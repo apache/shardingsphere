@@ -44,7 +44,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLLogicalReplicationTest {
+class PostgreSQLLogicalReplicationTest {
     
     @Mock
     private PgConnection connection;
@@ -61,19 +61,19 @@ public final class PostgreSQLLogicalReplicationTest {
     private PostgreSQLLogicalReplication logicalReplication;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         logicalReplication = new PostgreSQLLogicalReplication();
     }
     
     @Test
-    public void assertCreatePgConnectionSuccess() throws SQLException {
+    void assertCreatePgConnectionSuccess() throws SQLException {
         Connection connection = logicalReplication.createConnection(
                 new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=PostgreSQL", "root", "root"));
         assertFalse(connection.isClosed());
     }
     
     @Test
-    public void assertCreateReplicationStreamSuccess() throws SQLException {
+    void assertCreateReplicationStreamSuccess() throws SQLException {
         LogSequenceNumber startPosition = LogSequenceNumber.valueOf(100L);
         when(connection.unwrap(PGConnection.class)).thenReturn(connection);
         when(connection.getReplicationAPI()).thenReturn(pgReplicationConnection);

@@ -39,30 +39,30 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ConfigService.class)
-public final class ShardingSphereDriverURLManagerTest {
+class ShardingSphereDriverURLManagerTest {
     
     private final int fooDriverConfigLength = 999;
     
     @Test
-    public void assertNewConstructorWithEmptyURL() {
+    void assertNewConstructorWithEmptyURL() {
         assertThrows(DriverURLProviderNotFoundException.class, () -> ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:"));
     }
     
     @Test
-    public void assertToClasspathConfigurationFile() {
+    void assertToClasspathConfigurationFile() {
         byte[] actual = ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
         assertThat(actual.length, is(fooDriverConfigLength));
     }
     
     @Test
-    public void assertToAbsolutePathConfigurationFile() {
+    void assertToAbsolutePathConfigurationFile() {
         String absolutePath = Objects.requireNonNull(ShardingSphereDriverURLManagerTest.class.getClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
         byte[] actual = ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:absolutepath:" + absolutePath);
         assertThat(actual.length, is(fooDriverConfigLength));
     }
     
     @Test
-    public void assertToApolloConfigurationFile() {
+    void assertToApolloConfigurationFile() {
         ConfigFile configFile = mock(ConfigFile.class);
         when(configFile.getContent()).thenReturn("config content");
         when(ConfigService.getConfigFile(anyString(), any(ConfigFileFormat.class))).thenReturn(configFile);

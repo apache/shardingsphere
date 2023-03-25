@@ -42,46 +42,46 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class IndexMetaDataUtilTest {
+class IndexMetaDataUtilTest {
     
     private static final String TABLE_NAME = "t_order";
     
     private static final String INDEX_NAME = "user_id_idx";
     
     @Test
-    public void assertGetLogicIndexNameWithIndexNameSuffix() {
+    void assertGetLogicIndexNameWithIndexNameSuffix() {
         assertThat(IndexMetaDataUtil.getLogicIndexName("order_index_t_order", "t_order"), is("order_index"));
     }
     
     @Test
-    public void assertGetLogicIndexNameWithMultiIndexNameSuffix() {
+    void assertGetLogicIndexNameWithMultiIndexNameSuffix() {
         assertThat(IndexMetaDataUtil.getLogicIndexName("order_t_order_index_t_order", "t_order"), is("order_t_order_index"));
     }
     
     @Test
-    public void assertGetLogicIndexNameWithoutIndexNameSuffix() {
+    void assertGetLogicIndexNameWithoutIndexNameSuffix() {
         assertThat(IndexMetaDataUtil.getLogicIndexName("order_index", "t_order"), is("order_index"));
     }
     
     @Test
-    public void assertGetActualIndexNameWithActualTableName() {
+    void assertGetActualIndexNameWithActualTableName() {
         assertThat(IndexMetaDataUtil.getActualIndexName("order_index", "t_order"), is("order_index_t_order"));
     }
     
     @Test
-    public void assertGetActualIndexNameWithoutActualTableName() {
+    void assertGetActualIndexNameWithoutActualTableName() {
         assertThat(IndexMetaDataUtil.getActualIndexName("order_index", null), is("order_index"));
     }
     
     @Test
-    public void assertGetGeneratedLogicIndexName() {
+    void assertGetGeneratedLogicIndexName() {
         ColumnSegment userIdColumnSegment = new ColumnSegment(0, 0, new IdentifierValue("user_id"));
         ColumnSegment userNameColumnSegment = new ColumnSegment(0, 0, new IdentifierValue("user_name"));
         assertThat(IndexMetaDataUtil.getGeneratedLogicIndexName(Arrays.asList(userIdColumnSegment, userNameColumnSegment)), is("user_id_user_name_idx"));
     }
     
     @Test
-    public void assertGetTableNames() {
+    void assertGetTableNames() {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue(INDEX_NAME)));
         Collection<QualifiedTable> actual = IndexMetaDataUtil.getTableNames(buildDatabase(), new MySQLDatabaseType(), Collections.singleton(indexSegment));
         assertThat(actual.size(), is(1));

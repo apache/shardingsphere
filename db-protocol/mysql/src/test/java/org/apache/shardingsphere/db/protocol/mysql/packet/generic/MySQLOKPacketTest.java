@@ -30,13 +30,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLOKPacketTest {
+class MySQLOKPacketTest {
     
     @Mock
     private MySQLPacketPayload packetPayload;
     
     @Test
-    public void assertNewOKPacketWithStatusFlag() {
+    void assertNewOKPacketWithStatusFlag() {
         MySQLOKPacket actual = new MySQLOKPacket(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         assertThat(actual.getAffectedRows(), is(0L));
         assertThat(actual.getLastInsertId(), is(0L));
@@ -46,7 +46,7 @@ public final class MySQLOKPacketTest {
     }
     
     @Test
-    public void assertNewOKPacketWithAffectedRowsAndLastInsertId() {
+    void assertNewOKPacketWithAffectedRowsAndLastInsertId() {
         MySQLOKPacket actual = new MySQLOKPacket(100L, 9999L, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         assertThat(actual.getAffectedRows(), is(100L));
         assertThat(actual.getLastInsertId(), is(9999L));
@@ -56,7 +56,7 @@ public final class MySQLOKPacketTest {
     }
     
     @Test
-    public void assertNewOKPacketWithPayload() {
+    void assertNewOKPacketWithPayload() {
         when(packetPayload.readInt1()).thenReturn(MySQLOKPacket.HEADER);
         when(packetPayload.readInt2()).thenReturn(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), 0);
         when(packetPayload.readIntLenenc()).thenReturn(100L, 9999L);
@@ -70,7 +70,7 @@ public final class MySQLOKPacketTest {
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         new MySQLOKPacket(100L, 9999L, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()).write(packetPayload);
         verify(packetPayload).writeInt1(MySQLOKPacket.HEADER);
         verify(packetPayload).writeIntLenenc(100L);

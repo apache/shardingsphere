@@ -39,10 +39,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ColumnValueConvertUtilsTest {
+class ColumnValueConvertUtilsTest {
     
     @Test
-    public void assertConvertToProtobufMessage() {
+    void assertConvertToProtobufMessage() {
         Message actualMessage = ColumnValueConvertUtils.convertToProtobufMessage(null);
         assertTrue(actualMessage instanceof Empty);
         actualMessage = ColumnValueConvertUtils.convertToProtobufMessage(1);

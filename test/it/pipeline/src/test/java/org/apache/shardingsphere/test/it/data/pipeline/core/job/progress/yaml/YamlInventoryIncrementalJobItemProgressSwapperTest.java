@@ -29,12 +29,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public final class YamlInventoryIncrementalJobItemProgressSwapperTest {
+class YamlInventoryIncrementalJobItemProgressSwapperTest {
     
     private static final YamlInventoryIncrementalJobItemProgressSwapper SWAPPER = new YamlInventoryIncrementalJobItemProgressSwapper();
     
     @Test
-    public void assertFullSwapToYamlConfiguration() {
+    void assertFullSwapToYamlConfiguration() {
         InventoryIncrementalJobItemProgress progress = SWAPPER.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress.yaml"), YamlInventoryIncrementalJobItemProgress.class));
         YamlInventoryIncrementalJobItemProgress actual = SWAPPER.swapToYamlConfiguration(progress);
         assertThat(actual.getStatus(), is("RUNNING"));
@@ -49,14 +49,14 @@ public final class YamlInventoryIncrementalJobItemProgressSwapperTest {
     }
     
     @Test
-    public void assertSwapWithFullConfig() {
+    void assertSwapWithFullConfig() {
         YamlInventoryIncrementalJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress.yaml"), YamlInventoryIncrementalJobItemProgress.class);
         YamlInventoryIncrementalJobItemProgress actual = SWAPPER.swapToYamlConfiguration(SWAPPER.swapToObject(yamlProgress));
         assertThat(YamlEngine.marshal(actual), is(YamlEngine.marshal(yamlProgress)));
     }
     
     @Test
-    public void assertSwapWithoutInventoryIncremental() {
+    void assertSwapWithoutInventoryIncremental() {
         YamlInventoryIncrementalJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress-failure.yaml"), YamlInventoryIncrementalJobItemProgress.class);
         InventoryIncrementalJobItemProgress progress = SWAPPER.swapToObject(yamlProgress);
         assertNotNull(progress.getInventory());
@@ -70,7 +70,7 @@ public final class YamlInventoryIncrementalJobItemProgressSwapperTest {
     }
     
     @Test
-    public void assertSwapWithRunningConfig() {
+    void assertSwapWithRunningConfig() {
         YamlInventoryIncrementalJobItemProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress-running.yaml"), YamlInventoryIncrementalJobItemProgress.class);
         InventoryIncrementalJobItemProgress progress = SWAPPER.swapToObject(yamlProgress);
         assertNotNull(progress.getInventory());

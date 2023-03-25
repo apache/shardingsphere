@@ -41,14 +41,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class RowNumberPaginationContextEngineTest {
+class RowNumberPaginationContextEngineTest {
     
     private static final String ROW_NUMBER_COLUMN_NAME = "rownum";
     
     private static final String ROW_NUMBER_COLUMN_ALIAS = "predicateRowNumberAlias";
     
     @Test
-    public void assertCreatePaginationContextWhenRowNumberAliasNotPresent() {
+    void assertCreatePaginationContextWhenRowNumberAliasNotPresent() {
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.emptyList());
         PaginationContext paginationContext = new RowNumberPaginationContextEngine().createPaginationContext(Collections.emptyList(), projectionsContext, Collections.emptyList());
         assertFalse(paginationContext.getOffsetSegment().isPresent());
@@ -56,7 +56,7 @@ public final class RowNumberPaginationContextEngineTest {
     }
     
     @Test
-    public void assertCreatePaginationContextWhenRowNumberAliasIsPresentAndRowNumberPredicatesIsEmpty() {
+    void assertCreatePaginationContextWhenRowNumberAliasIsPresentAndRowNumberPredicatesIsEmpty() {
         Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
         PaginationContext paginationContext = new RowNumberPaginationContextEngine().createPaginationContext(Collections.emptyList(), projectionsContext, Collections.emptyList());
@@ -65,27 +65,27 @@ public final class RowNumberPaginationContextEngineTest {
     }
     
     @Test
-    public void assertCreatePaginationContextWhenRowNumberAliasIsPresentAndRowNumberPredicatesNotEmptyWithLessThanOperator() {
+    void assertCreatePaginationContextWhenRowNumberAliasIsPresentAndRowNumberPredicatesNotEmptyWithLessThanOperator() {
         assertCreatePaginationContextWhenRowNumberAliasPresentAndRowNumberPredicatedNotEmptyWithGivenOperator("<");
     }
     
     @Test
-    public void assertCreatePaginationContextWhenRowNumberAliasIsPresentAndRowNumberPredicatesNotEmptyWithLessThanEqualOperator() {
+    void assertCreatePaginationContextWhenRowNumberAliasIsPresentAndRowNumberPredicatesNotEmptyWithLessThanEqualOperator() {
         assertCreatePaginationContextWhenRowNumberAliasPresentAndRowNumberPredicatedNotEmptyWithGivenOperator("<=");
     }
     
     @Test
-    public void assertCreatePaginationContextWhenOffsetSegmentInstanceOfNumberLiteralRowNumberValueSegmentWithGreatThanOperator() {
+    void assertCreatePaginationContextWhenOffsetSegmentInstanceOfNumberLiteralRowNumberValueSegmentWithGreatThanOperator() {
         assertCreatePaginationContextWhenOffsetSegmentInstanceOfNumberLiteralRowNumberValueSegmentWithGivenOperator(">");
     }
     
     @Test
-    public void assertCreatePaginationContextWhenOffsetSegmentInstanceOfNumberLiteralRowNumberValueSegmentWithGreatThanEqualOperator() {
+    void assertCreatePaginationContextWhenOffsetSegmentInstanceOfNumberLiteralRowNumberValueSegmentWithGreatThanEqualOperator() {
         assertCreatePaginationContextWhenOffsetSegmentInstanceOfNumberLiteralRowNumberValueSegmentWithGivenOperator(">=");
     }
     
     @Test
-    public void assertCreatePaginationContextWhenRowNumberAliasIsPresentAndRowNumberPredicatesNotEmpty() {
+    void assertCreatePaginationContextWhenRowNumberAliasIsPresentAndRowNumberPredicatesNotEmpty() {
         Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
         AndPredicate andPredicate = new AndPredicate();
@@ -98,7 +98,7 @@ public final class RowNumberPaginationContextEngineTest {
     }
     
     @Test
-    public void assertCreatePaginationContextWhenParameterMarkerRowNumberValueSegment() {
+    void assertCreatePaginationContextWhenParameterMarkerRowNumberValueSegment() {
         Projection projectionWithRowNumberAlias = new ColumnProjection(null, ROW_NUMBER_COLUMN_NAME, ROW_NUMBER_COLUMN_ALIAS);
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, false, Collections.singleton(projectionWithRowNumberAlias));
         ColumnSegment left = new ColumnSegment(0, 10, new IdentifierValue(ROW_NUMBER_COLUMN_NAME));

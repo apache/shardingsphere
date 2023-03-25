@@ -35,11 +35,11 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DataSourcePropertiesTest {
+class DataSourcePropertiesTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertGetDataSourceConfigurationWithConnectionInitSqls() {
+    void assertGetDataSourceConfigurationWithConnectionInitSqls() {
         MockedDataSource actualDataSource = new MockedDataSource();
         actualDataSource.setDriverClassName(MockedDataSource.class.getName());
         actualDataSource.setUrl("jdbc:mock://127.0.0.1/foo_ds");
@@ -59,7 +59,7 @@ public final class DataSourcePropertiesTest {
     }
     
     @Test
-    public void assertGetAllLocalProperties() {
+    void assertGetAllLocalProperties() {
         DataSourceProperties originalDataSourceProps = new DataSourceProperties(MockedDataSource.class.getName(), getProperties());
         Map<String, Object> actualAllProps = originalDataSourceProps.getAllLocalProperties();
         assertThat(actualAllProps.size(), is(7));
@@ -92,42 +92,42 @@ public final class DataSourcePropertiesTest {
     }
     
     @Test
-    public void assertEquals() {
+    void assertEquals() {
         assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root")),
                 is(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root"))));
     }
     
     @Test
-    public void assertNotEqualsWithNullValue() {
+    void assertNotEqualsWithNullValue() {
         assertNotEquals(new DataSourceProperties(MockedDataSource.class.getName(), new HashMap<>()), null);
     }
     
     @Test
-    public void assertNotEqualsWithDifferentDataSourceClassName() {
+    void assertNotEqualsWithDifferentDataSourceClassName() {
         assertThat(new DataSourceProperties("FooDataSourceClass", new HashMap<>()), not(new DataSourceProperties("BarDataSourceClass", new HashMap<>())));
     }
     
     @Test
-    public void assertNotEqualsWithDifferentProperties() {
+    void assertNotEqualsWithDifferentProperties() {
         DataSourceProperties actual = new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("foo"));
         DataSourceProperties expected = new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("bar"));
         assertThat(actual, not(expected));
     }
     
     @Test
-    public void assertSameHashCode() {
+    void assertSameHashCode() {
         assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root")).hashCode(),
                 is(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("root")).hashCode()));
     }
     
     @Test
-    public void assertDifferentHashCodeWithDifferentDataSourceClassName() {
+    void assertDifferentHashCodeWithDifferentDataSourceClassName() {
         assertThat(new DataSourceProperties("FooDataSourceClass", createUserProperties("foo")).hashCode(),
                 not(new DataSourceProperties("BarDataSourceClass", createUserProperties("foo")).hashCode()));
     }
     
     @Test
-    public void assertDifferentHashCodeWithDifferentProperties() {
+    void assertDifferentHashCodeWithDifferentProperties() {
         assertThat(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("foo")).hashCode(),
                 not(new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("bar")).hashCode()));
     }

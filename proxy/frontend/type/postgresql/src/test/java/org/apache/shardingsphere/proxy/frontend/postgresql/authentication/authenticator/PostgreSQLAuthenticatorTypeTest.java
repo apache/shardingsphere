@@ -32,12 +32,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLAuthenticatorTypeTest {
+class PostgreSQLAuthenticatorTypeTest {
     
     private final AuthorityRule rule = mock(AuthorityRule.class);
     
     @Test
-    public void assertDefaultAuthenticatorType() {
+    void assertDefaultAuthenticatorType() {
         when(rule.getAuthenticatorType(any())).thenReturn("");
         Authenticator authenticator = new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
         assertThat(authenticator, instanceOf(PostgreSQLMD5PasswordAuthenticator.class));
@@ -45,7 +45,7 @@ public final class PostgreSQLAuthenticatorTypeTest {
     }
     
     @Test
-    public void assertAuthenticatorTypeWithErrorName() {
+    void assertAuthenticatorTypeWithErrorName() {
         when(rule.getAuthenticatorType(any())).thenReturn("error");
         Authenticator authenticator = new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
         assertThat(authenticator, instanceOf(PostgreSQLMD5PasswordAuthenticator.class));
@@ -53,7 +53,7 @@ public final class PostgreSQLAuthenticatorTypeTest {
     }
     
     @Test
-    public void assertAuthenticatorTypeWithMD5() {
+    void assertAuthenticatorTypeWithMD5() {
         when(rule.getAuthenticatorType(any())).thenReturn("MD5");
         Authenticator authenticator = new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
         assertThat(authenticator, instanceOf(PostgreSQLMD5PasswordAuthenticator.class));
@@ -61,7 +61,7 @@ public final class PostgreSQLAuthenticatorTypeTest {
     }
     
     @Test
-    public void assertAuthenticatorTypeWithPassword() {
+    void assertAuthenticatorTypeWithPassword() {
         when(rule.getAuthenticatorType(any())).thenReturn("PASSWORD");
         Authenticator authenticator = new AuthenticatorFactory<>(PostgreSQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
         assertThat(authenticator, instanceOf(PostgreSQLPasswordAuthenticator.class));

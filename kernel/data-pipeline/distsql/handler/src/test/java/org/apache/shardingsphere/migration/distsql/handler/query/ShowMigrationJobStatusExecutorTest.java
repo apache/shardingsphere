@@ -30,12 +30,12 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ShowMigrationJobStatusExecutorTest {
+class ShowMigrationJobStatusExecutorTest {
     
     private final ShowMigrationJobStatusExecutor executor = new ShowMigrationJobStatusExecutor();
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(9));
         Iterator<String> iterator = columns.iterator();

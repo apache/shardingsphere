@@ -31,18 +31,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class SQLMatchTrafficAlgorithmTest {
+class SQLMatchTrafficAlgorithmTest {
     
     private SQLMatchTrafficAlgorithm sqlMatchAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         sqlMatchAlgorithm = (SQLMatchTrafficAlgorithm) TypedSPILoader.getService(TrafficAlgorithm.class, "SQL_MATCH",
                 PropertiesBuilder.build(new Property("sql", "SELECT * FROM t_order; UPDATE t_order SET order_id = ? WHERE user_id = ?;")));
     }
     
     @Test
-    public void assertMatchWhenExistSQLMatch() {
+    void assertMatchWhenExistSQLMatch() {
         SQLStatement sqlStatement = mock(SelectStatement.class);
         assertTrue(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "SELECT * FROM t_order")));
         assertTrue(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "select *  from  t_order;")));
@@ -52,7 +52,7 @@ public final class SQLMatchTrafficAlgorithmTest {
     }
     
     @Test
-    public void assertMatchWhenNotExistSQLMatch() {
+    void assertMatchWhenNotExistSQLMatch() {
         SQLStatement sqlStatement = mock(SelectStatement.class);
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "select *  from `t_order` where order_id = ?;")));
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "TRUNCATE TABLE `t_order` ")));

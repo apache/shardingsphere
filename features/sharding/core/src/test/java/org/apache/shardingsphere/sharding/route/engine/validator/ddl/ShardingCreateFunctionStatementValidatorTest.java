@@ -48,13 +48,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingCreateFunctionStatementValidatorTest {
+class ShardingCreateFunctionStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
     
     @Test
-    public void assertPreValidateCreateFunctionForMySQL() {
+    void assertPreValidateCreateFunctionForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement(false);
@@ -76,7 +76,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateCreateFunctionWithShardingTableForMySQL() {
+    void assertPreValidateCreateFunctionWithShardingTableForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
@@ -93,7 +93,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateCreateFunctionWithNoSuchTableForMySQL() {
+    void assertPreValidateCreateFunctionWithNoSuchTableForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
@@ -110,7 +110,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateCreateFunctionWithTableExistsForMySQL() {
+    void assertPreValidateCreateFunctionWithTableExistsForMySQL() {
         MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement(false);
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);

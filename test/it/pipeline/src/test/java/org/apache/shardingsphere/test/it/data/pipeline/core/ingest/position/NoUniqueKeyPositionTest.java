@@ -25,17 +25,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class NoUniqueKeyPositionTest {
+class NoUniqueKeyPositionTest {
     
     @Test
-    public void assertInit() {
+    void assertInit() {
         NoUniqueKeyPosition position = (NoUniqueKeyPosition) PrimaryKeyPositionFactory.newInstance("n,,");
         assertNull(position.getBeginValue());
         assertNull(position.getEndValue());
     }
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         assertThat(new NoUniqueKeyPosition().toString(), is("n,,"));
     }
 }

@@ -26,10 +26,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class SQLUtilTest {
+class SQLUtilTest {
     
     @Test
-    public void assertGetExactlyNumberForInteger() {
+    void assertGetExactlyNumberForInteger() {
         assertThat(SQLUtil.getExactlyNumber("100000", 10), is(100000));
         assertThat(SQLUtil.getExactlyNumber("100000", 16), is(1048576));
         assertThat(SQLUtil.getExactlyNumber(String.valueOf(Integer.MIN_VALUE), 10), is(Integer.MIN_VALUE));
@@ -37,7 +37,7 @@ public final class SQLUtilTest {
     }
     
     @Test
-    public void assertGetExactlyNumberForLong() {
+    void assertGetExactlyNumberForLong() {
         assertThat(SQLUtil.getExactlyNumber("100000000000", 10), is(100000000000L));
         assertThat(SQLUtil.getExactlyNumber("100000000000", 16), is(17592186044416L));
         assertThat(SQLUtil.getExactlyNumber(String.valueOf(Long.MIN_VALUE), 10), is(Long.MIN_VALUE));
@@ -45,7 +45,7 @@ public final class SQLUtilTest {
     }
     
     @Test
-    public void assertGetExactlyNumberForBigInteger() {
+    void assertGetExactlyNumberForBigInteger() {
         assertThat(SQLUtil.getExactlyNumber("10000000000000000000", 10), is(new BigInteger("10000000000000000000")));
         assertThat(SQLUtil.getExactlyNumber("10000000000000000000", 16), is(new BigInteger("75557863725914323419136")));
         assertThat(SQLUtil.getExactlyNumber(String.valueOf(Long.MIN_VALUE + 1), 10), is(Long.MIN_VALUE + 1));
@@ -53,12 +53,12 @@ public final class SQLUtilTest {
     }
     
     @Test
-    public void assertGetExactlyNumberForBigDecimal() {
+    void assertGetExactlyNumberForBigDecimal() {
         assertThat(SQLUtil.getExactlyNumber("1.1", 10), is(new BigDecimal("1.1")));
     }
     
     @Test
-    public void assertGetExactlyValue() {
+    void assertGetExactlyValue() {
         assertThat(SQLUtil.getExactlyValue("`xxx`"), is("xxx"));
         assertThat(SQLUtil.getExactlyValue("[xxx]"), is("xxx"));
         assertThat(SQLUtil.getExactlyValue("\"xxx\""), is("xxx"));
@@ -66,7 +66,7 @@ public final class SQLUtilTest {
     }
     
     @Test
-    public void assertGetExactlyValueWithReservedCharacters() {
+    void assertGetExactlyValueWithReservedCharacters() {
         assertThat(SQLUtil.getExactlyValue("`xxx`", "`"), is("`xxx`"));
         assertThat(SQLUtil.getExactlyValue("[xxx]", "[]"), is("[xxx]"));
         assertThat(SQLUtil.getExactlyValue("\"xxx\"", "\""), is("\"xxx\""));
@@ -74,33 +74,33 @@ public final class SQLUtilTest {
     }
     
     @Test
-    public void assertGetExactlyValueUsingNull() {
+    void assertGetExactlyValueUsingNull() {
         assertNull(SQLUtil.getExactlyValue(null));
     }
     
     @Test
-    public void assertGetExactlyExpressionUsingAndReturningNull() {
+    void assertGetExactlyExpressionUsingAndReturningNull() {
         assertNull(SQLUtil.getExactlyExpression(null));
     }
     
     @Test
-    public void assertGetExactlyExpressionUsingAndReturningEmptyString() {
+    void assertGetExactlyExpressionUsingAndReturningEmptyString() {
         assertThat(SQLUtil.getExactlyExpression(""), is(""));
     }
     
     @Test
-    public void assertGetExactlyExpression() {
+    void assertGetExactlyExpression() {
         assertThat(SQLUtil.getExactlyExpression("((a + b*c))"), is("((a+b*c))"));
     }
     
     @Test
-    public void assertGetExpressionWithoutOutsideParentheses() {
+    void assertGetExpressionWithoutOutsideParentheses() {
         assertThat(SQLUtil.getExpressionWithoutOutsideParentheses("((a + b*c))"), is("a + b*c"));
         assertThat(SQLUtil.getExpressionWithoutOutsideParentheses(""), is(""));
     }
     
     @Test
-    public void assertConvertLikePatternToRegexWhenEndWithPattern() {
+    void assertConvertLikePatternToRegexWhenEndWithPattern() {
         assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding_'"), is("SHOW DATABASES LIKE 'sharding.'"));
         assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding%'"), is("SHOW DATABASES LIKE 'sharding.*'"));
         assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding%_'"), is("SHOW DATABASES LIKE 'sharding.*.'"));
@@ -114,7 +114,7 @@ public final class SQLUtilTest {
     }
     
     @Test
-    public void assertConvertLikePatternToRegexWhenStartWithPattern() {
+    void assertConvertLikePatternToRegexWhenStartWithPattern() {
         assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE '_sharding'"), is("SHOW DATABASES LIKE '.sharding'"));
         assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE '%sharding'"), is("SHOW DATABASES LIKE '.*sharding'"));
         assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE '%_sharding'"), is("SHOW DATABASES LIKE '.*.sharding'"));
@@ -128,7 +128,7 @@ public final class SQLUtilTest {
     }
     
     @Test
-    public void assertConvertLikePatternToRegexWhenContainsPattern() {
+    void assertConvertLikePatternToRegexWhenContainsPattern() {
         assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding_db'"), is("SHOW DATABASES LIKE 'sharding.db'"));
         assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding%db'"), is("SHOW DATABASES LIKE 'sharding.*db'"));
         assertThat(SQLUtil.convertLikePatternToRegex("SHOW DATABASES LIKE 'sharding%_db'"), is("SHOW DATABASES LIKE 'sharding.*.db'"));
@@ -142,13 +142,13 @@ public final class SQLUtilTest {
     }
     
     @Test
-    public void assertTrimSemiColon() {
+    void assertTrimSemiColon() {
         assertThat(SQLUtil.trimSemicolon("SHOW DATABASES;"), is("SHOW DATABASES"));
         assertThat(SQLUtil.trimSemicolon("SHOW DATABASES"), is("SHOW DATABASES"));
     }
     
     @Test
-    public void assertTrimComment() {
+    void assertTrimComment() {
         assertThat(SQLUtil.trimComment("/* This is a comment */ SHOW DATABASES"), is("SHOW DATABASES"));
         assertThat(SQLUtil.trimComment("/* This is a query with a semicolon */ SHOW DATABASES;"), is("SHOW DATABASES"));
         assertThat(SQLUtil.trimComment("/* This is a query with spaces */    SHOW DATABASES   "), is("SHOW DATABASES"));

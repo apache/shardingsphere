@@ -50,10 +50,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ShowTableMetaDataExecutorTest {
+class ShowTableMetaDataExecutorTest {
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         when(connectionSession.getDatabaseName()).thenReturn("foo_db");
         ShowTableMetaDataExecutor executor = new ShowTableMetaDataExecutor();
@@ -87,7 +87,7 @@ public final class ShowTableMetaDataExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         ShowTableMetaDataExecutor executor = new ShowTableMetaDataExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(4));

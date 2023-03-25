@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public final class CreateEncryptRuleStatementUpdaterTest {
+class CreateEncryptRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -56,17 +56,17 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     private final CreateEncryptRuleStatementUpdater updater = new CreateEncryptRuleStatementUpdater();
     
     @Test
-    public void assertCheckSQLStatementWithDuplicateEncryptRule() {
+    void assertCheckSQLStatementWithDuplicateEncryptRule() {
         assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "MD5"), getCurrentRuleConfig()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutToBeCreatedEncryptors() {
+    void assertCheckSQLStatementWithoutToBeCreatedEncryptors() {
         assertThrows(ServiceProviderNotFoundServerException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithIncompleteDataType() {
+    void assertCheckSQLStatementWithIncompleteDataType() {
         EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
                 "int varchar(10)", null, null, null, null, new AlgorithmSegment("test", new Properties()),
                 new AlgorithmSegment("test", new Properties()),
@@ -77,7 +77,7 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCreateEncryptRuleWithIfNotExists() {
+    void assertCreateEncryptRuleWithIfNotExists() {
         EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateEncryptRuleStatement sqlStatement = createAESEncryptRuleSQLStatement(true);
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
@@ -120,7 +120,7 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCreateAESEncryptRuleWithPropertiesNotExists() {
+    void assertCreateAESEncryptRuleWithPropertiesNotExists() {
         EncryptRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateEncryptRuleStatement sqlStatement = createWrongAESEncryptorSQLStatement();
         assertThrows(EncryptAlgorithmInitializationException.class, () -> updater.checkSQLStatement(database, sqlStatement, currentRuleConfig));

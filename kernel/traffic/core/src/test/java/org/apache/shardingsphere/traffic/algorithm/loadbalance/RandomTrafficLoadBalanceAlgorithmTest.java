@@ -26,10 +26,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class RandomTrafficLoadBalanceAlgorithmTest {
+class RandomTrafficLoadBalanceAlgorithmTest {
     
     @Test
-    public void assertGetInstanceId() {
+    void assertGetInstanceId() {
         RandomTrafficLoadBalanceAlgorithm randomAlgorithm = new RandomTrafficLoadBalanceAlgorithm();
         List<InstanceMetaData> instances = Arrays.asList(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_verison"),
                 new ProxyInstanceMetaData("bar_id", "127.0.0.1@3308", "foo_verison"));

@@ -32,10 +32,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DropIndexStatementHandlerTest {
+class DropIndexStatementHandlerTest {
     
     @Test
-    public void assertGetSimpleTableSegmentWithSimpleTableSegmentForMySQL() {
+    void assertGetSimpleTableSegmentWithSimpleTableSegmentForMySQL() {
         MySQLDropIndexStatement dropIndexStatement = new MySQLDropIndexStatement();
         dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(dropIndexStatement);
@@ -43,14 +43,14 @@ public final class DropIndexStatementHandlerTest {
     }
     
     @Test
-    public void assertGetSimpleTableSegmentWithoutSimpleTableSegmentForMySQL() {
+    void assertGetSimpleTableSegmentWithoutSimpleTableSegmentForMySQL() {
         MySQLDropIndexStatement dropIndexStatement = new MySQLDropIndexStatement();
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(dropIndexStatement);
         assertFalse(simpleTableSegment.isPresent());
     }
     
     @Test
-    public void assertGetSimpleTableSegmentWithSimpleTableSegmentForSQLServer() {
+    void assertGetSimpleTableSegmentWithSimpleTableSegmentForSQLServer() {
         SQLServerDropIndexStatement dropIndexStatement = new SQLServerDropIndexStatement(false);
         dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(dropIndexStatement);
@@ -58,39 +58,39 @@ public final class DropIndexStatementHandlerTest {
     }
     
     @Test
-    public void assertGetSimpleTableSegmentWithoutSimpleTableSegmentForSQLServer() {
+    void assertGetSimpleTableSegmentWithoutSimpleTableSegmentForSQLServer() {
         SQLServerDropIndexStatement dropIndexStatement = new SQLServerDropIndexStatement(false);
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(dropIndexStatement);
         assertFalse(simpleTableSegment.isPresent());
     }
     
     @Test
-    public void assertGetSimpleTableSegmentForOtherDatabases() {
+    void assertGetSimpleTableSegmentForOtherDatabases() {
         assertFalse(DropIndexStatementHandler.getSimpleTableSegment(new OpenGaussDropIndexStatement(true)).isPresent());
         assertFalse(DropIndexStatementHandler.getSimpleTableSegment(new OracleDropIndexStatement()).isPresent());
         assertFalse(DropIndexStatementHandler.getSimpleTableSegment(new PostgreSQLDropIndexStatement(true)).isPresent());
     }
     
     @Test
-    public void assertIfExistsForPostgreSQL() {
+    void assertIfExistsForPostgreSQL() {
         assertFalse(DropIndexStatementHandler.ifExists(new PostgreSQLDropIndexStatement(false)));
         assertTrue(DropIndexStatementHandler.ifExists(new PostgreSQLDropIndexStatement(true)));
     }
     
     @Test
-    public void assertIfExistsForSQLServer() {
+    void assertIfExistsForSQLServer() {
         assertFalse(DropIndexStatementHandler.ifExists(new SQLServerDropIndexStatement(false)));
         assertTrue(DropIndexStatementHandler.ifExists(new SQLServerDropIndexStatement(true)));
     }
     
     @Test
-    public void assertIfExistsForOpenGauss() {
+    void assertIfExistsForOpenGauss() {
         assertFalse(DropIndexStatementHandler.ifExists(new OpenGaussDropIndexStatement(false)));
         assertTrue(DropIndexStatementHandler.ifExists(new OpenGaussDropIndexStatement(true)));
     }
     
     @Test
-    public void assertIfExistsForOtherDatabases() {
+    void assertIfExistsForOtherDatabases() {
         assertFalse(DropIndexStatementHandler.ifExists(new MySQLDropIndexStatement()));
         assertFalse(DropIndexStatementHandler.ifExists(new OracleDropIndexStatement()));
     }

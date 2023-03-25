@@ -63,7 +63,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ProcessListChangedSubscriberTest {
+class ProcessListChangedSubscriberTest {
     
     private ProcessListChangedSubscriber subscriber;
     
@@ -73,7 +73,7 @@ public final class ProcessListChangedSubscriberTest {
     private ShardingSphereDatabase database;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
@@ -99,7 +99,7 @@ public final class ProcessListChangedSubscriberTest {
     }
     
     @Test
-    public void assertCompleteUnitShowProcessList() {
+    void assertCompleteUnitShowProcessList() {
         String processListId = "foo_process_id";
         ShowProcessListSimpleLock lock = new ShowProcessListSimpleLock();
         ShowProcessListManager.getInstance().getLocks().put(processListId, lock);
@@ -120,7 +120,7 @@ public final class ProcessListChangedSubscriberTest {
     }
     
     @Test
-    public void assertTriggerShowProcessList() throws ReflectiveOperationException {
+    void assertTriggerShowProcessList() throws ReflectiveOperationException {
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         ShowProcessListManager.getInstance().putProcessContext("foo_execution_id", mock(ExecuteProcessContext.class));
         String processListId = "foo_process_id";
@@ -132,7 +132,7 @@ public final class ProcessListChangedSubscriberTest {
     }
     
     @Test
-    public void assertKillProcessListId() throws SQLException, ReflectiveOperationException {
+    void assertKillProcessListId() throws SQLException, ReflectiveOperationException {
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         String processId = "foo_process_id";
         subscriber.killProcessListId(new KillProcessListIdEvent(instanceId, processId));

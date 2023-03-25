@@ -27,40 +27,40 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class MaskFirstNLastMMaskAlgorithmTest {
+class MaskFirstNLastMMaskAlgorithmTest {
     
     private MaskFirstNLastMMaskAlgorithm maskAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         maskAlgorithm = new MaskFirstNLastMMaskAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", "*")));
     }
     
     @Test
-    public void assertMask() {
+    void assertMask() {
         assertThat(maskAlgorithm.mask("abc12345678"), is("***123*****"));
     }
     
     @Test
-    public void assertMaskWhenPlainValueLengthLessThanFirstN() {
+    void assertMaskWhenPlainValueLengthLessThanFirstN() {
         assertThat(maskAlgorithm.mask("ab"), is("**"));
     }
     
     @Test
-    public void assertInitWhenFirstNIsEmpty() {
+    void assertInitWhenFirstNIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", ""), new Property("last-m", "5"), new Property("replace-char", "*"))));
     }
     
     @Test
-    public void assertInitWhenLastMIsEmpty() {
+    void assertInitWhenLastMIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", ""), new Property("replace-char", "*"))));
     }
     
     @Test
-    public void assertInitWhenReplaceCharIsEmpty() {
+    void assertInitWhenReplaceCharIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", ""))));
     }

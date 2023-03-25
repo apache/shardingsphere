@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ConsulRepositoryTest {
+class ConsulRepositoryTest {
     
     private final ConsulRepository repository = new ConsulRepository();
     
@@ -84,7 +84,7 @@ public final class ConsulRepositoryTest {
     private long index = 123456L;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         setClient();
         setProperties();
     }
@@ -112,14 +112,14 @@ public final class ConsulRepositoryTest {
     }
     
     @Test
-    public void assertDirectlyKey() {
+    void assertDirectlyKey() {
         repository.getDirectly("key");
         verify(client).getKVValue("key");
         verify(response).getValue();
     }
     
     @Test
-    public void assertGetChildrenKeys() {
+    void assertGetChildrenKeys() {
         final String key = "/key";
         String k1 = "/key/key1/key1-1";
         String v1 = "value1";
@@ -137,14 +137,14 @@ public final class ConsulRepositoryTest {
     }
     
     @Test
-    public void assertPersistEphemeral() {
+    void assertPersistEphemeral() {
         repository.persistEphemeral("key1", "value1");
         verify(client).sessionCreate(any(NewSession.class), any(QueryParams.class));
         verify(client).setKVValue(any(String.class), any(String.class), any(PutParams.class));
     }
     
     @Test
-    public void assertWatchUpdate() throws InterruptedException {
+    void assertWatchUpdate() throws InterruptedException {
         final String key = "sharding/key";
         final String k1 = "sharding/key/key1";
         final String v1 = "value1";
@@ -167,7 +167,7 @@ public final class ConsulRepositoryTest {
     }
     
     @Test
-    public void assertWatchDelete() throws InterruptedException {
+    void assertWatchDelete() throws InterruptedException {
         final String key = "sharding/key";
         final String k1 = "sharding/key/key1";
         final String v1 = "value1";
@@ -193,18 +193,18 @@ public final class ConsulRepositoryTest {
     }
     
     @Test
-    public void assertWatchIgnored() {
+    void assertWatchIgnored() {
         // TODO
     }
     
     @Test
-    public void assertDelete() {
+    void assertDelete() {
         repository.delete("key");
         verify(client).deleteKVValue(any(String.class));
     }
     
     @Test
-    public void assertPersist() {
+    void assertPersist() {
         repository.persist("key1", "value1");
         verify(client).setKVValue(any(String.class), any(String.class));
     }

@@ -56,7 +56,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingCreateTableStatementValidatorTest {
+class ShardingCreateTableStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
@@ -68,35 +68,35 @@ public final class ShardingCreateTableStatementValidatorTest {
     private RouteContext routeContext;
     
     @Test
-    public void assertPreValidateCreateTableForMySQL() {
+    void assertPreValidateCreateTableForMySQL() {
         MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "sharding_db"));
     }
     
     @Test
-    public void assertPreValidateCreateTableForOracle() {
+    void assertPreValidateCreateTableForOracle() {
         OracleCreateTableStatement sqlStatement = new OracleCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "sharding_db"));
     }
     
     @Test
-    public void assertPreValidateCreateTableForPostgreSQL() {
+    void assertPreValidateCreateTableForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "public"));
     }
     
     @Test
-    public void assertPreValidateCreateTableForSQL92() {
+    void assertPreValidateCreateTableForSQL92() {
         SQL92CreateTableStatement sqlStatement = new SQL92CreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "sharding_db"));
     }
     
     @Test
-    public void assertPreValidateCreateTableForSQLServer() {
+    void assertPreValidateCreateTableForSQLServer() {
         SQLServerCreateTableStatement sqlStatement = new SQLServerCreateTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         assertThrows(TableExistsException.class, () -> assertPreValidateCreateTable(sqlStatement, "sharding_db"));
@@ -111,14 +111,14 @@ public final class ShardingCreateTableStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateCreateTableIfNotExistsForMySQL() {
+    void assertPreValidateCreateTableIfNotExistsForMySQL() {
         MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement(true);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         assertPreValidateCreateTableIfNotExists(sqlStatement);
     }
     
     @Test
-    public void assertPreValidateCreateTableIfNotExistsForPostgreSQL() {
+    void assertPreValidateCreateTableIfNotExistsForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(true);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         assertPreValidateCreateTableIfNotExists(sqlStatement);
@@ -131,7 +131,7 @@ public final class ShardingCreateTableStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateCreateTableWithSameRouteResultShardingTableForPostgreSQL() {
+    void assertPostValidateCreateTableWithSameRouteResultShardingTableForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
@@ -145,7 +145,7 @@ public final class ShardingCreateTableStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateCreateTableWithDifferentRouteResultShardingTableForPostgreSQL() {
+    void assertPostValidateCreateTableWithDifferentRouteResultShardingTableForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
@@ -158,7 +158,7 @@ public final class ShardingCreateTableStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateCreateTableWithSameRouteResultBroadcastTableForPostgreSQL() {
+    void assertPostValidateCreateTableWithSameRouteResultBroadcastTableForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
         when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
@@ -172,7 +172,7 @@ public final class ShardingCreateTableStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateCreateTableWithDifferentRouteResultBroadcastTableForPostgreSQL() {
+    void assertPostValidateCreateTableWithDifferentRouteResultBroadcastTableForPostgreSQL() {
         PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
         when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);

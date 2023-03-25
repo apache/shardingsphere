@@ -34,10 +34,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class ExternalMetaDataFactoryTest {
+class ExternalMetaDataFactoryTest {
     
     @Test
-    public void assertCreateSingleDatabase() throws SQLException {
+    void assertCreateSingleDatabase() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
         ShardingSphereDatabase actual = ExternalMetaDataFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
         assertThat(actual.getName(), is("foo_db"));
@@ -45,7 +45,7 @@ public final class ExternalMetaDataFactoryTest {
     }
     
     @Test
-    public void assertCreateDatabaseMap() throws SQLException {
+    void assertCreateDatabaseMap() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
         Map<String, ShardingSphereDatabase> actual = ExternalMetaDataFactory.create(
                 Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
@@ -54,7 +54,7 @@ public final class ExternalMetaDataFactoryTest {
     }
     
     @Test
-    public void assertCreateDatabaseMapWhenConfigUppercaseDatabaseName() throws SQLException {
+    void assertCreateDatabaseMapWhenConfigUppercaseDatabaseName() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.emptyList());
         Map<String, ShardingSphereDatabase> actual = ExternalMetaDataFactory.create(
                 Collections.singletonMap("FOO_DB", databaseConfig), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));

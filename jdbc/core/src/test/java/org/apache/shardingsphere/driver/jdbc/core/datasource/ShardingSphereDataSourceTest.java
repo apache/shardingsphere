@@ -51,15 +51,15 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingSphereDataSourceTest {
+class ShardingSphereDataSourceTest {
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         TransactionTypeHolder.set(null);
     }
     
     @Test
-    public void assertNewConstructorWithModeConfigurationOnly() throws SQLException {
+    void assertNewConstructorWithModeConfigurationOnly() throws SQLException {
         ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultDatabase.LOGIC_NAME, null);
         ContextManager contextManager = getContextManager(actual);
         assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME));
@@ -69,7 +69,7 @@ public final class ShardingSphereDataSourceTest {
     }
     
     @Test
-    public void assertNewConstructorWithAllArguments() throws SQLException {
+    void assertNewConstructorWithAllArguments() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         ShardingSphereDataSource actual = createShardingSphereDataSource(new MockedDataSource(connection));
@@ -82,7 +82,7 @@ public final class ShardingSphereDataSourceTest {
     }
     
     @Test
-    public void assertRemoveGlobalRuleConfiguration() throws SQLException {
+    void assertRemoveGlobalRuleConfiguration() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         CacheOption cacheOption = new CacheOption(1024, 1024);
@@ -93,7 +93,7 @@ public final class ShardingSphereDataSourceTest {
     }
     
     @Test
-    public void assertGetConnectionWithUsernameAndPassword() throws SQLException {
+    void assertGetConnectionWithUsernameAndPassword() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         assertThat(((ShardingSphereConnection) createShardingSphereDataSource(
@@ -105,28 +105,28 @@ public final class ShardingSphereDataSourceTest {
     }
     
     @Test
-    public void assertEmptyDataSourceMap() throws SQLException {
+    void assertEmptyDataSourceMap() throws SQLException {
         ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultDatabase.LOGIC_NAME, null);
         assertTrue(getContextManager(actual).getDataSourceMap(DefaultDatabase.LOGIC_NAME).isEmpty());
         assertThat(actual.getLoginTimeout(), is(0));
     }
     
     @Test
-    public void assertNotEmptyDataSourceMap() throws SQLException {
+    void assertNotEmptyDataSourceMap() throws SQLException {
         ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource());
         assertThat(getContextManager(actual).getDataSourceMap(DefaultDatabase.LOGIC_NAME).size(), is(1));
         assertThat(actual.getLoginTimeout(), is(15));
     }
     
     @Test
-    public void assertSetLoginTimeout() throws SQLException {
+    void assertSetLoginTimeout() throws SQLException {
         ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource());
         actual.setLoginTimeout(30);
         assertThat(actual.getLoginTimeout(), is(30));
     }
     
     @Test
-    public void assertClose() throws Exception {
+    void assertClose() throws Exception {
         ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource());
         actual.close();
         Map<String, DataSource> dataSourceMap = getContextManager(actual).getDataSourceMap(DefaultDatabase.LOGIC_NAME);
@@ -134,7 +134,7 @@ public final class ShardingSphereDataSourceTest {
     }
     
     @Test
-    public void assertCloseWithDataSourceNames() throws Exception {
+    void assertCloseWithDataSourceNames() throws Exception {
         ShardingSphereDataSource actual = createShardingSphereDataSource(createHikariDataSource());
         actual.close(Collections.singleton("ds"));
         Map<String, DataSource> dataSourceMap = getContextManager(actual).getDataSourceMap(DefaultDatabase.LOGIC_NAME);

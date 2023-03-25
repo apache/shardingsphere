@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SnowflakeKeyGenerateAlgorithmTest {
+class SnowflakeKeyGenerateAlgorithmTest {
     
     private static final long DEFAULT_SEQUENCE_BITS = 12L;
     
@@ -69,7 +69,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertGenerateKeyWithMultipleThreads() throws ExecutionException, InterruptedException {
+    void assertGenerateKeyWithMultipleThreads() throws ExecutionException, InterruptedException {
         int threadNumber = Runtime.getRuntime().availableProcessors() * 2;
         ExecutorService executor = Executors.newFixedThreadPool(threadNumber);
         int taskNumber = threadNumber * 4;
@@ -85,7 +85,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertGenerateKeyWithSingleThread() {
+    void assertGenerateKeyWithSingleThread() {
         SnowflakeKeyGenerateAlgorithm.setTimeService(new FixedTimeService(1));
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
         if (algorithm instanceof InstanceContextAware) {
@@ -100,7 +100,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertLastDigitalOfGenerateKeySameMillisecond() {
+    void assertLastDigitalOfGenerateKeySameMillisecond() {
         SnowflakeKeyGenerateAlgorithm.setTimeService(new FixedTimeService(5));
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "3")));
         if (algorithm instanceof InstanceContextAware) {
@@ -114,7 +114,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertLastDigitalOfGenerateKeyDifferentMillisecond() throws InterruptedException {
+    void assertLastDigitalOfGenerateKeyDifferentMillisecond() throws InterruptedException {
         SnowflakeKeyGenerateAlgorithm.setTimeService(new TimeService());
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "3")));
         if (algorithm instanceof InstanceContextAware) {
@@ -137,7 +137,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertGenerateKeyWithClockCallBack() {
+    void assertGenerateKeyWithClockCallBack() {
         TimeService timeService = new FixedTimeService(1);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
@@ -154,7 +154,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertGenerateKeyWithClockCallBackBeyondTolerateTime() {
+    void assertGenerateKeyWithClockCallBackBeyondTolerateTime() {
         TimeService timeService = new FixedTimeService(1);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-tolerate-time-difference-milliseconds", "0")));
@@ -172,7 +172,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertGenerateKeyBeyondMaxSequencePerMilliSecond() {
+    void assertGenerateKeyBeyondMaxSequencePerMilliSecond() {
         TimeService timeService = new FixedTimeService(2);
         SnowflakeKeyGenerateAlgorithm.setTimeService(timeService);
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
@@ -200,7 +200,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertSetWorkerIdFailureWhenNegative() {
+    void assertSetWorkerIdFailureWhenNegative() {
         SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
         InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(-1),
                 new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
@@ -208,13 +208,13 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertSetMaxVibrationOffsetFailureWhenNegative() {
+    void assertSetMaxVibrationOffsetFailureWhenNegative() {
         assertThrows(KeyGenerateAlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "-1"))).generateKey());
     }
     
     @Test
-    public void assertSetWorkerIdFailureWhenOutOfRange() {
+    void assertSetWorkerIdFailureWhenOutOfRange() {
         SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE");
         InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Integer.MIN_VALUE),
                 new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
@@ -222,13 +222,13 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertSetMaxVibrationOffsetFailureWhenOutOfRange() {
+    void assertSetMaxVibrationOffsetFailureWhenOutOfRange() {
         assertThrows(KeyGenerateAlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "4096"))).generateKey());
     }
     
     @Test
-    public void assertSetMaxTolerateTimeDifferenceMilliseconds() throws ReflectiveOperationException {
+    void assertSetMaxTolerateTimeDifferenceMilliseconds() throws ReflectiveOperationException {
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-tolerate-time-difference-milliseconds", "1")));
         assertThat(((Properties) Plugins.getMemberAccessor().get(algorithm.getClass().getDeclaredField("props"), algorithm)).getProperty("max-tolerate-time-difference-milliseconds"), is("1"));
     }

@@ -66,7 +66,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class DatabaseOperateBackendHandlerFactoryTest {
+class DatabaseOperateBackendHandlerFactoryTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
@@ -75,7 +75,7 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     private ConnectionSession connectionSession;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
@@ -84,17 +84,17 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         setGovernanceMetaDataContexts(false);
     }
     
     @Test
-    public void assertExecuteMySQLCreateDatabaseContext() throws SQLException {
+    void assertExecuteMySQLCreateDatabaseContext() throws SQLException {
         assertExecuteCreateDatabaseContext(new MySQLCreateDatabaseStatement());
     }
     
     @Test
-    public void assertExecutePostgreSQLCreateDatabaseContext() throws SQLException {
+    void assertExecutePostgreSQLCreateDatabaseContext() throws SQLException {
         assertExecuteCreateDatabaseContext(new PostgreSQLCreateDatabaseStatement());
     }
     
@@ -106,12 +106,12 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertExecuteMySQLDropDatabaseContext() throws SQLException {
+    void assertExecuteMySQLDropDatabaseContext() throws SQLException {
         assertExecuteDropDatabaseContext(new MySQLDropDatabaseStatement());
     }
     
     @Test
-    public void assertExecutePostgreSQLDropDatabaseContext() throws SQLException {
+    void assertExecutePostgreSQLDropDatabaseContext() throws SQLException {
         assertExecuteDropDatabaseContext(new PostgreSQLDropDatabaseStatement());
     }
     
@@ -123,12 +123,12 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertExecuteMySQLCreateDatabaseContextWithException() {
+    void assertExecuteMySQLCreateDatabaseContextWithException() {
         assertExecuteCreateDatabaseContextWithException(new MySQLCreateDatabaseStatement());
     }
     
     @Test
-    public void assertExecutePostgreSQLCreateDatabaseContextWithException() {
+    void assertExecutePostgreSQLCreateDatabaseContextWithException() {
         assertExecuteCreateDatabaseContextWithException(new PostgreSQLCreateDatabaseStatement());
     }
     
@@ -162,17 +162,17 @@ public final class DatabaseOperateBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertDatabaseOperateBackendHandlerFactoryReturnCreateDatabaseBackendHandler() {
+    void assertDatabaseOperateBackendHandlerFactoryReturnCreateDatabaseBackendHandler() {
         assertThat(DatabaseOperateBackendHandlerFactory.newInstance(mock(CreateDatabaseStatement.class), mock(ConnectionSession.class)), instanceOf(CreateDatabaseBackendHandler.class));
     }
     
     @Test
-    public void assertDatabaseOperateBackendHandlerFactoryReturnDropDatabaseBackendHandler() {
+    void assertDatabaseOperateBackendHandlerFactoryReturnDropDatabaseBackendHandler() {
         assertThat(DatabaseOperateBackendHandlerFactory.newInstance(mock(DropDatabaseStatement.class), mock(ConnectionSession.class)), instanceOf(DropDatabaseBackendHandler.class));
     }
     
     @Test
-    public void assertDatabaseOperateBackendHandlerFactoryThrowUnsupportedOperationException() {
+    void assertDatabaseOperateBackendHandlerFactoryThrowUnsupportedOperationException() {
         assertThrows(UnsupportedSQLOperationException.class, () -> DatabaseOperateBackendHandlerFactory.newInstance(mock(AlterDatabaseStatement.class), mock(ConnectionSession.class)));
     }
 }

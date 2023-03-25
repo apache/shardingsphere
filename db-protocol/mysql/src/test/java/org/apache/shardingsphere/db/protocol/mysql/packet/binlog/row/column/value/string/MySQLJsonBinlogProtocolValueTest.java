@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class MySQLJsonBinlogProtocolValueTest {
+class MySQLJsonBinlogProtocolValueTest {
     
     private static final String KEY = "key";
     
@@ -56,7 +56,7 @@ public final class MySQLJsonBinlogProtocolValueTest {
     private MySQLBinlogColumnDef columnDef;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MySQL_TYPE_JSON);
         when(payload.getByteBuf()).thenReturn(byteBuf);
         mockJsonValue();
@@ -74,7 +74,7 @@ public final class MySQLJsonBinlogProtocolValueTest {
     }
     
     @Test
-    public void assertReadJsonValueWithMeta1() {
+    void assertReadJsonValueWithMeta1() {
         columnDef.setColumnMeta(1);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 1);
         when(byteBuf.readBytes(1)).thenReturn(jsonValueByteBuf);
@@ -82,7 +82,7 @@ public final class MySQLJsonBinlogProtocolValueTest {
     }
     
     @Test
-    public void assertReadJsonValueWithMeta2() {
+    void assertReadJsonValueWithMeta2() {
         columnDef.setColumnMeta(2);
         when(byteBuf.readUnsignedShortLE()).thenReturn(2);
         when(byteBuf.readBytes(2)).thenReturn(jsonValueByteBuf);
@@ -90,7 +90,7 @@ public final class MySQLJsonBinlogProtocolValueTest {
     }
     
     @Test
-    public void assertReadJsonValueWithMeta3() {
+    void assertReadJsonValueWithMeta3() {
         columnDef.setColumnMeta(3);
         when(byteBuf.readUnsignedMediumLE()).thenReturn(3);
         when(byteBuf.readBytes(3)).thenReturn(jsonValueByteBuf);
@@ -98,7 +98,7 @@ public final class MySQLJsonBinlogProtocolValueTest {
     }
     
     @Test
-    public void assertReadJsonValueWithMeta4() {
+    void assertReadJsonValueWithMeta4() {
         columnDef.setColumnMeta(4);
         when(payload.readInt4()).thenReturn(4);
         when(byteBuf.readBytes(4)).thenReturn(jsonValueByteBuf);
@@ -106,7 +106,7 @@ public final class MySQLJsonBinlogProtocolValueTest {
     }
     
     @Test
-    public void assertReadJsonValueWithIllegalMeta() {
+    void assertReadJsonValueWithIllegalMeta() {
         columnDef.setColumnMeta(5);
         assertThrows(UnsupportedSQLOperationException.class, () -> new MySQLJsonBinlogProtocolValue().read(columnDef, payload));
     }

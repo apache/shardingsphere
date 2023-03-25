@@ -33,17 +33,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public final class DataMatchCalculatedResultTest {
+class DataMatchCalculatedResultTest {
     
     @Test
-    public void assertEmptyRecordsEquals() {
+    void assertEmptyRecordsEquals() {
         CalculatedResult actual = new CalculatedResult(0, 0, Collections.emptyList());
         CalculatedResult expected = new CalculatedResult(0, 0, Collections.emptyList());
         assertThat(actual, is(expected));
     }
     
     @Test
-    public void assertFullTypeRecordsEquals() {
+    void assertFullTypeRecordsEquals() {
         CalculatedResult actual = new CalculatedResult(1000, 2, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
         CalculatedResult expected = new CalculatedResult(1000, 2, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
         assertThat(actual, is(expected));
@@ -55,7 +55,7 @@ public final class DataMatchCalculatedResultTest {
     }
     
     @Test
-    public void assertFullTypeRecordsEqualsWithDifferentDecimalScale() {
+    void assertFullTypeRecordsEqualsWithDifferentDecimalScale() {
         CalculatedResult expected = new CalculatedResult(1000, 1, Collections.singletonList(buildFixedFullTypeRecord()));
         List<Object> record = buildFixedFullTypeRecord();
         for (int index = 0; index < record.size(); index++) {
@@ -69,21 +69,21 @@ public final class DataMatchCalculatedResultTest {
     }
     
     @Test
-    public void assertRecordsCountNotEquals() {
+    void assertRecordsCountNotEquals() {
         CalculatedResult result1 = new CalculatedResult(1000, 1, Collections.emptyList());
         CalculatedResult result2 = new CalculatedResult(1000, 0, Collections.emptyList());
         assertNotEquals(result1, result2);
     }
     
     @Test
-    public void assertMaxUniqueKeyValueNotEquals() {
+    void assertMaxUniqueKeyValueNotEquals() {
         CalculatedResult result1 = new CalculatedResult(1000, 1, Collections.emptyList());
         CalculatedResult result2 = new CalculatedResult(1001, 1, Collections.emptyList());
         assertNotEquals(result1, result2);
     }
     
     @Test
-    public void assertRandomColumnValueNotEquals() {
+    void assertRandomColumnValueNotEquals() {
         List<Object> record = buildFixedFullTypeRecord();
         CalculatedResult result1 = new CalculatedResult(1000, 1, Collections.singletonList(record));
         for (int index = 0; index < record.size(); index++) {

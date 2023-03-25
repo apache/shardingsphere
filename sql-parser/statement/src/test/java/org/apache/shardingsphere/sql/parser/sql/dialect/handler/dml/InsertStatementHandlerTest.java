@@ -40,10 +40,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class InsertStatementHandlerTest {
+class InsertStatementHandlerTest {
     
     @Test
-    public void assertGetOnDuplicateKeyColumnsSegmentForMySQL() {
+    void assertGetOnDuplicateKeyColumnsSegmentForMySQL() {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setOnDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(0, 0, Collections.emptyList()));
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement);
@@ -53,7 +53,7 @@ public final class InsertStatementHandlerTest {
     }
     
     @Test
-    public void assertGetOnDuplicateKeyColumnsSegmentForOpenGauss() {
+    void assertGetOnDuplicateKeyColumnsSegmentForOpenGauss() {
         OpenGaussInsertStatement insertStatement = new OpenGaussInsertStatement();
         insertStatement.setOnDuplicateKeyColumnsSegment(new OnDuplicateKeyColumnsSegment(0, 0, Collections.emptyList()));
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement);
@@ -63,7 +63,7 @@ public final class InsertStatementHandlerTest {
     }
     
     @Test
-    public void assertGetOnDuplicateKeyColumnsSegmentForPostgreSQL() {
+    void assertGetOnDuplicateKeyColumnsSegmentForPostgreSQL() {
         PostgreSQLInsertStatement insertStatement = new PostgreSQLInsertStatement();
         insertStatement.setOnDuplicateKeyColumnsSegment(new OnDuplicateKeyColumnsSegment(0, 0, Collections.emptyList()));
         Optional<OnDuplicateKeyColumnsSegment> onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement);
@@ -73,14 +73,14 @@ public final class InsertStatementHandlerTest {
     }
     
     @Test
-    public void assertGetOnDuplicateKeyColumnsSegmentForOtherDatabases() {
+    void assertGetOnDuplicateKeyColumnsSegmentForOtherDatabases() {
         assertFalse(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(new OracleInsertStatement()).isPresent());
         assertFalse(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(new SQL92InsertStatement()).isPresent());
         assertFalse(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(new SQLServerInsertStatement()).isPresent());
     }
     
     @Test
-    public void assertGetSetAssignmentSegmentForMySQL() {
+    void assertGetSetAssignmentSegmentForMySQL() {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
         Optional<SetAssignmentSegment> setAssignmentSegment = InsertStatementHandler.getSetAssignmentSegment(insertStatement);
@@ -90,7 +90,7 @@ public final class InsertStatementHandlerTest {
     }
     
     @Test
-    public void assertGetSetAssignmentSegmentForOtherDatabases() {
+    void assertGetSetAssignmentSegmentForOtherDatabases() {
         assertFalse(InsertStatementHandler.getSetAssignmentSegment(new OpenGaussInsertStatement()).isPresent());
         assertFalse(InsertStatementHandler.getSetAssignmentSegment(new OracleInsertStatement()).isPresent());
         assertFalse(InsertStatementHandler.getSetAssignmentSegment(new PostgreSQLInsertStatement()).isPresent());
@@ -99,7 +99,7 @@ public final class InsertStatementHandlerTest {
     }
     
     @Test
-    public void assertGetWithSegmentForPostgreSQL() {
+    void assertGetWithSegmentForPostgreSQL() {
         PostgreSQLInsertStatement insertStatement = new PostgreSQLInsertStatement();
         insertStatement.setWithSegment(new WithSegment(0, 0, Collections.emptyList()));
         Optional<WithSegment> withSegment = InsertStatementHandler.getWithSegment(insertStatement);
@@ -109,7 +109,7 @@ public final class InsertStatementHandlerTest {
     }
     
     @Test
-    public void assertGetWithSegmentForSQLServer() {
+    void assertGetWithSegmentForSQLServer() {
         SQLServerInsertStatement insertStatement = new SQLServerInsertStatement();
         insertStatement.setWithSegment(new WithSegment(0, 0, Collections.emptyList()));
         Optional<WithSegment> withSegment = InsertStatementHandler.getWithSegment(insertStatement);
@@ -119,7 +119,7 @@ public final class InsertStatementHandlerTest {
     }
     
     @Test
-    public void assertGetWithSegmentForOpenGauss() {
+    void assertGetWithSegmentForOpenGauss() {
         OpenGaussInsertStatement insertStatement = new OpenGaussInsertStatement();
         insertStatement.setWithSegment(new WithSegment(0, 0, Collections.emptyList()));
         Optional<WithSegment> withSegment = InsertStatementHandler.getWithSegment(insertStatement);
@@ -129,14 +129,14 @@ public final class InsertStatementHandlerTest {
     }
     
     @Test
-    public void assertGetWithSegmentForOtherDatabases() {
+    void assertGetWithSegmentForOtherDatabases() {
         assertFalse(InsertStatementHandler.getWithSegment(new MySQLInsertStatement()).isPresent());
         assertFalse(InsertStatementHandler.getWithSegment(new OracleInsertStatement()).isPresent());
         assertFalse(InsertStatementHandler.getWithSegment(new SQL92InsertStatement()).isPresent());
     }
     
     @Test
-    public void assertGetOutputSegmentForSQLServer() {
+    void assertGetOutputSegmentForSQLServer() {
         SQLServerInsertStatement insertStatement = new SQLServerInsertStatement();
         insertStatement.setOutputSegment(new OutputSegment(0, 0));
         Optional<OutputSegment> outputSegment = InsertStatementHandler.getOutputSegment(insertStatement);
@@ -146,7 +146,7 @@ public final class InsertStatementHandlerTest {
     }
     
     @Test
-    public void assertGetOutputSegmentForOtherDatabases() {
+    void assertGetOutputSegmentForOtherDatabases() {
         assertFalse(InsertStatementHandler.getOutputSegment(new MySQLInsertStatement()).isPresent());
         assertFalse(InsertStatementHandler.getOutputSegment(new OpenGaussInsertStatement()).isPresent());
         assertFalse(InsertStatementHandler.getOutputSegment(new OracleInsertStatement()).isPresent());
@@ -155,7 +155,7 @@ public final class InsertStatementHandlerTest {
     }
     
     @Test
-    public void assertGetInsertMultiTableElementSegmentForOracle() {
+    void assertGetInsertMultiTableElementSegmentForOracle() {
         OracleInsertStatement insertStatement = new OracleInsertStatement();
         insertStatement.setInsertMultiTableElementSegment(new InsertMultiTableElementSegment(0, 0));
         Optional<InsertMultiTableElementSegment> insertMultiTableElementSegment = InsertStatementHandler.getInsertMultiTableElementSegment(insertStatement);
@@ -165,7 +165,7 @@ public final class InsertStatementHandlerTest {
     }
     
     @Test
-    public void assertGetInsertMultiTableElementSegmentForOtherDatabases() {
+    void assertGetInsertMultiTableElementSegmentForOtherDatabases() {
         assertFalse(InsertStatementHandler.getInsertMultiTableElementSegment(new MySQLInsertStatement()).isPresent());
         assertFalse(InsertStatementHandler.getInsertMultiTableElementSegment(new OpenGaussInsertStatement()).isPresent());
         assertFalse(InsertStatementHandler.getInsertMultiTableElementSegment(new PostgreSQLInsertStatement()).isPresent());
@@ -174,7 +174,7 @@ public final class InsertStatementHandlerTest {
     }
     
     @Test
-    public void assertGetSelectSubqueryForOracle() {
+    void assertGetSelectSubqueryForOracle() {
         OracleInsertStatement insertStatement = new OracleInsertStatement();
         insertStatement.setSelectSubquery(new SubquerySegment(0, 0, new OracleSelectStatement()));
         Optional<SubquerySegment> subquerySegment = InsertStatementHandler.getSelectSubquery(insertStatement);
@@ -184,7 +184,7 @@ public final class InsertStatementHandlerTest {
     }
     
     @Test
-    public void assertGetSelectSubqueryForOtherDatabases() {
+    void assertGetSelectSubqueryForOtherDatabases() {
         assertFalse(InsertStatementHandler.getSelectSubquery(new MySQLInsertStatement()).isPresent());
         assertFalse(InsertStatementHandler.getSelectSubquery(new OpenGaussInsertStatement()).isPresent());
         assertFalse(InsertStatementHandler.getSelectSubquery(new PostgreSQLInsertStatement()).isPresent());

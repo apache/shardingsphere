@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLComSetOptionExecutorTest {
+class MySQLComSetOptionExecutorTest {
     
     @Mock
     private MySQLComSetOptionPacket packet;
@@ -54,7 +54,7 @@ public final class MySQLComSetOptionExecutorTest {
     private MySQLComSetOptionExecutor executor;
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         when(packet.getValue()).thenReturn(MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON);
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS)).thenReturn(attribute);
         Collection<DatabasePacket<?>> actual = executor.execute();

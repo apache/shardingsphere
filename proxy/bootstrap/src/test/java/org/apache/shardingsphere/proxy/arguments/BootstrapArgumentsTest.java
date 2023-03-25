@@ -29,56 +29,56 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class BootstrapArgumentsTest {
+class BootstrapArgumentsTest {
     
     @Test
-    public void assertGetPortWithEmptyArgument() {
+    void assertGetPortWithEmptyArgument() {
         assertFalse(new BootstrapArguments(new String[]{}).getPort().isPresent());
     }
     
     @Test
-    public void assertGetPortWithWrongArgument() {
+    void assertGetPortWithWrongArgument() {
         assertThrows(IllegalArgumentException.class, () -> new BootstrapArguments(new String[]{"WrongArgument"}).getPort());
     }
     
     @Test
-    public void assertGetPortWithDefaultArgument() {
+    void assertGetPortWithDefaultArgument() {
         assertFalse(new BootstrapArguments(new String[]{"-1"}).getPort().isPresent());
     }
     
     @Test
-    public void assertGetPortWithSingleArgument() {
+    void assertGetPortWithSingleArgument() {
         Optional<Integer> actual = new BootstrapArguments(new String[]{"3306"}).getPort();
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(3306));
     }
     
     @Test
-    public void assertGetPortWithTwoArgument() {
+    void assertGetPortWithTwoArgument() {
         Optional<Integer> actual = new BootstrapArguments(new String[]{"3306", "/test_conf/"}).getPort();
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(3306));
     }
     
     @Test
-    public void assertGetPortWithThreeArgument() {
+    void assertGetPortWithThreeArgument() {
         Optional<Integer> actual = new BootstrapArguments(new String[]{"3306", "/test_conf/", "127.0.0.1"}).getPort();
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(3306));
     }
     
     @Test
-    public void assertGetConfigurationPathWithEmptyArgument() {
+    void assertGetConfigurationPathWithEmptyArgument() {
         assertThat(new BootstrapArguments(new String[]{}).getConfigurationPath(), is("/conf/"));
     }
     
     @Test
-    public void assertGetConfigurationPathWithSingleArgument() {
+    void assertGetConfigurationPathWithSingleArgument() {
         assertThat(new BootstrapArguments(new String[]{"3306"}).getConfigurationPath(), is("/conf/"));
     }
     
     @Test
-    public void assertGetConfigurationPathWithTwoArguments() {
+    void assertGetConfigurationPathWithTwoArguments() {
         assertThat(new BootstrapArguments(new String[]{"3306", "test_conf"}).getConfigurationPath(), is("/test_conf/"));
         assertThat(new BootstrapArguments(new String[]{"3306", "/test_conf"}).getConfigurationPath(), is("/test_conf/"));
         assertThat(new BootstrapArguments(new String[]{"3306", "test_conf/"}).getConfigurationPath(), is("/test_conf/"));
@@ -86,28 +86,28 @@ public final class BootstrapArgumentsTest {
     }
     
     @Test
-    public void assertGetAddressesWithEmptyArgument() {
+    void assertGetAddressesWithEmptyArgument() {
         assertThat(new BootstrapArguments(new String[]{}).getAddresses(), is(Collections.singletonList("0.0.0.0")));
     }
     
     @Test
-    public void assertGetAddressesWithSingleArgument() {
+    void assertGetAddressesWithSingleArgument() {
         assertThat(new BootstrapArguments(new String[]{"3306"}).getAddresses(), is(Collections.singletonList("0.0.0.0")));
     }
     
     @Test
-    public void assertGetAddressesWithTwoArgument() {
+    void assertGetAddressesWithTwoArgument() {
         assertThat(new BootstrapArguments(new String[]{"3306", "test_conf"}).getAddresses(), is(Collections.singletonList("0.0.0.0")));
     }
     
     @Test
-    public void assertGetAddressesWithThreeArguments() {
+    void assertGetAddressesWithThreeArguments() {
         assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1"}).getAddresses(), is(Collections.singletonList("127.0.0.1")));
         assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "1.1.1.1,127.0.0.1"}).getAddresses(), is(Arrays.asList("1.1.1.1", "127.0.0.1")));
     }
     
     @Test
-    public void assertGetForce() {
+    void assertGetForce() {
         assertFalse(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1"}).getForce());
         assertFalse(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1", "false"}).getForce());
         assertTrue(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1", "true "}).getForce());
@@ -116,7 +116,7 @@ public final class BootstrapArgumentsTest {
     }
     
     @Test
-    public void assertGetSocketPath() {
+    void assertGetSocketPath() {
         assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1,/tmp/shardingsphere.sock"}).getSocketPath(), is(Optional.of("/tmp/shardingsphere.sock")));
         assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "1.1.1.1,127.0.0.1,/tmp/shardingsphere.sock"}).getSocketPath(), is(Optional.of("/tmp/shardingsphere.sock")));
         assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1,/tmp/shardingsphere.sock"}).getAddresses(), is(Collections.singletonList("127.0.0.1")));

@@ -37,25 +37,25 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class TruncateStatementContextTest {
+class TruncateStatementContextTest {
     
     @Test
-    public void assertMySQLNewInstance() {
+    void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLTruncateStatement.class));
     }
     
     @Test
-    public void assertPostgreSQLNewInstance() {
+    void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLTruncateStatement.class));
     }
     
     @Test
-    public void assertOracleNewInstance() {
+    void assertOracleNewInstance() {
         assertNewInstance(mock(OracleTruncateStatement.class));
     }
     
     @Test
-    public void assertSQLServerNewInstance() {
+    void assertSQLServerNewInstance() {
         assertNewInstance(mock(SQLServerTruncateStatement.class));
     }
     

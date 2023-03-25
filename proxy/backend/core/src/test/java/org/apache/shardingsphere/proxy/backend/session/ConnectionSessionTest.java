@@ -52,7 +52,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ConnectionSessionTest {
+class ConnectionSessionTest {
     
     @Mock
     private BackendConnection backendConnection;
@@ -60,19 +60,19 @@ public final class ConnectionSessionTest {
     private ConnectionSession connectionSession;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, null);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
     
     @Test
-    public void assertSetCurrentSchema() {
+    void assertSetCurrentSchema() {
         connectionSession.setCurrentDatabase("currentDatabase");
         assertThat(connectionSession.getDatabaseName(), is("currentDatabase"));
     }
     
     @Test
-    public void assertFailedSwitchTransactionTypeWhileBegin() {
+    void assertFailedSwitchTransactionTypeWhileBegin() {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -81,7 +81,7 @@ public final class ConnectionSessionTest {
     }
     
     @Test
-    public void assertSwitchSchemaWhileBegin() {
+    void assertSwitchSchemaWhileBegin() {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -97,18 +97,18 @@ public final class ConnectionSessionTest {
     }
     
     @Test
-    public void assertDefaultAutocommit() {
+    void assertDefaultAutocommit() {
         assertTrue(connectionSession.isAutoCommit());
     }
     
     @Test
-    public void assertSetAutocommit() {
+    void assertSetAutocommit() {
         connectionSession.setAutoCommit(false);
         assertFalse(connectionSession.isAutoCommit());
     }
     
     @Test
-    public void assertClearQueryContext() {
+    void assertClearQueryContext() {
         connectionSession.setQueryContext(mock(QueryContext.class));
         assertNotNull(connectionSession.getQueryContext());
         connectionSession.clearQueryContext();

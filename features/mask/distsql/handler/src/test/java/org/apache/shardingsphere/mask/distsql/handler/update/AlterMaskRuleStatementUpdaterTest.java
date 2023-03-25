@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public final class AlterMaskRuleStatementUpdaterTest {
+class AlterMaskRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -51,23 +51,23 @@ public final class AlterMaskRuleStatementUpdaterTest {
     private final AlterMaskRuleStatementUpdater updater = new AlterMaskRuleStatementUpdater();
     
     @Test
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    void assertCheckSQLStatementWithoutCurrentRule() {
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("MD5"), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutToBeAlteredRules() {
+    void assertCheckSQLStatementWithoutToBeAlteredRules() {
         assertThrows(MissingRequiredRuleException.class,
                 () -> updater.checkSQLStatement(database, createSQLStatement("MD5"), new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutToBeAlteredAlgorithm() {
+    void assertCheckSQLStatementWithoutToBeAlteredAlgorithm() {
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfig()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithIncompleteDataType() {
+    void assertCheckSQLStatementWithIncompleteDataType() {
         MaskColumnSegment columnSegment = new MaskColumnSegment("user_id", new AlgorithmSegment("test", new Properties()));
         MaskRuleSegment ruleSegment = new MaskRuleSegment("t_mask", Collections.singleton(columnSegment));
         AlterMaskRuleStatement statement = new AlterMaskRuleStatement(Collections.singleton(ruleSegment));
@@ -75,7 +75,7 @@ public final class AlterMaskRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdate() {
+    void assertUpdate() {
         MaskRuleConfiguration currentRuleConfig = createCurrentRuleConfig();
         MaskColumnSegment columnSegment = new MaskColumnSegment("order_id",
                 new AlgorithmSegment("MD5", new Properties()));

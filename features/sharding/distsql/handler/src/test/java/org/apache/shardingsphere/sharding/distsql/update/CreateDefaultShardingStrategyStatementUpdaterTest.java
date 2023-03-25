@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class CreateDefaultShardingStrategyStatementUpdaterTest {
+class CreateDefaultShardingStrategyStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -52,24 +52,24 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
     private final CreateDefaultShardingStrategyStatementUpdater updater = new CreateDefaultShardingStrategyStatementUpdater();
     
     @BeforeEach
-    public void before() {
+    void before() {
         when(database.getName()).thenReturn("foo_db");
     }
     
     @Test
-    public void assertExecuteWithInvalidStrategyType() {
+    void assertExecuteWithInvalidStrategyType() {
         CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "invalidType", null, null);
         assertThrows(InvalidAlgorithmConfigurationException.class, () -> updater.checkSQLStatement(database, statement, new ShardingRuleConfiguration()));
     }
     
     @Test
-    public void assertExecuteWithoutCurrentConfiguration() {
+    void assertExecuteWithoutCurrentConfiguration() {
         CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "standard", "order_id", null);
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, statement, null));
     }
     
     @Test
-    public void assertExecuteWithExist() {
+    void assertExecuteWithExist() {
         AlgorithmSegment algorithm = new AlgorithmSegment("order_id_algorithm", new Properties());
         CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "standard", "order_id", algorithm);
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
@@ -79,7 +79,7 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithUnmatchedStrategy() {
+    void assertExecuteWithUnmatchedStrategy() {
         CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "standard", "order_id,user_id", null);
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "orderAlgorithm"));
@@ -88,7 +88,7 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
     }
     
     @Test
-    public void assertCreateDefaultTableShardingStrategy() {
+    void assertCreateDefaultTableShardingStrategy() {
         AlgorithmSegment algorithm = new AlgorithmSegment("order_id_algorithm", new Properties());
         CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "standard", "order_id", algorithm);
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
@@ -103,7 +103,7 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
     }
     
     @Test
-    public void assertCreateDefaultDatabaseShardingStrategy() {
+    void assertCreateDefaultDatabaseShardingStrategy() {
         AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}")));
         CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement(false, "DATABASE", "standard", "user_id", databaseAlgorithmSegment);
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
@@ -116,7 +116,7 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
     }
     
     @Test
-    public void assertCreateDefaultTableShardingStrategyWithIfNotExists() {
+    void assertCreateDefaultTableShardingStrategyWithIfNotExists() {
         AlgorithmSegment algorithm = new AlgorithmSegment("order_id_algorithm", new Properties());
         CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "standard", "order_id", algorithm);
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
@@ -136,7 +136,7 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
     }
     
     @Test
-    public void assertCreateDefaultDatabaseShardingStrategyWithIfNotExists() {
+    void assertCreateDefaultDatabaseShardingStrategyWithIfNotExists() {
         AlgorithmSegment databaseAlgorithmSegment = new AlgorithmSegment("inline", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}")));
         CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement(false, "DATABASE", "standard", "user_id", databaseAlgorithmSegment);
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
@@ -154,7 +154,7 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
     }
     
     @Test
-    public void assertCreateDefaultTableShardingStrategyWithNoneShardingStrategyType() {
+    void assertCreateDefaultTableShardingStrategyWithNoneShardingStrategyType() {
         CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "none", null, null);
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "orderAlgorithm"));
@@ -168,7 +168,7 @@ public final class CreateDefaultShardingStrategyStatementUpdaterTest {
     }
     
     @Test
-    public void assertCreateDefaultDatabaseShardingStrategyWithNoneShardingStrategyType() {
+    void assertCreateDefaultDatabaseShardingStrategyWithNoneShardingStrategyType() {
         CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement(false, "DATABASE", "none", null, null);
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         updater.checkSQLStatement(database, statement, currentRuleConfig);

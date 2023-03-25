@@ -66,7 +66,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class ShardingRouteCacheableCheckerTest {
+class ShardingRouteCacheableCheckerTest {
     
     private static final String DATABASE_NAME = "sharding_db";
     

@@ -23,17 +23,17 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class DataNodeUtilsTest {
+class DataNodeUtilsTest {
     
     @Test
-    public void assertFormatWithSchema() {
+    void assertFormatWithSchema() {
         DataNode dataNode = new DataNode("ds_0.tbl_0");
         dataNode.setSchemaName("public");
         assertThat(DataNodeUtils.formatWithSchema(dataNode), is("ds_0.public.tbl_0"));
     }
     
     @Test
-    public void assertParseWithSchema() {
+    void assertParseWithSchema() {
         DataNode actual = DataNodeUtils.parseWithSchema("ds_0.public.tbl_0");
         assertThat(actual.getDataSourceName(), is("ds_0"));
         assertThat(actual.getSchemaName(), is("public"));

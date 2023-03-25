@@ -41,10 +41,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SchemaMetaDataUtilTest {
+class SchemaMetaDataUtilTest {
     
     @Test
-    public void assertGetSchemaMetaDataLoaderMaterialsWhenConfigCheckMetaDataEnable() {
+    void assertGetSchemaMetaDataLoaderMaterialsWhenConfigCheckMetaDataEnable() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), Collections.emptyMap(), mockDataSourceMap(),
@@ -61,7 +61,7 @@ public final class SchemaMetaDataUtilTest {
     }
     
     @Test
-    public void assertGetSchemaMetaDataLoaderMaterialsWhenNotConfigCheckMetaDataEnable() {
+    void assertGetSchemaMetaDataLoaderMaterialsWhenNotConfigCheckMetaDataEnable() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getDataNodesByTableName("t_order")).thenReturn(mockShardingDataNodes());
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), Collections.emptyMap(), mockDataSourceMap(),
@@ -75,7 +75,7 @@ public final class SchemaMetaDataUtilTest {
     }
     
     @Test
-    public void assertGetSchemaMetaDataLoaderMaterialsWhenNotConfigCheckMetaDataEnableForSingleTableDataNode() {
+    void assertGetSchemaMetaDataLoaderMaterialsWhenNotConfigCheckMetaDataEnableForSingleTableDataNode() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         when(dataNodeContainedRule.getDataNodesByTableName("t_single")).thenReturn(mockSingleTableDataNodes());
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(mock(DatabaseType.class), Collections.emptyMap(), mockDataSourceMap(),

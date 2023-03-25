@@ -31,25 +31,25 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLInt8BinaryProtocolValueTest {
+class MySQLInt8BinaryProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertRead() {
+    void assertRead() {
         when(payload.readInt8()).thenReturn(1L);
         assertThat(new MySQLInt8BinaryProtocolValue().read(payload, false), is(1L));
     }
     
     @Test
-    public void assertWriteWithLong() {
+    void assertWriteWithLong() {
         new MySQLInt8BinaryProtocolValue().write(payload, 1L);
         verify(payload).writeInt8(1L);
     }
     
     @Test
-    public void assertWriteWithBigDecimal() {
+    void assertWriteWithBigDecimal() {
         new MySQLInt8BinaryProtocolValue().write(payload, new BigDecimal(1L));
         verify(payload).writeInt8(1L);
     }

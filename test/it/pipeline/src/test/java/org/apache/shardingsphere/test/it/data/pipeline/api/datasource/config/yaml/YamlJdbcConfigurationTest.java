@@ -27,7 +27,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlJdbcConfigurationTest {
+class YamlJdbcConfigurationTest {
     
     private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false";
     
@@ -36,7 +36,7 @@ public final class YamlJdbcConfigurationTest {
     private static final String PASSWORD = "password";
     
     @Test
-    public void assertConstructionWithUrl() {
+    void assertConstructionWithUrl() {
         assertYamlJdbcConfiguration(YamlEngine.unmarshal(YamlEngine.marshal(getDataSourcePropsWithUrl()), YamlJdbcConfiguration.class));
     }
     

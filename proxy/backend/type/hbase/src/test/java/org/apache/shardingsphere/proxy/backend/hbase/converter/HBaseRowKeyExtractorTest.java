@@ -31,10 +31,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class HBaseRowKeyExtractorTest {
+class HBaseRowKeyExtractorTest {
     
     @Test
-    public void assertGetRowKeys() {
+    void assertGetRowKeys() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey in ('1', '2') ");
         Optional<WhereSegment> whereSegment = sqlStatement.getWhere();
         assertTrue(whereSegment.isPresent());

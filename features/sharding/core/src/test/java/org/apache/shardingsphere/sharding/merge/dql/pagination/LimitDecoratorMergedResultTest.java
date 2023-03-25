@@ -45,10 +45,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class LimitDecoratorMergedResultTest {
+class LimitDecoratorMergedResultTest {
     
     @Test
-    public void assertNextForSkipAll() throws SQLException {
+    void assertNextForSkipAll() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -62,7 +62,7 @@ public final class LimitDecoratorMergedResultTest {
     }
     
     @Test
-    public void assertNextWithoutRowCount() throws SQLException {
+    void assertNextWithoutRowCount() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -79,7 +79,7 @@ public final class LimitDecoratorMergedResultTest {
     }
     
     @Test
-    public void assertNextWithRowCount() throws SQLException {
+    void assertNextWithRowCount() throws SQLException {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));

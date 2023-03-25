@@ -57,12 +57,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ExportMetaDataExecutorTest {
+class ExportMetaDataExecutorTest {
     
     private final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         Collection<String> columns = new ExportMetaDataExecutor().getColumnNames();
         assertThat(columns.size(), is(3));
         Iterator<String> columnIterator = columns.iterator();
@@ -72,7 +72,7 @@ public final class ExportMetaDataExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithEmptyMetaData() {
+    void assertExecuteWithEmptyMetaData() {
         ContextManager contextManager = mockEmptyContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
@@ -97,7 +97,7 @@ public final class ExportMetaDataExecutorTest {
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         when(database.getName()).thenReturn("normal_db");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

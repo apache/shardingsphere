@@ -25,10 +25,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class StringPrimaryKeyPositionTest {
+class StringPrimaryKeyPositionTest {
     
     @Test
-    public void assertCompareTo() {
+    void assertCompareTo() {
         StringPrimaryKeyPosition position1 = new StringPrimaryKeyPosition("abc", "def");
         StringPrimaryKeyPosition position2 = new StringPrimaryKeyPosition("hi", "jk");
         assertThat(position1.compareTo(null), is(1));
@@ -36,14 +36,14 @@ public final class StringPrimaryKeyPositionTest {
     }
     
     @Test
-    public void assertInit() {
+    void assertInit() {
         StringPrimaryKeyPosition position = (StringPrimaryKeyPosition) PrimaryKeyPositionFactory.newInstance("s,hi,jk");
         assertThat(position.getBeginValue(), is("hi"));
         assertThat(position.getEndValue(), is("jk"));
     }
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         assertThat(new StringPrimaryKeyPosition("hi", "jk").toString(), is("s,hi,jk"));
     }
 }

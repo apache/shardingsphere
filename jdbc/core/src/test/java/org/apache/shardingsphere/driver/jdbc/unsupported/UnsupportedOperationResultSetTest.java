@@ -33,183 +33,183 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class UnsupportedOperationResultSetTest {
+class UnsupportedOperationResultSetTest {
     
     private ShardingSphereResultSet shardingSphereResultSet;
     
     @BeforeEach
-    public void init() throws SQLException {
+    void init() throws SQLException {
         shardingSphereResultSet = new ShardingSphereResultSet(
                 Collections.singletonList(mock(ResultSet.class, RETURNS_DEEP_STUBS)), mock(MergedResult.class), mock(Statement.class), true, mock(ExecutionContext.class));
     }
     
     @Test
-    public void assertPrevious() {
+    void assertPrevious() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.previous());
     }
     
     @Test
-    public void assertIsBeforeFirst() {
+    void assertIsBeforeFirst() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.isBeforeFirst());
     }
     
     @Test
-    public void assertIsAfterLast() {
+    void assertIsAfterLast() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.isAfterLast());
     }
     
     @Test
-    public void assertIsFirst() {
+    void assertIsFirst() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.isFirst());
     }
     
     @Test
-    public void assertIsLast() {
+    void assertIsLast() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.isLast());
     }
     
     @Test
-    public void assertBeforeFirst() {
+    void assertBeforeFirst() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.beforeFirst());
     }
     
     @Test
-    public void assertAfterLast() {
+    void assertAfterLast() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.afterLast());
     }
     
     @Test
-    public void assertFirst() {
+    void assertFirst() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.first());
     }
     
     @Test
-    public void assertLast() {
+    void assertLast() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.last());
     }
     
     @Test
-    public void assertAbsolute() {
+    void assertAbsolute() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.absolute(1));
     }
     
     @Test
-    public void assertRelative() {
+    void assertRelative() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.relative(1));
     }
     
     @Test
-    public void assertGetRow() {
+    void assertGetRow() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getRow());
     }
     
     @Test
-    public void assertInsertRow() {
+    void assertInsertRow() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.insertRow());
     }
     
     @Test
-    public void assertUpdateRow() {
+    void assertUpdateRow() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateRow());
     }
     
     @Test
-    public void assertDeleteRow() {
+    void assertDeleteRow() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.deleteRow());
     }
     
     @Test
-    public void assertRefreshRow() {
+    void assertRefreshRow() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.refreshRow());
     }
     
     @Test
-    public void assertCancelRowUpdates() {
+    void assertCancelRowUpdates() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.cancelRowUpdates());
     }
     
     @Test
-    public void assertMoveToInsertRow() {
+    void assertMoveToInsertRow() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.moveToInsertRow());
     }
     
     @Test
-    public void assertMoveToCurrentRow() {
+    void assertMoveToCurrentRow() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.moveToCurrentRow());
     }
     
     @Test
-    public void assertRowInserted() {
+    void assertRowInserted() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.rowInserted());
     }
     
     @Test
-    public void assertRowUpdated() {
+    void assertRowUpdated() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.rowUpdated());
     }
     
     @Test
-    public void assertRowDeleted() {
+    void assertRowDeleted() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.rowDeleted());
     }
     
     @Test
-    public void assertGetCursorName() {
+    void assertGetCursorName() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getCursorName());
     }
     
     @Test
-    public void assertGetHoldability() {
+    void assertGetHoldability() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getHoldability());
     }
     
     @Test
-    public void assertGetNClobForColumnIndex() {
+    void assertGetNClobForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getNClob(1));
     }
     
     @Test
-    public void assertGetNClobForColumnLabel() {
+    void assertGetNClobForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getNClob("label"));
     }
     
     @Test
-    public void getNCharacterStreamForColumnIndex() {
+    void getNCharacterStreamForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getNCharacterStream(1));
     }
     
     @Test
-    public void getNCharacterStreamForColumnLabel() {
+    void getNCharacterStreamForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getNCharacterStream("label"));
     }
     
     @Test
-    public void assertGetRefForColumnIndex() {
+    void assertGetRefForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getRef(1));
     }
     
     @Test
-    public void assertGetRefForColumnLabel() {
+    void assertGetRefForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getRef("label"));
     }
     
     @Test
-    public void assertGetRowIdForColumnIndex() {
+    void assertGetRowIdForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getRowId(1));
     }
     
     @Test
-    public void assertGetRowIdForColumnLabel() {
+    void assertGetRowIdForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getRowId("label"));
     }
     
     @Test
-    public void assertObjectForColumnIndexWithMap() {
+    void assertObjectForColumnIndexWithMap() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getObject(1, Collections.emptyMap()));
     }
     
     @Test
-    public void assertObjectForColumnLabelWithMap() {
+    void assertObjectForColumnLabelWithMap() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getObject("label", Collections.emptyMap()));
     }
 }

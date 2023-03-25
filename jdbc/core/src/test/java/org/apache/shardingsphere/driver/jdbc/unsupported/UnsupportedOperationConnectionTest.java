@@ -38,11 +38,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class UnsupportedOperationConnectionTest {
+class UnsupportedOperationConnectionTest {
     
     private final ShardingSphereConnection shardingSphereConnection;
     
-    public UnsupportedOperationConnectionTest() {
+    UnsupportedOperationConnectionTest() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
                 new ShardingSphereRuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class))));
@@ -50,97 +50,97 @@ public final class UnsupportedOperationConnectionTest {
     }
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         TransactionTypeHolder.clear();
     }
     
     @Test
-    public void assertPrepareCall() {
+    void assertPrepareCall() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.prepareCall(""));
     }
     
     @Test
-    public void assertPrepareCallWithResultSetTypeAndResultSetConcurrency() {
+    void assertPrepareCallWithResultSetTypeAndResultSetConcurrency() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.prepareCall("", 0, 0));
     }
     
     @Test
-    public void assertPrepareCallWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() {
+    void assertPrepareCallWithResultSetTypeAndResultSetConcurrencyAndResultSetHoldability() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.prepareCall("", 0, 0, 0));
     }
     
     @Test
-    public void assertNativeSQL() {
+    void assertNativeSQL() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.nativeSQL(""));
     }
     
     @Test
-    public void assertAbort() {
+    void assertAbort() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.abort(null));
     }
     
     @Test
-    public void assertGetTypeMap() {
+    void assertGetTypeMap() {
         assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::getTypeMap);
     }
     
     @Test
-    public void assertSetTypeMap() {
+    void assertSetTypeMap() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.setTypeMap(null));
     }
     
     @Test
-    public void assertGetNetworkTimeout() {
+    void assertGetNetworkTimeout() {
         assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::getNetworkTimeout);
     }
     
     @Test
-    public void assertSetNetworkTimeout() {
+    void assertSetNetworkTimeout() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.setNetworkTimeout(null, 0));
     }
     
     @Test
-    public void assertCreateClob() {
+    void assertCreateClob() {
         assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::createClob);
     }
     
     @Test
-    public void assertCreateBlob() {
+    void assertCreateBlob() {
         assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::createBlob);
     }
     
     @Test
-    public void assertCreateNClob() {
+    void assertCreateNClob() {
         assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::createNClob);
     }
     
     @Test
-    public void assertCreateSQLXML() {
+    void assertCreateSQLXML() {
         assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::createSQLXML);
     }
     
     @Test
-    public void assertCreateStruct() {
+    void assertCreateStruct() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.createStruct("", null));
     }
     
     @Test
-    public void assertGetClientInfo() {
+    void assertGetClientInfo() {
         assertThrows(SQLFeatureNotSupportedException.class, shardingSphereConnection::getClientInfo);
     }
     
     @Test
-    public void assertGetClientInfoWithName() {
+    void assertGetClientInfoWithName() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.getClientInfo(""));
     }
     
     @Test
-    public void assertSetClientInfo() {
+    void assertSetClientInfo() {
         assertThrows(UnsupportedSQLOperationException.class, () -> shardingSphereConnection.setClientInfo("", ""));
     }
     
     @Test
-    public void assertSetClientInfoWithProperties() {
+    void assertSetClientInfoWithProperties() {
         assertThrows(UnsupportedSQLOperationException.class, () -> shardingSphereConnection.setClientInfo(new Properties()));
     }
 }

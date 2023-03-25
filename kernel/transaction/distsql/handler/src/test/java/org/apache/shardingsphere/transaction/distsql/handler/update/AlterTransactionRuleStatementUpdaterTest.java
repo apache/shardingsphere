@@ -42,10 +42,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ShardingSphereServiceLoader.class)
-public final class AlterTransactionRuleStatementUpdaterTest {
+class AlterTransactionRuleStatementUpdaterTest {
     
     @Test
-    public void assertExecuteWithXA() {
+    void assertExecuteWithXA() {
         when(ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class)).thenReturn(Collections.singleton(new ShardingSphereTransactionManagerFixture()));
         AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
         TransactionRuleConfiguration actual = updater.buildAlteredRuleConfiguration(createTransactionRuleConfiguration(), new AlterTransactionRuleStatement("XA",
@@ -59,7 +59,7 @@ public final class AlterTransactionRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithLocal() {
+    void assertExecuteWithLocal() {
         AlterTransactionRuleStatementUpdater updater = new AlterTransactionRuleStatementUpdater();
         TransactionRuleConfiguration actual =
                 updater.buildAlteredRuleConfiguration(createTransactionRuleConfiguration(), new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment("", new Properties())));

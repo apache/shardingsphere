@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ColumnExtractorParameterizedTest {
+class ColumnExtractorParameterizedTest {
     
     private static final ColumnSegment COLUMN_SEGMENT = new ColumnSegment(35, 42, new IdentifierValue("order_item_id"));
     

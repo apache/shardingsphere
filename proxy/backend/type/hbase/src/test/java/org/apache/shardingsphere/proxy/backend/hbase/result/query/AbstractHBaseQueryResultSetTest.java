@@ -55,7 +55,7 @@ public abstract class AbstractHBaseQueryResultSetTest {
     private Admin admin;
     
     @BeforeEach
-    public void setUp() throws IOException {
+    void setUp() throws IOException {
         Properties props = PropertiesBuilder.build(new Property(HBasePropertyKey.WARM_UP_THREAD_NUM.getKey(), String.valueOf(1)));
         HBaseContext.getInstance().setProps(new HBaseProperties(props));
         HTableDescriptor[] tableDescriptors = createHTableDescriptors();
@@ -84,7 +84,7 @@ public abstract class AbstractHBaseQueryResultSetTest {
     }
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         HBaseContext.getInstance().close();
     }
 }

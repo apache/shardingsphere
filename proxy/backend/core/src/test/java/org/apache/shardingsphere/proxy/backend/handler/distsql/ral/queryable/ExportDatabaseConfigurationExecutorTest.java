@@ -52,19 +52,19 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ExportDatabaseConfigurationExecutorTest {
+class ExportDatabaseConfigurationExecutorTest {
     
     private final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         Collection<String> columns = new ExportDatabaseConfigurationExecutor().getColumnNames();
         assertThat(columns.size(), is(1));
         assertThat(columns.iterator().next(), is("result"));
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         when(database.getName()).thenReturn("normal_db");
         when(database.getResourceMetaData().getDataSources()).thenReturn(createDataSourceMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
@@ -75,7 +75,7 @@ public final class ExportDatabaseConfigurationExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithEmptyDatabase() {
+    void assertExecuteWithEmptyDatabase() {
         when(database.getName()).thenReturn("empty_db");
         when(database.getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());

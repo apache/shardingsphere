@@ -80,7 +80,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class MySQLFrontendEngineTest {
+class MySQLFrontendEngineTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
@@ -96,26 +96,26 @@ public final class MySQLFrontendEngineTest {
     private MySQLPacketPayload payload;
     
     @BeforeEach
-    public void setUp() throws ReflectiveOperationException {
+    void setUp() throws ReflectiveOperationException {
         engine = new MySQLFrontendEngine();
         Plugins.getMemberAccessor().set(ConnectionIdGenerator.class.getDeclaredField("currentId"), ConnectionIdGenerator.getInstance(), 0);
         when(context.channel()).thenReturn(channel);
     }
     
     @Test
-    public void assertInitChannel() {
+    void assertInitChannel() {
         engine.initChannel(channel);
         verify(channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID)).set(any(AtomicInteger.class));
     }
     
     @Test
-    public void assertHandshake() {
+    void assertHandshake() {
         assertTrue(engine.getAuthenticationEngine().handshake(context) > 0);
         verify(context).writeAndFlush(isA(MySQLHandshakePacket.class));
     }
     
     @Test
-    public void assertAuthWhenLoginSuccess() {
+    void assertAuthWhenLoginSuccess() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ContextManager contextManager = mockContextManager(new ShardingSphereUser("root", "", ""));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -131,7 +131,7 @@ public final class MySQLFrontendEngineTest {
     }
     
     @Test
-    public void assertAuthWhenLoginFailure() {
+    void assertAuthWhenLoginFailure() {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ContextManager contextManager = mockContextManager(new ShardingSphereUser("root", "error", ""));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -147,7 +147,7 @@ public final class MySQLFrontendEngineTest {
     }
     
     @Test
-    public void assertErrorMsgWhenLoginFailure() throws UnknownHostException {
+    void assertErrorMsgWhenLoginFailure() throws UnknownHostException {
         setConnectionPhase(MySQLConnectionPhase.AUTH_PHASE_FAST_PATH);
         ContextManager contextManager = mockContextManager(new ShardingSphereUser("root", "error", ""));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

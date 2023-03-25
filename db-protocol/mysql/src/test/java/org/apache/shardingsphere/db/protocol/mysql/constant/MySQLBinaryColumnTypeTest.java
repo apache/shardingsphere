@@ -25,10 +25,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class MySQLBinaryColumnTypeTest {
+class MySQLBinaryColumnTypeTest {
     
     @Test
-    public void assertValueOfJDBC() {
+    void assertValueOfJDBC() {
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.BIT), is(MySQLBinaryColumnType.MYSQL_TYPE_BIT));
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.TINYINT), is(MySQLBinaryColumnType.MYSQL_TYPE_TINY));
         assertThat(MySQLBinaryColumnType.valueOfJDBCType(Types.SMALLINT), is(MySQLBinaryColumnType.MYSQL_TYPE_SHORT));
@@ -53,17 +53,17 @@ public final class MySQLBinaryColumnTypeTest {
     }
     
     @Test
-    public void assertValueOfJDBCIllegalArgument() {
+    void assertValueOfJDBCIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> MySQLBinaryColumnType.valueOfJDBCType(9999));
     }
     
     @Test
-    public void assertValueOf() {
+    void assertValueOf() {
         assertThat(MySQLBinaryColumnType.valueOf(MySQLBinaryColumnType.MYSQL_TYPE_DECIMAL.getValue()), is(MySQLBinaryColumnType.MYSQL_TYPE_DECIMAL));
     }
     
     @Test
-    public void assertValueOfWithIllegalArgument() {
+    void assertValueOfWithIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> MySQLBinaryColumnType.valueOf(-1));
     }
 }

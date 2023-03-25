@@ -42,7 +42,7 @@ public abstract class AbstractShardingSphereDataSourceForReadwriteSplittingTest 
     private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("test_primary_ds", "test_replica_ds");
     
     @BeforeAll
-    public static void initReadwriteSplittingDataSources() throws SQLException, IOException {
+    static void initReadwriteSplittingDataSources() throws SQLException, IOException {
         if (null == dataSource) {
             dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile());
         }
@@ -62,7 +62,7 @@ public abstract class AbstractShardingSphereDataSourceForReadwriteSplittingTest 
     }
     
     @AfterAll
-    public static void clear() throws Exception {
+    static void clear() throws Exception {
         if (null == dataSource) {
             return;
         }

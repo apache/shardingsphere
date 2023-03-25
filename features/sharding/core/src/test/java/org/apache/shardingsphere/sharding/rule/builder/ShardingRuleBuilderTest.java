@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class ShardingRuleBuilderTest {
+class ShardingRuleBuilderTest {
     
     private ShardingRuleConfiguration ruleConfig;
     
@@ -43,28 +43,28 @@ public final class ShardingRuleBuilderTest {
     private DatabaseRuleBuilder builder;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ruleConfig = new ShardingRuleConfiguration();
         builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig)).get(ruleConfig);
     }
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         assertThat(builder.build(ruleConfig, "sharding_db",
                 Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(ShardingRule.class));
     }
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertBuildWithNullDataSourceMap() {
+    void assertBuildWithNullDataSourceMap() {
         assertThrows(MissingRequiredShardingConfigurationException.class,
                 () -> builder.build(ruleConfig, "sharding_db", null, Collections.emptyList(), mock(InstanceContext.class)));
     }
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertBuildWithEmptyDataSourceMap() {
+    void assertBuildWithEmptyDataSourceMap() {
         assertThrows(MissingRequiredShardingConfigurationException.class,
                 () -> builder.build(ruleConfig, "sharding_db", Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)));
     }

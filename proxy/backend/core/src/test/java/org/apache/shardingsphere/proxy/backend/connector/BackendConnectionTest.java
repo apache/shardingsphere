@@ -76,7 +76,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class BackendConnectionTest {
+class BackendConnectionTest {
     
     private static final String SCHEMA_PATTERN = "schema_%s";
     
@@ -89,7 +89,7 @@ public final class BackendConnectionTest {
     private BackendConnection backendConnection;
     
     @BeforeEach
-    public void setUp() throws ReflectiveOperationException {
+    void setUp() throws ReflectiveOperationException {
         when(ProxyContext.getInstance().getBackendDataSource()).thenReturn(backendDataSource);
         when(connectionSession.getDatabaseName()).thenReturn(String.format(SCHEMA_PATTERN, 0));
         backendConnection = new BackendConnection(connectionSession);
@@ -101,14 +101,14 @@ public final class BackendConnectionTest {
     }
     
     @AfterEach
-    public void clean() throws ReflectiveOperationException {
+    void clean() throws ReflectiveOperationException {
         Field field = ProxyContext.getInstance().getClass().getDeclaredField("backendDataSource");
         Object datasource = field.getType().getDeclaredConstructor().newInstance();
         Plugins.getMemberAccessor().set(field, ProxyContext.getInstance(), datasource);
     }
     
     @Test
-    public void assertGetConnectionCacheIsEmpty() throws SQLException {
+    void assertGetConnectionCacheIsEmpty() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
@@ -118,7 +118,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertGetConnectionSizeLessThanCache() throws SQLException {
+    void assertGetConnectionSizeLessThanCache() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
         MockConnectionUtils.setCachedConnections(backendConnection, "ds1", 10);
         List<Connection> actualConnections = backendConnection.getConnections("ds1", 2, ConnectionMode.MEMORY_STRICTLY);
@@ -128,7 +128,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertGetConnectionSizeGreaterThanCache() throws SQLException {
+    void assertGetConnectionSizeGreaterThanCache() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
         MockConnectionUtils.setCachedConnections(backendConnection, "ds1", 10);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
@@ -139,7 +139,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertGetConnectionWithConnectionPostProcessors() throws SQLException {
+    void assertGetConnectionWithConnectionPostProcessors() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(2), any())).thenReturn(MockConnectionUtils.mockNewConnections(2));
         setConnectionPostProcessors();
@@ -159,7 +159,7 @@ public final class BackendConnectionTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertCloseConnectionsCorrectlyWhenNotForceRollback() throws ReflectiveOperationException, SQLException {
+    void assertCloseConnectionsCorrectlyWhenNotForceRollback() throws ReflectiveOperationException, SQLException {
         Multimap<String, Connection> cachedConnections = (Multimap<String, Connection>) Plugins.getMemberAccessor()
                 .get(BackendConnection.class.getDeclaredField("cachedConnections"), backendConnection);
         Connection connection = prepareCachedConnections();
@@ -179,7 +179,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertCloseConnectionsCorrectlyWhenForceRollbackAndNotInTransaction() throws SQLException {
+    void assertCloseConnectionsCorrectlyWhenForceRollbackAndNotInTransaction() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(false);
         Connection connection = prepareCachedConnections();
         backendConnection.closeConnections(true);
@@ -187,7 +187,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertCloseConnectionsCorrectlyWhenForceRollbackAndInTransaction() throws SQLException {
+    void assertCloseConnectionsCorrectlyWhenForceRollbackAndInTransaction() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
         Connection connection = prepareCachedConnections();
         backendConnection.closeConnections(true);
@@ -195,7 +195,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertCloseConnectionsCorrectlyWhenSQLExceptionThrown() throws SQLException {
+    void assertCloseConnectionsCorrectlyWhenSQLExceptionThrown() throws SQLException {
         Connection connection = prepareCachedConnections();
         SQLException sqlException = new SQLException("");
         doThrow(sqlException).when(connection).close();
@@ -203,7 +203,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertCreateStorageResourceCorrectlyWhenConnectionModeMemoryStrictly() throws SQLException {
+    void assertCreateStorageResourceCorrectlyWhenConnectionModeMemoryStrictly() throws SQLException {
         Connection connection = mock(Connection.class);
         Statement statement = mock(Statement.class);
         when(connection.createStatement()).thenReturn(statement);
@@ -213,7 +213,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertGetConnectionsAndReplaySessionVariables() throws SQLException {
+    void assertGetConnectionsAndReplaySessionVariables() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
         ProxyContext proxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance()).thenReturn(proxyContext);
@@ -226,7 +226,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertGetConnectionsAndFailedToReplaySessionVariables() throws SQLException {
+    void assertGetConnectionsAndFailedToReplaySessionVariables() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
         Connection connection = null;
         SQLException expectedException = new SQLException();
@@ -243,7 +243,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertGetConnectionsWithoutTransactions() throws SQLException {
+    void assertGetConnectionsWithoutTransactions() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(false);
         List<Connection> connections = MockConnectionUtils.mockNewConnections(1);
         when(backendDataSource.getConnections(anyString(), anyString(), eq(1), any())).thenReturn(connections);
@@ -263,7 +263,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertHandleAutoCommit() {
+    void assertHandleAutoCommit() {
         when(connectionSession.isAutoCommit()).thenReturn(false);
         connectionSession.getTransactionStatus().setInTransaction(false);
         try (MockedConstruction<BackendTransactionManager> mockedConstruction = mockConstruction(BackendTransactionManager.class)) {
@@ -273,7 +273,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertAddDatabaseConnector() {
+    void assertAddDatabaseConnector() {
         ProxyBackendHandler expectedEngine = mock(DatabaseConnector.class);
         backendConnection.add(expectedEngine);
         Collection<ProxyBackendHandler> actual = getBackendHandlers();
@@ -282,7 +282,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertMarkDatabaseConnectorInUse() {
+    void assertMarkDatabaseConnectorInUse() {
         ProxyBackendHandler expectedEngine = mock(DatabaseConnector.class);
         backendConnection.add(expectedEngine);
         backendConnection.markResourceInUse(expectedEngine);
@@ -292,7 +292,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertUnmarkInUseDatabaseConnector() {
+    void assertUnmarkInUseDatabaseConnector() {
         ProxyBackendHandler engine = mock(DatabaseConnector.class);
         Collection<ProxyBackendHandler> actual = getInUseBackendHandlers();
         actual.add(engine);
@@ -301,7 +301,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertCloseHandlers() throws SQLException {
+    void assertCloseHandlers() throws SQLException {
         ProxyBackendHandler engine = mock(DatabaseConnector.class);
         ProxyBackendHandler inUseEngine = mock(DatabaseConnector.class);
         SQLException expectedException = mock(SQLException.class);
@@ -324,7 +324,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertCloseExecutionResourcesNotInTransaction() throws BackendConnectionException, SQLException {
+    void assertCloseExecutionResourcesNotInTransaction() throws BackendConnectionException, SQLException {
         ProxyBackendHandler notInUseHandler = mock(ProxyBackendHandler.class);
         ProxyBackendHandler inUseHandler = mock(ProxyBackendHandler.class);
         getBackendHandlers().addAll(Arrays.asList(notInUseHandler, inUseHandler));
@@ -339,7 +339,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertCloseExecutionResourcesInTransaction() throws BackendConnectionException {
+    void assertCloseExecutionResourcesInTransaction() throws BackendConnectionException {
         connectionSession.getTransactionStatus().setInTransaction(true);
         ProxyBackendHandler notInUseHandler = mock(ProxyBackendHandler.class);
         ProxyBackendHandler inUseHandler = mock(ProxyBackendHandler.class);
@@ -365,7 +365,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertCloseAllResourcesInTransaction() throws SQLException {
+    void assertCloseAllResourcesInTransaction() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(true);
         Connection cachedConnection = prepareCachedConnections();
         backendConnection.closeAllResources();
@@ -384,7 +384,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertCloseConnectionsAndResetVariables() throws SQLException {
+    void assertCloseConnectionsAndResetVariables() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "default");
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
@@ -395,7 +395,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertCloseConnectionsAndFailedToGetDatabaseType() throws SQLException {
+    void assertCloseConnectionsAndFailedToGetDatabaseType() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "default");
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         SQLException expectedException = new SQLException();
@@ -406,7 +406,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertCloseConnectionsAndFailedToResetVariables() throws SQLException {
+    void assertCloseConnectionsAndFailedToResetVariables() throws SQLException {
         connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "default");
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
@@ -418,7 +418,7 @@ public final class BackendConnectionTest {
     }
     
     @Test
-    public void assertGetDataSourceNamesOfCachedConnections() {
+    void assertGetDataSourceNamesOfCachedConnections() {
         backendConnection.getCachedConnections().put(connectionSession.getDatabaseName() + ".ds_0", null);
         backendConnection.getCachedConnections().put(connectionSession.getDatabaseName() + ".ds_1", null);
         backendConnection.getCachedConnections().put(connectionSession.getDatabaseName() + ".ds_2", null);

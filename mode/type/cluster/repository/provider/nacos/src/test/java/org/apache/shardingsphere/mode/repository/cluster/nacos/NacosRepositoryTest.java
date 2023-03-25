@@ -66,7 +66,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class NacosRepositoryTest {
+class NacosRepositoryTest {
     
     private static final NacosRepository REPOSITORY = new NacosRepository();
     
@@ -76,7 +76,7 @@ public final class NacosRepositoryTest {
     private ServiceController serviceController;
     
     @BeforeEach
-    public void initClient() throws ReflectiveOperationException {
+    void initClient() throws ReflectiveOperationException {
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(REPOSITORY.getClass().getDeclaredField("nacosProps"), REPOSITORY, new NacosProperties(new Properties()));
         accessor.set(REPOSITORY.getClass().getDeclaredField("client"), REPOSITORY, client);
@@ -85,7 +85,7 @@ public final class NacosRepositoryTest {
     }
     
     @Test
-    public void assertGetLatestKey() throws NacosException {
+    void assertGetLatestKey() throws NacosException {
         int total = 2;
         String key = "/test/children/keys/persistent/1";
         List<Instance> instances = new LinkedList<>();
@@ -104,7 +104,7 @@ public final class NacosRepositoryTest {
     }
     
     @Test
-    public void assertGetChildrenKeys() throws NacosException {
+    void assertGetChildrenKeys() throws NacosException {
         Instance instance = new Instance();
         String key = "/test/children/keys/persistent/0";
         instance.setMetadata(Collections.singletonMap(key, "value0"));
@@ -122,7 +122,7 @@ public final class NacosRepositoryTest {
     }
     
     @Test
-    public void assertPersistNotExistKey() throws NacosException {
+    void assertPersistNotExistKey() throws NacosException {
         String key = "/test/children/keys/persistent/1";
         doAnswer(AdditionalAnswers.answerVoid(getRegisterInstanceAnswer())).when(client).registerInstance(anyString(), any(Instance.class));
         REPOSITORY.persist(key, "value4");
@@ -138,7 +138,7 @@ public final class NacosRepositoryTest {
     }
     
     @Test
-    public void assertPersistExistKey() throws NacosException {
+    void assertPersistExistKey() throws NacosException {
         String ip = "127.0.0.1";
         Instance instance = new Instance();
         instance.setIp(ip);
@@ -164,7 +164,7 @@ public final class NacosRepositoryTest {
     }
     
     @Test
-    public void assertPersistEphemeralExistKey() throws NacosException {
+    void assertPersistEphemeralExistKey() throws NacosException {
         final String key = "/test/children/keys/ephemeral/1";
         final Instance instance = new Instance();
         instance.setEphemeral(true);
@@ -216,7 +216,7 @@ public final class NacosRepositoryTest {
     }
     
     @Test
-    public void assertPersistEphemeralNotExistKey() throws NacosException {
+    void assertPersistEphemeralNotExistKey() throws NacosException {
         String key = "/test/children/keys/ephemeral/0";
         doAnswer(AdditionalAnswers.answerVoid(getRegisterInstanceAnswer())).when(client).registerInstance(anyString(), any(Instance.class));
         REPOSITORY.persistEphemeral(key, "value0");
@@ -237,7 +237,7 @@ public final class NacosRepositoryTest {
     }
     
     @Test
-    public void assertDeleteExistKey() throws NacosException {
+    void assertDeleteExistKey() throws NacosException {
         int total = 3;
         List<Instance> instances = new LinkedList<>();
         for (int count = 1; count <= total; count++) {
@@ -263,13 +263,13 @@ public final class NacosRepositoryTest {
     }
     
     @Test
-    public void assertDeleteNotExistKey() throws NacosException {
+    void assertDeleteNotExistKey() throws NacosException {
         REPOSITORY.delete("/test/children/keys/persistent/1");
         verify(client, times(0)).deregisterInstance(anyString(), any(Instance.class));
     }
     
     @Test
-    public void assertWatchAdded() throws NacosException, ExecutionException, InterruptedException {
+    void assertWatchAdded() throws NacosException, ExecutionException, InterruptedException {
         ServiceMetaData ephemeralService = serviceController.getEphemeralService();
         ephemeralService.setListener(null);
         String key = "key/key";
@@ -287,7 +287,7 @@ public final class NacosRepositoryTest {
     }
     
     @Test
-    public void assertWatchUpdate() throws NacosException, ExecutionException, InterruptedException {
+    void assertWatchUpdate() throws NacosException, ExecutionException, InterruptedException {
         ServiceMetaData persistentService = serviceController.getPersistentService();
         persistentService.setListener(null);
         String key = "key/key";
@@ -313,7 +313,7 @@ public final class NacosRepositoryTest {
     }
     
     @Test
-    public void assertWatchDelete() throws NacosException, ExecutionException, InterruptedException {
+    void assertWatchDelete() throws NacosException, ExecutionException, InterruptedException {
         ServiceMetaData persistentService = serviceController.getPersistentService();
         persistentService.setListener(null);
         String key = "key/key";
@@ -330,18 +330,18 @@ public final class NacosRepositoryTest {
     }
     
     @Test
-    public void assertClose() throws NacosException {
+    void assertClose() throws NacosException {
         REPOSITORY.close();
         verify(client).shutDown();
     }
     
     @Test
-    public void assertPersistNotAvailable() {
+    void assertPersistNotAvailable() {
         assertThrows(ClusterPersistRepositoryException.class, () -> REPOSITORY.persist("/test/children/keys/persistent/1", "value4"));
     }
     
     @Test
-    public void assertExceededMaximum() {
+    void assertExceededMaximum() {
         ServiceMetaData ephemeralService = serviceController.getEphemeralService();
         ephemeralService.setPort(new AtomicInteger(Integer.MAX_VALUE));
         assertThrows(IllegalStateException.class, () -> REPOSITORY.persistEphemeral("/key2", "value"));

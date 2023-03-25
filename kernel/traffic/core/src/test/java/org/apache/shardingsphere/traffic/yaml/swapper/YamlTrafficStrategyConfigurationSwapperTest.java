@@ -27,7 +27,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlTrafficStrategyConfigurationSwapperTest {
+class YamlTrafficStrategyConfigurationSwapperTest {
     
     private static final String NAME = "testName";
     
@@ -44,7 +44,7 @@ public final class YamlTrafficStrategyConfigurationSwapperTest {
     private final YamlTrafficStrategyConfigurationSwapper swapper = new YamlTrafficStrategyConfigurationSwapper();
     
     @Test
-    public void swapToYamlConfiguration() {
+    void swapToYamlConfiguration() {
         YamlTrafficStrategyConfiguration yamlStrategyConfig = swapper.swapToYamlConfiguration(createTrafficStrategyConfiguration());
         assertThat(yamlStrategyConfig.getName(), is(NAME));
         assertThat(yamlStrategyConfig.getLabels(), is(LABELS));
@@ -57,7 +57,7 @@ public final class YamlTrafficStrategyConfigurationSwapperTest {
     }
     
     @Test
-    public void swapToObject() {
+    void swapToObject() {
         TrafficStrategyConfiguration strategyConfig = swapper.swapToObject(createYamlTrafficStrategyConfiguration());
         assertThat(strategyConfig.getName(), is(NAME));
         assertThat(strategyConfig.getLabels(), is(LABELS));

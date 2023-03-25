@@ -30,13 +30,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLComQueryPacketTest {
+class PostgreSQLComQueryPacketTest {
     
     @Mock
     private PostgreSQLPacketPayload payload;
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         when(payload.readStringNul()).thenReturn("sql");
         PostgreSQLComQueryPacket actual = new PostgreSQLComQueryPacket(payload);
         actual.write(payload);

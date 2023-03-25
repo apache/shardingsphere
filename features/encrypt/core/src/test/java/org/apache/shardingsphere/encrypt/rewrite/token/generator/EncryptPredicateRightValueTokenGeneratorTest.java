@@ -33,10 +33,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class EncryptPredicateRightValueTokenGeneratorTest extends EncryptGeneratorBaseTest {
+class EncryptPredicateRightValueTokenGeneratorTest extends EncryptGeneratorBaseTest {
     
     @Test
-    public void assertIsGenerateSQLToken() {
+    void assertIsGenerateSQLToken() {
         EncryptPredicateRightValueTokenGenerator tokenGenerator = new EncryptPredicateRightValueTokenGenerator();
         tokenGenerator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
         tokenGenerator.setEncryptRule(createEncryptRule());
@@ -44,7 +44,7 @@ public final class EncryptPredicateRightValueTokenGeneratorTest extends EncryptG
     }
     
     @Test
-    public void assertGenerateSQLTokenFromGenerateNewSQLToken() {
+    void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         UpdateStatementContext updatesStatementContext = createUpdatesStatementContext();
         EncryptPredicateRightValueTokenGenerator tokenGenerator = new EncryptPredicateRightValueTokenGenerator();
         tokenGenerator.setDatabaseName(DefaultDatabase.LOGIC_NAME);

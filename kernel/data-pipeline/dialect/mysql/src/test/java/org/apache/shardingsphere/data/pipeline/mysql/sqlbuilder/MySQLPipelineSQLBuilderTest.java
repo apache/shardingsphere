@@ -28,24 +28,24 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class MySQLPipelineSQLBuilderTest {
+class MySQLPipelineSQLBuilderTest {
     
     private final MySQLPipelineSQLBuilder sqlBuilder = new MySQLPipelineSQLBuilder();
     
     @Test
-    public void assertBuildInsertSQL() {
+    void assertBuildInsertSQL() {
         String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t1"));
         assertThat(actual, is("INSERT INTO t1(id,sc,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
     }
     
     @Test
-    public void assertBuildInsertSQLHasShardingColumn() {
+    void assertBuildInsertSQLHasShardingColumn() {
         String actual = sqlBuilder.buildInsertSQL(null, mockDataRecord("t2"));
         assertThat(actual, is("INSERT INTO t2(id,sc,c1,c2,c3) VALUES(?,?,?,?,?) ON DUPLICATE KEY UPDATE c1=VALUES(c1),c2=VALUES(c2),c3=VALUES(c3)"));
     }
     
     @Test
-    public void assertBuildSumCrc32SQL() {
+    void assertBuildSumCrc32SQL() {
         Optional<String> actual = sqlBuilder.buildCRC32SQL(null, "t2", "id");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("SELECT BIT_XOR(CAST(CRC32(id) AS UNSIGNED)) AS checksum, COUNT(1) AS cnt FROM t2"));
@@ -63,7 +63,7 @@ public final class MySQLPipelineSQLBuilderTest {
     }
     
     @Test
-    public void assertQuoteKeyword() {
+    void assertQuoteKeyword() {
         String tableName = "CASCADE";
         String actualCountSql = sqlBuilder.buildCountSQL(null, tableName);
         assertThat(actualCountSql, is(String.format("SELECT COUNT(*) FROM %s", sqlBuilder.quote(tableName))));
@@ -72,7 +72,7 @@ public final class MySQLPipelineSQLBuilderTest {
     }
     
     @Test
-    public void assertBuilderEstimateCountSQLWithoutKeyword() {
+    void assertBuilderEstimateCountSQLWithoutKeyword() {
         Optional<String> actual = sqlBuilder.buildEstimatedCountSQL(null, "t_order");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is("SELECT TABLE_ROWS FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 't_order'"));

@@ -30,10 +30,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLAggregatedResponsesPacketTest {
+class PostgreSQLAggregatedResponsesPacketTest {
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         PostgreSQLIdentifierPacket identifierPacket = mock(PostgreSQLIdentifierPacket.class);
         when(identifierPacket.getIdentifier()).thenReturn(PostgreSQLMessagePacketType.READY_FOR_QUERY);
         PostgreSQLPacket nonIdentifierPacket = mock(PostgreSQLPacket.class);

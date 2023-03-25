@@ -35,10 +35,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class AlterIndexStatementHandlerTest {
+class AlterIndexStatementHandlerTest {
     
     @Test
-    public void assertGetSimpleTableSegmentWithSimpleTableSegmentForSQLServer() {
+    void assertGetSimpleTableSegmentWithSimpleTableSegmentForSQLServer() {
         SQLServerAlterIndexStatement alterIndexStatement = new SQLServerAlterIndexStatement();
         alterIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         Optional<SimpleTableSegment> simpleTableSegment = AlterIndexStatementHandler.getSimpleTableSegment(alterIndexStatement);
@@ -46,14 +46,14 @@ public final class AlterIndexStatementHandlerTest {
     }
     
     @Test
-    public void assertGetSimpleTableSegmentWithoutSimpleTableSegmentForSQLServer() {
+    void assertGetSimpleTableSegmentWithoutSimpleTableSegmentForSQLServer() {
         SQLServerAlterIndexStatement alterIndexStatement = new SQLServerAlterIndexStatement();
         Optional<SimpleTableSegment> simpleTableSegment = AlterIndexStatementHandler.getSimpleTableSegment(alterIndexStatement);
         assertFalse(simpleTableSegment.isPresent());
     }
     
     @Test
-    public void assertGetRenameIndexSegmentWithRenameIndexSegmentForPostgreSQL() {
+    void assertGetRenameIndexSegmentWithRenameIndexSegmentForPostgreSQL() {
         PostgreSQLAlterIndexStatement alterIndexStatement = new PostgreSQLAlterIndexStatement();
         alterIndexStatement.setRenameIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue(""))));
         Optional<IndexSegment> indexSegment = AlterIndexStatementHandler.getRenameIndexSegment(alterIndexStatement);
@@ -61,14 +61,14 @@ public final class AlterIndexStatementHandlerTest {
     }
     
     @Test
-    public void assertGetRenameIndexSegmentWithoutRenameIndexSegmentForPostgreSQL() {
+    void assertGetRenameIndexSegmentWithoutRenameIndexSegmentForPostgreSQL() {
         PostgreSQLAlterIndexStatement alterIndexStatement = new PostgreSQLAlterIndexStatement();
         Optional<IndexSegment> indexSegment = AlterIndexStatementHandler.getRenameIndexSegment(alterIndexStatement);
         assertFalse(indexSegment.isPresent());
     }
     
     @Test
-    public void assertGetRenameIndexSegmentForOpenGauss() {
+    void assertGetRenameIndexSegmentForOpenGauss() {
         IndexSegment indexSegment = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("")));
         OpenGaussAlterIndexStatement alterIndexStatement = new OpenGaussAlterIndexStatement();
         alterIndexStatement.setRenameIndex(indexSegment);
@@ -78,14 +78,14 @@ public final class AlterIndexStatementHandlerTest {
     }
     
     @Test
-    public void assertGetSimpleTableSegmentForOtherDatabases() {
+    void assertGetSimpleTableSegmentForOtherDatabases() {
         assertFalse(AlterIndexStatementHandler.getSimpleTableSegment(new OpenGaussAlterIndexStatement()).isPresent());
         assertFalse(AlterIndexStatementHandler.getSimpleTableSegment(new OracleAlterIndexStatement()).isPresent());
         assertFalse(AlterIndexStatementHandler.getSimpleTableSegment(new PostgreSQLAlterIndexStatement()).isPresent());
     }
     
     @Test
-    public void assertGetRenameIndexSegmentForOtherDatabases() {
+    void assertGetRenameIndexSegmentForOtherDatabases() {
         assertFalse(AlterIndexStatementHandler.getRenameIndexSegment(new OracleAlterIndexStatement()).isPresent());
         assertFalse(AlterIndexStatementHandler.getRenameIndexSegment(new SQLServerAlterIndexStatement()).isPresent());
     }

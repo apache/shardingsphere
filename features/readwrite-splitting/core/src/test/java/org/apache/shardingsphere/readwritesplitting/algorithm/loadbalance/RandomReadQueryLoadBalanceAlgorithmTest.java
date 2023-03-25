@@ -27,10 +27,10 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class RandomReadQueryLoadBalanceAlgorithmTest {
+class RandomReadQueryLoadBalanceAlgorithmTest {
     
     @Test
-    public void assertGetDataSourceWithDefaultStrategy() {
+    void assertGetDataSourceWithDefaultStrategy() {
         ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, "RANDOM", new Properties());
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";

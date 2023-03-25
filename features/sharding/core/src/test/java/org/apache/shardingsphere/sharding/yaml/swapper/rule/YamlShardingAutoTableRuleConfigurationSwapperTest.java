@@ -41,19 +41,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
+class YamlShardingAutoTableRuleConfigurationSwapperTest {
     
     private YamlShardingAutoTableRuleConfigurationSwapper swapper;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ShardingAutoTableAlgorithm shardingAlgorithm = mock(ShardingAutoTableAlgorithm.class);
         when(shardingAlgorithm.getAutoTablesAmount()).thenReturn(2);
         swapper = new YamlShardingAutoTableRuleConfigurationSwapper();
     }
     
     @Test
-    public void assertSwapToYamlConfigurationWithMinProperties() {
+    void assertSwapToYamlConfigurationWithMinProperties() {
         YamlShardingAutoTableRuleConfiguration actual = swapper.swapToYamlConfiguration(new ShardingAutoTableRuleConfiguration("tbl", "ds0,ds1"));
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataSources(), is("ds0,ds1"));
@@ -62,7 +62,7 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToYamlConfigurationWithMaxProperties() {
+    void assertSwapToYamlConfigurationWithMaxProperties() {
         ShardingAutoTableRuleConfiguration shardingTableRuleConfig = new ShardingAutoTableRuleConfiguration("tbl", "ds0,ds1");
         shardingTableRuleConfig.setShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
         shardingTableRuleConfig.setKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
@@ -76,12 +76,12 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithoutLogicTable() {
+    void assertSwapToObjectWithoutLogicTable() {
         assertThrows(MissingRequiredShardingConfigurationException.class, () -> new YamlShardingAutoTableRuleConfigurationSwapper().swapToObject(new YamlShardingAutoTableRuleConfiguration()));
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlShardingStrategyConfiguration yamlShardingStrategyConfig = new YamlShardingStrategyConfiguration();
         YamlStandardShardingStrategyConfiguration yamlStandardShardingStrategyConfig = new YamlStandardShardingStrategyConfiguration();
         yamlStandardShardingStrategyConfig.setShardingColumn("col");

@@ -35,7 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class EncryptStatementTest extends AbstractShardingSphereDataSourceForEncryptTest {
+class EncryptStatementTest extends AbstractShardingSphereDataSourceForEncryptTest {
     
     private static final String INSERT_SQL = "INSERT INTO t_encrypt(id, pwd) VALUES (2,'b')";
     
@@ -58,12 +58,12 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     private static final String SHOW_COLUMNS_SQL = "SHOW columns FROM t_encrypt";
     
     @Test
-    public void assertSQLShow() {
+    void assertSQLShow() {
         assertTrue(getEncryptConnectionWithProps().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.SQL_SHOW));
     }
     
     @Test
-    public void assertInsertWithExecute() throws SQLException {
+    void assertInsertWithExecute() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement()) {
             statement.execute(INSERT_SQL);
         }
@@ -71,7 +71,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     }
     
     @Test
-    public void assertInsertWithExecuteWithGeneratedKey() throws SQLException {
+    void assertInsertWithExecuteWithGeneratedKey() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
             statement.execute(INSERT_GENERATED_KEY_SQL, Statement.RETURN_GENERATED_KEYS);
             ResultSet resultSet = statement.getGeneratedKeys();
@@ -83,7 +83,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     }
     
     @Test
-    public void assertDeleteWithExecute() throws SQLException {
+    void assertDeleteWithExecute() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement()) {
             statement.execute(DELETE_SQL);
         }
@@ -91,7 +91,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     }
     
     @Test
-    public void assertUpdateWithExecuteUpdate() throws SQLException {
+    void assertUpdateWithExecuteUpdate() throws SQLException {
         int result;
         try (Statement statement = getEncryptConnection().createStatement()) {
             result = statement.executeUpdate(UPDATE_SQL);
@@ -101,7 +101,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     }
     
     @Test
-    public void assertSelectWithExecuteQuery() throws SQLException {
+    void assertSelectWithExecuteQuery() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(SELECT_SQL);
             assertTrue(resultSet.next());
@@ -114,7 +114,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     }
     
     @Test
-    public void assertSelectWithExecuteWithProperties() throws SQLException {
+    void assertSelectWithExecuteWithProperties() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT)) {
             int[] columnIndexes = {1, 2};
             boolean result = statement.execute(SELECT_SQL, columnIndexes);
@@ -126,7 +126,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     }
     
     @Test
-    public void assertSelectWithMetaData() throws SQLException {
+    void assertSelectWithMetaData() throws SQLException {
         try (Statement statement = getEncryptConnectionWithProps().createStatement()) {
             ResultSetMetaData metaData = statement.executeQuery(SELECT_SQL_WITH_STAR).getMetaData();
             assertThat(metaData.getColumnCount(), is(2));
@@ -138,7 +138,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     }
     
     @Test
-    public void assertSelectWithCipherColumn() throws SQLException {
+    void assertSelectWithCipherColumn() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(SELECT_SQL_WITH_CIPHER);
             int count = 1;
@@ -153,7 +153,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     }
     
     @Test
-    public void assertSelectWithPlainColumn() throws SQLException {
+    void assertSelectWithPlainColumn() throws SQLException {
         try (Statement statement = getEncryptConnectionWithProps().createStatement()) {
             ResultSet resultSet = statement.executeQuery(SELECT_SQL_WITH_PLAIN);
             int count = 1;
@@ -185,21 +185,21 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
     }
     
     @Test
-    public void assertQueryWithNull() throws SQLException {
+    void assertQueryWithNull() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement()) {
             assertThrows(SQLException.class, () -> statement.executeQuery(null));
         }
     }
     
     @Test
-    public void assertQueryWithEmptyString() throws SQLException {
+    void assertQueryWithEmptyString() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement()) {
             assertThrows(SQLException.class, () -> statement.executeQuery(""));
         }
     }
     
     @Test
-    public void assertShowColumnsTable() throws SQLException {
+    void assertShowColumnsTable() throws SQLException {
         try (Statement statement = getEncryptConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(SHOW_COLUMNS_SQL);
             int count = 0;

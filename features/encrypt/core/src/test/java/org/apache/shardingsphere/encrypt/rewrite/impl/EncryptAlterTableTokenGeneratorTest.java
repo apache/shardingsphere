@@ -48,12 +48,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class EncryptAlterTableTokenGeneratorTest {
+class EncryptAlterTableTokenGeneratorTest {
     
     private EncryptAlterTableTokenGenerator generator;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         generator = new EncryptAlterTableTokenGenerator();
         generator.setEncryptRule(mockEncryptRule());
     }
@@ -85,7 +85,7 @@ public final class EncryptAlterTableTokenGeneratorTest {
     }
     
     @Test
-    public void assertAddColumnGenerateSQLTokens() {
+    void assertAddColumnGenerateSQLTokens() {
         Collection<SQLToken> sqlTokens = generator.generateSQLTokens(buildAddColumnStatementContext());
         assertThat(sqlTokens.size(), is(5));
         Iterator<SQLToken> iterator = sqlTokens.iterator();
@@ -118,7 +118,7 @@ public final class EncryptAlterTableTokenGeneratorTest {
     }
     
     @Test
-    public void assertModifyColumnGenerateSQLTokens() {
+    void assertModifyColumnGenerateSQLTokens() {
         Collection<SQLToken> sqlTokens = generator.generateSQLTokens(buildModifyColumnStatementContext());
         assertThat(sqlTokens.size(), is(5));
         Iterator<SQLToken> iterator = sqlTokens.iterator();
@@ -151,7 +151,7 @@ public final class EncryptAlterTableTokenGeneratorTest {
     }
     
     @Test
-    public void assertChangeColumnGenerateSQLTokens() {
+    void assertChangeColumnGenerateSQLTokens() {
         Collection<SQLToken> sqlTokens = generator.generateSQLTokens(buildChangeColumnStatementContext());
         assertThat(sqlTokens.size(), is(7));
         Iterator<SQLToken> iterator = sqlTokens.iterator();

@@ -35,10 +35,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DatabaseDiscoveryRuleStatementConverterTest {
+class DatabaseDiscoveryRuleStatementConverterTest {
     
     @Test
-    public void assertConvert() {
+    void assertConvert() {
         DatabaseDiscoveryRuleConfiguration ruleConfig = DatabaseDiscoveryRuleStatementConverter.convert(createDatabaseDiscoveryRuleSegments());
         assertTrue(ruleConfig.getDiscoveryTypes().containsKey("definition_mysql_mgr"));
         assertTrue(ruleConfig.getDiscoveryHeartbeats().containsKey("definition_heartbeat"));

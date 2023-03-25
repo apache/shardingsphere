@@ -27,17 +27,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public final class JobDataNodeEntryTest {
+class JobDataNodeEntryTest {
     
     @Test
-    public void assertMarshal() {
+    void assertMarshal() {
         String actual = new JobDataNodeEntry("t_order", Arrays.asList(new DataNode("ds_0.t_order_0"), new DataNode("ds_0.t_order_1"))).marshal();
         String expected = "t_order:ds_0.t_order_0,ds_0.t_order_1";
         assertThat(actual, is(expected));
     }
     
     @Test
-    public void assertUnmarshalWithSchema() {
+    void assertUnmarshalWithSchema() {
         JobDataNodeEntry actual = JobDataNodeEntry.unmarshal("t_order:ds_0.public.t_order_0,ds_1.test.t_order_1");
         assertThat(actual.getLogicTableName(), is("t_order"));
         assertNotNull(actual.getDataNodes());

@@ -32,10 +32,10 @@ import java.util.LinkedList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ColumnExtractorTest {
+class ColumnExtractorTest {
     
     @Test
-    public void assertExtractColumnSegments() {
+    void assertExtractColumnSegments() {
         Collection<ColumnSegment> columnSegments = new LinkedList<>();
         ColumnExtractor.extractColumnSegments(columnSegments, createWhereSegments());
         assertThat(columnSegments.size(), is(2));

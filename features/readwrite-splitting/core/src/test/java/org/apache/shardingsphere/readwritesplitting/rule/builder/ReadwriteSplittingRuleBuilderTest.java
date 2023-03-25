@@ -32,11 +32,11 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class ReadwriteSplittingRuleBuilderTest {
+class ReadwriteSplittingRuleBuilderTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(
                 Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("name",
                         new StaticReadwriteSplittingStrategyConfiguration("writeDataSourceName", Collections.singletonList("readDataSourceName")),

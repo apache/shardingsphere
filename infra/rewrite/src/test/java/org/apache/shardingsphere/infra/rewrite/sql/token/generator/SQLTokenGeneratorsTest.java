@@ -38,10 +38,10 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SQLTokenGeneratorsTest {
+class SQLTokenGeneratorsTest {
     
     @Test
-    public void assertAddAllWithList() throws ReflectiveOperationException {
+    void assertAddAllWithList() throws ReflectiveOperationException {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         Map<Class<?>, SQLTokenGenerator> actualSqlTokenGeneratorsMap = getSQLTokenGeneratorsMap(sqlTokenGenerators);
         SQLTokenGenerator mockSqlTokenGenerator = mock(SQLTokenGenerator.class);
@@ -52,7 +52,7 @@ public final class SQLTokenGeneratorsTest {
     }
     
     @Test
-    public void assertAddAllWithSameClass() throws ReflectiveOperationException {
+    void assertAddAllWithSameClass() throws ReflectiveOperationException {
         SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
         SQLTokenGenerator expectedSqlTokenGenerator = mock(SQLTokenGenerator.class);
         SQLTokenGenerator unexpectedSqlTokenGenerator = mock(SQLTokenGenerator.class);

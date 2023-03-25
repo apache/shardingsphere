@@ -42,14 +42,14 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingGeneratedKeyInsertValueParameterRewriterTest {
+class ShardingGeneratedKeyInsertValueParameterRewriterTest {
     
     private static final int TEST_PARAMETER_COUNT = 3;
     
     private static final String TEST_GENERATED_VALUE = "testGeneratedValue";
     
     @Test
-    public void assertIsNeedRewrite() {
+    void assertIsNeedRewrite() {
         ShardingGeneratedKeyInsertValueParameterRewriter paramRewriter = new ShardingGeneratedKeyInsertValueParameterRewriter();
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         assertFalse(paramRewriter.isNeedRewrite(selectStatementContext));
@@ -65,7 +65,7 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriterTest {
     }
     
     @Test
-    public void assertRewrite() {
+    void assertRewrite() {
         InsertStatementContext insertStatementContext = getInsertStatementContext();
         ParameterBuilder groupedParamBuilder = getParameterBuilder();
         ShardingGeneratedKeyInsertValueParameterRewriter paramRewriter = new ShardingGeneratedKeyInsertValueParameterRewriter();

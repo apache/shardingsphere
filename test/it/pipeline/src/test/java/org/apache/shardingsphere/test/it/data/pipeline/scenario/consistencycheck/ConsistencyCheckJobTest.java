@@ -37,15 +37,15 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public final class ConsistencyCheckJobTest {
+class ConsistencyCheckJobTest {
     
     @BeforeAll
-    public static void beforeClass() {
+    static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
     }
     
     @Test
-    public void assertBuildPipelineJobItemContext() throws ReflectiveOperationException {
+    void assertBuildPipelineJobItemContext() throws ReflectiveOperationException {
         String checkJobId = "j0201001";
         Map<String, Object> expectTableCheckPosition = Collections.singletonMap("t_order", 100);
         PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(checkJobId, 0, YamlEngine.marshal(createYamlConsistencyCheckJobItemProgress(expectTableCheckPosition)));

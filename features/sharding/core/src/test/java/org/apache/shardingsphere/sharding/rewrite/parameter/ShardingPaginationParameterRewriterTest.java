@@ -37,7 +37,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingPaginationParameterRewriterTest {
+class ShardingPaginationParameterRewriterTest {
     
     private static final int TEST_OFFSET_PARAMETER_INDEX = 3;
     
@@ -52,7 +52,7 @@ public final class ShardingPaginationParameterRewriterTest {
     private static boolean addRowCountParameterFlag = Boolean.FALSE;
     
     @Test
-    public void assertIsNeedRewrite() {
+    void assertIsNeedRewrite() {
         ShardingPaginationParameterRewriter paramRewriter = new ShardingPaginationParameterRewriter();
         RouteContext routeContext = mock(RouteContext.class);
         paramRewriter.setRouteContext(routeContext);
@@ -69,7 +69,7 @@ public final class ShardingPaginationParameterRewriterTest {
     }
     
     @Test
-    public void assertRewrite() {
+    void assertRewrite() {
         addOffsetParametersFlag = false;
         addRowCountParameterFlag = false;
         StandardParameterBuilder standardParamBuilder = mock(StandardParameterBuilder.class);

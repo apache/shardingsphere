@@ -26,10 +26,10 @@ import java.nio.charset.StandardCharsets;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLComStmtSendLongDataPacketTest {
+class MySQLComStmtSendLongDataPacketTest {
     
     @Test
-    public void assertNewPacket() {
+    void assertNewPacket() {
         byte[] data = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x61, 0x62, 0x63};
         MySQLComStmtSendLongDataPacket actual = new MySQLComStmtSendLongDataPacket(new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8));
         assertThat(actual.getStatementId(), is(1));

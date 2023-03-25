@@ -33,10 +33,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class UpdateStatementHandlerTest {
+class UpdateStatementHandlerTest {
     
     @Test
-    public void assertGetOrderBySegmentWithOrderBySegmentForMySQL() {
+    void assertGetOrderBySegmentWithOrderBySegmentForMySQL() {
         MySQLUpdateStatement updateStatement = new MySQLUpdateStatement();
         updateStatement.setOrderBy(new OrderBySegment(0, 0, Collections.emptyList()));
         Optional<OrderBySegment> orderBySegment = UpdateStatementHandler.getOrderBySegment(updateStatement);
@@ -44,14 +44,14 @@ public final class UpdateStatementHandlerTest {
     }
     
     @Test
-    public void assertGetOrderBySegmentWithoutOrderBySegmentForMySQL() {
+    void assertGetOrderBySegmentWithoutOrderBySegmentForMySQL() {
         MySQLUpdateStatement updateStatement = new MySQLUpdateStatement();
         Optional<OrderBySegment> orderBySegment = UpdateStatementHandler.getOrderBySegment(updateStatement);
         assertFalse(orderBySegment.isPresent());
     }
     
     @Test
-    public void assertGetLimitSegmentWithLimitSegmentForMySQL() {
+    void assertGetLimitSegmentWithLimitSegmentForMySQL() {
         MySQLUpdateStatement updateStatement = new MySQLUpdateStatement();
         updateStatement.setLimit(new LimitSegment(0, 0, null, null));
         Optional<LimitSegment> limitSegment = UpdateStatementHandler.getLimitSegment(updateStatement);
@@ -59,14 +59,14 @@ public final class UpdateStatementHandlerTest {
     }
     
     @Test
-    public void assertGetLimitSegmentWithoutLimitSegmentForMySQL() {
+    void assertGetLimitSegmentWithoutLimitSegmentForMySQL() {
         MySQLUpdateStatement updateStatement = new MySQLUpdateStatement();
         Optional<LimitSegment> limitSegment = UpdateStatementHandler.getLimitSegment(updateStatement);
         assertFalse(limitSegment.isPresent());
     }
     
     @Test
-    public void assertGetOrderBySegmentForOtherDatabases() {
+    void assertGetOrderBySegmentForOtherDatabases() {
         assertFalse(UpdateStatementHandler.getOrderBySegment(new OpenGaussUpdateStatement()).isPresent());
         assertFalse(UpdateStatementHandler.getOrderBySegment(new OracleUpdateStatement()).isPresent());
         assertFalse(UpdateStatementHandler.getOrderBySegment(new PostgreSQLUpdateStatement()).isPresent());
@@ -75,7 +75,7 @@ public final class UpdateStatementHandlerTest {
     }
     
     @Test
-    public void assertGetLimitSegmentForOtherDatabases() {
+    void assertGetLimitSegmentForOtherDatabases() {
         assertFalse(UpdateStatementHandler.getLimitSegment(new OpenGaussUpdateStatement()).isPresent());
         assertFalse(UpdateStatementHandler.getLimitSegment(new OracleUpdateStatement()).isPresent());
         assertFalse(UpdateStatementHandler.getLimitSegment(new PostgreSQLUpdateStatement()).isPresent());

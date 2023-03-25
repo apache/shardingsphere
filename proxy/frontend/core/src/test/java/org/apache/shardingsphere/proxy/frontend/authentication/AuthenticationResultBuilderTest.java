@@ -25,10 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class AuthenticationResultBuilderTest {
+class AuthenticationResultBuilderTest {
     
     @Test
-    public void assertContinuedWithEmpty() {
+    void assertContinuedWithEmpty() {
         AuthenticationResult actual = AuthenticationResultBuilder.continued();
         assertNull(actual.getUsername());
         assertNull(actual.getDatabase());
@@ -36,7 +36,7 @@ public final class AuthenticationResultBuilderTest {
     }
     
     @Test
-    public void assertContinued() {
+    void assertContinued() {
         AuthenticationResult actual = AuthenticationResultBuilder.continued("username", "127.0.0.1", "database");
         assertThat(actual.getUsername(), is("username"));
         assertThat(actual.getHostname(), is("127.0.0.1"));
@@ -45,7 +45,7 @@ public final class AuthenticationResultBuilderTest {
     }
     
     @Test
-    public void assertFinished() {
+    void assertFinished() {
         AuthenticationResult actual = AuthenticationResultBuilder.finished("username", "127.0.0.1", "database");
         assertThat(actual.getUsername(), is("username"));
         assertThat(actual.getHostname(), is("127.0.0.1"));

@@ -25,10 +25,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class ServerPreparedStatementRegistryTest {
+class ServerPreparedStatementRegistryTest {
     
     @Test
-    public void assertAddAndGetAndClosePreparedStatement() {
+    void assertAddAndGetAndClosePreparedStatement() {
         ServerPreparedStatement expected = new DummyServerPreparedStatement();
         ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
         registry.addPreparedStatement(1, expected);
@@ -38,7 +38,7 @@ public final class ServerPreparedStatementRegistryTest {
     }
     
     @Test
-    public void assertClearPreparedStatements() {
+    void assertClearPreparedStatements() {
         ServerPreparedStatementRegistry registry = new ServerPreparedStatementRegistry();
         registry.addPreparedStatement(1, new DummyServerPreparedStatement());
         registry.clear();

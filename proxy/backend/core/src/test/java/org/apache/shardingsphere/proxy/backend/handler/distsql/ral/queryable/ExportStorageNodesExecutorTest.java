@@ -68,12 +68,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ExportStorageNodesExecutorTest {
+class ExportStorageNodesExecutorTest {
     
     private final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         Collection<String> columns = new ExportStorageNodesExecutor().getColumnNames();
         assertThat(columns.size(), is(3));
         Iterator<String> columnIterator = columns.iterator();
@@ -83,7 +83,7 @@ public final class ExportStorageNodesExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithWrongDatabaseName() {
+    void assertExecuteWithWrongDatabaseName() {
         ContextManager contextManager = mockEmptyContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
@@ -92,7 +92,7 @@ public final class ExportStorageNodesExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithEmptyMetaData() {
+    void assertExecuteWithEmptyMetaData() {
         ContextManager contextManager = mockEmptyContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_metadata"));
@@ -112,7 +112,7 @@ public final class ExportStorageNodesExecutorTest {
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         when(database.getName()).thenReturn("normal_db");
         when(database.getResourceMetaData().getDataSources()).thenReturn(createDataSourceMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
@@ -125,7 +125,7 @@ public final class ExportStorageNodesExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithDatabaseName() {
+    void assertExecuteWithDatabaseName() {
         when(database.getName()).thenReturn("normal_db");
         when(database.getResourceMetaData().getDataSources()).thenReturn(createDataSourceMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));

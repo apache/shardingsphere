@@ -22,15 +22,15 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class GlobalNodeTest {
+class GlobalNodeTest {
     
     @Test
-    public void assertGetGlobalRuleNodePath() {
+    void assertGetGlobalRuleNodePath() {
         assertThat(GlobalNode.getGlobalRuleNode(), is("/rules"));
     }
     
     @Test
-    public void assertGetPropsPath() {
+    void assertGetPropsPath() {
         assertThat(GlobalNode.getPropsPath(), is("/props"));
     }
 }

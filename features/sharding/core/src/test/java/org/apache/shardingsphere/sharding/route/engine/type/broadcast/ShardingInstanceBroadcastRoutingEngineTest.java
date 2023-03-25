@@ -33,7 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingInstanceBroadcastRoutingEngineTest {
+class ShardingInstanceBroadcastRoutingEngineTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
@@ -46,14 +46,14 @@ public final class ShardingInstanceBroadcastRoutingEngineTest {
     private ShardingInstanceBroadcastRoutingEngine shardingInstanceBroadcastRoutingEngine;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(shardingRule.getDataSourceNames()).thenReturn(Collections.singletonList(DATASOURCE_NAME));
         when(resourceMetaData.getAllInstanceDataSourceNames()).thenReturn(Collections.singleton(DATASOURCE_NAME));
         shardingInstanceBroadcastRoutingEngine = new ShardingInstanceBroadcastRoutingEngine(resourceMetaData);
     }
     
     @Test
-    public void assertRoute() {
+    void assertRoute() {
         RouteContext routeContext = shardingInstanceBroadcastRoutingEngine.route(shardingRule);
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeContext.getRouteUnits().iterator().next().getDataSourceMapper().getActualName(), is(DATASOURCE_NAME));

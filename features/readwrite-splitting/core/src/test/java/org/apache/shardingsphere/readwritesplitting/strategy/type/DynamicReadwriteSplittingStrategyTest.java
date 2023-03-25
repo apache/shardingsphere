@@ -28,10 +28,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class DynamicReadwriteSplittingStrategyTest {
+class DynamicReadwriteSplittingStrategyTest {
     
     @Test
-    public void assertGetDataSourceMapper() {
+    void assertGetDataSourceMapper() {
         DynamicReadwriteSplittingStrategy dynamicReadwriteSplittingStrategy = new DynamicReadwriteSplittingStrategy("database_discovery_ds",
                 mock(DynamicDataSourceContainedRule.class));
         assertThat(dynamicReadwriteSplittingStrategy.getAllDataSources(), is(Collections.singletonList(new DataSourceRoleInfo("database_discovery_ds", DataSourceRole.PRIMARY))));

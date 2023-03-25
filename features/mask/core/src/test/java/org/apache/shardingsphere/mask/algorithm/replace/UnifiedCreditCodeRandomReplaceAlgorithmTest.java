@@ -28,17 +28,17 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class UnifiedCreditCodeRandomReplaceAlgorithmTest {
+class UnifiedCreditCodeRandomReplaceAlgorithmTest {
     
     private UnifiedCreditCodeRandomReplaceAlgorithm maskAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         maskAlgorithm = new UnifiedCreditCodeRandomReplaceAlgorithm();
     }
     
     @Test
-    public void assertMask() {
+    void assertMask() {
         maskAlgorithm.init(PropertiesBuilder.build(new Property("registration-department-codes", "1,2,3,4"), new Property("category-codes", "1,2,3,4"),
                 new Property("administrative-division-codes", "100000,200000,300000")));
         assertThat(maskAlgorithm.mask("123456781234567890"), not("123456781234567890"));
@@ -46,7 +46,7 @@ public final class UnifiedCreditCodeRandomReplaceAlgorithmTest {
     }
     
     @Test
-    public void assertInitWhenConfigIsNull() {
+    void assertInitWhenConfigIsNull() {
         assertThrows(MaskAlgorithmInitializationException.class, () -> maskAlgorithm.init(PropertiesBuilder.build(new Property("registration-department-codes", "1,2,3,4"))));
     }
 }

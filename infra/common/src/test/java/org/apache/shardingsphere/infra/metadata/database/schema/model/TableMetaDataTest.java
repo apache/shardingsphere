@@ -30,17 +30,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class TableMetaDataTest {
+class TableMetaDataTest {
     
     private TableMetaData tableMetaData;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         tableMetaData = new TableMetaData(null, Collections.singletonList(new ColumnMetaData("test", Types.INTEGER, true, false, true, true, false)), Collections.emptyList(), Collections.emptyList());
     }
     
     @Test
-    public void assertGetColumnMetaData() {
+    void assertGetColumnMetaData() {
         ColumnMetaData actual = tableMetaData.getColumns().iterator().next();
         assertThat(actual.getName(), is("test"));
         assertThat(actual.getDataType(), is(Types.INTEGER));

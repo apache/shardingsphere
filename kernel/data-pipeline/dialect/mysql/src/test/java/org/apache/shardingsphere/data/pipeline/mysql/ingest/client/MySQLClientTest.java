@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class MySQLClientTest {
+class MySQLClientTest {
     
     @Mock
     private Channel channel;
@@ -68,7 +68,7 @@ public final class MySQLClientTest {
     
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp() throws InterruptedException {
+    void setUp() throws InterruptedException {
         mysqlClient = new MySQLClient(new ConnectInfo(1, "host", 3306, "username", "password"));
         when(channel.pipeline()).thenReturn(pipeline);
         when(channel.isOpen()).thenReturn(true);
@@ -83,7 +83,7 @@ public final class MySQLClientTest {
     }
     
     @Test
-    public void assertConnect() throws ReflectiveOperationException {
+    void assertConnect() throws ReflectiveOperationException {
         ServerInfo expected = new ServerInfo();
         mockChannelResponse(expected);
         mysqlClient.connect();
@@ -92,7 +92,7 @@ public final class MySQLClientTest {
     }
     
     @Test
-    public void assertExecute() throws ReflectiveOperationException {
+    void assertExecute() throws ReflectiveOperationException {
         mockChannelResponse(new MySQLOKPacket(0));
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("eventLoopGroup"), mysqlClient, new NioEventLoopGroup(1));
@@ -101,7 +101,7 @@ public final class MySQLClientTest {
     }
     
     @Test
-    public void assertExecuteUpdate() throws ReflectiveOperationException {
+    void assertExecuteUpdate() throws ReflectiveOperationException {
         MySQLOKPacket expected = new MySQLOKPacket(10, 0, 0);
         Plugins.getMemberAccessor().set(MySQLOKPacket.class.getDeclaredField("affectedRows"), expected, 10L);
         mockChannelResponse(expected);
@@ -112,7 +112,7 @@ public final class MySQLClientTest {
     }
     
     @Test
-    public void assertExecuteQuery() throws ReflectiveOperationException {
+    void assertExecuteQuery() throws ReflectiveOperationException {
         InternalResultSet expected = new InternalResultSet(null);
         mockChannelResponse(expected);
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
@@ -122,7 +122,7 @@ public final class MySQLClientTest {
     }
     
     @Test
-    public void assertSubscribeBelow56Version() throws ReflectiveOperationException {
+    void assertSubscribeBelow56Version() throws ReflectiveOperationException {
         ServerInfo serverInfo = new ServerInfo();
         serverInfo.setServerVersion(new ServerVersion("5.5.0-log"));
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("serverInfo"), mysqlClient, serverInfo);
@@ -153,14 +153,14 @@ public final class MySQLClientTest {
     }
     
     @Test
-    public void assertCloseChannel() throws ReflectiveOperationException {
+    void assertCloseChannel() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
         mysqlClient.closeChannel();
         assertFalse(channel.isOpen());
     }
     
     @Test
-    public void assertPollFailed() throws ReflectiveOperationException {
+    void assertPollFailed() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("channel"), mysqlClient, channel);
         Plugins.getMemberAccessor().set(MySQLClient.class.getDeclaredField("running"), mysqlClient, false);
         assertThrows(BinlogSyncChannelAlreadyClosedException.class, () -> mysqlClient.poll());

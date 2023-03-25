@@ -27,10 +27,10 @@ import java.nio.charset.StandardCharsets;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLCommandCompletePacketTest {
+class PostgreSQLCommandCompletePacketTest {
     
     @Test
-    public void assertSelectReadWrite() {
+    void assertSelectReadWrite() {
         String sqlCommand = "SELECT";
         long rowCount = 1;
         String expectedString = sqlCommand + " " + rowCount;
@@ -43,7 +43,7 @@ public final class PostgreSQLCommandCompletePacketTest {
     }
     
     @Test
-    public void assertInsertReadWrite() {
+    void assertInsertReadWrite() {
         String sqlCommand = "INSERT";
         long rowCount = 1;
         String expectedString = sqlCommand + " 0 " + rowCount;
@@ -56,7 +56,7 @@ public final class PostgreSQLCommandCompletePacketTest {
     }
     
     @Test
-    public void assertMoveReadWrite() {
+    void assertMoveReadWrite() {
         String sqlCommand = "MOVE";
         long rowCount = 1;
         String expectedString = sqlCommand + " " + rowCount;

@@ -25,10 +25,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ConfigurationPropertyKeyTest {
+class ConfigurationPropertyKeyTest {
     
     @Test
-    public void assertKeyNames() {
+    void assertKeyNames() {
         Collection<String> keyNames = ConfigurationPropertyKey.getKeyNames();
         assertThat(keyNames.size(), is(ConfigurationPropertyKey.values().length));
         keyNames.forEach(each -> assertNotNull(ConfigurationPropertyKey.valueOf(each)));

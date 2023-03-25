@@ -22,34 +22,34 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class IdentifierValueTest {
+class IdentifierValueTest {
     
     @Test
-    public void assertGetIdentifierValueWithSingleQuote() {
+    void assertGetIdentifierValueWithSingleQuote() {
         String text = "'ms_group_${0..1}'";
         assertThat(new IdentifierValue(text).getValue(), is("ms_group_${0..1}"));
     }
     
     @Test
-    public void assertGetIdentifierValueWithQuote() {
+    void assertGetIdentifierValueWithQuote() {
         String text = "\"ms_group_${0..1}\"";
         assertThat(new IdentifierValue(text).getValue(), is("ms_group_${0..1}"));
     }
     
     @Test
-    public void assertGetIdentifierValueWithBackQuote() {
+    void assertGetIdentifierValueWithBackQuote() {
         String text = "`t_order`";
         assertThat(new IdentifierValue(text).getValue(), is("t_order"));
     }
     
     @Test
-    public void assertGetIdentifierValueWithBracket() {
+    void assertGetIdentifierValueWithBracket() {
         String text = "ds_${[1,2]}.t_order";
         assertThat(new IdentifierValue(text).getValue(), is("ds_${1,2}.t_order"));
     }
     
     @Test
-    public void assertGetIdentifierValueWithReservedBracket() {
+    void assertGetIdentifierValueWithReservedBracket() {
         String text = "ds_${[1,2]}.t_order";
         assertThat(new IdentifierValue(text, "[]").getValue(), is("ds_${[1,2]}.t_order"));
     }

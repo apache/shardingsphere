@@ -25,10 +25,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ParseTreeCacheBuilderTest {
+class ParseTreeCacheBuilderTest {
     
     @Test
-    public void assertParseTreeCacheBuild() {
+    void assertParseTreeCacheBuild() {
         LoadingCache<String, ParseASTNode> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10), "MySQL");
         assertThat(cache, isA(LoadingCache.class));
     }

@@ -49,10 +49,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DatabaseTypeEngineTest {
+class DatabaseTypeEngineTest {
     
     @Test
-    public void assertGetProtocolTypeFromConfiguredProperties() {
+    void assertGetProtocolTypeFromConfiguredProperties() {
         Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "MySQL"));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
         assertThat(DatabaseTypeEngine.getProtocolType("sharding_db", databaseConfig, new ConfigurationProperties(props)), instanceOf(MySQLDatabaseType.class));
@@ -60,7 +60,7 @@ public final class DatabaseTypeEngineTest {
     }
     
     @Test
-    public void assertGetProtocolTypeFromDataSource() throws SQLException {
+    void assertGetProtocolTypeFromDataSource() throws SQLException {
         DataSource datasource = mockDataSource(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", datasource), Collections.singleton(new FixtureRuleConfiguration()));
         assertThat(DatabaseTypeEngine.getProtocolType("sharding_db", databaseConfig, new ConfigurationProperties(new Properties())), instanceOf(PostgreSQLDatabaseType.class));
@@ -68,7 +68,7 @@ public final class DatabaseTypeEngineTest {
     }
     
     @Test
-    public void assertGetStorageTypes() throws SQLException {
+    void assertGetStorageTypes() throws SQLException {
         DataSource datasource = mockDataSource(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_db", datasource), Collections.singletonList(new FixtureRuleConfiguration()));
         assertTrue(DatabaseTypeEngine.getStorageTypes("foo_db", databaseConfig).containsKey("foo_db"));
@@ -76,38 +76,38 @@ public final class DatabaseTypeEngineTest {
     }
     
     @Test
-    public void assertGetStorageTypeWithEmptyDataSources() {
+    void assertGetStorageTypeWithEmptyDataSources() {
         assertThat(DatabaseTypeEngine.getStorageType(Collections.emptyList()).getType(), is("MySQL"));
     }
     
     @Test
-    public void assertGetStorageTypeWithDataSources() throws SQLException {
+    void assertGetStorageTypeWithDataSources() throws SQLException {
         Collection<DataSource> dataSources = Arrays.asList(mockDataSource(TypedSPILoader.getService(DatabaseType.class, "H2")),
                 mockDataSource(TypedSPILoader.getService(DatabaseType.class, "H2")));
         assertThat(DatabaseTypeEngine.getStorageType(dataSources).getType(), is("H2"));
     }
     
     @Test
-    public void assertGetStorageTypeWithDifferentDataSourceTypes() throws SQLException {
+    void assertGetStorageTypeWithDifferentDataSourceTypes() throws SQLException {
         Collection<DataSource> dataSources = Arrays.asList(mockDataSource(TypedSPILoader.getService(DatabaseType.class, "H2")),
                 mockDataSource(TypedSPILoader.getService(DatabaseType.class, "MySQL")));
         assertThat(DatabaseTypeEngine.getStorageType(dataSources).getType(), is("H2"));
     }
     
     @Test
-    public void assertGetStorageTypeWhenGetConnectionError() throws SQLException {
+    void assertGetStorageTypeWhenGetConnectionError() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenThrow(SQLException.class);
         assertThrows(SQLWrapperException.class, () -> DatabaseTypeEngine.getStorageType(Collections.singleton(dataSource)));
     }
     
     @Test
-    public void assertGetDatabaseTypeWithRecognizedURL() {
+    void assertGetDatabaseTypeWithRecognizedURL() {
         assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:mysql://localhost:3306/test").getType(), is("MySQL"));
     }
     
     @Test
-    public void assertGetDatabaseTypeWithUnrecognizedURL() {
+    void assertGetDatabaseTypeWithUnrecognizedURL() {
         assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:sqlite:test").getType(), is("SQL92"));
     }
     
@@ -131,27 +131,27 @@ public final class DatabaseTypeEngineTest {
     }
     
     @Test
-    public void assertGetTrunkDatabaseTypeWithTrunkDatabaseType() {
+    void assertGetTrunkDatabaseTypeWithTrunkDatabaseType() {
         assertThat(DatabaseTypeEngine.getTrunkDatabaseType("MySQL").getType(), is("MySQL"));
     }
     
     @Test
-    public void assertGetTrunkDatabaseTypeWithBranchDatabaseType() {
+    void assertGetTrunkDatabaseTypeWithBranchDatabaseType() {
         assertThat(DatabaseTypeEngine.getTrunkDatabaseType("H2").getType(), is("MySQL"));
     }
     
     @Test
-    public void assertGetTrunkDatabaseTypeNameWithTrunkDatabaseType() {
+    void assertGetTrunkDatabaseTypeNameWithTrunkDatabaseType() {
         assertThat(DatabaseTypeEngine.getTrunkDatabaseTypeName(new MySQLDatabaseType()), is("MySQL"));
     }
     
     @Test
-    public void assertGetTrunkDatabaseTypeNameWithBranchDatabaseType() {
+    void assertGetTrunkDatabaseTypeNameWithBranchDatabaseType() {
         assertThat(DatabaseTypeEngine.getTrunkDatabaseTypeName(new MariaDBDatabaseType()), is("MySQL"));
     }
     
     @Test
-    public void assertGetDefaultSchemaName() {
+    void assertGetDefaultSchemaName() {
         DatabaseType schemaSupportDatabaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
         assertThat(DatabaseTypeEngine.getDefaultSchemaName(schemaSupportDatabaseType, ""), is("public"));
         DatabaseType schemaNoSupportDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
@@ -159,7 +159,7 @@ public final class DatabaseTypeEngineTest {
     }
     
     @Test
-    public void assertGetDatabaseTypeWithCorrectOrder() {
+    void assertGetDatabaseTypeWithCorrectOrder() {
         assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:infra.fixture:long.length://localhost:3306/test").getType(), is("INFRA.FIXTURE.LONG.LENGTH"));
     }
 }

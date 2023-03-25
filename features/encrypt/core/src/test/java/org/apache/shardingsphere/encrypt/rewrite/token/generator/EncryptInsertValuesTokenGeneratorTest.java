@@ -26,17 +26,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class EncryptInsertValuesTokenGeneratorTest extends EncryptGeneratorBaseTest {
+class EncryptInsertValuesTokenGeneratorTest extends EncryptGeneratorBaseTest {
     
     @Test
-    public void assertIsGenerateSQLToken() {
+    void assertIsGenerateSQLToken() {
         EncryptInsertValuesTokenGenerator encryptInsertValuesTokenGenerator = new EncryptInsertValuesTokenGenerator();
         encryptInsertValuesTokenGenerator.setEncryptRule(createEncryptRule());
         assertTrue(encryptInsertValuesTokenGenerator.isGenerateSQLToken(createInsertStatementContext(Collections.emptyList())));
     }
     
     @Test
-    public void assertGenerateSQLTokenFromGenerateNewSQLToken() {
+    void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         EncryptInsertValuesTokenGenerator encryptInsertValuesTokenGenerator = new EncryptInsertValuesTokenGenerator();
         encryptInsertValuesTokenGenerator.setEncryptRule(createEncryptRule());
         encryptInsertValuesTokenGenerator.setPreviousSQLTokens(Collections.emptyList());
@@ -45,7 +45,7 @@ public final class EncryptInsertValuesTokenGeneratorTest extends EncryptGenerato
     }
     
     @Test
-    public void assertGenerateSQLTokenFromPreviousSQLTokens() {
+    void assertGenerateSQLTokenFromPreviousSQLTokens() {
         EncryptInsertValuesTokenGenerator encryptInsertValuesTokenGenerator = new EncryptInsertValuesTokenGenerator();
         encryptInsertValuesTokenGenerator.setDatabaseName("db-001");
         encryptInsertValuesTokenGenerator.setEncryptRule(createEncryptRule());

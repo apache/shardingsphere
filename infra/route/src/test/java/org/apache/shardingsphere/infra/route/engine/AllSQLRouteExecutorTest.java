@@ -36,10 +36,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class AllSQLRouteExecutorTest {
+class AllSQLRouteExecutorTest {
     
     @Test
-    public void assertRouteSuccess() {
+    void assertRouteSuccess() {
         String name = "test";
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getResourceMetaData().getDataSources().keySet()).thenReturn(Stream.of(name).collect(Collectors.toSet()));

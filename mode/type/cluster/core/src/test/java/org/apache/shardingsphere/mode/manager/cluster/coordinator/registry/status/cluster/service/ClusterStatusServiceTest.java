@@ -29,20 +29,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public final class ClusterStatusServiceTest {
+class ClusterStatusServiceTest {
     
     @Mock
     private ClusterPersistRepository repository;
     
     @Test
-    public void assertPersistClusterState() {
+    void assertPersistClusterState() {
         ClusterStatusService clusterStatusService = new ClusterStatusService(repository);
         clusterStatusService.persistClusterState(new ClusterStateContext());
         verify(repository).persist(ComputeNode.getClusterStatusNodePath(), ClusterState.OK.name());
     }
     
     @Test
-    public void assertLoadClusterStatus() {
+    void assertLoadClusterStatus() {
         new ClusterStatusService(repository).loadClusterStatus();
         verify(repository).getDirectly(ComputeNode.getClusterStatusNodePath());
     }

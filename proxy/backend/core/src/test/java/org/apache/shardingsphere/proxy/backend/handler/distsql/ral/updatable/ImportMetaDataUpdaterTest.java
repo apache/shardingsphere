@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ImportMetaDataUpdaterTest {
+class ImportMetaDataUpdaterTest {
     
     private static final String METADATA_VALUE = "{\"meta_data\":{\"databases\":{\"sharding_db\":\"databaseName: sharding_db\\ndataSources:\\nrules:\\n\"},"
             + "\"props\":\"props:\\n  system-log-level: INFO\\n  sql-show: false\\n\","
@@ -68,25 +68,25 @@ public final class ImportMetaDataUpdaterTest {
     private final Map<String, String> featureMap = new HashMap<>(1, 1);
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         featureMap.put(empty, "/conf/import/empty-metadata.json");
     }
     
     @Test
-    public void assertCheckImportEmptyMetaData() {
+    void assertCheckImportEmptyMetaData() {
         init(null);
         assertThrows(IllegalStateException.class, () -> importMetaDataUpdater.executeUpdate(
                 empty, new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(empty))).getPath())));
     }
     
     @Test
-    public void assertImportMetaDataFromJsonValue() {
+    void assertImportMetaDataFromJsonValue() {
         init(empty);
         assertThrows(NullPointerException.class, () -> importMetaDataUpdater.executeUpdate(empty, new ImportMetaDataStatement(METADATA_VALUE, null)));
     }
     
     @Test
-    public void assertImportExistedMetaDataFromFile() {
+    void assertImportExistedMetaDataFromFile() {
         init(empty);
         assertThrows(IllegalStateException.class, () -> importMetaDataUpdater.executeUpdate(
                 empty, new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(empty))).getPath())));

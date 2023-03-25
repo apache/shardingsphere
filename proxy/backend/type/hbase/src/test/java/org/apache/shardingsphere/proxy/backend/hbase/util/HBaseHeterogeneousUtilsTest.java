@@ -27,10 +27,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class HBaseHeterogeneousUtilsTest {
+class HBaseHeterogeneousUtilsTest {
     
     @Test
-    public void assertCrc32ProjectionSegment() {
+    void assertCrc32ProjectionSegment() {
         String sql = "SELECT /*+ HBase */ rowKey, crc32(concat_ws('#',rowKey)) from t_order where rowKey in (1, 2, 3)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         List<ProjectionSegment> projectionSegments = new ArrayList<>(((SelectStatement) sqlStatement).getProjections().getProjections());

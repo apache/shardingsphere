@@ -50,10 +50,10 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DataRecordResultConvertUtilsTest {
+class DataRecordResultConvertUtilsTest {
     
     @Test
-    public void assertConvertDataRecordToRecord() throws InvalidProtocolBufferException, SQLException {
+    void assertConvertDataRecordToRecord() throws InvalidProtocolBufferException, SQLException {
         DataRecord dataRecord = new DataRecord(new IntegerPrimaryKeyPosition(0, 1), 2);
         dataRecord.addColumn(new Column("order_id", BigInteger.ONE, false, true));
         dataRecord.addColumn(new Column("price", BigDecimal.valueOf(123), false, false));

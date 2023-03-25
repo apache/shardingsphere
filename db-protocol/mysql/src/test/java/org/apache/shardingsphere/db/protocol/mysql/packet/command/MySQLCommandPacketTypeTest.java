@@ -23,15 +23,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class MySQLCommandPacketTypeTest {
+class MySQLCommandPacketTypeTest {
     
     @Test
-    public void assertGetValue() {
+    void assertGetValue() {
         assertThat(MySQLCommandPacketType.valueOf(MySQLCommandPacketType.COM_SLEEP.getValue()), is(MySQLCommandPacketType.COM_SLEEP));
     }
     
     @Test
-    public void assertGetValueWithIllegalArgument() {
+    void assertGetValueWithIllegalArgument() {
         assertThrows(NullPointerException.class, () -> MySQLCommandPacketType.valueOf(-1));
     }
 }

@@ -29,10 +29,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class CommentStatementHandlerTest {
+class CommentStatementHandlerTest {
     
     @Test
-    public void assertGetIndexTypeSegmentWithIndexTypeSegment() {
+    void assertGetIndexTypeSegmentWithIndexTypeSegment() {
         OracleCommentStatement statement = new OracleCommentStatement();
         statement.setIndexType(new IndexTypeSegment(0, 0, new IdentifierValue("")));
         Optional<IndexTypeSegment> actual = CommentStatementHandler.getIndexType(statement);
@@ -40,7 +40,7 @@ public final class CommentStatementHandlerTest {
     }
     
     @Test
-    public void assertGetIndexTypeSegmentWithoutIndexTypeSegment() {
+    void assertGetIndexTypeSegmentWithoutIndexTypeSegment() {
         CommentStatement statement = mock(CommentStatement.class);
         Optional<IndexTypeSegment> actual = CommentStatementHandler.getIndexType(statement);
         assertFalse(actual.isPresent());

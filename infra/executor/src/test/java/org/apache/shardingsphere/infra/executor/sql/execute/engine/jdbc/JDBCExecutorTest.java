@@ -39,10 +39,10 @@ import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class JDBCExecutorTest {
+class JDBCExecutorTest {
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         ExecutionGroup<JDBCExecutionUnit> group = new ExecutionGroup<>(Collections.singletonList(mock(JDBCExecutionUnit.class)));
         ExecutionGroupContext context = new ExecutionGroupContext(Collections.singletonList(group), mock(ExecutionGroupReportContext.class));
@@ -55,7 +55,7 @@ public final class JDBCExecutorTest {
     }
     
     @Test
-    public void assertExecuteSQLException() {
+    void assertExecuteSQLException() {
         try {
             ExecutorEngine executorEngine = mock(ExecutorEngine.class);
             ExecutionGroupReportContext reportContext = mock(ExecutionGroupReportContext.class);
@@ -69,7 +69,7 @@ public final class JDBCExecutorTest {
     }
     
     @Test
-    public void assertExecuteNotThrownSQLException() throws SQLException {
+    void assertExecuteNotThrownSQLException() throws SQLException {
         ExecutorEngine executorEngine = mock(ExecutorEngine.class);
         ExecutionGroupReportContext reportContext = mock(ExecutionGroupReportContext.class);
         when(executorEngine.execute(new ExecutionGroupContext<>(anyCollection(), reportContext), any(), any(), anyBoolean())).thenThrow(new SQLException("TestSQLException"));

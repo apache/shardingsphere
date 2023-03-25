@@ -25,10 +25,10 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class StandardParameterBuilderTest {
+class StandardParameterBuilderTest {
     
     @Test
-    public void assertGetParameters() {
+    void assertGetParameters() {
         StandardParameterBuilder paramBuilder = new StandardParameterBuilder(Arrays.asList(1, 2, 1, 5));
         paramBuilder.addAddedParameters(4, Collections.singleton(7));
         assertThat(paramBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 1, 5, 7)));

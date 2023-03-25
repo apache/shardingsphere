@@ -33,10 +33,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class StorageNodeStateChangedWatcherTest {
+class StorageNodeStateChangedWatcherTest {
     
     @Test
-    public void assertCreatePrimaryStateChangedEvent() {
+    void assertCreatePrimaryStateChangedEvent() {
         Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
                 new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: PRIMARY\nstatus: ENABLED\n", Type.ADDED));
         assertTrue(actual.isPresent());
@@ -47,7 +47,7 @@ public final class StorageNodeStateChangedWatcherTest {
     }
     
     @Test
-    public void assertCreateEnabledStorageNodeChangedEvent() {
+    void assertCreateEnabledStorageNodeChangedEvent() {
         Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
                 new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: MEMBER\nstatus: ENABLED\n", Type.ADDED));
         assertTrue(actual.isPresent());
@@ -60,7 +60,7 @@ public final class StorageNodeStateChangedWatcherTest {
     }
     
     @Test
-    public void assertCreateDisabledStorageNodeChangedEvent() {
+    void assertCreateDisabledStorageNodeChangedEvent() {
         Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
                 new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: MEMBER\nstatus: DISABLED\n", Type.DELETED));
         assertTrue(actual.isPresent());
@@ -73,7 +73,7 @@ public final class StorageNodeStateChangedWatcherTest {
     }
     
     @Test
-    public void assertCreateEmptyEvent() {
+    void assertCreateEmptyEvent() {
         Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
                 new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "", Type.ADDED));
         assertFalse(actual.isPresent());

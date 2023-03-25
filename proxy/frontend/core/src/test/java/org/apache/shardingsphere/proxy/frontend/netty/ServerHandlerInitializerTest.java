@@ -34,10 +34,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @ConstructionMockSettings(FrontendChannelInboundHandler.class)
-public final class ServerHandlerInitializerTest {
+class ServerHandlerInitializerTest {
     
     @Test
-    public void assertInitChannel() {
+    void assertInitChannel() {
         SocketChannel channel = mock(SocketChannel.class);
         ChannelPipeline pipeline = mock(ChannelPipeline.class);
         when(channel.pipeline()).thenReturn(pipeline);

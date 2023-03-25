@@ -45,10 +45,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class RuleDefinitionBackendHandlerTest {
+class RuleDefinitionBackendHandlerTest {
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         ConnectionSession connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
         connectionSession.setCurrentDatabase("foo_db");
         ShardingSphereDatabase database = mockDatabase();

@@ -25,24 +25,24 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DropSchemaStatementHandlerTest {
+class DropSchemaStatementHandlerTest {
     
     @Test
-    public void assertContainsCascadeForPostgreSQL() {
+    void assertContainsCascadeForPostgreSQL() {
         PostgreSQLDropSchemaStatement dropSchemaStatement = new PostgreSQLDropSchemaStatement();
         dropSchemaStatement.setContainsCascade(true);
         assertTrue(DropSchemaStatementHandler.containsCascade(dropSchemaStatement));
     }
     
     @Test
-    public void assertContainsCascadeForOpenGauss() {
+    void assertContainsCascadeForOpenGauss() {
         OpenGaussDropSchemaStatement dropSchemaStatement = new OpenGaussDropSchemaStatement();
         dropSchemaStatement.setContainsCascade(true);
         assertTrue(DropSchemaStatementHandler.containsCascade(dropSchemaStatement));
     }
     
     @Test
-    public void assertContainsCascadeForSQLServer() {
+    void assertContainsCascadeForSQLServer() {
         SQLServerDropSchemaStatement dropSchemaStatement = new SQLServerDropSchemaStatement();
         assertFalse(DropSchemaStatementHandler.containsCascade(dropSchemaStatement));
     }

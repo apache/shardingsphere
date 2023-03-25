@@ -51,7 +51,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingAlterTableStatementValidatorTest {
+class ShardingAlterTableStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
@@ -63,7 +63,7 @@ public final class ShardingAlterTableStatementValidatorTest {
     private RouteContext routeContext;
     
     @Test
-    public void assertPreValidateAlterTableWithRenameTableWithShardingTableForPostgreSQL() {
+    void assertPreValidateAlterTableWithRenameTableWithShardingTableForPostgreSQL() {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
@@ -74,7 +74,7 @@ public final class ShardingAlterTableStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateAlterTableWithRenameTableWithBroadcastTableForPostgreSQL() {
+    void assertPreValidateAlterTableWithRenameTableWithBroadcastTableForPostgreSQL() {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
@@ -86,7 +86,7 @@ public final class ShardingAlterTableStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateAlterTableWithSameRouteResultShardingTableForPostgreSQL() {
+    void assertPostValidateAlterTableWithSameRouteResultShardingTableForPostgreSQL() {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
@@ -100,7 +100,7 @@ public final class ShardingAlterTableStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateAlterTableWithDifferentRouteResultShardingTableForPostgreSQL() {
+    void assertPostValidateAlterTableWithDifferentRouteResultShardingTableForPostgreSQL() {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
@@ -114,7 +114,7 @@ public final class ShardingAlterTableStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateAlterTableWithSameRouteResultBroadcastTableForPostgreSQL() {
+    void assertPostValidateAlterTableWithSameRouteResultBroadcastTableForPostgreSQL() {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
         when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
@@ -128,7 +128,7 @@ public final class ShardingAlterTableStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateAlterTableWithDifferentRouteResultBroadcastTableForPostgreSQL() {
+    void assertPostValidateAlterTableWithDifferentRouteResultBroadcastTableForPostgreSQL() {
         PostgreSQLAlterTableStatement sqlStatement = new PostgreSQLAlterTableStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
         when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);

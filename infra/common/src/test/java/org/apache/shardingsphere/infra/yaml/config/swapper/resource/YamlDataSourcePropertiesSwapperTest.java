@@ -30,12 +30,12 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlDataSourcePropertiesSwapperTest {
+class YamlDataSourcePropertiesSwapperTest {
     
     private final YamlDataSourceConfigurationSwapper swapper = new YamlDataSourceConfigurationSwapper();
     
     @Test
-    public void assertSwapToDataSources() {
+    void assertSwapToDataSources() {
         Map<String, Map<String, Object>> yamlConfig = createYamlConfig();
         Map<String, DataSource> dataSources = swapper.swapToDataSources(yamlConfig);
         HikariDataSource actual0 = (HikariDataSource) dataSources.get("ds_0");
@@ -49,7 +49,7 @@ public final class YamlDataSourcePropertiesSwapperTest {
     }
     
     @Test
-    public void assertSwapToDataSourceProperties() {
+    void assertSwapToDataSourceProperties() {
         Map<String, Object> yamlConfig = new HashMap<>(3, 1);
         yamlConfig.put("dataSourceClassName", MockedDataSource.class.getName());
         yamlConfig.put("url", "xx:xxx");
@@ -61,7 +61,7 @@ public final class YamlDataSourcePropertiesSwapperTest {
     }
     
     @Test
-    public void assertSwapToMap() {
+    void assertSwapToMap() {
         Map<String, Object> actual = swapper.swapToMap(new DataSourceProperties(MockedDataSource.class.getName(), createProperties()));
         assertThat(actual.get("dataSourceClassName"), is(MockedDataSource.class.getName()));
         assertThat(actual.get("url").toString(), is("xx:xxx"));

@@ -56,12 +56,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class CDCChannelInboundHandlerTest {
+class CDCChannelInboundHandlerTest {
     
     private final EmbeddedChannel channel = new EmbeddedChannel(new LoggingHandler(), new CDCChannelInboundHandler());
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
@@ -80,7 +80,7 @@ public final class CDCChannelInboundHandlerTest {
     }
     
     @Test
-    public void assertLoginRequestFailed() {
+    void assertLoginRequestFailed() {
         CDCRequest actualRequest = CDCRequest.newBuilder().setType(Type.LOGIN).setLoginRequestBody(LoginRequestBody.newBuilder().setBasicBody(BasicBody.newBuilder().setUsername("root2").build())
                 .build()).build();
         channel.writeInbound(actualRequest);
@@ -93,7 +93,7 @@ public final class CDCChannelInboundHandlerTest {
     }
     
     @Test
-    public void assertIllegalLoginRequest() {
+    void assertIllegalLoginRequest() {
         CDCRequest actualRequest = CDCRequest.newBuilder().setType(Type.LOGIN).setVersion(1).setRequestId("test").build();
         channel.writeInbound(actualRequest);
         CDCResponse expectedGreetingResult = channel.readOutbound();
@@ -105,7 +105,7 @@ public final class CDCChannelInboundHandlerTest {
     }
     
     @Test
-    public void assertLoginRequestSucceed() {
+    void assertLoginRequestSucceed() {
         String encryptPassword = Hashing.sha256().hashBytes("root".getBytes()).toString().toUpperCase();
         Builder builder = CDCRequest.newBuilder().setType(Type.LOGIN).setLoginRequestBody(LoginRequestBody.newBuilder().setBasicBody(BasicBody.newBuilder().setUsername("root")
                 .setPassword(encryptPassword).build()).build());

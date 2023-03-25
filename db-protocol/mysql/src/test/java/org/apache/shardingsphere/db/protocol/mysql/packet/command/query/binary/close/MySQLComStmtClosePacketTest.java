@@ -28,20 +28,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLComStmtClosePacketTest {
+class MySQLComStmtClosePacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertNew() {
+    void assertNew() {
         when(payload.readInt4()).thenReturn(1);
         MySQLComStmtClosePacket actual = new MySQLComStmtClosePacket(payload);
         assertThat(actual.getStatementId(), is(1));
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         when(payload.readInt4()).thenReturn(1);
         MySQLComStmtClosePacket actual = new MySQLComStmtClosePacket(payload);
         actual.write(payload);

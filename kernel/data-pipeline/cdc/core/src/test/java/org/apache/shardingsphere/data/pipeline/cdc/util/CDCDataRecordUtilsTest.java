@@ -37,10 +37,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 
-public final class CDCDataRecordUtilsTest {
+class CDCDataRecordUtilsTest {
     
     @Test
-    public void assertFindMinimumDataRecordAndSavePosition() throws InterruptedException {
+    void assertFindMinimumDataRecordAndSavePosition() throws InterruptedException {
         final Map<SocketSinkImporter, BlockingQueue<Record>> actualIncrementalRecordMap = new HashMap<>();
         ArrayBlockingQueue<Record> queueFirst = new ArrayBlockingQueue<>(5);
         queueFirst.put(generateDataRecord(0));

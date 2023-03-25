@@ -33,12 +33,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
-public final class LogbackTest {
+class LogbackTest {
     
     public static final String DEFAULT_PATTERN = "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n";
     
     @Test
-    public void assertLogConfiguration() {
+    void assertLogConfiguration() {
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger rootLogger = loggerContext.getLogger("ROOT");
         assertThat(rootLogger.getLevel(), is(Level.INFO));

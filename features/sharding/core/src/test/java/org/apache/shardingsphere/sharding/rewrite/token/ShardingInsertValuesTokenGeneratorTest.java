@@ -40,10 +40,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingInsertValuesTokenGeneratorTest {
+class ShardingInsertValuesTokenGeneratorTest {
     
     @Test
-    public void assertIsGenerateSQLToken() {
+    void assertIsGenerateSQLToken() {
         ShardingInsertValuesTokenGenerator generator = new ShardingInsertValuesTokenGenerator();
         assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class)));
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
@@ -54,7 +54,7 @@ public final class ShardingInsertValuesTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLToken() {
+    void assertGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(new InsertValueContext(Collections.emptyList(), Collections.emptyList(), 4)));
         when(insertStatementContext.getSqlStatement().getValues()).thenReturn(Collections.singleton(new InsertValuesSegment(1, 2, Collections.emptyList())));

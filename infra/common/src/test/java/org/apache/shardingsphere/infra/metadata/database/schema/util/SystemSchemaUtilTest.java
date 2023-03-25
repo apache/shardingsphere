@@ -31,10 +31,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SystemSchemaUtilTest {
+class SystemSchemaUtilTest {
     
     @Test
-    public void assertContainsSystemSchemaForPostgreSQL() {
+    void assertContainsSystemSchemaForPostgreSQL() {
         ShardingSphereDatabase informationSchemaDatabase = mockShardingSphereDatabase("information_schema", false);
         assertTrue(SystemSchemaUtil.containsSystemSchema(new PostgreSQLDatabaseType(), Arrays.asList("information_schema", "pg_catalog"), informationSchemaDatabase));
         ShardingSphereDatabase shardingSchemaDatabase = mockShardingSphereDatabase("sharding_db", false);
@@ -44,7 +44,7 @@ public final class SystemSchemaUtilTest {
     }
     
     @Test
-    public void assertContainsSystemSchemaForOpenGaussSQL() {
+    void assertContainsSystemSchemaForOpenGaussSQL() {
         ShardingSphereDatabase informationSchemaDatabase = mockShardingSphereDatabase("information_schema", false);
         assertTrue(SystemSchemaUtil.containsSystemSchema(new OpenGaussDatabaseType(), Arrays.asList("information_schema", "pg_catalog"), informationSchemaDatabase));
         ShardingSphereDatabase shardingSchemaDatabase = mockShardingSphereDatabase("sharding_db", false);
@@ -54,7 +54,7 @@ public final class SystemSchemaUtilTest {
     }
     
     @Test
-    public void assertContainsSystemSchemaForMySQL() {
+    void assertContainsSystemSchemaForMySQL() {
         ShardingSphereDatabase informationSchemaDatabase = mockShardingSphereDatabase("information_schema", false);
         assertTrue(SystemSchemaUtil.containsSystemSchema(new MySQLDatabaseType(), Arrays.asList("information_schema", "mysql"), informationSchemaDatabase));
         ShardingSphereDatabase shardingSchemaDatabase = mockShardingSphereDatabase("sharding_db", false);

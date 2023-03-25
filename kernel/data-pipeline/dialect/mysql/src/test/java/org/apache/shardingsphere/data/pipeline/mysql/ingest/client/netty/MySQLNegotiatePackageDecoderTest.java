@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLNegotiatePackageDecoderTest {
+class MySQLNegotiatePackageDecoderTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext channelHandlerContext;
@@ -53,18 +53,18 @@ public final class MySQLNegotiatePackageDecoderTest {
     private ByteBuf byteBuf;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
     }
     
     @Test
-    public void assertDecodeUnsupportedProtocolVersion() {
+    void assertDecodeUnsupportedProtocolVersion() {
         MySQLNegotiatePackageDecoder commandPacketDecoder = new MySQLNegotiatePackageDecoder();
         assertThrows(IllegalArgumentException.class, () -> commandPacketDecoder.decode(channelHandlerContext, byteBuf, null));
     }
     
     @Test
-    public void assertDecodeHandshakePacket() {
+    void assertDecodeHandshakePacket() {
         MySQLNegotiatePackageDecoder commandPacketDecoder = new MySQLNegotiatePackageDecoder();
         List<Object> actual = new LinkedList<>();
         commandPacketDecoder.decode(channelHandlerContext, mockHandshakePacket(), actual);
@@ -95,7 +95,7 @@ public final class MySQLNegotiatePackageDecoderTest {
     }
     
     @Test
-    public void assertDecodeAuthSwitchRequestPacket() throws ReflectiveOperationException {
+    void assertDecodeAuthSwitchRequestPacket() throws ReflectiveOperationException {
         MySQLNegotiatePackageDecoder negotiatePackageDecoder = new MySQLNegotiatePackageDecoder();
         Plugins.getMemberAccessor().set(MySQLNegotiatePackageDecoder.class.getDeclaredField("handshakeReceived"), negotiatePackageDecoder, true);
         List<Object> actual = new LinkedList<>();
@@ -111,7 +111,7 @@ public final class MySQLNegotiatePackageDecoderTest {
     }
     
     @Test
-    public void assertDecodeAuthMoreDataPacket() throws ReflectiveOperationException {
+    void assertDecodeAuthMoreDataPacket() throws ReflectiveOperationException {
         MySQLNegotiatePackageDecoder negotiatePackageDecoder = new MySQLNegotiatePackageDecoder();
         Plugins.getMemberAccessor().set(MySQLNegotiatePackageDecoder.class.getDeclaredField("handshakeReceived"), negotiatePackageDecoder, true);
         List<Object> actual = new LinkedList<>();

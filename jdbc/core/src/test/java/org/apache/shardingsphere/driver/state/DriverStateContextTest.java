@@ -54,13 +54,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class DriverStateContextTest {
+class DriverStateContextTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         Map<String, ShardingSphereDatabase> databases = mockDatabases();
         ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class)));
         MetaDataContexts metaDataContexts = new MetaDataContexts(
@@ -79,13 +79,13 @@ public final class DriverStateContextTest {
     }
     
     @Test
-    public void assertGetConnectionWithOkState() {
+    void assertGetConnectionWithOkState() {
         Connection actual = DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager, mock(JDBCContext.class));
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
     }
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         TransactionTypeHolder.clear();
     }
 }

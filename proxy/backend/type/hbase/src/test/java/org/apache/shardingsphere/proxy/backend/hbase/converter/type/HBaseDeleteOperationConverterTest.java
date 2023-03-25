@@ -32,10 +32,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class HBaseDeleteOperationConverterTest {
+class HBaseDeleteOperationConverterTest {
     
     @Test
-    public void assertConvert() {
+    void assertConvert() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getDeleteStatement());
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
@@ -45,7 +45,7 @@ public final class HBaseDeleteOperationConverterTest {
     }
     
     @Test
-    public void assertConvertWithIn() {
+    void assertConvertWithIn() {
         String sql = " delete /*+ hbase */ from t_test_order where rowKey in ('2', '1')";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");

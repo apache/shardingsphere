@@ -25,15 +25,15 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class InsertColumnsTokenTest {
+class InsertColumnsTokenTest {
     
     @Test
-    public void assertToStringWithEmptyColumn() {
+    void assertToStringWithEmptyColumn() {
         assertThat(new InsertColumnsToken(0, Collections.emptyList()).toString(), is(""));
     }
     
     @Test
-    public void assertToStringWithColumns() {
+    void assertToStringWithColumns() {
         assertThat(new InsertColumnsToken(0, Arrays.asList("id", "name")).toString(), is(", id, name"));
     }
 }

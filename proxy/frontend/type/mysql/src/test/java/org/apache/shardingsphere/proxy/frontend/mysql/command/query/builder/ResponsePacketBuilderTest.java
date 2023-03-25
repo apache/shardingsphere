@@ -43,10 +43,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ResponsePacketBuilderTest {
+class ResponsePacketBuilderTest {
     
     @Test
-    public void assertBuildQueryResponsePackets() {
+    void assertBuildQueryResponsePackets() {
         QueryHeader queryHeader1 = new QueryHeader("schema1", "table1", "columnLabel1", "columnName1", 5, "VARCHAR", 4, 6, false, true, false, true);
         QueryHeader queryHeader2 = new QueryHeader("schema2", "table2", "columnLabel2", "columnName2", 8, "VARCHAR", 7, 9, false, true, true, true);
         List<QueryHeader> queryHeaders = Arrays.asList(queryHeader1, queryHeader2);
@@ -57,7 +57,7 @@ public final class ResponsePacketBuilderTest {
     }
     
     @Test
-    public void assertBuildUpdateResponsePackets() {
+    void assertBuildUpdateResponsePackets() {
         UpdateResponseHeader updateResponseHeader = mock(UpdateResponseHeader.class);
         when(updateResponseHeader.getUpdateCount()).thenReturn(10L);
         when(updateResponseHeader.getLastInsertId()).thenReturn(100L);
@@ -71,7 +71,7 @@ public final class ResponsePacketBuilderTest {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
-    public void assertBuildQueryResponsePacketsWithBinaryColumnType() {
+    void assertBuildQueryResponsePacketsWithBinaryColumnType() {
         QueryHeader nonBinaryHeader = new QueryHeader("s", "t", "columnLabel1", "columnName1", 5, "VARCHAR", 1, 1, false, false, false, false);
         QueryHeader binaryHeader = new QueryHeader("s", "t", "columnLabel2", "columnName2", 8, "VARBINARY", 1, 1, false, false, false, false);
         List<QueryHeader> queryHeaders = Arrays.asList(nonBinaryHeader, binaryHeader);

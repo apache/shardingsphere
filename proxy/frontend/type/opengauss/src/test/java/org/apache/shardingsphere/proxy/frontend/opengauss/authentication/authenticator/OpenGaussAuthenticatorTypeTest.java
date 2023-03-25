@@ -32,12 +32,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class OpenGaussAuthenticatorTypeTest {
+class OpenGaussAuthenticatorTypeTest {
     
     private final AuthorityRule rule = mock(AuthorityRule.class);
     
     @Test
-    public void assertDefaultAuthenticatorType() {
+    void assertDefaultAuthenticatorType() {
         when(rule.getAuthenticatorType(any())).thenReturn("");
         Authenticator authenticator = new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
         assertThat(authenticator, instanceOf(OpenGaussSCRAMSha256PasswordAuthenticator.class));
@@ -45,7 +45,7 @@ public final class OpenGaussAuthenticatorTypeTest {
     }
     
     @Test
-    public void assertAuthenticatorTypeWithErrorName() {
+    void assertAuthenticatorTypeWithErrorName() {
         when(rule.getAuthenticatorType(any())).thenReturn("error");
         Authenticator authenticator = new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
         assertThat(authenticator, instanceOf(OpenGaussSCRAMSha256PasswordAuthenticator.class));
@@ -53,7 +53,7 @@ public final class OpenGaussAuthenticatorTypeTest {
     }
     
     @Test
-    public void assertAuthenticatorTypeWithSCRAMSha256() {
+    void assertAuthenticatorTypeWithSCRAMSha256() {
         when(rule.getAuthenticatorType(any())).thenReturn("SCRAM_SHA256");
         Authenticator authenticator = new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
         assertThat(authenticator, instanceOf(OpenGaussSCRAMSha256PasswordAuthenticator.class));
@@ -61,7 +61,7 @@ public final class OpenGaussAuthenticatorTypeTest {
     }
     
     @Test
-    public void assertAuthenticatorTypeWithMD5() {
+    void assertAuthenticatorTypeWithMD5() {
         when(rule.getAuthenticatorType(any())).thenReturn("md5");
         Authenticator authenticator = new AuthenticatorFactory<>(OpenGaussAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
         assertThat(authenticator, instanceOf(OpenGaussMD5PasswordAuthenticator.class));

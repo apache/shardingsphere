@@ -70,7 +70,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class PostgreSQLAuthenticationEngineTest {
+class PostgreSQLAuthenticationEngineTest {
     
     private final String username = "root";
     
@@ -81,12 +81,12 @@ public final class PostgreSQLAuthenticationEngineTest {
     
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(mock(Attribute.class));
     }
     
     @Test
-    public void assertSSLNegative() {
+    void assertSSLNegative() {
         ByteBuf byteBuf = createByteBuf(8, 8);
         byteBuf.writeInt(8);
         byteBuf.writeInt(80877103);
@@ -96,7 +96,7 @@ public final class PostgreSQLAuthenticationEngineTest {
     }
     
     @Test
-    public void assertUserNotSet() {
+    void assertUserNotSet() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 512), StandardCharsets.UTF_8);
         payload.writeInt4(64);
         payload.writeInt4(196608);
@@ -108,7 +108,7 @@ public final class PostgreSQLAuthenticationEngineTest {
     }
     
     @Test
-    public void assertAuthenticateWithNonPasswordMessage() {
+    void assertAuthenticateWithNonPasswordMessage() {
         PostgreSQLAuthenticationEngine authenticationEngine = new PostgreSQLAuthenticationEngine();
         setAlreadyReceivedStartupMessage(authenticationEngine);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(createByteBuf(8, 16), StandardCharsets.UTF_8);
@@ -125,12 +125,12 @@ public final class PostgreSQLAuthenticationEngineTest {
     }
     
     @Test
-    public void assertLoginSuccessful() {
+    void assertLoginSuccessful() {
         assertLogin(password);
     }
     
     @Test
-    public void assertLoginFailed() {
+    void assertLoginFailed() {
         assertThrows(InvalidPasswordException.class, () -> assertLogin("wrong" + password));
     }
     

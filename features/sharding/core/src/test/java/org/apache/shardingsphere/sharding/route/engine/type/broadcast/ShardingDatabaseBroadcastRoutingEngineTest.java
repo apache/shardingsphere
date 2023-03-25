@@ -33,12 +33,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class ShardingDatabaseBroadcastRoutingEngineTest {
+class ShardingDatabaseBroadcastRoutingEngineTest {
     
     private final ShardingDatabaseBroadcastRoutingEngine shardingDatabaseBroadcastRoutingEngine = new ShardingDatabaseBroadcastRoutingEngine();
     
     @Test
-    public void assertRoute() {
+    void assertRoute() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..2}"));
         RouteContext routeContext = shardingDatabaseBroadcastRoutingEngine.route(new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"), mock(InstanceContext.class)));

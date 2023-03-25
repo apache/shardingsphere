@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(TypedSPILoader.class)
-public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
+class CreateReadwriteSplittingRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -69,30 +69,30 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     private final CreateReadwriteSplittingRuleStatementUpdater updater = new CreateReadwriteSplittingRuleStatementUpdater();
     
     @BeforeEach
-    public void before() {
+    void before() {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
     }
     
     @Test
-    public void assertCheckSQLStatementWithDuplicateRuleNames() {
+    void assertCheckSQLStatementWithDuplicateRuleNames() {
         when(resourceMetaData.getDataSources()).thenReturn(Collections.emptyMap());
         assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("TEST"), createCurrentRuleConfiguration()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithDuplicateResource() {
+    void assertCheckSQLStatementWithDuplicateResource() {
         when(resourceMetaData.getDataSources()).thenReturn(Collections.singletonMap("write_ds", null));
         assertThrows(InvalidRuleConfigurationException.class, () -> updater.checkSQLStatement(database, createSQLStatement("write_ds", "TEST"), createCurrentRuleConfiguration()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutExistedResources() {
+    void assertCheckSQLStatementWithoutExistedResources() {
         when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(Arrays.asList("read_ds_0", "read_ds_1"));
         assertThrows(MissingRequiredStorageUnitsException.class, () -> updater.checkSQLStatement(database, createSQLStatement("TEST"), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutExistedAutoAwareResources() {
+    void assertCheckSQLStatementWithoutExistedAutoAwareResources() {
         ExportableRule exportableRule = mock(ExportableRule.class);
         when(exportableRule.getExportData()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, Collections.singletonMap("ms_group", "ds_0")));
         when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(exportableRule));
@@ -101,44 +101,44 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutToBeCreatedLoadBalancers() {
+    void assertCheckSQLStatementWithoutToBeCreatedLoadBalancers() {
         when(database.getRuleMetaData().findRules(any())).thenReturn(Collections.emptyList());
         when(TypedSPILoader.checkService(any(), any(), any())).thenCallRealMethod();
         assertThrows(ServiceProviderNotFoundServerException.class, () -> updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithDuplicateWriteResourceNamesInStatement() {
+    void assertCheckSQLStatementWithDuplicateWriteResourceNamesInStatement() {
         assertThrows(InvalidRuleConfigurationException.class,
                 () -> updater.checkSQLStatement(database, createSQLStatementWithDuplicateWriteResourceNames("write_ds_0", "write_ds_1", "TEST"), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithDuplicateWriteResourceNames() {
+    void assertCheckSQLStatementWithDuplicateWriteResourceNames() {
         assertThrows(InvalidRuleConfigurationException.class,
                 () -> updater.checkSQLStatement(database, createSQLStatement("readwrite_ds_1", "ds_write", Arrays.asList("read_ds_0", "read_ds_1"), "TEST"), createCurrentRuleConfiguration()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithDuplicateReadResourceNamesInStatement() {
+    void assertCheckSQLStatementWithDuplicateReadResourceNamesInStatement() {
         assertThrows(InvalidRuleConfigurationException.class, () -> updater.checkSQLStatement(database, createSQLStatementWithDuplicateReadResourceNames("write_ds_0", "write_ds_1", "TEST"), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithDuplicateReadResourceNames() {
+    void assertCheckSQLStatementWithDuplicateReadResourceNames() {
         assertThrows(InvalidRuleConfigurationException.class,
                 () -> updater.checkSQLStatement(database, createSQLStatement("readwrite_ds_1", "write_ds_1", Arrays.asList("read_ds_0", "read_ds_1"), "TEST"), createCurrentRuleConfiguration()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithIfNotExists() {
+    void assertCheckSQLStatementWithIfNotExists() {
         ReadwriteSplittingRuleSegment staticSegment = new ReadwriteSplittingRuleSegment("readwrite_ds_0", "write_ds_0", Arrays.asList("read_ds_2", "read_ds_3"),
                 new AlgorithmSegment(null, new Properties()));
         updater.checkSQLStatement(database, createSQLStatement(true, staticSegment), createCurrentRuleConfiguration());
     }
     
     @Test
-    public void assertUpdateSuccess() {
+    void assertUpdateSuccess() {
         ExportableRule exportableRule = mock(ExportableRule.class);
         when(exportableRule.getExportData()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, Collections.singletonMap("ms_group", "ds_0")));
         when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(exportableRule));

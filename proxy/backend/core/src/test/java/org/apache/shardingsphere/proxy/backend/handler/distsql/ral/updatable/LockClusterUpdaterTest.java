@@ -38,10 +38,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class LockClusterUpdaterTest {
+class LockClusterUpdaterTest {
     
     @Test
-    public void assertExecuteWithNotClusterMode() {
+    void assertExecuteWithNotClusterMode() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         LockClusterUpdater updater = new LockClusterUpdater();
@@ -49,7 +49,7 @@ public final class LockClusterUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithLockedCluster() {
+    void assertExecuteWithLockedCluster() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterState.UNAVAILABLE);
@@ -59,7 +59,7 @@ public final class LockClusterUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithWrongAlgorithm() {
+    void assertExecuteWithWrongAlgorithm() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterState.OK);

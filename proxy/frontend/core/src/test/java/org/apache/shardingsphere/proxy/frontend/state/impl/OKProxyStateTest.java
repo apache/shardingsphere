@@ -46,10 +46,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class OKProxyStateTest {
+class OKProxyStateTest {
     
     @Test
-    public void assertExecuteWithProxyHintEnabled() {
+    void assertExecuteWithProxyHintEnabled() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(true);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -62,7 +62,7 @@ public final class OKProxyStateTest {
     }
     
     @Test
-    public void assertExecuteWithDistributedTransaction() {
+    void assertExecuteWithDistributedTransaction() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -76,7 +76,7 @@ public final class OKProxyStateTest {
     }
     
     @Test
-    public void assertExecuteWithProxyBackendExecutorSuitableForOLTP() {
+    void assertExecuteWithProxyBackendExecutorSuitableForOLTP() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(
@@ -90,7 +90,7 @@ public final class OKProxyStateTest {
     }
     
     @Test
-    public void assertExecuteWithProxyBackendExecutorSuitableForOLAPAndRequiredSameThreadForConnection() {
+    void assertExecuteWithProxyBackendExecutorSuitableForOLAPAndRequiredSameThreadForConnection() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
         when(contextManager.getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(

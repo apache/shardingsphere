@@ -50,64 +50,64 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ImportDatabaseConfigurationUpdaterTest {
+class ImportDatabaseConfigurationUpdaterTest {
     
     private ImportDatabaseConfigurationUpdater importDatabaseConfigUpdater;
     
     @Test
-    public void assertImportDatabaseExecutorForSharding() throws SQLException {
+    void assertImportDatabaseExecutorForSharding() throws SQLException {
         assertExecute("sharding_db", "/conf/import/config-sharding.yaml");
     }
     
     @Test
-    public void assertImportDatabaseExecutorForReadwriteSplitting() throws SQLException {
+    void assertImportDatabaseExecutorForReadwriteSplitting() throws SQLException {
         assertExecute("readwrite_splitting_db", "/conf/import/config-readwrite-splitting.yaml");
     }
     
     @Test
-    public void assertImportDatabaseExecutorForDatabaseDiscovery() throws SQLException {
+    void assertImportDatabaseExecutorForDatabaseDiscovery() throws SQLException {
         assertExecute("database_discovery_db", "/conf/import/config-database-discovery.yaml");
     }
     
     @Test
-    public void assertImportDatabaseExecutorForEncrypt() throws SQLException {
+    void assertImportDatabaseExecutorForEncrypt() throws SQLException {
         assertExecute("encrypt_db", "/conf/import/config-encrypt.yaml");
     }
     
     @Test
-    public void assertImportDatabaseExecutorForShadow() throws SQLException {
+    void assertImportDatabaseExecutorForShadow() throws SQLException {
         assertExecute("shadow_db", "/conf/import/config-shadow.yaml");
     }
     
     @Test
-    public void assertImportDatabaseExecutorForMask() throws SQLException {
+    void assertImportDatabaseExecutorForMask() throws SQLException {
         assertExecute("mask_db", "/conf/import/config-mask.yaml");
     }
     
     @Test
-    public void assertImportExistedDatabase() {
+    void assertImportExistedDatabase() {
         String databaseName = "sharding_db";
         when(ProxyContext.getInstance().databaseExists(databaseName)).thenReturn(true);
         assertThrows(IllegalStateException.class, () -> assertExecute(databaseName, "/conf/import/config-sharding.yaml"));
     }
     
     @Test
-    public void assertImportEmptyDatabaseName() {
+    void assertImportEmptyDatabaseName() {
         assertThrows(NullPointerException.class, () -> assertExecute("sharding_db", "/conf/import/config-empty-database-name.yaml"));
     }
     
     @Test
-    public void assertImportEmptyDataSource() {
+    void assertImportEmptyDataSource() {
         assertThrows(IllegalStateException.class, () -> assertExecute("sharding_db", "/conf/import/config-empty-data-source.yaml"));
     }
     
     @Test
-    public void assertImportDuplicatedLogicTable() {
+    void assertImportDuplicatedLogicTable() {
         assertThrows(DuplicateRuleException.class, () -> assertExecute("sharding_db", "/conf/import/config-duplicated-logic-table.yaml"));
     }
     
     @Test
-    public void assertImportInvalidAlgorithm() {
+    void assertImportInvalidAlgorithm() {
         assertThrows(ServiceProviderNotFoundServerException.class, () -> assertExecute("sharding_db", "/conf/import/config-invalid-algorithm.yaml"));
     }
     

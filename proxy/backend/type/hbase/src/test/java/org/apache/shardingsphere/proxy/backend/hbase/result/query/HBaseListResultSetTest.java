@@ -34,10 +34,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class HBaseListResultSetTest extends AbstractHBaseQueryResultSetTest {
+class HBaseListResultSetTest extends AbstractHBaseQueryResultSetTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getShowTableStatement());
         HBaseQueryResultSet resultSet = new HBaseListResultSet();
         ShowTablesStatementContext context = mock(ShowTablesStatementContext.class);
@@ -51,7 +51,7 @@ public final class HBaseListResultSetTest extends AbstractHBaseQueryResultSetTes
     }
     
     @Test
-    public void assertGetRowDataFromRemoteHBaseCluster() {
+    void assertGetRowDataFromRemoteHBaseCluster() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("show /*+ hbase */ tables from cluster_lj");
         HBaseQueryResultSet resultSet = new HBaseListResultSet();
         ShowTablesStatementContext context = mock(ShowTablesStatementContext.class);
@@ -66,7 +66,7 @@ public final class HBaseListResultSetTest extends AbstractHBaseQueryResultSetTes
     }
     
     @Test
-    public void assertGetRowDataByLike() {
+    void assertGetRowDataByLike() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("show /*+ hbase */ tables  like 't_test' ");
         HBaseQueryResultSet resultSet = new HBaseListResultSet();
         ShowTablesStatementContext context = mock(ShowTablesStatementContext.class);
@@ -82,7 +82,7 @@ public final class HBaseListResultSetTest extends AbstractHBaseQueryResultSetTes
     }
     
     @Test
-    public void assertGetRowDataError() {
+    void assertGetRowDataError() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("show /*+ hbase */ tables from cluster_do_not_exists");
         HBaseQueryResultSet resultSet = new HBaseListResultSet();
         ShowTablesStatementContext context = mock(ShowTablesStatementContext.class);

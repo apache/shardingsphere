@@ -39,18 +39,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLTimeBinaryProtocolValueTest {
+class MySQLTimeBinaryProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertReadWithZeroByte() throws SQLException {
+    void assertReadWithZeroByte() throws SQLException {
         assertThat(new MySQLTimeBinaryProtocolValue().read(payload, false), is(new Timestamp(0)));
     }
     
     @Test
-    public void assertReadWithEightBytes() throws SQLException {
+    void assertReadWithEightBytes() throws SQLException {
         when(payload.readInt1()).thenReturn(8, 0, 10, 59, 0);
         Calendar actual = Calendar.getInstance();
         actual.setTimeInMillis(((Timestamp) new MySQLTimeBinaryProtocolValue().read(payload, false)).getTime());
@@ -60,7 +60,7 @@ public final class MySQLTimeBinaryProtocolValueTest {
     }
     
     @Test
-    public void assertReadWithTwelveBytes() throws SQLException {
+    void assertReadWithTwelveBytes() throws SQLException {
         when(payload.readInt1()).thenReturn(12, 0, 10, 59, 0);
         Calendar actual = Calendar.getInstance();
         actual.setTimeInMillis(((Timestamp) new MySQLTimeBinaryProtocolValue().read(payload, false)).getTime());
@@ -70,20 +70,20 @@ public final class MySQLTimeBinaryProtocolValueTest {
     }
     
     @Test
-    public void assertReadWithIllegalArgument() {
+    void assertReadWithIllegalArgument() {
         when(payload.readInt1()).thenReturn(100);
         assertThrows(SQLFeatureNotSupportedException.class, () -> new MySQLTimeBinaryProtocolValue().read(payload, false));
     }
     
     @Test
-    public void assertWriteWithZeroByte() {
+    void assertWriteWithZeroByte() {
         MySQLTimeBinaryProtocolValue actual = new MySQLTimeBinaryProtocolValue();
         actual.write(payload, Time.valueOf("00:00:00"));
         verify(payload).writeInt1(0);
     }
     
     @Test
-    public void assertWriteWithEightBytes() {
+    void assertWriteWithEightBytes() {
         MySQLTimeBinaryProtocolValue actual = new MySQLTimeBinaryProtocolValue();
         actual.write(payload, Time.valueOf("01:30:10"));
         verify(payload).writeInt1(8);
@@ -97,7 +97,7 @@ public final class MySQLTimeBinaryProtocolValueTest {
     }
     
     @Test
-    public void assertWriteWithTwelveBytes() {
+    void assertWriteWithTwelveBytes() {
         MySQLTimeBinaryProtocolValue actual = new MySQLTimeBinaryProtocolValue();
         actual.write(payload, new Time(1L));
         verify(payload, atLeastOnce()).writeInt1(12);

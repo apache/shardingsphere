@@ -32,10 +32,10 @@ import java.util.LinkedList;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class AutoCommitUtilsTest {
+class AutoCommitUtilsTest {
     
     @Test
-    public void assertNeedOpenTransactionForSelectStatement() {
+    void assertNeedOpenTransactionForSelectStatement() {
         SelectStatement selectStatement = new MySQLSelectStatement();
         assertFalse(AutoCommitUtils.needOpenTransaction(selectStatement));
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 5, new IdentifierValue("foo"))));
@@ -43,13 +43,13 @@ public final class AutoCommitUtilsTest {
     }
     
     @Test
-    public void assertNeedOpenTransactionForDDLOrDMLStatement() {
+    void assertNeedOpenTransactionForDDLOrDMLStatement() {
         assertTrue(AutoCommitUtils.needOpenTransaction(new MySQLCreateTableStatement(true)));
         assertTrue(AutoCommitUtils.needOpenTransaction(new MySQLInsertStatement()));
     }
     
     @Test
-    public void assertNeedOpenTransactionForOtherStatement() {
+    void assertNeedOpenTransactionForOtherStatement() {
         assertFalse(AutoCommitUtils.needOpenTransaction(new RegisterStorageUnitStatement(false, new LinkedList<>())));
     }
 }

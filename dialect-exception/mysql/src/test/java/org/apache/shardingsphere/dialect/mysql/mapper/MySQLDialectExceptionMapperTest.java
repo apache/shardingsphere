@@ -44,7 +44,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class MySQLDialectExceptionMapperTest {
+class MySQLDialectExceptionMapperTest {
     
     @ParameterizedTest(name = "{1} -> {0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)

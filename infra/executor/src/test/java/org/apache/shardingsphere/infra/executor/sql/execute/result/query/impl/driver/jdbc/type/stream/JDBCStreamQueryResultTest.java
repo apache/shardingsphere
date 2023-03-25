@@ -40,80 +40,80 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class JDBCStreamQueryResultTest {
+class JDBCStreamQueryResultTest {
     
     @Test
-    public void assertNext() throws SQLException {
+    void assertNext() throws SQLException {
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(getResultSet());
         assertTrue(queryResult.next());
         assertFalse(queryResult.next());
     }
     
     @Test
-    public void assertGetValueByBoolean() throws SQLException {
+    void assertGetValueByBoolean() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getBoolean(1)).thenReturn(true);
         assertTrue((boolean) new JDBCStreamQueryResult(resultSet).getValue(1, boolean.class));
     }
     
     @Test
-    public void assertGetValueByByte() throws SQLException {
+    void assertGetValueByByte() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getByte(1)).thenReturn((byte) 0x00);
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, byte.class), is((byte) 0x00));
     }
     
     @Test
-    public void assertGetValueByShort() throws SQLException {
+    void assertGetValueByShort() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getShort(1)).thenReturn((short) 1);
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, short.class), is((short) 1));
     }
     
     @Test
-    public void assertGetValueByInt() throws SQLException {
+    void assertGetValueByInt() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getInt(1)).thenReturn(1);
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, int.class), is(1));
     }
     
     @Test
-    public void assertGetValueByLong() throws SQLException {
+    void assertGetValueByLong() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getLong(1)).thenReturn(1L);
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, long.class), is(1L));
     }
     
     @Test
-    public void assertGetValueByFloat() throws SQLException {
+    void assertGetValueByFloat() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getFloat(1)).thenReturn(1.0F);
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, float.class), is(1.0F));
     }
     
     @Test
-    public void assertGetValueByDouble() throws SQLException {
+    void assertGetValueByDouble() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getDouble(1)).thenReturn(1.0D);
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, double.class), is(1.0D));
     }
     
     @Test
-    public void assertGetValueByString() throws SQLException {
+    void assertGetValueByString() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString(1)).thenReturn("value");
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, String.class), is("value"));
     }
     
     @Test
-    public void assertGetValueByBigDecimal() throws SQLException {
+    void assertGetValueByBigDecimal() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getBigDecimal(1)).thenReturn(new BigDecimal("0"));
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, BigDecimal.class), is(new BigDecimal("0")));
     }
     
     @Test
-    public void assertGetValueByBytes() throws SQLException {
+    void assertGetValueByBytes() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         byte[] value = {1};
         when(resultSet.getBytes(1)).thenReturn(value);
@@ -121,21 +121,21 @@ public final class JDBCStreamQueryResultTest {
     }
     
     @Test
-    public void assertGetValueByDate() throws SQLException {
+    void assertGetValueByDate() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getDate(1)).thenReturn(new Date(0L));
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, Date.class), is(new Date(0L)));
     }
     
     @Test
-    public void assertGetValueByTime() throws SQLException {
+    void assertGetValueByTime() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getTime(1)).thenReturn(new Time(0L));
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, Time.class), is(new Time(0L)));
     }
     
     @Test
-    public void assertGetValueByBlob() throws SQLException {
+    void assertGetValueByBlob() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         Blob value = mock(Blob.class);
         when(resultSet.getBlob(1)).thenReturn(value);
@@ -143,7 +143,7 @@ public final class JDBCStreamQueryResultTest {
     }
     
     @Test
-    public void assertGetValueByClob() throws SQLException {
+    void assertGetValueByClob() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         Clob value = mock(Clob.class);
         when(resultSet.getClob(1)).thenReturn(value);
@@ -151,7 +151,7 @@ public final class JDBCStreamQueryResultTest {
     }
     
     @Test
-    public void assertGetValueByArray() throws SQLException {
+    void assertGetValueByArray() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         Array value = mock(Array.class);
         when(resultSet.getArray(1)).thenReturn(value);
@@ -159,14 +159,14 @@ public final class JDBCStreamQueryResultTest {
     }
     
     @Test
-    public void assertGetValueByTimestamp() throws SQLException {
+    void assertGetValueByTimestamp() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getTimestamp(1)).thenReturn(new Timestamp(0L));
         assertThat(new JDBCStreamQueryResult(resultSet).getValue(1, Timestamp.class), is(new Timestamp(0L)));
     }
     
     @Test
-    public void assertGetCalendarValueWithDate() throws SQLException {
+    void assertGetCalendarValueWithDate() throws SQLException {
         ResultSet result = getResultSet();
         Calendar calendar = Calendar.getInstance();
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(result);
@@ -176,7 +176,7 @@ public final class JDBCStreamQueryResultTest {
     }
     
     @Test
-    public void assertGetCalendarValueWithTime() throws SQLException {
+    void assertGetCalendarValueWithTime() throws SQLException {
         ResultSet resultSet = getResultSet();
         Calendar calendar = Calendar.getInstance();
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
@@ -186,7 +186,7 @@ public final class JDBCStreamQueryResultTest {
     }
     
     @Test
-    public void assertGetCalendarValueWithTimestamp() throws SQLException {
+    void assertGetCalendarValueWithTimestamp() throws SQLException {
         ResultSet resultSet = getResultSet();
         Calendar calendar = Calendar.getInstance();
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
@@ -196,14 +196,14 @@ public final class JDBCStreamQueryResultTest {
     }
     
     @Test
-    public void assertGetCalendarValueWithUnsupportedType() throws SQLException {
+    void assertGetCalendarValueWithUnsupportedType() throws SQLException {
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(getResultSet());
         queryResult.next();
         assertThrows(SQLException.class, () -> queryResult.getCalendarValue(1, Object.class, Calendar.getInstance()));
     }
     
     @Test
-    public void assertGetInputStreamWithAscii() throws SQLException {
+    void assertGetInputStreamWithAscii() throws SQLException {
         ResultSet resultSet = getResultSet();
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
         queryResult.next();
@@ -213,7 +213,7 @@ public final class JDBCStreamQueryResultTest {
     
     @SuppressWarnings("deprecation")
     @Test
-    public void assertGetInputStreamWithUnicode() throws SQLException {
+    void assertGetInputStreamWithUnicode() throws SQLException {
         ResultSet resultSet = getResultSet();
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
         queryResult.next();
@@ -222,7 +222,7 @@ public final class JDBCStreamQueryResultTest {
     }
     
     @Test
-    public void assertGetInputStreamWithBinary() throws SQLException {
+    void assertGetInputStreamWithBinary() throws SQLException {
         ResultSet resultSet = getResultSet();
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(resultSet);
         queryResult.next();
@@ -231,14 +231,14 @@ public final class JDBCStreamQueryResultTest {
     }
     
     @Test
-    public void assertGetInputStreamWithUnsupportedType() throws SQLException {
+    void assertGetInputStreamWithUnsupportedType() throws SQLException {
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(getResultSet());
         queryResult.next();
         assertThrows(SQLException.class, () -> queryResult.getInputStream(1, "Unsupported Type"));
     }
     
     @Test
-    public void assertWasNull() throws SQLException {
+    void assertWasNull() throws SQLException {
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(getResultSet());
         queryResult.next();
         assertFalse(queryResult.wasNull());
@@ -247,7 +247,7 @@ public final class JDBCStreamQueryResultTest {
     }
     
     @Test
-    public void assertGetResultSet() throws SQLException {
+    void assertGetResultSet() throws SQLException {
         JDBCStreamQueryResult queryResult = new JDBCStreamQueryResult(getResultSet());
         ResultSet actual = queryResult.getResultSet();
         assertNotNull(actual);

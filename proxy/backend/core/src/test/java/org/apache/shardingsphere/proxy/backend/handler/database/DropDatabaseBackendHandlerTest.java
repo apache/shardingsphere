@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class DropDatabaseBackendHandlerTest {
+class DropDatabaseBackendHandlerTest {
     
     @Mock
     private ConnectionSession connectionSession;
@@ -64,7 +64,7 @@ public final class DropDatabaseBackendHandlerTest {
     private DropDatabaseBackendHandler handler;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().databaseExists("foo_db")).thenReturn(true);
@@ -90,20 +90,20 @@ public final class DropDatabaseBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteDropNotExistDatabase() {
+    void assertExecuteDropNotExistDatabase() {
         when(sqlStatement.getDatabaseName()).thenReturn("test_not_exist_db");
         assertThrows(DatabaseDropNotExistsException.class, () -> handler.execute());
     }
     
     @Test
-    public void assertExecuteDropNotExistDatabaseWithIfExists() {
+    void assertExecuteDropNotExistDatabaseWithIfExists() {
         when(sqlStatement.getDatabaseName()).thenReturn("test_not_exist_db");
         when(sqlStatement.isIfExists()).thenReturn(true);
         handler.execute();
     }
     
     @Test
-    public void assertExecuteDropWithoutCurrentDatabase() {
+    void assertExecuteDropWithoutCurrentDatabase() {
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         ResponseHeader responseHeader = handler.execute();
         verify(connectionSession, times(0)).setCurrentDatabase(null);
@@ -111,7 +111,7 @@ public final class DropDatabaseBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteDropCurrentDatabase() {
+    void assertExecuteDropCurrentDatabase() {
         when(connectionSession.getDatabaseName()).thenReturn("foo_db");
         when(sqlStatement.getDatabaseName()).thenReturn("foo_db");
         ResponseHeader responseHeader = handler.execute();
@@ -120,7 +120,7 @@ public final class DropDatabaseBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteDropOtherDatabase() {
+    void assertExecuteDropOtherDatabase() {
         when(connectionSession.getDatabaseName()).thenReturn("foo_db");
         when(sqlStatement.getDatabaseName()).thenReturn("bar_db");
         ResponseHeader responseHeader = handler.execute();

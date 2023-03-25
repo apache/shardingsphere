@@ -79,7 +79,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingInsertStatementValidatorTest {
+class ShardingInsertStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
@@ -91,7 +91,7 @@ public final class ShardingInsertStatementValidatorTest {
     private ShardingConditions shardingConditions;
     
     @Test
-    public void assertPreValidateWhenInsertMultiTables() {
+    void assertPreValidateWhenInsertMultiTables() {
         SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
@@ -109,7 +109,7 @@ public final class ShardingInsertStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateWhenInsertSelectWithoutKeyGenerateColumn() {
+    void assertPreValidateWhenInsertSelectWithoutKeyGenerateColumn() {
         when(shardingRule.findGenerateKeyColumnName("user")).thenReturn(Optional.of("id"));
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(false);
         SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
@@ -119,7 +119,7 @@ public final class ShardingInsertStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateWhenInsertSelectWithKeyGenerateColumn() {
+    void assertPreValidateWhenInsertSelectWithKeyGenerateColumn() {
         when(shardingRule.findGenerateKeyColumnName("user")).thenReturn(Optional.of("id"));
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(true);
         SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertSelectStatement());
@@ -129,7 +129,7 @@ public final class ShardingInsertStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateWhenInsertSelectWithoutBindingTables() {
+    void assertPreValidateWhenInsertSelectWithoutBindingTables() {
         when(shardingRule.findGenerateKeyColumnName("user")).thenReturn(Optional.of("id"));
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(true);
         TablesContext multiTablesContext = createMultiTablesContext();
@@ -142,7 +142,7 @@ public final class ShardingInsertStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateWhenInsertSelectWithBindingTables() {
+    void assertPreValidateWhenInsertSelectWithBindingTables() {
         when(shardingRule.findGenerateKeyColumnName("user")).thenReturn(Optional.of("id"));
         when(shardingRule.isGenerateKeyColumn("id", "user")).thenReturn(true);
         TablesContext multiTablesContext = createMultiTablesContext();
@@ -153,7 +153,7 @@ public final class ShardingInsertStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateWhenInsertWithSingleRouting() {
+    void assertPostValidateWhenInsertWithSingleRouting() {
         SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(true);
         new ShardingInsertStatementValidator(shardingConditions).postValidate(shardingRule, sqlStatementContext, new HintValueContext(),
@@ -161,7 +161,7 @@ public final class ShardingInsertStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateWhenInsertWithBroadcastTable() {
+    void assertPostValidateWhenInsertWithBroadcastTable() {
         SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(false);
         when(shardingRule.isBroadcastTable(sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue())).thenReturn(true);
@@ -170,7 +170,7 @@ public final class ShardingInsertStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateWhenInsertWithRoutingToSingleDataNode() {
+    void assertPostValidateWhenInsertWithRoutingToSingleDataNode() {
         SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(false);
         when(shardingRule.isBroadcastTable(sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue())).thenReturn(false);
@@ -180,7 +180,7 @@ public final class ShardingInsertStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateWhenInsertWithRoutingToMultipleDataNodes() {
+    void assertPostValidateWhenInsertWithRoutingToMultipleDataNodes() {
         SQLStatementContext<InsertStatement> sqlStatementContext = createInsertStatementContext(Collections.singletonList(1), createInsertStatement());
         when(routeContext.isSingleRouting()).thenReturn(false);
         when(shardingRule.isBroadcastTable(sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue())).thenReturn(false);
@@ -190,7 +190,7 @@ public final class ShardingInsertStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateWhenNotOnDuplicateKeyUpdateShardingColumn() {
+    void assertPostValidateWhenNotOnDuplicateKeyUpdateShardingColumn() {
         List<Object> params = Collections.singletonList(1);
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.isSingleRouting()).thenReturn(true);
@@ -200,7 +200,7 @@ public final class ShardingInsertStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateWhenOnDuplicateKeyUpdateShardingColumnWithSameRouteContext() {
+    void assertPostValidateWhenOnDuplicateKeyUpdateShardingColumnWithSameRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
         List<Object> params = Collections.singletonList(1);
         InsertStatementContext insertStatementContext = createInsertStatementContext(params, createInsertStatement());
@@ -209,7 +209,7 @@ public final class ShardingInsertStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateWhenOnDuplicateKeyUpdateShardingColumnWithDifferentRouteContext() {
+    void assertPostValidateWhenOnDuplicateKeyUpdateShardingColumnWithDifferentRouteContext() {
         mockShardingRuleForUpdateShardingColumn();
         List<Object> params = Collections.singletonList(1);
         InsertStatementContext insertStatementContext = createInsertStatementContext(params, createInsertStatement());

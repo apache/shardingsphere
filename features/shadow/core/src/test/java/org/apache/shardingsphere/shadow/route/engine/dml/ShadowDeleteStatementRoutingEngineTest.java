@@ -52,12 +52,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShadowDeleteStatementRoutingEngineTest {
+class ShadowDeleteStatementRoutingEngineTest {
     
     private ShadowDeleteStatementRoutingEngine shadowDeleteStatementRoutingEngine;
     
     @BeforeEach
-    public void init() {
+    void init() {
         shadowDeleteStatementRoutingEngine = new ShadowDeleteStatementRoutingEngine(createDeleteStatementContext(), Collections.emptyList());
     }
     
@@ -79,7 +79,7 @@ public final class ShadowDeleteStatementRoutingEngineTest {
     }
     
     @Test
-    public void assertRouteAndParseShadowColumnConditions() {
+    void assertRouteAndParseShadowColumnConditions() {
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.getRouteUnits()).thenReturn(Collections.singleton(new RouteUnit(new RouteMapper("ds", "ds_shadow"), Collections.emptyList())));
         shadowDeleteStatementRoutingEngine.route(routeContext, new ShadowRule(createShadowRuleConfiguration()));
@@ -105,7 +105,7 @@ public final class ShadowDeleteStatementRoutingEngineTest {
     }
     
     @Test
-    public void assertGetAllTables() {
+    void assertGetAllTables() {
         Collection<SimpleTableSegment> allTables = shadowDeleteStatementRoutingEngine.getAllTables();
         assertThat(allTables.size(), is(1));
         assertThat(allTables.iterator().next().getTableName().getIdentifier().getValue(), is("t_order"));

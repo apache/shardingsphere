@@ -31,10 +31,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class PostgreSQLComStartupPacketTest {
+class PostgreSQLComStartupPacketTest {
     
     @Test
-    public void assertNewPostgreSQLComStartupPacket() {
+    void assertNewPostgreSQLComStartupPacket() {
         Map<String, String> parametersMap = createParametersMap();
         int packetMessageLength = getPacketMessageLength(parametersMap);
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(packetMessageLength);
@@ -75,7 +75,7 @@ public final class PostgreSQLComStartupPacketTest {
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         new PostgreSQLComStartupPacket(mock(PostgreSQLPacketPayload.class)).write(mock(PostgreSQLPacketPayload.class));
     }
 }

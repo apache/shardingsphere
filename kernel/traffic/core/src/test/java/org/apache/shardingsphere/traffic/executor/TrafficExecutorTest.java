@@ -32,10 +32,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class TrafficExecutorTest {
+class TrafficExecutorTest {
     
     @Test
-    public void assertClose() throws SQLException {
+    void assertClose() throws SQLException {
         Statement statement = mock(Statement.class, RETURNS_DEEP_STUBS);
         try (TrafficExecutor trafficExecutor = new TrafficExecutor()) {
             JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);

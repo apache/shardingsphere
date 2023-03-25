@@ -41,423 +41,423 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class UnsupportedUpdateOperationResultSetTest {
+class UnsupportedUpdateOperationResultSetTest {
     
     private ShardingSphereResultSet shardingSphereResultSet;
     
     @BeforeEach
-    public void init() throws SQLException {
+    void init() throws SQLException {
         shardingSphereResultSet = new ShardingSphereResultSet(
                 Collections.singletonList(mock(ResultSet.class, RETURNS_DEEP_STUBS)), mock(MergedResult.class), mock(Statement.class), true, mock(ExecutionContext.class));
     }
     
     @Test
-    public void assertUpdateNullForColumnIndex() {
+    void assertUpdateNullForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNull(1));
     }
     
     @Test
-    public void assertUpdateNullForColumnLabel() {
+    void assertUpdateNullForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNull("label"));
     }
     
     @Test
-    public void assertUpdateBooleanForColumnIndex() {
+    void assertUpdateBooleanForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBoolean(1, false));
     }
     
     @Test
-    public void assertUpdateBooleanForColumnLabel() {
+    void assertUpdateBooleanForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBoolean("label", false));
     }
     
     @Test
-    public void assertUpdateByteForColumnIndex() {
+    void assertUpdateByteForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateByte(1, (byte) 1));
     }
     
     @Test
-    public void assertUpdateByteForColumnLabel() {
+    void assertUpdateByteForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateByte("label", (byte) 1));
     }
     
     @Test
-    public void assertUpdateShortForColumnIndex() {
+    void assertUpdateShortForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateShort(1, (short) 1));
     }
     
     @Test
-    public void assertUpdateShortForColumnLabel() {
+    void assertUpdateShortForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateShort("label", (short) 1));
     }
     
     @Test
-    public void assertUpdateIntForColumnIndex() {
+    void assertUpdateIntForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateInt(1, 1));
     }
     
     @Test
-    public void assertUpdateIntForColumnLabel() {
+    void assertUpdateIntForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateInt("label", 1));
     }
     
     @Test
-    public void assertUpdateLongForColumnIndex() {
+    void assertUpdateLongForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateLong(1, 1L));
     }
     
     @Test
-    public void assertUpdateLongForColumnLabel() {
+    void assertUpdateLongForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateLong("label", 1L));
     }
     
     @Test
-    public void assertUpdateFloatForColumnIndex() {
+    void assertUpdateFloatForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateFloat(1, 1.0F));
     }
     
     @Test
-    public void assertUpdateFloatForColumnLabel() {
+    void assertUpdateFloatForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateFloat("label", 1.0F));
     }
     
     @Test
-    public void assertUpdateDoubleForColumnIndex() {
+    void assertUpdateDoubleForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateDouble(1, 1.0D));
     }
     
     @Test
-    public void assertUpdateDoubleForColumnLabel() {
+    void assertUpdateDoubleForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateDouble("label", 1.0D));
     }
     
     @Test
-    public void assertUpdateBigDecimalForColumnIndex() {
+    void assertUpdateBigDecimalForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBigDecimal(1, new BigDecimal("1")));
     }
     
     @Test
-    public void assertUpdateBigDecimalForColumnLabel() {
+    void assertUpdateBigDecimalForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBigDecimal("label", new BigDecimal("1")));
     }
     
     @Test
-    public void assertUpdateStringForColumnIndex() {
+    void assertUpdateStringForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateString(1, "1"));
     }
     
     @Test
-    public void assertUpdateStringForColumnLabel() {
+    void assertUpdateStringForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateString("label", "1"));
     }
     
     @Test
-    public void assertUpdateNStringForColumnIndex() {
+    void assertUpdateNStringForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNString(1, ""));
     }
     
     @Test
-    public void assertUpdateNStringForColumnLabel() {
+    void assertUpdateNStringForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNString("label", ""));
     }
     
     @Test
-    public void assertUpdateBytesForColumnIndex() {
+    void assertUpdateBytesForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBytes(1, new byte[]{}));
     }
     
     @Test
-    public void assertUpdateBytesForColumnLabel() {
+    void assertUpdateBytesForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBytes("label", new byte[]{}));
     }
     
     @Test
-    public void assertUpdateDateForColumnIndex() {
+    void assertUpdateDateForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateDate(1, new Date(0L)));
     }
     
     @Test
-    public void assertUpdateDateForColumnLabel() {
+    void assertUpdateDateForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateDate("label", new Date(0L)));
     }
     
     @Test
-    public void assertUpdateTimeForColumnIndex() {
+    void assertUpdateTimeForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateTime(1, new Time(0L)));
     }
     
     @Test
-    public void assertUpdateTimeForColumnLabel() {
+    void assertUpdateTimeForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateTime("label", new Time(0L)));
     }
     
     @Test
-    public void assertUpdateTimestampForColumnIndex() {
+    void assertUpdateTimestampForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateTimestamp(1, new Timestamp(0L)));
     }
     
     @Test
-    public void assertUpdateTimestampForColumnLabel() {
+    void assertUpdateTimestampForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateTimestamp("label", new Timestamp(0L)));
     }
     
     @Test
-    public void assertUpdateAsciiStreamForColumnIndex() {
+    void assertUpdateAsciiStreamForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateAsciiStream(1, System.in));
     }
     
     @Test
-    public void assertUpdateAsciiStreamForColumnLabel() {
+    void assertUpdateAsciiStreamForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateAsciiStream("label", System.in));
     }
     
     @Test
-    public void assertUpdateAsciiStreamForColumnIndexWithIntegerLength() {
+    void assertUpdateAsciiStreamForColumnIndexWithIntegerLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateAsciiStream(1, System.in, 1));
     }
     
     @Test
-    public void assertUpdateAsciiStreamForColumnLabelWithIntegerLength() {
+    void assertUpdateAsciiStreamForColumnLabelWithIntegerLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateAsciiStream("label", System.in, 1));
     }
     
     @Test
-    public void assertUpdateAsciiStreamForColumnIndexWithLongLength() {
+    void assertUpdateAsciiStreamForColumnIndexWithLongLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateAsciiStream(1, System.in, 1L));
     }
     
     @Test
-    public void assertUpdateAsciiStreamForColumnLabelWithLongLength() {
+    void assertUpdateAsciiStreamForColumnLabelWithLongLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateAsciiStream("label", System.in, 1L));
     }
     
     @Test
-    public void assertUpdateBinaryStreamForColumnIndex() {
+    void assertUpdateBinaryStreamForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBinaryStream(1, System.in));
     }
     
     @Test
-    public void assertUpdateBinaryStreamForColumnLabel() {
+    void assertUpdateBinaryStreamForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBinaryStream("label", System.in));
     }
     
     @Test
-    public void assertUpdateBinaryStreamForColumnIndexWithIntegerLength() {
+    void assertUpdateBinaryStreamForColumnIndexWithIntegerLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBinaryStream(1, System.in, 1));
     }
     
     @Test
-    public void assertUpdateBinaryStreamForColumnLabelWithIntegerLength() {
+    void assertUpdateBinaryStreamForColumnLabelWithIntegerLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBinaryStream("label", System.in, 1));
     }
     
     @Test
-    public void assertUpdateBinaryStreamForColumnIndexWithLongLength() {
+    void assertUpdateBinaryStreamForColumnIndexWithLongLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBinaryStream(1, System.in, 1L));
     }
     
     @Test
-    public void assertUpdateBinaryStreamForColumnLabelWithLongLength() {
+    void assertUpdateBinaryStreamForColumnLabelWithLongLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBinaryStream("label", System.in, 1L));
     }
     
     @Test
-    public void assertUpdateCharacterStreamForColumnIndex() {
+    void assertUpdateCharacterStreamForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateCharacterStream(1, new StringReader("")));
     }
     
     @Test
-    public void assertUpdateCharacterStreamForColumnLabel() {
+    void assertUpdateCharacterStreamForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateCharacterStream("label", new StringReader("")));
     }
     
     @Test
-    public void assertUpdateCharacterStreamForColumnIndexWithIntegerLength() {
+    void assertUpdateCharacterStreamForColumnIndexWithIntegerLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateCharacterStream(1, new StringReader(""), 1));
     }
     
     @Test
-    public void assertUpdateCharacterStreamForColumnLabelWithIntegerLength() {
+    void assertUpdateCharacterStreamForColumnLabelWithIntegerLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateCharacterStream("label", new StringReader(""), 1));
     }
     
     @Test
-    public void assertUpdateCharacterStreamForColumnIndexWithLongLength() {
+    void assertUpdateCharacterStreamForColumnIndexWithLongLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateCharacterStream(1, new StringReader(""), 1L));
     }
     
     @Test
-    public void assertUpdateCharacterStreamForColumnLabelWithLongLength() {
+    void assertUpdateCharacterStreamForColumnLabelWithLongLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateCharacterStream("label", new StringReader(""), 1L));
     }
     
     @Test
-    public void assertUpdateNCharacterStreamForColumnIndex() {
+    void assertUpdateNCharacterStreamForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNCharacterStream(1, new StringReader("")));
     }
     
     @Test
-    public void assertUpdateNCharacterStreamForColumnLabel() {
+    void assertUpdateNCharacterStreamForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNCharacterStream("label", new StringReader("")));
     }
     
     @Test
-    public void assertUpdateNCharacterStreamForColumnIndexWithLength() {
+    void assertUpdateNCharacterStreamForColumnIndexWithLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNCharacterStream(1, new StringReader(""), 1));
     }
     
     @Test
-    public void assertUpdateNCharacterStreamForColumnLabelWithLength() {
+    void assertUpdateNCharacterStreamForColumnLabelWithLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNCharacterStream("label", new StringReader(""), 1));
     }
     
     @Test
-    public void assertUpdateObjectForColumnIndex() {
+    void assertUpdateObjectForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateObject(1, new Object()));
     }
     
     @Test
-    public void assertUpdateObjectForColumnLabel() {
+    void assertUpdateObjectForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateObject("label", new Object()));
     }
     
     @Test
-    public void assertUpdateObjectForColumnIndexWithScaleOrLength() {
+    void assertUpdateObjectForColumnIndexWithScaleOrLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateObject(1, new Object(), 1));
     }
     
     @Test
-    public void assertUpdateObjectForColumnLabelWithScaleOrLength() {
+    void assertUpdateObjectForColumnLabelWithScaleOrLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateObject("label", new Object(), 1));
     }
     
     @Test
-    public void assertUpdateRefForColumnIndex() {
+    void assertUpdateRefForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateRef(1, null));
     }
     
     @Test
-    public void assertUpdateRefForColumnLabel() {
+    void assertUpdateRefForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateRef("label", null));
     }
     
     @Test
-    public void assertUpdateBlobForColumnIndex() {
+    void assertUpdateBlobForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBlob(1, (Blob) null));
     }
     
     @Test
-    public void assertUpdateBlobForColumnLabel() {
+    void assertUpdateBlobForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBlob("label", (Blob) null));
     }
     
     @Test
-    public void assertUpdateBlobForColumnIndexWithInputStream() {
+    void assertUpdateBlobForColumnIndexWithInputStream() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBlob(1, System.in));
     }
     
     @Test
-    public void assertUpdateBlobForColumnLabelWithInputStream() {
+    void assertUpdateBlobForColumnLabelWithInputStream() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBlob("label", System.in));
     }
     
     @Test
-    public void assertUpdateBlobForColumnIndexWithInputStreamAndLength() {
+    void assertUpdateBlobForColumnIndexWithInputStreamAndLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBlob(1, System.in, 100));
     }
     
     @Test
-    public void assertUpdateBlobForColumnLabelWithInputStreamAndLength() {
+    void assertUpdateBlobForColumnLabelWithInputStreamAndLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateBlob("label", System.in, 100));
     }
     
     @Test
-    public void assertUpdateClobForColumnIndex() {
+    void assertUpdateClobForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateClob(1, (Clob) null));
     }
     
     @Test
-    public void assertUpdateClobForColumnLabel() {
+    void assertUpdateClobForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateClob("label", (Clob) null));
     }
     
     @Test
-    public void assertUpdateClobForColumnIndexWithInputStream() {
+    void assertUpdateClobForColumnIndexWithInputStream() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateClob(1, new StringReader("")));
     }
     
     @Test
-    public void assertUpdateClobForColumnLabelWithInputStream() {
+    void assertUpdateClobForColumnLabelWithInputStream() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateClob("label", new StringReader("")));
     }
     
     @Test
-    public void assertUpdateClobForColumnIndexWithInputStreamAndLength() {
+    void assertUpdateClobForColumnIndexWithInputStreamAndLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateClob(1, new StringReader(""), 100));
     }
     
     @Test
-    public void assertUpdateClobForColumnLabelWithInputStreamAndLength() {
+    void assertUpdateClobForColumnLabelWithInputStreamAndLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateClob("label", new StringReader(""), 100));
     }
     
     @Test
-    public void assertUpdateNClobForColumnIndex() {
+    void assertUpdateNClobForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNClob(1, (NClob) null));
     }
     
     @Test
-    public void assertUpdateNClobForColumnLabel() {
+    void assertUpdateNClobForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNClob("label", (NClob) null));
     }
     
     @Test
-    public void assertUpdateNClobForColumnIndexWithInputStream() {
+    void assertUpdateNClobForColumnIndexWithInputStream() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNClob(1, new StringReader("")));
     }
     
     @Test
-    public void assertUpdateNClobForColumnLabelWithInputStream() {
+    void assertUpdateNClobForColumnLabelWithInputStream() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNClob("label", new StringReader("")));
     }
     
     @Test
-    public void assertUpdateNClobForColumnIndexWithInputStreamAndLength() {
+    void assertUpdateNClobForColumnIndexWithInputStreamAndLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNClob(1, new StringReader(""), 100));
     }
     
     @Test
-    public void assertUpdateNClobForColumnLabelWithInputStreamAndLength() {
+    void assertUpdateNClobForColumnLabelWithInputStreamAndLength() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateNClob("label", new StringReader(""), 100));
     }
     
     @Test
-    public void assertUpdateArrayForColumnIndex() {
+    void assertUpdateArrayForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateArray(1, null));
     }
     
     @Test
-    public void assertUpdateArrayForColumnLabel() {
+    void assertUpdateArrayForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateArray("label", null));
     }
     
     @Test
-    public void assertUpdateRowIdForColumnIndex() {
+    void assertUpdateRowIdForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateRowId(1, null));
     }
     
     @Test
-    public void assertUpdateRowIdForColumnLabel() {
+    void assertUpdateRowIdForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateRowId("label", null));
     }
     
     @Test
-    public void assertUpdateSQLXMLForColumnIndex() {
+    void assertUpdateSQLXMLForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateSQLXML(1, null));
     }
     
     @Test
-    public void assertUpdateSQXMLForColumnLabel() {
+    void assertUpdateSQXMLForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.updateSQLXML("label", null));
     }
 }

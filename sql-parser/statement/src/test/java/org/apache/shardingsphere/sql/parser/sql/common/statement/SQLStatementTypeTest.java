@@ -31,33 +31,33 @@ import static org.mockito.Mockito.mock;
 public class SQLStatementTypeTest {
     
     @Test
-    public void assertInvolvesDataChangesWithSelectStatement() {
+    void assertInvolvesDataChangesWithSelectStatement() {
         assertFalse(SQLStatementType.involvesDataChanges(mock(SelectStatement.class)));
     }
     
     @Test
-    public void assertNotInvolvesDataChangesWithUpdateStatement() {
+    void assertNotInvolvesDataChangesWithUpdateStatement() {
         assertTrue(SQLStatementType.involvesDataChanges(mock(UpdateStatement.class)));
     }
     
     @Test
-    public void assertNotInvolvesDataChangesWithDDLStatement() {
+    void assertNotInvolvesDataChangesWithDDLStatement() {
         assertTrue(SQLStatementType.involvesDataChanges(mock(CreateTableStatement.class)));
     }
     
     @Test
-    public void assertInvolvesDataChangesWithOtherStatement() {
+    void assertInvolvesDataChangesWithOtherStatement() {
         assertFalse(SQLStatementType.involvesDataChanges(mock(ShowStatement.class)));
     }
     
     @Test
-    public void assertInvolvesDataChangesWithCache() {
+    void assertInvolvesDataChangesWithCache() {
         assertFalse(SQLStatementType.involvesDataChanges(mock(SelectStatement.class)));
         assertFalse(SQLStatementType.involvesDataChanges(mock(SelectStatement.class)));
     }
     
     @Test
-    public void assertNotInvolvesDataChangesWithCache() {
+    void assertNotInvolvesDataChangesWithCache() {
         assertTrue(SQLStatementType.involvesDataChanges(mock(DeleteStatement.class)));
         assertTrue(SQLStatementType.involvesDataChanges(mock(DeleteStatement.class)));
     }

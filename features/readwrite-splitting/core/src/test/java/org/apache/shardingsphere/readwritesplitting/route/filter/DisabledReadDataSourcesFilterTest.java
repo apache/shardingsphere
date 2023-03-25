@@ -36,7 +36,7 @@ class DisabledReadDataSourcesFilterTest {
     private ReadwriteSplittingDataSourceRule rule;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         rule = new ReadwriteSplittingDataSourceRule(
                 new ReadwriteSplittingDataSourceRuleConfiguration("test_pr",
                         new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, null),

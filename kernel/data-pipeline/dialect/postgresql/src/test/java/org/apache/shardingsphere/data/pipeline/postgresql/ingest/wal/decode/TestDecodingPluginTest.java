@@ -39,14 +39,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class TestDecodingPluginTest {
+class TestDecodingPluginTest {
     
     private final LogSequenceNumber pgSequenceNumber = LogSequenceNumber.valueOf("0/14EFDB8");
     
     private final PostgreSQLLogSequenceNumber logSequenceNumber = new PostgreSQLLogSequenceNumber(pgSequenceNumber);
     
     @Test
-    public void assertDecodeWriteRowEvent() {
+    void assertDecodeWriteRowEvent() {
         ByteBuffer data = ByteBuffer.wrap(("table public.test: INSERT: data[character varying]:' 1 2 3'' 😊中' t_json_empty[json]:'{}' t_json[json]:'{\"test\":\"中中{中中}' 中\"}'"
                 + " t_jsonb[jsonb]:'{\"test\":\"😊Emoji中\"}'").getBytes());
         WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
@@ -59,7 +59,7 @@ public final class TestDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeUpdateRowEvent() {
+    void assertDecodeUpdateRowEvent() {
         ByteBuffer data = ByteBuffer.wrap("table public.test: UPDATE: unicode[character varying]:' 1 2 3'' 😊中 ' t_json_empty[json]:'{}' t_json[json]:'{\"test\":\"中中{中中}' 中\"}'".getBytes());
         UpdateRowEvent actual = (UpdateRowEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
@@ -70,7 +70,7 @@ public final class TestDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeDeleteRowEvent() {
+    void assertDecodeDeleteRowEvent() {
         ByteBuffer data = ByteBuffer.wrap("table public.test: DELETE: data[integer]:1".getBytes());
         DeleteRowEvent actual = (DeleteRowEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
@@ -79,7 +79,7 @@ public final class TestDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeWriteRowEventWithByteA() {
+    void assertDecodeWriteRowEventWithByteA() {
         ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: data[bytea]:'\\xff00ab'".getBytes());
         WriteRowEvent actual = (WriteRowEvent) new TestDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual.getLogSequenceNumber(), is(logSequenceNumber));
@@ -88,13 +88,13 @@ public final class TestDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeUnknownTableType() {
+    void assertDecodeUnknownTableType() {
         ByteBuffer data = ByteBuffer.wrap("unknown".getBytes());
         assertThat(new TestDecodingPlugin(null).decode(data, logSequenceNumber), instanceOf(PlaceholderEvent.class));
     }
     
     @Test
-    public void assertDecodeUnknownRowEventType() {
+    void assertDecodeUnknownRowEventType() {
         ByteBuffer data = ByteBuffer.wrap("table public.test: UNKNOWN: data[character varying]:'1 2 3'''".getBytes());
         assertThrows(IngestException.class, () -> new TestDecodingPlugin(null).decode(data, logSequenceNumber));
     }
@@ -109,7 +109,7 @@ public final class TestDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeInsertWithNullValue() {
+    void assertDecodeInsertWithNullValue() {
         ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: id[integer]:123 col0[integer]:null col1[character varying]:null col2[character varying]:'nonnull'".getBytes());
         AbstractWALEvent actual = new TestDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual, instanceOf(WriteRowEvent.class));
@@ -121,7 +121,7 @@ public final class TestDecodingPluginTest {
     }
     
     @Test
-    public void assertDecodeJsonValue() {
+    void assertDecodeJsonValue() {
         ByteBuffer data = ByteBuffer.wrap("table public.test: INSERT: id[integer]:123 ".getBytes());
         AbstractWALEvent actual = new TestDecodingPlugin(null).decode(data, logSequenceNumber);
         assertThat(actual, instanceOf(WriteRowEvent.class));

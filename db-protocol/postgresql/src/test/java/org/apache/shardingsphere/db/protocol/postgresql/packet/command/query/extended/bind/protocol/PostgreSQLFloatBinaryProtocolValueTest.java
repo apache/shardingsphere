@@ -32,24 +32,24 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLFloatBinaryProtocolValueTest {
+class PostgreSQLFloatBinaryProtocolValueTest {
     
     @Mock
     private ByteBuf byteBuf;
     
     @Test
-    public void assertGetColumnLength() {
+    void assertGetColumnLength() {
         assertThat(new PostgreSQLFloatBinaryProtocolValue().getColumnLength(""), is(4));
     }
     
     @Test
-    public void assertRead() {
+    void assertRead() {
         when(byteBuf.readFloat()).thenReturn(1F);
         assertThat(new PostgreSQLFloatBinaryProtocolValue().read(new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8), 4), is(1.0F));
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         new PostgreSQLFloatBinaryProtocolValue().write(new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8), 1F);
         verify(byteBuf).writeFloat(1.0f);
     }
