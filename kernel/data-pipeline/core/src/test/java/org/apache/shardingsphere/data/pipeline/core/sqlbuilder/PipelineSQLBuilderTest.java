@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.spi.sqlbuilder;
+package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixturePipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class PipelineSQLBuilderTest {
     
-    private final PipelineSQLBuilder pipelineSQLBuilder = new FixturePipelineSQLBuilder();
+    private final PipelineSQLBuilder pipelineSQLBuilder = new H2PipelineSQLBuilder();
     
     @Test
     void assertBuildDivisibleInventoryDumpSQL() {

@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
-
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.AbstractPipelineSQLBuilder;
+package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 
 import java.util.Optional;
 
-public final class FixturePipelineSQLBuilder extends AbstractPipelineSQLBuilder {
+public final class H2PipelineSQLBuilder extends AbstractPipelineSQLBuilder {
     
     @Override
     protected boolean isKeyword(final String item) {

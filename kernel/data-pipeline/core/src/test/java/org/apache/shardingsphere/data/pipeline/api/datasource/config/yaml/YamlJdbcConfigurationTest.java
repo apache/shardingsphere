@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.api.datasource.config.yaml;
+package org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml;
 
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJdbcConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.junit.jupiter.api.Test;
 
