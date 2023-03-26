@@ -15,35 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.ingest.position;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPositionFactory;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.StringPrimaryKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class StringPrimaryKeyPositionTest {
+class PlaceholderPositionTest {
     
     @Test
     void assertCompareTo() {
-        StringPrimaryKeyPosition position1 = new StringPrimaryKeyPosition("abc", "def");
-        StringPrimaryKeyPosition position2 = new StringPrimaryKeyPosition("hi", "jk");
-        assertThat(position1.compareTo(null), is(1));
-        assertTrue(position1.compareTo(position2) < 0);
-    }
-    
-    @Test
-    void assertInit() {
-        StringPrimaryKeyPosition position = (StringPrimaryKeyPosition) PrimaryKeyPositionFactory.newInstance("s,hi,jk");
-        assertThat(position.getBeginValue(), is("hi"));
-        assertThat(position.getEndValue(), is("jk"));
+        PlaceholderPosition position1 = new PlaceholderPosition();
+        PlaceholderPosition position2 = new PlaceholderPosition();
+        assertThat(position1.compareTo(position2), is(1));
     }
     
     @Test
     void assertToString() {
-        assertThat(new StringPrimaryKeyPosition("hi", "jk").toString(), is("s,hi,jk"));
+        assertThat(new PlaceholderPosition().toString(), is(""));
     }
 }

@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.ingest.channel.memory;
+package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.ManualBitSet;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 

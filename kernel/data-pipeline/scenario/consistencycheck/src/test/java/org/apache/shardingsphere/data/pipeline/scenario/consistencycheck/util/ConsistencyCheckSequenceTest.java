@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.scenario.consistencycheck.util;
+package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util;
 
-import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

@@ -15,27 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.ingest.position;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.NoUniqueKeyPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPositionFactory;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class NoUniqueKeyPositionTest {
+class IntegerPrimaryKeyPositionTest {
+    
+    @Test
+    void assertCompareTo() {
+        IntegerPrimaryKeyPosition position1 = new IntegerPrimaryKeyPosition(1, 100);
+        IntegerPrimaryKeyPosition position2 = new IntegerPrimaryKeyPosition(101, 200);
+        assertThat(position1.compareTo(null), is(1));
+        assertTrue(position1.compareTo(position2) < 0);
+    }
     
     @Test
     void assertInit() {
-        NoUniqueKeyPosition position = (NoUniqueKeyPosition) PrimaryKeyPositionFactory.newInstance("n,,");
-        assertNull(position.getBeginValue());
-        assertNull(position.getEndValue());
+        IntegerPrimaryKeyPosition position = (IntegerPrimaryKeyPosition) PrimaryKeyPositionFactory.newInstance("i,1,100");
+        assertThat(position.getBeginValue(), is(1L));
+        assertThat(position.getEndValue(), is(100L));
     }
     
     @Test
     void assertToString() {
-        assertThat(new NoUniqueKeyPosition().toString(), is("n,,"));
+        assertThat(new IntegerPrimaryKeyPosition(1, 100).toString(), is("i,1,100"));
     }
 }

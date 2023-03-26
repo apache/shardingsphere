@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.ingest.position;
+package org.apache.shardingsphere.data.pipeline.core.ingest.position;
 
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.NoUniqueKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPositionFactory;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.UnsupportedKeyPosition;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-class UnsupportedKeyPositionTest {
+class NoUniqueKeyPositionTest {
     
     @Test
     void assertInit() {
-        UnsupportedKeyPosition position = (UnsupportedKeyPosition) PrimaryKeyPositionFactory.newInstance("u,,");
+        NoUniqueKeyPosition position = (NoUniqueKeyPosition) PrimaryKeyPositionFactory.newInstance("n,,");
         assertNull(position.getBeginValue());
         assertNull(position.getEndValue());
     }
     
     @Test
     void assertToString() {
-        assertThat(new UnsupportedKeyPosition().toString(), is("u,,"));
+        assertThat(new NoUniqueKeyPosition().toString(), is("n,,"));
     }
 }
