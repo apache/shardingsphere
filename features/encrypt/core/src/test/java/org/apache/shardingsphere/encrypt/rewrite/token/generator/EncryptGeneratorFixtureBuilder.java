@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
@@ -62,35 +64,32 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public abstract class EncryptGeneratorBaseTest {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+class EncryptGeneratorFixtureBuilder {
     
-    private static final String TABLE_NAME = "t_user";
-    
-    protected static EncryptRule createEncryptRule() {
+    static EncryptRule createEncryptRule() {
         EncryptColumnRuleConfiguration pwdColumnConfig =
                 new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_like", "pwd_plain", "test_encryptor", "test_encryptor", "like_encryptor", false);
-        Map<String, AlgorithmConfiguration> encryptors = new LinkedHashMap<>();
+        Map<String, AlgorithmConfiguration> encryptors = new LinkedHashMap<>(2, 1);
         encryptors.put("test_encryptor", new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties()));
         encryptors.put("like_encryptor", new AlgorithmConfiguration("CORE.QUERY_LIKE.FIXTURE", new Properties()));
-        return new EncryptRule(new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration(TABLE_NAME, Collections.singletonList(pwdColumnConfig), null)), encryptors));
+        return new EncryptRule(new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration("t_user", Collections.singletonList(pwdColumnConfig), null)), encryptors));
     }
     
-    protected InsertStatementContext createInsertStatementContext(final List<Object> params) {
+    static InsertStatementContext createInsertStatementContext(final List<Object> params) {
         InsertStatement insertStatement = createInsertStatement();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         when(schema.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status", "pwd"));
-        return new InsertStatementContext(createShardingSphereMetaData(database), params, insertStatement, DefaultDatabase.LOGIC_NAME);
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
+        return new InsertStatementContext(metaData, params, insertStatement, DefaultDatabase.LOGIC_NAME);
     }
     
-    private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
-        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
-    }
-    
-    protected static InsertStatement createInsertStatement() {
+    private static InsertStatement createInsertStatement() {
         InsertStatement result = new MySQLInsertStatement();
-        result.setTable(createTableSegment(TABLE_NAME));
+        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Arrays.asList(
                 new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")),
                 new ColumnSegment(0, 0, new IdentifierValue("status")), new ColumnSegment(0, 0, new IdentifierValue("pwd"))));
@@ -99,12 +98,12 @@ public abstract class EncryptGeneratorBaseTest {
         return result;
     }
     
-    protected static UpdateStatementContext createUpdatesStatementContext() {
-        MySQLUpdateStatement mySQLUpdateStatement = new MySQLUpdateStatement();
-        mySQLUpdateStatement.setTable(createTableSegment(TABLE_NAME));
-        mySQLUpdateStatement.setWhere(createWhereSegment());
-        mySQLUpdateStatement.setSetAssignment(createSetAssignmentSegment());
-        return new UpdateStatementContext(mySQLUpdateStatement);
+    static UpdateStatementContext createUpdatesStatementContext() {
+        MySQLUpdateStatement updateStatement = new MySQLUpdateStatement();
+        updateStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
+        updateStatement.setWhere(createWhereSegment());
+        updateStatement.setSetAssignment(createSetAssignmentSegment());
+        return new UpdateStatementContext(updateStatement);
     }
     
     private static WhereSegment createWhereSegment() {
@@ -120,8 +119,10 @@ public abstract class EncryptGeneratorBaseTest {
         return new SetAssignmentSegment(0, 0, Collections.singletonList(new ColumnAssignmentSegment(0, 0, columnSegment, new LiteralExpressionSegment(0, 0, "654321"))));
     }
     
-    private static SimpleTableSegment createTableSegment(final String tableName) {
-        return new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(tableName)));
+    static List<SQLToken> getPreviousSQLTokens() {
+        EncryptInsertValuesToken encryptInsertValuesToken = new EncryptInsertValuesToken(0, 0);
+        encryptInsertValuesToken.getInsertValues().add(new InsertValue(createValueExpressions()));
+        return Collections.singletonList(encryptInsertValuesToken);
     }
     
     private static List<ExpressionSegment> createValueExpressions() {
@@ -130,14 +131,6 @@ public abstract class EncryptGeneratorBaseTest {
         result.add(new ParameterMarkerExpressionSegment(0, 0, 2));
         result.add(new ParameterMarkerExpressionSegment(0, 0, 3));
         result.add(new ParameterMarkerExpressionSegment(0, 0, 4));
-        return result;
-    }
-    
-    protected static List<SQLToken> getPreviousSQLTokens() {
-        List<SQLToken> result = new ArrayList<>(1);
-        EncryptInsertValuesToken encryptInsertValuesToken = new EncryptInsertValuesToken(0, 0);
-        encryptInsertValuesToken.getInsertValues().add(new InsertValue(createValueExpressions()));
-        result.add(encryptInsertValuesToken);
         return result;
     }
 }
