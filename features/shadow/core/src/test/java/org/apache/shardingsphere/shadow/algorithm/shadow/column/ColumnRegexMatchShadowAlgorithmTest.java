@@ -28,20 +28,25 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class ColumnRegexMatchShadowAlgorithmTest extends AbstractColumnShadowAlgorithmTest {
+class ColumnRegexMatchShadowAlgorithmTest {
+    
+    private static final String SHADOW_TABLE = "t_user";
+    
+    private static final String SHADOW_COLUMN = "shadow";
     
     @Test
     void assertIsShadow() {
-        ColumnRegexMatchedShadowAlgorithm shadowAlgorithm = (ColumnRegexMatchedShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class,
-                "REGEX_MATCH", PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "insert"), new Property("regex", "[1]")));
-        createPreciseColumnShadowValuesFalseCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
-        createPreciseColumnShadowValuesTrueCase().forEach(each -> assertTrue(shadowAlgorithm.isShadow(each)));
+        ColumnRegexMatchedShadowAlgorithm shadowAlgorithm = (ColumnRegexMatchedShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "REGEX_MATCH",
+                PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "insert"), new Property("regex", "[1]")));
+        PreciseColumnShadowValueFixtureBuilder.createFalseCase(SHADOW_TABLE, SHADOW_COLUMN).forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
+        PreciseColumnShadowValueFixtureBuilder.createTrueCase(SHADOW_TABLE, SHADOW_COLUMN).forEach(each -> assertTrue(shadowAlgorithm.isShadow(each)));
     }
     
     @Test
     void assertExceptionCase() {
-        ColumnRegexMatchedShadowAlgorithm shadowAlgorithm = (ColumnRegexMatchedShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class,
-                "REGEX_MATCH", PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "insert"), new Property("regex", "[1]")));
-        assertThrows(UnsupportedShadowColumnTypeException.class, () -> createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each))));
+        ColumnRegexMatchedShadowAlgorithm shadowAlgorithm = (ColumnRegexMatchedShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "REGEX_MATCH",
+                PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "insert"), new Property("regex", "[1]")));
+        assertThrows(UnsupportedShadowColumnTypeException.class,
+                () -> PreciseColumnShadowValueFixtureBuilder.createExceptionCase(SHADOW_TABLE, SHADOW_COLUMN).forEach(each -> assertFalse(shadowAlgorithm.isShadow(each))));
     }
 }
