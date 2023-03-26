@@ -31,6 +31,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.Migrati
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.util.ConfigurationFileUtils;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -70,10 +71,10 @@ public final class JobConfigurationBuilder {
         result.setJobShardingDataNodes(Collections.singletonList("t_order:ds_0.t_order"));
         result.setJobId(generateJobId(result));
         Map<String, YamlPipelineDataSourceConfiguration> sources = new LinkedHashMap<>();
-        sources.put("ds_0", createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtil.readFile("migration_standard_jdbc_source.yaml"))));
+        sources.put("ds_0", createYamlPipelineDataSourceConfiguration(new StandardPipelineDataSourceConfiguration(ConfigurationFileUtils.readFile("migration_standard_jdbc_source.yaml"))));
         result.setSources(sources);
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
-                ConfigurationFileUtil.readFile("migration_sharding_sphere_jdbc_target.yaml"))));
+                ConfigurationFileUtils.readFile("migration_sharding_sphere_jdbc_target.yaml"))));
         TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION").extendYamlJobConfiguration(result);
         return result;
     }
