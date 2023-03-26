@@ -15,53 +15,69 @@
 # limitations under the License.
 #
 
-name: COLLATIONS
+name: INNODB_CMP_PER_INDEX_RESET
 columns:
-  collation_name:
+  database_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: COLLATION_NAME
+    name: database_name
     primaryKey: false
     unsigned: false
     visible: true
-  character_set_name:
+  table_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: CHARACTER_SET_NAME
+    name: table_name
     primaryKey: false
     unsigned: false
     visible: true
-  id:
+  index_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: index_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  compress_ops:
     caseSensitive: false
     dataType: 4
     generated: false
-    name: ID
+    name: compress_ops
     primaryKey: false
     unsigned: false
     visible: true
-  is_default:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: IS_DEFAULT
-    primaryKey: false
-    unsigned: false
-    visible: true
-  is_compiled:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: IS_COMPILED
-    primaryKey: false
-    unsigned: false
-    visible: true
-  sortlen:
+  compress_ops_ok:
     caseSensitive: false
     dataType: 4
     generated: false
-    name: SORTLEN
+    name: compress_ops_ok
+    primaryKey: false
+    unsigned: false
+    visible: true
+  compress_time:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: compress_time
+    primaryKey: false
+    unsigned: false
+    visible: true
+  uncompress_ops:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: uncompress_ops
+    primaryKey: false
+    unsigned: false
+    visible: true
+  uncompress_time:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: uncompress_time
     primaryKey: false
     unsigned: false
     visible: true

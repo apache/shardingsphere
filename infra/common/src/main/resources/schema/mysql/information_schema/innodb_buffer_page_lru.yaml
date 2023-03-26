@@ -15,133 +15,165 @@
 # limitations under the License.
 #
 
-name: PARAMETERS
+name: INNODB_BUFFER_PAGE_LRU
 columns:
-  specific_catalog:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: SPECIFIC_CATALOG
-    primaryKey: false
-    unsigned: false
-    visible: true
-  specific_schema:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: SPECIFIC_SCHEMA
-    primaryKey: false
-    unsigned: false
-    visible: true
-  specific_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: SPECIFIC_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  ordinal_position:
+  pool_id:
     caseSensitive: false
     dataType: 4
     generated: false
-    name: ORDINAL_POSITION
-    primaryKey: false
-    unsigned: false
-    visible: true
-  parameter_mode:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: PARAMETER_MODE
-    primaryKey: false
-    unsigned: false
-    visible: true
-  parameter_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: PARAMETER_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  data_type:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: DATA_TYPE
-    primaryKey: false
-    unsigned: false
-    visible: true
-  character_maximum_length:
-    caseSensitive: false
-    dataType: 4
-    generated: false
-    name: CHARACTER_MAXIMUM_LENGTH
-    primaryKey: false
-    unsigned: false
-    visible: true
-  character_octet_length:
-    caseSensitive: false
-    dataType: 4
-    generated: false
-    name: CHARACTER_OCTET_LENGTH
-    primaryKey: false
-    unsigned: false
-    visible: true
-  numeric_precision:
-    caseSensitive: false
-    dataType: 4
-    generated: false
-    name: NUMERIC_PRECISION
+    name: POOL_ID
     primaryKey: false
     unsigned: true
     visible: true
-  numeric_scale:
+  lru_position:
     caseSensitive: false
     dataType: 4
     generated: false
-    name: NUMERIC_SCALE
-    primaryKey: false
-    unsigned: false
-    visible: true
-  datetime_precision:
-    caseSensitive: false
-    dataType: 4
-    generated: false
-    name: DATETIME_PRECISION
+    name: LRU_POSITION
     primaryKey: false
     unsigned: true
     visible: true
-  character_set_name:
+  space:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SPACE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  page_number:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PAGE_NUMBER
+    primaryKey: false
+    unsigned: true
+    visible: true
+  page_type:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: CHARACTER_SET_NAME
+    name: PAGE_TYPE
     primaryKey: false
     unsigned: false
     visible: true
-  collation_name:
+  flush_type:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: FLUSH_TYPE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  fix_count:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: FIX_COUNT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  is_hashed:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: COLLATION_NAME
+    name: IS_HASHED
     primaryKey: false
     unsigned: false
     visible: true
-  dtd_identifier:
+  newest_modification:
     caseSensitive: false
-    dataType: -1
+    dataType: 4
     generated: false
-    name: DTD_IDENTIFIER
+    name: NEWEST_MODIFICATION
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true
-  routine_type:
+  oldest_modification:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: OLDEST_MODIFICATION
+    primaryKey: false
+    unsigned: true
+    visible: true
+  access_time:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: ACCESS_TIME
+    primaryKey: false
+    unsigned: true
+    visible: true
+  table_name:
     caseSensitive: false
     dataType: 12
     generated: false
-    name: ROUTINE_TYPE
+    name: TABLE_NAME
     primaryKey: false
     unsigned: false
+    visible: true
+  index_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: INDEX_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  number_records:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: NUMBER_RECORDS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  data_size:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: DATA_SIZE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  compressed_size:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COMPRESSED_SIZE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  compressed:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COMPRESSED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  io_fix:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: IO_FIX
+    primaryKey: false
+    unsigned: false
+    visible: true
+  is_old:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: IS_OLD
+    primaryKey: false
+    unsigned: false
+    visible: true
+  free_page_clock:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: FREE_PAGE_CLOCK
+    primaryKey: false
+    unsigned: true
     visible: true

@@ -15,53 +15,13 @@
 # limitations under the License.
 #
 
-name: COLLATIONS
+name: INNODB_FT_BEING_DELETED
 columns:
-  collation_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: COLLATION_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  character_set_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: CHARACTER_SET_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  id:
+  doc_id:
     caseSensitive: false
     dataType: 4
     generated: false
-    name: ID
+    name: DOC_ID
     primaryKey: false
-    unsigned: false
-    visible: true
-  is_default:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: IS_DEFAULT
-    primaryKey: false
-    unsigned: false
-    visible: true
-  is_compiled:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: IS_COMPILED
-    primaryKey: false
-    unsigned: false
-    visible: true
-  sortlen:
-    caseSensitive: false
-    dataType: 4
-    generated: false
-    name: SORTLEN
-    primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true

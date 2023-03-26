@@ -32,7 +32,7 @@ class SystemSchemaBuilderRuleTest {
     void assertValueOfSchemaPathSuccess() {
         SystemSchemaBuilderRule actual = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "information_schema");
         assertThat(actual, is(SystemSchemaBuilderRule.MYSQL_INFORMATION_SCHEMA));
-        assertThat(actual.getTables().size(), is(15));
+        assertThat(actual.getTables().size(), is(25));
     }
     
     @Test
