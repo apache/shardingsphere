@@ -107,7 +107,7 @@
         
         <junit.version>5.9.2</junit.version>
         <hamcrest.version>2.2</hamcrest.version>
-        <mockito.version>4.8.0</mockito.version>
+        <mockito.version>5.2.0</mockito.version>
         
         <protobuf-java.version>3.21.12</protobuf-java.version>
         <awaitility.version>4.2.0</awaitility.version>

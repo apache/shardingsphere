@@ -64,7 +64,7 @@ class InventoryTaskSplitterTest {
     }
     
     @BeforeEach
-    void setUp() throws ReflectiveOperationException {
+    void setUp() {
         initJobItemContext();
         dumperConfig = new InventoryDumperConfiguration(jobItemContext.getTaskConfig().getDumperConfig());
         PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "int", false, true, true);
