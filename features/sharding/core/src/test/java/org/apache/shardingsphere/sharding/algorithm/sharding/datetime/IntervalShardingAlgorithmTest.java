@@ -53,7 +53,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class IntervalShardingAlgorithmTest {
     
-    public static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 6, '0');
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 6, '0');
     
     private final Collection<String> availableTablesForQuarterDataSources = new LinkedList<>();
     
