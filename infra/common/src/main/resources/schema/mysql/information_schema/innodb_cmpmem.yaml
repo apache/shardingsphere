@@ -15,53 +15,53 @@
 # limitations under the License.
 #
 
-name: COLLATIONS
+name: INNODB_CMPMEM
 columns:
-  collation_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: COLLATION_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  character_set_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: CHARACTER_SET_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  id:
+  page_size:
     caseSensitive: false
     dataType: 4
     generated: false
-    name: ID
+    name: page_size
     primaryKey: false
     unsigned: false
     visible: true
-  is_default:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: IS_DEFAULT
-    primaryKey: false
-    unsigned: false
-    visible: true
-  is_compiled:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: IS_COMPILED
-    primaryKey: false
-    unsigned: false
-    visible: true
-  sortlen:
+  buffer_pool_instance:
     caseSensitive: false
     dataType: 4
     generated: false
-    name: SORTLEN
+    name: buffer_pool_instance
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pages_used:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: pages_used
+    primaryKey: false
+    unsigned: false
+    visible: true
+  pages_free:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: pages_free
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relocation_ops:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: relocation_ops
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relocation_time:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: relocation_time
     primaryKey: false
     unsigned: false
     visible: true

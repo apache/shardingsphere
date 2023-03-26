@@ -15,253 +15,261 @@
 # limitations under the License.
 #
 
-name: ROUTINES
+name: INNODB_BUFFER_POOL_STATS
 columns:
-  specific_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: SPECIFIC_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  routine_catalog:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: ROUTINE_CATALOG
-    primaryKey: false
-    unsigned: false
-    visible: true
-  routine_schema:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: ROUTINE_SCHEMA
-    primaryKey: false
-    unsigned: false
-    visible: true
-  routine_name:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: ROUTINE_NAME
-    primaryKey: false
-    unsigned: false
-    visible: true
-  routine_type:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: ROUTINE_TYPE
-    primaryKey: false
-    unsigned: false
-    visible: true
-  data_type:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: DATA_TYPE
-    primaryKey: false
-    unsigned: false
-    visible: true
-  character_maximum_length:
+  pool_id:
     caseSensitive: false
     dataType: 4
     generated: false
-    name: CHARACTER_MAXIMUM_LENGTH
-    primaryKey: false
-    unsigned: false
-    visible: true
-  character_octet_length:
-    caseSensitive: false
-    dataType: 4
-    generated: false
-    name: CHARACTER_OCTET_LENGTH
-    primaryKey: false
-    unsigned: false
-    visible: true
-  numeric_precision:
-    caseSensitive: false
-    dataType: 4
-    generated: false
-    name: NUMERIC_PRECISION
+    name: POOL_ID
     primaryKey: false
     unsigned: true
     visible: true
-  numeric_scale:
+  pool_size:
     caseSensitive: false
     dataType: 4
     generated: false
-    name: NUMERIC_SCALE
-    primaryKey: false
-    unsigned: false
-    visible: true
-  datetime_precision:
-    caseSensitive: false
-    dataType: 4
-    generated: false
-    name: DATETIME_PRECISION
+    name: POOL_SIZE
     primaryKey: false
     unsigned: true
     visible: true
-  character_set_name:
+  free_buffers:
     caseSensitive: false
-    dataType: 12
+    dataType: 4
     generated: false
-    name: CHARACTER_SET_NAME
+    name: FREE_BUFFERS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  database_pages:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: DATABASE_PAGES
+    primaryKey: false
+    unsigned: true
+    visible: true
+  old_database_pages:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: OLD_DATABASE_PAGES
+    primaryKey: false
+    unsigned: true
+    visible: true
+  modified_database_pages:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MODIFIED_DATABASE_PAGES
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pending_decompress:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PENDING_DECOMPRESS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pending_reads:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PENDING_READS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pending_flush_lru:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PENDING_FLUSH_LRU
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pending_flush_list:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PENDING_FLUSH_LIST
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pages_made_young:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PAGES_MADE_YOUNG
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pages_not_made_young:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PAGES_NOT_MADE_YOUNG
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pages_made_young_rate:
+    caseSensitive: false
+    dataType: 8
+    generated: false
+    name: PAGES_MADE_YOUNG_RATE
     primaryKey: false
     unsigned: false
     visible: true
-  collation_name:
+  pages_made_not_young_rate:
     caseSensitive: false
-    dataType: 12
+    dataType: 8
     generated: false
-    name: COLLATION_NAME
+    name: PAGES_MADE_NOT_YOUNG_RATE
     primaryKey: false
     unsigned: false
     visible: true
-  dtd_identifier:
+  number_pages_read:
     caseSensitive: false
-    dataType: -1
+    dataType: 4
     generated: false
-    name: DTD_IDENTIFIER
+    name: NUMBER_PAGES_READ
+    primaryKey: false
+    unsigned: true
+    visible: true
+  number_pages_created:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: NUMBER_PAGES_CREATED
+    primaryKey: false
+    unsigned: true
+    visible: true
+  number_pages_written:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: NUMBER_PAGES_WRITTEN
+    primaryKey: false
+    unsigned: true
+    visible: true
+  pages_read_rate:
+    caseSensitive: false
+    dataType: 8
+    generated: false
+    name: PAGES_READ_RATE
     primaryKey: false
     unsigned: false
     visible: true
-  routine_body:
+  pages_create_rate:
     caseSensitive: false
-    dataType: 12
+    dataType: 8
     generated: false
-    name: ROUTINE_BODY
+    name: PAGES_CREATE_RATE
     primaryKey: false
     unsigned: false
     visible: true
-  routine_definition:
+  pages_written_rate:
     caseSensitive: false
-    dataType: -1
+    dataType: 8
     generated: false
-    name: ROUTINE_DEFINITION
+    name: PAGES_WRITTEN_RATE
     primaryKey: false
     unsigned: false
     visible: true
-  external_name:
+  number_pages_get:
     caseSensitive: false
-    dataType: 12
+    dataType: 4
     generated: false
-    name: EXTERNAL_NAME
+    name: NUMBER_PAGES_GET
+    primaryKey: false
+    unsigned: true
+    visible: true
+  hit_rate:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: HIT_RATE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  young_make_per_thousand_gets:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: YOUNG_MAKE_PER_THOUSAND_GETS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  not_young_make_per_thousand_gets:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: NOT_YOUNG_MAKE_PER_THOUSAND_GETS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  number_pages_read_ahead:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: NUMBER_PAGES_READ_AHEAD
+    primaryKey: false
+    unsigned: true
+    visible: true
+  number_read_ahead_evicted:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: NUMBER_READ_AHEAD_EVICTED
+    primaryKey: false
+    unsigned: true
+    visible: true
+  read_ahead_rate:
+    caseSensitive: false
+    dataType: 8
+    generated: false
+    name: READ_AHEAD_RATE
     primaryKey: false
     unsigned: false
     visible: true
-  external_language:
+  read_ahead_evicted_rate:
     caseSensitive: false
-    dataType: 12
+    dataType: 8
     generated: false
-    name: EXTERNAL_LANGUAGE
+    name: READ_AHEAD_EVICTED_RATE
     primaryKey: false
     unsigned: false
     visible: true
-  parameter_style:
+  lru_io_total:
     caseSensitive: false
-    dataType: 12
+    dataType: 4
     generated: false
-    name: PARAMETER_STYLE
+    name: LRU_IO_TOTAL
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true
-  is_deterministic:
+  lru_io_current:
     caseSensitive: false
-    dataType: 12
+    dataType: 4
     generated: false
-    name: IS_DETERMINISTIC
+    name: LRU_IO_CURRENT
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true
-  sql_data_access:
+  uncompress_total:
     caseSensitive: false
-    dataType: 12
+    dataType: 4
     generated: false
-    name: SQL_DATA_ACCESS
+    name: UNCOMPRESS_TOTAL
     primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true
-  sql_path:
+  uncompress_current:
     caseSensitive: false
-    dataType: 12
+    dataType: 4
     generated: false
-    name: SQL_PATH
+    name: UNCOMPRESS_CURRENT
     primaryKey: false
-    unsigned: false
-    visible: true
-  security_type:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: SECURITY_TYPE
-    primaryKey: false
-    unsigned: false
-    visible: true
-  created:
-    caseSensitive: false
-    dataType: 93
-    generated: false
-    name: CREATED
-    primaryKey: false
-    unsigned: false
-    visible: true
-  last_altered:
-    caseSensitive: false
-    dataType: 93
-    generated: false
-    name: LAST_ALTERED
-    primaryKey: false
-    unsigned: false
-    visible: true
-  sql_mode:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: SQL_MODE
-    primaryKey: false
-    unsigned: false
-    visible: true
-  routine_comment:
-    caseSensitive: false
-    dataType: -1
-    generated: false
-    name: ROUTINE_COMMENT
-    primaryKey: false
-    unsigned: false
-    visible: true
-  definer:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: DEFINER
-    primaryKey: false
-    unsigned: false
-    visible: true
-  character_set_client:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: CHARACTER_SET_CLIENT
-    primaryKey: false
-    unsigned: false
-    visible: true
-  collation_connection:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: COLLATION_CONNECTION
-    primaryKey: false
-    unsigned: false
-    visible: true
-  database_collation:
-    caseSensitive: false
-    dataType: 12
-    generated: false
-    name: DATABASE_COLLATION
-    primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true

@@ -179,7 +179,7 @@ columns:
     visible: true
   originator:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: ORIGINATOR
     primaryKey: false
