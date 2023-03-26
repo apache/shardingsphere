@@ -51,7 +51,7 @@ columns:
     visible: true
   relocation_ops:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: relocation_ops
     primaryKey: false

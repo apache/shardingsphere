@@ -51,7 +51,7 @@ columns:
     visible: true
   ordinal_position:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: ORDINAL_POSITION
     primaryKey: false
@@ -83,7 +83,7 @@ columns:
     visible: true
   character_maximum_length:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: CHARACTER_MAXIMUM_LENGTH
     primaryKey: false
@@ -91,7 +91,7 @@ columns:
     visible: true
   character_octet_length:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: CHARACTER_OCTET_LENGTH
     primaryKey: false
@@ -99,7 +99,7 @@ columns:
     visible: true
   numeric_precision:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: NUMERIC_PRECISION
     primaryKey: false
@@ -107,7 +107,7 @@ columns:
     visible: true
   numeric_scale:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: NUMERIC_SCALE
     primaryKey: false
@@ -115,7 +115,7 @@ columns:
     visible: true
   datetime_precision:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: DATETIME_PRECISION
     primaryKey: false

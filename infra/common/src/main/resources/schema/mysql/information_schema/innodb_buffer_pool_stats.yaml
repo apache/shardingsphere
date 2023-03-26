@@ -19,7 +19,7 @@ name: INNODB_BUFFER_POOL_STATS
 columns:
   pool_id:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: POOL_ID
     primaryKey: false
@@ -27,7 +27,7 @@ columns:
     visible: true
   pool_size:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: POOL_SIZE
     primaryKey: false
@@ -35,7 +35,7 @@ columns:
     visible: true
   free_buffers:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: FREE_BUFFERS
     primaryKey: false
@@ -43,7 +43,7 @@ columns:
     visible: true
   database_pages:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: DATABASE_PAGES
     primaryKey: false
@@ -51,7 +51,7 @@ columns:
     visible: true
   old_database_pages:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: OLD_DATABASE_PAGES
     primaryKey: false
@@ -59,7 +59,7 @@ columns:
     visible: true
   modified_database_pages:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: MODIFIED_DATABASE_PAGES
     primaryKey: false
@@ -67,7 +67,7 @@ columns:
     visible: true
   pending_decompress:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: PENDING_DECOMPRESS
     primaryKey: false
@@ -75,7 +75,7 @@ columns:
     visible: true
   pending_reads:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: PENDING_READS
     primaryKey: false
@@ -83,7 +83,7 @@ columns:
     visible: true
   pending_flush_lru:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: PENDING_FLUSH_LRU
     primaryKey: false
@@ -91,7 +91,7 @@ columns:
     visible: true
   pending_flush_list:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: PENDING_FLUSH_LIST
     primaryKey: false
@@ -99,7 +99,7 @@ columns:
     visible: true
   pages_made_young:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: PAGES_MADE_YOUNG
     primaryKey: false
@@ -107,7 +107,7 @@ columns:
     visible: true
   pages_not_made_young:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: PAGES_NOT_MADE_YOUNG
     primaryKey: false
@@ -131,7 +131,7 @@ columns:
     visible: true
   number_pages_read:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: NUMBER_PAGES_READ
     primaryKey: false
@@ -139,7 +139,7 @@ columns:
     visible: true
   number_pages_created:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: NUMBER_PAGES_CREATED
     primaryKey: false
@@ -147,7 +147,7 @@ columns:
     visible: true
   number_pages_written:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: NUMBER_PAGES_WRITTEN
     primaryKey: false
@@ -179,7 +179,7 @@ columns:
     visible: true
   number_pages_get:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: NUMBER_PAGES_GET
     primaryKey: false
@@ -187,7 +187,7 @@ columns:
     visible: true
   hit_rate:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: HIT_RATE
     primaryKey: false
@@ -195,7 +195,7 @@ columns:
     visible: true
   young_make_per_thousand_gets:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: YOUNG_MAKE_PER_THOUSAND_GETS
     primaryKey: false
@@ -203,7 +203,7 @@ columns:
     visible: true
   not_young_make_per_thousand_gets:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: NOT_YOUNG_MAKE_PER_THOUSAND_GETS
     primaryKey: false
@@ -211,7 +211,7 @@ columns:
     visible: true
   number_pages_read_ahead:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: NUMBER_PAGES_READ_AHEAD
     primaryKey: false
@@ -219,7 +219,7 @@ columns:
     visible: true
   number_read_ahead_evicted:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: NUMBER_READ_AHEAD_EVICTED
     primaryKey: false
@@ -243,7 +243,7 @@ columns:
     visible: true
   lru_io_total:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: LRU_IO_TOTAL
     primaryKey: false
@@ -251,7 +251,7 @@ columns:
     visible: true
   lru_io_current:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: LRU_IO_CURRENT
     primaryKey: false
@@ -259,7 +259,7 @@ columns:
     visible: true
   uncompress_total:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: UNCOMPRESS_TOTAL
     primaryKey: false
@@ -267,7 +267,7 @@ columns:
     visible: true
   uncompress_current:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: UNCOMPRESS_CURRENT
     primaryKey: false

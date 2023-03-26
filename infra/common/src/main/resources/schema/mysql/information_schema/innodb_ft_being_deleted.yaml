@@ -19,7 +19,7 @@ name: INNODB_FT_BEING_DELETED
 columns:
   doc_id:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: DOC_ID
     primaryKey: false

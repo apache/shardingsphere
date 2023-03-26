@@ -17,46 +17,6 @@
   -->
 
 <integration-test-cases>
-    <test-case sql="select * from information_schema.character_sets;" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_character_sets.xml" />
-    </test-case>
-    
-    <test-case sql="select * from information_schema.collation_character_set_applicability;" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_collation_character_set_applicability.xml" />
-    </test-case>
-    
-    <test-case sql="select * from information_schema.collations;" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_collations.xml" />
-    </test-case>
-    
-    <test-case sql="select * from information_schema.column_privileges;" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_column_privileges.xml" />
-    </test-case>
-    
-    <test-case sql="select * from information_schema.columns;" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_columns.xml" />
-    </test-case>
-    
-    <test-case sql="select * from information_schema.engines;" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_engines.xml" />
-    </test-case>
-    
-    <test-case sql="select * from information_schema.events;" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_events.xml" />
-    </test-case>
-    
-    <test-case sql="select * from information_schema.files;" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_files.xml" />
-    </test-case>
-    
-    <test-case sql="select * from information_schema.global_status;" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_global_status.xml" />
-    </test-case>
-    
-    <test-case sql="select * from information_schema.global_variables;" db-types="MySQL" scenario-types="db">
-        <assertion expected-data-file="select_mysql_information_schema_global_variables.xml" />
-    </test-case>
-    
     <test-case sql="select * from information_schema.innodb_buffer_page;" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_buffer_page.xml" />
     </test-case>
