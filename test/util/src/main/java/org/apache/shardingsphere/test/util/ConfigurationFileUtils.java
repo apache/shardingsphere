@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.util;
+package org.apache.shardingsphere.test.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -28,10 +28,10 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 /**
- * Configuration file util.
+ * Configuration file utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ConfigurationFileUtil {
+public final class ConfigurationFileUtils {
     
     /**
      * Read file content.
