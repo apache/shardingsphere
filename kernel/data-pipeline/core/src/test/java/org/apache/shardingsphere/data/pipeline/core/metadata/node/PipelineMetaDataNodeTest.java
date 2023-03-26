@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.metadata.node;
+package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
-import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
+import org.apache.shardingsphere.data.pipeline.api.job.type.FixtureJobType;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class PipelineMetaDataNodeTest {
     
-    private final String migrationMetaDataRootPath = "/pipeline/migration/metadata";
+    private final String migrationMetaDataRootPath = "/pipeline/fixture/metadata";
     
     private final String jobId = "j0101001";
     
@@ -39,12 +38,12 @@ class PipelineMetaDataNodeTest {
     
     @Test
     void assertGetMetaDataDataSourcesPath() {
-        MatcherAssert.assertThat(PipelineMetaDataNode.getMetaDataDataSourcesPath(new MigrationJobType()), is(migrationMetaDataRootPath + "/data_sources"));
+        MatcherAssert.assertThat(PipelineMetaDataNode.getMetaDataDataSourcesPath(new FixtureJobType()), is(migrationMetaDataRootPath + "/data_sources"));
     }
     
     @Test
     void assertGetMetaDataProcessConfigPath() {
-        assertThat(PipelineMetaDataNode.getMetaDataProcessConfigPath(new MigrationJobType()), is(migrationMetaDataRootPath + "/process_config"));
+        assertThat(PipelineMetaDataNode.getMetaDataProcessConfigPath(new FixtureJobType()), is(migrationMetaDataRootPath + "/process_config"));
     }
     
     @Test
