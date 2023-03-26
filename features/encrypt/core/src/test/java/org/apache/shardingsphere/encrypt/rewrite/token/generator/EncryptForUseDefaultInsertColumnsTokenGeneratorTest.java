@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class EncryptForUseDefaultInsertColumnsTokenGeneratorTest {
     
-    EncryptForUseDefaultInsertColumnsTokenGenerator generator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
+    private final EncryptForUseDefaultInsertColumnsTokenGenerator generator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
     
     @BeforeEach
     void setup() {
@@ -43,12 +43,14 @@ class EncryptForUseDefaultInsertColumnsTokenGeneratorTest {
     @Test
     void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         generator.setPreviousSQLTokens(Collections.emptyList());
-        assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_like, pwd_plain)"));
+        assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())).toString(),
+                is("(id, name, status, pwd_cipher, pwd_assist, pwd_like, pwd_plain)"));
     }
     
     @Test
     void assertGenerateSQLTokenFromPreviousSQLTokens() {
         generator.setPreviousSQLTokens(EncryptGeneratorFixtureBuilder.getPreviousSQLTokens());
-        assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_like, pwd_plain)"));
+        assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())).toString(),
+                is("(id, name, status, pwd_cipher, pwd_assist, pwd_like, pwd_plain)"));
     }
 }
