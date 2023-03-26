@@ -31,7 +31,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.Govern
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
 import org.apache.shardingsphere.test.e2e.showprocesslist.parameter.ShowProcessListTestParameter;
 
 import javax.sql.DataSource;
@@ -57,7 +57,7 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
         StorageContainer storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "", testParam.getScenario(),
                 StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType())));
         AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(),
-                getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getRunMode()), AdapterContainerUtil.getAdapterContainerImage());
+                getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getRunMode()), AdapterContainerUtils.getAdapterContainerImage());
         jdbcContainer = AdapterContainerFactory.newInstance(
                 AdapterMode.valueOf(testParam.getRunMode().toUpperCase()), AdapterType.JDBC, testParam.getDatabaseType(), storageContainer, testParam.getScenario(), containerConfig);
         proxyContainer = AdapterContainerFactory.newInstance(

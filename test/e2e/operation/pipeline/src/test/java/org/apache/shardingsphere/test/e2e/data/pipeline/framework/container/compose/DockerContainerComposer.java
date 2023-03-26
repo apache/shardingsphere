@@ -34,7 +34,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.St
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.mysql.MySQLContainerConfigurationFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
 import java.security.InvalidParameterException;
@@ -66,7 +66,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         }
         for (int i = 0; i < storageContainerCount; i++) {
             StorageContainerConfiguration storageContainerConfig;
-            if (DatabaseTypeUtil.isMySQL(databaseType)) {
+            if (DatabaseTypeUtils.isMySQL(databaseType)) {
                 int majorVersion = new DockerImageVersion(storageContainerImage).getMajorVersion();
                 Map<String, String> mountedResources = Collections.singletonMap(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
                 storageContainerConfig = MySQLContainerConfigurationFactory.newInstance(null, null, mountedResources);

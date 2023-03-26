@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateA
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.BaseIncrementTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
-import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtil;
+import org.apache.shardingsphere.test.e2e.data.pipeline.util.DataSourceExecuteUtils;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 
@@ -57,7 +57,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         while (executeCount < executeCountLimit && !Thread.currentThread().isInterrupted()) {
             Object orderId = insertOrder();
             if (0 == executeCount % 2) {
-                DataSourceExecuteUtil.execute(dataSource, String.format("DELETE FROM %s WHERE order_id = ?", getTableNameWithSchema(orderTableName)), new Object[]{orderId});
+                DataSourceExecuteUtils.execute(dataSource, String.format("DELETE FROM %s WHERE order_id = ?", getTableNameWithSchema(orderTableName)), new Object[]{orderId});
             } else {
                 updateOrderByPrimaryKey(orderId);
             }
@@ -72,7 +72,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
                 PipelineCaseHelper.generateJsonString(10, false)};
         String insertSQL = String.format("INSERT INTO %s (order_id,user_id,status,t_json,t_jsonb) VALUES (?, ?, ?, ?, ?)", getTableNameWithSchema(orderTableName));
         log.info("insert order sql:{}", insertSQL);
-        DataSourceExecuteUtil.execute(dataSource, insertSQL, orderInsertDate);
+        DataSourceExecuteUtils.execute(dataSource, insertSQL, orderInsertDate);
         return orderInsertDate[0];
     }
     
@@ -80,7 +80,7 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
         // TODO openGauss incremental task parse single quote not correctly now
         Object[] updateData = {"中文UPDATE" + Instant.now().getEpochSecond(), PipelineCaseHelper.generateJsonString(5, true), PipelineCaseHelper.generateJsonString(5, false), primaryKey};
         String updateSql = String.format("UPDATE %s SET status = ?, t_json = ?, t_jsonb = ? WHERE order_id = ?", getTableNameWithSchema(orderTableName));
-        DataSourceExecuteUtil.execute(dataSource, updateSql, updateData);
+        DataSourceExecuteUtils.execute(dataSource, updateSql, updateData);
     }
     
     private String getTableNameWithSchema(final String tableName) {

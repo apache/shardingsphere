@@ -25,8 +25,11 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 
+/**
+ * Database type utility class.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DatabaseTypeUtil {
+public final class DatabaseTypeUtils {
     
     /**
      * Check MySQL database type.

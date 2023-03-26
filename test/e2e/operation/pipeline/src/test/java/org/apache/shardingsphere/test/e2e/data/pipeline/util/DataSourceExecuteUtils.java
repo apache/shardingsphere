@@ -27,10 +27,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Data source execute util.
+ * Data source execute utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceExecuteUtil {
+public final class DataSourceExecuteUtils {
     
     /**
      * Execute SQL.
