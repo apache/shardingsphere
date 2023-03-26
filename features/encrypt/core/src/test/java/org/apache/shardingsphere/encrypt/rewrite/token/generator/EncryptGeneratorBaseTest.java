@@ -66,7 +66,7 @@ public abstract class EncryptGeneratorBaseTest {
     
     private static final String TABLE_NAME = "t_user";
     
-    protected static EncryptRule createEncryptRule() {
+    protected EncryptRule createEncryptRule() {
         EncryptColumnRuleConfiguration pwdColumnConfig =
                 new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_like", "pwd_plain", "test_encryptor", "test_encryptor", "like_encryptor", false);
         Map<String, AlgorithmConfiguration> encryptors = new LinkedHashMap<>();
