@@ -27,32 +27,32 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class EncryptInsertValuesTokenGeneratorTest extends EncryptGeneratorBaseTest {
+class EncryptInsertValuesTokenGeneratorTest {
     
     private final EncryptInsertValuesTokenGenerator generator = new EncryptInsertValuesTokenGenerator();
     
     @BeforeEach
     void setup() {
-        generator.setEncryptRule(createEncryptRule());
+        generator.setEncryptRule(EncryptGeneratorFixtureBuilder.createEncryptRule());
     }
     
     @Test
     void assertIsGenerateSQLToken() {
-        assertTrue(generator.isGenerateSQLToken(createInsertStatementContext(Collections.emptyList())));
+        assertTrue(generator.isGenerateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())));
     }
     
     @Test
     void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         generator.setPreviousSQLTokens(Collections.emptyList());
         generator.setDatabaseName("db_schema");
-        assertThat(generator.generateSQLToken(createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?, ?)"));
+        assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?, ?)"));
     }
     
     @Test
     void assertGenerateSQLTokenFromPreviousSQLTokens() {
         generator.setDatabaseName("db-001");
-        generator.setPreviousSQLTokens(getPreviousSQLTokens());
+        generator.setPreviousSQLTokens(EncryptGeneratorFixtureBuilder.getPreviousSQLTokens());
         generator.setDatabaseName("db_schema");
-        assertThat(generator.generateSQLToken(createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?, ?)"));
+        assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?, ?)"));
     }
 }

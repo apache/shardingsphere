@@ -29,27 +29,27 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class EncryptPredicateColumnTokenGeneratorTest extends EncryptGeneratorBaseTest {
+class EncryptPredicateColumnTokenGeneratorTest {
     
     private final EncryptPredicateColumnTokenGenerator generator = new EncryptPredicateColumnTokenGenerator();
     
     @BeforeEach
     void setup() {
-        generator.setEncryptRule(createEncryptRule());
+        generator.setEncryptRule(EncryptGeneratorFixtureBuilder.createEncryptRule());
     }
     
     @Test
     void assertIsGenerateSQLToken() {
         generator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
         generator.setSchemas(Collections.emptyMap());
-        assertTrue(generator.isGenerateSQLToken(createUpdatesStatementContext()));
+        assertTrue(generator.isGenerateSQLToken(EncryptGeneratorFixtureBuilder.createUpdatesStatementContext()));
     }
     
     @Test
     void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         generator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
         generator.setSchemas(Collections.emptyMap());
-        Collection<SubstitutableColumnNameToken> substitutableColumnNameTokens = generator.generateSQLTokens(createUpdatesStatementContext());
+        Collection<SubstitutableColumnNameToken> substitutableColumnNameTokens = generator.generateSQLTokens(EncryptGeneratorFixtureBuilder.createUpdatesStatementContext());
         assertThat(substitutableColumnNameTokens.size(), is(1));
         assertThat(substitutableColumnNameTokens.iterator().next().toString(null), is("pwd_plain"));
     }

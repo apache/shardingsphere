@@ -23,32 +23,32 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class EncryptForUseDefaultInsertColumnsTokenGeneratorTest extends EncryptGeneratorBaseTest {
+class EncryptForUseDefaultInsertColumnsTokenGeneratorTest {
     
     EncryptForUseDefaultInsertColumnsTokenGenerator generator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
     
     @BeforeEach
     void setup() {
-        generator.setEncryptRule(createEncryptRule());
+        generator.setEncryptRule(EncryptGeneratorFixtureBuilder.createEncryptRule());
     }
     
     @Test
     void assertIsGenerateSQLToken() {
-        assertFalse(generator.isGenerateSQLToken(createInsertStatementContext(Collections.emptyList())));
+        assertFalse(generator.isGenerateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())));
     }
     
     @Test
     void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         generator.setPreviousSQLTokens(Collections.emptyList());
-        assertThat(generator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_like, pwd_plain)"));
+        assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_like, pwd_plain)"));
     }
     
     @Test
     void assertGenerateSQLTokenFromPreviousSQLTokens() {
-        generator.setPreviousSQLTokens(getPreviousSQLTokens());
-        assertThat(generator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_like, pwd_plain)"));
+        generator.setPreviousSQLTokens(EncryptGeneratorFixtureBuilder.getPreviousSQLTokens());
+        assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_like, pwd_plain)"));
     }
 }
