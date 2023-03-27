@@ -5,7 +5,7 @@ weight = 7
 
 ## 描述
 
-`DROP DEFAULT SHARDING STRATEGY` 语法用于删除指定逻辑库的默认分片策略
+`DROP DEFAULT SHARDING STRATEGY` 语法用于删除指定逻辑库的默认分片策略。
 
 ### 语法定义
 

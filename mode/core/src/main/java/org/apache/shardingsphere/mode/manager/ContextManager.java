@@ -55,7 +55,7 @@ import org.apache.shardingsphere.metadata.MetaDataFactory;
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

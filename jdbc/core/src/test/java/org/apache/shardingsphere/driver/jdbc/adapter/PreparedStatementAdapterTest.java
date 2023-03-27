@@ -58,12 +58,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PreparedStatementAdapterTest {
+class PreparedStatementAdapterTest {
     
     private ShardingSpherePreparedStatement shardingSpherePreparedStatement;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         when(connection.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
@@ -79,7 +79,7 @@ public final class PreparedStatementAdapterTest {
     }
     
     @Test
-    public void assertSetNull() {
+    void assertSetNull() {
         shardingSpherePreparedStatement.setNull(1, Types.VARCHAR);
         shardingSpherePreparedStatement.setNull(2, Types.VARCHAR, "");
         assertParameter(shardingSpherePreparedStatement, 1, null);
@@ -87,61 +87,61 @@ public final class PreparedStatementAdapterTest {
     }
     
     @Test
-    public void assertSetBoolean() {
+    void assertSetBoolean() {
         shardingSpherePreparedStatement.setBoolean(1, true);
         assertParameter(shardingSpherePreparedStatement, 1, true);
     }
     
     @Test
-    public void assertSetByte() {
+    void assertSetByte() {
         shardingSpherePreparedStatement.setByte(1, (byte) 0);
         assertParameter(shardingSpherePreparedStatement, 1, (byte) 0);
     }
     
     @Test
-    public void assertSetShort() {
+    void assertSetShort() {
         shardingSpherePreparedStatement.setShort(1, (short) 0);
         assertParameter(shardingSpherePreparedStatement, 1, (short) 0);
     }
     
     @Test
-    public void assertSetInt() {
+    void assertSetInt() {
         shardingSpherePreparedStatement.setInt(1, 0);
         assertParameter(shardingSpherePreparedStatement, 1, 0);
     }
     
     @Test
-    public void assertSetLong() {
+    void assertSetLong() {
         shardingSpherePreparedStatement.setLong(1, 0L);
         assertParameter(shardingSpherePreparedStatement, 1, 0L);
     }
     
     @Test
-    public void assertSetFloat() {
+    void assertSetFloat() {
         shardingSpherePreparedStatement.setFloat(1, 0.0F);
         assertParameter(shardingSpherePreparedStatement, 1, 0.0F);
     }
     
     @Test
-    public void assertSetDouble() {
+    void assertSetDouble() {
         shardingSpherePreparedStatement.setDouble(1, 0.0D);
         assertParameter(shardingSpherePreparedStatement, 1, 0.0D);
     }
     
     @Test
-    public void assertSetString() {
+    void assertSetString() {
         shardingSpherePreparedStatement.setString(1, "0");
         assertParameter(shardingSpherePreparedStatement, 1, "0");
     }
     
     @Test
-    public void assertSetBigDecimal() {
+    void assertSetBigDecimal() {
         shardingSpherePreparedStatement.setBigDecimal(1, BigDecimal.ZERO);
         assertParameter(shardingSpherePreparedStatement, 1, BigDecimal.ZERO);
     }
     
     @Test
-    public void assertSetDate() {
+    void assertSetDate() {
         Date date = new Date(0L);
         shardingSpherePreparedStatement.setDate(1, date);
         shardingSpherePreparedStatement.setDate(2, date, Calendar.getInstance());
@@ -150,7 +150,7 @@ public final class PreparedStatementAdapterTest {
     }
     
     @Test
-    public void assertSetTime() {
+    void assertSetTime() {
         Time time = new Time(0L);
         shardingSpherePreparedStatement.setTime(1, time);
         shardingSpherePreparedStatement.setTime(2, time, Calendar.getInstance());
@@ -159,7 +159,7 @@ public final class PreparedStatementAdapterTest {
     }
     
     @Test
-    public void assertSetTimestamp() {
+    void assertSetTimestamp() {
         Timestamp timestamp = new Timestamp(0L);
         shardingSpherePreparedStatement.setTimestamp(1, timestamp);
         shardingSpherePreparedStatement.setTimestamp(2, timestamp, Calendar.getInstance());
@@ -168,13 +168,13 @@ public final class PreparedStatementAdapterTest {
     }
     
     @Test
-    public void assertSetBytes() {
+    void assertSetBytes() {
         shardingSpherePreparedStatement.setBytes(1, new byte[]{});
         assertParameter(shardingSpherePreparedStatement, 1, new byte[]{});
     }
     
     @Test
-    public void assertSetBlob() throws IOException {
+    void assertSetBlob() throws IOException {
         try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
             shardingSpherePreparedStatement.setBlob(1, (Blob) null);
             shardingSpherePreparedStatement.setBlob(2, inputStream);
@@ -186,7 +186,7 @@ public final class PreparedStatementAdapterTest {
     }
     
     @Test
-    public void assertSetClob() {
+    void assertSetClob() {
         Reader reader = new StringReader("value");
         shardingSpherePreparedStatement.setClob(1, (Clob) null);
         shardingSpherePreparedStatement.setClob(2, reader);
@@ -197,7 +197,7 @@ public final class PreparedStatementAdapterTest {
     }
     
     @Test
-    public void assertSetAsciiStream() throws IOException {
+    void assertSetAsciiStream() throws IOException {
         try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
             shardingSpherePreparedStatement.setAsciiStream(1, inputStream);
             shardingSpherePreparedStatement.setAsciiStream(2, inputStream, 100);
@@ -209,7 +209,7 @@ public final class PreparedStatementAdapterTest {
     }
     
     @Test
-    public void assertSetUnicodeStream() throws IOException {
+    void assertSetUnicodeStream() throws IOException {
         try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
             shardingSpherePreparedStatement.setUnicodeStream(1, inputStream, 100);
             assertParameter(shardingSpherePreparedStatement, 1, inputStream);
@@ -217,7 +217,7 @@ public final class PreparedStatementAdapterTest {
     }
     
     @Test
-    public void assertSetBinaryStream() throws IOException {
+    void assertSetBinaryStream() throws IOException {
         try (InputStream inputStream = new ByteArrayInputStream(new byte[]{})) {
             shardingSpherePreparedStatement.setBinaryStream(1, inputStream);
             shardingSpherePreparedStatement.setBinaryStream(2, inputStream, 100);
@@ -229,7 +229,7 @@ public final class PreparedStatementAdapterTest {
     }
     
     @Test
-    public void assertSetCharacterStream() {
+    void assertSetCharacterStream() {
         shardingSpherePreparedStatement.setCharacterStream(1, new StringReader("value"));
         shardingSpherePreparedStatement.setCharacterStream(2, new StringReader("value"), 100);
         shardingSpherePreparedStatement.setCharacterStream(3, new StringReader("value"), 100L);
@@ -239,19 +239,19 @@ public final class PreparedStatementAdapterTest {
     }
     
     @Test
-    public void assertSetURL() {
+    void assertSetURL() {
         shardingSpherePreparedStatement.setURL(1, null);
         assertParameter(shardingSpherePreparedStatement, 1, null);
     }
     
     @Test
-    public void assertSetSQLXML() {
+    void assertSetSQLXML() {
         shardingSpherePreparedStatement.setSQLXML(1, null);
         assertParameter(shardingSpherePreparedStatement, 1, null);
     }
     
     @Test
-    public void assertSetObject() {
+    void assertSetObject() {
         Object obj = "value";
         shardingSpherePreparedStatement.setObject(1, obj);
         shardingSpherePreparedStatement.setObject(2, obj, 0);
@@ -270,7 +270,7 @@ public final class PreparedStatementAdapterTest {
     }
     
     @Test
-    public void assertClearParameters() {
+    void assertClearParameters() {
         Object obj = new Object();
         shardingSpherePreparedStatement.setObject(1, obj);
         shardingSpherePreparedStatement.setObject(2, obj, 0);

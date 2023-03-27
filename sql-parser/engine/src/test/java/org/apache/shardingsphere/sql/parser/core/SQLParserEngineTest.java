@@ -30,10 +30,10 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
 
-public final class SQLParserEngineTest {
+class SQLParserEngineTest {
     
     @Test
-    public void assertParse() {
+    void assertParse() {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class);
         when(sqlParserExecutor.parse("")).thenReturn(mock(ParseASTNode.class));
         LoadingCache<String, ParseASTNode> parseTreeCache = Caffeine.newBuilder().softValues()

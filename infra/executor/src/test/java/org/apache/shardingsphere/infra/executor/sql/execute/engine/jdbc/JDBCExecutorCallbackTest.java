@@ -52,7 +52,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class JDBCExecutorCallbackTest {
+class JDBCExecutorCallbackTest {
     
     @Mock
     private PreparedStatement preparedStatement;
@@ -66,7 +66,7 @@ public final class JDBCExecutorCallbackTest {
     private Collection<JDBCExecutionUnit> units;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(databaseMetaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
@@ -77,7 +77,7 @@ public final class JDBCExecutorCallbackTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertExecute() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertExecute() throws SQLException, NoSuchFieldException, IllegalAccessException {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         JDBCExecutorCallback<?> jdbcExecutorCallback = new JDBCExecutorCallback<Integer>(databaseType, Collections.singletonMap("ds", databaseType), mock(SelectStatement.class), true) {
             
@@ -100,7 +100,7 @@ public final class JDBCExecutorCallbackTest {
     }
     
     @Test
-    public void assertExecuteFailedAndProtocolTypeDifferentWithDatabaseType() throws SQLException {
+    void assertExecuteFailedAndProtocolTypeDifferentWithDatabaseType() throws SQLException {
         Object saneResult = new Object();
         JDBCExecutorCallback<Object> callback =
                 new JDBCExecutorCallback<Object>(TypedSPILoader.getService(DatabaseType.class, "MySQL"),
@@ -121,7 +121,7 @@ public final class JDBCExecutorCallbackTest {
     }
     
     @Test
-    public void assertExecuteSQLExceptionOccurredAndProtocolTypeSameAsDatabaseType() {
+    void assertExecuteSQLExceptionOccurredAndProtocolTypeSameAsDatabaseType() {
         JDBCExecutorCallback<Object> callback =
                 new JDBCExecutorCallback<Object>(TypedSPILoader.getService(DatabaseType.class, "MySQL"),
                         Collections.singletonMap("ds", TypedSPILoader.getService(DatabaseType.class, "PostgreSQL")), mock(SelectStatement.class), true) {

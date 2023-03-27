@@ -49,10 +49,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SQLRewriteEntryTest {
+class SQLRewriteEntryTest {
     
     @Test
-    public void assertRewriteForGenericSQLRewriteResult() {
+    void assertRewriteForGenericSQLRewriteResult() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "H2"), mockResource(),
                 mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(
@@ -65,7 +65,7 @@ public final class SQLRewriteEntryTest {
     }
     
     @Test
-    public void assertRewriteForRouteSQLRewriteResult() {
+    void assertRewriteForRouteSQLRewriteResult() {
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "H2"), mockResource(),
                 mock(ShardingSphereRuleMetaData.class), Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(

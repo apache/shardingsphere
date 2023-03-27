@@ -34,10 +34,10 @@ import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 
-public final class ShadowRuleConfigurationCheckerTest {
+class ShadowRuleConfigurationCheckerTest {
     
     @Test
-    public void assertCheck() {
+    void assertCheck() {
         new ShadowRuleConfigurationChecker().check("", createShadowRuleConfiguration(), createDataSourceMap(), Collections.emptyList());
     }
     

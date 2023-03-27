@@ -44,6 +44,10 @@ public final class SchemaMetaDataLoader {
     
     private static final String VIEW_TYPE = "VIEW";
     
+    private static final String SYSTEM_TABLE_TYPE = "SYSTEM TABLE";
+    
+    private static final String SYSTEM_VIEW_TYPE = "SYSTEM VIEW";
+    
     private static final String TABLE_NAME = "TABLE_NAME";
     
     private static final String TABLE_SCHEME = "TABLE_SCHEM";
@@ -95,7 +99,7 @@ public final class SchemaMetaDataLoader {
     
     private static Collection<String> loadTableNames(final Connection connection, final String schemaName) throws SQLException {
         Collection<String> result = new LinkedList<>();
-        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, null, new String[]{TABLE_TYPE, VIEW_TYPE})) {
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, null, new String[]{TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE})) {
             while (resultSet.next()) {
                 String table = resultSet.getString(TABLE_NAME);
                 if (!isSystemTable(table)) {

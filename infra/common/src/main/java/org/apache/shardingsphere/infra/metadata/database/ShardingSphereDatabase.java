@@ -85,11 +85,10 @@ public final class ShardingSphereDatabase {
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes,
                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, databaseConfig, instanceContext);
-        Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>();
-        schemas.putAll(GenericSchemaBuilder.build(new GenericSchemaBuilderMaterial(protocolType, storageTypes,
-                DataSourceStateManager.getInstance().getEnabledDataSourceMap(name, databaseConfig.getDataSources()), databaseRules, props,
-                DatabaseTypeEngine.getDefaultSchemaName(protocolType, name))));
-        schemas.putAll(SystemSchemaBuilder.build(name, protocolType));
+        Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>(GenericSchemaBuilder
+                .build(new GenericSchemaBuilderMaterial(protocolType, storageTypes, DataSourceStateManager.getInstance().getEnabledDataSourceMap(name, databaseConfig.getDataSources()), databaseRules,
+                        props, DatabaseTypeEngine.getDefaultSchemaName(protocolType, name))));
+        SystemSchemaBuilder.build(name, protocolType).forEach(schemas::putIfAbsent);
         return create(name, protocolType, databaseConfig, databaseRules, schemas);
     }
     

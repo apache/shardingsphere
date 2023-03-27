@@ -26,29 +26,29 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ExecuteIDContextTest {
+class ExecuteIDContextTest {
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         ExecuteIDContext.remove();
     }
     
     @Test
-    public void assertIsEmpty() {
+    void assertIsEmpty() {
         assertTrue(ExecuteIDContext.isEmpty());
         ExecuteIDContext.set("123e4567e89b12d3a456426655440000");
         assertFalse(ExecuteIDContext.isEmpty());
     }
     
     @Test
-    public void assertGet() {
+    void assertGet() {
         assertNull(ExecuteIDContext.get());
         ExecuteIDContext.set("123e4567e89b12d3a456426655440000");
         assertThat(ExecuteIDContext.get(), is("123e4567e89b12d3a456426655440000"));
     }
     
     @Test
-    public void assertSet() {
+    void assertSet() {
         assertNull(ExecuteIDContext.get());
         ExecuteIDContext.set("123e4567e89b12d3a456426655440000");
         assertThat(ExecuteIDContext.get(), is("123e4567e89b12d3a456426655440000"));
@@ -57,7 +57,7 @@ public final class ExecuteIDContextTest {
     }
     
     @Test
-    public void assertRemove() {
+    void assertRemove() {
         assertNull(ExecuteIDContext.get());
         ExecuteIDContext.set("123e4567e89b12d3a456426655440000");
         assertThat(ExecuteIDContext.get(), is("123e4567e89b12d3a456426655440000"));

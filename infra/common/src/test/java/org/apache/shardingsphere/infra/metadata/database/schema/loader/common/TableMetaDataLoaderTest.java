@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class TableMetaDataLoaderTest {
+class TableMetaDataLoaderTest {
     
     private static final String TEST_CATALOG = "catalog";
     
@@ -82,7 +82,7 @@ public final class TableMetaDataLoaderTest {
     private ResultSet indexResultSet;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         when(dataSource.getConnection().getCatalog()).thenReturn(TEST_CATALOG);
         when(dataSource.getConnection().getMetaData().getTables(TEST_CATALOG, null, TEST_TABLE, null)).thenReturn(tableExistResultSet);
         when(tableExistResultSet.next()).thenReturn(true);
@@ -105,7 +105,7 @@ public final class TableMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadWithExistedTable() throws SQLException {
+    void assertLoadWithExistedTable() throws SQLException {
         DatabaseType databaseType = mock(DatabaseType.class, RETURNS_DEEP_STUBS);
         when(databaseType.formatTableNamePattern(TEST_TABLE)).thenReturn(TEST_TABLE);
         Map<String, SchemaMetaData> actual = SchemaMetaDataLoaderEngine.load(Collections.singletonList(
@@ -130,7 +130,7 @@ public final class TableMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadWithNotExistedTable() throws SQLException {
+    void assertLoadWithNotExistedTable() throws SQLException {
         Map<String, SchemaMetaData> actual = SchemaMetaDataLoaderEngine.load(Collections.singletonList(
                 new SchemaMetaDataLoaderMaterial(Collections.singletonList(TEST_TABLE), dataSource, mock(DatabaseType.class), "sharding_db")));
         assertFalse(actual.isEmpty());

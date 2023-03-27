@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
@@ -55,12 +55,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class DatabaseAdminQueryBackendHandlerTest {
+class DatabaseAdminQueryBackendHandlerTest {
     
     private DatabaseAdminQueryBackendHandler handler;
     
     @BeforeEach
-    public void before() throws SQLException {
+    void before() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getDatabaseName()).thenReturn("foo_db");
         DatabaseAdminQueryExecutor executor = mock(DatabaseAdminQueryExecutor.class, RETURNS_DEEP_STUBS);
@@ -70,7 +70,7 @@ public final class DatabaseAdminQueryBackendHandlerTest {
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
@@ -80,7 +80,7 @@ public final class DatabaseAdminQueryBackendHandlerTest {
     }
     
     @Test
-    public void assertNext() throws SQLException {
+    void assertNext() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
@@ -92,7 +92,7 @@ public final class DatabaseAdminQueryBackendHandlerTest {
     }
     
     @Test
-    public void assertGetRowData() throws SQLException {
+    void assertGetRowData() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {

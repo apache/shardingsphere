@@ -23,15 +23,15 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class JDBCTrafficAlgorithmTest {
+class JDBCTrafficAlgorithmTest {
     
     @Test
-    public void assertMatchWhenInTransaction() {
+    void assertMatchWhenInTransaction() {
         assertTrue(new JDBCTrafficAlgorithm().match(new TransactionTrafficValue(true)));
     }
     
     @Test
-    public void assertMatchWhenNotInTransaction() {
+    void assertMatchWhenNotInTransaction() {
         assertFalse(new JDBCTrafficAlgorithm().match(new TransactionTrafficValue(false)));
     }
 }

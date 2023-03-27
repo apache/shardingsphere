@@ -25,6 +25,7 @@ import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -74,7 +75,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class CreateShardingTableRuleStatementUpdaterTest {
+class CreateShardingTableRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -84,7 +85,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     private final CreateShardingTableRuleStatementUpdater updater = new CreateShardingTableRuleStatementUpdater();
     
     @BeforeEach
-    public void before() {
+    void before() {
         when(database.getName()).thenReturn("schema");
         ShardingSphereResourceMetaData resourceMetaData = new ShardingSphereResourceMetaData("sharding_db", createDataSource());
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
@@ -92,7 +93,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdate() {
+    void assertUpdate() {
         CreateShardingTableRuleStatement statement = new CreateShardingTableRuleStatement(false, Arrays.asList(createCompleteAutoTableRule(), createCompleteTableRule()));
         updater.checkSQLStatement(database, statement, currentRuleConfig);
         ShardingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(currentRuleConfig, statement);
@@ -132,7 +133,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCheckCreateShardingStatement() {
+    void assertCheckCreateShardingStatement() {
         String sql = "CREATE SHARDING TABLE RULE t_order("
                 + "STORAGE_UNITS(ds_0,ds_1),"
                 + "SHARDING_COLUMN=order_id,"
@@ -143,7 +144,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCheckCreateShardingStatementThrows() {
+    void assertCheckCreateShardingStatementThrows() {
         String sql = "CREATE SHARDING TABLE RULE t_order("
                 + "STORAGE_UNITS(ds_0,ds_1),"
                 + "SHARDING_COLUMN=order_id,"
@@ -154,7 +155,7 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateWithIfNotExistsStatement() {
+    void assertUpdateWithIfNotExistsStatement() {
         Collection<AbstractTableRuleSegment> segments = new LinkedList<>();
         segments.add(createCompleteAutoTableRule());
         segments.add(createCompleteTableRule());
@@ -258,8 +259,8 @@ public final class CreateShardingTableRuleStatementUpdaterTest {
         }
         
         @Override
-        public Map<String, Collection<String>> getDataSourceMapper() {
-            return Collections.singletonMap("logic_ds", null);
+        public Map<String, Collection<DataSourceRoleInfo>> getDataSourceMapper() {
+            return Collections.singletonMap("logic_ds", Collections.emptyList());
         }
         
         @Override

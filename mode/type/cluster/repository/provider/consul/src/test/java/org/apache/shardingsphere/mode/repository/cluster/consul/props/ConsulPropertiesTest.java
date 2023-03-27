@@ -26,16 +26,16 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ConsulPropertiesTest {
+class ConsulPropertiesTest {
     
     @Test
-    public void assertGetValue() {
+    void assertGetValue() {
         assertThat(new ConsulProperties(PropertiesBuilder.build(new Property(ConsulPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "50"))).getValue(ConsulPropertyKey.BLOCK_QUERY_TIME_TO_SECONDS),
                 is(60L));
     }
     
     @Test
-    public void assertGetDefaultValue() {
+    void assertGetDefaultValue() {
         assertThat(new ConsulProperties(new Properties()).getValue(ConsulPropertyKey.TIME_TO_LIVE_SECONDS), is("30s"));
     }
 }

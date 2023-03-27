@@ -42,10 +42,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class ShardingSphereDataCollectorTest {
+class ShardingSphereDataCollectorTest {
     
     @Test
-    public void assertCollect() {
+    void assertCollect() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereData shardingSphereData = mockShardingSphereData();
         when(contextManager.getMetaDataContexts().getShardingSphereData()).thenReturn(shardingSphereData);

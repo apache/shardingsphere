@@ -22,15 +22,15 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public final class FirstSQLTrafficAlgorithmTest {
+class FirstSQLTrafficAlgorithmTest {
     
     @Test
-    public void assertMatchWhenInTransaction() {
+    void assertMatchWhenInTransaction() {
         assertFalse(new FirstSQLTrafficAlgorithm().match(new TransactionTrafficValue(true)));
     }
     
     @Test
-    public void assertMatchWhenNotInTransaction() {
+    void assertMatchWhenNotInTransaction() {
         assertFalse(new FirstSQLTrafficAlgorithm().match(new TransactionTrafficValue(false)));
     }
 }

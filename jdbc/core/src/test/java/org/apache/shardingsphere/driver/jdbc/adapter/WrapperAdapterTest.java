@@ -34,28 +34,28 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class WrapperAdapterTest {
+class WrapperAdapterTest {
     
     private ShardingSphereDataSource wrapperAdapter;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         wrapperAdapter = new ShardingSphereDataSource(
                 DefaultDatabase.LOGIC_NAME, null, Collections.singletonMap("ds", new MockedDataSource()), Collections.singletonList(mock(RuleConfiguration.class)), new Properties());
     }
     
     @Test
-    public void assertUnwrapSuccess() throws SQLException {
+    void assertUnwrapSuccess() throws SQLException {
         assertThat(wrapperAdapter.unwrap(Object.class), is(wrapperAdapter));
     }
     
     @Test
-    public void assertUnwrapFailure() {
+    void assertUnwrapFailure() {
         assertThrows(SQLException.class, () -> wrapperAdapter.unwrap(String.class));
     }
     
     @Test
-    public void assertIsWrapperFor() {
+    void assertIsWrapperFor() {
         assertTrue(wrapperAdapter.isWrapperFor(Object.class));
     }
 }

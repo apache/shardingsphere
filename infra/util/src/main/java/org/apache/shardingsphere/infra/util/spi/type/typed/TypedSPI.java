@@ -28,7 +28,7 @@ public interface TypedSPI {
     
     /**
      * Initialize SPI.
-     *
+     * 
      * @param props properties to be initialized
      */
     default void init(Properties props) {
@@ -45,7 +45,7 @@ public interface TypedSPI {
     
     /**
      * Get type aliases.
-     *
+     * 
      * @return type aliases
      */
     default Collection<String> getTypeAliases() {
@@ -54,7 +54,7 @@ public interface TypedSPI {
     
     /**
      * Judge whether default service provider.
-     *
+     * 
      * @return is default service provider or not
      */
     default boolean isDefault() {

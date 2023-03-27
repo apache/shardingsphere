@@ -22,47 +22,47 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ParenTest {
+class ParenTest {
     
     @Test
-    public void assertIsLeftParenForParentheses() {
+    void assertIsLeftParenForParentheses() {
         assertTrue(Paren.isLeftParen('('));
     }
     
     @Test
-    public void assertIsLeftParenForBracket() {
+    void assertIsLeftParenForBracket() {
         assertTrue(Paren.isLeftParen('['));
     }
     
     @Test
-    public void assertIsLeftParenForBraces() {
+    void assertIsLeftParenForBraces() {
         assertTrue(Paren.isLeftParen('{'));
     }
     
     @Test
-    public void assertIsNotLeftParen() {
+    void assertIsNotLeftParen() {
         assertFalse(Paren.isLeftParen(')'));
         assertFalse(Paren.isLeftParen(']'));
         assertFalse(Paren.isLeftParen('}'));
     }
     
     @Test
-    public void assertMatchForParentheses() {
+    void assertMatchForParentheses() {
         assertTrue(Paren.match('(', ')'));
     }
     
     @Test
-    public void assertMatchForBracket() {
+    void assertMatchForBracket() {
         assertTrue(Paren.match('[', ']'));
     }
     
     @Test
-    public void assertMatchForBraces() {
+    void assertMatchForBraces() {
         assertTrue(Paren.match('{', '}'));
     }
     
     @Test
-    public void assertNotMatch() {
+    void assertNotMatch() {
         assertFalse(Paren.match('{', ']'));
     }
 }

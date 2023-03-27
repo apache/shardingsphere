@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphere
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -58,12 +58,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ShowStatusFromReadwriteSplittingRulesExecutorTest {
+class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     
     private final ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         ShowStatusFromReadwriteSplittingRulesExecutor executor = new ShowStatusFromReadwriteSplittingRulesExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));
@@ -74,7 +74,7 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     }
     
     @Test
-    public void assertGetRowsWithEmptyResult() {
+    void assertGetRowsWithEmptyResult() {
         when(connectionSession.getDatabaseName()).thenReturn("readwrite_db");
         ShowStatusFromReadwriteSplittingRulesExecutor executor = new ShowStatusFromReadwriteSplittingRulesExecutor();
         ContextManager contextManager = mockContextManager();

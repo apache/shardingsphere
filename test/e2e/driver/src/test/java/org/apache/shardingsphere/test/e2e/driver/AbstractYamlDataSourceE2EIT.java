@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.driver;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.h2.tools.RunScript;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -32,8 +32,8 @@ import java.util.Objects;
 // TODO move to new acceptance test module with mode
 public abstract class AbstractYamlDataSourceE2EIT {
     
-    @BeforeClass
-    public static void createSchema() throws SQLException {
+    @BeforeAll
+    static void createSchema() throws SQLException {
         for (String each : getSchemaFiles()) {
             RunScript.execute(
                     createDataSource(getFileName(each)).getConnection(), new InputStreamReader(Objects.requireNonNull(AbstractYamlDataSourceE2EIT.class.getClassLoader().getResourceAsStream(each))));

@@ -22,10 +22,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLRandomGeneratorTest {
+class MySQLRandomGeneratorTest {
     
     @Test
-    public void assertGenerateRandomBytes() {
+    void assertGenerateRandomBytes() {
         assertThat(MySQLRandomGenerator.getINSTANCE().generateRandomBytes(8).length, is(8));
         assertThat(MySQLRandomGenerator.getINSTANCE().generateRandomBytes(12).length, is(12));
     }

@@ -78,108 +78,108 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLCommandTest {
+class PostgreSQLCommandTest {
     
     @Test
-    public void assertValueOfUnConfiguredSQLStatement() {
+    void assertValueOfUnConfiguredSQLStatement() {
         assertFalse(PostgreSQLCommand.valueOf(SQLStatement.class).isPresent());
     }
     
     @Test
-    public void assertValueOfSelectStatement() {
+    void assertValueOfSelectStatement() {
         assertThat(PostgreSQLCommand.valueOf(SelectStatement.class).orElse(null), is(PostgreSQLCommand.SELECT));
         assertThat(PostgreSQLCommand.SELECT.getTag(), is("SELECT"));
     }
     
     @Test
-    public void assertValueOfInsertStatement() {
+    void assertValueOfInsertStatement() {
         assertThat(PostgreSQLCommand.valueOf(InsertStatement.class).orElse(null), is(PostgreSQLCommand.INSERT));
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLInsertStatement.class).orElse(null), is(PostgreSQLCommand.INSERT));
         assertThat(PostgreSQLCommand.INSERT.getTag(), is("INSERT"));
     }
     
     @Test
-    public void assertValueOfUpdateStatement() {
+    void assertValueOfUpdateStatement() {
         assertThat(PostgreSQLCommand.valueOf(UpdateStatement.class).orElse(null), is(PostgreSQLCommand.UPDATE));
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLUpdateStatement.class).orElse(null), is(PostgreSQLCommand.UPDATE));
         assertThat(PostgreSQLCommand.UPDATE.getTag(), is("UPDATE"));
     }
     
     @Test
-    public void assertValueOfDeleteStatement() {
+    void assertValueOfDeleteStatement() {
         assertThat(PostgreSQLCommand.valueOf(DeleteStatement.class).orElse(null), is(PostgreSQLCommand.DELETE));
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLDeleteStatement.class).orElse(null), is(PostgreSQLCommand.DELETE));
         assertThat(PostgreSQLCommand.DELETE.getTag(), is("DELETE"));
     }
     
     @Test
-    public void assertValueOfCallStatement() {
+    void assertValueOfCallStatement() {
         assertThat(PostgreSQLCommand.valueOf(CallStatement.class).orElse(null), is(PostgreSQLCommand.CALL));
         assertThat(PostgreSQLCommand.CALL.getTag(), is("CALL"));
     }
     
     @Test
-    public void assertValueOfDoStatement() {
+    void assertValueOfDoStatement() {
         assertThat(PostgreSQLCommand.valueOf(DoStatement.class).orElse(null), is(PostgreSQLCommand.DO));
         assertThat(PostgreSQLCommand.DO.getTag(), is("DO"));
     }
     
     @Test
-    public void assertValueOfAnalyzeStatement() {
+    void assertValueOfAnalyzeStatement() {
         assertThat(PostgreSQLCommand.valueOf(AnalyzeTableStatement.class).orElse(null), is(PostgreSQLCommand.ANALYZE));
         assertThat(PostgreSQLCommand.ANALYZE.getTag(), is("ANALYZE"));
     }
     
     @Test
-    public void assertValueOfVacuumStatement() {
+    void assertValueOfVacuumStatement() {
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLVacuumStatement.class).orElse(null), is(PostgreSQLCommand.VACUUM));
         assertThat(PostgreSQLCommand.VACUUM.getTag(), is("VACUUM"));
     }
     
     @Test
-    public void assertValueOfAlterFunctionStatement() {
+    void assertValueOfAlterFunctionStatement() {
         assertThat(PostgreSQLCommand.valueOf(AlterFunctionStatement.class).orElse(null), is(PostgreSQLCommand.ALTER_FUNCTION));
         assertThat(PostgreSQLCommand.ALTER_FUNCTION.getTag(), is("ALTER FUNCTION"));
     }
     
     @Test
-    public void assertValueOfAlterIndexStatement() {
+    void assertValueOfAlterIndexStatement() {
         assertThat(PostgreSQLCommand.valueOf(AlterIndexStatement.class).orElse(null), is(PostgreSQLCommand.ALTER_INDEX));
         assertThat(PostgreSQLCommand.ALTER_INDEX.getTag(), is("ALTER INDEX"));
     }
     
     @Test
-    public void assertValueOfAlterProcedureStatement() {
+    void assertValueOfAlterProcedureStatement() {
         assertThat(PostgreSQLCommand.valueOf(AlterProcedureStatement.class).orElse(null), is(PostgreSQLCommand.ALTER_PROCEDURE));
         assertThat(PostgreSQLCommand.ALTER_PROCEDURE.getTag(), is("ALTER PROCEDURE"));
     }
     
     @Test
-    public void assertValueOfAlterSequenceStatement() {
+    void assertValueOfAlterSequenceStatement() {
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLAlterSequenceStatement.class).orElse(null), is(PostgreSQLCommand.ALTER_SEQUENCE));
         assertThat(PostgreSQLCommand.ALTER_SEQUENCE.getTag(), is("ALTER SEQUENCE"));
     }
     
     @Test
-    public void assertValueOfAlterTablespaceStatement() {
+    void assertValueOfAlterTablespaceStatement() {
         assertThat(PostgreSQLCommand.valueOf(AlterTablespaceStatement.class).orElse(null), is(PostgreSQLCommand.ALTER_TABLESPACE));
         assertThat(PostgreSQLCommand.ALTER_TABLESPACE.getTag(), is("ALTER TABLESPACE"));
     }
     
     @Test
-    public void assertValueOfAlterTableStatement() {
+    void assertValueOfAlterTableStatement() {
         assertThat(PostgreSQLCommand.valueOf(AlterTableStatement.class).orElse(null), is(PostgreSQLCommand.ALTER_TABLE));
         assertThat(PostgreSQLCommand.ALTER_TABLE.getTag(), is("ALTER TABLE"));
     }
     
     @Test
-    public void assertValueOfAlterViewStatement() {
+    void assertValueOfAlterViewStatement() {
         assertThat(PostgreSQLCommand.valueOf(AlterViewStatement.class).orElse(null), is(PostgreSQLCommand.ALTER_VIEW));
         assertThat(PostgreSQLCommand.ALTER_VIEW.getTag(), is("ALTER VIEW"));
     }
     
     @Test
-    public void assertValueOfCreateShardingTableRuleOrCreateDataSourcesStatement() {
+    void assertValueOfCreateShardingTableRuleOrCreateDataSourcesStatement() {
         assertThat(PostgreSQLCommand.valueOf(RegisterStorageUnitStatement.class).orElse(null), is(PostgreSQLCommand.SUCCESS));
         assertThat(PostgreSQLCommand.valueOf(CreateShardingTableRuleStatement.class).orElse(null), is(PostgreSQLCommand.SUCCESS));
         assertThat(PostgreSQLCommand.valueOf(DistSQLStatement.class).orElse(null), is(PostgreSQLCommand.SUCCESS));
@@ -187,174 +187,174 @@ public final class PostgreSQLCommandTest {
     }
     
     @Test
-    public void assertValueOfCreateDatabaseStatement() {
+    void assertValueOfCreateDatabaseStatement() {
         assertThat(PostgreSQLCommand.valueOf(CreateDatabaseStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_DATABASE));
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLCreateDatabaseStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_DATABASE));
         assertThat(PostgreSQLCommand.CREATE_DATABASE.getTag(), is("CREATE DATABASE"));
     }
     
     @Test
-    public void assertValueOfCreateFunctionStatement() {
+    void assertValueOfCreateFunctionStatement() {
         assertThat(PostgreSQLCommand.valueOf(CreateFunctionStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_FUNCTION));
         assertThat(PostgreSQLCommand.CREATE_FUNCTION.getTag(), is("CREATE FUNCTION"));
     }
     
     @Test
-    public void assertValueOfCreateIndexStatement() {
+    void assertValueOfCreateIndexStatement() {
         assertThat(PostgreSQLCommand.valueOf(CreateIndexStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_INDEX));
         assertThat(PostgreSQLCommand.CREATE_INDEX.getTag(), is("CREATE INDEX"));
     }
     
     @Test
-    public void assertValueOfCreateProcedureStatement() {
+    void assertValueOfCreateProcedureStatement() {
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLCreateProcedureStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_PROCEDURE));
         assertThat(PostgreSQLCommand.CREATE_PROCEDURE.getTag(), is("CREATE PROCEDURE"));
     }
     
     @Test
-    public void assertValueOfCreateSequenceStatement() {
+    void assertValueOfCreateSequenceStatement() {
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLCreateSequenceStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_SEQUENCE));
         assertThat(PostgreSQLCommand.CREATE_SEQUENCE.getTag(), is("CREATE SEQUENCE"));
     }
     
     @Test
-    public void assertValueOfCreateTablespaceStatement() {
+    void assertValueOfCreateTablespaceStatement() {
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLCreateTablespaceStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_TABLESPACE));
         assertThat(PostgreSQLCommand.CREATE_TABLESPACE.getTag(), is("CREATE TABLESPACE"));
     }
     
     @Test
-    public void assertValueOfCreateTableStatement() {
+    void assertValueOfCreateTableStatement() {
         assertThat(PostgreSQLCommand.valueOf(CreateTableStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_TABLE));
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLCreateTableStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_TABLE));
         assertThat(PostgreSQLCommand.CREATE_TABLE.getTag(), is("CREATE TABLE"));
     }
     
     @Test
-    public void assertValueOfCreateViewStatement() {
+    void assertValueOfCreateViewStatement() {
         assertThat(PostgreSQLCommand.valueOf(CreateViewStatement.class).orElse(null), is(PostgreSQLCommand.CREATE_VIEW));
         assertThat(PostgreSQLCommand.CREATE_VIEW.getTag(), is("CREATE VIEW"));
     }
     
     @Test
-    public void assertValueOfDropDatabaseStatement() {
+    void assertValueOfDropDatabaseStatement() {
         assertThat(PostgreSQLCommand.valueOf(DropDatabaseStatement.class).orElse(null), is(PostgreSQLCommand.DROP_DATABASE));
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLDropDatabaseStatement.class).orElse(null), is(PostgreSQLCommand.DROP_DATABASE));
         assertThat(PostgreSQLCommand.DROP_DATABASE.getTag(), is("DROP DATABASE"));
     }
     
     @Test
-    public void assertValueOfDropFunctionStatement() {
+    void assertValueOfDropFunctionStatement() {
         assertThat(PostgreSQLCommand.valueOf(DropFunctionStatement.class).orElse(null), is(PostgreSQLCommand.DROP_FUNCTION));
         assertThat(PostgreSQLCommand.DROP_FUNCTION.getTag(), is("DROP FUNCTION"));
     }
     
     @Test
-    public void assertValueOfDropIndexStatement() {
+    void assertValueOfDropIndexStatement() {
         assertThat(PostgreSQLCommand.valueOf(DropIndexStatement.class).orElse(null), is(PostgreSQLCommand.DROP_INDEX));
         assertThat(PostgreSQLCommand.DROP_INDEX.getTag(), is("DROP INDEX"));
     }
     
     @Test
-    public void assertValueOfDropProcedureStatement() {
+    void assertValueOfDropProcedureStatement() {
         assertThat(PostgreSQLCommand.valueOf(DropProcedureStatement.class).orElse(null), is(PostgreSQLCommand.DROP_PROCEDURE));
         assertThat(PostgreSQLCommand.DROP_PROCEDURE.getTag(), is("DROP PROCEDURE"));
     }
     
     @Test
-    public void assertValueOfDropSequenceStatement() {
+    void assertValueOfDropSequenceStatement() {
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLDropSequenceStatement.class).orElse(null), is(PostgreSQLCommand.DROP_SEQUENCE));
         assertThat(PostgreSQLCommand.DROP_SEQUENCE.getTag(), is("DROP SEQUENCE"));
     }
     
     @Test
-    public void assertValueOfDropTablespaceStatement() {
+    void assertValueOfDropTablespaceStatement() {
         assertThat(PostgreSQLCommand.valueOf(DropTablespaceStatement.class).orElse(null), is(PostgreSQLCommand.DROP_TABLESPACE));
         assertThat(PostgreSQLCommand.DROP_TABLESPACE.getTag(), is("DROP TABLESPACE"));
     }
     
     @Test
-    public void assertValueOfDropTableStatement() {
+    void assertValueOfDropTableStatement() {
         assertThat(PostgreSQLCommand.valueOf(DropTableStatement.class).orElse(null), is(PostgreSQLCommand.DROP_TABLE));
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLDropTableStatement.class).orElse(null), is(PostgreSQLCommand.DROP_TABLE));
         assertThat(PostgreSQLCommand.DROP_TABLE.getTag(), is("DROP TABLE"));
     }
     
     @Test
-    public void assertValueOfDropViewStatement() {
+    void assertValueOfDropViewStatement() {
         assertThat(PostgreSQLCommand.valueOf(DropViewStatement.class).orElse(null), is(PostgreSQLCommand.DROP_VIEW));
         assertThat(PostgreSQLCommand.DROP_VIEW.getTag(), is("DROP VIEW"));
     }
     
     @Test
-    public void assertValueOfTruncateStatement() {
+    void assertValueOfTruncateStatement() {
         assertThat(PostgreSQLCommand.valueOf(TruncateStatement.class).orElse(null), is(PostgreSQLCommand.TRUNCATE_TABLE));
         assertThat(PostgreSQLCommand.TRUNCATE_TABLE.getTag(), is("TRUNCATE TABLE"));
     }
     
     @Test
-    public void assertValueOfBeginStatement() {
+    void assertValueOfBeginStatement() {
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLBeginTransactionStatement.class).orElse(null), is(PostgreSQLCommand.BEGIN));
         assertThat(PostgreSQLCommand.BEGIN.getTag(), is("BEGIN"));
     }
     
     @Test
-    public void assertValueOfStartTransactionStatement() {
+    void assertValueOfStartTransactionStatement() {
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLStartTransactionStatement.class).orElse(null), is(PostgreSQLCommand.START_TRANSACTION));
         assertThat(PostgreSQLCommand.START_TRANSACTION.getTag(), is("START TRANSACTION"));
     }
     
     @Test
-    public void assertValueOfCommitStatement() {
+    void assertValueOfCommitStatement() {
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLCommitStatement.class).orElse(null), is(PostgreSQLCommand.COMMIT));
         assertThat(PostgreSQLCommand.COMMIT.getTag(), is("COMMIT"));
     }
     
     @Test
-    public void assertValueOfSavepointStatement() {
+    void assertValueOfSavepointStatement() {
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLSavepointStatement.class).orElse(null), is(PostgreSQLCommand.SAVEPOINT));
         assertThat(PostgreSQLCommand.SAVEPOINT.getTag(), is("SAVEPOINT"));
     }
     
     @Test
-    public void assertValueOfRollbackStatement() {
+    void assertValueOfRollbackStatement() {
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLRollbackStatement.class).orElse(null), is(PostgreSQLCommand.ROLLBACK));
         assertThat(PostgreSQLCommand.ROLLBACK.getTag(), is("ROLLBACK"));
     }
     
     @Test
-    public void assertValueOfReleaseSavepointStatement() {
+    void assertValueOfReleaseSavepointStatement() {
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLReleaseSavepointStatement.class).orElse(null), is(PostgreSQLCommand.RELEASE));
         assertThat(PostgreSQLCommand.RELEASE.getTag(), is("RELEASE"));
     }
     
     @Test
-    public void assertValueOfSetStatement() {
+    void assertValueOfSetStatement() {
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLSetStatement.class).orElse(null), is(PostgreSQLCommand.SET));
         assertThat(PostgreSQLCommand.SET.getTag(), is("SET"));
     }
     
     @Test
-    public void assertValueOfResetStatement() {
+    void assertValueOfResetStatement() {
         assertThat(PostgreSQLCommand.valueOf(PostgreSQLResetParameterStatement.class).orElse(null), is(PostgreSQLCommand.RESET));
         assertThat(PostgreSQLCommand.RESET.getTag(), is("RESET"));
     }
     
     @Test
-    public void assertValueOfCursorStatement() {
+    void assertValueOfCursorStatement() {
         assertThat(PostgreSQLCommand.valueOf(OpenGaussCursorStatement.class).orElse(null), is(PostgreSQLCommand.DECLARE_CURSOR));
         assertThat(PostgreSQLCommand.valueOf(DeclareStatement.class).orElse(null), is(PostgreSQLCommand.DECLARE_CURSOR));
         assertThat(PostgreSQLCommand.DECLARE_CURSOR.getTag(), is("DECLARE CURSOR"));
     }
     
     @Test
-    public void assertValueOfMoveStatement() {
+    void assertValueOfMoveStatement() {
         assertThat(PostgreSQLCommand.valueOf(MoveStatement.class).orElse(null), is(PostgreSQLCommand.MOVE));
         assertThat(PostgreSQLCommand.MOVE.getTag(), is("MOVE"));
     }
     
     @Test
-    public void assertValueOfCloseStatement() {
+    void assertValueOfCloseStatement() {
         assertThat(PostgreSQLCommand.valueOf(CloseStatement.class).orElse(null), is(PostgreSQLCommand.CLOSE_CURSOR));
         assertThat(PostgreSQLCommand.CLOSE_CURSOR.getTag(), is("CLOSE CURSOR"));
     }

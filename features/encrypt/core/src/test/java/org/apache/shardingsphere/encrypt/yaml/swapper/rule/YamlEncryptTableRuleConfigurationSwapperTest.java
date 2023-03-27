@@ -34,12 +34,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlEncryptTableRuleConfigurationSwapperTest {
+class YamlEncryptTableRuleConfigurationSwapperTest {
     
     private final YamlEncryptTableRuleConfigurationSwapper swapper = new YamlEncryptTableRuleConfigurationSwapper();
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         Collection<EncryptColumnRuleConfiguration> encryptColumnRuleConfigs = Arrays.asList(
                 new EncryptColumnRuleConfiguration("encrypt_column_1", "encrypt_cipher_1", "", "", "", "test_encryptor_1", null),
                 new EncryptColumnRuleConfiguration("encrypt_column_2", "encrypt_cipher_2", "", "", "", "test_encryptor_2", true),
@@ -65,7 +65,7 @@ public final class YamlEncryptTableRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlEncryptColumnRuleConfiguration encryptColumnRuleConfig = new YamlEncryptColumnRuleConfiguration();
         encryptColumnRuleConfig.setLogicColumn("encrypt_column");
         encryptColumnRuleConfig.setCipherColumn("encrypt_cipher");

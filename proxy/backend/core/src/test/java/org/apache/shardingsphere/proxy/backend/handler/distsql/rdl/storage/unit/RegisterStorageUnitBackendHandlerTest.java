@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class RegisterStorageUnitBackendHandlerTest {
+class RegisterStorageUnitBackendHandlerTest {
     
     @Mock
     private ShardingSphereDatabase database;
@@ -67,7 +67,7 @@ public final class RegisterStorageUnitBackendHandlerTest {
     private RegisterStorageUnitBackendHandler handler;
     
     @BeforeEach
-    public void setUp() throws ReflectiveOperationException {
+    void setUp() throws ReflectiveOperationException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
         when(database.getRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
@@ -76,7 +76,7 @@ public final class RegisterStorageUnitBackendHandlerTest {
     }
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -86,7 +86,7 @@ public final class RegisterStorageUnitBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteWithDuplicateStorageUnitNamesInStatement() {
+    void assertExecuteWithDuplicateStorageUnitNamesInStatement() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -94,7 +94,7 @@ public final class RegisterStorageUnitBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteWithDuplicateStorageUnitNamesWithResourceMetaData() {
+    void assertExecuteWithDuplicateStorageUnitNamesWithResourceMetaData() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getDataSourceMap("foo_db").keySet()).thenReturn(Collections.singleton("ds_0"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -102,7 +102,7 @@ public final class RegisterStorageUnitBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteWithDuplicateStorageUnitNamesWithDataSourceContainedRule() {
+    void assertExecuteWithDuplicateStorageUnitNamesWithDataSourceContainedRule() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(mock(MetaDataContexts.class, RETURNS_DEEP_STUBS));
         DataSourceContainedRule rule = mock(DataSourceContainedRule.class);
@@ -114,7 +114,7 @@ public final class RegisterStorageUnitBackendHandlerTest {
     }
     
     @Test
-    public void assertCheckStatementWithIfNotExists() {
+    void assertCheckStatementWithIfNotExists() {
         RegisterStorageUnitStatement registerStorageUnitStatementWithIfNotExists = new RegisterStorageUnitStatement(true, Collections.singleton(
                 new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "db_1", "root", "", new Properties())));
         handler.checkSQLStatement("foo_db", registerStorageUnitStatementWithIfNotExists);

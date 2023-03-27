@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
 
 /**
  * YAML storage node data source swapper.

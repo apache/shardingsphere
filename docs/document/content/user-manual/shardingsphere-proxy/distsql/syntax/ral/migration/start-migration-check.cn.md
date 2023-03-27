@@ -5,7 +5,7 @@ weight = 14
 
 ### 描述
 
-`START MIGRATION CHECK` 语法用于开始指定数据迁移作业的数据校验
+`START MIGRATION CHECK` 语法用于开始指定数据迁移作业的数据校验。
 
 ### 语法
 

@@ -22,20 +22,20 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLCapabilityFlagTest {
+class MySQLCapabilityFlagTest {
     
     @Test
-    public void assertGetValue() {
+    void assertGetValue() {
         assertThat(MySQLCapabilityFlag.CLIENT_LONG_PASSWORD.getValue(), is(0x00000001));
     }
     
     @Test
-    public void assertCalculateHandshakeCapabilityFlagsLower() {
+    void assertCalculateHandshakeCapabilityFlagsLower() {
         assertThat(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), is(46927));
     }
     
     @Test
-    public void assertCalculateHandshakeCapabilityFlagsUpper() {
+    void assertCalculateHandshakeCapabilityFlagsUpper() {
         assertThat(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper(), is(0x0008));
     }
 }

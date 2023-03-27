@@ -73,7 +73,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class MySQLComQueryPacketExecutorTest {
+class MySQLComQueryPacketExecutorTest {
     
     @Mock
     private ProxyBackendHandler proxyBackendHandler;
@@ -85,13 +85,13 @@ public final class MySQLComQueryPacketExecutorTest {
     private ConnectionSession connectionSession;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(packet.getSql()).thenReturn("");
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
     }
     
     @Test
-    public void assertIsQueryResponse() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertIsQueryResponse() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(packet, connectionSession);
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), mysqlComQueryPacketExecutor, proxyBackendHandler);
@@ -103,7 +103,7 @@ public final class MySQLComQueryPacketExecutorTest {
     }
     
     @Test
-    public void assertIsUpdateResponse() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertIsUpdateResponse() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor mysqlComQueryPacketExecutor = new MySQLComQueryPacketExecutor(packet, connectionSession);
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), mysqlComQueryPacketExecutor, proxyBackendHandler);
@@ -113,7 +113,7 @@ public final class MySQLComQueryPacketExecutorTest {
     }
     
     @Test
-    public void assertExecuteMultiUpdateStatements() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertExecuteMultiUpdateStatements() throws SQLException, NoSuchFieldException, IllegalAccessException {
         when(connectionSession.getAttributeMap().hasAttr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS)).thenReturn(true);
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS).get()).thenReturn(0);
         when(connectionSession.getDatabaseName()).thenReturn("foo_db");
@@ -149,7 +149,7 @@ public final class MySQLComQueryPacketExecutorTest {
     }
     
     @Test
-    public void assertNext() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertNext() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor actual = new MySQLComQueryPacketExecutor(packet, connectionSession);
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), actual, proxyBackendHandler);
@@ -159,12 +159,12 @@ public final class MySQLComQueryPacketExecutorTest {
     }
     
     @Test
-    public void assertGetQueryRowPacket() throws SQLException {
+    void assertGetQueryRowPacket() throws SQLException {
         assertThat(new MySQLComQueryPacketExecutor(packet, connectionSession).getQueryRowPacket(), instanceOf(MySQLTextResultSetRowPacket.class));
     }
     
     @Test
-    public void assertClose() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertClose() throws SQLException, NoSuchFieldException, IllegalAccessException {
         MySQLComQueryPacketExecutor actual = new MySQLComQueryPacketExecutor(packet, connectionSession);
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), actual, proxyBackendHandler);

@@ -24,17 +24,17 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class SQLHintTrafficAlgorithmTest {
+class SQLHintTrafficAlgorithmTest {
     
     @Test
-    public void assertMatchWhenSQLHintAllMatch() {
+    void assertMatchWhenSQLHintAllMatch() {
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setUseTraffic(Boolean.TRUE);
         assertTrue(new SQLHintTrafficAlgorithm().match(new HintTrafficValue(hintValueContext)));
     }
     
     @Test
-    public void assertMatchWhenSQLHintOneMatch() {
+    void assertMatchWhenSQLHintOneMatch() {
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setUseTraffic(Boolean.FALSE);
         assertFalse(new SQLHintTrafficAlgorithm().match(new HintTrafficValue(hintValueContext)));

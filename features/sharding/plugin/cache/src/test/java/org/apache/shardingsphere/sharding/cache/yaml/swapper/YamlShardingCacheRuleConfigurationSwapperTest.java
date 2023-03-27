@@ -28,10 +28,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlShardingCacheRuleConfigurationSwapperTest {
+class YamlShardingCacheRuleConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlShardingCacheRuleConfiguration actual = new YamlShardingCacheRuleConfigurationSwapper()
                 .swapToYamlConfiguration(new ShardingCacheRuleConfiguration(100, new ShardingCacheOptions(true, 128, 1024)));
         assertThat(actual.getAllowedMaxSqlLength(), is(100));
@@ -42,7 +42,7 @@ public final class YamlShardingCacheRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlShardingCacheRuleConfiguration input = new YamlShardingCacheRuleConfiguration();
         input.setAllowedMaxSqlLength(200);
         YamlShardingCacheOptionsConfiguration yamlConfig = new YamlShardingCacheOptionsConfiguration();
@@ -59,17 +59,17 @@ public final class YamlShardingCacheRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertGetTypeClass() {
+    void assertGetTypeClass() {
         assertThat(new YamlShardingCacheRuleConfigurationSwapper().getTypeClass(), CoreMatchers.<Class<ShardingCacheRuleConfiguration>>is(ShardingCacheRuleConfiguration.class));
     }
     
     @Test
-    public void assertGetRuleTagName() {
+    void assertGetRuleTagName() {
         assertThat(new YamlShardingCacheRuleConfigurationSwapper().getRuleTagName(), is("SHARDING_CACHE"));
     }
     
     @Test
-    public void assertGetOrder() {
+    void assertGetOrder() {
         assertThat(new YamlShardingCacheRuleConfigurationSwapper().getOrder(), is(-9));
     }
 }

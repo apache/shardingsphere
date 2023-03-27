@@ -40,23 +40,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class MySQLSaneQueryResultEngineTest {
+class MySQLSaneQueryResultEngineTest {
     
     @Test
-    public void assertGetSaneQueryResultForSyntaxError() {
+    void assertGetSaneQueryResultForSyntaxError() {
         SQLException ex = new SQLException("", "", 1064, null);
         assertThat(new MySQLSaneQueryResultEngine().getSaneQueryResult(null, ex), is(Optional.empty()));
     }
     
     @Test
-    public void assertGetSaneQueryResultForSelectStatementWithFrom() {
+    void assertGetSaneQueryResultForSelectStatementWithFrom() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t"))));
         assertThat(new MySQLSaneQueryResultEngine().getSaneQueryResult(selectStatement, new SQLException()), is(Optional.empty()));
     }
     
     @Test
-    public void assertGetSaneQueryResultForSelectStatementWithoutFrom() {
+    void assertGetSaneQueryResultForSelectStatementWithoutFrom() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@session.transaction_read_only"));
@@ -73,21 +73,21 @@ public final class MySQLSaneQueryResultEngineTest {
     }
     
     @Test
-    public void assertGetSaneQueryResultForSelectNoProjectionsStatementWithoutFrom() {
+    void assertGetSaneQueryResultForSelectNoProjectionsStatementWithoutFrom() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         assertThat(new MySQLSaneQueryResultEngine().getSaneQueryResult(selectStatement, new SQLException()), is(Optional.empty()));
     }
     
     @Test
-    public void assertGetSaneQueryResultForSetStatement() {
+    void assertGetSaneQueryResultForSetStatement() {
         Optional<ExecuteResult> actual = new MySQLSaneQueryResultEngine().getSaneQueryResult(new MySQLSetStatement(), new SQLException());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(UpdateResult.class));
     }
     
     @Test
-    public void assertGetSaneQueryResultForShowOtherStatement() {
+    void assertGetSaneQueryResultForShowOtherStatement() {
         Optional<ExecuteResult> actual = new MySQLSaneQueryResultEngine().getSaneQueryResult(new MySQLShowOtherStatement(), new SQLException());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(RawMemoryQueryResult.class));
@@ -99,12 +99,12 @@ public final class MySQLSaneQueryResultEngineTest {
     }
     
     @Test
-    public void assertGetSaneQueryResultForOtherStatements() {
+    void assertGetSaneQueryResultForOtherStatements() {
         assertThat(new MySQLSaneQueryResultEngine().getSaneQueryResult(new MySQLInsertStatement(), new SQLException()), is(Optional.empty()));
     }
     
     @Test
-    public void assertGetType() {
+    void assertGetType() {
         assertThat(new MySQLSaneQueryResultEngine().getType(), is("MySQL"));
     }
 }

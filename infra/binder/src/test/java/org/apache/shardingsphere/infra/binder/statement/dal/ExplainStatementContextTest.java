@@ -33,15 +33,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ExplainStatementContextTest {
+class ExplainStatementContextTest {
     
     @Test
-    public void assertMySQLNewInstance() {
+    void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLExplainStatement.class));
     }
     
     @Test
-    public void assertPostgreSQLNewInstance() {
+    void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLExplainStatement.class));
     }
     

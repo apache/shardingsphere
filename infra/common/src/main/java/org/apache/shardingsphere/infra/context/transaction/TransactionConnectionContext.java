@@ -29,11 +29,14 @@ public final class TransactionConnectionContext implements AutoCloseable {
     
     private volatile boolean inTransaction;
     
+    private volatile long beginMills;
+    
     private volatile String readWriteSplitReplicaRoute;
     
     @Override
     public void close() {
         inTransaction = false;
+        beginMills = 0L;
         readWriteSplitReplicaRoute = null;
     }
 }

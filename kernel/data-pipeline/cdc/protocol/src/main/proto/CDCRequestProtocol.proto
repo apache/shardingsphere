@@ -66,7 +66,7 @@ message StreamDataRequestBody {
     string schema = 1;
     string table = 2;
   }
-  repeated SchemaTable source_schema_tables = 2;
+  repeated SchemaTable source_schema_table = 2;
   bool full = 3;
 }
 

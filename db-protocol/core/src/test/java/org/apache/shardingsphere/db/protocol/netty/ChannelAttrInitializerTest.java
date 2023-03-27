@@ -28,10 +28,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class ChannelAttrInitializerTest {
+class ChannelAttrInitializerTest {
     
     @Test
-    public void assertChannelActive() {
+    void assertChannelActive() {
         ChannelHandlerContext context = mock(ChannelHandlerContext.class, RETURNS_DEEP_STUBS);
         new ChannelAttrInitializer().channelActive(context);
         verify(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).setIfAbsent(any(Charset.class));

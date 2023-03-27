@@ -22,10 +22,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class BinlogPositionTest {
+class BinlogPositionTest {
     
     @Test
-    public void assertCompareTo() {
+    void assertCompareTo() {
         int position = 10;
         BinlogPosition binlogPosition = new BinlogPosition("mysql-bin.000002", position);
         assertThat(binlogPosition.compareTo(new BinlogPosition("mysql-bin.000002", position)), is(0));
@@ -40,7 +40,7 @@ public final class BinlogPositionTest {
     }
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         assertThat(new BinlogPosition("mysql-bin.000001", 4).toString(), is("mysql-bin.000001#4"));
     }
 }

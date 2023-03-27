@@ -30,7 +30,7 @@ import lombok.SneakyThrows;
  * Json utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class JsonUtils {
+public final class JsonUtils {
     
     private static final ObjectMapper MAPPER;
     
@@ -39,17 +39,17 @@ public class JsonUtils {
     }
     
     private static ObjectMapper initDefaultMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.findAndRegisterModules();
-        mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        mapper.setSerializationInclusion(Include.NON_NULL);
-        return mapper;
+        ObjectMapper result = new ObjectMapper();
+        result.findAndRegisterModules();
+        result.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+        result.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        result.setSerializationInclusion(Include.NON_NULL);
+        return result;
     }
     
     /**
      * Parse data to json string.
-     * 
+     *
      * @param data data
      * @return json string
      */
@@ -60,7 +60,7 @@ public class JsonUtils {
     
     /**
      * Deserialize to Object from json string.
-     * 
+     *
      * @param value json string
      * @param clazz target Object
      * @param <T> the type of return Object data

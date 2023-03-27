@@ -162,7 +162,7 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 #### 复合行表达式分片算法
 
-详情请参见[行表达式](/cn/dev-manual/sharding/#implementation-classes)。
+详情请参见[行表达式](/cn/features/sharding/concept/#行表达式)。
 
 类型：COMPLEX_INLINE
 
@@ -177,7 +177,7 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 #### Hint 行表达式分片算法
 
-详情请参见[行表达式](/cn/dev-manual/sharding/#implementation-classes)。
+详情请参见[行表达式](/cn/features/sharding/concept/#行表达式)。
 
 类型：HINT_INLINE
 

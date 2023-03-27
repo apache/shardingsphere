@@ -28,10 +28,10 @@ import java.nio.charset.StandardCharsets;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLComTerminationPacketTest {
+class PostgreSQLComTerminationPacketTest {
     
     @Test
-    public void assertReadWrite() {
+    void assertReadWrite() {
         ByteBuf byteBuf = ByteBufTestUtils.createByteBuf(4);
         byteBuf.writeInt(1);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);

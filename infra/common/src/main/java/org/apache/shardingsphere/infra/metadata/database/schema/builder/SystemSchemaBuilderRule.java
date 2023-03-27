@@ -35,8 +35,12 @@ import java.util.Map;
 @Getter
 public enum SystemSchemaBuilderRule {
     
-    MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", new HashSet<>(Arrays.asList("columns", "engines",
-            "parameters", "routines", "schemata", "tables", "views"))),
+    MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", new HashSet<>(Arrays.asList("character_sets", "collation_character_set_applicability", "collations", "column_privileges", "columns",
+            "engines", "events", "files", "global_status", "global_variables", "parameters", "routines", "schemata", "tables", "views",
+            "innodb_buffer_page", "innodb_buffer_page_lru", "innodb_buffer_pool_stats", "innodb_cmp", "innodb_cmp_per_index", "innodb_cmp_per_index_reset", "innodb_cmp_reset",
+            "innodb_cmpmem", "innodb_cmpmem_reset", "innodb_ft_being_deleted",
+            "innodb_ft_config", "innodb_ft_default_stopword", "innodb_ft_deleted", "innodb_ft_index_cache", "innodb_ft_index_table", "innodb_lock_waits", "innodb_locks",
+            "innodb_metrics", "innodb_sys_columns", "innodb_sys_datafiles"))),
     
     MYSQL_MYSQL("MySQL", "mysql", new HashSet<>(Collections.singleton("db"))),
     
@@ -100,7 +104,7 @@ public enum SystemSchemaBuilderRule {
     
     /**
      * Value of builder rule.
-     * 
+     *
      * @param databaseType database type
      * @param schema schema
      * @return builder rule
@@ -114,7 +118,7 @@ public enum SystemSchemaBuilderRule {
     
     /**
      * Judge whether current table is system table or not.
-     * 
+     *
      * @param schema schema
      * @param tableName table name
      * @return whether current table is system table or not

@@ -33,13 +33,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLHandshakeResponse41PacketTest {
+class MySQLHandshakeResponse41PacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertNewWithPayloadWithDatabase() {
+    void assertNewWithPayloadWithDatabase() {
         when(payload.readInt1()).thenReturn(MySQLServerInfo.DEFAULT_CHARSET.getId());
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue(), 1000);
         when(payload.readStringNul()).thenReturn("root", "sharding_db");
@@ -56,7 +56,7 @@ public final class MySQLHandshakeResponse41PacketTest {
     }
     
     @Test
-    public void assertNewWithPayloadWithAuthPluginName() {
+    void assertNewWithPayloadWithAuthPluginName() {
         when(payload.readInt1()).thenReturn(MySQLServerInfo.DEFAULT_CHARSET.getId());
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue(), 1000);
         when(payload.readStringNul()).thenReturn("root", MySQLAuthenticationMethod.NATIVE.getMethodName());
@@ -73,7 +73,7 @@ public final class MySQLHandshakeResponse41PacketTest {
     }
     
     @Test
-    public void assertNewWithPayloadWithClientPluginAuthLenencClientData() {
+    void assertNewWithPayloadWithClientPluginAuthLenencClientData() {
         when(payload.readInt1()).thenReturn(MySQLServerInfo.DEFAULT_CHARSET.getId());
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue(), 1000);
         when(payload.readStringNul()).thenReturn("root");
@@ -90,7 +90,7 @@ public final class MySQLHandshakeResponse41PacketTest {
     }
     
     @Test
-    public void assertNewWithPayloadWithClientSecureConnection() {
+    void assertNewWithPayloadWithClientSecureConnection() {
         when(payload.readInt1()).thenReturn(MySQLServerInfo.DEFAULT_CHARSET.getId(), 1);
         when(payload.readInt4()).thenReturn(MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue(), 1000);
         when(payload.readStringNul()).thenReturn("root");
@@ -107,7 +107,7 @@ public final class MySQLHandshakeResponse41PacketTest {
     }
     
     @Test
-    public void assertWriteWithDatabase() {
+    void assertWriteWithDatabase() {
         MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(100, MySQLServerInfo.DEFAULT_CHARSET.getId(), "root");
         actual.setAuthResponse(new byte[]{1});
         actual.setDatabase("sharding_db");
@@ -122,7 +122,7 @@ public final class MySQLHandshakeResponse41PacketTest {
     }
     
     @Test
-    public void assertWriteWithAuthPluginName() {
+    void assertWriteWithAuthPluginName() {
         MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(100, MySQLServerInfo.DEFAULT_CHARSET.getId(), "root");
         actual.setAuthResponse(new byte[]{1});
         actual.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
@@ -137,7 +137,7 @@ public final class MySQLHandshakeResponse41PacketTest {
     }
     
     @Test
-    public void assertWriteWithClientPluginAuthLenencClientData() {
+    void assertWriteWithClientPluginAuthLenencClientData() {
         MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(100, MySQLServerInfo.DEFAULT_CHARSET.getId(), "root");
         actual.setCapabilityFlags(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA.getValue());
         actual.setAuthResponse(new byte[]{1});
@@ -151,7 +151,7 @@ public final class MySQLHandshakeResponse41PacketTest {
     }
     
     @Test
-    public void assertWriteWithClientSecureConnection() {
+    void assertWriteWithClientSecureConnection() {
         MySQLHandshakeResponse41Packet actual = new MySQLHandshakeResponse41Packet(100, MySQLServerInfo.DEFAULT_CHARSET.getId(), "root");
         actual.setCapabilityFlags(MySQLCapabilityFlag.CLIENT_SECURE_CONNECTION.getValue());
         actual.setAuthResponse(new byte[]{1});

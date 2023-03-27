@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class OpenGaussAdminExecutorFactoryTest {
+class OpenGaussAdminExecutorFactoryTest {
     
     @Mock
     private PostgreSQLAdminExecutorCreator postgreSQLAdminExecutorFactory;
@@ -47,13 +47,13 @@ public final class OpenGaussAdminExecutorFactoryTest {
     private OpenGaussAdminExecutorCreator openGaussAdminExecutorFactory;
     
     @BeforeEach
-    public void setup() throws ReflectiveOperationException {
+    void setup() throws ReflectiveOperationException {
         openGaussAdminExecutorFactory = new OpenGaussAdminExecutorCreator();
         Plugins.getMemberAccessor().set(OpenGaussAdminExecutorCreator.class.getDeclaredField("delegated"), openGaussAdminExecutorFactory, postgreSQLAdminExecutorFactory);
     }
     
     @Test
-    public void assertNewInstanceWithSQLStatementContextOnly() {
+    void assertNewInstanceWithSQLStatementContextOnly() {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class);
         DatabaseAdminExecutor expected = mock(DatabaseAdminExecutor.class);
         when(postgreSQLAdminExecutorFactory.create(sqlStatementContext)).thenReturn(Optional.of(expected));
@@ -63,7 +63,7 @@ public final class OpenGaussAdminExecutorFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithSelectDatabase() {
+    void assertNewInstanceWithSelectDatabase() {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("pg_database"));
         Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext, "select datcompatibility from pg_database where datname = 'sharding_db'", "");
@@ -72,7 +72,7 @@ public final class OpenGaussAdminExecutorFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithOtherSQL() {
+    void assertNewInstanceWithOtherSQL() {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
         DatabaseAdminExecutor expected = mock(DatabaseAdminExecutor.class);

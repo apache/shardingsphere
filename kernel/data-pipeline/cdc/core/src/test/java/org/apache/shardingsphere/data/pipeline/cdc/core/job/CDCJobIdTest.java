@@ -29,10 +29,10 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class CDCJobIdTest {
+class CDCJobIdTest {
     
     @Test
-    public void parseJobType() {
+    void parseJobType() {
         PipelineContextKey contextKey = PipelineContextKey.build(InstanceType.PROXY, "sharding_db");
         CDCJobId pipelineJobId = new CDCJobId(Arrays.asList("test", "t_order"), false, contextKey);
         String jobId = PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + "abcd";

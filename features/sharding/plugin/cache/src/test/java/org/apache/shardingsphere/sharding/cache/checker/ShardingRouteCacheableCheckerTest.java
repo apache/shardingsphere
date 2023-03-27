@@ -66,7 +66,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class ShardingRouteCacheableCheckerTest {
+class ShardingRouteCacheableCheckerTest {
     
     private static final String DATABASE_NAME = "sharding_db";
     
@@ -74,7 +74,7 @@ public final class ShardingRouteCacheableCheckerTest {
     
     @ParameterizedTest(name = "probably cacheable: {2}, SQL: {0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertCheckCacheable(final String sql, final List<Object> parameters, final boolean expectedProbablyCacheable, final List<Integer> expectedShardingConditionParameterMarkerIndexes) {
+    void assertCheckCacheable(final String sql, final List<Object> parameters, final boolean expectedProbablyCacheable, final List<Integer> expectedShardingConditionParameterMarkerIndexes) {
         ShardingRule shardingRule = createShardingRule();
         ShardingCacheRule shardingCacheRule = createShardingCacheRule(shardingRule);
         TimeServiceRule timeServiceRule = createTimeServiceRule();

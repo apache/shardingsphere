@@ -30,7 +30,7 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourc
 import javax.sql.DataSource;
 
 /**
- * Data source utility.
+ * Data source utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataSourceUtils {

@@ -63,7 +63,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLCommandExecutorFactoryTest {
+class PostgreSQLCommandExecutorFactoryTest {
     
     @Mock
     private ConnectionSession connectionSession;
@@ -72,7 +72,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     private PortalContext portalContext;
     
     @Test
-    public void assertNewInstance() throws SQLException {
+    void assertNewInstance() throws SQLException {
         Collection<InputOutput> inputOutputs = Arrays.asList(
                 new InputOutput(PostgreSQLCommandPacketType.SIMPLE_QUERY, PostgreSQLComQueryPacket.class, PostgreSQLComQueryExecutor.class),
                 new InputOutput(PostgreSQLCommandPacketType.PARSE_COMMAND, PostgreSQLComParsePacket.class, PostgreSQLComParseExecutor.class),
@@ -103,7 +103,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     }
     
     @Test
-    public void assertAggregatedPacketNotBatchedStatements() throws SQLException {
+    void assertAggregatedPacketNotBatchedStatements() throws SQLException {
         PostgreSQLComParsePacket parsePacket = mock(PostgreSQLComParsePacket.class);
         when(parsePacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.PARSE_COMMAND);
         PostgreSQLComBindPacket bindPacket = mock(PostgreSQLComBindPacket.class);
@@ -129,7 +129,7 @@ public final class PostgreSQLCommandExecutorFactoryTest {
     }
     
     @Test
-    public void assertAggregatedPacketIsBatchedStatements() throws SQLException {
+    void assertAggregatedPacketIsBatchedStatements() throws SQLException {
         PostgreSQLComParsePacket parsePacket = mock(PostgreSQLComParsePacket.class);
         when(parsePacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.PARSE_COMMAND);
         PostgreSQLComBindPacket bindPacket = mock(PostgreSQLComBindPacket.class);

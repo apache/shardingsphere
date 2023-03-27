@@ -27,45 +27,45 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class KeepFromXToYMaskAlgorithmTest {
+class KeepFromXToYMaskAlgorithmTest {
     
     private KeepFromXToYMaskAlgorithm maskAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         maskAlgorithm = new KeepFromXToYMaskAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("from-x", "2"), new Property("to-y", "5"), new Property("replace-char", "*")));
     }
     
     @Test
-    public void assertMask() {
+    void assertMask() {
         assertThat(maskAlgorithm.mask("abc123456"), is("**c123***"));
     }
     
     @Test
-    public void assertMaskWhenPlainValueLengthLessThanToY() {
+    void assertMaskWhenPlainValueLengthLessThanToY() {
         assertThat(maskAlgorithm.mask("abc"), is("**c"));
     }
     
     @Test
-    public void assertMaskWhenPlainValueLengthLessThanFromX() {
+    void assertMaskWhenPlainValueLengthLessThanFromX() {
         assertThat(maskAlgorithm.mask("a"), is("a"));
     }
     
     @Test
-    public void assertInitWhenFromXIsEmpty() {
+    void assertInitWhenFromXIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", ""), new Property("to-y", "5"), new Property("replace-char", "*"))));
     }
     
     @Test
-    public void assertInitWhenToYIsEmpty() {
+    void assertInitWhenToYIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "2"), new Property("to-y", ""), new Property("replace-char", "*"))));
     }
     
     @Test
-    public void assertInitWhenReplaceCharIsEmpty() {
+    void assertInitWhenReplaceCharIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "2"), new Property("to-y", "5"), new Property("replace-char", ""))));
     }

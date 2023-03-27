@@ -39,27 +39,27 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ShardingStrategyTest {
+class ShardingStrategyTest {
     
     private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("logicTable_", 1, '0');
     
     private final Collection<String> targets = Arrays.asList("1", "2", "3");
     
     @Test
-    public void assertDoShardingWithoutShardingColumns() {
+    void assertDoShardingWithoutShardingColumns() {
         NoneShardingStrategy strategy = new NoneShardingStrategy();
         assertThat(strategy.doSharding(targets, Collections.emptySet(), DATA_NODE_INFO, new ConfigurationProperties(new Properties())), is(targets));
     }
     
     @Test
-    public void assertDoShardingForBetweenSingleKey() {
+    void assertDoShardingForBetweenSingleKey() {
         StandardShardingStrategy strategy = new StandardShardingStrategy("column", new CoreStandardShardingAlgorithmFixture());
         Collection<ShardingConditionValue> shardingConditionValues = Collections.singleton(new RangeShardingConditionValue<>("column", "logicTable", Range.open(1, 3)));
         assertThat(strategy.doSharding(targets, shardingConditionValues, DATA_NODE_INFO, new ConfigurationProperties(new Properties())), is(Collections.singleton("1")));
     }
     
     @Test
-    public void assertDoShardingForMultipleKeys() {
+    void assertDoShardingForMultipleKeys() {
         Collection<String> expected = new HashSet<>(3, 1);
         expected.add("1");
         expected.add("2");

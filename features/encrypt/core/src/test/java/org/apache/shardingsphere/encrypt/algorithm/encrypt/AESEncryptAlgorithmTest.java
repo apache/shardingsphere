@@ -33,40 +33,40 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-public final class AESEncryptAlgorithmTest {
+class AESEncryptAlgorithmTest {
     
     private StandardEncryptAlgorithm<Object, String> encryptAlgorithm;
     
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         encryptAlgorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test")));
     }
     
     @Test
-    public void assertCreateNewInstanceWithoutAESKey() {
+    void assertCreateNewInstanceWithoutAESKey() {
         assertThrows(EncryptAlgorithmInitializationException.class, () -> TypedSPILoader.getService(EncryptAlgorithm.class, "AES"));
     }
     
     @Test
-    public void assertEncrypt() {
+    void assertEncrypt() {
         Object actual = encryptAlgorithm.encrypt("test", mock(EncryptContext.class));
         assertThat(actual, is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
     @Test
-    public void assertEncryptNullValue() {
+    void assertEncryptNullValue() {
         assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
     @Test
-    public void assertDecrypt() {
+    void assertDecrypt() {
         Object actual = encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==", mock(EncryptContext.class));
         assertThat(actual.toString(), is("test"));
     }
     
     @Test
-    public void assertDecryptNullValue() {
+    void assertDecryptNullValue() {
         assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
     }
 }

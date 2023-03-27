@@ -28,14 +28,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class BatchExecutionUnitTest {
+class BatchExecutionUnitTest {
     
     private static final String DATA_SOURCE_NAME = "ds";
     
     private static final String SQL = "SELECT * FROM table WHERE id = ?";
     
     @Test
-    public void assertGetParameterSets() {
+    void assertGetParameterSets() {
         BatchExecutionUnit batchExecutionUnit = new BatchExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Collections.singletonList(1))));
         List<List<Object>> actual = batchExecutionUnit.getParameterSets();
         assertThat(actual.size(), is(1));
@@ -48,14 +48,14 @@ public final class BatchExecutionUnitTest {
     }
     
     @Test
-    public void assertEquals() {
+    void assertEquals() {
         BatchExecutionUnit actual = new BatchExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Collections.singletonList(1))));
         BatchExecutionUnit expected = new BatchExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Collections.singletonList(2))));
         assertThat(actual, is(expected));
     }
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         ExecutionUnit executionUnit = new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Collections.singletonList(1)));
         BatchExecutionUnit actual = new BatchExecutionUnit(executionUnit);
         assertThat(actual.toString(), is(String.format("BatchExecutionUnit(executionUnit=ExecutionUnit"

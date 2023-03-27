@@ -28,10 +28,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
-public final class ShadowSQLRouterTest {
+class ShadowSQLRouterTest {
     
     @Test
-    public void assertCreateRouteContext() {
+    void assertCreateRouteContext() {
         assertNotNull(new ShadowSQLRouter().createRouteContext(mock(QueryContext.class),
                 mock(ShardingSphereRuleMetaData.class), mock(ShardingSphereDatabase.class), mock(ShadowRule.class), mock(ConfigurationProperties.class), new ConnectionContext()));
     }

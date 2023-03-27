@@ -21,12 +21,12 @@ import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 import me.ahoo.cosid.sharding.IntervalStep;
 import me.ahoo.cosid.sharding.IntervalTimeline;
+import me.ahoo.cosid.sharding.LocalDateTimeConvertor;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
-import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.CosIdLocalDateTimeConvertor;
 import org.apache.shardingsphere.sharding.exception.ShardingPluginException;
 
 import java.time.LocalDateTime;
@@ -56,7 +56,7 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
     
     private IntervalTimeline intervalTimeline;
     
-    private CosIdLocalDateTimeConvertor localDateTimeConvertor;
+    private LocalDateTimeConvertor localDateTimeConvertor;
     
     @Override
     public void init(final Properties props) {
@@ -79,7 +79,7 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
         return props.getProperty(key);
     }
     
-    protected abstract CosIdLocalDateTimeConvertor createLocalDateTimeConvertor(Properties props);
+    protected abstract LocalDateTimeConvertor createLocalDateTimeConvertor(Properties props);
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<T> shardingValue) {

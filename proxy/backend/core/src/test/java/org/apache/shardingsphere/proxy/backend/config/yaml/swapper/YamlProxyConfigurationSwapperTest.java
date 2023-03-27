@@ -41,10 +41,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlProxyConfigurationSwapperTest {
+class YamlProxyConfigurationSwapperTest {
     
     @Test
-    public void assertSwap() throws IOException {
+    void assertSwap() throws IOException {
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/swap");
         ProxyConfiguration actual = new YamlProxyConfigurationSwapper().swap(yamlProxyConfig);
         assertDataSources(actual);

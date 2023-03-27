@@ -37,6 +37,10 @@ public class TranslatableFilterRule extends RelOptRule {
     
     private static final Pattern CONDITION_PATTERN = Pattern.compile("\\$[A-Za-z]");
     
+    private static final Pattern CONDITION_FUNCTION_PATTERN = Pattern.compile("[A-Za-z_]+\\.[A-Za-z_]+\\(.*\\)");
+    
+    private static final Pattern CONDITION_COMPLEX_PATTERN = Pattern.compile("NEGATED POSIX REGEX CASE SENSITIVE");
+    
     public TranslatableFilterRule(final RelBuilderFactory relBuilderFactory) {
         super(operand(LogicalFilter.class, operand(TranslatableTableScan.class, none())), relBuilderFactory, "TranslatableFilterRule");
     }
@@ -46,7 +50,9 @@ public class TranslatableFilterRule extends RelOptRule {
         LogicalFilter filter = call.rel(0);
         RexCall condition = (RexCall) filter.getCondition();
         for (RexNode each : condition.getOperands()) {
-            if (CONDITION_PATTERN.matcher(each.toString()).find()) {
+            if (CONDITION_PATTERN.matcher(each.toString()).find()
+                    || CONDITION_FUNCTION_PATTERN.matcher(each.toString()).find()
+                    || CONDITION_COMPLEX_PATTERN.matcher(each.toString()).find()) {
                 return false;
             }
         }

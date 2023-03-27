@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Pipeline job id utils.
+ * Pipeline job id utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineJobIdUtils {

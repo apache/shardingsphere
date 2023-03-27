@@ -26,8 +26,9 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
+import org.apache.shardingsphere.readwritesplitting.exception.checker.DataSourceNameExistedException;
+import org.apache.shardingsphere.readwritesplitting.exception.checker.DuplicateDataSourceException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.InvalidWeightLoadBalancerConfigurationException;
-import org.apache.shardingsphere.readwritesplitting.exception.checker.LoadBalancerAlgorithmNotFoundException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -44,11 +45,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ReadwriteSplittingRuleConfigurationCheckerTest {
+class ReadwriteSplittingRuleConfigurationCheckerTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertValidCheck() {
+    void assertValidCheck() {
         ReadwriteSplittingRuleConfiguration config = createValidConfiguration();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         checker.check("test", config, Collections.emptyMap(), Collections.singleton(mock(DynamicDataSourceContainedRule.class)));
@@ -65,7 +66,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertInvalidCheck() {
+    void assertInvalidCheck() {
         ReadwriteSplittingRuleConfiguration config = createInvalidConfiguration();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         assertThrows(IllegalStateException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
@@ -81,29 +82,29 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertCheckWhenConfigInvalidWriteDataSource() {
+    void assertCheckWhenConfigInvalidWriteDataSource() {
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
         List<ReadwriteSplittingDataSourceRuleConfiguration> configurations = Arrays.asList(createDataSourceRuleConfig(
-                "write_ds_0", Arrays.asList("ds_0", "ds_1")), createDataSourceRuleConfig("write_ds_1", Arrays.asList("ds_2", "ds_3")));
+                "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1")), createDataSourceRuleConfig("write_ds_2", Arrays.asList("read_ds_0", "read_ds_1")));
         when(config.getDataSources()).thenReturn(configurations);
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        assertThrows(LoadBalancerAlgorithmNotFoundException.class, () -> checker.check("test", config, mockDataSources(), Collections.emptyList()));
+        assertThrows(DataSourceNameExistedException.class, () -> checker.check("test", config, mockDataSources(), Collections.emptyList()));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertCheckWhenConfigInvalidReadDataSource() {
+    void assertCheckWhenConfigInvalidReadDataSource() {
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
         List<ReadwriteSplittingDataSourceRuleConfiguration> configurations = Arrays.asList(createDataSourceRuleConfig(
                 "write_ds_0", Arrays.asList("read_ds_0", "read_ds_0")), createDataSourceRuleConfig("write_ds_1", Arrays.asList("read_ds_0", "read_ds_0")));
         when(config.getDataSources()).thenReturn(configurations);
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        assertThrows(LoadBalancerAlgorithmNotFoundException.class, () -> checker.check("test", config, mockDataSources(), Collections.emptyList()));
+        assertThrows(DuplicateDataSourceException.class, () -> checker.check("test", config, mockDataSources(), Collections.emptyList()));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertCheckWeightLoadBalanceInvalidDataSourceName() {
+    void assertCheckWeightLoadBalanceInvalidDataSourceName() {
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
         List<ReadwriteSplittingDataSourceRuleConfiguration> configs = Collections.singletonList(createDataSourceRuleConfig("write_ds_0", Arrays.asList("read_ds_0", "read_ds_1")));
         when(config.getDataSources()).thenReturn(configs);
@@ -115,7 +116,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertCheckWhenConfigOtherRulesDatasource() {
+    void assertCheckWhenConfigOtherRulesDatasource() {
         ReadwriteSplittingRuleConfiguration config = createContainsOtherRulesDatasourceConfig();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         DataSourceContainedRule dataSourceContainedRule = mock(DataSourceContainedRule.class, RETURNS_DEEP_STUBS);

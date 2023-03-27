@@ -5,7 +5,7 @@ weight = 7
 
 ### 描述
 
-`REFRESH DATABASE METADATA FROM GOVERNANCE CENTER` 语法用于从治理中心拉取最新配置，刷新本地逻辑库元数据
+`REFRESH DATABASE METADATA FROM GOVERNANCE CENTER` 语法用于从治理中心拉取最新配置，刷新本地逻辑库元数据。
 
 ### 语法
 

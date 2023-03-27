@@ -45,10 +45,11 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.context.Migrat
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 
 import java.sql.SQLException;
@@ -92,6 +93,7 @@ public final class MigrationJobPreparer {
                 jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private void prepareAndCheckTargetWithLock(final MigrationJobItemContext jobItemContext) throws SQLException {
         MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
         String jobId = jobConfig.getJobId();
@@ -100,7 +102,7 @@ public final class MigrationJobPreparer {
         if (!jobAPI.getJobItemProgress(jobId, jobItemContext.getShardingItem()).isPresent()) {
             jobAPI.persistJobItemProgress(jobItemContext);
         }
-        LockDefinition lockDefinition = new GlobalLockDefinition(lockName);
+        LockDefinition lockDefinition = new GlobalLockDefinition(String.format(GlobalLockNames.PREPARE.getLockName(), jobConfig.getJobId()));
         long startTimeMillis = System.currentTimeMillis();
         if (lockContext.tryLock(lockDefinition, 600000)) {
             log.info("try lock success, jobId={}, shardingItem={}, cost {} ms", jobId, jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);
@@ -117,7 +119,7 @@ public final class MigrationJobPreparer {
                 lockContext.unlock(lockDefinition);
             }
         } else {
-            log.warn("jobId={}, shardingItem={} try lock failed", jobId, jobItemContext.getShardingItem());
+            log.warn("try lock failed, jobId={}, shardingItem={}", jobId, jobItemContext.getShardingItem());
         }
     }
     
@@ -126,7 +128,7 @@ public final class MigrationJobPreparer {
             prepareTarget(jobItemContext);
         }
         InventoryIncrementalJobItemProgress initProgress = jobItemContext.getInitProgress();
-        if (null == initProgress || initProgress.getStatus() == JobStatus.PREPARING_FAILURE) {
+        if (null == initProgress) {
             PipelineDataSourceWrapper targetDataSource = ((PipelineDataSourceManager) jobItemContext.getImporterConnector().getConnector())
                     .getDataSource(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
             PipelineJobPreparerUtils.checkTargetDataSource(jobItemContext.getJobConfig().getTargetDatabaseType(), jobItemContext.getTaskConfig().getImporterConfig(),
@@ -143,7 +145,7 @@ public final class MigrationJobPreparer {
                 PipelineTypedSPILoader.getDatabaseTypedService(DatabaseType.class, targetDatabaseType), createTableConfig, dataSourceManager);
         PipelineJobPreparerUtils.prepareTargetSchema(targetDatabaseType, prepareTargetSchemasParam);
         ShardingSphereMetaData metaData = PipelineContextManager.getContext(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId())).getContextManager().getMetaDataContexts().getMetaData();
-        ShardingSphereSQLParserEngine sqlParserEngine = PipelineJobPreparerUtils.getSQLParserEngine(metaData, jobConfig.getTargetDatabaseName());
+        SQLParserEngine sqlParserEngine = PipelineJobPreparerUtils.getSQLParserEngine(metaData, jobConfig.getTargetDatabaseName());
         PipelineJobPreparerUtils.prepareTargetTables(targetDatabaseType, new PrepareTargetTablesParameter(createTableConfig, dataSourceManager, sqlParserEngine));
     }
     

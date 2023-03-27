@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public final class DropDatabaseDiscoveryProviderStatementUpdaterTest {
+class DropDatabaseDiscoveryProviderStatementUpdaterTest {
     
     private final DropDatabaseDiscoveryTypeStatementUpdater updater = new DropDatabaseDiscoveryTypeStatementUpdater();
     
@@ -50,18 +50,18 @@ public final class DropDatabaseDiscoveryProviderStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Test
-    public void assertCheckSQLStatementWithoutCurrentType() {
+    void assertCheckSQLStatementWithoutCurrentType() {
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutToBeDroppedTypes() {
+    void assertCheckSQLStatementWithoutToBeDroppedTypes() {
         assertThrows(MissingRequiredRuleException.class,
                 () -> updater.checkSQLStatement(database, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap())));
     }
     
     @Test
-    public void assertCheckSQLStatementWithInUsed() {
+    void assertCheckSQLStatementWithInUsed() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.emptyList(), "", "type_name");
         assertThrows(RuleInUsedException.class,
                 () -> updater.checkSQLStatement(database, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(dataSourceRuleConfig),
@@ -69,14 +69,14 @@ public final class DropDatabaseDiscoveryProviderStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfiguration() {
+    void assertUpdateCurrentRuleConfiguration() {
         DatabaseDiscoveryRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         updater.updateCurrentRuleConfiguration(createSQLStatement(), ruleConfig);
         assertFalse(ruleConfig.getDiscoveryTypes().containsKey("type_name"));
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfigurationWithIfExists() {
+    void assertUpdateCurrentRuleConfigurationWithIfExists() {
         DatabaseDiscoveryRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropDatabaseDiscoveryTypeStatement dropDatabaseDiscoveryRuleStatement = createSQLStatementWithIfExists();
         updater.checkSQLStatement(database, dropDatabaseDiscoveryRuleStatement, ruleConfig);

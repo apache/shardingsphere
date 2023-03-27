@@ -30,13 +30,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLComFieldListPacketTest {
+class MySQLComFieldListPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertNew() {
+    void assertNew() {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
         MySQLComFieldListPacket actual = new MySQLComFieldListPacket(payload);
@@ -45,7 +45,7 @@ public final class MySQLComFieldListPacketTest {
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         when(payload.readStringNul()).thenReturn("tbl");
         when(payload.readStringEOF()).thenReturn("-");
         MySQLComFieldListPacket actual = new MySQLComFieldListPacket(payload);

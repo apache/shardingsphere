@@ -5,7 +5,7 @@ weight = 15
 
 ### 描述
 
-`STOP MIGRATION` 语法用于停止指定的数据迁移作业
+`STOP MIGRATION` 语法用于停止指定的数据迁移作业。
 
 ### 语法
 

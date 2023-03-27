@@ -33,17 +33,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class StreamMergedResultTest {
+class StreamMergedResultTest {
     
     private final TestStreamMergedResult streamMergedResult = new TestStreamMergedResult();
     
     @Test
-    public void assertGetCurrentQueryResultIfNull() {
+    void assertGetCurrentQueryResultIfNull() {
         assertThrows(SQLException.class, streamMergedResult::getCurrentQueryResult);
     }
     
     @Test
-    public void assertGetValue() throws SQLException {
+    void assertGetValue() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.getValue(1, Object.class)).thenReturn("1");
         streamMergedResult.setCurrentQueryResult(queryResult);
@@ -51,7 +51,7 @@ public final class StreamMergedResultTest {
     }
     
     @Test
-    public void assertGetCalendarValue() throws SQLException {
+    void assertGetCalendarValue() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         Calendar calendar = Calendar.getInstance();
         when(queryResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
@@ -60,7 +60,7 @@ public final class StreamMergedResultTest {
     }
     
     @Test
-    public void assertGetInputStream() throws SQLException {
+    void assertGetInputStream() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         InputStream value = mock(InputStream.class);
         when(queryResult.getInputStream(1, "Ascii")).thenReturn(value);
@@ -69,7 +69,7 @@ public final class StreamMergedResultTest {
     }
     
     @Test
-    public void assertWasNull() {
+    void assertWasNull() {
         QueryResult queryResult = mock(QueryResult.class);
         streamMergedResult.setCurrentQueryResult(queryResult);
         assertFalse(streamMergedResult.wasNull());

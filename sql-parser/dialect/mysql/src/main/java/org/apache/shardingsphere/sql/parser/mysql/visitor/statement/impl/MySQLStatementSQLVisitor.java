@@ -129,6 +129,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableRe
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TemporalLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TrimFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TypeDatetimePrecisionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValuesFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ViewNameContext;
@@ -203,7 +204,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.BooleanLiteralValue;
@@ -448,6 +449,16 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.comparisonOperator() || null != ctx.SAFE_EQ_()) {
             return createCompareSegment(ctx);
         }
+        if (null != ctx.MEMBER()) {
+            int startIndex = ctx.MEMBER().getSymbol().getStopIndex() + 5;
+            int endIndex = ctx.stop.getStopIndex() - 1;
+            String rightText = ctx.start.getInputStream().getText(new Interval(startIndex, endIndex));
+            ExpressionSegment right = new ExpressionProjectionSegment(startIndex, endIndex, rightText);
+            String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
+            ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
+            String operator = "MEMBER OF";
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
+        }
         if (null != ctx.assignmentOperator()) {
             return createAssignmentSegment(ctx);
         }
@@ -572,7 +583,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
             return segment;
         }
         if (null != ctx.literals()) {
-            return SQLUtil.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
+            return SQLUtils.createLiteralExpression(visit(ctx.literals()), startIndex, stopIndex, ctx.literals().start.getInputStream().getText(new Interval(startIndex, stopIndex)));
         }
         if (null != ctx.intervalExpression()) {
             return visit(ctx.intervalExpression());
@@ -887,15 +898,29 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitCastFunction(final CastFunctionContext ctx) {
-        calculateParameterCount(Collections.singleton(ctx.expr()));
+        calculateParameterCount(ctx.expr());
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CAST().getText(), getOriginalText(ctx));
-        ASTNode exprSegment = visit(ctx.expr());
-        if (exprSegment instanceof ColumnSegment) {
-            result.getParameters().add((ColumnSegment) exprSegment);
-        } else if (exprSegment instanceof LiteralExpressionSegment) {
-            result.getParameters().add((LiteralExpressionSegment) exprSegment);
+        for (ExprContext each : ctx.expr()) {
+            ASTNode expr = visit(each);
+            if (expr instanceof ColumnSegment) {
+                result.getParameters().add((ColumnSegment) expr);
+            } else if (expr instanceof LiteralExpressionSegment) {
+                result.getParameters().add((LiteralExpressionSegment) expr);
+            }
         }
-        result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        if (null != ctx.dataType()) {
+            result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        }
+        if (null != ctx.DATETIME()) {
+            DataTypeSegment dataType = new DataTypeSegment();
+            dataType.setDataTypeName(ctx.DATETIME().getText());
+            dataType.setStartIndex(ctx.DATETIME().getSymbol().getStartIndex());
+            dataType.setStopIndex(ctx.DATETIME().getSymbol().getStopIndex());
+            if (null != ctx.typeDatetimePrecision()) {
+                dataType.setDataLength((DataTypeLengthSegment) visit(ctx.typeDatetimePrecision()));
+            }
+            result.getParameters().add(dataType);
+        }
         return result;
     }
     
@@ -1070,6 +1095,15 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     }
     
     @Override
+    public ASTNode visitTypeDatetimePrecision(final TypeDatetimePrecisionContext ctx) {
+        DataTypeLengthSegment result = new DataTypeLengthSegment();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStartIndex());
+        result.setPrecision(Integer.parseInt(ctx.NUMBER_().getText()));
+        return result;
+    }
+    
+    @Override
     public final ASTNode visitOrderByClause(final OrderByClauseContext ctx) {
         Collection<OrderByItemSegment> items = new LinkedList<>();
         for (OrderByItemContext each : ctx.orderByItem()) {
@@ -1088,7 +1122,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         if (null != ctx.numberLiterals()) {
             return new IndexOrderByItemSegment(ctx.numberLiterals().getStart().getStartIndex(), ctx.numberLiterals().getStop().getStopIndex(),
-                    SQLUtil.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, null);
+                    SQLUtils.getExactlyNumber(ctx.numberLiterals().getText(), 10).intValue(), orderDirection, null);
         } else {
             ASTNode expr = visitExpr(ctx.expr());
             if (expr instanceof ColumnSegment) {

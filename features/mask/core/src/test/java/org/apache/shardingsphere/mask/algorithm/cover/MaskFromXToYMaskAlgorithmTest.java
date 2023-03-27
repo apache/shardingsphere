@@ -27,45 +27,45 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class MaskFromXToYMaskAlgorithmTest {
+class MaskFromXToYMaskAlgorithmTest {
     
     private MaskFromXToYMaskAlgorithm maskAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         maskAlgorithm = new MaskFromXToYMaskAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", "*")));
     }
     
     @Test
-    public void assertMask() {
+    void assertMask() {
         assertThat(maskAlgorithm.mask("abc12345"), is("abc***45"));
     }
     
     @Test
-    public void assertMaskWhenPlainValueLengthLessThanFromX() {
+    void assertMaskWhenPlainValueLengthLessThanFromX() {
         assertThat(maskAlgorithm.mask("ab"), is("ab"));
     }
     
     @Test
-    public void assertMaskWhenPlainValueLengthLessThanToY() {
+    void assertMaskWhenPlainValueLengthLessThanToY() {
         assertThat(maskAlgorithm.mask("abc1"), is("abc*"));
     }
     
     @Test
-    public void assertInitWhenFromXIsEmpty() {
+    void assertInitWhenFromXIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", ""), new Property("to-y", "5"), new Property("replace-char", "*"))));
     }
     
     @Test
-    public void assertInitWhenToYIsEmpty() {
+    void assertInitWhenToYIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", ""), new Property("replace-char", "*"))));
     }
     
     @Test
-    public void assertInitWhenReplaceCharIsEmpty() {
+    void assertInitWhenReplaceCharIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", ""))));
     }

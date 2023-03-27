@@ -31,15 +31,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DefaultSaneQueryResultEngineTest {
+class DefaultSaneQueryResultEngineTest {
     
     @Test
-    public void assertGetSaneQueryResultForOtherStatement() {
+    void assertGetSaneQueryResultForOtherStatement() {
         assertThat(TypedSPILoader.getService(SaneQueryResultEngine.class, null).getSaneQueryResult(() -> 0, null), is(Optional.empty()));
     }
     
     @Test
-    public void assertGetSaneQueryResultForSelectStatement() {
+    void assertGetSaneQueryResultForSelectStatement() {
         Optional<ExecuteResult> actual = TypedSPILoader.getService(SaneQueryResultEngine.class, null).getSaneQueryResult(new SelectStatement() {
         }, null);
         assertTrue(actual.isPresent());

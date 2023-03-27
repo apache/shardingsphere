@@ -33,10 +33,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowIndexStatementContextTest {
+class ShowIndexStatementContextTest {
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         MySQLShowIndexStatement mySQLShowIndexStatement = mock(MySQLShowIndexStatement.class);
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         when(mySQLShowIndexStatement.getTable()).thenReturn(table);

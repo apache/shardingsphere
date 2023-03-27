@@ -28,12 +28,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTimeout;
 
-public final class ExecutorServiceManagerTest {
+class ExecutorServiceManagerTest {
     
     private static final TransmittableThreadLocal<String> TRANSMITTABLE_THREAD_LOCAL = new TransmittableThreadLocal<>();
     
     @Test
-    public void assertThreadLocalValueChangedForReusedThread() {
+    void assertThreadLocalValueChangedForReusedThread() {
         AtomicBoolean finished = new AtomicBoolean(false);
         ExecutorService executorService = new ExecutorServiceManager(1).getExecutorService();
         executorService.submit(() -> {

@@ -28,20 +28,25 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class ColumnValueMatchShadowAlgorithmTest extends AbstractColumnShadowAlgorithmTest {
+class ColumnValueMatchShadowAlgorithmTest {
+    
+    private static final String SHADOW_TABLE = "t_user";
+    
+    private static final String SHADOW_COLUMN = "shadow";
     
     @Test
-    public void assertIsShadow() {
+    void assertIsShadow() {
         ColumnValueMatchedShadowAlgorithm shadowAlgorithm = (ColumnValueMatchedShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class,
                 "VALUE_MATCH", PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "insert"), new Property("value", "1")));
-        createPreciseColumnShadowValuesTrueCase().forEach(each -> assertTrue(shadowAlgorithm.isShadow(each)));
-        createPreciseColumnShadowValuesFalseCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
+        PreciseColumnShadowValueFixtureBuilder.createTrueCase(SHADOW_TABLE, SHADOW_COLUMN).forEach(each -> assertTrue(shadowAlgorithm.isShadow(each)));
+        PreciseColumnShadowValueFixtureBuilder.createFalseCase(SHADOW_TABLE, SHADOW_COLUMN).forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
     }
     
     @Test
-    public void assertExceptionCase() {
+    void assertExceptionCase() {
         ColumnValueMatchedShadowAlgorithm shadowAlgorithm = (ColumnValueMatchedShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class,
                 "VALUE_MATCH", PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "insert"), new Property("value", "1")));
-        assertThrows(UnsupportedShadowColumnTypeException.class, () -> createPreciseColumnShadowValuesExceptionCase().forEach(each -> assertFalse(shadowAlgorithm.isShadow(each))));
+        assertThrows(UnsupportedShadowColumnTypeException.class,
+                () -> PreciseColumnShadowValueFixtureBuilder.createExceptionCase(SHADOW_TABLE, SHADOW_COLUMN).forEach(each -> assertFalse(shadowAlgorithm.isShadow(each))));
     }
 }

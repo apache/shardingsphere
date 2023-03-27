@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphere
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -59,12 +59,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class SelectDatabaseExecutorTest {
+class SelectDatabaseExecutorTest {
     
     private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
     @Test
-    public void assertSelectDatabaseExecute() throws SQLException {
+    void assertSelectDatabaseExecute() throws SQLException {
         String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner,"
                 + " d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname "
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
@@ -95,7 +95,7 @@ public final class SelectDatabaseExecutorTest {
     }
     
     @Test
-    public void assertSelectDatabaseWithoutDataSourceExecute() throws SQLException {
+    void assertSelectDatabaseWithoutDataSourceExecute() throws SQLException {
         String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate, d.datallowconn, pg_get_userbyid(d.datdba) AS databaseowner, "
                 + "d.datcollate, d.datctype, shobj_description(d.oid, 'pg_database') AS description, d.datconnlimit, t.spcname, d.encoding, pg_encoding_to_char(d.encoding) AS encodingname "
                 + "FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
@@ -110,7 +110,7 @@ public final class SelectDatabaseExecutorTest {
     }
     
     @Test
-    public void assertSelectDatabaseWithoutDataSourceExecuteAndWithColumnProjectionSegment() throws SQLException {
+    void assertSelectDatabaseWithoutDataSourceExecuteAndWithColumnProjectionSegment() throws SQLException {
         String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         ContextManager contextManager = mockContextManager(createEmptyDatabase());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -126,7 +126,7 @@ public final class SelectDatabaseExecutorTest {
     }
     
     @Test
-    public void assertSelectDatabaseInNoSchemaExecute() throws SQLException {
+    void assertSelectDatabaseInNoSchemaExecute() throws SQLException {
         String sql = "SELECT d.oid, d.datname AS databasename, d.datacl, d.datistemplate FROM pg_database d LEFT JOIN pg_tablespace t ON d.dattablespace = t.oid;";
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -136,7 +136,7 @@ public final class SelectDatabaseExecutorTest {
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
     }
     
-    private static ContextManager mockContextManager(final ShardingSphereDatabase... databases) {
+    private ContextManager mockContextManager(final ShardingSphereDatabase... databases) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(Arrays.stream(databases).collect(Collectors.toMap(ShardingSphereDatabase::getName, each -> each, (key, value) -> value)),

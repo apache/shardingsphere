@@ -24,17 +24,17 @@ import org.postgresql.replication.LogSequenceNumber;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class WALPositionTest {
+class WALPositionTest {
     
     @Test
-    public void assertCompareTo() {
+    void assertCompareTo() {
         WALPosition walPosition = new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
         assertThat(walPosition.compareTo(null), is(1));
         assertThat(walPosition.compareTo(new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)))), is(0));
     }
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         assertThat(new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))).toString(), is("100"));
     }
 }

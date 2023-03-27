@@ -5,7 +5,7 @@ weight = 5
 
 ### 描述
 
-`SHOW DIST VARIABLE` 语法用于查询 `PROXY` 系统变量配置
+`SHOW DIST VARIABLE` 语法用于查询 `PROXY` 系统变量配置。
 
 ### 语法
 
@@ -48,11 +48,10 @@ mysql> SHOW DIST VARIABLES;
 +---------------------------------------+----------------+
 | variable_name                         | variable_value |
 +---------------------------------------+----------------+
-| sql_show                              | false          |
-| sql_simple                            | false          |
+| system_log_level                      | INFO           |
 | kernel_executor_size                  | 0              |
 | max_connections_size_per_query        | 1              |
-| check_table_metadata_enabled          | false          |
+| check_table_meta_data_enabled         | false          |
 | sql_federation_type                   | NONE           |
 | proxy_frontend_database_protocol_type |                |
 | proxy_frontend_flush_threshold        | 128            |
@@ -65,12 +64,15 @@ mysql> SHOW DIST VARIABLES;
 | proxy_default_port                    | 3307           |
 | proxy_netty_backlog                   | 1024           |
 | proxy_instance_type                   | Proxy          |
-| proxy_metadata_collector_enabled      | false          |
+| cdc_server_port                       | 33071          |
+| proxy_meta_data_collector_enabled     | true           |
 | agent_plugins_enabled                 | true           |
 | cached_connections                    | 0              |
 | transaction_type                      | LOCAL          |
+| sql_show                              | false          |
+| sql_simple                            | false          |
 +---------------------------------------+----------------+
-21 rows in set (0.01 sec)
+23 rows in set (0.01 sec)
 ```
 
 - 查询指定 `PROXY` 系统变量配置

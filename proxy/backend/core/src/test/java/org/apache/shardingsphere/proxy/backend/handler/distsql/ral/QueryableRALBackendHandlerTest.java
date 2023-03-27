@@ -32,7 +32,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
@@ -54,17 +54,17 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class QueryableRALBackendHandlerTest {
+class QueryableRALBackendHandlerTest {
     
     @Test
-    public void assertExecuteWithNoDatabase() {
+    void assertExecuteWithNoDatabase() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getDatabaseName()).thenReturn(null);
         assertThrows(NoDatabaseSelectedException.class, () -> new QueryableRALBackendHandler<>(mock(ExportDatabaseConfigurationStatement.class), connectionSession).execute());
     }
     
     @Test
-    public void assertExecuteWithUnknownDatabase() {
+    void assertExecuteWithUnknownDatabase() {
         ShardingSphereMetaData metaData = new ShardingSphereMetaData();
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), metaData);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
@@ -75,12 +75,12 @@ public final class QueryableRALBackendHandlerTest {
     }
     
     @Test
-    public void assertExecuteWithAbstractStatement() {
+    void assertExecuteWithAbstractStatement() {
         assertThrows(ServiceProviderNotFoundServerException.class, () -> new QueryableRALBackendHandler<>(mock(QueryableRALStatement.class), mock(ConnectionSession.class)).execute());
     }
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema("db_name")).thenReturn(new ShardingSphereSchema(createTableMap(), Collections.emptyMap()));

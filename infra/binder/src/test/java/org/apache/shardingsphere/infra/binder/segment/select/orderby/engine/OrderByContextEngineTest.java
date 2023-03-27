@@ -49,30 +49,30 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class OrderByContextEngineTest {
+class OrderByContextEngineTest {
     
     @Test
-    public void assertCreateOrderByWithoutOrderByForMySQL() {
+    void assertCreateOrderByWithoutOrderByForMySQL() {
         assertCreateOrderByWithoutOrderBy(new MySQLSelectStatement());
     }
     
     @Test
-    public void assertCreateOrderByWithoutOrderByForOracle() {
+    void assertCreateOrderByWithoutOrderByForOracle() {
         assertCreateOrderByWithoutOrderBy(new OracleSelectStatement());
     }
     
     @Test
-    public void assertCreateOrderByWithoutOrderByForPostgreSQL() {
+    void assertCreateOrderByWithoutOrderByForPostgreSQL() {
         assertCreateOrderByWithoutOrderBy(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertCreateOrderByWithoutOrderByForSQL92() {
+    void assertCreateOrderByWithoutOrderByForSQL92() {
         assertCreateOrderByWithoutOrderBy(new SQL92SelectStatement());
     }
     
     @Test
-    public void assertCreateOrderByWithoutOrderByForSQLServer() {
+    void assertCreateOrderByWithoutOrderByForSQLServer() {
         assertCreateOrderByWithoutOrderBy(new SQLServerSelectStatement());
     }
     
@@ -87,27 +87,27 @@ public final class OrderByContextEngineTest {
     }
     
     @Test
-    public void assertCreateOrderByWithOrderByForMySQL() {
+    void assertCreateOrderByWithOrderByForMySQL() {
         assertCreateOrderByWithOrderBy(new MySQLSelectStatement());
     }
     
     @Test
-    public void assertCreateOrderByWithOrderByForOracle() {
+    void assertCreateOrderByWithOrderByForOracle() {
         assertCreateOrderByWithOrderBy(new OracleSelectStatement());
     }
     
     @Test
-    public void assertCreateOrderByWithOrderByForPostgreSQL() {
+    void assertCreateOrderByWithOrderByForPostgreSQL() {
         assertCreateOrderByWithOrderBy(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertCreateOrderByWithOrderByForSQL92() {
+    void assertCreateOrderByWithOrderByForSQL92() {
         assertCreateOrderByWithOrderBy(new SQL92SelectStatement());
     }
     
     @Test
-    public void assertCreateOrderByWithOrderByForSQLServer() {
+    void assertCreateOrderByWithOrderByForSQLServer() {
         assertCreateOrderByWithOrderBy(new SQLServerSelectStatement());
     }
     
@@ -129,31 +129,31 @@ public final class OrderByContextEngineTest {
     }
     
     @Test
-    public void assertCreateOrderInDistinctByWithoutOrderByForMySQL() {
+    void assertCreateOrderInDistinctByWithoutOrderByForMySQL() {
         assertCreateOrderInDistinctByWithoutOrderBy(new MySQLSelectStatement());
     }
     
     @Test
-    public void assertCreateOrderInDistinctByWithoutOrderByForOracle() {
+    void assertCreateOrderInDistinctByWithoutOrderByForOracle() {
         assertCreateOrderInDistinctByWithoutOrderBy(new OracleSelectStatement());
     }
     
     @Test
-    public void assertCreateOrderInDistinctByWithoutOrderByForPostgreSQL() {
+    void assertCreateOrderInDistinctByWithoutOrderByForPostgreSQL() {
         assertCreateOrderInDistinctByWithoutOrderBy(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertCreateOrderInDistinctByWithoutOrderByForSQL92() {
+    void assertCreateOrderInDistinctByWithoutOrderByForSQL92() {
         assertCreateOrderInDistinctByWithoutOrderBy(new SQL92SelectStatement());
     }
     
     @Test
-    public void assertCreateOrderInDistinctByWithoutOrderByForSQLServer() {
+    void assertCreateOrderInDistinctByWithoutOrderByForSQLServer() {
         assertCreateOrderInDistinctByWithoutOrderBy(new SQLServerSelectStatement());
     }
     
-    public void assertCreateOrderInDistinctByWithoutOrderBy(final SelectStatement selectStatement) {
+    void assertCreateOrderInDistinctByWithoutOrderBy(final SelectStatement selectStatement) {
         ColumnProjectionSegment columnProjectionSegment1 = new ColumnProjectionSegment(new ColumnSegment(0, 1, new IdentifierValue("column1")));
         ColumnProjectionSegment columnProjectionSegment2 = new ColumnProjectionSegment(new ColumnSegment(1, 2, new IdentifierValue("column2")));
         List<ProjectionSegment> list = Arrays.asList(columnProjectionSegment1, columnProjectionSegment2);

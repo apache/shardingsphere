@@ -31,10 +31,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class TransparentMergedResultTest {
+class TransparentMergedResultTest {
     
     @Test
-    public void assertNext() throws SQLException {
+    void assertNext() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.next()).thenReturn(true, false);
         TransparentMergedResult actual = new TransparentMergedResult(queryResult);
@@ -43,7 +43,7 @@ public final class TransparentMergedResultTest {
     }
     
     @Test
-    public void assertGetValue() throws SQLException {
+    void assertGetValue() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.getValue(1, Object.class)).thenReturn("1");
         TransparentMergedResult actual = new TransparentMergedResult(queryResult);
@@ -51,7 +51,7 @@ public final class TransparentMergedResultTest {
     }
     
     @Test
-    public void assertGetCalendarValue() throws SQLException {
+    void assertGetCalendarValue() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.getCalendarValue(1, Date.class, null)).thenReturn(new Date(0L));
         TransparentMergedResult actual = new TransparentMergedResult(queryResult);
@@ -59,7 +59,7 @@ public final class TransparentMergedResultTest {
     }
     
     @Test
-    public void assertGetInputStream() throws SQLException {
+    void assertGetInputStream() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         InputStream value = mock(InputStream.class);
         when(queryResult.getInputStream(1, "Ascii")).thenReturn(value);
@@ -68,7 +68,7 @@ public final class TransparentMergedResultTest {
     }
     
     @Test
-    public void assertWasNull() throws SQLException {
+    void assertWasNull() throws SQLException {
         TransparentMergedResult actual = new TransparentMergedResult(mock(QueryResult.class));
         assertFalse(actual.wasNull());
     }

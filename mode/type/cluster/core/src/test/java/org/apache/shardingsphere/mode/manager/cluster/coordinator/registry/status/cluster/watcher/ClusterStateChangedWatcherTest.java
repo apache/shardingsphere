@@ -30,10 +30,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ClusterStateChangedWatcherTest {
+class ClusterStateChangedWatcherTest {
     
     @Test
-    public void assertCreateEventWhenReadOnly() {
+    void assertCreateEventWhenReadOnly() {
         Optional<GovernanceEvent> actual = new ClusterStateChangedWatcher()
                 .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.READ_ONLY.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
@@ -41,7 +41,7 @@ public final class ClusterStateChangedWatcherTest {
     }
     
     @Test
-    public void assertCreateEventWhenUnavailable() {
+    void assertCreateEventWhenUnavailable() {
         Optional<GovernanceEvent> actual = new ClusterStateChangedWatcher()
                 .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.UNAVAILABLE.name(), Type.UPDATED));
         assertTrue(actual.isPresent());
@@ -49,7 +49,7 @@ public final class ClusterStateChangedWatcherTest {
     }
     
     @Test
-    public void assertCreateEventWhenEnabled() {
+    void assertCreateEventWhenEnabled() {
         Optional<GovernanceEvent> actual = new ClusterStateChangedWatcher()
                 .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status", ClusterState.OK.name(), Type.UPDATED));
         assertTrue(actual.isPresent());

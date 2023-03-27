@@ -5,7 +5,7 @@ weight = 6
 
 ### 描述
 
-`LABEL|RELABEL COMPUTE NODE` 语法用于为 `PROXY` 实例添加标签
+`LABEL|RELABEL COMPUTE NODE` 语法用于为 `PROXY` 实例添加标签。
 
 ### 语法
 

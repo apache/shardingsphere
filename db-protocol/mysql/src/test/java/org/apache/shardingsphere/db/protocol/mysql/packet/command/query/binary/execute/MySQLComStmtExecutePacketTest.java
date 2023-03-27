@@ -34,10 +34,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class MySQLComStmtExecutePacketTest {
+class MySQLComStmtExecutePacketTest {
     
     @Test
-    public void assertNewWithoutParameter() {
+    void assertNewWithoutParameter() {
         byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00};
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 0);
@@ -47,7 +47,7 @@ public final class MySQLComStmtExecutePacketTest {
     }
     
     @Test
-    public void assertNewParameterBoundWithNotNullParameters() throws SQLException {
+    void assertNewParameterBoundWithNotNullParameters() throws SQLException {
         byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00};
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
@@ -61,7 +61,7 @@ public final class MySQLComStmtExecutePacketTest {
     }
     
     @Test
-    public void assertNewWithNullParameters() throws SQLException {
+    void assertNewWithNullParameters() throws SQLException {
         byte[] data = {0x01, 0x00, 0x00, 0x00, 0x09, 0x01, 0x00, 0x00, 0x00, 0x01, 0x01, 0x03, 0x00};
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);
@@ -75,7 +75,7 @@ public final class MySQLComStmtExecutePacketTest {
     }
     
     @Test
-    public void assertNewWithLongDataParameter() throws SQLException {
+    void assertNewWithLongDataParameter() throws SQLException {
         byte[] data = {0x02, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01, (byte) 0xfc, 0x00};
         MySQLPacketPayload payload = new MySQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
         MySQLComStmtExecutePacket actual = new MySQLComStmtExecutePacket(payload, 1);

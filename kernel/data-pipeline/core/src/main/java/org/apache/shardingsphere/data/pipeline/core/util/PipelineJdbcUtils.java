@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import java.sql.Types;
 
 /**
- * Pipeline JDBC utils.
+ * Pipeline JDBC utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineJdbcUtils {

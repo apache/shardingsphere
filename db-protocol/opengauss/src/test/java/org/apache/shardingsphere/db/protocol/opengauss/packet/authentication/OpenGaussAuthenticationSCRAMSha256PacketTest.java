@@ -26,12 +26,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public final class OpenGaussAuthenticationSCRAMSha256PacketTest {
+class OpenGaussAuthenticationSCRAMSha256PacketTest {
     
     private final OpenGaussAuthenticationHexData authHexData = new OpenGaussAuthenticationHexData();
     
     @Test
-    public void assertWriteProtocol300Packet() {
+    void assertWriteProtocol300Packet() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
         OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(OpenGaussProtocolVersion.PROTOCOL_350.getVersion() - 1, 2048, authHexData, "");
         packet.write(payload);
@@ -43,7 +43,7 @@ public final class OpenGaussAuthenticationSCRAMSha256PacketTest {
     }
     
     @Test
-    public void assertWriteProtocol350Packet() {
+    void assertWriteProtocol350Packet() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
         OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(OpenGaussProtocolVersion.PROTOCOL_350.getVersion(), 2048, authHexData, "");
         packet.write(payload);
@@ -55,7 +55,7 @@ public final class OpenGaussAuthenticationSCRAMSha256PacketTest {
     }
     
     @Test
-    public void assertWriteProtocol351Packet() {
+    void assertWriteProtocol351Packet() {
         PostgreSQLPacketPayload payload = mock(PostgreSQLPacketPayload.class);
         OpenGaussAuthenticationSCRAMSha256Packet packet = new OpenGaussAuthenticationSCRAMSha256Packet(OpenGaussProtocolVersion.PROTOCOL_351.getVersion(), 10000, authHexData, "");
         packet.write(payload);

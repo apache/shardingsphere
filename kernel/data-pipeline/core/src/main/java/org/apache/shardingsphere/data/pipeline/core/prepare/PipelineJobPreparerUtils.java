@@ -41,7 +41,7 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
@@ -51,7 +51,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Pipeline job preparer utils.
+ * Pipeline job preparer utility class.
  */
 @Slf4j
 public final class PipelineJobPreparerUtils {
@@ -89,7 +89,7 @@ public final class PipelineJobPreparerUtils {
      * @param targetDatabaseName target database name
      * @return SQL parser engine
      */
-    public static ShardingSphereSQLParserEngine getSQLParserEngine(final ShardingSphereMetaData metaData, final String targetDatabaseName) {
+    public static SQLParserEngine getSQLParserEngine(final ShardingSphereMetaData metaData, final String targetDatabaseName) {
         ShardingSphereDatabase database = metaData.getDatabase(targetDatabaseName);
         DatabaseType databaseType = database.getProtocolType();
         if (databaseType instanceof BranchDatabaseType) {

@@ -24,26 +24,26 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class ShardingSphereInternalExceptionTest {
+class ShardingSphereInternalExceptionTest {
     
     @Test
-    public void assertGetMessageWithNoArgsConstructor() {
+    void assertGetMessageWithNoArgsConstructor() {
         assertNull(new ShardingSphereInternalExceptionFixture().getMessage());
     }
     
     @Test
-    public void assertGetMessage() {
+    void assertGetMessage() {
         assertThat(new ShardingSphereInternalExceptionFixture("Test").getMessage(), is("Fixture error message: Test"));
     }
     
     @Test
-    public void assertGetCause() {
+    void assertGetCause() {
         RuntimeException cause = new RuntimeException("Test");
         assertThat(new ShardingSphereInternalExceptionFixture(cause).getCause(), is(cause));
     }
     
     @Test
-    public void assertGetCauseWithMessage() {
+    void assertGetCauseWithMessage() {
         RuntimeException cause = new RuntimeException("Test");
         assertThat(new ShardingSphereInternalExceptionFixture("Test", cause).getCause(), is(cause));
     }

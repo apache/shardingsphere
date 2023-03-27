@@ -831,6 +831,7 @@ notOperator
 booleanPrimary
     : booleanPrimary IS NOT? (TRUE | FALSE | UNKNOWN | NULL)
     | booleanPrimary SAFE_EQ_ predicate
+    | booleanPrimary MEMBER OF LP_ (expr) RP_
     | booleanPrimary comparisonOperator predicate
     | booleanPrimary comparisonOperator (ALL | ANY) subquery
     | booleanPrimary assignmentOperator predicate
@@ -1004,8 +1005,9 @@ repairType
     
 castFunction
     : CAST LP_ expr AS dataType RP_
+    | CAST LP_ expr AT TIME ZONE expr AS DATETIME typeDatetimePrecision? RP_
     ;
-    
+
 convertFunction
     : CONVERT LP_ expr COMMA_ castType RP_
     | CONVERT LP_ expr USING charsetName RP_

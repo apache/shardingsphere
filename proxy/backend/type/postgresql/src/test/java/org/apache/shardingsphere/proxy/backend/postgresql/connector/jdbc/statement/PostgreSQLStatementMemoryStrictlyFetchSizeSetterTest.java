@@ -35,10 +35,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetterTest {
+class PostgreSQLStatementMemoryStrictlyFetchSizeSetterTest {
     
     @Test
-    public void assertSetFetchSize() throws SQLException {
+    void assertSetFetchSize() throws SQLException {
         Statement statement = mock(Statement.class);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -46,7 +46,7 @@ public final class PostgreSQLStatementMemoryStrictlyFetchSizeSetterTest {
         verify(statement).setFetchSize(1);
     }
     
-    private static ContextManager mockContextManager() {
+    private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE)).thenReturn(-1);
         return result;

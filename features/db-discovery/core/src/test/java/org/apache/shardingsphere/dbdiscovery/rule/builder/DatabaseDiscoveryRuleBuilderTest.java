@@ -40,11 +40,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DatabaseDiscoveryRuleBuilderTest {
+class DatabaseDiscoveryRuleBuilderTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         ScheduleContextFactory.newInstance(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class)));
         DatabaseDiscoveryRuleConfiguration ruleConfig = new DatabaseDiscoveryRuleConfiguration(
                 Collections.singleton(new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "", "CORE.FIXTURE")),

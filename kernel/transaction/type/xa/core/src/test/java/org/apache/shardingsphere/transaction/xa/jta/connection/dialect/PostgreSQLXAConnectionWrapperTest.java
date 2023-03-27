@@ -39,12 +39,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLXAConnectionWrapperTest {
+class PostgreSQLXAConnectionWrapperTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
     @Test
-    public void assertWrap() throws SQLException {
+    void assertWrap() throws SQLException {
         XAConnection actual = TypedSPILoader.getService(XAConnectionWrapper.class, databaseType.getType()).wrap(createXADataSource(), mockConnection());
         assertThat(actual.getXAResource(), instanceOf(PGXAConnection.class));
     }

@@ -17,29 +17,40 @@
 
 package org.apache.shardingsphere.test.e2e.agent.file;
 
-import org.apache.shardingsphere.test.e2e.agent.common.BasePluginE2EIT;
+import org.apache.shardingsphere.test.e2e.agent.common.AgentTestActionExtension;
+import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.file.asserts.ContentAssert;
 import org.apache.shardingsphere.test.e2e.agent.file.loader.LogLoader;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.io.File;
 import java.util.Collection;
-import java.util.LinkedList;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class FilePluginE2EIT extends BasePluginE2EIT {
+@ExtendWith(AgentTestActionExtension.class)
+class FilePluginE2EIT {
     
     @Test
-    public void assertProxyWithAgent() {
-        super.assertProxyWithAgent();
-        assertTrue(LogLoader.getLogFile().exists(), String.format("The file `%s` does not exist", LogLoader.getLogFilePath()));
-        Collection<String> expectedLogRegexs = getExpectedLogRegex();
-        expectedLogRegexs.forEach(ContentAssert::assertIs);
+    void assertWithAgent() {
+        assertTrue(new File(LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy())).exists(),
+                String.format("The file `%s` does not exist", LogLoader.getLogFilePath(E2ETestEnvironment.getInstance().isAdaptedProxy())));
+        Collection<String> actualLogLines = LogLoader.getLogLines(E2ETestEnvironment.getInstance().isAdaptedProxy());
+        assertFalse(actualLogLines.isEmpty(), "Actual log is empty");
+        if (E2ETestEnvironment.getInstance().isAdaptedProxy()) {
+            assertProxyWithAgent(actualLogLines);
+        } else {
+            assertJdbcWithAgent(actualLogLines);
+        }
     }
     
-    private Collection<String> getExpectedLogRegex() {
-        Collection<String> result = new LinkedList<>();
-        result.add("Build meta data contexts finished, cost\\s(?=[1-9]+\\d*)");
-        return result;
+    private void assertProxyWithAgent(final Collection<String> actualLogLines) {
+        ContentAssert.assertIs(actualLogLines, "Build meta data contexts finished, cost\\s(?=[1-9]+\\d*)");
+    }
+    
+    private void assertJdbcWithAgent(final Collection<String> actualLogLines) {
+        ContentAssert.assertIs(actualLogLines, "Build meta data contexts finished, cost\\s(?=[1-9]+\\d*)");
     }
 }

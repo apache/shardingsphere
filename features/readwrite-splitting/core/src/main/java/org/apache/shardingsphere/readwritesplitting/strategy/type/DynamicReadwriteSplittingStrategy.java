@@ -20,6 +20,8 @@ package org.apache.shardingsphere.readwritesplitting.strategy.type;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
 
 import java.util.ArrayList;
@@ -49,7 +51,7 @@ public final class DynamicReadwriteSplittingStrategy implements ReadwriteSplitti
     }
     
     @Override
-    public Collection<String> getAllDataSources() {
-        return Collections.singletonList(autoAwareDataSourceName);
+    public Collection<DataSourceRoleInfo> getAllDataSources() {
+        return Collections.singletonList(new DataSourceRoleInfo(autoAwareDataSourceName, DataSourceRole.PRIMARY));
     }
 }

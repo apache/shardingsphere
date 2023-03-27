@@ -5,7 +5,7 @@ weight = 6
 
 ### 描述
 
-`REFRESH TABLE METADATA` 语法用于刷新表元数据
+`REFRESH TABLE METADATA` 语法用于刷新表元数据。
 
 ### 语法
 

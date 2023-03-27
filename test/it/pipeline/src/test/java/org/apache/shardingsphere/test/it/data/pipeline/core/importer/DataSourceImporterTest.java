@@ -32,7 +32,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.importer.DataSourceImporter;
 import org.apache.shardingsphere.data.pipeline.core.importer.connector.DataSourceImporterConnector;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +59,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class DataSourceImporterTest {
+class DataSourceImporterTest {
     
     private static final String TABLE_NAME = "test_table";
     
@@ -84,7 +84,7 @@ public final class DataSourceImporterTest {
     private DataSourceImporter jdbcImporter;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         ImporterConnector importerConnector = new DataSourceImporterConnector(dataSourceManager);
         jdbcImporter = new DataSourceImporter(mockImporterConfiguration(), importerConnector, channel, new FixtureInventoryIncrementalJobItemContext());
         when(dataSourceManager.getDataSource(dataSourceConfig)).thenReturn(dataSource);
@@ -92,7 +92,7 @@ public final class DataSourceImporterTest {
     }
     
     @Test
-    public void assertWriteInsertDataRecord() throws SQLException {
+    void assertWriteInsertDataRecord() throws SQLException {
         DataRecord insertRecord = getDataRecord("INSERT");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(insertRecord));
@@ -104,7 +104,7 @@ public final class DataSourceImporterTest {
     }
     
     @Test
-    public void assertDeleteDataRecord() throws SQLException {
+    void assertDeleteDataRecord() throws SQLException {
         DataRecord deleteRecord = getDataRecord("DELETE");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(deleteRecord));
@@ -115,7 +115,7 @@ public final class DataSourceImporterTest {
     }
     
     @Test
-    public void assertUpdateDataRecord() throws SQLException {
+    void assertUpdateDataRecord() throws SQLException {
         DataRecord updateRecord = getDataRecord("UPDATE");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
@@ -128,7 +128,7 @@ public final class DataSourceImporterTest {
     }
     
     @Test
-    public void assertUpdatePrimaryKeyDataRecord() throws SQLException {
+    void assertUpdatePrimaryKeyDataRecord() throws SQLException {
         DataRecord updateRecord = getUpdatePrimaryKeyDataRecord();
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
@@ -153,7 +153,7 @@ public final class DataSourceImporterTest {
     }
     
     private Collection<Column> mockConditionColumns(final DataRecord dataRecord) {
-        return RecordUtil.extractConditionColumns(dataRecord, Collections.singleton("user"));
+        return RecordUtils.extractConditionColumns(dataRecord, Collections.singleton("user"));
     }
     
     private List<Record> mockRecords(final DataRecord dataRecord) {

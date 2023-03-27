@@ -47,20 +47,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PrepareStatementContextTest {
+class PrepareStatementContextTest {
     
     private ColumnSegment column;
     
     private SimpleTableSegment table;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl_1")));
         column = new ColumnSegment(0, 0, new IdentifierValue("col_1"));
     }
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         PostgreSQLPrepareStatement postgreSQLPrepare = mock(PostgreSQLPrepareStatement.class);
         when(postgreSQLPrepare.getSelect()).thenReturn(Optional.of(getSelect()));
         when(postgreSQLPrepare.getInsert()).thenReturn(Optional.of(getInsert()));

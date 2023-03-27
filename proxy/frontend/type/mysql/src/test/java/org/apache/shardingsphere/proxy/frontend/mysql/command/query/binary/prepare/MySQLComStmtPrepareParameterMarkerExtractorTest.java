@@ -35,10 +35,10 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLComStmtPrepareParameterMarkerExtractorTest {
+class MySQLComStmtPrepareParameterMarkerExtractorTest {
     
     @Test
-    public void assertFindColumnsOfParameterMarkersForInsertStatement() {
+    void assertFindColumnsOfParameterMarkersForInsertStatement() {
         String sql = "insert into user (id, name, age) values (1, ?, ?), (?, 'bar', ?)";
         SQLStatement sqlStatement = new ShardingSphereSQLParserEngine("MySQL", new CacheOption(0, 0), new CacheOption(0, 0), false).parse(sql, false);
         ShardingSphereSchema schema = prepareSchema();

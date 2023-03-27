@@ -22,10 +22,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class LockProxyStateTest {
+class LockProxyStateTest {
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         assertThrows(UnsupportedSQLOperationException.class, () -> new LockProxyState().execute(null, null, null, null));
     }
 }

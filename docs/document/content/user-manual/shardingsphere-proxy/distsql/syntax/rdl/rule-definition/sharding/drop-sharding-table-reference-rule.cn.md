@@ -5,7 +5,7 @@ weight = 15
 
 ## 描述
 
-`DROP SHARDING TABLE REFERENCE RULE` 语法用删除指定的关联规则
+`DROP SHARDING TABLE REFERENCE RULE` 语法用删除指定的关联规则。
 
 ### 语法定义
 

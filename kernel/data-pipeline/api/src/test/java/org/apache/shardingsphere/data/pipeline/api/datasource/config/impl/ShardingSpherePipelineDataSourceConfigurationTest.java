@@ -32,10 +32,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ShardingSpherePipelineDataSourceConfigurationTest {
+class ShardingSpherePipelineDataSourceConfigurationTest {
     
     @Test
-    public void assertCreate() {
+    void assertCreate() {
         YamlRootConfiguration rootConfig = YamlEngine.unmarshal(getDataSourceYaml(), YamlRootConfiguration.class, true);
         Map<String, Object> backupDs0 = new HashMap<>(rootConfig.getDataSources().get("ds_0"));
         Map<String, Object> backupDs1 = new HashMap<>(rootConfig.getDataSources().get("ds_1"));

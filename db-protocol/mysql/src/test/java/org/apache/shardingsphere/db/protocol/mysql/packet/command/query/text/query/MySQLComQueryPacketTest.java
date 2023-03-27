@@ -30,20 +30,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLComQueryPacketTest {
+class MySQLComQueryPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertNew() {
+    void assertNew() {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl");
         MySQLComQueryPacket actual = new MySQLComQueryPacket(payload, false);
         assertThat(actual.getSql(), is("SELECT id FROM tbl"));
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl");
         MySQLComQueryPacket actual = new MySQLComQueryPacket(payload, false);
         actual.write(payload);

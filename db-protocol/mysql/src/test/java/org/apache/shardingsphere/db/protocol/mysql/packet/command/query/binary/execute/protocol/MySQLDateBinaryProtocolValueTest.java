@@ -35,18 +35,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLDateBinaryProtocolValueTest {
+class MySQLDateBinaryProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertReadWithZeroByte() {
+    void assertReadWithZeroByte() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> new MySQLDateBinaryProtocolValue().read(payload, false));
     }
     
     @Test
-    public void assertReadWithFourBytes() throws SQLException {
+    void assertReadWithFourBytes() throws SQLException {
         when(payload.readInt1()).thenReturn(4, 12, 31);
         when(payload.readInt2()).thenReturn(2018);
         Calendar actual = Calendar.getInstance();
@@ -57,7 +57,7 @@ public final class MySQLDateBinaryProtocolValueTest {
     }
     
     @Test
-    public void assertReadWithSevenBytes() throws SQLException {
+    void assertReadWithSevenBytes() throws SQLException {
         when(payload.readInt1()).thenReturn(7, 12, 31, 10, 59, 0);
         when(payload.readInt2()).thenReturn(2018);
         Calendar actual = Calendar.getInstance();
@@ -71,7 +71,7 @@ public final class MySQLDateBinaryProtocolValueTest {
     }
     
     @Test
-    public void assertReadWithElevenBytes() throws SQLException {
+    void assertReadWithElevenBytes() throws SQLException {
         when(payload.readInt1()).thenReturn(11, 12, 31, 10, 59, 0);
         when(payload.readInt2()).thenReturn(2018);
         when(payload.readInt4()).thenReturn(232323);
@@ -88,13 +88,13 @@ public final class MySQLDateBinaryProtocolValueTest {
     }
     
     @Test
-    public void assertReadWithIllegalArgument() {
+    void assertReadWithIllegalArgument() {
         when(payload.readInt1()).thenReturn(100);
         assertThrows(SQLFeatureNotSupportedException.class, () -> new MySQLDateBinaryProtocolValue().read(payload, false));
     }
     
     @Test
-    public void assertWriteWithFourBytes() {
+    void assertWriteWithFourBytes() {
         MySQLDateBinaryProtocolValue actual = new MySQLDateBinaryProtocolValue();
         actual.write(payload, Timestamp.valueOf("1970-01-14 0:0:0"));
         verify(payload).writeInt1(4);
@@ -104,7 +104,7 @@ public final class MySQLDateBinaryProtocolValueTest {
     }
     
     @Test
-    public void assertWriteWithSevenBytes() {
+    void assertWriteWithSevenBytes() {
         MySQLDateBinaryProtocolValue actual = new MySQLDateBinaryProtocolValue();
         actual.write(payload, Timestamp.valueOf("1970-01-14 12:10:30"));
         verify(payload).writeInt1(7);
@@ -117,7 +117,7 @@ public final class MySQLDateBinaryProtocolValueTest {
     }
     
     @Test
-    public void assertWriteWithElevenBytes() {
+    void assertWriteWithElevenBytes() {
         MySQLDateBinaryProtocolValue actual = new MySQLDateBinaryProtocolValue();
         actual.write(payload, Timestamp.valueOf("1970-01-14 12:10:30.1"));
         verify(payload).writeInt1(11);

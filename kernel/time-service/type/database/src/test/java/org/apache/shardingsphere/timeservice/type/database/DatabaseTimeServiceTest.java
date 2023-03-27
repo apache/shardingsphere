@@ -27,10 +27,10 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DatabaseTimeServiceTest {
+class DatabaseTimeServiceTest {
     
     @Test
-    public void assertGetDatetime() {
+    void assertGetDatetime() {
         Properties props = PropertiesBuilder.build(
                 new Property("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource"),
                 new Property("jdbcUrl", "jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"),

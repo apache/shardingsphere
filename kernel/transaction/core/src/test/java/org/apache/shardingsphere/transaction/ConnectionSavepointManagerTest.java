@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ConnectionSavepointManagerTest {
+class ConnectionSavepointManagerTest {
     
     private static final String SAVE_POINT = "SavePoint";
     
@@ -44,32 +44,32 @@ public final class ConnectionSavepointManagerTest {
     private Savepoint savepoint;
     
     @BeforeEach
-    public void setup() throws SQLException {
+    void setup() throws SQLException {
         when(connection.setSavepoint(SAVE_POINT)).thenReturn(savepoint);
     }
     
     @Test
-    public void assertSetSavepoint() throws SQLException {
+    void assertSetSavepoint() throws SQLException {
         ConnectionSavepointManager.getInstance().setSavepoint(connection, SAVE_POINT);
         verify(connection).setSavepoint(SAVE_POINT);
     }
     
     @Test
-    public void assertRollbackToSavepoint() throws SQLException {
+    void assertRollbackToSavepoint() throws SQLException {
         ConnectionSavepointManager.getInstance().setSavepoint(connection, SAVE_POINT);
         ConnectionSavepointManager.getInstance().rollbackToSavepoint(connection, SAVE_POINT);
         verify(connection).rollback(savepoint);
     }
     
     @Test
-    public void assertSaveReleaseSavingPoint() throws SQLException {
+    void assertSaveReleaseSavingPoint() throws SQLException {
         ConnectionSavepointManager.getInstance().setSavepoint(connection, SAVE_POINT);
         ConnectionSavepointManager.getInstance().releaseSavepoint(connection, SAVE_POINT);
         verify(connection).releaseSavepoint(savepoint);
     }
     
     @Test
-    public void assertTransactionFinished() throws SQLException {
+    void assertTransactionFinished() throws SQLException {
         ConnectionSavepointManager.getInstance().setSavepoint(connection, SAVE_POINT);
         ConnectionSavepointManager.getInstance().transactionFinished(connection);
         ConnectionSavepointManager.getInstance().releaseSavepoint(connection, SAVE_POINT);

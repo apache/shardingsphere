@@ -33,10 +33,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class UnlabelComputeNodeUpdaterTest {
+class UnlabelComputeNodeUpdaterTest {
     
     @Test
-    public void assertWithStandaloneMode() {
+    void assertWithStandaloneMode() {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         UnlabelComputeNodeUpdater updater = new UnlabelComputeNodeUpdater();
         assertThrows(UnsupportedSQLOperationException.class, () -> updater.executeUpdate("foo", mock(UnlabelComputeNodeStatement.class)));

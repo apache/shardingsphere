@@ -36,10 +36,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class JDBCMetaDataInfoExporterTest {
+class JDBCMetaDataInfoExporterTest {
     
     @AfterEach
-    public void reset() throws SQLException {
+    void reset() {
         MetricConfiguration config = new MetricConfiguration("jdbc_meta_data_info",
                 MetricCollectorType.GAUGE_METRIC_FAMILY, "Meta data information of ShardingSphere-JDBC",
                 Arrays.asList("database", "type"), Collections.emptyMap());
@@ -47,7 +47,7 @@ public final class JDBCMetaDataInfoExporterTest {
     }
     
     @Test
-    public void assertExport() throws SQLException {
+    void assertExport() throws SQLException {
         DriverManager.registerDriver(new ShardingSphereDriver());
         DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
         Optional<GaugeMetricFamilyMetricsCollector> collector = new JDBCMetaDataInfoExporter().export("FIXTURE");

@@ -37,15 +37,15 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class OKDriverStateTest {
+class OKDriverStateTest {
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         TransactionTypeHolder.clear();
     }
     
     @Test
-    public void assertGetConnection() {
+    void assertGetConnection() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
                 .thenReturn(new ShardingSphereRuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class))));

@@ -25,15 +25,15 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ListShardingConditionValueTest {
+class ListShardingConditionValueTest {
     
     @Test
-    public void assertToStringWithEqual() {
+    void assertToStringWithEqual() {
         assertThat(new ListShardingConditionValue<>("order_id", "t_order", Collections.singleton(10)).toString(), is("t_order.order_id = 10"));
     }
     
     @Test
-    public void assertToStringWithIn() {
+    void assertToStringWithIn() {
         assertThat(new ListShardingConditionValue<>("order_id", "t_order", Arrays.asList(10, 20)).toString(), is("t_order.order_id in (10,20)"));
     }
 }

@@ -29,18 +29,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class SystemSchemaBuilderTest {
+class SystemSchemaBuilderTest {
     
     @Test
-    public void assertBuildForMySQL() {
+    void assertBuildForMySQL() {
         Map<String, ShardingSphereSchema> actual = SystemSchemaBuilder.build("information_schema", new MySQLDatabaseType());
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("information_schema"));
-        assertThat(actual.get("information_schema").getTables().size(), is(7));
+        assertThat(actual.get("information_schema").getTables().size(), is(35));
     }
     
     @Test
-    public void assertBuildForPostgreSQL() {
+    void assertBuildForPostgreSQL() {
         Map<String, ShardingSphereSchema> actual = SystemSchemaBuilder.build("sharding_db", new PostgreSQLDatabaseType());
         assertThat(actual.size(), is(3));
         assertTrue(actual.containsKey("information_schema"));
@@ -52,7 +52,7 @@ public final class SystemSchemaBuilderTest {
     }
     
     @Test
-    public void assertBuildForOpenGaussSQL() {
+    void assertBuildForOpenGaussSQL() {
         Map<String, ShardingSphereSchema> actual = SystemSchemaBuilder.build("sharding_db", new OpenGaussDatabaseType());
         assertThat(actual.size(), is(16));
         assertTrue(actual.containsKey("pg_catalog"));

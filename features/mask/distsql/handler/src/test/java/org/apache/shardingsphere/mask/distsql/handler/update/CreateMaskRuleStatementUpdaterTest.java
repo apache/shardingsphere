@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskColumnSegment;
@@ -44,7 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public final class CreateMaskRuleStatementUpdaterTest {
+class CreateMaskRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -52,17 +52,17 @@ public final class CreateMaskRuleStatementUpdaterTest {
     private final CreateMaskRuleStatementUpdater updater = new CreateMaskRuleStatementUpdater();
     
     @Test
-    public void assertCheckSQLStatementWithDuplicateMaskRule() {
+    void assertCheckSQLStatementWithDuplicateMaskRule() {
         assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, createDuplicatedSQLStatement(false, "MD5"), getCurrentRuleConfig()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithInvalidAlgorithm() {
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null));
+    void assertCheckSQLStatementWithInvalidAlgorithm() {
+        assertThrows(ServiceProviderNotFoundServerException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "INVALID_TYPE"), null));
     }
     
     @Test
-    public void assertCreateMaskRule() {
+    void assertCreateMaskRule() {
         MaskRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateMaskRuleStatement sqlStatement = createSQLStatement(false, "MD5");
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
@@ -74,7 +74,7 @@ public final class CreateMaskRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCreateMaskRuleWithIfNotExists() {
+    void assertCreateMaskRuleWithIfNotExists() {
         MaskRuleConfiguration currentRuleConfig = getCurrentRuleConfig();
         CreateMaskRuleStatement sqlStatement = createSQLStatement(false, "MD5");
         updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);

@@ -21,11 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterComputeNodeStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterComputeNodeStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -42,10 +41,7 @@ public final class AlterComputeNodeStatementAssert {
      * @param expected expected alter compute node statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterComputeNodeStatement actual, final AlterComputeNodeStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should not exist."));
-        } else {
-            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             assertThat(actual.getInstanceId(), is(expected.getInstanceId()));
             assertThat(actual.getKey(), is(expected.getKey()));
             assertThat(actual.getValue(), is(actual.getValue()));

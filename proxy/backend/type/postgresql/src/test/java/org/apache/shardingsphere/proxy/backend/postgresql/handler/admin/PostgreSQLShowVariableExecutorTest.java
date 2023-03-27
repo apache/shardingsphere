@@ -35,10 +35,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class PostgreSQLShowVariableExecutorTest {
+class PostgreSQLShowVariableExecutorTest {
     
     @Test
-    public void assertExecuteShowAll() throws SQLException {
+    void assertExecuteShowAll() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         PostgreSQLShowVariableExecutor executor = new PostgreSQLShowVariableExecutor(new PostgreSQLShowStatement("ALL"));
         executor.execute(connectionSession);
@@ -65,7 +65,7 @@ public final class PostgreSQLShowVariableExecutorTest {
     }
     
     @Test
-    public void assertExecuteShowOne() throws SQLException {
+    void assertExecuteShowOne() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         PostgreSQLShowVariableExecutor executor = new PostgreSQLShowVariableExecutor(new PostgreSQLShowStatement("client_encoding"));
         executor.execute(connectionSession);

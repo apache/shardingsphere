@@ -35,9 +35,11 @@ public final class MySQLTimestamp2BinlogProtocolValue implements MySQLBinlogProt
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int seconds = payload.getByteBuf().readInt();
         if (0 == seconds) {
-            return MySQLTimeValueUtil.DATETIME_OF_ZERO;
+            return MySQLTimeValueUtils.DATETIME_OF_ZERO;
         }
-        String result = MySQLTimeValueUtil.getSimpleDateFormat().format(new Timestamp(seconds * 1000L));
-        return columnDef.getColumnMeta() > 0 ? result + new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload) : result;
+        int nanos = columnDef.getColumnMeta() > 0 ? new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload).getNanos() : 0;
+        Timestamp result = new Timestamp(seconds * 1000L);
+        result.setNanos(nanos);
+        return result;
     }
 }

@@ -38,10 +38,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class FilterableTableScanExecutorTest {
+class FilterableTableScanExecutorTest {
     
     @Test
-    public void assertExecuteWithShardingSphereData() {
+    void assertExecuteWithShardingSphereData() {
         OptimizerContext optimizerContext = mock(OptimizerContext.class, RETURNS_DEEP_STUBS);
         when(optimizerContext.getParserContext(any()).getDatabaseType().getType()).thenReturn("PostgreSQL");
         TableScanExecutorContext executorContext = mock(TableScanExecutorContext.class);

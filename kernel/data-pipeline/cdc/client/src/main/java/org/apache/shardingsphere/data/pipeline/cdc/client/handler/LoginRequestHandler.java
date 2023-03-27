@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.client.event.StreamDataEvent;
-import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtil;
+import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody;
@@ -81,7 +81,7 @@ public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
         String encryptPassword = Hashing.sha256().hashBytes(password.getBytes()).toString().toUpperCase();
         LoginRequestBody loginRequestBody = LoginRequestBody.newBuilder().setType(LoginType.BASIC).setBasicBody(BasicBody.newBuilder().setUsername(username).setPassword(encryptPassword).build())
                 .build();
-        String loginRequestId = RequestIdUtil.generateRequestId();
+        String loginRequestId = RequestIdUtils.generateRequestId();
         CDCRequest data = CDCRequest.newBuilder().setType(Type.LOGIN).setVersion(1).setRequestId(loginRequestId).setLoginRequestBody(loginRequestBody).build();
         ctx.writeAndFlush(data);
         connectionContext.setStatus(ClientConnectionStatus.NOT_LOGGED_IN);
@@ -89,11 +89,11 @@ public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
     
     private void sendStreamDataEvent(final ChannelHandlerContext ctx, final CDCResponse response, final ClientConnectionContext connectionContext) {
         if (response.getStatus() == Status.SUCCEED) {
-            log.info("login success, username {}", username);
+            log.info("Login success, username {}", username);
             connectionContext.setStatus(ClientConnectionStatus.LOGGING_IN);
             ctx.fireUserEventTriggered(new StreamDataEvent());
         } else {
-            log.error("login failed, username {}", username);
+            log.error("Login failed, username: {}, error message: {}", username, response.getErrorMessage());
         }
     }
     

@@ -25,10 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class H2DataSourceMetaDataTest {
+class H2DataSourceMetaDataTest {
     
     @Test
-    public void assertNewConstructorWithMem() {
+    void assertNewConstructorWithMem() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         assertThat(actual.getHostname(), is(""));
         assertThat(actual.getPort(), is(-1));
@@ -37,7 +37,7 @@ public final class H2DataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorWithSymbol() {
+    void assertNewConstructorWithSymbol() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:~:ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         assertThat(actual.getHostname(), is(""));
         assertThat(actual.getPort(), is(-1));
@@ -45,7 +45,7 @@ public final class H2DataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorWithTcp() {
+    void assertNewConstructorWithTcp() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:tcp://localhost:8082/~/test1/test2;DB_CLOSE_DELAY=-1");
         assertThat(actual.getHostname(), is("localhost"));
         assertThat(actual.getPort(), is(8082));
@@ -54,7 +54,7 @@ public final class H2DataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorWithSsl() {
+    void assertNewConstructorWithSsl() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:ssl:180.76.76.76/home/test");
         assertThat(actual.getHostname(), is("180.76.76.76"));
         assertThat(actual.getPort(), is(-1));
@@ -63,7 +63,7 @@ public final class H2DataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorWithFile() {
+    void assertNewConstructorWithFile() {
         H2DataSourceMetaData actual = new H2DataSourceMetaData("jdbc:h2:file:/data/sample;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false");
         assertThat(actual.getHostname(), is(""));
         assertThat(actual.getPort(), is(-1));
@@ -72,56 +72,56 @@ public final class H2DataSourceMetaDataTest {
     }
     
     @Test
-    public void assertIsInSameDatabaseInstanceWithMem() {
+    void assertIsInSameDatabaseInstanceWithMem() {
         H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:mem:ds_1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         assertTrue(actual1.isInSameDatabaseInstance(actual2));
     }
     
     @Test
-    public void assertIsInSameDatabaseInstanceWithSymbol() {
+    void assertIsInSameDatabaseInstanceWithSymbol() {
         H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:~:ds-0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:~:ds-1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         assertTrue(actual1.isInSameDatabaseInstance(actual2));
     }
     
     @Test
-    public void assertIsInSameDatabaseInstance() {
+    void assertIsInSameDatabaseInstance() {
         H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:mem:ds_0;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:~:ds-1;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL");
         assertTrue(actual1.isInSameDatabaseInstance(actual2));
     }
     
     @Test
-    public void assertIsInSameDatabaseInstanceWithTcp() {
+    void assertIsInSameDatabaseInstanceWithTcp() {
         H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:tcp://localhost:8082/~/test1/test2;DB_CLOSE_DELAY=-1");
         H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:tcp://localhost:8082/~/test3/test4;DB_CLOSE_DELAY=-1");
         assertTrue(actual1.isInSameDatabaseInstance(actual2));
     }
     
     @Test
-    public void assertFalseIsInSameDatabaseInstanceWithTcp() {
+    void assertFalseIsInSameDatabaseInstanceWithTcp() {
         H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:tcp://localhost:8082/~/test1/test2;DB_CLOSE_DELAY=-1");
         H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:tcp://192.168.64.76:8082/~/test3/test4;DB_CLOSE_DELAY=-1");
         assertFalse(actual1.isInSameDatabaseInstance(actual2));
     }
     
     @Test
-    public void assertIsInSameDatabaseInstanceWithSsl() {
+    void assertIsInSameDatabaseInstanceWithSsl() {
         H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:ssl:180.76.76.76/home/test-one");
         H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:ssl:180.76.76.76/home/test-two");
         assertTrue(actual1.isInSameDatabaseInstance(actual2));
     }
     
     @Test
-    public void assertFalseIsInSameDatabaseInstanceWithSsl() {
+    void assertFalseIsInSameDatabaseInstanceWithSsl() {
         H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:ssl:180.76.76.76/home/test-one");
         H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:ssl:181.76.76.76/home/test-two");
         assertFalse(actual1.isInSameDatabaseInstance(actual2));
     }
     
     @Test
-    public void assertIsInSameDatabaseInstanceWithFile() {
+    void assertIsInSameDatabaseInstanceWithFile() {
         H2DataSourceMetaData actual1 = new H2DataSourceMetaData("jdbc:h2:file:/data/sample-one;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false");
         H2DataSourceMetaData actual2 = new H2DataSourceMetaData("jdbc:h2:file:/data/sample-two;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false");
         assertTrue(actual1.isInSameDatabaseInstance(actual2));

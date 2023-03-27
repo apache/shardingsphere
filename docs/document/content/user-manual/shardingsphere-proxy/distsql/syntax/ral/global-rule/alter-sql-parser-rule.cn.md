@@ -5,7 +5,7 @@ weight = 6
 
 ### 描述
 
-`ALTER SQL_PARSER RULE` 语法用于修改解析引擎规则配置
+`ALTER SQL_PARSER RULE` 语法用于修改解析引擎规则配置。
 
 ### 语法
 

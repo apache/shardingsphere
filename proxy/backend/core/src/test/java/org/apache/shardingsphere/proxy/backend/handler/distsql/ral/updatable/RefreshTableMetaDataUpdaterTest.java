@@ -46,24 +46,24 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class RefreshTableMetaDataUpdaterTest {
+class RefreshTableMetaDataUpdaterTest {
     
     @Test
-    public void assertNoDatabaseSelected() {
+    void assertNoDatabaseSelected() {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         UpdatableRALBackendHandler<?> backendHandler = new UpdatableRALBackendHandler<>(new RefreshTableMetaDataStatement(), mock(ConnectionSession.class));
         assertThrows(NoDatabaseSelectedException.class, backendHandler::execute);
     }
     
     @Test
-    public void assertUnknownDatabaseException() {
+    void assertUnknownDatabaseException() {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         UpdatableRALBackendHandler<?> backendHandler = new UpdatableRALBackendHandler<>(new RefreshTableMetaDataStatement(), mockConnectionSession("not_existed_db"));
         assertThrows(UnknownDatabaseException.class, backendHandler::execute);
     }
     
     @Test
-    public void assertEmptyResource() {
+    void assertEmptyResource() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getDataSourceMap("foo_db")).thenReturn(Collections.emptyMap());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -73,7 +73,7 @@ public final class RefreshTableMetaDataUpdaterTest {
     }
     
     @Test
-    public void assertMissingRequiredResources() {
+    void assertMissingRequiredResources() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getDataSourceMap("foo_db")).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -83,7 +83,7 @@ public final class RefreshTableMetaDataUpdaterTest {
     }
     
     @Test
-    public void assertUpdate() throws SQLException {
+    void assertUpdate() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getDataSourceMap("foo_db")).thenReturn(Collections.singletonMap("ds_0", new MockedDataSource()));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

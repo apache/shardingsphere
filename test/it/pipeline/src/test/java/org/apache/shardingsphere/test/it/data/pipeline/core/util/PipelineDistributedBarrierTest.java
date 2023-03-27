@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
-import org.apache.shardingsphere.mode.persist.PersistRepository;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -33,17 +33,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class PipelineDistributedBarrierTest {
+class PipelineDistributedBarrierTest {
     
     @BeforeAll
-    public static void setUp() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
+    static void setUp() {
+        PipelineContextUtils.mockModeConfigAndContextManager();
     }
     
     @Test
-    public void assertRegisterAndRemove() throws ReflectiveOperationException {
+    void assertRegisterAndRemove() throws ReflectiveOperationException {
         String jobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
-        PipelineContextKey contextKey = PipelineContextUtil.getContextKey();
+        PipelineContextKey contextKey = PipelineContextUtils.getContextKey();
         PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(contextKey);
@@ -57,9 +57,9 @@ public final class PipelineDistributedBarrierTest {
     }
     
     @Test
-    public void assertAwait() {
+    void assertAwait() {
         String jobId = JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId();
-        PipelineContextKey contextKey = PipelineContextUtil.getContextKey();
+        PipelineContextKey contextKey = PipelineContextUtils.getContextKey();
         PersistRepository repository = PipelineContextManager.getContext(contextKey).getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
         PipelineDistributedBarrier instance = PipelineDistributedBarrier.getInstance(contextKey);

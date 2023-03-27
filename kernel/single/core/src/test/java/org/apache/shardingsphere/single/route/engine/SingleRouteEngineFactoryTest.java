@@ -30,30 +30,30 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class SingleRouteEngineFactoryTest {
+class SingleRouteEngineFactoryTest {
     
     @Test
-    public void assertNewInstanceWithNotEmptySingleTableNames() {
+    void assertNewInstanceWithNotEmptySingleTableNames() {
         assertTrue(SingleRouteEngineFactory.newInstance(Collections.singleton(new QualifiedTable("demo_ds", "t_order")), mock(SQLStatement.class)).isPresent());
     }
     
     @Test
-    public void assertNewInstanceWithEmptySingleTableNameAndCreateSchemaStatement() {
+    void assertNewInstanceWithEmptySingleTableNameAndCreateSchemaStatement() {
         assertTrue(SingleRouteEngineFactory.newInstance(Collections.emptyList(), mock(CreateSchemaStatement.class)).isPresent());
     }
     
     @Test
-    public void assertNewInstanceWithEmptySingleTableNameAndAlterSchemaStatement() {
+    void assertNewInstanceWithEmptySingleTableNameAndAlterSchemaStatement() {
         assertTrue(SingleRouteEngineFactory.newInstance(Collections.emptyList(), mock(AlterSchemaStatement.class)).isPresent());
     }
     
     @Test
-    public void assertNewInstanceWithEmptySingleTableNameAndDropSchemaStatement() {
+    void assertNewInstanceWithEmptySingleTableNameAndDropSchemaStatement() {
         assertTrue(SingleRouteEngineFactory.newInstance(Collections.emptyList(), mock(DropSchemaStatement.class)).isPresent());
     }
     
     @Test
-    public void assertNewInstanceWithEmptySingleTableNameAndOtherStatement() {
+    void assertNewInstanceWithEmptySingleTableNameAndOtherStatement() {
         assertFalse(SingleRouteEngineFactory.newInstance(Collections.emptyList(), mock(SQLStatement.class)).isPresent());
     }
 }

@@ -34,11 +34,13 @@ agentPluginsEnable ::=
 
 ### Supplement
 
--  `proxy_property_name` is one of [properties configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/) of `PROXY`, name is split by underscore
+- `proxy_property_name` is one of [properties configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/) of `PROXY`, name is split by underscore
 
 - `transaction_type` is use to set transaction types for current connection, supports `LOCAL`, `XA`, `BASE`
 
 - `agent_plugins_enable` is use to set the `agent` plugins enable status, the default value is `FALSE`
+
+- `system_log_level` is the system log level, only affects the log printing of `PROXY`, the default value is `INFO`
 
 ### Example
 

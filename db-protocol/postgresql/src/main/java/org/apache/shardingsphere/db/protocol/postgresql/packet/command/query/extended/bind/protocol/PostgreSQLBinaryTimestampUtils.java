@@ -24,6 +24,9 @@ import java.sql.Timestamp;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Binary timestamp utility class of PostgreSQL.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLBinaryTimestampUtils {
     

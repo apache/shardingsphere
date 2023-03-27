@@ -5,7 +5,7 @@ weight = 2
 
 ## 描述
 
-`CREATE DB_DISCOVERY RULE` 语法用于创建数据库发现规则
+`CREATE DB_DISCOVERY RULE` 语法用于创建数据库发现规则。
 
 ### 语法定义
 

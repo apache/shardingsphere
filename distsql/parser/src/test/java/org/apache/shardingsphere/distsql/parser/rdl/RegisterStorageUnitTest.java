@@ -28,10 +28,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public final class RegisterStorageUnitTest {
+class RegisterStorageUnitTest {
     
     @Test
-    public void assertRegisterStorageUnitSpecialCharacters() {
+    void assertRegisterStorageUnitSpecialCharacters() {
         String sql = "REGISTER STORAGE UNIT test_db ("
                 + "URL='jdbc:mysql://127.0.0.1:3306/test_db',"
                 + "USER='root',PASSWORD='\\'\\\"r\\[oo]t');";

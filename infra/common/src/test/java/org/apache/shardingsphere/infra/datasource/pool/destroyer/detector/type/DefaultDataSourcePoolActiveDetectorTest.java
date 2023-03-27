@@ -22,10 +22,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public final class DefaultDataSourcePoolActiveDetectorTest {
+class DefaultDataSourcePoolActiveDetectorTest {
     
     @Test
-    public void assertContainsActiveConnection() {
+    void assertContainsActiveConnection() {
         assertFalse(new DefaultDataSourcePoolActiveDetector().containsActiveConnection(new MockedDataSource()));
     }
 }

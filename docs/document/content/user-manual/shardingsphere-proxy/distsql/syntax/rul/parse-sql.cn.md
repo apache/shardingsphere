@@ -5,7 +5,7 @@ weight = 1
 
 ### 描述
 
-`PARSE SQL` 语法用于解析 `SQL` 并输出抽象语法树
+`PARSE SQL` 语法用于解析 `SQL` 并输出抽象语法树。
 
 ### 语法
 

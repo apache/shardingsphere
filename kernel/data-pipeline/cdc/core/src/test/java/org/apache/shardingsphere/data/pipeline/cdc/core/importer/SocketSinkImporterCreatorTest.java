@@ -21,6 +21,7 @@ import io.netty.channel.Channel;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.core.connector.SocketSinkImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,14 +35,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public final class SocketSinkImporterCreatorTest {
+class SocketSinkImporterCreatorTest {
     
     @Mock
     private ImporterConfiguration importerConfig;
     
     @Test
-    public void assertCreateCDCImporter() {
-        SocketSinkImporterConnector importerConnector = new SocketSinkImporterConnector(mock(Channel.class), "foo_db", 1, Collections.emptyList(), null);
+    void assertCreateCDCImporter() {
+        SocketSinkImporterConnector importerConnector = new SocketSinkImporterConnector(mock(Channel.class), mock(ShardingSphereDatabase.class), 1, Collections.emptyList(), null);
         assertThat(TypedSPILoader.getService(ImporterCreator.class, "Socket").createImporter(importerConfig, importerConnector, null, null, null), instanceOf(SocketSinkImporter.class));
     }
 }

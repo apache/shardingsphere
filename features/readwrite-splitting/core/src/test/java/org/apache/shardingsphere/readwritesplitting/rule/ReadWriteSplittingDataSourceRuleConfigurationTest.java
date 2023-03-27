@@ -29,14 +29,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
+class ReadWriteSplittingDataSourceRuleConfigurationTest {
     
     private ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfig;
     
     private ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfigDynamic;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         readwriteSplittingDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds",
                 new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, "");
         readwriteSplittingDataSourceRuleConfigDynamic = new ReadwriteSplittingDataSourceRuleConfiguration("ds", null,
@@ -44,7 +44,7 @@ public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
     }
     
     @Test
-    public void assertStaticReadWriteSplittingConfig() {
+    void assertStaticReadWriteSplittingConfig() {
         assertNotNull(readwriteSplittingDataSourceRuleConfig.getStaticStrategy());
         StaticReadwriteSplittingStrategyConfiguration actual = readwriteSplittingDataSourceRuleConfig.getStaticStrategy();
         assertThat(actual.getWriteDataSourceName(), is("write_ds"));
@@ -52,7 +52,7 @@ public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
     }
     
     @Test
-    public void assertDynamicReadWriteSplittingConfig() {
+    void assertDynamicReadWriteSplittingConfig() {
         assertNotNull(readwriteSplittingDataSourceRuleConfigDynamic.getDynamicStrategy());
         DynamicReadwriteSplittingStrategyConfiguration actual = readwriteSplittingDataSourceRuleConfigDynamic.getDynamicStrategy();
         assertThat(actual.getAutoAwareDataSourceName(), is("readwrite_ds"));

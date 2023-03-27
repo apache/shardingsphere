@@ -26,10 +26,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public final class DataConsistencyCalculateAlgorithmChooserTest {
+class DataConsistencyCalculateAlgorithmChooserTest {
     
     @Test
-    public void assertChooseOnDifferentDatabaseTypes() {
+    void assertChooseOnDifferentDatabaseTypes() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
         DatabaseType peerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         DataConsistencyCalculateAlgorithm actual = DataConsistencyCalculateAlgorithmChooser.choose(databaseType, peerDatabaseType);
@@ -38,7 +38,7 @@ public final class DataConsistencyCalculateAlgorithmChooserTest {
     }
     
     @Test
-    public void assertChooseOnMySQL() {
+    void assertChooseOnMySQL() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         DatabaseType peerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         DataConsistencyCalculateAlgorithm actual = DataConsistencyCalculateAlgorithmChooser.choose(databaseType, peerDatabaseType);
@@ -47,7 +47,7 @@ public final class DataConsistencyCalculateAlgorithmChooserTest {
     }
     
     @Test
-    public void assertChooseOnPostgreSQL() {
+    void assertChooseOnPostgreSQL() {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         DatabaseType peerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
         DataConsistencyCalculateAlgorithm actual = DataConsistencyCalculateAlgorithmChooser.choose(databaseType, peerDatabaseType);

@@ -54,7 +54,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class AlterShadowRuleStatementUpdaterTest {
+class AlterShadowRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -68,7 +68,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
     private final AlterShadowRuleStatementUpdater updater = new AlterShadowRuleStatementUpdater();
     
     @BeforeEach
-    public void before() {
+    void before() {
         Collection<ShadowDataSourceConfiguration> shadowDataSource = new LinkedList<>();
         shadowDataSource.add(new ShadowDataSourceConfiguration("initRuleName1", "ds1", "ds_shadow1"));
         shadowDataSource.add(new ShadowDataSourceConfiguration("initRuleName2", "ds2", "ds_shadow2"));
@@ -77,25 +77,25 @@ public final class AlterShadowRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithoutCurrentConfiguration() {
+    void assertExecuteWithoutCurrentConfiguration() {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, new AlterShadowRuleStatement(Arrays.asList(ruleSegment, ruleSegment)), null));
     }
     
     @Test
-    public void assertExecuteWithDuplicateRuleName() {
+    void assertExecuteWithDuplicateRuleName() {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
         assertThrows(DuplicateRuleException.class, () -> updater.checkSQLStatement(database, new AlterShadowRuleStatement(Arrays.asList(ruleSegment, ruleSegment)), currentConfig));
     }
     
     @Test
-    public void assertExecuteWithRuleNameNotInMetaData() {
+    void assertExecuteWithRuleNameNotInMetaData() {
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("ruleName", null, null, null);
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, new AlterShadowRuleStatement(Collections.singleton(ruleSegment)), currentConfig));
     }
     
     @Test
-    public void assertExecuteWithNotExistResource() {
+    void assertExecuteWithNotExistResource() {
         List<String> dataSources = Arrays.asList("ds", "ds0");
         when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(dataSources);
         AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Collections.singleton(new ShadowRuleSegment("initRuleName1", "ds3", null, null)));
@@ -103,7 +103,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteDuplicateAlgorithm() {
+    void assertExecuteDuplicateAlgorithm() {
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", PropertiesBuilder.build(new Property("type", "value"))));
         AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Arrays.asList(
                 new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
@@ -112,7 +112,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteDuplicateAlgorithmWithoutConfiguration() {
+    void assertExecuteDuplicateAlgorithmWithoutConfiguration() {
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("name", PropertiesBuilder.build(new Property("type", "value"))));
         AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Arrays.asList(
                 new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment))),
@@ -121,7 +121,7 @@ public final class AlterShadowRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteSuccess() {
+    void assertExecuteSuccess() {
         Properties props = PropertiesBuilder.build(new Property("type", "value"));
         ShadowAlgorithmSegment segment1 = new ShadowAlgorithmSegment("algorithmName1", new AlgorithmSegment("SQL_HINT", props));
         ShadowAlgorithmSegment segment2 = new ShadowAlgorithmSegment("algorithmName2", new AlgorithmSegment("SQL_HINT", props));

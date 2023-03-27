@@ -30,13 +30,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLColumnDefinition41PacketTest {
+class MySQLColumnDefinition41PacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertWriteWithPayload() {
+    void assertWriteWithPayload() {
         when(payload.readInt1()).thenReturn(MySQLBinaryColumnType.MYSQL_TYPE_LONG.getValue(), 0);
         when(payload.readInt2()).thenReturn(MySQLServerInfo.DEFAULT_CHARSET.getId(), 0);
         when(payload.readInt4()).thenReturn(10);

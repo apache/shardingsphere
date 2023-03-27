@@ -26,25 +26,25 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ShorthandProjectionTest {
+class ShorthandProjectionTest {
     
     @Test
-    public void assertGetExpression() {
+    void assertGetExpression() {
         assertThat(new ShorthandProjection("owner", Collections.emptyList()).getExpression(), is("owner.*"));
     }
     
     @Test
-    public void assertGetAliasWhenAbsent() {
+    void assertGetAliasWhenAbsent() {
         assertFalse(new ShorthandProjection("owner", Collections.emptyList()).getAlias().isPresent());
     }
     
     @Test
-    public void assertGetColumnLabel() {
+    void assertGetColumnLabel() {
         assertTrue(new ShorthandProjection("owner", Collections.emptyList()).getColumnLabel().contains("*"));
     }
     
     @Test
-    public void assertContains() {
+    void assertContains() {
         assertTrue(new ShorthandProjection("owner", Collections.emptyList()).getOwner().isPresent());
     }
 }

@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public final class DropShardingAlgorithmStatementUpdaterTest {
+class DropShardingAlgorithmStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -51,38 +51,38 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
     private final DropShardingAlgorithmStatementUpdater updater = new DropShardingAlgorithmStatementUpdater();
     
     @Test
-    public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
         assertThrows(MissingRequiredAlgorithmException.class, () -> updater.checkSQLStatement(database, new DropShardingAlgorithmStatement(false, Collections.emptyList()), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutCurrentRuleWithIfExists() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithoutCurrentRuleWithIfExists() throws RuleDefinitionViolationException {
         DropShardingAlgorithmStatement dropShardingAlgorithmStatement = new DropShardingAlgorithmStatement(true, Collections.emptyList());
         updater.checkSQLStatement(database, dropShardingAlgorithmStatement, null);
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutExistedAlgorithm() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithoutExistedAlgorithm() throws RuleDefinitionViolationException {
         assertThrows(MissingRequiredAlgorithmException.class, () -> updater.checkSQLStatement(database, createSQLStatement("t_order"), new ShardingRuleConfiguration()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutExistedAlgorithmWithIfExists() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithoutExistedAlgorithmWithIfExists() throws RuleDefinitionViolationException {
         updater.checkSQLStatement(database, createSQLStatementWithIfExists("t_order"), new ShardingRuleConfiguration());
     }
     
     @Test
-    public void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
         assertThrows(AlgorithmInUsedException.class, () -> updater.checkSQLStatement(database, createSQLStatement("t_order_tb_inline"), createCurrentRuleConfiguration()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithBindingTableRuleWithIfExists() throws RuleDefinitionViolationException {
+    void assertCheckSQLStatementWithBindingTableRuleWithIfExists() throws RuleDefinitionViolationException {
         assertThrows(AlgorithmInUsedException.class, () -> updater.checkSQLStatement(database, createSQLStatementWithIfExists("t_order_tb_inline"), createCurrentRuleConfiguration()));
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfiguration() {
+    void assertUpdateCurrentRuleConfiguration() {
         String toBeDroppedAlgorithmName = "t_test";
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(3));
@@ -94,7 +94,7 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfigurationWithIfExists() {
+    void assertUpdateCurrentRuleConfigurationWithIfExists() {
         String toBeDroppedAlgorithmName = "t_test";
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         assertThat(currentRuleConfig.getShardingAlgorithms().size(), is(3));

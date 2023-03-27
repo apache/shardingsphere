@@ -5,7 +5,7 @@ weight = 2
 
 ### 描述
 
-`SHOW AUTHORITY RULE` 语法用于查询权限规则配置
+`SHOW AUTHORITY RULE` 语法用于查询权限规则配置。
 ### 语法
 
 {{< tabs >}}

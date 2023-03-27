@@ -27,27 +27,27 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class SQLParserRuleTest {
+class SQLParserRuleTest {
     
     private SQLParserRule sqlParserRule;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(true, new CacheOption(2, 4), new CacheOption(3, 7)));
     }
     
     @Test
-    public void assertGetSQLParserEngine() {
+    void assertGetSQLParserEngine() {
         assertNotNull(sqlParserRule.getSQLParserEngine("H2"));
     }
     
     @Test
-    public void assertGetType() {
+    void assertGetType() {
         assertThat(sqlParserRule.getType(), is(SQLParserRule.class.getSimpleName()));
     }
     
     @Test
-    public void assertFields() {
+    void assertFields() {
         assertTrue(sqlParserRule.isSqlCommentParseEnabled());
         assertTrue(sqlParserRule.getConfiguration().isSqlCommentParseEnabled());
         assertThat(sqlParserRule.getConfiguration().getParseTreeCache().getInitialCapacity(), is(2));

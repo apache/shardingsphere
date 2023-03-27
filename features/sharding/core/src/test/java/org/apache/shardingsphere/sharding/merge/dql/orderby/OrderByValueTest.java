@@ -57,30 +57,30 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class OrderByValueTest {
+class OrderByValueTest {
     
     @Test
-    public void assertCompareToForAscForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToForAscForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToForAsc(new MySQLSelectStatement());
     }
     
     @Test
-    public void assertCompareToForAscForOracle() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToForAscForOracle() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToForAsc(new OracleSelectStatement());
     }
     
     @Test
-    public void assertCompareToForAscForPostgreSQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToForAscForPostgreSQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToForAsc(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertCompareToForAscForSQL92() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToForAscForSQL92() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToForAsc(new SQL92SelectStatement());
     }
     
     @Test
-    public void assertCompareToForAscForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToForAscForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToForAsc(new SQLServerSelectStatement());
     }
     
@@ -117,27 +117,27 @@ public final class OrderByValueTest {
     }
     
     @Test
-    public void assertCompareToForDescForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToForDescForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToForDesc(new MySQLSelectStatement());
     }
     
     @Test
-    public void assertCompareToForDescForOracle() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToForDescForOracle() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToForDesc(new OracleSelectStatement());
     }
     
     @Test
-    public void assertCompareToForDescForPostgreSQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToForDescForPostgreSQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToForDesc(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertCompareToForDescForSQL92() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToForDescForSQL92() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToForDesc(new SQL92SelectStatement());
     }
     
     @Test
-    public void assertCompareToForDescForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToForDescForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToForDesc(new SQLServerSelectStatement());
     }
     
@@ -171,27 +171,27 @@ public final class OrderByValueTest {
     }
     
     @Test
-    public void assertCompareToWhenEqualForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToWhenEqualForMySQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToWhenEqual(new MySQLSelectStatement());
     }
     
     @Test
-    public void assertCompareToWhenEqualForOracle() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToWhenEqualForOracle() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToWhenEqual(new OracleSelectStatement());
     }
     
     @Test
-    public void assertCompareToWhenEqualForPostgreSQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToWhenEqualForPostgreSQL() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToWhenEqual(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void assertCompareToWhenEqualForSQL92() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToWhenEqualForSQL92() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToWhenEqual(new SQL92SelectStatement());
     }
     
     @Test
-    public void assertCompareToWhenEqualForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
+    void assertCompareToWhenEqualForSQLServer() throws SQLException, NoSuchFieldException, IllegalAccessException {
         assertCompareToWhenEqual(new SQLServerSelectStatement());
     }
     

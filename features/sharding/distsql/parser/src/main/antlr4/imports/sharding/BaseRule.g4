@@ -28,25 +28,34 @@ algorithmDefinition
     ;
 
 algorithmTypeName
-    : STRING_ | buildInShardingAlgorithmType | buildInkeyGeneratorType | buildInAuditAlgorithmType
+    : STRING_ | buildInShardingAlgorithmType | buildInKeyGenerateAlgorithmType | buildInShardingAuditAlgorithmType
     ;
 
 buildInShardingAlgorithmType
     : MOD
-    | COSID_MOD
     | HASH_MOD
     | VOLUME_RANGE
     | BOUNDARY_RANGE
     | AUTO_INTERVAL
     | INLINE
     | INTERVAL
+    | COSID_MOD
     | COSID_INTERVAL
     | COSID_INTERVAL_SNOWFLAKE
     | COMPLEX_INLINE
     | HINT_INLINE
+    | CLASS_BASED
     ;
 
-buildInAuditAlgorithmType
+buildInKeyGenerateAlgorithmType
+    : SNOWFLAKE
+    | NANOID
+    | UUID
+    | COSID
+    | COSID_SNOWFLAKE
+    ;
+
+buildInShardingAuditAlgorithmType
     : DML_SHARDING_CONDITIONS
     ;
 
@@ -72,14 +81,6 @@ shardingAlgorithmName
 
 keyGeneratorName
     : IDENTIFIER_
-    ;
-
-buildInkeyGeneratorType
-    : SNOWFLAKE
-    | NANOID
-    | UUID
-    | COSID
-    | COSID_SNOWFLAKE
     ;
 
 auditorName

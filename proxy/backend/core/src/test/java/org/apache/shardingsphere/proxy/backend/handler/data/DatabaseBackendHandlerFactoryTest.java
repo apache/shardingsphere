@@ -49,10 +49,10 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 @ConstructionMockSettings(DatabaseConnector.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class DatabaseBackendHandlerFactoryTest {
+class DatabaseBackendHandlerFactoryTest {
     
     @Test
-    public void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithDAL() {
+    void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithDAL() {
         String sql = "DESC tbl";
         SQLStatementContext<DALStatement> sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DALStatement.class));
@@ -61,7 +61,7 @@ public final class DatabaseBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithQueryWithoutFrom() {
+    void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithQueryWithoutFrom() {
         String sql = "SELECT 1";
         SQLStatementContext<SelectStatement> sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
@@ -70,7 +70,7 @@ public final class DatabaseBackendHandlerFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceReturnedSchemaAssignedDatabaseBackendHandler() {
+    void assertNewInstanceReturnedSchemaAssignedDatabaseBackendHandler() {
         String sql = "SELECT 1 FROM user WHERE id = 1";
         SQLStatementContext<SQLStatement> sqlStatementContext = mockSQLStatementContext();
         ConnectionSession connectionSession = mockConnectionSession();

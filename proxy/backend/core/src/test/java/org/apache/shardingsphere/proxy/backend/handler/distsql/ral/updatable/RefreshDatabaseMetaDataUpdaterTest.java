@@ -33,10 +33,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class RefreshDatabaseMetaDataUpdaterTest {
+class RefreshDatabaseMetaDataUpdaterTest {
     
     @Test
-    public void assertExecuteWithNoDatabase() {
+    void assertExecuteWithNoDatabase() {
         RefreshDatabaseMetaDataUpdater updater = new RefreshDatabaseMetaDataUpdater();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         assertThrows(UnknownDatabaseException.class, () -> updater.executeUpdate("foo_db", mock(RefreshDatabaseMetaDataStatement.class)));

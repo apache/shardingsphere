@@ -22,10 +22,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class RemoveTokenTest {
+class RemoveTokenTest {
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         assertThat(new RemoveToken(0, 1).toString(), is(""));
     }
 }

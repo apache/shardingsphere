@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResul
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereConstraint;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -48,11 +48,11 @@ public final class ShowCreateTableMergedResult extends LogicTablesMergedResult {
                                 final ShardingSphereTable table, final ShardingRule shardingRule) {
         memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replaceFirst(actualTableName, logicTableName));
         for (String each : table.getIndexes().keySet()) {
-            String actualIndexName = IndexMetaDataUtil.getActualIndexName(each, actualTableName);
+            String actualIndexName = IndexMetaDataUtils.getActualIndexName(each, actualTableName);
             memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(actualIndexName, each));
         }
         for (Entry<String, ShardingSphereConstraint> entry : table.getConstrains().entrySet()) {
-            String actualIndexName = IndexMetaDataUtil.getActualIndexName(entry.getKey(), actualTableName);
+            String actualIndexName = IndexMetaDataUtils.getActualIndexName(entry.getKey(), actualTableName);
             memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(actualIndexName, entry.getKey()));
             Optional<TableRule> tableRule = shardingRule.findTableRule(entry.getValue().getReferencedTableName());
             if (!tableRule.isPresent()) {

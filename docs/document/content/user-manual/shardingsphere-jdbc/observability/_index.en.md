@@ -40,7 +40,6 @@ tree
 │   │   └── shardingsphere-agent-metrics-prometheus-${latest.release.version}.jar
 │   └── tracing
 │       ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
-│       └── shardingsphere-agent-tracing-opentracing-${latest.release.version}.jar
 └── shardingsphere-agent-${latest.release.version}.jar
 ```
 Agent log output location is `agent/logs/stdout.log`.
@@ -48,7 +47,7 @@ Agent log output location is `agent/logs/stdout.log`.
 ### Configuration
 
 `conf/agent.yaml` is used to manage agent configuration.
-Built-in plugins include File, Prometheus, OpenTelemetry, OpenTracing.
+Built-in plugins include File, Prometheus, OpenTelemetry.
 
 ```yaml
 plugins:
@@ -69,9 +68,6 @@ plugins:
 #        otel.traces.exporter: "jaeger"
 #        otel.exporter.otlp.traces.endpoint: "http://localhost:14250"
 #        otel.traces.sampler: "always_on"
-#    OpenTracing:
-#      props:
-#        opentracing-tracer-class-name: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
 ```
 
 ### Plugin description

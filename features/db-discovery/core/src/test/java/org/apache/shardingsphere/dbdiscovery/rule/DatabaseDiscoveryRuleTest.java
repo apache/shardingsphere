@@ -23,6 +23,8 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHe
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
@@ -34,7 +36,7 @@ import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
@@ -46,24 +48,24 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DatabaseDiscoveryRuleTest {
+class DatabaseDiscoveryRuleTest {
     
     private final Map<String, DataSource> dataSourceMap = Collections.singletonMap("primary_ds", new MockedDataSource());
     
     @BeforeAll
-    public static void setUp() {
+    static void setUp() {
         ScheduleContextFactory.newInstance(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class)));
     }
     
     @Test
-    public void assertFindDataSourceRule() {
+    void assertFindDataSourceRule() {
         Optional<DatabaseDiscoveryDataSourceRule> actual = createRule().findDataSourceRule("replica_ds");
         assertTrue(actual.isPresent());
         assertDataSourceRule(actual.get());
     }
     
     @Test
-    public void assertGetSingleDataSourceRule() {
+    void assertGetSingleDataSourceRule() {
         assertDataSourceRule(createRule().getSingleDataSourceRule());
     }
     
@@ -73,14 +75,15 @@ public final class DatabaseDiscoveryRuleTest {
     }
     
     @Test
-    public void assertGetDataSourceMapper() {
+    void assertGetDataSourceMapper() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
-        Map<String, Collection<String>> actual = databaseDiscoveryRule.getDataSourceMapper();
-        assertThat(actual, is(Collections.singletonMap("replica_ds", new HashSet<>(Arrays.asList("primary_ds", "replica_ds_0", "replica_ds_1")))));
+        Map<String, Collection<DataSourceRoleInfo>> actual = databaseDiscoveryRule.getDataSourceMapper();
+        assertThat(actual, is(Collections.singletonMap("replica_ds", new LinkedHashSet<>(Arrays.asList(new DataSourceRoleInfo("primary_ds", DataSourceRole.PRIMARY),
+                new DataSourceRoleInfo("replica_ds_0", DataSourceRole.MEMBER), new DataSourceRoleInfo("replica_ds_1", DataSourceRole.MEMBER))))));
     }
     
     @Test
-    public void assertGetExportedMethods() {
+    void assertGetExportedMethods() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
         assertThat(databaseDiscoveryRule.getExportData().get(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES), is(Collections.singletonMap("replica_ds", "primary_ds")));
     }

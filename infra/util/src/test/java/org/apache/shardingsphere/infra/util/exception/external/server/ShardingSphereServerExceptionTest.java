@@ -23,15 +23,15 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ShardingSphereServerExceptionTest {
+class ShardingSphereServerExceptionTest {
     
     @Test
-    public void assertGetMessage() {
+    void assertGetMessage() {
         assertThat(new ShardingSphereServerExceptionFixture().getMessage(), is("FIXTURE-00001: Fixture error message"));
     }
     
     @Test
-    public void assertGetCause() {
+    void assertGetCause() {
         RuntimeException cause = new RuntimeException("Test");
         assertThat(new ShardingSphereServerExceptionFixture(cause).getCause(), is(cause));
     }

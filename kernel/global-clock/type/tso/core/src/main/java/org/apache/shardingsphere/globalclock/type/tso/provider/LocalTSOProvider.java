@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Local timestamp oracle provider.
  */
-public class LocalTSOProvider implements TSOProvider {
+public final class LocalTSOProvider implements TSOProvider {
     
     private final AtomicLong localClock = new AtomicLong();
     

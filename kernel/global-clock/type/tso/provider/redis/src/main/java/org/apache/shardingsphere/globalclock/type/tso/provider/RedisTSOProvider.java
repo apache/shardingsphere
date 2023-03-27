@@ -22,7 +22,7 @@ import java.util.Properties;
 /**
  * Redis timestamp oracle provider.
  */
-public class RedisTSOProvider implements TSOProvider {
+public final class RedisTSOProvider implements TSOProvider {
     
     @Override
     public void init(final Properties props) {

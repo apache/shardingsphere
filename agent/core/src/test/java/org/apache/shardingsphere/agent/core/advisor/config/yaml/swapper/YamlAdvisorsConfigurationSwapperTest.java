@@ -20,11 +20,10 @@ package org.apache.shardingsphere.agent.core.advisor.config.yaml.swapper;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.config.MethodAdvisorConfiguration;
-import org.apache.shardingsphere.agent.core.advisor.config.yaml.entity.YamlAdvisorsConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlAdviceFixture;
 import org.apache.shardingsphere.agent.core.advisor.config.yaml.fixture.YamlTargetObjectFixture;
+import org.apache.shardingsphere.agent.core.yaml.AgentYamlEngine;
 import org.junit.jupiter.api.Test;
-import org.yaml.snakeyaml.Yaml;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,12 +32,12 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlAdvisorsConfigurationSwapperTest {
+class YamlAdvisorsConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         Collection<AdvisorConfiguration> actual = YamlAdvisorsConfigurationSwapper.swap(
-                new Yaml().loadAs(getClass().getResourceAsStream("/META-INF/conf/advisors.yaml"), YamlAdvisorsConfiguration.class), "FIXTURE");
+                AgentYamlEngine.unmarshalYamlAdvisorsConfiguration(getClass().getResourceAsStream("/META-INF/conf/advisors.yaml")), "FIXTURE");
         assertThat(actual.size(), is(1));
         assertAdvisorConfiguration(actual.iterator().next());
     }

@@ -51,7 +51,7 @@ public final class ReadwriteSplittingRuleStatementConverter {
             if (null == each.getLoadBalancer()) {
                 dataSources.add(createDataSourceRuleConfiguration(each, null, each.isAutoAware()));
             } else {
-                String loadBalancerName = getLoadBalancerName(each.getName(), each.getLoadBalancer());
+                String loadBalancerName = getLoadBalancerName(each.getName(), each.getLoadBalancer().getName());
                 loadBalancers.put(loadBalancerName, createLoadBalancer(each));
                 dataSources.add(createDataSourceRuleConfiguration(each, loadBalancerName, each.isAutoAware()));
             }
@@ -68,7 +68,7 @@ public final class ReadwriteSplittingRuleStatementConverter {
     }
     
     private static AlgorithmConfiguration createLoadBalancer(final ReadwriteSplittingRuleSegment ruleSegment) {
-        return new AlgorithmConfiguration(ruleSegment.getLoadBalancer(), ruleSegment.getProps());
+        return new AlgorithmConfiguration(ruleSegment.getLoadBalancer().getName(), ruleSegment.getLoadBalancer().getProps());
     }
     
     private static String getLoadBalancerName(final String ruleName, final String type) {

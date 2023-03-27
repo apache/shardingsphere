@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class EncryptAlgorithmMetaDataTest {
+class EncryptAlgorithmMetaDataTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -81,7 +81,7 @@ public final class EncryptAlgorithmMetaDataTest {
     private StandardEncryptAlgorithm<?, ?> encryptAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(selectStatementContext.getProjectionsContext()).thenReturn(projectionsContext);
         when(projectionsContext.getExpandProjections()).thenReturn(Collections.singletonList(columnProjection));
         when(columnProjection.getName()).thenReturn("id");
@@ -94,7 +94,7 @@ public final class EncryptAlgorithmMetaDataTest {
     }
     
     @Test
-    public void assertFindEncryptContextByMetaData() {
+    void assertFindEncryptContextByMetaData() {
         Map<String, String> columnTableNames = new HashMap<>();
         columnTableNames.put(columnProjection.getExpression(), "t_order");
         when(tablesContext.findTableNamesByColumnProjection(Collections.singletonList(columnProjection), schema)).thenReturn(columnTableNames);
@@ -107,7 +107,7 @@ public final class EncryptAlgorithmMetaDataTest {
     }
     
     @Test
-    public void assertFindEncryptContextByStatementContext() {
+    void assertFindEncryptContextByStatementContext() {
         when(tablesContext.findTableNamesByColumnProjection(Collections.singletonList(columnProjection), schema)).thenReturn(Collections.emptyMap());
         when(tablesContext.getTableNames()).thenReturn(Arrays.asList("t_user", "t_user_item", "t_order_item"));
         when(encryptRule.findEncryptor("t_order_item", "id")).thenReturn(Optional.of(encryptAlgorithm));
@@ -120,7 +120,7 @@ public final class EncryptAlgorithmMetaDataTest {
     }
     
     @Test
-    public void assertFindEncryptContextWhenColumnProjectionIsNotExist() {
+    void assertFindEncryptContextWhenColumnProjectionIsNotExist() {
         when(projectionsContext.getExpandProjections()).thenReturn(Collections.singletonList(mock(DerivedProjection.class)));
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(database, encryptRule, selectStatementContext);
         Optional<EncryptContext> actual = encryptAlgorithmMetaData.findEncryptContext(1);
@@ -129,7 +129,7 @@ public final class EncryptAlgorithmMetaDataTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertFindEncryptor() {
+    void assertFindEncryptor() {
         when(encryptRule.findEncryptor("t_order", "id")).thenReturn(Optional.of(encryptAlgorithm));
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(database, encryptRule, selectStatementContext);
         Optional<StandardEncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor("t_order", "id");
@@ -138,7 +138,7 @@ public final class EncryptAlgorithmMetaDataTest {
     }
     
     @Test
-    public void assertIsQueryWithCipherColumn() {
+    void assertIsQueryWithCipherColumn() {
         when(encryptRule.isQueryWithCipherColumn("t_order", "id")).thenReturn(true);
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(database, encryptRule, selectStatementContext);
         assertTrue(encryptAlgorithmMetaData.isQueryWithCipherColumn("t_order", "id"));

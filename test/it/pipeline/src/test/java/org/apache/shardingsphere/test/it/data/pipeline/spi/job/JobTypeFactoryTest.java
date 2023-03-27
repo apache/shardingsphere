@@ -30,10 +30,10 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class JobTypeFactoryTest {
+class JobTypeFactoryTest {
     
     @Test
-    public void assertGetInstance() {
+    void assertGetInstance() {
         Collection<Pair<String, Class<? extends JobType>>> paramResult = Arrays.asList(
                 Pair.of(MigrationJobType.TYPE_CODE, MigrationJobType.class), Pair.of(ConsistencyCheckJobType.TYPE_CODE, ConsistencyCheckJobType.class));
         for (Pair<String, Class<? extends JobType>> each : paramResult) {

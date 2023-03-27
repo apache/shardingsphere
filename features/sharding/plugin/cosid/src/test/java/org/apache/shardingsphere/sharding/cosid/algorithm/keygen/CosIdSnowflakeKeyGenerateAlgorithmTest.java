@@ -48,7 +48,7 @@ import static org.hamcrest.Matchers.closeTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
+class CosIdSnowflakeKeyGenerateAlgorithmTest {
     
     private static final int FIXTURE_WORKER_ID = 0;
     
@@ -61,7 +61,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     private final EventBusContext eventBusContext = new EventBusContext();
     
     @Test
-    public void assertGenerateKey() {
+    void assertGenerateKey() {
         CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "COSID_SNOWFLAKE");
         algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID),
                 new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), eventBusContext));
@@ -77,7 +77,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertGenerateKeyModUniformity() {
+    void assertGenerateKeyModUniformity() {
         CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "COSID_SNOWFLAKE");
         algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID),
                 new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), eventBusContext));
@@ -118,7 +118,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertGenerateKeyAsString() {
+    void assertGenerateKeyAsString() {
         Properties props = PropertiesBuilder.build(new Property(CosIdSnowflakeKeyGenerateAlgorithm.AS_STRING_KEY, Boolean.TRUE.toString()));
         CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "COSID_SNOWFLAKE", props);
         algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)),
@@ -135,19 +135,19 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    public void assertGenerateKeyWhenNoneInstanceContext() {
+    void assertGenerateKeyWhenNoneInstanceContext() {
         assertThrows(ShardingPluginException.class, () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "COSID_SNOWFLAKE").generateKey());
     }
     
     @Test
-    public void assertGenerateKeyWhenNegative() {
+    void assertGenerateKeyWhenNegative() {
         CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "COSID_SNOWFLAKE");
         assertThrows(IllegalArgumentException.class, () -> algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(-1),
                 new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), eventBusContext)));
     }
     
     @Test
-    public void assertGenerateKeyWhenGreaterThen1023() {
+    void assertGenerateKeyWhenGreaterThen1023() {
         CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "COSID_SNOWFLAKE");
         assertThrows(IllegalArgumentException.class, () -> algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(1024),
                 new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), eventBusContext)));

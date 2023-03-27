@@ -5,7 +5,7 @@ weight = 3
 
 ### 描述
 
-`SHOW COMPUTE NODE MODE` 语法用于查询当前 proxy 的模式配置信息
+`SHOW COMPUTE NODE MODE` 语法用于查询当前 proxy 的模式配置信息。
 
 ### 语法
 

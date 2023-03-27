@@ -92,7 +92,7 @@ importMetaData
     ;
 
 exportStorageNodes
-    : EXPORT STORAGE NODES (TO FILE filePath)?
+    : EXPORT STORAGE NODES (FROM databaseName)? (TO FILE filePath)?
     ;
 
 convertYamlConfiguration

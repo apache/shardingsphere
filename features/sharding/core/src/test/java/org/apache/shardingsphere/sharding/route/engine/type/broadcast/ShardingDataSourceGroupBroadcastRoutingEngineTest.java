@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
+class ShardingDataSourceGroupBroadcastRoutingEngineTest {
     
     private final ShardingDataSourceGroupBroadcastRoutingEngine shardingDataSourceGroupBroadcastRoutingEngine = new ShardingDataSourceGroupBroadcastRoutingEngine();
     
@@ -69,7 +69,7 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
     }
     
     @Test
-    public void assertRoute() {
+    void assertRoute() {
         List<List<String>> shards = new LinkedList<>();
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));

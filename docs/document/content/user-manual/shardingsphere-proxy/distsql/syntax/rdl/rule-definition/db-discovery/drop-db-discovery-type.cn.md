@@ -5,7 +5,7 @@ weight = 6
 
 ## 描述
 
-`DROP DB_DISCOVERY TYPE` 语法用于为指定逻辑库删除数据库发现类型
+`DROP DB_DISCOVERY TYPE` 语法用于为指定逻辑库删除数据库发现类型。
 
 ### 语法定义
 

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.valu
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.io.Serializable;
+import java.time.LocalTime;
 
 /**
  * TIME2 type value of MySQL binlog protocol.
@@ -38,9 +39,12 @@ public final class MySQLTime2BinlogProtocolValue implements MySQLBinlogProtocolV
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int time = payload.getByteBuf().readUnsignedMedium();
         if (0x800000 == time) {
-            return MySQLTimeValueUtil.ZERO_OF_TIME;
+            return MySQLTimeValueUtils.ZERO_OF_TIME;
         }
         MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
-        return String.format("%02d:%02d:%02d%s", (time >> 12) % (1 << 10), (time >> 6) % (1 << 6), time % (1 << 6), fractionalSeconds);
+        int hour = (time >> 12) % (1 << 10);
+        int minute = (time >> 6) % (1 << 6);
+        int second = time % (1 << 6);
+        return LocalTime.of(hour, minute, second).withNano(fractionalSeconds.getNanos());
     }
 }

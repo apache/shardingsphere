@@ -40,7 +40,7 @@ searchArgs
     ;
 
 constant
-    : INTEGER_ | STRING_ | PLACEHOLDER_
+    : INTEGER_ | STRING_ | PLACEHOLDER_ | DATE_ | string_zh
     ;
 
 cast
@@ -48,7 +48,7 @@ cast
     ;
 
 paramWithType
-    : (STRING_|INTEGER_) COLON_ type
+    : (STRING_|INTEGER_|DATE_) COLON_ type
     ;
 
 op
@@ -68,7 +68,15 @@ argRangeList
     ;
 
 type
-    : BIGINT | INTEGER | VARCHAR
+    : BIGINT | INTEGER | VARCHAR | DATE | VARCHAR_ZH
+    ;
+
+string_zh
+    : UTF_ STRING_
+    ;
+
+VARCHAR_ZH
+    : VARCHAR (('\\'. | '""' | ~('"'| '\\' | ','))* | ('\\'. | '\'\'' | ~('\'' | '\\' | ','))*)
     ;
 
 WS

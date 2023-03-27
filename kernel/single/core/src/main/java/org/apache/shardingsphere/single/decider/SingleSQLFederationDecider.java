@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -88,7 +88,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
         DatabaseType databaseType = sqlStatementContext.getDatabaseType();
         Collection<QualifiedTable> result = getQualifiedTables(database, databaseType, sqlStatementContext.getTablesContext().getTables());
         if (result.isEmpty() && sqlStatementContext instanceof IndexAvailable) {
-            result = IndexMetaDataUtil.getTableNames(database, databaseType, ((IndexAvailable) sqlStatementContext).getIndexes());
+            result = IndexMetaDataUtils.getTableNames(database, databaseType, ((IndexAvailable) sqlStatementContext).getIndexes());
         }
         return rule.getSingleTableNames(result);
     }

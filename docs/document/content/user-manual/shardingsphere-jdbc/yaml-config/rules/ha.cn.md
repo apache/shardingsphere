@@ -14,7 +14,7 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     replica_ds:
-      dynamicStrategy: Dynamic # 动态读写分离
+      dynamicStrategy: # 动态读写分离
         autoAwareDataSourceName: # 高可用规则逻辑数据源名称
 
 - !DB_DISCOVERY

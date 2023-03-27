@@ -30,10 +30,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PipelineJobIdUtilsTest {
+class PipelineJobIdUtilsTest {
     
     @Test
-    public void assertParse() {
+    void assertParse() {
         for (InstanceType each : InstanceType.values()) {
             assertParse0(each);
         }

@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * Builder for Sharding cache rule.
+ * Builder for sharding cache rule.
  */
 public final class ShardingCacheRuleBuilder implements DatabaseRuleBuilder<ShardingCacheRuleConfiguration> {
     

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sqlfederation.optimizer.context.planner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
+import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtils;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,7 +41,7 @@ public final class OptimizerPlannerContextFactory {
     public static Map<String, OptimizerPlannerContext> create(final Map<String, ShardingSphereDatabase> databases) {
         Map<String, OptimizerPlannerContext> result = new ConcurrentHashMap<>(databases.size(), 1);
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
-            result.put(entry.getKey(), new OptimizerPlannerContext(SQLFederationPlannerUtil.createHepPlanner()));
+            result.put(entry.getKey(), new OptimizerPlannerContext(SQLFederationPlannerUtils.createHepPlanner()));
         }
         return result;
     }

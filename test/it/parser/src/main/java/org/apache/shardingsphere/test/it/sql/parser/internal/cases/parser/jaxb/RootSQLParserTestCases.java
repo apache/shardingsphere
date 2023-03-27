@@ -296,6 +296,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.DiscardDistSQLStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ExportDatabaseConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ExportMetaDataStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ExportStorageNodesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ImportDatabaseConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ImportMetaDataStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.LabelComputeNodeStatementTestCase;
@@ -1406,6 +1407,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "export-metadata")
     private final List<ExportMetaDataStatementTestCase> exportMetaDataStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "export-storage-nodes")
+    private final List<ExportStorageNodesStatementTestCase> exportStorageNodesStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "convert-yaml-config")
     private final List<ConvertYamlConfigurationStatementTestCase> convertYamlConfigurationStatementTestCases = new LinkedList<>();

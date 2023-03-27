@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.instance.utils.IpUtils;
+import org.apache.shardingsphere.infra.instance.util.IpUtils;
 
 /**
  * JDBC instance meta data.

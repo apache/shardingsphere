@@ -54,12 +54,12 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class TableExtractorTest {
+class TableExtractorTest {
     
     private final TableExtractor tableExtractor = new TableExtractor();
     
     @Test
-    public void assertExtractTablesFromSelectProjects() {
+    void assertExtractTablesFromSelectProjects() {
         AggregationProjectionSegment aggregationProjection = new AggregationProjectionSegment(10, 20, AggregationType.SUM, "t_order.id");
         ColumnSegment columnSegment = new ColumnSegment(133, 136, new IdentifierValue("id"));
         columnSegment.setOwner(new OwnerSegment(130, 132, new IdentifierValue("t_order")));
@@ -75,7 +75,7 @@ public final class TableExtractorTest {
     }
     
     @Test
-    public void assertExtractTablesFromSelectLockWithValue() {
+    void assertExtractTablesFromSelectLockWithValue() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         LockSegment lockSegment = new LockSegment(108, 154);
         selectStatement.setLock(lockSegment);
@@ -89,7 +89,7 @@ public final class TableExtractorTest {
     }
     
     @Test
-    public void assertExtractTablesFromInsert() {
+    void assertExtractTablesFromInsert() {
         MySQLInsertStatement mySQLInsertStatement = new MySQLInsertStatement();
         mySQLInsertStatement.setTable(new SimpleTableSegment(new TableNameSegment(122, 128, new IdentifierValue("t_order"))));
         Collection<AssignmentSegment> assignmentSegments = new LinkedList<>();
@@ -105,7 +105,7 @@ public final class TableExtractorTest {
     }
     
     @Test
-    public void assertNotExistTableFromRoutineBody() {
+    void assertNotExistTableFromRoutineBody() {
         RoutineBodySegment routineBodySegment = new RoutineBodySegment(0, 3);
         ValidStatementSegment validStatement = new ValidStatementSegment(0, 1);
         validStatement.setSqlStatement(() -> 0);
@@ -126,7 +126,7 @@ public final class TableExtractorTest {
     }
     
     @Test
-    public void assertExtractTablesFromCombineSegment() {
+    void assertExtractTablesFromCombineSegment() {
         MySQLSelectStatement selectStatement = createSelectStatement("t_order");
         selectStatement.setCombine(new CombineSegment(0, 0, createSelectStatement("t_order"), CombineType.UNION, createSelectStatement("t_order_item")));
         tableExtractor.extractTablesFromSelect(selectStatement);
@@ -147,7 +147,7 @@ public final class TableExtractorTest {
     }
     
     @Test
-    public void assertExtractTablesFromCombineSegmentWithColumnProjection() {
+    void assertExtractTablesFromCombineSegmentWithColumnProjection() {
         MySQLSelectStatement selectStatement = createSelectStatementWithColumnProjection("t_order");
         selectStatement.setCombine(new CombineSegment(0, 0, createSelectStatementWithColumnProjection("t_order"), CombineType.UNION, createSelectStatementWithColumnProjection("t_order_item")));
         tableExtractor.extractTablesFromSelect(selectStatement);

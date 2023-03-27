@@ -26,7 +26,7 @@ import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationExc
  */
 @RequiredArgsConstructor
 @Slf4j
-public class HBaseMetaDataRefresher implements Runnable {
+public final class HBaseMetaDataRefresher implements Runnable {
     
     private final HBaseContext context;
     
