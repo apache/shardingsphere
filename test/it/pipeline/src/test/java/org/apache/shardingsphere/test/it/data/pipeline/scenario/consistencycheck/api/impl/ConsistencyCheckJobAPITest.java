@@ -32,7 +32,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.Co
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
-import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +54,7 @@ class ConsistencyCheckJobAPITest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
+        PipelineContextUtils.mockModeConfigAndContextManager();
         checkJobAPI = new ConsistencyCheckJobAPI();
         migrationJobAPI = new MigrationJobAPI();
     }

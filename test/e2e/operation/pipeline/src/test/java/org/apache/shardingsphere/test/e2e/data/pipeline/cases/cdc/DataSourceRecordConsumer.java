@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordR
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.TableColumn;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.data.pipeline.util.SQLBuilderUtil;
+import org.apache.shardingsphere.test.e2e.data.pipeline.util.SQLBuilderUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -80,7 +80,7 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
         PipelineTableMetaData tableMetaData = loadTableMetaData(metaData.getSchema(), metaData.getTable());
         List<String> columnNames = firstRecord.getAfterList().stream().map(TableColumn::getName).collect(Collectors.toList());
         String tableName = buildTableNameWithSchema(metaData.getSchema(), metaData.getTable());
-        String insertSQL = SQLBuilderUtil.buildInsertSQL(columnNames, tableName);
+        String insertSQL = SQLBuilderUtils.buildInsertSQL(columnNames, tableName);
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
@@ -157,11 +157,11 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
         String tableName = buildTableNameWithSchema(metaData.getSchema(), metaData.getTable());
         switch (record.getDataChangeType()) {
             case INSERT:
-                return SQLBuilderUtil.buildInsertSQL(columnNames, tableName);
+                return SQLBuilderUtils.buildInsertSQL(columnNames, tableName);
             case UPDATE:
-                return SQLBuilderUtil.buildUpdateSQL(columnNames, tableName, "?");
+                return SQLBuilderUtils.buildUpdateSQL(columnNames, tableName, "?");
             case DELETE:
-                return SQLBuilderUtil.buildDeleteSQL(tableName, "order_id");
+                return SQLBuilderUtils.buildDeleteSQL(tableName, "order_id");
             default:
                 throw new UnsupportedOperationException();
         }

@@ -22,10 +22,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
 
 /**
- * Adapter Container Util.
+ * Adapter container utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AdapterContainerUtil {
+public final class AdapterContainerUtils {
     
     /**
      * Get adapter container image.

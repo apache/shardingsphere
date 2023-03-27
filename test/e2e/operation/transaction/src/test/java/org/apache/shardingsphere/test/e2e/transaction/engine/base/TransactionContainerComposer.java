@@ -21,7 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.enums.AdapterType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.e2e.transaction.env.TransactionE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.transaction.env.enums.TransactionE2EEnvTypeEnum;
@@ -77,7 +77,7 @@ public final class TransactionContainerComposer implements AutoCloseable {
     }
     
     private DataSource createDataSource(final DockerStorageContainer storageContainer, final String dataSourceName) {
-        return StorageContainerUtil.generateDataSource(DataSourceEnvironment.getURL(databaseType, storageContainer.getHost(), storageContainer.getMappedPort(), dataSourceName),
+        return StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, storageContainer.getHost(), storageContainer.getMappedPort(), dataSourceName),
                 storageContainer.getUsername(), storageContainer.getPassword(), 50);
     }
     

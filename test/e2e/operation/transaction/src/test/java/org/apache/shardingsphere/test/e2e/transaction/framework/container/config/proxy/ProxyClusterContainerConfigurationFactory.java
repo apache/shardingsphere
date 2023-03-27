@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtil;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,11 +42,11 @@ public final class ProxyClusterContainerConfigurationFactory {
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final String scenario, final DatabaseType databaseType) {
-        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(scenario, databaseType), AdapterContainerUtil.getAdapterContainerImage());
+        return new AdaptorContainerConfiguration(getProxyDatasourceName(databaseType), getMountedResource(scenario, databaseType), AdapterContainerUtils.getAdapterContainerImage());
     }
     
     private static String getProxyDatasourceName(final DatabaseType databaseType) {
-        return (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) ? "postgres" : "";
+        return (DatabaseTypeUtils.isPostgreSQL(databaseType) || DatabaseTypeUtils.isOpenGauss(databaseType)) ? "postgres" : "";
     }
     
     private static Map<String, String> getMountedResource(final String scenario, final DatabaseType databaseType) {

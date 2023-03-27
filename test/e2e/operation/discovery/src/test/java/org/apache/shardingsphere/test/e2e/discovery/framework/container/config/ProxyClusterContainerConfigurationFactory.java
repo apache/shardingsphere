@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.adapter.config.AdaptorContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.constants.ProxyContainerConstants;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +39,7 @@ public final class ProxyClusterContainerConfigurationFactory {
      * @return created instance
      */
     public static AdaptorContainerConfiguration newInstance(final String scenario) {
-        return new AdaptorContainerConfiguration("", getMountedResources(scenario), AdapterContainerUtil.getAdapterContainerImage());
+        return new AdaptorContainerConfiguration("", getMountedResources(scenario), AdapterContainerUtils.getAdapterContainerImage());
     }
     
     private static Map<String, String> getMountedResources(final String scenario) {

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.Migrati
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureImporterConnector;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
-import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +57,7 @@ class InventoryTaskTest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
+        PipelineContextUtils.mockModeConfigAndContextManager();
     }
     
     @AfterAll
@@ -67,7 +67,7 @@ class InventoryTaskTest {
     
     @BeforeEach
     void setUp() {
-        taskConfig = PipelineContextUtil.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
+        taskConfig = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
     }
     
     @Test
@@ -77,8 +77,8 @@ class InventoryTaskTest {
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
         try (
                 InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
-                        PipelineContextUtil.getPipelineChannelCreator(), new FixtureImporterConnector(), dataSource,
-                        metaDataLoader, PipelineContextUtil.getExecuteEngine(), PipelineContextUtil.getExecuteEngine(), new FixtureInventoryIncrementalJobItemContext())) {
+                        PipelineContextUtils.getPipelineChannelCreator(), new FixtureImporterConnector(), dataSource,
+                        metaDataLoader, PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(), new FixtureInventoryIncrementalJobItemContext())) {
             assertThrows(ExecutionException.class, () -> CompletableFuture.allOf(inventoryTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS));
         }
     }
@@ -92,8 +92,8 @@ class InventoryTaskTest {
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
         try (
                 InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
-                        PipelineContextUtil.getPipelineChannelCreator(), new FixtureImporterConnector(), dataSource,
-                        metaDataLoader, PipelineContextUtil.getExecuteEngine(), PipelineContextUtil.getExecuteEngine(), new FixtureInventoryIncrementalJobItemContext())) {
+                        PipelineContextUtils.getPipelineChannelCreator(), new FixtureImporterConnector(), dataSource,
+                        metaDataLoader, PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(), new FixtureInventoryIncrementalJobItemContext())) {
             CompletableFuture.allOf(inventoryTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS);
             assertThat(inventoryTask.getTaskProgress().getPosition(), instanceOf(IntegerPrimaryKeyPosition.class));
         }
@@ -116,7 +116,7 @@ class InventoryTaskTest {
         InventoryDumperConfiguration result = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         result.setLogicTableName(logicTableName);
         result.setActualTableName(actualTableName);
-        result.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtil.mockOrderIdColumnMetaData()));
+        result.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
         result.setPosition(null == taskConfig.getDumperConfig().getPosition() ? new IntegerPrimaryKeyPosition(0, 1000) : taskConfig.getDumperConfig().getPosition());
         return result;
     }
