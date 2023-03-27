@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.driver.statement;
 
-import org.apache.shardingsphere.test.e2e.driver.AbstractShardingSphereDataSourceForReadwriteSplittingTest;
+import org.apache.shardingsphere.test.e2e.driver.AbstractReadwriteSplittingDriverTest;
 import org.junit.jupiter.api.Test;
 
 import java.sql.ResultSet;
@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ReadwriteSplittingStatementTest extends AbstractShardingSphereDataSourceForReadwriteSplittingTest {
+class ReadwriteSplittingStatementTest extends AbstractReadwriteSplittingDriverTest {
     
     @Test
     void assertQueryWithNull() throws SQLException {
