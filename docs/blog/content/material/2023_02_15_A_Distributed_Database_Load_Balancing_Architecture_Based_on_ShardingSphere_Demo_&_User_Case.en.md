@@ -22,7 +22,7 @@ It consists of two products, ShardingSphere-JDBC and ShardingSphere-Proxy, which
 
 ShardingSphere-JDBC is a lightweight Java framework with additional services provided in the JDBC layer. ShardingSphere-JDBC simply adds computational operations before the application performs database operations, and the application process still connects directly to the database via the database driver.
 
-As a result, users don’t have to worry about load balancing with ShardingSphere-JDBC, and can focus on how their application is load balanced.
+As a result, users don't have to worry about load balancing with ShardingSphere-JDBC, and can focus on how their application is load balanced.
 
 **SharidngSphere-Proxy Load Balancing Solution**
 
@@ -57,7 +57,7 @@ Therefore, in addition to considerations at the load balancing level, there are 
 
 ***Consider on-demand connection creation for scenarios with long execution intervals***
 
-For example, if a connection’s single instance is created and used continuously, the database connection will be idle most of the time when executing a timed job with a 1-hour interval and a short execution time.
+For example, if a connection's single instance is created and used continuously, the database connection will be idle most of the time when executing a timed job with a 1-hour interval and a short execution time.
 
 If the client itself is not aware of changes in the connection state, the long idle time increases the uncertainty of the connection state.
 
@@ -88,7 +88,7 @@ A while back, a community user provided feedback that the ShardingSphere-Proxy c
 
 ## Problem Description
 
-For the sake of our case, let’s consider that a user’s production environment uses a 3-node ShardingSphere-Proxy cluster, which serves applications through a cloud vendor’s ELB.
+For the sake of our case, let's consider that a user's production environment uses a 3-node ShardingSphere-Proxy cluster, which serves applications through a cloud vendor's ELB.
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_02_15_A_Distributed_Database_Load_Balancing_Architecture_Based_on_ShardingSphere_Demo_&_User_Case3.png)
 
@@ -114,7 +114,7 @@ If you encounter any of the three reasons listed below, we recommend that you pe
 
 - The problem will recur on an hourly basis.
 - The issue is network related.
-- The issue does not affect the user’s real-time operations.
+- The issue does not affect the user's real-time operations.
 
 **Packet Capture Phenomenon I**
 
@@ -139,9 +139,9 @@ The MySQL connection is established between the client and the ShardingSphere-Pr
 The above packet capture results show that the client first initiated the `COM_QUIT` command to ShardingSphere-Proxy, i.e. the MySQL connection was disconnected by the client, including but not limited to the following possible scenarios:
 
 - The application has finished using the MySQL connection and closed the database connection normally.
-- The application’s database connection to ShardingSphere-Proxy is managed by a connection pool, which performs a release operation for idle connections that have timed out or have exceeded their maximum lifetime.
+- The application's database connection to ShardingSphere-Proxy is managed by a connection pool, which performs a release operation for idle connections that have timed out or have exceeded their maximum lifetime.
 
-As the connection is actively closed on the application side, it does not theoretically affect other business operations, unless there is a problem with the application’s logic.
+As the connection is actively closed on the application side, it does not theoretically affect other business operations, unless there is a problem with the application's logic.
 
 After several rounds of packet analysis, no RSTs were found to have been sent to the client by the ShardingSphere-Proxy in the minutes before and after the problem resurfaced.
 
@@ -284,8 +284,8 @@ private static String getProxyVersion(Statement statement) throws SQLException {
 Expected results:
 
 1. A client connection to the ShardingSphere-Proxy is established and the first query is successful.
-2. The client’s second query is successful.
-3. The client’s third query results in an error due to a broken TCP connection, as the nginx idle timeout is set to 1 minute.
+2. The client's second query is successful.
+3. The client's third query results in an error due to a broken TCP connection, as the nginx idle timeout is set to 1 minute.
 
 The execution results are as expected. Due to differences between the programming language and the database driver, the error messages behave differently, but the underlying cause is the same: both are TCP connections have been disconnected.
 
