@@ -35,6 +35,7 @@ import org.apache.shardingsphere.test.e2e.transaction.framework.container.config
 import org.apache.shardingsphere.test.e2e.transaction.framework.container.jdbc.ShardingSphereJDBCContainer;
 import org.apache.shardingsphere.test.e2e.transaction.framework.param.TransactionTestParameter;
 
+import java.net.URL;
 import java.util.Objects;
 
 /**
@@ -69,17 +70,31 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         } else {
             proxyContainer = null;
             ShardingSphereJDBCContainer jdbcContainer = new ShardingSphereJDBCContainer(storageContainer,
-                    Objects.requireNonNull(ShardingSphereJDBCContainer.class.getClassLoader().getResource(getShardingSphereConfigResource(testParam))).getFile());
+                    Objects.requireNonNull(getShardingSphereConfigResource(testParam)).getFile());
             this.jdbcContainer = getContainers().registerContainer(jdbcContainer);
         }
     }
     
-    private String getShardingSphereConfigResource(final TransactionTestParameter testParam) {
-        String result = String.format("env/%s/%s/config-sharding-%s%s.yaml", testParam.getAdapter().toLowerCase(),
-                testParam.getDatabaseType().getType().toLowerCase(), testParam.getTransactionTypes().get(0).toString().toLowerCase(),
-                getTransactionProvider(testParam.getProviders().get(0)));
+    private URL getShardingSphereConfigResource(final TransactionTestParameter testParam) {
+        URL result = ShardingSphereJDBCContainer.class.getClassLoader().getResource(getScenarioResource(testParam));
+        if (null != result) {
+            return result;
+        }
+        result = ShardingSphereJDBCContainer.class.getClassLoader().getResource(getDefaultResource(testParam));
         log.info("Transaction IT tests use the configuration file: {}", result);
         return result;
+    }
+    
+    private String getDefaultResource(final TransactionTestParameter testParam) {
+        return String.format("env/%s/%s/config-sharding-%s%s.yaml", testParam.getAdapter().toLowerCase(),
+                testParam.getDatabaseType().getType().toLowerCase(), testParam.getTransactionTypes().get(0).toString().toLowerCase(),
+                getTransactionProvider(testParam.getProviders().get(0)));
+    }
+    
+    private String getScenarioResource(final TransactionTestParameter testParam) {
+        return String.format("env/scenario/%s/%s/conf/%s/config-%s-%s%s.yaml", testParam.getScenario(), testParam.getAdapter().toLowerCase(),
+                testParam.getDatabaseType().getType().toLowerCase(), testParam.getScenario(), testParam.getTransactionTypes().get(0).toString().toLowerCase(),
+                getTransactionProvider(testParam.getProviders().get(0)));
     }
     
     private String getTransactionProvider(final String providerType) {
