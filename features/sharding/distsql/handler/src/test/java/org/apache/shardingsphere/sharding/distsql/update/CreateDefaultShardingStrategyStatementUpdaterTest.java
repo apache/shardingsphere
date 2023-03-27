@@ -63,7 +63,7 @@ class CreateDefaultShardingStrategyStatementUpdaterTest {
     }
     
     @Test
-    void assertExecuteWithoutCurrentConfiguration() {
+    void assertExecuteWithoutAlgorithm() {
         CreateDefaultShardingStrategyStatement statement = new CreateDefaultShardingStrategyStatement(false, "TABLE", "standard", "order_id", null);
         assertThrows(MissingRequiredAlgorithmException.class, () -> updater.checkSQLStatement(database, statement, null));
     }
