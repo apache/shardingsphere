@@ -33,7 +33,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public abstract class AbstractShardingSphereDataSourceForReadwriteSplittingTest extends AbstractSQLTest {
+public abstract class AbstractReadwriteSplittingDriverTest extends AbstractDriverTest {
     
     private static ShardingSphereDataSource dataSource;
     
@@ -54,7 +54,7 @@ public abstract class AbstractShardingSphereDataSourceForReadwriteSplittingTest 
     
     private static File getFile() {
         return new File(Objects.requireNonNull(
-                AbstractShardingSphereDataSourceForReadwriteSplittingTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed.", CONFIG_FILE)).getFile());
+                AbstractReadwriteSplittingDriverTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed.", CONFIG_FILE)).getFile());
     }
     
     protected final ShardingSphereDataSource getReadwriteSplittingDataSource() {

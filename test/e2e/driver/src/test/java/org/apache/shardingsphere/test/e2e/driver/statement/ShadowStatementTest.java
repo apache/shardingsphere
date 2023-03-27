@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.driver.statement;
 
-import org.apache.shardingsphere.test.e2e.driver.AbstractShardingSphereDataSourceForShadowTest;
+import org.apache.shardingsphere.test.e2e.driver.AbstractShadowDriverTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +29,7 @@ import java.sql.Statement;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class ShadowStatementTest extends AbstractShardingSphereDataSourceForShadowTest {
+class ShadowStatementTest extends AbstractShadowDriverTest {
     
     private static final String CLEAN_SQL = "DELETE FROM t_encrypt";
     

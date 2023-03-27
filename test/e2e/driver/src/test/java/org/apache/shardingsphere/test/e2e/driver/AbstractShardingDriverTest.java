@@ -19,12 +19,16 @@ package org.apache.shardingsphere.test.e2e.driver;
 
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.h2.tools.RunScript;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -33,18 +37,19 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public abstract class AbstractShardingSphereDataSourceForShadowTest extends AbstractSQLTest {
+public abstract class AbstractShardingDriverTest extends AbstractDriverTest {
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final String CONFIG_FILE = "config/config-shadow.yaml";
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "single_jdbc");
     
-    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("shadow_jdbc_0", "shadow_jdbc_1");
+    private static final String CONFIG_FILE = "config/config-sharding.yaml";
     
     @BeforeAll
-    static void initShadowDataSource() throws SQLException, IOException {
+    static void initShardingSphereDataSource() throws SQLException, IOException {
         if (null == dataSource) {
             dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile());
+            System.out.println(dataSource);
         }
     }
     
@@ -54,15 +59,26 @@ public abstract class AbstractShardingSphereDataSourceForShadowTest extends Abst
     
     private static File getFile() {
         return new File(Objects.requireNonNull(
-                AbstractShardingSphereDataSourceForShadowTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed.", CONFIG_FILE)).getFile());
+                AbstractShardingDriverTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed.", CONFIG_FILE)).getFile());
     }
     
-    protected final ShardingSphereDataSource getShadowDataSource() {
+    @BeforeEach
+    void initTable() {
+        try {
+            Connection connection = dataSource.getConnection();
+            RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractDriverTest.class.getClassLoader().getResourceAsStream("sql/jdbc_data.sql"))));
+            connection.close();
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    protected final ShardingSphereDataSource getShardingSphereDataSource() {
         return dataSource;
     }
     
     @AfterAll
-    static void close() throws Exception {
+    static void clear() throws Exception {
         if (null == dataSource) {
             return;
         }

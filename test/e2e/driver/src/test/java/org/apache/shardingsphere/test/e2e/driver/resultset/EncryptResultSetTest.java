@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.driver.resultset;
 
-import org.apache.shardingsphere.test.e2e.driver.AbstractShardingSphereDataSourceForEncryptTest;
+import org.apache.shardingsphere.test.e2e.driver.AbstractEncryptDriverTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Disabled
-class EncryptResultSetTest extends AbstractShardingSphereDataSourceForEncryptTest {
+class EncryptResultSetTest extends AbstractEncryptDriverTest {
     
     private static final String SELECT_SQL_TO_ASSERT = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
     

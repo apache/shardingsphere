@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.driver.statement;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.test.e2e.driver.AbstractShardingSphereDataSourceForEncryptTest;
+import org.apache.shardingsphere.test.e2e.driver.AbstractEncryptDriverTest;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class EncryptStatementTest extends AbstractShardingSphereDataSourceForEncryptTest {
+class EncryptStatementTest extends AbstractEncryptDriverTest {
     
     private static final String INSERT_SQL = "INSERT INTO t_encrypt(id, pwd) VALUES (2,'b')";
     

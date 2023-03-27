@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.driver.statement;
 
-import org.apache.shardingsphere.test.e2e.driver.AbstractShardingSphereDataSourceForShardingTest;
+import org.apache.shardingsphere.test.e2e.driver.AbstractShardingDriverTest;
 import org.apache.shardingsphere.test.e2e.driver.fixture.keygen.ResetIncrementKeyGenerateAlgorithmFixture;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ShardingSpherePreparedStatementTest extends AbstractShardingSphereDataSourceForShardingTest {
+class ShardingPreparedStatementTest extends AbstractShardingDriverTest {
     
     private static final String INSERT_MULTI_VALUES_WITH_GENERATE_SHARDING_KEY_SQL = "INSERT INTO t_user (name) VALUES (?),(?),(?),(?)";
     
