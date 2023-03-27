@@ -28,11 +28,13 @@ algorithmDefinition
     ;
 
 algorithmTypeName
-    : STRING_ | buildInAlgorithmTypeName
+    : STRING_ | buildInDatabaseDiscoveryProviderType
     ;
 
-buildInAlgorithmTypeName
-    : MYSQLMGR
+buildInDatabaseDiscoveryProviderType
+    : MYSQL_MGR
+    | MYSQL_NORMAL_REPLICATION
+    | OPENGAUSS_NORMAL_REPLICATION
     ;
 
 propertiesDefinition

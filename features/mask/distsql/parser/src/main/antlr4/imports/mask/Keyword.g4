@@ -23,6 +23,14 @@ WS
     : [ \t\r\n] + ->skip
     ;
 
+TRUE
+    : T R U E
+    ;
+
+FALSE
+    : F A L S E
+    ;
+
 CREATE
     : C R E A T E
     ;
@@ -115,12 +123,12 @@ MASK_FROM_X_TO_Y
     : M A S K UL_ F R O M UL_ X UL_ T O UL_ Y
     ;
 
-MASK_BEFORE_SPECIAL_CHAR
-    : M A S K UL_ B E F O R E UL_ S P E C I A L UL_ C H A R
+MASK_BEFORE_SPECIAL_CHARS
+    : M A S K UL_ B E F O R E UL_ S P E C I A L UL_ C H A R S
     ;
 
-MASK_AFTER_SPECIAL_CHAR
-    : M A S K UL_ A F T E R UL_ S P E C I A L UL_ C H A R
+MASK_AFTER_SPECIAL_CHARS
+    : M A S K UL_ A F T E R UL_ S P E C I A L UL_ C H A R S
     ;
 
 PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE
