@@ -49,7 +49,6 @@ public abstract class AbstractShardingDriverTest extends AbstractDriverTest {
     static void initShardingSphereDataSource() throws SQLException, IOException {
         if (null == dataSource) {
             dataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(getDataSourceMap(), getFile());
-            System.out.println(dataSource);
         }
     }
     
