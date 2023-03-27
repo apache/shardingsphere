@@ -129,7 +129,7 @@ We used the `count` parameter to deploy the ZooKeeper service, which indicates t
 
 When creating a ZooKeeper instance, we use the `ignore_changes`parameter to ignore artificial changes to the `tag` to avoid the instance being recreated the next time Terraform is run.
 
-We use `cloud-init` to reboot the ZooKeeper-related configuration, as described in [here](https://raw.githubusercontent.com/apache/shardingsphere-on-cloud/main/terraform/amazon/zk/cloud-init.yml).
+We use `cloud-init` to reboot the ZooKeeper-related configuration, as described in [here](https://raw.githubusercontent.com/apache/shardingsphere-on-cloud/main/terraform/amazon/modules/zk/cloud-init.yml).
 
 We create a domain name for each ZooKeeper service and the application only needs to use the domain name to avoid problems with changing the IP address when the ZooKeeper service is restarted.
 
@@ -313,7 +313,7 @@ We'll create an AutoScalingGroup to allow it to manage ShardingSphere-Proxy inst
 
 The changes to `load_balancers` and `target_group_arns` are ignored when creating the AutoScalingGroup.
 
-We also use `cloud-init` to configure the ShardingSphere-Proxy instance, as described [here](https://raw.githubusercontent.com/apache/shardingsphere-on-cloud/main/terraform/amazon/shardingsphere/cloud-init.yml).
+We also use `cloud-init` to configure the ShardingSphere-Proxy instance, as described [here](https://raw.githubusercontent.com/apache/shardingsphere-on-cloud/main/terraform/amazon/modules/shardingsphere/cloud-init.yml).
 
 ```yaml
 resource "aws_launch_template" "ss" {
@@ -447,7 +447,7 @@ We will go through the STS to create a role with CloudWatch permissions, which w
 
 The runtime logs of the ShardingSphere-Proxy will be captured by the CloudWatch Agent on CloudWatch. A `log_group` named `shardingsphere-proxy.log` is created by default.
 
-The specific configuration of CloudWatch is described [here](https://raw.githubusercontent.com/apache/shardingsphere-on-cloud/main/terraform/amazon/shardingsphere/cloudwatch-agent.json).
+The specific configuration of CloudWatch is described [here](https://raw.githubusercontent.com/apache/shardingsphere-on-cloud/main/terraform/amazon/modules/shardingsphere/cloudwatch-agent.json).
 
 ```yaml
 resource "aws_iam_role" "sts" {

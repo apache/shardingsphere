@@ -17,7 +17,7 @@ The Apache ShardingSphere ecosystem includes ShardingSphere-JDBC and ShardingSph
 
 They both provide standardised incremental functionality based on databases as storage nodes for a variety of application scenarios such as Java homogeneous, heterogeneous languages, cloud native and more.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database Protocol_Interaction_Explained1.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database_Protocol_Interaction_Explained1.png)
 
 ShardingSphere-JDBC is a Java-based SDK that implements the standard JDBC and is lightweight and high performance, but also has obvious limitations. Nevertheless, the limitations of ShardingSphere-JDBC in terms of access are addressed by ShardingSphere-Proxy on the access side.
 
@@ -36,7 +36,7 @@ This section focuses on the features of each database protocol, such as its supp
 
 The MySQL protocol is typically a “one question, one answer" protocol, e.g. to execute SQL using Prepared Statement. At the protocol level, you need to execute `COM_STMT_PREPARE` and `COM_STMT_EXECUTE` respectively.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database Protocol_Interaction_Explained2.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database_Protocol_Interaction_Explained2.png)
 
 **Image source:** [MySQL documentation](https://dev.mysql.com/doc/dev/mysql-server/latest/mysqlx_protocol_use_cases.html).
 
@@ -46,7 +46,7 @@ The X Plugin uses a new communication protocol, X Protocol, which uses port 3306
 
 For example, if a SQL is executed using `Prepared Statement`, at the protocol level there are `Prepare` and `Execute` steps, but at the network transport level, these two steps can be combined and sent. This can theoretically reduce the RTT by one compared to the original protocol.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database Protocol_Interaction_Explained3.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database_Protocol_Interaction_Explained3.png)
 
 **Image source:** [MySQL documentation](https://dev.mysql.com/doc/dev/mysql-server/latest/mysqlx_protocol_use_cases.html).
 
@@ -54,7 +54,7 @@ However, the X Plugin for MySQL does not seem to be catching on at the moment, a
 
 In the case of batch operations, the MySQL protocol command `COM_STMT_EXECUTE`, which executes the `Prepared Statement `statement, can only send one set of parameters at a time, making the "one question, one answer" approach somewhat inefficient:
 
-![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database Protocol_Interaction_Explained4.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database_Protocol_Interaction_Explained4.png)
 
 **Image source:** [MySQL documentation](https://dev.mysql.com/doc/dev/mysql-server/latest/mysqlx_protocol_use_cases.html).
 
@@ -104,15 +104,15 @@ PostgreSQL's Extended Query breaks up SQL execution into multiple steps, with th
 
 An example of the PostgreSQL JDBC protocol interaction with the database is as follows:
 
-![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database Protocol_Interaction_Explained5.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database_Protocol_Interaction_Explained5.png)
 
 In a bulk operation scenario, the client can send multiple sets of parameters in one continuous `Bind`, `Execute`, which is multiple packets at the protocol level, but at the TCP transport level, one batch of packets can be sent out at a time.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database Protocol_Interaction_Explained6.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database_Protocol_Interaction_Explained6.png)
 
 Pipelining-enabled protocols, combined with I/O multiplexing, offer certain advantages in terms of throughput. For example, Vert.x PostgreSQL, a database driver based on multiplexed I/O, scored first place in the TechEmpower Benchmark Round 15 test in the Single Query scenario (database spotting).
 
-![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database Protocol_Interaction_Explained7.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database_Protocol_Interaction_Explained7.png)
 
 Image source: [Tech Empower](https://www.techempower.com/benchmarks/#section=data-r15&test=db).
 
@@ -122,7 +122,7 @@ openGauss adds a Batch Bind message to the PostgreSQL Protocol 3.0, which only s
 
 openGauss adds a Batch Bind message to support sending multiple sets of parameters at the same time.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database Protocol_Interaction_Explained8.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database_Protocol_Interaction_Explained8.png)
 
 Additionally, openGauss has been enhanced in terms of authentication security. The general flow of the protocol is identical to that of PostgreSQL.
 
@@ -148,7 +148,7 @@ ShardingSphere-Proxy and ShardingSphere-JDBC share the ShardingSphere kernel mod
 
 ShardingSphere-Proxy exists as a standalone process and provides services to the outside world as a database protocol. ShardingSphere-JDBC is a set of SDKs that can be called directly by users through code.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database Protocol_Interaction_Explained9.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database_Protocol_Interaction_Explained9.png)
 
 ## ShardingSphere-Proxy Front-end Process
 
@@ -156,7 +156,7 @@ The ShardingSphere-Proxy front-end uses Netty to implement the database protocol
 
 The protocol unwrapping and encoding logic is mainly performed in the Netty `EventLoop` thread. As the ShardingSphere-Proxy backend still uses JDBC to interact with the database, a dedicated thread pool is used to execute the ShardingSphere kernel logic and database interaction after the protocol data has been unpacked to avoid blocking in the Netty `EventLoop` thread.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database Protocol_Interaction_Explained10.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database_Protocol_Interaction_Explained10.png)
 
 `PacketCodecs` are mainly used for unpacking and encoding data. As mentioned earlier in the introduction to database protocols, the PostgreSQL protocol supports pipelining and can send a batch of packets at a time.
 
@@ -164,13 +164,13 @@ The protocol unwrapping and encoding logic is mainly performed in the Netty `Eve
 
 The following diagram shows the request protocol for a PostgreSQL client to execute the `select current_schema()` statement using `Prepared Statement`, where the SQL parsing and execution steps of `Prepared Statement` are sent by the client to the server for execution in one go.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database Protocol_Interaction_Explained11.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database_Protocol_Interaction_Explained11.png)
 
 What the server receives is a stream of bytes. How can this stream be split into multiple protocol packets?
 
 Taking the PostgreSQL protocol format as an example, except for the Startup Message, the format of each protocol packet is 1 byte of message type + 4 bytes of data length (including the length itself) + data, with the following structure:
 
-![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database Protocol_Interaction_Explained12.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database_Protocol_Interaction_Explained12.png)
 
 The MySQL protocol packet format is similar.
 
@@ -182,7 +182,7 @@ Once the SQL and parameters are available, the rest of the execution process is 
 
 After the ShardingSphere-Proxy backend executes SQL via JDBC, the result set is a Java object and the `PacketCodec` calls the specific encoding logic to convert the Java object into a byte stream according to the database protocol, assembles it into a packet and responds to the client.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database Protocol_Interaction_Explained13.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database_Protocol_Interaction_Explained13.png)
 
 This is the general flow of the ShardingSphere-Proxy front-end database protocol interaction.
 
@@ -236,7 +236,7 @@ or/Core/ServerSession.cs:line 616
 
 As this issue is costly to reproduce, it's not easy for the ShardingSphere team to reproduce the issue locally, and the community has provided protocol traffic between the client and the Proxy.
 
-![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database Protocol_Interaction_Explained14.png)
+![img](https://shardingsphere.apache.org/blog/img/2023_02_23_ShardingSphere-Proxy_Database_Protocol_Interaction_Explained14.png)
 
 Based on the protocol packet capture results, the ShardingSphere team immediately identified the issue as a problem with the implementation of the ShardingSphere-Proxy MySQL packet encoding logic.
 
