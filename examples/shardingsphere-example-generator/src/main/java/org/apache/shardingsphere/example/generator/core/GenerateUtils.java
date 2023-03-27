@@ -35,10 +35,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Freemarker generate util.
+ * Freemarker generate utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class GenerateUtil {
+public final class GenerateUtils {
     
     /**
      * Generate directories.
