@@ -25,7 +25,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -34,7 +33,7 @@ import java.util.Collections;
  */
 public final class FixtureIncrementalDumperCreator implements IncrementalDumperCreator<FinishedPosition> {
     
-    private static final Collection<String> TYPE_ALIASES = Collections.unmodifiableList(Arrays.asList("Fixture", "H2"));
+    private static final Collection<String> TYPE_ALIASES = Collections.singletonList("H2");
     
     @Override
     public IncrementalDumper createIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<FinishedPosition> position,
