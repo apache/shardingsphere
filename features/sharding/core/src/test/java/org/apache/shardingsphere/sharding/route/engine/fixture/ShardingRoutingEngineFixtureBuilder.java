@@ -204,7 +204,8 @@ public final class ShardingRoutingEngineFixtureBuilder {
         return new ShardingRule(shardingRuleConfig, createDataSourceNames(), mock(InstanceContext.class));
     }
     
-    private static ShardingTableRuleConfiguration createInlineTableRuleConfig(final String tableName, final String actualDataNodes, final String algorithmExpression, final String dsAlgorithmExpression) {
+    private static ShardingTableRuleConfiguration createInlineTableRuleConfig(final String tableName,
+                                                                              final String actualDataNodes, final String algorithmExpression, final String dsAlgorithmExpression) {
         return createTableRuleConfig(tableName, actualDataNodes,
                 createStandardShardingStrategyConfiguration("ds_inline", dsAlgorithmExpression), createStandardShardingStrategyConfiguration(tableName + "_inline", algorithmExpression));
     }
