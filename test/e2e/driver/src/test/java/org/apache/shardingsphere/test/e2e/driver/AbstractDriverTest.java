@@ -31,22 +31,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+// TODO merge in to sql-e2e
 public abstract class AbstractDriverTest {
     
     private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "single_jdbc", "shadow_jdbc_0", "shadow_jdbc_1", "encrypt", "test_primary_ds", "test_replica_ds");
     
-    private static final Map<String, DataSource> ACTUAL_DATA_SOURCES = new HashMap<>();
+    private static final Map<String, DataSource> ACTUAL_DATA_SOURCES = new HashMap<>(ACTUAL_DATA_SOURCE_NAMES.size(), 1);
     
     @BeforeAll
-    public static synchronized void initializeDataSource() throws SQLException {
+    static synchronized void initializeDataSource() throws SQLException {
         for (String each : ACTUAL_DATA_SOURCE_NAMES) {
-            createDataSources(each);
+            ACTUAL_DATA_SOURCES.put(each, buildDataSource(each));
+            initializeSchema(each);
         }
-    }
-    
-    private static void createDataSources(final String dataSourceName) throws SQLException {
-        ACTUAL_DATA_SOURCES.put(dataSourceName, buildDataSource(dataSourceName));
-        initializeSchema(dataSourceName);
     }
     
     private static void initializeSchema(final String dataSourceName) throws SQLException {
