@@ -43,6 +43,7 @@ public final class PipelineElasticJobListener implements ElasticJobListener {
     
     @Override
     public void afterJobExecuted(final ShardingContexts shardingContexts) {
+        log.info("After {} job execute ", shardingContexts.getJobName());
         RUNNING_JOBS.remove(shardingContexts.getJobName());
     }
     
