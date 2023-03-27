@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngine;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -46,12 +47,12 @@ class EncryptPredicateRightValueTokenGeneratorTest {
     @Test
     void assertIsGenerateSQLToken() {
         generator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
-        assertTrue(generator.isGenerateSQLToken(EncryptGeneratorFixtureBuilder.createUpdatesStatementContext()));
+        assertTrue(generator.isGenerateSQLToken(EncryptGeneratorFixtureBuilder.createUpdateStatementContext()));
     }
     
     @Test
     void assertGenerateSQLTokenFromGenerateNewSQLToken() {
-        UpdateStatementContext updateStatementContext = EncryptGeneratorFixtureBuilder.createUpdatesStatementContext();
+        UpdateStatementContext updateStatementContext = EncryptGeneratorFixtureBuilder.createUpdateStatementContext();
         generator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
         generator.setEncryptConditions(getEncryptConditions(updateStatementContext));
         Collection<SQLToken> sqlTokens = generator.generateSQLTokens(updateStatementContext);
