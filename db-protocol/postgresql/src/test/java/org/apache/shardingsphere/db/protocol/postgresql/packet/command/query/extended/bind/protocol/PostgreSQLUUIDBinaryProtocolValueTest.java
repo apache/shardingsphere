@@ -30,23 +30,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 public final class PostgreSQLUUIDBinaryProtocolValueTest {
     
-    private final byte[] expected = new byte[5];
+    private final byte[] expected = new byte[16];
     
     @Test
     public void assertGetColumnLength() {
-        assertThat(new PostgreSQLUUIDBinaryProtocolValue().getColumnLength(expected), is(11));
+        assertThat(new PostgreSQLUUIDBinaryProtocolValue().getColumnLength(UUID.nameUUIDFromBytes(expected)), is(36));
     }
     
     @Test
     public void assertRead() {
         ByteBuf byteBuf = Unpooled.wrappedBuffer(expected);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
-        assertThat(new PostgreSQLUUIDBinaryProtocolValue().read(payload, 5), is(UUID.nameUUIDFromBytes(expected)));
+        assertThat(new PostgreSQLUUIDBinaryProtocolValue().read(payload, 16), is(UUID.nameUUIDFromBytes(expected)));
     }
     
     @Test
     public void assertWrite() {
-        byte[] bytes = new byte[5];
+        byte[] bytes = new byte[16];
         ByteBuf byteBuf = Unpooled.wrappedBuffer(bytes).writerIndex(0);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         new PostgreSQLUUIDBinaryProtocolValue().write(payload, expected);

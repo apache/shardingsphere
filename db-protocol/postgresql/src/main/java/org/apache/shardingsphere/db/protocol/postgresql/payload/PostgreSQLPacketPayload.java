@@ -22,7 +22,6 @@ import io.netty.buffer.CompositeByteBuf;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-
 import java.nio.charset.Charset;
 
 /**
