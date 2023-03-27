@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rewrite.token.generator;
+package org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -64,10 +64,18 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Encrypt generator fixture builder.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-class EncryptGeneratorFixtureBuilder {
+public final class EncryptGeneratorFixtureBuilder {
     
-    static EncryptRule createEncryptRule() {
+    /**
+     * Create encrypt rule.
+     * 
+     * @return created encrypt rule
+     */
+    public static EncryptRule createEncryptRule() {
         EncryptColumnRuleConfiguration pwdColumnConfig =
                 new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_like", "pwd_plain", "test_encryptor", "test_encryptor", "like_encryptor", false);
         Map<String, AlgorithmConfiguration> encryptors = new LinkedHashMap<>(2, 1);
@@ -76,7 +84,13 @@ class EncryptGeneratorFixtureBuilder {
         return new EncryptRule(new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration("t_user", Collections.singletonList(pwdColumnConfig), null)), encryptors));
     }
     
-    static InsertStatementContext createInsertStatementContext(final List<Object> params) {
+    /**
+     * Create insert statement context.
+     * 
+     * @param params parameters
+     * @return created insert statement context
+     */
+    public static InsertStatementContext createInsertStatementContext(final List<Object> params) {
         InsertStatement insertStatement = createInsertStatement();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
@@ -98,7 +112,12 @@ class EncryptGeneratorFixtureBuilder {
         return result;
     }
     
-    static UpdateStatementContext createUpdatesStatementContext() {
+    /**
+     * Create update statement context.
+     * 
+     * @return created update statement context
+     */
+    public static UpdateStatementContext createUpdateStatementContext() {
         MySQLUpdateStatement updateStatement = new MySQLUpdateStatement();
         updateStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_user"))));
         updateStatement.setWhere(createWhereSegment());
@@ -119,7 +138,12 @@ class EncryptGeneratorFixtureBuilder {
         return new SetAssignmentSegment(0, 0, Collections.singletonList(new ColumnAssignmentSegment(0, 0, columnSegment, new LiteralExpressionSegment(0, 0, "654321"))));
     }
     
-    static List<SQLToken> getPreviousSQLTokens() {
+    /**
+     * Get previous SQL tokens.
+     * 
+     * @return previous SQL tokens
+     */
+    public static List<SQLToken> getPreviousSQLTokens() {
         EncryptInsertValuesToken encryptInsertValuesToken = new EncryptInsertValuesToken(0, 0);
         encryptInsertValuesToken.getInsertValues().add(new InsertValue(createValueExpressions()));
         return Collections.singletonList(encryptInsertValuesToken);

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sharding.route.engine.fixture;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -58,9 +60,18 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public abstract class AbstractRoutingEngineTest {
+/**
+ * Sharding routing engine fixture builder.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingRoutingEngineFixtureBuilder {
     
-    protected final ShardingRule createBasedShardingRule() {
+    /**
+     * Create based sharding rule.
+     * 
+     * @return created sharding rule
+     */
+    public static ShardingRule createBasedShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${order_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
@@ -69,7 +80,12 @@ public abstract class AbstractRoutingEngineTest {
         return new ShardingRule(shardingRuleConfig, createDataSourceNames(), mock(InstanceContext.class));
     }
     
-    protected final ShardingRule createErrorShardingRule() {
+    /**
+     * Create error sharding rule.
+     * 
+     * @return created sharding rule
+     */
+    public static ShardingRule createErrorShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${order_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getShardingAlgorithms().put("ds_inline", new AlgorithmConfiguration("INLINE", PropertiesBuilder.build(new Property("algorithm-expression", "ds_${user_id % 2}"))));
@@ -78,7 +94,12 @@ public abstract class AbstractRoutingEngineTest {
         return new ShardingRule(shardingRuleConfig, createDataSourceNames(), mock(InstanceContext.class));
     }
     
-    protected final ShardingRule createBindingShardingRule() {
+    /**
+     * Create binding sharding rule.
+     * 
+     * @return created sharding rule
+     */
+    public static ShardingRule createBindingShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${order_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order_item", "ds_${0..1}.t_order_item_${0..1}", "t_order_item_${order_id % 2}", "ds_${user_id % 2}"));
@@ -91,7 +112,12 @@ public abstract class AbstractRoutingEngineTest {
         return new ShardingRule(shardingRuleConfig, createDataSourceNames(), mock(InstanceContext.class));
     }
     
-    protected final ShardingRule createBroadcastShardingRule() {
+    /**
+     * Create broadcast sharding rule.
+     * 
+     * @return created sharding rule
+     */
+    public static ShardingRule createBroadcastShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order", "ds_${0..1}.t_order_${0..1}", "t_order_${order_id % 2}", "ds_${user_id % 2}"));
         shardingRuleConfig.getTables().add(createInlineTableRuleConfig("t_order_item", "ds_${0..1}.t_order_item_${0..1}", "t_order_item_${order_id % 2}", "ds_${user_id % 2}"));
@@ -104,14 +130,24 @@ public abstract class AbstractRoutingEngineTest {
         return new ShardingRule(shardingRuleConfig, createDataSourceNames(), mock(InstanceContext.class));
     }
     
-    protected final ShardingRule createHintShardingRule() {
+    /**
+     * Create hint sharding rule.
+     * 
+     * @return created sharding rule
+     */
+    public static ShardingRule createHintShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createTableRuleWithHintConfig());
         shardingRuleConfig.getShardingAlgorithms().put("core_hint_fixture", new AlgorithmConfiguration("CORE.HINT.FIXTURE", new Properties()));
         return new ShardingRule(shardingRuleConfig, createDataSourceNames(), mock(InstanceContext.class));
     }
     
-    protected final ShardingRule createMixedShardingRule() {
+    /**
+     * Create mixed sharding rule.
+     * 
+     * @return created sharding rule
+     */
+    public static ShardingRule createMixedShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createTableRuleConfig("t_hint_ds_test", "ds_${0..1}.t_hint_ds_test_${0..1}",
                 new HintShardingStrategyConfiguration("core_hint_fixture"), createStandardShardingStrategyConfiguration("t_hint_ds_test_inline", "t_hint_ds_test_${order_id % 2}")));
@@ -124,7 +160,12 @@ public abstract class AbstractRoutingEngineTest {
         return new ShardingRule(shardingRuleConfig, createDataSourceNames(), mock(InstanceContext.class));
     }
     
-    protected final ShardingRule createAllShardingRule() {
+    /**
+     * Create all sharding rule.
+     * 
+     * @return created sharding rule
+     */
+    public static ShardingRule createAllShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getBroadcastTables().add("t_product");
         shardingRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "ds_inline"));
@@ -143,7 +184,12 @@ public abstract class AbstractRoutingEngineTest {
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1", "main"), mock(InstanceContext.class));
     }
     
-    protected final ShardingRule createIntervalTableShardingRule() {
+    /**
+     * Create interval table sharding rule.
+     * 
+     * @return created sharding rule
+     */
+    public static ShardingRule createIntervalTableShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(createTableRuleConfig("t_interval_test", "ds_0.t_interval_test_202101,ds_1.t_interval_test_202102",
                 null, new StandardShardingStrategyConfiguration("create_at", "interval_test")));
@@ -158,26 +204,27 @@ public abstract class AbstractRoutingEngineTest {
         return new ShardingRule(shardingRuleConfig, createDataSourceNames(), mock(InstanceContext.class));
     }
     
-    private ShardingTableRuleConfiguration createInlineTableRuleConfig(final String tableName, final String actualDataNodes, final String algorithmExpression, final String dsAlgorithmExpression) {
+    private static ShardingTableRuleConfiguration createInlineTableRuleConfig(final String tableName,
+                                                                              final String actualDataNodes, final String algorithmExpression, final String dsAlgorithmExpression) {
         return createTableRuleConfig(tableName, actualDataNodes,
                 createStandardShardingStrategyConfiguration("ds_inline", dsAlgorithmExpression), createStandardShardingStrategyConfiguration(tableName + "_inline", algorithmExpression));
     }
     
-    private StandardShardingStrategyConfiguration createStandardShardingStrategyConfiguration(final String algorithmName, final String algorithmExpression) {
+    private static StandardShardingStrategyConfiguration createStandardShardingStrategyConfiguration(final String algorithmName, final String algorithmExpression) {
         int startIndex = algorithmExpression.indexOf('{');
         int endIndex = algorithmExpression.indexOf('%');
         String shardingColumn = algorithmExpression.substring(startIndex + 1, endIndex).trim();
         return new StandardShardingStrategyConfiguration(shardingColumn, algorithmName);
     }
     
-    private ShardingTableRuleConfiguration createTableRuleWithHintConfig() {
+    private static ShardingTableRuleConfiguration createTableRuleWithHintConfig() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_hint_test", "ds_${0..1}.t_hint_test_${0..1}");
         result.setTableShardingStrategy(new HintShardingStrategyConfiguration("core_hint_fixture"));
         result.setDatabaseShardingStrategy(new HintShardingStrategyConfiguration("core_hint_fixture"));
         return result;
     }
     
-    private ShardingTableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes,
+    private static ShardingTableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes,
                                                                  final ShardingStrategyConfiguration dsShardingStrategyConfig, final ShardingStrategyConfiguration tableShardingStrategyConfig) {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(tableName, actualDataNodes);
         result.setDatabaseShardingStrategy(dsShardingStrategyConfig);
@@ -185,7 +232,13 @@ public abstract class AbstractRoutingEngineTest {
         return result;
     }
     
-    protected final ShardingConditions createShardingConditions(final String tableName) {
+    /**
+     * Create sharding conditions.
+     * 
+     * @param tableName table name
+     * @return created sharding conditions
+     */
+    public static ShardingConditions createShardingConditions(final String tableName) {
         List<ShardingCondition> result = new LinkedList<>();
         ShardingConditionValue shardingConditionValue1 = new ListShardingConditionValue<>("user_id", tableName, Collections.singleton(1L));
         ShardingConditionValue shardingConditionValue2 = new ListShardingConditionValue<>("order_id", tableName, Collections.singleton(1L));
@@ -196,7 +249,13 @@ public abstract class AbstractRoutingEngineTest {
         return new ShardingConditions(result, mock(SQLStatementContext.class), mock(ShardingRule.class));
     }
     
-    protected final ShardingConditions createErrorShardingConditions(final String tableName) {
+    /**
+     * Create error sharding conditions.
+     *
+     * @param tableName table name
+     * @return created sharding conditions
+     */
+    public static ShardingConditions createErrorShardingConditions(final String tableName) {
         List<ShardingCondition> result = new LinkedList<>();
         ShardingConditionValue shardingConditionValue1 = new ListShardingConditionValue<>("user_id", tableName, Collections.singleton(1L));
         ShardingConditionValue shardingConditionValue2 = new ListShardingConditionValue<>("order_id", tableName, Collections.singleton(2L));
@@ -207,7 +266,13 @@ public abstract class AbstractRoutingEngineTest {
         return new ShardingConditions(result, mock(SQLStatementContext.class), mock(ShardingRule.class));
     }
     
-    protected final ShardingConditions createIntervalShardingConditions(final String tableName) {
+    /**
+     * Create interval sharding conditions.
+     *
+     * @param tableName table name
+     * @return created sharding conditions
+     */
+    public static ShardingConditions createIntervalShardingConditions(final String tableName) {
         List<ShardingCondition> result = new LinkedList<>();
         ShardingConditionValue shardingConditionValue = new ListShardingConditionValue<>("create_at", tableName, Collections.singleton("2021-01-01 20:20:20"));
         ShardingCondition shardingCondition = new ShardingCondition();
@@ -216,23 +281,34 @@ public abstract class AbstractRoutingEngineTest {
         return new ShardingConditions(result, mock(SQLStatementContext.class), mock(ShardingRule.class));
     }
     
-    private Collection<String> createDataSourceNames() {
+    private static Collection<String> createDataSourceNames() {
         return Arrays.asList("ds_0", "ds_1");
     }
     
-    protected final SingleRule createSingleRule(final Collection<ShardingSphereRule> rules) {
+    /**
+     * Create single rule.
+     *
+     * @param rules rules
+     * @return created single rule
+     */
+    public static SingleRule createSingleRule(final Collection<ShardingSphereRule> rules) {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
         SingleRule result = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, rules);
         result.put(dataSourceMap.keySet().iterator().next(), DefaultDatabase.LOGIC_NAME, "t_category");
         return result;
     }
     
-    protected final TimeServiceRule createTimeServiceRule() {
+    /**
+     * Create time service rule.
+     *
+     * @return created time service rule
+     */
+    public static TimeServiceRule createTimeServiceRule() {
         return new TimeServiceRule(new TimeServiceRuleConfiguration("System", new Properties()));
     }
     
     @SneakyThrows(SQLException.class)
-    private Map<String, DataSource> createDataSourceMap() {
+    private static Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>(3, 1);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:h2:mem:db");
