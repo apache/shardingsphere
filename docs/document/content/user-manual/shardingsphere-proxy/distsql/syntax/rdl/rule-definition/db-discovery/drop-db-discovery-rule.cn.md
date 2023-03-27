@@ -5,7 +5,7 @@ weight = 4
 
 ## 描述
 
-`DROP DB_DISCOVERY RULE` 语法用于为指定逻辑库删除数据库发现规则
+`DROP DB_DISCOVERY RULE` 语法用于为指定逻辑库删除数据库发现规则。
 
 ### 语法定义
 

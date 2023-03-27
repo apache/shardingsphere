@@ -21,7 +21,6 @@ import com.google.common.hash.Hashing;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.logging.LoggingHandler;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.data.pipeline.cdc.common.CDCResponseErrorCode;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Builder;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Type;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -56,12 +56,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class CDCChannelInboundHandlerTest {
+class CDCChannelInboundHandlerTest {
     
     private final EmbeddedChannel channel = new EmbeddedChannel(new LoggingHandler(), new CDCChannelInboundHandler());
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
     }
@@ -80,7 +80,7 @@ public final class CDCChannelInboundHandlerTest {
     }
     
     @Test
-    public void assertLoginRequestFailed() {
+    void assertLoginRequestFailed() {
         CDCRequest actualRequest = CDCRequest.newBuilder().setType(Type.LOGIN).setLoginRequestBody(LoginRequestBody.newBuilder().setBasicBody(BasicBody.newBuilder().setUsername("root2").build())
                 .build()).build();
         channel.writeInbound(actualRequest);
@@ -88,24 +88,24 @@ public final class CDCChannelInboundHandlerTest {
         assertTrue(expectedGreetingResult.hasServerGreetingResult());
         CDCResponse expectedLoginResult = channel.readOutbound();
         assertThat(expectedLoginResult.getStatus(), is(Status.FAILED));
-        assertThat(expectedLoginResult.getErrorCode(), is(CDCResponseErrorCode.ILLEGAL_USERNAME_OR_PASSWORD.getCode()));
+        assertThat(expectedLoginResult.getErrorCode(), is(XOpenSQLState.GENERAL_ERROR.getValue()));
         assertFalse(channel.isOpen());
     }
     
     @Test
-    public void assertIllegalLoginRequest() {
+    void assertIllegalLoginRequest() {
         CDCRequest actualRequest = CDCRequest.newBuilder().setType(Type.LOGIN).setVersion(1).setRequestId("test").build();
         channel.writeInbound(actualRequest);
         CDCResponse expectedGreetingResult = channel.readOutbound();
         assertTrue(expectedGreetingResult.hasServerGreetingResult());
         CDCResponse expectedLoginResult = channel.readOutbound();
         assertThat(expectedLoginResult.getStatus(), is(Status.FAILED));
-        assertThat(expectedLoginResult.getErrorCode(), is(CDCResponseErrorCode.ILLEGAL_REQUEST_ERROR.getCode()));
+        assertThat(expectedLoginResult.getErrorCode(), is(XOpenSQLState.INVALID_PARAMETER_VALUE.getValue()));
         assertFalse(channel.isOpen());
     }
     
     @Test
-    public void assertLoginRequestSucceed() {
+    void assertLoginRequestSucceed() {
         String encryptPassword = Hashing.sha256().hashBytes("root".getBytes()).toString().toUpperCase();
         Builder builder = CDCRequest.newBuilder().setType(Type.LOGIN).setLoginRequestBody(LoginRequestBody.newBuilder().setBasicBody(BasicBody.newBuilder().setUsername("root")
                 .setPassword(encryptPassword).build()).build());

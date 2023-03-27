@@ -48,22 +48,22 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ProxyMetaDataInfoExporterTest {
+class ProxyMetaDataInfoExporterTest {
     
     @AfterEach
-    public void reset() {
+    void reset() {
         MetricConfiguration config = new MetricConfiguration("proxy_meta_data_info", MetricCollectorType.GAUGE_METRIC_FAMILY, null, Collections.singletonList("name"), Collections.emptyMap());
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertExportWithoutContextManager() {
+    void assertExportWithoutContextManager() {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(null);
         assertFalse(new ProxyMetaDataInfoExporter().export("FIXTURE").isPresent());
     }
     
     @Test
-    public void assertExportWithContextManager() {
+    void assertExportWithContextManager() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         Optional<GaugeMetricFamilyMetricsCollector> collector = new ProxyMetaDataInfoExporter().export("FIXTURE");

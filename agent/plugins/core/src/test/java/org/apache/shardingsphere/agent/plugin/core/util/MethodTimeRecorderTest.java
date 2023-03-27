@@ -25,10 +25,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
-public final class MethodTimeRecorderTest {
+class MethodTimeRecorderTest {
     
     @Test
-    public void assertGetElapsedTimeAndCleanWithRecorded() throws InterruptedException, NoSuchMethodException {
+    void assertGetElapsedTimeAndCleanWithRecorded() throws InterruptedException, NoSuchMethodException {
         MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(AgentAdvice.class);
         methodTimeRecorder.record(Object.class.getDeclaredMethod("toString"));
         Thread.sleep(5L);
@@ -36,7 +36,7 @@ public final class MethodTimeRecorderTest {
     }
     
     @Test
-    public void assertGetElapsedTimeAndCleanWithoutRecorded() throws NoSuchMethodException {
+    void assertGetElapsedTimeAndCleanWithoutRecorded() throws NoSuchMethodException {
         assertThat(new MethodTimeRecorder(AgentAdvice.class).getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), is(0L));
     }
 }

@@ -33,10 +33,10 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class DataSourceGeneratedDatabaseConfigurationTest {
+class DataSourceGeneratedDatabaseConfigurationTest {
     
     @Test
-    public void assertGetDataSources() {
+    void assertGetDataSources() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         HikariDataSource hikariDataSource = (HikariDataSource) databaseConfig.getDataSources().get("normal_db");
         assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:mock://127.0.0.1/normal_db"));
@@ -45,14 +45,14 @@ public final class DataSourceGeneratedDatabaseConfigurationTest {
     }
     
     @Test
-    public void assertGetRuleConfigurations() {
+    void assertGetRuleConfigurations() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         FixtureRuleConfiguration ruleConfig = (FixtureRuleConfiguration) databaseConfig.getRuleConfigurations().iterator().next();
         assertThat(ruleConfig.getName(), is("test_rule"));
     }
     
     @Test
-    public void assertGetDataSourceProperties() {
+    void assertGetDataSourceProperties() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         DataSourceProperties props = databaseConfig.getDataSourceProperties().get("normal_db");
         Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();

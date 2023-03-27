@@ -43,7 +43,7 @@ columns:
     visible: true
   maxlen:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: MAXLEN
     primaryKey: false

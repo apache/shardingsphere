@@ -41,7 +41,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TranslatableScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.statistic.FederationStatistic;
-import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationDataTypeUtil;
+import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationDataTypeUtils;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -122,7 +122,7 @@ public final class FederationTranslatableTable extends AbstractTable implements 
     
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
-        return SQLFederationDataTypeUtil.createRelDataType(table, protocolType, typeFactory);
+        return SQLFederationDataTypeUtils.createRelDataType(table, protocolType, typeFactory);
     }
     
     @Override

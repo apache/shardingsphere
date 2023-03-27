@@ -24,25 +24,25 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class InstanceStateContextTest {
+class InstanceStateContextTest {
     
     private final InstanceStateContext instanceStateContext = new InstanceStateContext();
     
     @Test
-    public void assertSwitchStateWithCircuitBreakOn() {
+    void assertSwitchStateWithCircuitBreakOn() {
         instanceStateContext.switchState(InstanceState.CIRCUIT_BREAK, true);
         assertThat(instanceStateContext.getCurrentState(), is(InstanceState.CIRCUIT_BREAK));
         instanceStateContext.switchState(InstanceState.CIRCUIT_BREAK, false);
     }
     
     @Test
-    public void assertSwitchStateWithCircuitBreakOff() {
+    void assertSwitchStateWithCircuitBreakOff() {
         instanceStateContext.switchState(InstanceState.CIRCUIT_BREAK, false);
         assertThat(instanceStateContext.getCurrentState(), is(InstanceState.OK));
     }
     
     @Test
-    public void assertSwitchStateWithMultiState() {
+    void assertSwitchStateWithMultiState() {
         instanceStateContext.switchState(InstanceState.CIRCUIT_BREAK, true);
         instanceStateContext.switchState(InstanceState.LOCK, true);
         assertThat(instanceStateContext.getCurrentState(), is(InstanceState.LOCK));

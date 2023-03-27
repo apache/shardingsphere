@@ -26,26 +26,3 @@ plugins:
       port: 19099
       props:
         jvm-information-collector-enabled: "true"
-  tracing:
-#    Jaeger:
-#      host: "localhost"
-#      port: 5775
-#      props:
-#        service-name: "shardingsphere"
-#        jaeger-sampler-type: "const"
-#        jaeger-sampler-param: "1"
-#    Zipkin:
-#      host: "localhost"
-#      port: 9411
-#      props:
-#        service-name: "shardingsphere"
-#        url-version: "/api/v2/spans"
-#        sampler-type: "const"
-#        sampler-param: "1"
-#    OpenTracing:
-#      props:
-#        opentracing-tracer-class-name: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
-#    OpenTelemetry:
-#      props:
-#        otel-resource-attributes: "service.name=shardingsphere"
-#        otel-traces-exporter: "zipkin"

@@ -26,15 +26,15 @@ import java.nio.charset.StandardCharsets;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLInt2BinaryProtocolValueTest {
+class PostgreSQLInt2BinaryProtocolValueTest {
     
     @Test
-    public void assertGetColumnLength() {
+    void assertGetColumnLength() {
         assertThat(new PostgreSQLInt2BinaryProtocolValue().getColumnLength(null), is(2));
     }
     
     @Test
-    public void assertRead() {
+    void assertRead() {
         byte[] data = {(byte) 0x80, (byte) 0x00, (byte) 0xFF, (byte) 0xFF, (byte) 0x7F, (byte) 0xFF};
         PostgreSQLInt2BinaryProtocolValue actual = new PostgreSQLInt2BinaryProtocolValue();
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(data), StandardCharsets.UTF_8);
@@ -44,7 +44,7 @@ public final class PostgreSQLInt2BinaryProtocolValueTest {
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         byte[] actualData = new byte[6];
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(actualData).writerIndex(0), StandardCharsets.UTF_8);
         PostgreSQLInt2BinaryProtocolValue actual = new PostgreSQLInt2BinaryProtocolValue();

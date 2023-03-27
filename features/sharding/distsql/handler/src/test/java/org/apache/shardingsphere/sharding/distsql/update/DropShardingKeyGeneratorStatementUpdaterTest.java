@@ -35,23 +35,23 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class DropShardingKeyGeneratorStatementUpdaterTest {
+class DropShardingKeyGeneratorStatementUpdaterTest {
     
     @Test
-    public void assertExecuteWithNotExist() {
+    void assertExecuteWithNotExist() {
         DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(false, Collections.singleton("uuid_key_generator"));
         assertThrows(MissingRequiredAlgorithmException.class,
                 () -> new DropShardingKeyGeneratorStatementUpdater().checkSQLStatement(mock(ShardingSphereDatabase.class), sqlStatement, new ShardingRuleConfiguration()));
     }
     
     @Test
-    public void assertExecuteWithNotExistWithIfExists() {
+    void assertExecuteWithNotExistWithIfExists() {
         DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(true, Collections.singletonList("uuid_key_generator"));
         new DropShardingKeyGeneratorStatementUpdater().checkSQLStatement(mock(ShardingSphereDatabase.class), sqlStatement, new ShardingRuleConfiguration());
     }
     
     @Test
-    public void assertDropSpecifiedKeyGenerator() {
+    void assertDropSpecifiedKeyGenerator() {
         DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(false, Collections.singleton("uuid_key_generator"));
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("uuid", new Properties()));
@@ -60,7 +60,7 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithUsed() {
+    void assertExecuteWithUsed() {
         DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(false, Collections.singleton("uuid_key_generator"));
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("UUID", null));

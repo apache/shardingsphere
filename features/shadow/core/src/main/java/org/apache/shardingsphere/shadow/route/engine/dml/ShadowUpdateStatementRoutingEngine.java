@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -70,7 +70,7 @@ public final class ShadowUpdateStatementRoutingEngine extends AbstractShadowDMLS
     private Collection<ExpressionSegment> parseWhereSegment() {
         Collection<ExpressionSegment> result = new LinkedList<>();
         for (WhereSegment each : updateStatementContext.getWhereSegments()) {
-            for (AndPredicate predicate : ExpressionExtractUtil.getAndPredicates(each.getExpr())) {
+            for (AndPredicate predicate : ExpressionExtractUtils.getAndPredicates(each.getExpr())) {
                 result.addAll(predicate.getPredicates());
             }
         }

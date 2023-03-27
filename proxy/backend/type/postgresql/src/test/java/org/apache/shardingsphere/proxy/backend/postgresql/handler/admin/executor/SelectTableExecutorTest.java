@@ -56,10 +56,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class SelectTableExecutorTest {
+class SelectTableExecutorTest {
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         String sql = "SELECT c.oid, n.nspname AS schemaname, c.relname AS tablename from pg_tablespace";
         ShardingSphereDatabase database = createDatabase();
         ContextManager contextManager = mockContextManager(database);

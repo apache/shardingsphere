@@ -26,18 +26,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PersonalIdentityNumberRandomReplaceAlgorithmTest {
+class PersonalIdentityNumberRandomReplaceAlgorithmTest {
     
     private PersonalIdentityNumberRandomReplaceAlgorithm maskAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         maskAlgorithm = new PersonalIdentityNumberRandomReplaceAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("alpha-two-country-area-code", "CN")));
     }
     
     @Test
-    public void assertMask() {
+    void assertMask() {
         assertThat(maskAlgorithm.mask("372928198312103215"), not("372928198312103215"));
         assertThat(maskAlgorithm.mask("372928231210321"), not("372928231210321"));
         assertThat(maskAlgorithm.mask("1234567891011121314"), is("1234567891011121314"));

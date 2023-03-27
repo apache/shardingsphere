@@ -45,10 +45,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @ConstructionMockSettings(BackendTransactionManager.class)
-public final class MySQLComResetConnectionExecutorTest {
+class MySQLComResetConnectionExecutorTest {
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         BackendConnection backendConnection = mock(BackendConnection.class);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);

@@ -34,14 +34,14 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ShardingInsertValuesTokenTest {
+class ShardingInsertValuesTokenTest {
     
     private ShardingInsertValuesToken shardingInsertValuesToken;
     
     private RouteUnit routeUnit;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         shardingInsertValuesToken = new ShardingInsertValuesToken(0, 2);
         RouteMapper routeMapper = new RouteMapper("logic_ds", "actual_ds");
         RouteMapper routeMapper1 = new RouteMapper("tbl", "tbl_0");
@@ -60,12 +60,12 @@ public final class ShardingInsertValuesTokenTest {
     }
     
     @Test
-    public void assertToStringWithRouteUnit() {
+    void assertToStringWithRouteUnit() {
         assertThat(shardingInsertValuesToken.toString(routeUnit), is("('shardingsphere', 'test')"));
     }
     
     @Test
-    public void assertToStringWithoutRouteUnit() {
+    void assertToStringWithoutRouteUnit() {
         assertThat(shardingInsertValuesToken.toString(), is("('shardingsphere', 'test')"));
     }
 }

@@ -31,7 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 
-public final class CharDigestLikeEncryptAlgorithmTest {
+class CharDigestLikeEncryptAlgorithmTest {
     
     private LikeEncryptAlgorithm<Object, String> englishLikeEncryptAlgorithm;
     
@@ -41,7 +41,7 @@ public final class CharDigestLikeEncryptAlgorithmTest {
     
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         englishLikeEncryptAlgorithm = (LikeEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "CHAR_DIGEST_LIKE");
         chineseLikeEncryptAlgorithm = (LikeEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "CHAR_DIGEST_LIKE");
         koreanLikeEncryptAlgorithm = (LikeEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class,
@@ -49,24 +49,24 @@ public final class CharDigestLikeEncryptAlgorithmTest {
     }
     
     @Test
-    public void assertEncrypt() {
+    void assertEncrypt() {
         assertThat(englishLikeEncryptAlgorithm.encrypt("1234567890%abcdefghijklmnopqrstuvwxyz%ABCDEFGHIJKLMNOPQRSTUVWXYZ",
                 mock(EncryptContext.class)), is("0145458981%`adedehihilmlmpqpqtutuxyxy%@ADEDEHIHILMLMPQPQTUTUXYXY"));
         assertThat(englishLikeEncryptAlgorithm.encrypt("_1234__5678__", mock(EncryptContext.class)), is("_0145__4589__"));
     }
     
     @Test
-    public void assertEncryptWithChineseChar() {
+    void assertEncryptWithChineseChar() {
         assertThat(chineseLikeEncryptAlgorithm.encrypt("中国", mock(EncryptContext.class)), is("婝估"));
     }
     
     @Test
-    public void assertEncryptWithKoreanChar() {
+    void assertEncryptWithKoreanChar() {
         assertThat(koreanLikeEncryptAlgorithm.encrypt("한국", mock(EncryptContext.class)), is("각가"));
     }
     
     @Test
-    public void assertEncryptWithNullPlaintext() {
+    void assertEncryptWithNullPlaintext() {
         assertNull(englishLikeEncryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
 }

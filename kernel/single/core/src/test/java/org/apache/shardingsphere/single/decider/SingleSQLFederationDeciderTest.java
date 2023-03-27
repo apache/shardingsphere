@@ -46,10 +46,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SingleSQLFederationDeciderTest {
+class SingleSQLFederationDeciderTest {
     
     @Test
-    public void assertDecideWhenNotContainsSingleTable() {
+    void assertDecideWhenNotContainsSingleTable() {
         SingleSQLFederationDecider federationDecider = new SingleSQLFederationDecider();
         SelectStatementContext select = createStatementContext();
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
@@ -60,7 +60,7 @@ public final class SingleSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenAllSingleTablesInSameDataSource() {
+    void assertDecideWhenAllSingleTablesInSameDataSource() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(true);
@@ -74,7 +74,7 @@ public final class SingleSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenAllSingleTablesNotInSameDataSource() {
+    void assertDecideWhenAllSingleTablesNotInSameDataSource() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(false);
@@ -88,7 +88,7 @@ public final class SingleSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenAllTablesInSameDataSource() {
+    void assertDecideWhenAllTablesInSameDataSource() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(true);
@@ -103,7 +103,7 @@ public final class SingleSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenAllTablesNotInSameDataSource() {
+    void assertDecideWhenAllTablesNotInSameDataSource() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
         SingleRule rule = createSingleRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(true);

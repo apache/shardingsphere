@@ -37,12 +37,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-public final class YamlShardingTableRuleConfigurationSwapperTest {
+class YamlShardingTableRuleConfigurationSwapperTest {
     
     private final YamlShardingTableRuleConfigurationSwapper swapper = new YamlShardingTableRuleConfigurationSwapper();
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlTableRuleConfiguration actual = swapper.swapToYamlConfiguration(createShardingTableRuleConfiguration());
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));
@@ -62,12 +62,12 @@ public final class YamlShardingTableRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithoutLogicTable() {
+    void assertSwapToObjectWithoutLogicTable() {
         assertThrows(MissingRequiredShardingConfigurationException.class, () -> new YamlShardingTableRuleConfigurationSwapper().swapToObject(new YamlTableRuleConfiguration()));
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         ShardingTableRuleConfiguration actual = swapper.swapToObject(createYamlTableRuleConfiguration());
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataNodes(), is("ds_$->{0..1}.tbl_$->{0..1}"));

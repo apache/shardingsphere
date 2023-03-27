@@ -51,7 +51,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
+class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     
     private final CreateDatabaseDiscoveryRuleStatementUpdater updater = new CreateDatabaseDiscoveryRuleStatementUpdater();
     
@@ -62,12 +62,12 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     private ShardingSphereResourceMetaData resourceMetaData;
     
     @BeforeEach
-    public void before() {
+    void before() {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
     }
     
     @Test
-    public void assertCheckSQLStatementWithDuplicateRuleNames() {
+    void assertCheckSQLStatementWithDuplicateRuleNames() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceRuleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("readwrite_ds", Collections.emptyList(), "ha-heartbeat", "test");
         Properties props = new Properties();
         DatabaseDiscoveryRuleSegment databaseDiscoveryRuleSegment =
@@ -77,7 +77,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutExistedResources() {
+    void assertCheckSQLStatementWithoutExistedResources() {
         when(resourceMetaData.getNotExistedDataSources(any())).thenReturn(Collections.singleton("ds_read_0"));
         Properties props = new Properties();
         DatabaseDiscoveryRuleSegment segment =
@@ -86,14 +86,14 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertCheckSQLStatementWithDatabaseDiscoveryType() {
+    void assertCheckSQLStatementWithDatabaseDiscoveryType() {
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("INVALID_TYPE", new Properties());
         DatabaseDiscoveryRuleSegment segment = new DatabaseDiscoveryRuleSegment("readwrite_ds", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
         assertThrows(ServiceProviderNotFoundServerException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, Collections.singleton(segment)), null));
     }
     
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("MySQL.MGR", new Properties());
         DatabaseDiscoveryRuleSegment definitionSegment = new DatabaseDiscoveryRuleSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
         DatabaseDiscoveryRuleConfiguration ruleConfig =
@@ -106,7 +106,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdate() {
+    void assertUpdate() {
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("MySQL.MGR", new Properties());
         DatabaseDiscoveryRuleSegment definitionSegment = new DatabaseDiscoveryRuleSegment("readwrite_ds_1", Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());
         DatabaseDiscoveryRuleConfiguration currentConfig = new DatabaseDiscoveryRuleConfiguration(new LinkedList<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
@@ -121,7 +121,7 @@ public final class CreateDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateWithIfNotExists() {
+    void assertUpdateWithIfNotExists() {
         AlgorithmSegment algorithmSegment = new AlgorithmSegment("MySQL.MGR", new Properties());
         DatabaseDiscoveryRuleSegment definitionSegmentDS1 = new DatabaseDiscoveryRuleSegment("readwrite_ds_1",
                 Arrays.asList("ds_read_0", "ds_read_1"), algorithmSegment, new Properties());

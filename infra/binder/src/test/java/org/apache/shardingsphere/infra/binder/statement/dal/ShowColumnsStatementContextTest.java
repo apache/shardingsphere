@@ -36,10 +36,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowColumnsStatementContextTest {
+class ShowColumnsStatementContextTest {
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         MySQLShowColumnsStatement mySQLShowColumnsStatement = mock(MySQLShowColumnsStatement.class);
         String tableName = "tbl_1";
         String databaseName = "sharding_db";

@@ -23,25 +23,25 @@ import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class ShardingSpherePreconditionsTest {
+class ShardingSpherePreconditionsTest {
     
     @Test
-    public void assertCheckStateToThrowsException() {
+    void assertCheckStateToThrowsException() {
         assertThrows(SQLException.class, () -> ShardingSpherePreconditions.checkState(false, SQLException::new));
     }
     
     @Test
-    public void assertCheckStateToNotThrowException() throws SQLException {
+    void assertCheckStateToNotThrowException() throws SQLException {
         ShardingSpherePreconditions.checkState(true, SQLException::new);
     }
     
     @Test
-    public void assertCheckNotNullToThrowsException() {
+    void assertCheckNotNullToThrowsException() {
         assertThrows(SQLException.class, () -> ShardingSpherePreconditions.checkNotNull(null, SQLException::new));
     }
     
     @Test
-    public void assertCheckNotNullToNotThrowException() throws SQLException {
+    void assertCheckNotNullToNotThrowException() throws SQLException {
         ShardingSpherePreconditions.checkNotNull(new Object(), SQLException::new);
     }
 }

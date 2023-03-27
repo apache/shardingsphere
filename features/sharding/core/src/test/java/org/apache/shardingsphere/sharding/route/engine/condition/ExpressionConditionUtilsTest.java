@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ExpressionConditionUtilsTest {
+class ExpressionConditionUtilsTest {
     
     @Test
-    public void assertIsNowExpression() {
+    void assertIsNowExpression() {
         assertFalse(ExpressionConditionUtils.isNowExpression(new LiteralExpressionSegment(0, 0, new Object())));
         assertFalse(ExpressionConditionUtils.isNowExpression(new CommonExpressionSegment(0, 0, "shardingsphere")));
         assertTrue(ExpressionConditionUtils.isNowExpression(new CommonExpressionSegment(0, 0, "NOW()")));

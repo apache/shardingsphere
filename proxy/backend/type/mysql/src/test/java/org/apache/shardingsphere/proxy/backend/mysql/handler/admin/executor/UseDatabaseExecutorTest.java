@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class UseDatabaseExecutorTest {
+class UseDatabaseExecutorTest {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
@@ -57,7 +57,7 @@ public final class UseDatabaseExecutorTest {
     private ConnectionSession connectionSession;
     
     @Test
-    public void assertExecuteUseStatementBackendHandler() {
+    void assertExecuteUseStatementBackendHandler() {
         MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
         when(useStatement.getSchema()).thenReturn(String.format(DATABASE_PATTERN, 0));
         ContextManager contextManager = mockContextManager();
@@ -69,7 +69,7 @@ public final class UseDatabaseExecutorTest {
     }
     
     @Test
-    public void assertExecuteUseStatementBackendHandlerWhenSchemaNotExist() {
+    void assertExecuteUseStatementBackendHandlerWhenSchemaNotExist() {
         MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
         when(useStatement.getSchema()).thenReturn(String.format(DATABASE_PATTERN, 10));
         UseDatabaseExecutor executor = new UseDatabaseExecutor(useStatement);

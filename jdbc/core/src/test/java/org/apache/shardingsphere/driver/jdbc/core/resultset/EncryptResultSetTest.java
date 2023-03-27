@@ -30,12 +30,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Disabled
-public final class EncryptResultSetTest extends AbstractShardingSphereDataSourceForEncryptTest {
+class EncryptResultSetTest extends AbstractShardingSphereDataSourceForEncryptTest {
     
     private static final String SELECT_SQL_TO_ASSERT = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
     
     @Test
-    public void assertResultSetIsBeforeFirst() throws SQLException {
+    void assertResultSetIsBeforeFirst() throws SQLException {
         try (
                 Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet resultSet = statement.executeQuery(SELECT_SQL_TO_ASSERT)) {
@@ -50,7 +50,7 @@ public final class EncryptResultSetTest extends AbstractShardingSphereDataSource
     }
     
     @Test
-    public void assertResultSetGetRow() throws SQLException {
+    void assertResultSetGetRow() throws SQLException {
         try (
                 Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet resultSet = statement.executeQuery(SELECT_SQL_TO_ASSERT)) {
@@ -60,7 +60,7 @@ public final class EncryptResultSetTest extends AbstractShardingSphereDataSource
     }
     
     @Test
-    public void assertResultSetAfterLast() throws SQLException {
+    void assertResultSetAfterLast() throws SQLException {
         try (
                 Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet resultSet = statement.executeQuery(SELECT_SQL_TO_ASSERT)) {
@@ -70,7 +70,7 @@ public final class EncryptResultSetTest extends AbstractShardingSphereDataSource
     }
     
     @Test
-    public void assertResultSetBeforeFirst() throws SQLException {
+    void assertResultSetBeforeFirst() throws SQLException {
         try (
                 Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet resultSet = statement.executeQuery(SELECT_SQL_TO_ASSERT)) {
@@ -79,7 +79,7 @@ public final class EncryptResultSetTest extends AbstractShardingSphereDataSource
     }
     
     @Test
-    public void assertResultSetPrevious() throws SQLException {
+    void assertResultSetPrevious() throws SQLException {
         try (
                 Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet resultSet = statement.executeQuery(SELECT_SQL_TO_ASSERT)) {
@@ -91,7 +91,7 @@ public final class EncryptResultSetTest extends AbstractShardingSphereDataSource
     }
     
     @Test
-    public void assertRelative() throws SQLException {
+    void assertRelative() throws SQLException {
         try (
                 Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet resultSet = statement.executeQuery(SELECT_SQL_TO_ASSERT)) {
@@ -102,7 +102,7 @@ public final class EncryptResultSetTest extends AbstractShardingSphereDataSource
     }
     
     @Test
-    public void assertAbsolute() throws SQLException {
+    void assertAbsolute() throws SQLException {
         try (
                 Statement statement = getEncryptConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet resultSet = statement.executeQuery(SELECT_SQL_TO_ASSERT)) {

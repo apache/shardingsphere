@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.mod;
 
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtil;
+import org.apache.shardingsphere.sharding.algorithm.sharding.ShardingAutoTableAlgorithmUtils;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -65,7 +65,9 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     
     private int getShardingCount(final Properties props) {
         ShardingSpherePreconditions.checkState(props.containsKey(SHARDING_COUNT_KEY), () -> new ShardingAlgorithmInitializationException(getType(), "Sharding count can not be null."));
-        return Integer.parseInt(props.getProperty(SHARDING_COUNT_KEY));
+        int result = Integer.parseInt(String.valueOf(props.getProperty(SHARDING_COUNT_KEY)));
+        ShardingSpherePreconditions.checkState(result > 0, () -> new ShardingAlgorithmInitializationException(getType(), "Sharding count must be a positive integer."));
+        return result;
     }
     
     private int getStartOffset(final Properties props) {
@@ -97,7 +99,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         String shardingResultSuffix = getShardingResultSuffix(cutShardingValue(shardingValue.getValue()).mod(new BigInteger(String.valueOf(shardingCount))).toString());
-        return ShardingAutoTableAlgorithmUtil.findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).orElse(null);
+        return ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
     
     @Override
@@ -117,7 +119,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
         BigInteger shardingCountBigInter = new BigInteger(String.valueOf(shardingCount));
         for (BigInteger i = lower; i.compareTo(upper) <= 0; i = i.add(new BigInteger("1"))) {
             String shardingResultSuffix = getShardingResultSuffix(String.valueOf(i.mod(shardingCountBigInter)));
-            ShardingAutoTableAlgorithmUtil.findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).ifPresent(result::add);
+            ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).ifPresent(result::add);
         }
         return result;
     }

@@ -27,22 +27,22 @@ import java.nio.charset.StandardCharsets;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLByteaBinaryProtocolValueTest {
+class PostgreSQLByteaBinaryProtocolValueTest {
     
     @Test
-    public void assertGetColumnLength() {
+    void assertGetColumnLength() {
         assertThat(new PostgreSQLByteaBinaryProtocolValue().getColumnLength(new byte[10]), is(10));
     }
     
     @Test
-    public void assertRead() {
+    void assertRead() {
         ByteBuf byteBuf = Unpooled.wrappedBuffer("value".getBytes(StandardCharsets.UTF_8));
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         assertThat(new PostgreSQLByteaBinaryProtocolValue().read(payload, 5), is("value".getBytes(StandardCharsets.UTF_8)));
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         byte[] bytes = new byte[5];
         ByteBuf byteBuf = Unpooled.wrappedBuffer(bytes).writerIndex(0);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);

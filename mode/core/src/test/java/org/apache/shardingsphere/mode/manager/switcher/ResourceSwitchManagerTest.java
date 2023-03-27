@@ -32,10 +32,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ResourceSwitchManagerTest {
+class ResourceSwitchManagerTest {
     
     @Test
-    public void assertCreate() throws InterruptedException {
+    void assertCreate() throws InterruptedException {
         Map<String, DataSource> dataSourceMap = createDataSourceMap();
         SwitchingResource actual = new ResourceSwitchManager().create(new ShardingSphereResourceMetaData("sharding_db", dataSourceMap), createToBeChangedDataSourcePropsMap());
         assertNewDataSources(actual);
@@ -44,7 +44,7 @@ public final class ResourceSwitchManagerTest {
     }
     
     @Test
-    public void assertCreateByAlterDataSourceProps() throws InterruptedException {
+    void assertCreateByAlterDataSourceProps() throws InterruptedException {
         Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());

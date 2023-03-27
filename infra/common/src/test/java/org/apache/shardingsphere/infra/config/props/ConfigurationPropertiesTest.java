@@ -28,10 +28,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ConfigurationPropertiesTest {
+class ConfigurationPropertiesTest {
     
     @Test
-    public void assertGetValue() {
+    void assertGetValue() {
         ConfigurationProperties actual = new ConfigurationProperties(createProperties());
         assertThat(actual.getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(LoggerLevel.DEBUG));
         assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.SQL_SHOW));
@@ -76,7 +76,7 @@ public final class ConfigurationPropertiesTest {
     }
     
     @Test
-    public void assertGetDefaultValue() {
+    void assertGetDefaultValue() {
         ConfigurationProperties actual = new ConfigurationProperties(new Properties());
         assertThat(actual.getValue(ConfigurationPropertyKey.SYSTEM_LOG_LEVEL), is(LoggerLevel.INFO));
         assertFalse((Boolean) actual.getValue(ConfigurationPropertyKey.SQL_SHOW));

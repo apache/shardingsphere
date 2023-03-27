@@ -19,8 +19,6 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
-import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.jupiter.api.Test;
@@ -39,10 +37,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class ResultSetAdapterTest {
+class ResultSetAdapterTest {
     
     @Test
-    public void assertClose() throws SQLException {
+    void assertClose() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         ShardingSphereResultSet actual = mockShardingSphereResultSet(resultSet);
         actual.close();
@@ -51,7 +49,7 @@ public final class ResultSetAdapterTest {
     }
     
     @Test
-    public void assertSetFetchDirection() throws SQLException {
+    void assertSetFetchDirection() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         ShardingSphereResultSet actual = mockShardingSphereResultSet(resultSet);
         actual.setFetchDirection(ResultSet.FETCH_REVERSE);
@@ -59,7 +57,7 @@ public final class ResultSetAdapterTest {
     }
     
     @Test
-    public void assertSetFetchSize() throws SQLException {
+    void assertSetFetchSize() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         ShardingSphereResultSet actual = mockShardingSphereResultSet(resultSet);
         actual.setFetchSize(100);
@@ -67,7 +65,7 @@ public final class ResultSetAdapterTest {
     }
     
     @Test
-    public void assertGetType() throws SQLException {
+    void assertGetType() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getType()).thenReturn(ResultSet.TYPE_FORWARD_ONLY);
         ShardingSphereResultSet actual = mockShardingSphereResultSet(resultSet);
@@ -75,7 +73,7 @@ public final class ResultSetAdapterTest {
     }
     
     @Test
-    public void assertGetConcurrency() throws SQLException {
+    void assertGetConcurrency() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getConcurrency()).thenReturn(ResultSet.CONCUR_READ_ONLY);
         ShardingSphereResultSet actual = mockShardingSphereResultSet(resultSet);
@@ -83,12 +81,12 @@ public final class ResultSetAdapterTest {
     }
     
     @Test
-    public void assertGetStatement() throws SQLException {
+    void assertGetStatement() throws SQLException {
         assertNotNull(mockShardingSphereResultSet(mock(ResultSet.class)).getStatement());
     }
     
     @Test
-    public void assertClearWarnings() throws SQLException {
+    void assertClearWarnings() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         ShardingSphereResultSet actual = mockShardingSphereResultSet(resultSet);
         actual.clearWarnings();
@@ -96,12 +94,12 @@ public final class ResultSetAdapterTest {
     }
     
     @Test
-    public void assertGetMetaData() throws SQLException {
+    void assertGetMetaData() throws SQLException {
         assertThat(mockShardingSphereResultSet(mock(ResultSet.class)).getMetaData().getColumnLabel(1), is("col"));
     }
     
     @Test
-    public void assertFindColumn() throws SQLException {
+    void assertFindColumn() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.findColumn("col")).thenReturn(1);
         ShardingSphereResultSet actual = mockShardingSphereResultSet(resultSet);
@@ -113,16 +111,7 @@ public final class ResultSetAdapterTest {
         when(resultSetMetaData.getColumnLabel(1)).thenReturn("col");
         when(resultSetMetaData.getColumnCount()).thenReturn(1);
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
-        return new ShardingSphereResultSet(Collections.singletonList(resultSet), mock(MergedResult.class), mock(ShardingSphereStatement.class, RETURNS_DEEP_STUBS), createExecutionContext());
-    }
-    
-    private ExecutionContext createExecutionContext() {
-        ExecutionContext result = mock(ExecutionContext.class);
-        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class);
-        TablesContext tablesContext = mock(TablesContext.class);
-        when(tablesContext.getTableNames()).thenReturn(Collections.emptyList());
-        when(sqlStatementContext.getTablesContext()).thenReturn(tablesContext);
-        when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        return result;
+        return new ShardingSphereResultSet(Collections.singletonList(resultSet), mock(MergedResult.class), mock(ShardingSphereStatement.class, RETURNS_DEEP_STUBS),
+                true, mock(ExecutionContext.class));
     }
 }

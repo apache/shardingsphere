@@ -27,16 +27,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ShardingSphereStatementTest extends AbstractShardingSphereDataSourceForShardingTest {
+class ShardingSphereStatementTest extends AbstractShardingSphereDataSourceForShardingTest {
     
     @Test
-    public void assertGetGeneratedKeys() throws SQLException {
+    void assertGetGeneratedKeys() throws SQLException {
         String sql = "INSERT INTO t_order_item(order_id, user_id, status) VALUES (%d, %d, '%s')";
         try (
                 Connection connection = getShardingSphereDataSource().getConnection();
@@ -67,7 +67,7 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
     }
     
     @Test
-    public void assertAddGetGeneratedKeysForNoGeneratedValues() throws SQLException {
+    void assertAddGetGeneratedKeysForNoGeneratedValues() throws SQLException {
         String sql = "INSERT INTO t_product (product_name) VALUES ('%s')";
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
             statement.execute(String.format(sql, "cup"), Statement.RETURN_GENERATED_KEYS);
@@ -78,21 +78,21 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
     }
     
     @Test
-    public void assertQueryWithNull() throws SQLException {
+    void assertQueryWithNull() throws SQLException {
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
             assertThrows(SQLException.class, () -> statement.executeQuery(null));
         }
     }
     
     @Test
-    public void assertQueryWithEmptyString() throws SQLException {
+    void assertQueryWithEmptyString() throws SQLException {
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
             assertThrows(SQLException.class, () -> statement.executeQuery(""));
         }
     }
     
     @Test
-    public void assertExecuteGetResultSet() throws SQLException {
+    void assertExecuteGetResultSet() throws SQLException {
         String sql = "UPDATE t_order_item SET status = '%s' WHERE user_id = %d AND order_id = %d";
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
             assertFalse(statement.execute(String.format(sql, "OK", 1, 1)));
@@ -101,7 +101,7 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
     }
     
     @Test
-    public void assertExecuteUpdateGetResultSet() throws SQLException {
+    void assertExecuteUpdateGetResultSet() throws SQLException {
         String sql = "UPDATE t_order_item SET status = '%s' WHERE user_id = %d AND order_id = %d";
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
             statement.executeUpdate(String.format(sql, "OK", 1, 1));
@@ -110,7 +110,7 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
     }
     
     @Test
-    public void assertColumnNotFoundException() throws SQLException {
+    void assertColumnNotFoundException() throws SQLException {
         String sql = "UPDATE t_order_item SET error_column = '%s'";
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
             assertThrows(SQLException.class, () -> statement.executeUpdate(String.format(sql, "OK")));
@@ -118,12 +118,24 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
     }
     
     @Test
-    public void assertShowDatabases() throws SQLException {
+    void assertShowDatabases() throws SQLException {
         String sql = "SHOW DATABASES";
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
             ResultSet resultSet = statement.executeQuery(sql);
             assertTrue(resultSet.next());
             assertThat(resultSet.getString(1), is(DefaultDatabase.LOGIC_NAME));
+        }
+    }
+    
+    @Test
+    void assertExecuteBatch() throws SQLException {
+        try (Connection connection = getShardingSphereDataSource().getConnection(); Statement statement = connection.createStatement()) {
+            statement.addBatch("UPDATE t_order SET status = 'closed' WHERE order_id = 1001");
+            statement.addBatch("UPDATE t_order SET status = 'closed' WHERE order_id = 1100 OR order_id = 1101");
+            statement.addBatch("DELETE FROM t_order WHERE order_id = 1000");
+            assertThat(statement.executeBatch(), is(new int[]{1, 2, 1}));
+            statement.clearBatch();
+            assertThat(statement.executeBatch(), is(new int[0]));
         }
     }
 }

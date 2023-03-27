@@ -31,18 +31,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class SQLRegexTrafficAlgorithmTest {
+class SQLRegexTrafficAlgorithmTest {
     
     private SQLRegexTrafficAlgorithm sqlRegexAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         sqlRegexAlgorithm = (SQLRegexTrafficAlgorithm) TypedSPILoader.getService(
                 TrafficAlgorithm.class, "SQL_REGEX", PropertiesBuilder.build(new Property("regex", "(?i)^(UPDATE|SELECT).*WHERE user_id.*")));
     }
     
     @Test
-    public void assertMatchWhenExistSQLRegexMatch() {
+    void assertMatchWhenExistSQLRegexMatch() {
         SQLStatement sqlStatement = mock(SelectStatement.class);
         assertTrue(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE t_order SET order_id = ? WHERE user_id = ?;")));
         assertTrue(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "update `t_order`  SET `order_id` = ? WHERE user_id = ?;")));
@@ -51,7 +51,7 @@ public final class SQLRegexTrafficAlgorithmTest {
     }
     
     @Test
-    public void assertMatchWhenNotExistSQLRegexMatch() {
+    void assertMatchWhenNotExistSQLRegexMatch() {
         SQLStatement sqlStatement = mock(SelectStatement.class);
         assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "SELECT * FROM t_order")));
         assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "select *  from  t_order;")));

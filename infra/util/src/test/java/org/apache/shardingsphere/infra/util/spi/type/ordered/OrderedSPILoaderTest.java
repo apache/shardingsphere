@@ -35,16 +35,16 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class OrderedSPILoaderTest {
+class OrderedSPILoaderTest {
     
     @AfterEach
-    public void cleanCache() throws ReflectiveOperationException {
+    void cleanCache() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(OrderedServicesCache.class.getDeclaredField("cache"), OrderedServicesCache.class, new SoftReference<>(new ConcurrentHashMap<>()));
     }
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertGetServicesByClass() {
+    void assertGetServicesByClass() {
         Map<Class<?>, OrderedSPIFixture> actual = OrderedSPILoader.getServicesByClass(OrderedSPIFixture.class, Collections.singleton(OrderedInterfaceFixtureImpl.class));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(OrderedInterfaceFixtureImpl.class), instanceOf(OrderedSPIFixtureImpl.class));
@@ -52,7 +52,7 @@ public final class OrderedSPILoaderTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertGetServices() {
+    void assertGetServices() {
         OrderedInterfaceFixtureImpl key = new OrderedInterfaceFixtureImpl();
         Map<OrderedInterfaceFixtureImpl, OrderedSPIFixture> actual = OrderedSPILoader.getServices(OrderedSPIFixture.class, Collections.singleton(key));
         assertThat(actual.size(), is(1));
@@ -60,7 +60,7 @@ public final class OrderedSPILoaderTest {
     }
     
     @Test
-    public void assertGetServicesFromCache() {
+    void assertGetServicesFromCache() {
         OrderedInterfaceFixture key = new OrderedInterfaceFixtureImpl();
         assertThat(OrderedSPILoader.getServices(OrderedSPIFixture.class, Collections.singleton(key)),
                 is(OrderedSPILoader.getServices(OrderedSPIFixture.class, Collections.singleton(key))));

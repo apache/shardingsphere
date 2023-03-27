@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class RetryExecutorTest {
+class RetryExecutorTest {
     
     @Test
-    public void assertExecuteForOnce() {
+    void assertExecuteForOnce() {
         long timeout = 5L;
         long target = 10L;
         RetryFunctionFixture withFunc = new RetryFunctionFixture(target);
@@ -36,7 +36,7 @@ public final class RetryExecutorTest {
     }
     
     @Test
-    public void assertExecuteForInProgress() {
+    void assertExecuteForInProgress() {
         long timeout = 5L;
         long target = 20L;
         RetryFunctionFixture withFunc = new RetryFunctionFixture(target);
@@ -46,7 +46,7 @@ public final class RetryExecutorTest {
     }
     
     @Test
-    public void assertExecuteForTimeout() {
+    void assertExecuteForTimeout() {
         long timeout = 5L;
         long target = 100L;
         RetryFunctionFixture withFunc = new RetryFunctionFixture(target);
@@ -56,7 +56,7 @@ public final class RetryExecutorTest {
     }
     
     @Test
-    public void assertExecuteForWait() {
+    void assertExecuteForWait() {
         long timeout = -1L;
         long target = 100L;
         RetryFunctionFixture withFunc = new RetryFunctionFixture(target);

@@ -31,7 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class PropertiesPersistServiceTest {
+class PropertiesPersistServiceTest {
     
     private static final String PROPS_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": false\n";
     
@@ -39,7 +39,7 @@ public final class PropertiesPersistServiceTest {
     private PersistRepository repository;
     
     @Test
-    public void assertLoad() {
+    void assertLoad() {
         when(repository.getDirectly("/props")).thenReturn(PROPS_YAML);
         Properties actual = new PropertiesPersistService(repository).load();
         assertThat(actual.get(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.FALSE));

@@ -40,10 +40,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowShadowRuleExecutorTest {
+class ShowShadowRuleExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         RQLExecutor<ShowShadowRulesStatement> executor = new ShowShadowRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowShadowRulesStatement.class));
         assertThat(actual.size(), is(1));
@@ -56,7 +56,7 @@ public final class ShowShadowRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         RQLExecutor<ShowShadowRulesStatement> executor = new ShowShadowRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(4));

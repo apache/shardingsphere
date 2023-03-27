@@ -32,11 +32,11 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class SingleRuleBuilderTest {
+class SingleRuleBuilderTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class).iterator().next();
         DatabaseRule actual = builder.build(mock(SingleRuleConfiguration.class), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), mock(InstanceContext.class));
         assertThat(actual, instanceOf(SingleRule.class));
@@ -44,7 +44,7 @@ public final class SingleRuleBuilderTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertBuildWithDefaultDataSource() {
+    void assertBuildWithDefaultDataSource() {
         DatabaseRuleBuilder builder = OrderedSPILoader.getServices(DatabaseRuleBuilder.class).iterator().next();
         DatabaseRule actual = builder.build(
                 new SingleRuleConfiguration("foo_ds"), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), mock(InstanceContext.class));

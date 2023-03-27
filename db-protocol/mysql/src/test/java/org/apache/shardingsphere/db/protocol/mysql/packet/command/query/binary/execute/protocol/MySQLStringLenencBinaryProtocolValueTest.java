@@ -29,25 +29,25 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLStringLenencBinaryProtocolValueTest {
+class MySQLStringLenencBinaryProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertRead() {
+    void assertRead() {
         when(payload.readStringLenenc()).thenReturn("value");
         assertThat(new MySQLStringLenencBinaryProtocolValue().read(payload, false), is("value"));
     }
     
     @Test
-    public void assertWriteString() {
+    void assertWriteString() {
         new MySQLStringLenencBinaryProtocolValue().write(payload, "value");
         verify(payload).writeStringLenenc("value");
     }
     
     @Test
-    public void assertWriteByteArray() {
+    void assertWriteByteArray() {
         new MySQLStringLenencBinaryProtocolValue().write(payload, new byte[]{});
         verify(payload).writeBytesLenenc(new byte[]{});
     }

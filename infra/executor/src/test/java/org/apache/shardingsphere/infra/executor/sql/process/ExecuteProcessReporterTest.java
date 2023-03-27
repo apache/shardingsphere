@@ -41,18 +41,18 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ShowProcessListManager.class)
-public final class ExecuteProcessReporterTest {
+class ExecuteProcessReporterTest {
     
     @Mock
     private ShowProcessListManager showProcessListManager;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(ShowProcessListManager.getInstance()).thenReturn(showProcessListManager);
     }
     
     @Test
-    public void assertReport() {
+    void assertReport() {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
         new ExecuteProcessReporter().report(new QueryContext(null, null, null), executionGroupContext, ExecuteProcessStatusEnum.START);
         verify(showProcessListManager).putProcessContext(eq(executionGroupContext.getReportContext().getExecutionID()), any());
@@ -68,7 +68,7 @@ public final class ExecuteProcessReporterTest {
     }
     
     @Test
-    public void assertReportUnit() {
+    void assertReportUnit() {
         SQLExecutionUnit sqlExecutionUnit = mock(SQLExecutionUnit.class);
         when(sqlExecutionUnit.getExecutionUnit()).thenReturn(mock(ExecutionUnit.class));
         when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ExecuteProcessContext.class));
@@ -77,7 +77,7 @@ public final class ExecuteProcessReporterTest {
     }
     
     @Test
-    public void assertReportClean() {
+    void assertReportClean() {
         when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ExecuteProcessContext.class));
         new ExecuteProcessReporter().reportClean("foo_id");
         verify(showProcessListManager).removeProcessStatement("foo_id");

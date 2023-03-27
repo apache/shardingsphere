@@ -30,12 +30,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class JDBCQueryResultMetaDataTest {
+class JDBCQueryResultMetaDataTest {
     
     private JDBCQueryResultMetaData queryResultMetaData;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         queryResultMetaData = new JDBCQueryResultMetaData(mockResultSetMetaData());
     }
     
@@ -56,57 +56,57 @@ public final class JDBCQueryResultMetaDataTest {
     }
     
     @Test
-    public void assertGetColumnCount() throws SQLException {
+    void assertGetColumnCount() throws SQLException {
         assertThat(queryResultMetaData.getColumnCount(), is(1));
     }
     
     @Test
-    public void assertGetColumnName() throws SQLException {
+    void assertGetColumnName() throws SQLException {
         assertThat(queryResultMetaData.getColumnName(1), is("order_id"));
     }
     
     @Test
-    public void assertGetColumnLabel() throws SQLException {
+    void assertGetColumnLabel() throws SQLException {
         assertThat(queryResultMetaData.getColumnLabel(1), is("oid"));
     }
     
     @Test
-    public void assertGetColumnTypeName() throws SQLException {
+    void assertGetColumnTypeName() throws SQLException {
         assertThat(queryResultMetaData.getColumnTypeName(1), is("INT"));
     }
     
     @Test
-    public void assertGetTableName() throws SQLException {
+    void assertGetTableName() throws SQLException {
         assertThat(queryResultMetaData.getTableName(1), is("order"));
     }
     
     @Test
-    public void assertGetColumnType() throws SQLException {
+    void assertGetColumnType() throws SQLException {
         assertThat(queryResultMetaData.getColumnType(1), is(Types.INTEGER));
     }
     
     @Test
-    public void assertGetColumnLength() throws SQLException {
+    void assertGetColumnLength() throws SQLException {
         assertThat(queryResultMetaData.getColumnLength(1), is(10));
     }
     
     @Test
-    public void assertGetDecimals() throws SQLException {
+    void assertGetDecimals() throws SQLException {
         assertThat(queryResultMetaData.getDecimals(1), is(0));
     }
     
     @Test
-    public void assertIsSigned() throws SQLException {
+    void assertIsSigned() throws SQLException {
         assertTrue(queryResultMetaData.isSigned(1));
     }
     
     @Test
-    public void assertIsNotNull() throws SQLException {
+    void assertIsNotNull() throws SQLException {
         assertTrue(queryResultMetaData.isNotNull(1));
     }
     
     @Test
-    public void assertIsAutoIncrement() throws SQLException {
+    void assertIsAutoIncrement() throws SQLException {
         assertTrue(queryResultMetaData.isAutoIncrement(1));
     }
 }

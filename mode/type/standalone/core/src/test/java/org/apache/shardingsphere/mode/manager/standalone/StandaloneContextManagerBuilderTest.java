@@ -42,10 +42,10 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
-public final class StandaloneContextManagerBuilderTest {
+class StandaloneContextManagerBuilderTest {
     
     @Test
-    public void assertBuild() throws SQLException {
+    void assertBuild() throws SQLException {
         ContextManager actual = new StandaloneContextManagerBuilder().build(createContextManagerBuilderParameter());
         assertNotNull(actual.getMetaDataContexts().getMetaData().getDatabase("foo_db"));
         PersistRepository repository = actual.getMetaDataContexts().getPersistService().getRepository();

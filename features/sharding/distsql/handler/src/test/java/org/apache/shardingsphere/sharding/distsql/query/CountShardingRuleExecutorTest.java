@@ -42,10 +42,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class CountShardingRuleExecutorTest {
+class CountShardingRuleExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         RQLExecutor<CountShardingRuleStatement> executor = new CountShardingRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountShardingRuleStatement.class));
         assertThat(actual.size(), is(3));
@@ -65,7 +65,7 @@ public final class CountShardingRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         RQLExecutor<CountShardingRuleStatement> executor = new CountShardingRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));

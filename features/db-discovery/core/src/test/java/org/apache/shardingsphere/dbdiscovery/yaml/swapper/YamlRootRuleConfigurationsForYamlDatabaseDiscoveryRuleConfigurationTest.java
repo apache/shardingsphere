@@ -33,10 +33,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public final class YamlRootRuleConfigurationsForYamlDatabaseDiscoveryRuleConfigurationTest {
+class YamlRootRuleConfigurationsForYamlDatabaseDiscoveryRuleConfigurationTest {
     
     @Test
-    public void assertUnmarshalWithYamlFile() throws IOException {
+    void assertUnmarshalWithYamlFile() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/db-discovery-rule.yaml");
         assertNotNull(url);
         YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
@@ -45,7 +45,7 @@ public final class YamlRootRuleConfigurationsForYamlDatabaseDiscoveryRuleConfigu
     }
     
     @Test
-    public void assertUnmarshalWithYamlBytes() throws IOException {
+    void assertUnmarshalWithYamlBytes() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/db-discovery-rule.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();

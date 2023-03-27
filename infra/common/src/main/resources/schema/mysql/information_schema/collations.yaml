@@ -35,7 +35,7 @@ columns:
     visible: true
   id:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: ID
     primaryKey: false
@@ -59,7 +59,7 @@ columns:
     visible: true
   sortlen:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: SORTLEN
     primaryKey: false

@@ -28,10 +28,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DefaultSQLBuilderTest {
+class DefaultSQLBuilderTest {
     
     @Test
-    public void assertToSQLWithEmptySQLToken() {
+    void assertToSQLWithEmptySQLToken() {
         SQLRewriteContext context = mock(SQLRewriteContext.class);
         when(context.getSql()).thenReturn("SELECT * FROM tbl WHERE id=?");
         when(context.getSqlTokens()).thenReturn(Collections.emptyList());
@@ -39,7 +39,7 @@ public final class DefaultSQLBuilderTest {
     }
     
     @Test
-    public void assertToSQLWithSQLToken() {
+    void assertToSQLWithSQLToken() {
         SQLRewriteContext context = mock(SQLRewriteContext.class);
         when(context.getSql()).thenReturn("SELECT * FROM tbl WHERE id=?");
         when(context.getSqlTokens()).thenReturn(Collections.singletonList(new SQLTokenFixture(14, 16)));

@@ -37,10 +37,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ConstraintTokenGeneratorTest {
+class ConstraintTokenGeneratorTest {
     
     @Test
-    public void assertIsGenerateSQLToken() {
+    void assertIsGenerateSQLToken() {
         ConstraintTokenGenerator generator = new ConstraintTokenGenerator();
         assertFalse(generator.isGenerateSQLToken(mock(CreateDatabaseStatementContext.class)));
         AlterTableStatementContext alterTableStatementContext = mock(AlterTableStatementContext.class);
@@ -52,7 +52,7 @@ public final class ConstraintTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLTokens() {
+    void assertGenerateSQLTokens() {
         ConstraintSegment constraintSegment = mock(ConstraintSegment.class);
         when(constraintSegment.getStartIndex()).thenReturn(1);
         when(constraintSegment.getStopIndex()).thenReturn(3);

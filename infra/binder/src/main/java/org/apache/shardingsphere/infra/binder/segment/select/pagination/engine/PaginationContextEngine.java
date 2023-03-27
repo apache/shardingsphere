@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.to
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
@@ -75,7 +75,7 @@ public final class PaginationContextEngine {
     }
     
     private Optional<TopProjectionSegment> findTopProjection(final SelectStatement selectStatement) {
-        List<SubqueryTableSegment> subqueryTableSegments = SQLUtil.getSubqueryTableSegmentFromTableSegment(selectStatement.getFrom());
+        List<SubqueryTableSegment> subqueryTableSegments = SQLUtils.getSubqueryTableSegmentFromTableSegment(selectStatement.getFrom());
         for (SubqueryTableSegment subquery : subqueryTableSegments) {
             SelectStatement subquerySelect = subquery.getSubquery().getSelect();
             for (ProjectionSegment each : subquerySelect.getProjections().getProjections()) {

@@ -115,7 +115,7 @@ public final class MigrationJobPreparer {
                 lockContext.unlock(lockDefinition);
             }
         } else {
-            log.warn("jobId={}, shardingItem={} try lock failed", jobConfig.getJobId(), jobItemContext.getShardingItem());
+            log.warn("try lock failed, jobId={}, shardingItem={}", jobConfig.getJobId(), jobItemContext.getShardingItem());
         }
     }
     
@@ -124,7 +124,7 @@ public final class MigrationJobPreparer {
             prepareTarget(jobItemContext);
         }
         InventoryIncrementalJobItemProgress initProgress = jobItemContext.getInitProgress();
-        if (null == initProgress || initProgress.getStatus() == JobStatus.PREPARING_FAILURE) {
+        if (null == initProgress) {
             PipelineDataSourceWrapper targetDataSource = ((PipelineDataSourceManager) jobItemContext.getImporterConnector().getConnector())
                     .getDataSource(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
             PipelineJobPreparerUtils.checkTargetDataSource(jobItemContext.getJobConfig().getTargetDatabaseType(), jobItemContext.getTaskConfig().getImporterConfig(),

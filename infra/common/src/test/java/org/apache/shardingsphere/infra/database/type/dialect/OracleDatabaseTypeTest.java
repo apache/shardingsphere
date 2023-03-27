@@ -34,49 +34,49 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class OracleDatabaseTypeTest {
+class OracleDatabaseTypeTest {
     
     @Test
-    public void assertGetQuoteCharacter() {
+    void assertGetQuoteCharacter() {
         assertThat(new OracleDatabaseType().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
     }
     
     @Test
-    public void assertGetJdbcUrlPrefixes() {
+    void assertGetJdbcUrlPrefixes() {
         assertThat(new OracleDatabaseType().getJdbcUrlPrefixes(), is(Collections.singleton("jdbc:oracle:")));
     }
     
     @Test
-    public void assertOracleDataSourceMetaData() {
+    void assertOracleDataSourceMetaData() {
         assertThat(new OracleDatabaseType().getDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/foo_ds", "scott"), instanceOf(OracleDataSourceMetaData.class));
     }
     
     @Test
-    public void assertGetSchema() throws SQLException {
+    void assertGetSchema() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getUserName()).thenReturn("scott");
         assertThat(new OracleDatabaseType().getSchema(connection), is("SCOTT"));
     }
     
     @Test
-    public void assertGetSchemaIfExceptionThrown() throws SQLException {
+    void assertGetSchemaIfExceptionThrown() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getUserName()).thenThrow(SQLException.class);
         assertNull(new OracleDatabaseType().getSchema(connection));
     }
     
     @Test
-    public void assertFormatTableNamePattern() {
+    void assertFormatTableNamePattern() {
         assertThat(new OracleDatabaseType().formatTableNamePattern("tbl"), is("TBL"));
     }
     
     @Test
-    public void assertGetSystemDatabases() {
+    void assertGetSystemDatabases() {
         assertTrue(new OracleDatabaseType().getSystemDatabaseSchemaMap().isEmpty());
     }
     
     @Test
-    public void assertGetSystemSchemas() {
+    void assertGetSystemSchemas() {
         assertTrue(new OracleDatabaseType().getSystemSchemas().isEmpty());
     }
 }

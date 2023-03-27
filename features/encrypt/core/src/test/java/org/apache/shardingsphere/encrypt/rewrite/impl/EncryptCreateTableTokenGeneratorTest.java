@@ -46,18 +46,18 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class EncryptCreateTableTokenGeneratorTest {
+class EncryptCreateTableTokenGeneratorTest {
     
     private EncryptCreateTableTokenGenerator generator;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         generator = new EncryptCreateTableTokenGenerator();
         generator.setEncryptRule(buildEncryptRule());
     }
     
     @Test
-    public void assertGenerateSQLTokens() {
+    void assertGenerateSQLTokens() {
         Collection<SQLToken> sqlTokens = generator.generateSQLTokens(buildCreateTableStatementContext());
         assertThat(sqlTokens.size(), is(5));
         Iterator<SQLToken> iterator = sqlTokens.iterator();

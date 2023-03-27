@@ -31,10 +31,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class LocalDataMergedResultTest {
+class LocalDataMergedResultTest {
     
     @Test
-    public void assertNext() {
+    void assertNext() {
         LocalDataQueryResultRow row = new LocalDataQueryResultRow("value");
         LocalDataMergedResult actual = new LocalDataMergedResult(Collections.singletonList(row));
         assertTrue(actual.next());
@@ -42,7 +42,7 @@ public final class LocalDataMergedResultTest {
     }
     
     @Test
-    public void assertGetValue() {
+    void assertGetValue() {
         LocalDataQueryResultRow row = new LocalDataQueryResultRow("value");
         LocalDataMergedResult actual = new LocalDataMergedResult(Collections.singletonList(row));
         assertTrue(actual.next());
@@ -50,7 +50,7 @@ public final class LocalDataMergedResultTest {
     }
     
     @Test
-    public void assertGetCalendarValue() {
+    void assertGetCalendarValue() {
         LocalDataQueryResultRow row = new LocalDataQueryResultRow(new Date(0L));
         LocalDataMergedResult actual = new LocalDataMergedResult(Collections.singletonList(row));
         assertTrue(actual.next());
@@ -58,14 +58,14 @@ public final class LocalDataMergedResultTest {
     }
     
     @Test
-    public void assertGetInputStream() {
+    void assertGetInputStream() {
         List<Object> row = Collections.singletonList("value");
         LocalDataMergedResult actual = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow(row)));
         assertThrows(SQLFeatureNotSupportedException.class, () -> actual.getInputStream(1, "Ascii"));
     }
     
     @Test
-    public void assertWasNull() {
+    void assertWasNull() {
         List<Object> row = Collections.singletonList("value");
         LocalDataMergedResult actual = new LocalDataMergedResult(Collections.singletonList(new LocalDataQueryResultRow(row)));
         assertTrue(actual.next());

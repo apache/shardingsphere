@@ -59,12 +59,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class OrderByStreamMergedResultTest {
+class OrderByStreamMergedResultTest {
     
     private SelectStatementContext selectStatementContext;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl")));
         selectStatement.setFrom(tableSegment);
@@ -84,7 +84,7 @@ public final class OrderByStreamMergedResultTest {
     }
     
     @Test
-    public void assertNextForResultSetsAllEmpty() throws SQLException {
+    void assertNextForResultSetsAllEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         MergedResult actual = resultMerger.merge(queryResults, selectStatementContext, createDatabase(), mock(ConnectionContext.class));
@@ -92,7 +92,7 @@ public final class OrderByStreamMergedResultTest {
     }
     
     @Test
-    public void assertNextForSomeResultSetsEmpty() throws SQLException {
+    void assertNextForSomeResultSetsEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         for (int i = 0; i < 3; i++) {
             QueryResultMetaData metaData = mock(QueryResultMetaData.class);
@@ -116,7 +116,7 @@ public final class OrderByStreamMergedResultTest {
     }
     
     @Test
-    public void assertNextForMix() throws SQLException {
+    void assertNextForMix() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         for (int i = 0; i < 3; i++) {
             QueryResultMetaData metaData = mock(QueryResultMetaData.class);
@@ -148,7 +148,7 @@ public final class OrderByStreamMergedResultTest {
     }
     
     @Test
-    public void assertNextForCaseSensitive() throws SQLException {
+    void assertNextForCaseSensitive() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         for (int i = 0; i < 3; i++) {
             QueryResultMetaData metaData = mock(QueryResultMetaData.class);
@@ -176,7 +176,7 @@ public final class OrderByStreamMergedResultTest {
     }
     
     @Test
-    public void assertNextForCaseInsensitive() throws SQLException {
+    void assertNextForCaseInsensitive() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class), mock(QueryResult.class), mock(QueryResult.class));
         for (int i = 0; i < 3; i++) {
             QueryResultMetaData metaData = mock(QueryResultMetaData.class);

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -52,7 +52,7 @@ public final class ShowIndexMergedResult extends MemoryMergedResult<ShardingRule
                 String actualIndexName = memoryResultSetRow.getCell(3).toString();
                 Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
                 tableRule.ifPresent(optional -> memoryResultSetRow.setCell(1, optional.getLogicTable()));
-                memoryResultSetRow.setCell(3, IndexMetaDataUtil.getLogicIndexName(actualIndexName, actualTableName));
+                memoryResultSetRow.setCell(3, IndexMetaDataUtils.getLogicIndexName(actualIndexName, actualTableName));
                 result.add(memoryResultSetRow);
             }
         }

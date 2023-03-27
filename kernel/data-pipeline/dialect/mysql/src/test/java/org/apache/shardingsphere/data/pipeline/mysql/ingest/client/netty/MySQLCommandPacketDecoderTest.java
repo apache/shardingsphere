@@ -41,7 +41,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLCommandPacketDecoderTest {
+class MySQLCommandPacketDecoderTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext channelHandlerContext;
@@ -50,12 +50,12 @@ public final class MySQLCommandPacketDecoderTest {
     private ByteBuf byteBuf;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
     }
     
     @Test
-    public void assertDecodeOkPacket() {
+    void assertDecodeOkPacket() {
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
         List<Object> actual = new LinkedList<>();
         commandPacketDecoder.decode(channelHandlerContext, mockOkPacket(), actual);
@@ -69,7 +69,7 @@ public final class MySQLCommandPacketDecoderTest {
     }
     
     @Test
-    public void assertDecodeErrPacket() {
+    void assertDecodeErrPacket() {
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
         List<Object> actual = new LinkedList<>();
         commandPacketDecoder.decode(channelHandlerContext, mockErrPacket(), actual);
@@ -83,7 +83,7 @@ public final class MySQLCommandPacketDecoderTest {
     }
     
     @Test
-    public void assertDecodeQueryCommPacket() {
+    void assertDecodeQueryCommPacket() {
         MySQLCommandPacketDecoder commandPacketDecoder = new MySQLCommandPacketDecoder();
         List<Object> actual = new LinkedList<>();
         commandPacketDecoder.decode(channelHandlerContext, mockEmptyResultSetPacket(), actual);

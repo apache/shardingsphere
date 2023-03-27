@@ -44,10 +44,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingSQLFederationDeciderTest {
+class ShardingSQLFederationDeciderTest {
     
     @Test
-    public void assertDecideWhenNotContainsShardingTable() {
+    void assertDecideWhenNotContainsShardingTable() {
         ShardingSQLFederationDecider federationDecider = new ShardingSQLFederationDecider();
         SelectStatementContext select = createStatementContext();
         ShardingRule rule = mock(ShardingRule.class);
@@ -60,7 +60,7 @@ public final class ShardingSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenContainsSameShardingCondition() {
+    void assertDecideWhenContainsSameShardingCondition() {
         SelectStatementContext select = createStatementContext();
         when(select.isContainsSubquery()).thenReturn(true);
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
@@ -71,7 +71,7 @@ public final class ShardingSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenContainsSubquery() {
+    void assertDecideWhenContainsSubquery() {
         SelectStatementContext select = createStatementContext();
         when(select.isContainsSubquery()).thenReturn(true);
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
@@ -83,7 +83,7 @@ public final class ShardingSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenContainsHaving() {
+    void assertDecideWhenContainsHaving() {
         SelectStatementContext select = createStatementContext();
         when(select.isContainsHaving()).thenReturn(true);
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
@@ -95,7 +95,7 @@ public final class ShardingSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenContainsCombine() {
+    void assertDecideWhenContainsCombine() {
         SelectStatementContext select = createStatementContext();
         when(select.isContainsCombine()).thenReturn(true);
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
@@ -107,7 +107,7 @@ public final class ShardingSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenContainsPartialDistinctAggregation() {
+    void assertDecideWhenContainsPartialDistinctAggregation() {
         SelectStatementContext select = createStatementContext();
         when(select.isContainsPartialDistinctAggregation()).thenReturn(true);
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
@@ -119,7 +119,7 @@ public final class ShardingSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenAllTablesInSameDataSource() {
+    void assertDecideWhenAllTablesInSameDataSource() {
         SelectStatementContext select = createStatementContext();
         when(select.isContainsJoinQuery()).thenReturn(true);
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
@@ -133,7 +133,7 @@ public final class ShardingSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenAllTablesIsBindingTables() {
+    void assertDecideWhenAllTablesIsBindingTables() {
         SelectStatementContext select = createStatementContext();
         when(select.isContainsJoinQuery()).thenReturn(true);
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
@@ -148,7 +148,7 @@ public final class ShardingSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenAllTablesIsNotBindingTables() {
+    void assertDecideWhenAllTablesIsNotBindingTables() {
         SelectStatementContext select = createStatementContext();
         when(select.isContainsJoinQuery()).thenReturn(true);
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
@@ -163,7 +163,7 @@ public final class ShardingSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenAllTablesIsNotBindingTablesAndContainsPagination() {
+    void assertDecideWhenAllTablesIsNotBindingTablesAndContainsPagination() {
         SelectStatementContext select = createStatementContext();
         when(select.isContainsJoinQuery()).thenReturn(true);
         when(select.getPaginationContext().isHasPagination()).thenReturn(true);

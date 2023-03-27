@@ -28,19 +28,13 @@ algorithmDefinition
     ;
 
 algorithmTypeName
-    : STRING_ | buildInAlgorithmTypeName
+    : STRING_ | buildInReadQueryLoadBalanceAlgorithmType
     ;
 
-buildInAlgorithmTypeName
+buildInReadQueryLoadBalanceAlgorithmType
     : ROUND_ROBIN
     | RANDOM
     | WEIGHT
-    | TRANSACTION_RANDOM
-    | TRANSACTION_ROUND_ROBIN
-    | TRANSACTION_WEIGHT
-    | FIXED_REPLICA_RANDOM
-    | FIXED_REPLICA_ROUND_ROBIN
-    | FIXED_REPLICA_WEIGHT
     ;
 
 propertiesDefinition

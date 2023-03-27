@@ -29,7 +29,7 @@ import java.sql.Statement;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ShadowStatementTest extends AbstractShardingSphereDataSourceForShadowTest {
+class ShadowStatementTest extends AbstractShardingSphereDataSourceForShadowTest {
     
     private static final String CLEAN_SQL = "DELETE FROM t_encrypt";
     
@@ -52,7 +52,7 @@ public final class ShadowStatementTest extends AbstractShardingSphereDataSourceF
     private static final String RESULT_SELECT_SQL = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
     
     @AfterEach
-    public void clean() throws SQLException {
+    void clean() throws SQLException {
         try (Statement statement = getActualDataSources().get("shadow_jdbc_0").getConnection().createStatement()) {
             statement.execute(CLEAN_SQL);
         }
@@ -62,7 +62,7 @@ public final class ShadowStatementTest extends AbstractShardingSphereDataSourceF
     }
     
     @Test
-    public void assertInsertNativeCase() throws SQLException {
+    void assertInsertNativeCase() throws SQLException {
         try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(INSERT_SQL);
         }
@@ -84,7 +84,7 @@ public final class ShadowStatementTest extends AbstractShardingSphereDataSourceF
     }
     
     @Test
-    public void assertInsertShadowCase() throws SQLException {
+    void assertInsertShadowCase() throws SQLException {
         try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(INSERT_SHADOW_SQL);
         }
@@ -93,7 +93,7 @@ public final class ShadowStatementTest extends AbstractShardingSphereDataSourceF
     }
     
     @Test
-    public void assertUpdateNativeCase() throws SQLException {
+    void assertUpdateNativeCase() throws SQLException {
         int result;
         try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(INSERT_SQL);
@@ -106,7 +106,7 @@ public final class ShadowStatementTest extends AbstractShardingSphereDataSourceF
     }
     
     @Test
-    public void assertUpdateShadowCase() throws SQLException {
+    void assertUpdateShadowCase() throws SQLException {
         int result;
         try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(INSERT_SHADOW_SQL);
@@ -118,7 +118,7 @@ public final class ShadowStatementTest extends AbstractShardingSphereDataSourceF
     }
     
     @Test
-    public void assertDeleteNativeCase() throws SQLException {
+    void assertDeleteNativeCase() throws SQLException {
         try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(INSERT_SQL);
             statement.execute(INSERT_SHADOW_SQL);
@@ -129,7 +129,7 @@ public final class ShadowStatementTest extends AbstractShardingSphereDataSourceF
     }
     
     @Test
-    public void assertDeleteShadowCase() throws SQLException {
+    void assertDeleteShadowCase() throws SQLException {
         try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(INSERT_SQL);
             statement.execute(INSERT_SHADOW_SQL);
@@ -140,7 +140,7 @@ public final class ShadowStatementTest extends AbstractShardingSphereDataSourceF
     }
     
     @Test
-    public void assertSelectNativeCase() throws SQLException {
+    void assertSelectNativeCase() throws SQLException {
         ResultSet resultSet;
         try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(INSERT_SQL);
@@ -157,7 +157,7 @@ public final class ShadowStatementTest extends AbstractShardingSphereDataSourceF
     }
     
     @Test
-    public void assertSelectShadowCase() throws SQLException {
+    void assertSelectShadowCase() throws SQLException {
         ResultSet resultSet;
         try (Statement statement = getShadowDataSource().getConnection().createStatement()) {
             statement.execute(INSERT_SHADOW_SQL);

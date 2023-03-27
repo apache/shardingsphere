@@ -38,7 +38,7 @@ public final class MySQLTimeBinlogProtocolValue implements MySQLBinlogProtocolVa
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int time = payload.getByteBuf().readUnsignedMediumLE();
         if (0 == time) {
-            return MySQLTimeValueUtil.ZERO_OF_TIME;
+            return MySQLTimeValueUtils.ZERO_OF_TIME;
         }
         int minuteSecond = Math.abs(time) % 10000;
         return String.format("%02d:%02d:%02d", time / 10000, minuteSecond / 100, minuteSecond % 100);

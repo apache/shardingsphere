@@ -26,17 +26,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLCommandPacketTypeLoaderTest {
+class MySQLCommandPacketTypeLoaderTest {
     
     @Test
-    public void assertGetCommandPacketType() {
+    void assertGetCommandPacketType() {
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
         when(payload.readInt1()).thenReturn(MySQLCommandPacketType.COM_QUIT.getValue());
         assertThat(MySQLCommandPacketTypeLoader.getCommandPacketType(payload), is(MySQLCommandPacketType.COM_QUIT));
     }
     
     @Test
-    public void assertGetCommandPacketTypeError() {
+    void assertGetCommandPacketTypeError() {
         MySQLPacketPayload payload = mock(MySQLPacketPayload.class);
         when(payload.readInt1()).thenReturn(0x21);
         assertThrows(NullPointerException.class, () -> MySQLCommandPacketTypeLoader.getCommandPacketType(payload));

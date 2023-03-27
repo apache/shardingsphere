@@ -34,10 +34,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class GeneratedKeyAssignmentTokenGeneratorTest {
+class GeneratedKeyAssignmentTokenGeneratorTest {
     
     @Test
-    public void assertGenerateSQLTokenWithLiteralValue() {
+    void assertGenerateSQLTokenWithLiteralValue() {
         InsertStatementContext insertStatementContext = mockInsertStatementContext();
         GeneratedKeyAssignmentTokenGenerator generator = new GeneratedKeyAssignmentTokenGenerator();
         generator.setParameters(Collections.emptyList());
@@ -45,7 +45,7 @@ public final class GeneratedKeyAssignmentTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLTokenWithPlaceholder() {
+    void assertGenerateSQLTokenWithPlaceholder() {
         InsertStatementContext insertStatementContext = mockInsertStatementContext();
         GeneratedKeyAssignmentTokenGenerator generator = new GeneratedKeyAssignmentTokenGenerator();
         generator.setParameters(Collections.singletonList("testObject"));

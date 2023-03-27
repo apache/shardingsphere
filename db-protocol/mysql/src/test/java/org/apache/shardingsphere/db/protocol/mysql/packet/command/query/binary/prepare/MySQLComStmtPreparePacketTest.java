@@ -29,20 +29,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLComStmtPreparePacketTest {
+class MySQLComStmtPreparePacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertNew() {
+    void assertNew() {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl WHERE id=?");
         MySQLComStmtPreparePacket actual = new MySQLComStmtPreparePacket(payload);
         assertThat(actual.getSql(), is("SELECT id FROM tbl WHERE id=?"));
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         when(payload.readStringEOF()).thenReturn("SELECT id FROM tbl WHERE id=?");
         MySQLComStmtPreparePacket actual = new MySQLComStmtPreparePacket(payload);
         actual.write(payload);

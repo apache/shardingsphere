@@ -86,7 +86,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyBackendHandlerFactory.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class MySQLComStmtExecuteExecutorTest {
+class MySQLComStmtExecuteExecutorTest {
     
     @Mock
     private ProxyBackendHandler proxyBackendHandler;
@@ -98,7 +98,7 @@ public final class MySQLComStmtExecuteExecutorTest {
     private BackendConnection backendConnection;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<?> selectStatementContext = prepareSelectStatementContext();
@@ -134,7 +134,7 @@ public final class MySQLComStmtExecuteExecutorTest {
     }
     
     @Test
-    public void assertIsQueryResponse() throws SQLException {
+    void assertIsQueryResponse() throws SQLException {
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getStatementId()).thenReturn(1);
         MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);
@@ -158,7 +158,7 @@ public final class MySQLComStmtExecuteExecutorTest {
     }
     
     @Test
-    public void assertIsUpdateResponse() throws SQLException {
+    void assertIsUpdateResponse() throws SQLException {
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getStatementId()).thenReturn(2);
         when(packet.getNewParametersBoundFlag()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST);
@@ -172,7 +172,7 @@ public final class MySQLComStmtExecuteExecutorTest {
     }
     
     @Test
-    public void assertExecutePreparedCommit() throws SQLException {
+    void assertExecutePreparedCommit() throws SQLException {
         MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
         when(packet.getStatementId()).thenReturn(3);
         MySQLComStmtExecuteExecutor executor = new MySQLComStmtExecuteExecutor(packet, connectionSession);

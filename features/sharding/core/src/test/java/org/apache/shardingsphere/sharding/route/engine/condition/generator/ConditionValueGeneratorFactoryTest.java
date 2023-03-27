@@ -43,12 +43,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class ConditionValueGeneratorFactoryTest {
+class ConditionValueGeneratorFactoryTest {
     
     private final Column column = new Column("id", "tbl");
     
     @Test
-    public void assertGenerateBinaryOperationExpression() {
+    void assertGenerateBinaryOperationExpression() {
         ConditionValueCompareOperatorGenerator conditionValueCompareOperatorGenerator = new ConditionValueCompareOperatorGenerator();
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, 1), "=", null);
         Optional<ShardingConditionValue> actual = conditionValueCompareOperatorGenerator.generate(rightValue, column, new LinkedList<>(), mock(TimeServiceRule.class));
@@ -59,7 +59,7 @@ public final class ConditionValueGeneratorFactoryTest {
     }
     
     @Test
-    public void assertGenerateInOperationExpression() {
+    void assertGenerateInOperationExpression() {
         ConditionValueInOperatorGenerator conditionValueInOperatorGenerator = new ConditionValueInOperatorGenerator();
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
         ListExpression right = new ListExpression(0, 0);
@@ -74,7 +74,7 @@ public final class ConditionValueGeneratorFactoryTest {
     }
     
     @Test
-    public void assertGenerateBetweenExpression() {
+    void assertGenerateBetweenExpression() {
         ConditionValueBetweenOperatorGenerator conditionValueBetweenOperatorGenerator = new ConditionValueBetweenOperatorGenerator();
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, 1);
         ExpressionSegment andSegment = new LiteralExpressionSegment(0, 0, 2);

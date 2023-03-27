@@ -41,10 +41,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class SQLRouteEngineTest {
+class SQLRouteEngineTest {
     
     @Test
-    public void assertRouteSuccess() {
+    void assertRouteSuccess() {
         QueryContext queryContext = new QueryContext(mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(new RouteRuleFixture()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_schema",
@@ -59,7 +59,7 @@ public final class SQLRouteEngineTest {
     }
     
     @Test
-    public void assertRouteFailure() {
+    void assertRouteFailure() {
         QueryContext queryContext = new QueryContext(mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList());
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(new RouteRuleFixture()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_schema",

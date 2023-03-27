@@ -28,10 +28,10 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PrometheusMetricsGaugeMetricFamilyCollectorTest {
+class PrometheusMetricsGaugeMetricFamilyCollectorTest {
     
     @Test
-    public void assertCreate() throws ReflectiveOperationException {
+    void assertCreate() throws ReflectiveOperationException {
         PrometheusMetricsGaugeMetricFamilyCollector collector = new PrometheusMetricsGaugeMetricFamilyCollector(new MetricConfiguration("foo_gauge_metric_family",
                 MetricCollectorType.GAUGE_METRIC_FAMILY, "foo_help", Collections.emptyList(), Collections.emptyMap()));
         collector.addMetric(Collections.emptyList(), 1d);

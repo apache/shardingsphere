@@ -34,27 +34,27 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ReadwriteSplittingPreparedStatementTest extends AbstractShardingSphereDataSourceForReadwriteSplittingTest {
+class ReadwriteSplittingPreparedStatementTest extends AbstractShardingSphereDataSourceForReadwriteSplittingTest {
     
     @Test
-    public void assertQueryWithNull() {
+    void assertQueryWithNull() {
         assertThrows(SQLException.class, () -> getReadwriteSplittingDataSource().getConnection().prepareStatement(null));
     }
     
     @Test
-    public void assertQueryWithEmptyString() {
+    void assertQueryWithEmptyString() {
         assertThrows(SQLException.class, () -> getReadwriteSplittingDataSource().getConnection().prepareStatement(""));
     }
     
     @Test
-    public void assertGetParameterMetaData() throws SQLException {
+    void assertGetParameterMetaData() throws SQLException {
         try (PreparedStatement preparedStatement = getReadwriteSplittingDataSource().getConnection().prepareStatement("SELECT * FROM t_config where id = ?")) {
             assertThat(preparedStatement.getParameterMetaData().getParameterCount(), is(1));
         }
     }
     
     @Test
-    public void assertGetGeneratedKeys() throws SQLException {
+    void assertGetGeneratedKeys() throws SQLException {
         try (
                 PreparedStatement preparedStatement = getReadwriteSplittingDataSource()
                         .getConnection().prepareStatement("INSERT INTO t_config(status) VALUES(?);", Statement.RETURN_GENERATED_KEYS)) {
@@ -73,7 +73,7 @@ public final class ReadwriteSplittingPreparedStatementTest extends AbstractShard
     }
     
     @Test
-    public void assertGetGeneratedKeysWithPrimaryKeyIsNull() throws SQLException {
+    void assertGetGeneratedKeysWithPrimaryKeyIsNull() throws SQLException {
         try (
                 PreparedStatement preparedStatement = getReadwriteSplittingDataSource()
                         .getConnection().prepareStatement("INSERT INTO t_config(id, status) VALUES(?, ?);", Statement.RETURN_GENERATED_KEYS)) {
@@ -93,7 +93,7 @@ public final class ReadwriteSplittingPreparedStatementTest extends AbstractShard
     }
     
     @Test
-    public void assertGetGeneratedKeysWithPrimaryKeyIsNullInTransactional() throws SQLException {
+    void assertGetGeneratedKeysWithPrimaryKeyIsNullInTransactional() throws SQLException {
         try (
                 Connection connection = getReadwriteSplittingDataSource()
                         .getConnection();

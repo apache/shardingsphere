@@ -36,8 +36,13 @@ public class ClusterReadWriteLockStrategy implements ClusterLockStrategy {
     public void lock() {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         LockContext lockContext = contextManager.getInstanceContext().getLockContext();
-        if (lockContext.tryLock(new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName()), -1)) {
-            contextManager.getInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(ClusterState.UNAVAILABLE));
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
+        if (lockContext.tryLock(lockDefinition, 3000L)) {
+            try {
+                contextManager.getInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(ClusterState.UNAVAILABLE));
+            } finally {
+                lockContext.unlock(lockDefinition);
+            }
         }
     }
     

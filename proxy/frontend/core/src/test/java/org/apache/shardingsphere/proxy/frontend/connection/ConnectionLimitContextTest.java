@@ -33,10 +33,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ConnectionLimitContextTest {
+class ConnectionLimitContextTest {
     
     @Test
-    public void assertConnectionsLimited() {
+    void assertConnectionsLimited() {
         ContextManager contextManager = mockContextManager(2);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertTrue(ConnectionLimitContext.getInstance().connectionAllowed());
@@ -51,7 +51,7 @@ public final class ConnectionLimitContextTest {
     }
     
     @Test
-    public void assertConnectionsUnlimited() {
+    void assertConnectionsUnlimited() {
         ContextManager contextManager = mockContextManager(0);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         assertFalse(ConnectionLimitContext.getInstance().limitsMaxConnections());

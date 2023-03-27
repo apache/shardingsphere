@@ -5,7 +5,7 @@ weight = 15
 
 ## 描述
 
-`SHOW BROADCAST TABLE RULES` 语法用于查询指定数据库中具有广播规则的表
+`SHOW BROADCAST TABLE RULES` 语法用于查询指定数据库中具有广播规则的表。
 
 ### 语法定义
 

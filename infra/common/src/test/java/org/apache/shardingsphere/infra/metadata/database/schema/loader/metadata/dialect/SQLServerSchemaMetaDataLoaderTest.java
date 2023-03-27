@@ -42,7 +42,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SQLServerSchemaMetaDataLoaderTest {
+class SQLServerSchemaMetaDataLoaderTest {
     
     private static final String LOAD_COLUMN_META_DATA_WITHOUT_TABLES_HIGH_VERSION = "SELECT obj.name AS TABLE_NAME, col.name AS COLUMN_NAME, t.name AS DATA_TYPE,"
             + " col.collation_name AS COLLATION_NAME, col.column_id, is_identity AS IS_IDENTITY, is_hidden AS IS_HIDDEN,"
@@ -76,7 +76,7 @@ public final class SQLServerSchemaMetaDataLoaderTest {
     private static final String LOAD_VIEW_META_DATA = "SELECT TABLE_NAME, VIEW_DEFINITION FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_CATALOG = ?";
     
     @Test
-    public void assertLoadWithoutTablesWithHighVersion() throws SQLException {
+    void assertLoadWithoutTablesWithHighVersion() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(LOAD_COLUMN_META_DATA_WITHOUT_TABLES_HIGH_VERSION)
@@ -94,7 +94,7 @@ public final class SQLServerSchemaMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadWithoutTablesWithLowVersion() throws SQLException {
+    void assertLoadWithoutTablesWithLowVersion() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(LOAD_COLUMN_META_DATA_WITHOUT_TABLES_LOW_VERSION)
@@ -112,7 +112,7 @@ public final class SQLServerSchemaMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadWithTablesWithHighVersion() throws SQLException {
+    void assertLoadWithTablesWithHighVersion() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(LOAD_COLUMN_META_DATA_WITH_TABLES_HIGH_VERSION).executeQuery()).thenReturn(resultSet);
@@ -129,7 +129,7 @@ public final class SQLServerSchemaMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadWithTablesWithLowVersion() throws SQLException {
+    void assertLoadWithTablesWithLowVersion() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(LOAD_COLUMN_META_DATA_WITH_TABLES_LOW_VERSION).executeQuery()).thenReturn(resultSet);

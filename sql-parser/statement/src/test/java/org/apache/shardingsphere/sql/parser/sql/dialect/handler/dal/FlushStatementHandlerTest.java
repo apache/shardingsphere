@@ -27,10 +27,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class FlushStatementHandlerTest {
+class FlushStatementHandlerTest {
     
     @Test
-    public void assertGetSimpleTableSegmentForMySQL() {
+    void assertGetSimpleTableSegmentForMySQL() {
         MySQLFlushStatement mySQLFlushStatement = new MySQLFlushStatement();
         assertTrue(FlushStatementHandler.getSimpleTableSegment(mySQLFlushStatement).isEmpty());
         mySQLFlushStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 2, new IdentifierValue("foo_table"))));
@@ -38,7 +38,7 @@ public final class FlushStatementHandlerTest {
     }
     
     @Test
-    public void assertGetSimpleTableSegmentForOtherDatabases() {
+    void assertGetSimpleTableSegmentForOtherDatabases() {
         assertTrue(FlushStatementHandler.getSimpleTableSegment(null).isEmpty());
     }
 }

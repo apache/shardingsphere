@@ -24,7 +24,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * Data consistency check utils.
+ * Data consistency check utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataConsistencyCheckUtils {

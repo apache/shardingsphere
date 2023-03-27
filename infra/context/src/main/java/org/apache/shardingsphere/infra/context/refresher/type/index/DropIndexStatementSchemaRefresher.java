@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.pojo.AlterSchemaMetaDataPOJO;
-import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
@@ -62,7 +62,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
         if (simpleTableSegment.isPresent()) {
             return Optional.of(simpleTableSegment.get().getTableName().getIdentifier().getValue());
         }
-        Collection<QualifiedTable> tableNames = IndexMetaDataUtil.getTableNames(database, database.getProtocolType(), indexSegments);
+        Collection<QualifiedTable> tableNames = IndexMetaDataUtils.getTableNames(database, database.getProtocolType(), indexSegments);
         return tableNames.isEmpty() ? Optional.empty() : Optional.of(tableNames.iterator().next().getTableName());
     }
     

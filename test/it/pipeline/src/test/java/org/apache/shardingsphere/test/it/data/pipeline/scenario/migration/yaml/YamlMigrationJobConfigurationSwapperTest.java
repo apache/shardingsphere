@@ -27,10 +27,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlMigrationJobConfigurationSwapperTest {
+class YamlMigrationJobConfigurationSwapperTest {
     
     @Test
-    public void assertMarsharlUnmarshal() {
+    void assertMarsharlUnmarshal() {
         YamlMigrationJobConfiguration yamlJobConfig = JobConfigurationBuilder.createYamlMigrationJobConfiguration();
         YamlMigrationJobConfigurationSwapper swapper = new YamlMigrationJobConfigurationSwapper();
         MigrationJobConfiguration jobConfig = swapper.swapToObject(yamlJobConfig);

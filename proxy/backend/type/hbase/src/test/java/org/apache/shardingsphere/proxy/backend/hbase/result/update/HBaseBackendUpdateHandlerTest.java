@@ -33,10 +33,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class HBaseBackendUpdateHandlerTest {
+class HBaseBackendUpdateHandlerTest {
     
     @Test
-    public void assertExecuteDeleteStatement() {
+    void assertExecuteDeleteStatement() {
         HBaseDeleteUpdater updater = mock(HBaseDeleteUpdater.class);
         when(updater.executeUpdate(any())).thenReturn(Collections.singletonList(new UpdateResult(1, 0)));
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getDeleteStatement());
@@ -46,7 +46,7 @@ public final class HBaseBackendUpdateHandlerTest {
     }
     
     @Test
-    public void assertExecuteUpdateStatement() {
+    void assertExecuteUpdateStatement() {
         HBaseUpdateUpdater updater = mock(HBaseUpdateUpdater.class);
         when(updater.executeUpdate(any())).thenReturn(Collections.singletonList(new UpdateResult(1, 0)));
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getUpdateStatement());
@@ -56,7 +56,7 @@ public final class HBaseBackendUpdateHandlerTest {
     }
     
     @Test
-    public void assertFlushTableStatement() {
+    void assertFlushTableStatement() {
         HBaseRegionReloadUpdater updater = mock(HBaseRegionReloadUpdater.class);
         when(updater.executeUpdate(any())).thenReturn(Collections.singletonList(new UpdateResult(1, 0)));
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getFlushTablesStatement());

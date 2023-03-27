@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class AbstractDataSourcePreparerTest {
+class AbstractDataSourcePreparerTest {
     
     private static final Pattern PATTERN_CREATE_TABLE_IF_NOT_EXISTS = Pattern.compile("CREATE\\s+TABLE\\s+IF\\s+NOT\\s+EXISTS\\s+", Pattern.CASE_INSENSITIVE);
     
@@ -45,7 +45,7 @@ public final class AbstractDataSourcePreparerTest {
     };
     
     @Test
-    public void assertExecuteTargetTableSQL() throws SQLException {
+    void assertExecuteTargetTableSQL() throws SQLException {
         Statement statement = mock(Statement.class);
         Connection targetConnection = mock(Connection.class);
         when(targetConnection.createStatement()).thenReturn(statement);
@@ -55,7 +55,7 @@ public final class AbstractDataSourcePreparerTest {
     }
     
     @Test
-    public void assertAddIfNotExistsForCreateTableSQL() {
+    void assertAddIfNotExistsForCreateTableSQL() {
         Collection<String> createTableSQLs = Arrays.asList("CREATE TABLE IF NOT EXISTS t (id int)", "CREATE TABLE t (id int)",
                 "CREATE  TABLE IF \nNOT \tEXISTS t (id int)", "CREATE \tTABLE t (id int)", "CREATE TABLE \tt_order (id bigint) WITH (orientation=row, compression=no);");
         for (String each : createTableSQLs) {

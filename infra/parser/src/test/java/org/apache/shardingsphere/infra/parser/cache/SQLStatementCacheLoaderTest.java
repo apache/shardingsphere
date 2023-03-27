@@ -28,12 +28,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-public final class SQLStatementCacheLoaderTest {
+class SQLStatementCacheLoaderTest {
     
     private static final String SQL = "select * from user where id=1";
     
     @Test
-    public void assertSQLStatementCacheLoad() throws ReflectiveOperationException {
+    void assertSQLStatementCacheLoad() throws ReflectiveOperationException {
         SQLStatementCacheLoader sqlStatementCacheLoader = new SQLStatementCacheLoader("MySQL", new CacheOption(128, 1024L), false);
         SQLStatementParserExecutor executor = mock(SQLStatementParserExecutor.class, RETURNS_DEEP_STUBS);
         Plugins.getMemberAccessor().set(sqlStatementCacheLoader.getClass().getDeclaredField("sqlStatementParserExecutor"), sqlStatementCacheLoader, executor);

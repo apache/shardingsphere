@@ -46,72 +46,72 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class SQLParseCountAdviceTest {
+class SQLParseCountAdviceTest {
     
     private final MetricConfiguration config = new MetricConfiguration("parsed_sql_total", MetricCollectorType.COUNTER, null, Collections.singletonList("type"), Collections.emptyMap());
     
     @AfterEach
-    public void reset() {
+    void reset() {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertParseInsertSQL() {
+    void assertParseInsertSQL() {
         assertParse(new MySQLInsertStatement(), "INSERT=1");
     }
     
     @Test
-    public void assertParseUpdateSQL() {
+    void assertParseUpdateSQL() {
         assertParse(new MySQLUpdateStatement(), "UPDATE=1");
     }
     
     @Test
-    public void assertParseDeleteSQL() {
+    void assertParseDeleteSQL() {
         assertParse(new MySQLDeleteStatement(), "DELETE=1");
     }
     
     @Test
-    public void assertParseSelectSQL() {
+    void assertParseSelectSQL() {
         assertParse(new MySQLSelectStatement(), "SELECT=1");
     }
     
     @Test
-    public void assertParseDDL() {
+    void assertParseDDL() {
         assertParse(new MySQLCreateDatabaseStatement(), "DDL=1");
     }
     
     @Test
-    public void assertParseDCL() {
+    void assertParseDCL() {
         assertParse(new MySQLCreateUserStatement(), "DCL=1");
     }
     
     @Test
-    public void assertParseDAL() {
+    void assertParseDAL() {
         assertParse(new MySQLShowDatabasesStatement(), "DAL=1");
     }
     
     @Test
-    public void assertParseTCL() {
+    void assertParseTCL() {
         assertParse(new MySQLCommitStatement(), "TCL=1");
     }
     
     @Test
-    public void assertParseRQL() {
+    void assertParseRQL() {
         assertParse(new ShowStorageUnitsStatement(new DatabaseSegment(0, 0, null), null), "RQL=1");
     }
     
     @Test
-    public void assertParseRDL() {
+    void assertParseRDL() {
         assertParse(new RegisterStorageUnitStatement(false, Collections.emptyList()), "RDL=1");
     }
     
     @Test
-    public void assertParseRAL() {
+    void assertParseRAL() {
         assertParse(new ShowMigrationListStatement(), "RAL=1");
     }
     
     @Test
-    public void assertParseRUL() {
+    void assertParseRUL() {
         assertParse(new FormatStatement("SELECT * FROM tbl"), "RUL=1");
     }
     

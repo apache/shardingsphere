@@ -29,16 +29,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class SubstitutableColumnNameTokenTest {
+class SubstitutableColumnNameTokenTest {
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         Collection<ColumnProjection> projections = Collections.singletonList(new ColumnProjection(null, "id", null));
         assertThat(new SubstitutableColumnNameToken(0, 1, projections).toString(mock(RouteUnit.class)), is("id"));
     }
     
     @Test
-    public void assertToStringWithQuote() {
+    void assertToStringWithQuote() {
         Collection<ColumnProjection> projections = Collections.singletonList(new ColumnProjection(null, "id", "id"));
         assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)), is("`id` AS `id`"));
     }

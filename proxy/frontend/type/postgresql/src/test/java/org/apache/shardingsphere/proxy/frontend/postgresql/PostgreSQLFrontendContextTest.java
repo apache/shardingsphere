@@ -21,10 +21,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class PostgreSQLFrontendContextTest {
+class PostgreSQLFrontendContextTest {
     
     @Test
-    public void assertIsRequiredSameThreadForConnection() {
+    void assertIsRequiredSameThreadForConnection() {
         assertTrue(new PostgreSQLFrontendContext().isRequiredSameThreadForConnection(null));
     }
 }

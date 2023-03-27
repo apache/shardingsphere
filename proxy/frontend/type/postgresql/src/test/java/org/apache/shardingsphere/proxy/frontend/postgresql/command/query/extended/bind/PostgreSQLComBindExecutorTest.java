@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ProxyContext.class, ProxyBackendHandlerFactory.class})
-public final class PostgreSQLComBindExecutorTest {
+class PostgreSQLComBindExecutorTest {
     
     @Mock
     private PortalContext portalContext;
@@ -70,7 +70,7 @@ public final class PostgreSQLComBindExecutorTest {
     private PostgreSQLComBindExecutor executor;
     
     @Test
-    public void assertExecuteBind() throws SQLException {
+    void assertExecuteBind() throws SQLException {
         String databaseName = "postgres";
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());

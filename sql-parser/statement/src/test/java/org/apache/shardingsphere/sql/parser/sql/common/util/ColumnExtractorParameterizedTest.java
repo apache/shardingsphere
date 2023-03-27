@@ -35,13 +35,13 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ColumnExtractorParameterizedTest {
+class ColumnExtractorParameterizedTest {
     
     private static final ColumnSegment COLUMN_SEGMENT = new ColumnSegment(35, 42, new IdentifierValue("order_item_id"));
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertExtract(final ExpressionSegment expression) {
+    void assertExtract(final ExpressionSegment expression) {
         Collection<ColumnSegment> columnSegments = ColumnExtractor.extract(expression);
         assertThat(columnSegments.size(), is(1));
         assertThat(columnSegments.iterator().next(), is(COLUMN_SEGMENT));

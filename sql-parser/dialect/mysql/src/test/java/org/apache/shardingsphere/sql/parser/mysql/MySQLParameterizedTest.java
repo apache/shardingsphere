@@ -38,11 +38,11 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLParameterizedTest {
+class MySQLParameterizedTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertSQLFormat(final String caseId, final String inputSQL, final String expectFormattedSQL) {
+    void assertSQLFormat(final String caseId, final String inputSQL, final String expectFormattedSQL) {
         CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(inputSQL.toCharArray()));
         MySQLLexer lexer = new MySQLLexer(CodePointCharStream.fromBuffer(buffer));
         MySQLParser parser = new MySQLParser(new CommonTokenStream(lexer));

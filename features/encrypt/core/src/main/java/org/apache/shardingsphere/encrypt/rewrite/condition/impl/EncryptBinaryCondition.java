@@ -27,8 +27,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,24 +63,18 @@ public final class EncryptBinaryCondition implements EncryptCondition {
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
         this.expressionSegment = expressionSegment;
-        putPositionMap(expressionSegment);
+        putPositionMap(0, expressionSegment);
     }
     
-    private void putPositionMap(final ExpressionSegment expressionSegment) {
+    private void putPositionMap(final int index, final ExpressionSegment expressionSegment) {
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            positionIndexMap.put(0, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+            positionIndexMap.put(index, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
         } else if (expressionSegment instanceof LiteralExpressionSegment) {
-            positionValueMap.put(0, ((LiteralExpressionSegment) expressionSegment).getLiterals());
-        } else if (expressionSegment instanceof FunctionSegment) {
-            Collection<ExpressionSegment> parameters = ((FunctionSegment) expressionSegment).getParameters();
-            Iterator<ExpressionSegment> iterator = parameters.iterator();
-            int i = 0;
-            while (iterator.hasNext()) {
-                ExpressionSegment next = iterator.next();
-                if (next instanceof LiteralExpressionSegment) {
-                    positionValueMap.put(i, ((LiteralExpressionSegment) next).getLiterals());
-                }
-                i++;
+            positionValueMap.put(index, ((LiteralExpressionSegment) expressionSegment).getLiterals());
+        } else if (expressionSegment instanceof FunctionSegment && "CONCAT".equalsIgnoreCase(((FunctionSegment) expressionSegment).getFunctionName())) {
+            int parameterIndex = index;
+            for (ExpressionSegment each : ((FunctionSegment) expressionSegment).getParameters()) {
+                putPositionMap(parameterIndex++, each);
             }
         }
     }

@@ -34,10 +34,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class OpenGaussAdminExecutorCreatorTest {
+class OpenGaussAdminExecutorCreatorTest {
     
     @Test
-    public void assertCreateExecutorForSelectDatabase() {
+    void assertCreateExecutorForSelectDatabase() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getTablesContext().getTableNames().contains("pg_database")).thenReturn(true);
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator()
@@ -47,7 +47,7 @@ public final class OpenGaussAdminExecutorCreatorTest {
     }
     
     @Test
-    public void assertCreateExecutorForSelectVersion() {
+    void assertCreateExecutorForSelectVersion() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getSqlStatement().getProjections().getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(-1, -1, "VERSION()")));
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator().create(selectStatementContext, "select VERSION()", "postgres");
@@ -56,7 +56,7 @@ public final class OpenGaussAdminExecutorCreatorTest {
     }
     
     @Test
-    public void assertCreateOtherExecutor() {
+    void assertCreateOtherExecutor() {
         OpenGaussAdminExecutorCreator creator = new OpenGaussAdminExecutorCreator();
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
@@ -65,7 +65,7 @@ public final class OpenGaussAdminExecutorCreatorTest {
     }
     
     @Test
-    public void assertGetType() {
+    void assertGetType() {
         assertThat(new OpenGaussAdminExecutorCreator().getType(), is("openGauss"));
     }
 }

@@ -27,10 +27,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class YamlUserSwapperTest {
+class YamlUserSwapperTest {
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlUserConfiguration actual = new YamlUserSwapper().swapToYamlConfiguration(new ShardingSphereUser("foo_user", "foo_pwd", "127.0.0.1"));
         assertNotNull(actual);
         assertThat(actual.getUser(), is("foo_user@127.0.0.1"));
@@ -38,12 +38,12 @@ public final class YamlUserSwapperTest {
     }
     
     @Test
-    public void assertSwapToNullYamlConfiguration() {
+    void assertSwapToNullYamlConfiguration() {
         assertNull(new YamlUserSwapper().swapToYamlConfiguration(null));
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlUserConfiguration user = new YamlUserConfiguration();
         user.setUser("foo_user@127.0.0.1");
         user.setPassword("foo_pwd");
@@ -55,7 +55,7 @@ public final class YamlUserSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithUserEndWithAt() {
+    void assertSwapToObjectWithUserEndWithAt() {
         YamlUserConfiguration user = new YamlUserConfiguration();
         user.setUser("foo_user@");
         user.setPassword("foo_pwd");
@@ -67,14 +67,14 @@ public final class YamlUserSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithEmptyUsername() {
+    void assertSwapToObjectWithEmptyUsername() {
         YamlUserConfiguration user = new YamlUserConfiguration();
         user.setUser("@127.0.0.1");
         assertThrows(IllegalArgumentException.class, () -> new YamlUserSwapper().swapToObject(user));
     }
     
     @Test
-    public void assertSwapToNullObject() {
+    void assertSwapToNullObject() {
         assertNull(new YamlUserSwapper().swapToObject(null));
     }
 }

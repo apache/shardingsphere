@@ -27,19 +27,19 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class PropertiesChangedWatcherTest {
+class PropertiesChangedWatcherTest {
     
     private static final String PROPERTIES_YAML = ConfigurationPropertyKey.SQL_SHOW.getKey() + ": true";
     
     @Test
-    public void assertCreateEvent() {
+    void assertCreateEvent() {
         Optional<PropertiesChangedEvent> actual = new PropertiesChangedWatcher().createGovernanceEvent(new DataChangedEvent("/props", PROPERTIES_YAML, Type.UPDATED));
         assertTrue(actual.isPresent());
         assertTrue((boolean) actual.get().getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()));
     }
     
     @Test
-    public void assertCreateAddEvent() {
+    void assertCreateAddEvent() {
         Optional<PropertiesChangedEvent> actual = new PropertiesChangedWatcher().createGovernanceEvent(new DataChangedEvent("/props", PROPERTIES_YAML, Type.ADDED));
         assertTrue(actual.isPresent());
         assertTrue((boolean) actual.get().getProps().get(ConfigurationPropertyKey.SQL_SHOW.getKey()));

@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLBlobBinlogProtocolValueTest {
+class MySQLBlobBinlogProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
@@ -45,12 +45,12 @@ public final class MySQLBlobBinlogProtocolValueTest {
     private MySQLBinlogColumnDef columnDef;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_STRING);
     }
     
     @Test
-    public void assertReadWithMeta1() {
+    void assertReadWithMeta1() {
         columnDef.setColumnMeta(1);
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedByte()).thenReturn((short) 0xff);
@@ -59,7 +59,7 @@ public final class MySQLBlobBinlogProtocolValueTest {
     }
     
     @Test
-    public void assertReadWithMeta2() {
+    void assertReadWithMeta2() {
         columnDef.setColumnMeta(2);
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedShortLE()).thenReturn(0xffff);
@@ -68,7 +68,7 @@ public final class MySQLBlobBinlogProtocolValueTest {
     }
     
     @Test
-    public void assertReadWithMeta3() {
+    void assertReadWithMeta3() {
         columnDef.setColumnMeta(3);
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedMediumLE()).thenReturn(0xffffff);
@@ -77,7 +77,7 @@ public final class MySQLBlobBinlogProtocolValueTest {
     }
     
     @Test
-    public void assertReadWithMeta4() {
+    void assertReadWithMeta4() {
         columnDef.setColumnMeta(4);
         when(payload.readInt4()).thenReturn(Integer.MAX_VALUE);
         when(payload.readStringFixByBytes(Integer.MAX_VALUE)).thenReturn(new byte[255]);
@@ -85,7 +85,7 @@ public final class MySQLBlobBinlogProtocolValueTest {
     }
     
     @Test
-    public void assertReadWithUnknownMetaValue() {
+    void assertReadWithUnknownMetaValue() {
         columnDef.setColumnMeta(5);
         assertThrows(UnsupportedSQLOperationException.class, () -> new MySQLBlobBinlogProtocolValue().read(columnDef, payload));
     }

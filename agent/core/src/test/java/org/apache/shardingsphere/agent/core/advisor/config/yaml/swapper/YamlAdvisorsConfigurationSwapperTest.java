@@ -32,10 +32,10 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlAdvisorsConfigurationSwapperTest {
+class YamlAdvisorsConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         Collection<AdvisorConfiguration> actual = YamlAdvisorsConfigurationSwapper.swap(
                 AgentYamlEngine.unmarshalYamlAdvisorsConfiguration(getClass().getResourceAsStream("/META-INF/conf/advisors.yaml")), "FIXTURE");
         assertThat(actual.size(), is(1));

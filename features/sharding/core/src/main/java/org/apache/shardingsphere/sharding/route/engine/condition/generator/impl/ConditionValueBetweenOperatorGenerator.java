@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.generator.Condi
 import org.apache.shardingsphere.sharding.route.engine.condition.value.RangeShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public final class ConditionValueBetweenOperatorGenerator implements ConditionVa
         betweenConditionValue.getParameterMarkerIndex().ifPresent(parameterMarkerIndexes::add);
         andConditionValue.getParameterMarkerIndex().ifPresent(parameterMarkerIndexes::add);
         if (betweenValue.isPresent() && andValue.isPresent()) {
-            return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), SafeNumberOperationUtil.safeClosed(betweenValue.get(), andValue.get()),
+            return Optional.of(new RangeShardingConditionValue<>(column.getName(), column.getTableName(), SafeNumberOperationUtils.safeClosed(betweenValue.get(), andValue.get()),
                     parameterMarkerIndexes));
         }
         Date datetime = timeServiceRule.getDatetime();

@@ -34,10 +34,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class UnlockClusterUpdaterTest {
+class UnlockClusterUpdaterTest {
     
     @Test
-    public void assertExecuteWithNotClusterMode() {
+    void assertExecuteWithNotClusterMode() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         UnlockClusterUpdater updater = new UnlockClusterUpdater();
@@ -45,7 +45,7 @@ public final class UnlockClusterUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithNotLockedCluster() {
+    void assertExecuteWithNotLockedCluster() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getClusterStateContext().getCurrentState()).thenReturn(ClusterState.OK);

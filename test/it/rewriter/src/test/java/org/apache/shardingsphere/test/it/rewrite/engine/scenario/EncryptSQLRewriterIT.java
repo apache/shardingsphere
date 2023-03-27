@@ -52,7 +52,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SQLRewriterITSettings("scenario/encrypt/case")
-public final class EncryptSQLRewriterIT extends SQLRewriterIT {
+class EncryptSQLRewriterIT extends SQLRewriterIT {
     
     @Override
     protected YamlRootConfiguration createRootConfiguration(final SQLRewriteEngineTestParameters testParams) throws IOException {

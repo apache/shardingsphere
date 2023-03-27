@@ -32,8 +32,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
-import org.apache.shardingsphere.proxy.backend.util.RegularUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.proxy.backend.util.RegularUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
 import java.sql.Types;
@@ -94,8 +94,8 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         Collection<String> result = ProxyContext.getInstance()
                 .getDatabase(databaseName).getSchema(databaseName).getTables().values().stream().map(ShardingSphereTable::getName).collect(Collectors.toList());
         if (showTablesStatement.getFilter().isPresent()) {
-            Optional<String> pattern = showTablesStatement.getFilter().get().getLike().map(optional -> SQLUtil.convertLikePatternToRegex(optional.getPattern()));
-            return pattern.isPresent() ? result.stream().filter(each -> RegularUtil.matchesCaseInsensitive(pattern.get(), each)).collect(Collectors.toList()) : result;
+            Optional<String> pattern = showTablesStatement.getFilter().get().getLike().map(optional -> SQLUtils.convertLikePatternToRegex(optional.getPattern()));
+            return pattern.isPresent() ? result.stream().filter(each -> RegularUtils.matchesCaseInsensitive(pattern.get(), each)).collect(Collectors.toList()) : result;
         }
         return result;
     }

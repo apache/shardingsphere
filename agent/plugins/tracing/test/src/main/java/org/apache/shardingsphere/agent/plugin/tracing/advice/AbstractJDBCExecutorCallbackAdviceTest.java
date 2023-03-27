@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.TracingAgentExtension;
-import org.apache.shardingsphere.agent.plugin.tracing.MockDataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -44,41 +44,36 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(TracingAgentExtension.class)
+@Getter
 public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTestBase {
     
-    @Getter
+    public static final String DATA_SOURCE_NAME = "mock.db";
+    
+    public static final String SQL = "SELECT 1";
+    
+    private final Map<String, Object> extraMap = new HashMap<>();
+    
     private TargetAdviceObject targetObject;
     
+    @Getter(AccessLevel.NONE)
     private Object attachment;
     
-    @Getter
     private JDBCExecutionUnit executionUnit;
     
-    @Getter
-    private Map<String, Object> extraMap;
-    
+    @Getter(AccessLevel.NONE)
     private Map<String, DatabaseType> storageTypes;
-    
-    @Getter
-    private String dataSourceName;
-    
-    @Getter
-    private String sql;
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
     @Override
     public void prepare() {
-        extraMap = new HashMap<>();
-        dataSourceName = "mock.db";
-        sql = "select 1";
         Statement statement = mock(Statement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         when(databaseMetaData.getURL()).thenReturn("mock_url");
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(statement.getConnection()).thenReturn(connection);
-        executionUnit = new JDBCExecutionUnit(new ExecutionUnit(dataSourceName, new SQLUnit(sql, Collections.emptyList())), null, statement);
+        executionUnit = new JDBCExecutionUnit(new ExecutionUnit(DATA_SOURCE_NAME, new SQLUnit(SQL, Collections.emptyList())), null, statement);
         JDBCExecutorCallback mockedJDBCExecutorCallback = mock(JDBCExecutorCallback.class, invocation -> {
             switch (invocation.getMethod().getName()) {
                 case "getAttachment":
@@ -92,8 +87,8 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
         });
         Map<String, DataSourceMetaData> cachedDatasourceMetaData = (Map<String, DataSourceMetaData>) Plugins.getMemberAccessor()
                 .get(JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA"), mockedJDBCExecutorCallback);
-        cachedDatasourceMetaData.put("mock_url", new MockDataSourceMetaData());
-        storageTypes = Collections.singletonMap(dataSourceName, new MySQLDatabaseType());
+        cachedDatasourceMetaData.put("mock_url", mock(DataSourceMetaData.class));
+        storageTypes = Collections.singletonMap(DATA_SOURCE_NAME, new MySQLDatabaseType());
         Plugins.getMemberAccessor().set(JDBCExecutorCallback.class.getDeclaredField("storageTypes"), mockedJDBCExecutorCallback, storageTypes);
         targetObject = (TargetAdviceObject) mockedJDBCExecutorCallback;
     }

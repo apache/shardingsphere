@@ -29,10 +29,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class TransparentResultDecoratorTest {
+class TransparentResultDecoratorTest {
     
     @Test
-    public void assertDecorateQueryResult() throws SQLException {
+    void assertDecorateQueryResult() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.next()).thenReturn(true);
         TransparentResultDecorator decorator = new TransparentResultDecorator();
@@ -40,7 +40,7 @@ public final class TransparentResultDecoratorTest {
     }
     
     @Test
-    public void assertDecorateMergedResult() throws SQLException {
+    void assertDecorateMergedResult() throws SQLException {
         MergedResult mergedResult = mock(MergedResult.class);
         when(mergedResult.next()).thenReturn(true);
         TransparentResultDecorator decorator = new TransparentResultDecorator();

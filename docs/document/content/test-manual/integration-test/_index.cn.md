@@ -49,7 +49,7 @@ weight = 1
 
 ## 使用指南
 
-模块路径：`test/e2e/suite`
+模块路径：`test/e2e/sql`
 
 ### 测试用例配置
 
@@ -163,7 +163,7 @@ it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
 如果仅修改了测试代码，可以复用已有的测试镜像，无须重新构建。使用以下命令可以跳过镜像构建，直接运行集成测试：
 
 ```bash
-./mvnw -B clean install -f test/e2e/suite/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
+./mvnw -B clean install -f test/e2e/sql/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
 ```
 
 #### 远程 debug Docker 容器中的 Proxy 代码
@@ -185,7 +185,7 @@ IDEA -> Run -> Edit Configurations -> Add New Configuration -> Remote JVM Debug
 ##### 远程调试通过 Testcontainer 启动的 Proxy
 > 注意：如果通过 Testcontainer 启动 Proxy 容器，由于 Testcontainer 启动前 3308 端口还没有暴露出来，无法通过 `远程调试通过镜像启动的 Proxy` 方式进行 debug。
 可以通过如下方式 debug Testcontainer 启动的 Proxy 容器：
-  - 在 Testcontainer 的相关启动类后打一个断点，例如 suite 测试中 BaseE2EIT#setUp() -> `containerComposer.start();` 后面的一行打断点，此时相关容器一定已经启动。
+  - 在 Testcontainer 的相关启动类后打一个断点，例如 sql 测试中 E2EIT#setUp() -> `containerComposer.start();` 后面的一行打断点，此时相关容器一定已经启动。
   - 通过快捷键 Alt + F8，进入断点调试模式，查看 containerComposer 下的 Proxy 对象 3308 映射的端口（Testcontainer 对外映射端口是随机的）。例如本次通过该表达式：`((ShardingSphereProxyClusterContainer)((java.util.LinkedList)((ITContainers)((ClusterContainerComposer)containerComposer).containers).dockerContainers).getLast()).getMappedPort(3308)` 获取到映射的对外随机端口为 51837。（或者通过命令 `docker ps` 查看）
   - 参考 `远程调试通过镜像启动的 Proxy` 中的方式，Port 设置为上一步中获取到的端口。
 

@@ -69,13 +69,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class GroupByMemoryMergedResultTest {
+class GroupByMemoryMergedResultTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
     @Test
-    public void assertNextForResultSetsAllEmpty() throws SQLException {
+    void assertNextForResultSetsAllEmpty() throws SQLException {
         when(database.getName()).thenReturn("db_schema");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectStatementContext(), database, mock(ConnectionContext.class));
@@ -86,7 +86,7 @@ public final class GroupByMemoryMergedResultTest {
     }
     
     @Test
-    public void assertNextForSomeResultSetsEmpty() throws SQLException {
+    void assertNextForSomeResultSetsEmpty() throws SQLException {
         when(database.getName()).thenReturn("db_schema");
         QueryResult queryResult1 = createQueryResult();
         when(queryResult1.next()).thenReturn(true, false);
@@ -151,7 +151,7 @@ public final class GroupByMemoryMergedResultTest {
     }
     
     @Test
-    public void assertNextForAggregationResultSetsEmpty() throws SQLException {
+    void assertNextForAggregationResultSetsEmpty() throws SQLException {
         when(database.getName()).thenReturn("db_schema");
         QueryResult queryResult1 = createQueryResult();
         when(queryResult1.next()).thenReturn(true, false);
@@ -197,7 +197,7 @@ public final class GroupByMemoryMergedResultTest {
     }
     
     @Test
-    public void assertNextForDistinctShorthandResultSetsEmpty() throws SQLException {
+    void assertNextForDistinctShorthandResultSetsEmpty() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class, RETURNS_DEEP_STUBS);
         when(queryResult.getMetaData().getColumnCount()).thenReturn(2);
         when(queryResult.getMetaData().getColumnLabel(1)).thenReturn("order_id");

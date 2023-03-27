@@ -37,10 +37,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class AggregationDistinctTokenGeneratorTest {
+class AggregationDistinctTokenGeneratorTest {
     
     @Test
-    public void assertIsGenerateSQLToken() {
+    void assertIsGenerateSQLToken() {
         AggregationDistinctTokenGenerator aggregationDistinctTokenGenerator = new AggregationDistinctTokenGenerator();
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         assertTrue(aggregationDistinctTokenGenerator.isGenerateSQLToken(selectStatementContext));
@@ -49,7 +49,7 @@ public final class AggregationDistinctTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLToken() {
+    void assertGenerateSQLToken() {
         AggregationDistinctProjection aggregationDistinctProjection = mock(AggregationDistinctProjection.class);
         String testAlias = "AVG_DERIVED_COUNT_0";
         when(aggregationDistinctProjection.getAlias()).thenReturn(Optional.of(testAlias));

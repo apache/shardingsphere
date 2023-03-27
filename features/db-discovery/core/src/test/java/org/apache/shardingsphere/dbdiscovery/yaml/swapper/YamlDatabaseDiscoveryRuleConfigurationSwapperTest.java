@@ -35,10 +35,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlDatabaseDiscoveryRuleConfigurationSwapperTest {
+class YamlDatabaseDiscoveryRuleConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYamlWithLoadBalanceAlgorithm() {
+    void assertSwapToYamlWithLoadBalanceAlgorithm() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig =
                 new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "ha_heartbeat", "discoveryTypeName");
         YamlDatabaseDiscoveryRuleConfiguration actual = getYamlDatabaseDiscoveryRuleConfigurationSwapper().swapToYamlConfiguration(
@@ -49,7 +49,7 @@ public final class YamlDatabaseDiscoveryRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
+    void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"),
                 "ha_heartbeat", "discoveryTypeName");
         YamlDatabaseDiscoveryRuleConfiguration actual = getYamlDatabaseDiscoveryRuleConfigurationSwapper().swapToYamlConfiguration(
@@ -59,14 +59,14 @@ public final class YamlDatabaseDiscoveryRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithLoadBalanceAlgorithmType() {
+    void assertSwapToObjectWithLoadBalanceAlgorithmType() {
         YamlDatabaseDiscoveryRuleConfiguration yamlConfig = createYamlDatabaseDiscoveryRuleConfiguration();
         DatabaseDiscoveryRuleConfiguration actual = getYamlDatabaseDiscoveryRuleConfigurationSwapper().swapToObject(yamlConfig);
         assertDatabaseDiscoveryDataSourceRuleConfiguration(actual);
     }
     
     @Test
-    public void assertSwapToObjectWithoutLoadBalanceAlgorithm() {
+    void assertSwapToObjectWithoutLoadBalanceAlgorithm() {
         YamlDatabaseDiscoveryRuleConfiguration yamlConfig = createYamlDatabaseDiscoveryRuleConfiguration();
         DatabaseDiscoveryRuleConfiguration actual = getYamlDatabaseDiscoveryRuleConfigurationSwapper().swapToObject(yamlConfig);
         assertDatabaseDiscoveryDataSourceRuleConfiguration(actual);

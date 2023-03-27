@@ -29,17 +29,17 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlRuleConfigurationSwapperEngineTest {
+class YamlRuleConfigurationSwapperEngineTest {
     
     @Test
-    public void assertSwapToYamlConfigurations() {
+    void assertSwapToYamlConfigurations() {
         Collection<YamlRuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singleton(new FixtureRuleConfiguration("test")));
         assertThat(actual.size(), is(1));
         assertThat(((YamlRuleConfigurationFixture) actual.iterator().next()).getName(), is("test"));
     }
     
     @Test
-    public void assertSwapToRuleConfigurations() {
+    void assertSwapToRuleConfigurations() {
         YamlRuleConfigurationFixture yamlRuleConfig = new YamlRuleConfigurationFixture();
         yamlRuleConfig.setName("test");
         Collection<RuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(yamlRuleConfig));

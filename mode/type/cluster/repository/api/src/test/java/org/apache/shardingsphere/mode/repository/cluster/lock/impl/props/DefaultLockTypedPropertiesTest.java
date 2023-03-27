@@ -26,16 +26,16 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class DefaultLockTypedPropertiesTest {
+class DefaultLockTypedPropertiesTest {
     
     @Test
-    public void assertGetValue() {
+    void assertGetValue() {
         DefaultLockTypedProperties actual = new DefaultLockTypedProperties(PropertiesBuilder.build(new Property("instanceId", "instance-id")));
         assertThat(actual.getValue(DefaultLockPropertyKey.INSTANCE_ID), is("instance-id"));
     }
     
     @Test
-    public void assertGetDefaultValue() {
+    void assertGetDefaultValue() {
         DefaultLockTypedProperties actual = new DefaultLockTypedProperties(new Properties());
         assertThat(actual.getValue(DefaultLockPropertyKey.INSTANCE_ID), is(""));
     }

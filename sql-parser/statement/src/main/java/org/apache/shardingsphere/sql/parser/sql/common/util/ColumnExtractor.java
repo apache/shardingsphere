@@ -69,7 +69,7 @@ public final class ColumnExtractor {
      */
     public static void extractColumnSegments(final Collection<ColumnSegment> columnSegments, final Collection<WhereSegment> whereSegments) {
         for (WhereSegment each : whereSegments) {
-            for (AndPredicate andPredicate : ExpressionExtractUtil.getAndPredicates(each.getExpr())) {
+            for (AndPredicate andPredicate : ExpressionExtractUtils.getAndPredicates(each.getExpr())) {
                 extractColumnSegments(columnSegments, andPredicate);
             }
         }

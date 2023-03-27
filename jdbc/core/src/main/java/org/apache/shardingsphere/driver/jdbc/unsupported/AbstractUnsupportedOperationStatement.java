@@ -29,21 +29,6 @@ import java.sql.Statement;
 public abstract class AbstractUnsupportedOperationStatement extends WrapperAdapter implements Statement {
     
     @Override
-    public final void addBatch(final String sql) throws SQLException {
-        throw new SQLFeatureNotSupportedException("addBatch sql");
-    }
-    
-    @Override
-    public void clearBatch() throws SQLException {
-        throw new SQLFeatureNotSupportedException("clearBatch");
-    }
-    
-    @Override
-    public int[] executeBatch() throws SQLException {
-        throw new SQLFeatureNotSupportedException("executeBatch");
-    }
-    
-    @Override
     public final void closeOnCompletion() throws SQLException {
         throw new SQLFeatureNotSupportedException("closeOnCompletion");
     }

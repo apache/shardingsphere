@@ -12,9 +12,9 @@ With this in mind, we plan to use Terraform to create a ShardingSphere-Proxy hig
 
 ## Terraform
 
-[Terraform](https://www.terraform.io/) is [Hashicorp](https://www.hashicorp.com/)’s open source infrastructure automation orchestration tool that uses IaC philosophy to manage infrastructure changes.
+[Terraform](https://www.terraform.io/) is [Hashicorp](https://www.hashicorp.com/)'s open source infrastructure automation orchestration tool that uses IaC philosophy to manage infrastructure changes.
 
-It’s supported by public cloud vendors such as AWS, GCP, AZURE and a variety of other providers from the community, and has become one of the most popular practices in the “Infrastructure as Code” space.
+It's supported by public cloud vendors such as AWS, GCP, AZURE and a variety of other providers from the community, and has become one of the most popular practices in the "Infrastructure as Code" space.
 
 **Terraform has the following advantages:**
 
@@ -24,7 +24,7 @@ Terraform is suitable for multi-cloud scenarios, deploying similar infrastructur
 
 *Automated management infrastructure*
 
-Terraform’s ability to create reusable modules reduces human-induced deployment and management errors.
+Terraform's ability to create reusable modules reduces human-induced deployment and management errors.
 
 *Infrastructure as code*
 
@@ -309,7 +309,7 @@ variable "zk_servers" {
 
 **Configure AutoScalingGroup**
 
-We’ll create an AutoScalingGroup to allow it to manage ShardingSphere-Proxy instances. The health check type of the AutoScalingGroup is changed to “ELB” to allow the AutoScalingGroup to move out bad nodes in time after load balancing fails to perform a health check on the instance.
+We'll create an AutoScalingGroup to allow it to manage ShardingSphere-Proxy instances. The health check type of the AutoScalingGroup is changed to "ELB" to allow the AutoScalingGroup to move out bad nodes in time after load balancing fails to perform a health check on the instance.
 
 The changes to `load_balancers` and `target_group_arns` are ignored when creating the AutoScalingGroup.
 
@@ -504,13 +504,13 @@ resource "aws_iam_instance_profile" "ss" {
 
 ## Deployment
 
-Once all Terraform configurations have been created, you’ll be ready to deploy the ShardingSphere-Proxy cluster. Before actually deploying, it’s recommended that you use the following command to check that the configuration performs as expected.
+Once all Terraform configurations have been created, you'll be ready to deploy the ShardingSphere-Proxy cluster. Before actually deploying, it's recommended that you use the following command to check that the configuration performs as expected.
 
 ```markdown
 terraform plan
 ```
 
-After confirming the plan, it’s time to go ahead and actually execute it by running the following command
+After confirming the plan, it's time to go ahead and actually execute it by running the following command
 
 ```markdown
 terraform apply
@@ -528,7 +528,7 @@ By default, we create an internal domain `proxy.shardingsphere.org` and the user
 
 **Description:**
 
-DistSQL (Distributed SQL) is Apache ShardingSphere’s SQL-like operational language. It’s used in exactly the same way as standard SQL to provide SQL-level manipulation capabilities for incremental functionality, as described [here](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/).
+DistSQL (Distributed SQL) is Apache ShardingSphere's SQL-like operational language. It's used in exactly the same way as standard SQL to provide SQL-level manipulation capabilities for incremental functionality, as described [here](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/).
 
 # Conclusion
 

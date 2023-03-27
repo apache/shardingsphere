@@ -33,10 +33,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ComputeNodeStateChangedWatcherTest {
+class ComputeNodeStateChangedWatcherTest {
     
     @Test
-    public void assertCreateEventWhenDisabled() {
+    void assertCreateEventWhenDisabled() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
                 .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", InstanceState.CIRCUIT_BREAK.name(), Type.ADDED));
         assertTrue(actual.isPresent());
@@ -45,7 +45,7 @@ public final class ComputeNodeStateChangedWatcherTest {
     }
     
     @Test
-    public void assertCreateEventWhenEnabled() {
+    void assertCreateEventWhenEnabled() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
                 .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status/foo_instance_id", "", Type.UPDATED));
         assertTrue(actual.isPresent());
@@ -54,7 +54,7 @@ public final class ComputeNodeStateChangedWatcherTest {
     }
     
     @Test
-    public void assertCreateAddLabelEvent() {
+    void assertCreateAddLabelEvent() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
                 .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id",
                         YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.ADDED));
@@ -64,7 +64,7 @@ public final class ComputeNodeStateChangedWatcherTest {
     }
     
     @Test
-    public void assertCreateUpdateLabelsEvent() {
+    void assertCreateUpdateLabelsEvent() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
                 .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/labels/foo_instance_id",
                         YamlEngine.marshal(Arrays.asList("label_1", "label_2")), Type.UPDATED));

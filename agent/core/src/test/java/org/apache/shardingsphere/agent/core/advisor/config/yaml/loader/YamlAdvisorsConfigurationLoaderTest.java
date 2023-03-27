@@ -34,10 +34,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlAdvisorsConfigurationLoaderTest {
+class YamlAdvisorsConfigurationLoaderTest {
     
     @Test
-    public void assertLoad() {
+    void assertLoad() {
         YamlAdvisorsConfiguration actual = YamlAdvisorsConfigurationLoader.load(getClass().getResourceAsStream("/META-INF/conf/advisors.yaml"));
         assertThat(actual.getAdvisors().size(), is(1));
         assertYamlAdvisorConfiguration(actual.getAdvisors().iterator().next());
@@ -85,7 +85,7 @@ public final class YamlAdvisorsConfigurationLoaderTest {
     }
     
     @Test
-    public void assertLoadEmptyFile() {
+    void assertLoadEmptyFile() {
         YamlAdvisorsConfiguration actual = YamlAdvisorsConfigurationLoader.load(getClass().getResourceAsStream("/META-INF/conf/empty-advisors.yaml"));
         assertTrue(actual.getAdvisors().isEmpty());
     }

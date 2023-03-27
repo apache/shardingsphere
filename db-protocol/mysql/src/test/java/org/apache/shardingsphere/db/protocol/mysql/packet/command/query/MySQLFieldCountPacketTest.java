@@ -29,13 +29,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLFieldCountPacketTest {
+class MySQLFieldCountPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         when(payload.readInt1()).thenReturn(3);
         MySQLFieldCountPacket actual = new MySQLFieldCountPacket(payload);
         assertThat(actual.getColumnCount(), is(3));

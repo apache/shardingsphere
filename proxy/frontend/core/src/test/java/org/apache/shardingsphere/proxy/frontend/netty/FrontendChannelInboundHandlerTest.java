@@ -55,7 +55,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class FrontendChannelInboundHandlerTest {
+class FrontendChannelInboundHandlerTest {
     
     private static final int CONNECTION_ID = 1;
     
@@ -72,7 +72,7 @@ public final class FrontendChannelInboundHandlerTest {
     private ConnectionSession connectionSession;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(frontendEngine.getAuthenticationEngine()).thenReturn(authenticationEngine);
         when(frontendEngine.getType()).thenReturn("MySQL");
         when(authenticationEngine.handshake(any(ChannelHandlerContext.class))).thenReturn(CONNECTION_ID);
@@ -91,14 +91,14 @@ public final class FrontendChannelInboundHandlerTest {
     }
     
     @Test
-    public void assertChannelActive() throws Exception {
+    void assertChannelActive() throws Exception {
         channel.register();
         verify(authenticationEngine).handshake(any(ChannelHandlerContext.class));
         assertThat(connectionSession.getConnectionId(), is(CONNECTION_ID));
     }
     
     @Test
-    public void assertChannelReadNotAuthenticated() throws Exception {
+    void assertChannelReadNotAuthenticated() throws Exception {
         channel.register();
         AuthenticationResult authenticationResult = AuthenticationResultBuilder.finished("username", "hostname", "database");
         when(authenticationEngine.authenticate(any(ChannelHandlerContext.class), any(PacketPayload.class))).thenReturn(authenticationResult);
@@ -109,7 +109,7 @@ public final class FrontendChannelInboundHandlerTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertChannelReadNotAuthenticatedAndExceptionOccur() throws Exception {
+    void assertChannelReadNotAuthenticatedAndExceptionOccur() throws Exception {
         channel.register();
         RuntimeException cause = new RuntimeException("assertChannelReadNotAuthenticatedAndExceptionOccur");
         doThrow(cause).when(authenticationEngine).authenticate(any(ChannelHandlerContext.class), any(PacketPayload.class));

@@ -32,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.TransactionUtil;
+import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
 
 import java.sql.Connection;
@@ -100,7 +100,7 @@ public final class BackendConnection implements ExecutorJDBCConnectionManager {
     private void executeTransactionHooksAfterCreateConnections(final List<Connection> result) throws SQLException {
         if (connectionSession.getTransactionStatus().isInTransaction()) {
             for (TransactionHook each : transactionHooks) {
-                each.afterCreateConnections(result, connectionSession.getConnectionContext().getTransactionConnectionContext());
+                each.afterCreateConnections(result, connectionSession.getConnectionContext().getTransactionContext());
             }
         }
     }
@@ -163,7 +163,7 @@ public final class BackendConnection implements ExecutorJDBCConnectionManager {
             connection.setReadOnly(true);
         }
         if (null != connectionSession.getIsolationLevel()) {
-            connection.setTransactionIsolation(TransactionUtil.getTransactionIsolationLevel(connectionSession.getIsolationLevel()));
+            connection.setTransactionIsolation(TransactionUtils.getTransactionIsolationLevel(connectionSession.getIsolationLevel()));
         }
     }
     

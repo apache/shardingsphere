@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class MySQLPacketCodecEngineTest {
+class MySQLPacketCodecEngineTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ChannelHandlerContext context;
@@ -65,23 +65,23 @@ public final class MySQLPacketCodecEngineTest {
     private ByteBuf byteBuf;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(context.channel().attr(AttributeKey.<Charset>valueOf(Charset.class.getName())).get()).thenReturn(StandardCharsets.UTF_8);
         when(context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get()).thenReturn(new AtomicInteger());
     }
     
     @Test
-    public void assertIsValidHeader() {
+    void assertIsValidHeader() {
         assertTrue(new MySQLPacketCodecEngine().isValidHeader(50));
     }
     
     @Test
-    public void assertIsInvalidHeader() {
+    void assertIsInvalidHeader() {
         assertFalse(new MySQLPacketCodecEngine().isValidHeader(3));
     }
     
     @Test
-    public void assertDecode() {
+    void assertDecode() {
         when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedMediumLE()).thenReturn(50);
         when(byteBuf.readableBytes()).thenReturn(51);
@@ -91,7 +91,7 @@ public final class MySQLPacketCodecEngineTest {
     }
     
     @Test
-    public void assertDecodeWithEmptyPacket() {
+    void assertDecodeWithEmptyPacket() {
         when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
         when(byteBuf.readableBytes()).thenReturn(1);
         when(byteBuf.readUnsignedMediumLE()).thenReturn(0);
@@ -101,7 +101,7 @@ public final class MySQLPacketCodecEngineTest {
     }
     
     @Test
-    public void assertDecodeWithStickyPacket() {
+    void assertDecodeWithStickyPacket() {
         when(byteBuf.markReaderIndex()).thenReturn(byteBuf);
         when(byteBuf.readUnsignedMediumLE()).thenReturn(50);
         List<Object> out = new LinkedList<>();
@@ -110,7 +110,7 @@ public final class MySQLPacketCodecEngineTest {
     }
     
     @Test
-    public void assertDecodePacketMoreThan16MB() {
+    void assertDecodePacketMoreThan16MB() {
         MySQLPacketCodecEngine engine = new MySQLPacketCodecEngine();
         when(context.alloc().compositeBuffer(2)).thenReturn(new CompositeByteBuf(UnpooledByteBufAllocator.DEFAULT, false, 2));
         List<Object> actual = new ArrayList<>(1);
@@ -130,7 +130,7 @@ public final class MySQLPacketCodecEngineTest {
     }
     
     @Test
-    public void assertEncode() {
+    void assertEncode() {
         when(byteBuf.writeInt(anyInt())).thenReturn(byteBuf);
         when(byteBuf.markWriterIndex()).thenReturn(byteBuf);
         when(byteBuf.readableBytes()).thenReturn(8);
@@ -145,7 +145,7 @@ public final class MySQLPacketCodecEngineTest {
     }
     
     @Test
-    public void assertEncodePacketMoreThan16MB() {
+    void assertEncodePacketMoreThan16MB() {
         CompositeByteBuf expected = new CompositeByteBuf(UnpooledByteBufAllocator.DEFAULT, false, 6);
         when(context.alloc().compositeBuffer(6)).thenReturn(expected);
         when(context.alloc().ioBuffer(4, 4)).thenReturn(Unpooled.buffer(4, 4), Unpooled.buffer(4, 4), Unpooled.buffer(4, 4));
@@ -168,7 +168,7 @@ public final class MySQLPacketCodecEngineTest {
     }
     
     @Test
-    public void assertEncodeOccursException() {
+    void assertEncodeOccursException() {
         when(byteBuf.writeInt(anyInt())).thenReturn(byteBuf);
         when(byteBuf.markWriterIndex()).thenReturn(byteBuf);
         when(byteBuf.readableBytes()).thenReturn(12);
@@ -185,7 +185,7 @@ public final class MySQLPacketCodecEngineTest {
     }
     
     @Test
-    public void assertCreatePacketPayload() {
+    void assertCreatePacketPayload() {
         assertThat(new MySQLPacketCodecEngine().createPacketPayload(byteBuf, StandardCharsets.UTF_8).getByteBuf(), is(byteBuf));
     }
 }

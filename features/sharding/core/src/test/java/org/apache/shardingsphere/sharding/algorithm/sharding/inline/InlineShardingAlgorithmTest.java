@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class InlineShardingAlgorithmTest {
+class InlineShardingAlgorithmTest {
     
     private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1, '0');
     
@@ -52,7 +52,7 @@ public final class InlineShardingAlgorithmTest {
     private InlineShardingAlgorithm negativeNumberInlineShardingAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         inlineShardingAlgorithm = (InlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INLINE",
                 PropertiesBuilder.build(new Property("algorithm-expression", "t_order_$->{order_id % 4}"), new Property("allow-range-query-with-inline-sharding", Boolean.TRUE.toString())));
         inlineShardingAlgorithmWithSimplified = (InlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "INLINE",
@@ -62,7 +62,7 @@ public final class InlineShardingAlgorithmTest {
     }
     
     @Test
-    public void assertDoSharding() {
+    void assertDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
         assertThrows(MismatchedInlineShardingAlgorithmExpressionAndColumnException.class,
@@ -71,28 +71,28 @@ public final class InlineShardingAlgorithmTest {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Test
-    public void assertDoShardingWithRangeShardingConditionValue() {
+    void assertDoShardingWithRangeShardingConditionValue() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         Collection<String> actual = inlineShardingAlgorithm.doSharding(availableTargetNames, new RangeShardingValue<>("t_order", "order_id", DATA_NODE_INFO, mock(Range.class)));
         assertTrue(actual.containsAll(availableTargetNames));
     }
     
     @Test
-    public void assertDoShardingWithNonExistNodes() {
+    void assertDoShardingWithNonExistNodes() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1");
         assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
         assertThat(inlineShardingAlgorithmWithSimplified.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 0)), is("t_order_0"));
     }
     
     @Test
-    public void assertDoShardingWithNegative() {
+    void assertDoShardingWithNegative() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         assertThat(negativeNumberInlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -1)), is("t_order_1"));
         assertThat(negativeNumberInlineShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -4)), is("t_order_0"));
     }
     
     @Test
-    public void assertDoShardingWithLargeValues() {
+    void assertDoShardingWithLargeValues() {
         List<String> availableTargetNames = Lists.newArrayList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         assertThat(inlineShardingAlgorithm.doSharding(availableTargetNames,
                 new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, 787694822390497280L)), is("t_order_0"));

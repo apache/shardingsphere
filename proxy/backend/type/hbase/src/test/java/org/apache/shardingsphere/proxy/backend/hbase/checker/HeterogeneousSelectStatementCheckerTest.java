@@ -31,44 +31,44 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class HeterogeneousSelectStatementCheckerTest {
+class HeterogeneousSelectStatementCheckerTest {
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         HBaseProperties props = mock(HBaseProperties.class);
         when(props.getValue(HBasePropertyKey.MAX_SCAN_LIMIT_SIZE)).thenReturn(5000L);
         HBaseContext.getInstance().setProps(props);
     }
     
     @Test
-    public void assertSelectStatement() {
+    void assertSelectStatement() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getSelectStatement());
         HBaseCheckerFactory.newInstance(sqlStatement).execute();
     }
     
     @Test
-    public void assertSelectStatementWithLargeRowCount() {
+    void assertSelectStatementWithLargeRowCount() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where id = 1 limit 5001");
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
         assertThat(ex.getMessage(), is("row count must less than 5000"));
     }
     
     @Test
-    public void assertSelectStatementWithLimitSegment() {
+    void assertSelectStatementWithLimitSegment() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where id = 1 limit 5 offset 3");
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
         assertThat(ex.getMessage(), is("Do not supported offset segment"));
     }
     
     @Test
-    public void assertSelectStatementWithLockSegment() {
+    void assertSelectStatementWithLockSegment() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where id = 1 lock in share mode");
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
         assertThat(ex.getMessage(), is("Do not supported lock segment"));
     }
     
     @Test
-    public void assertSelectStatementWithFunction() {
+    void assertSelectStatementWithFunction() {
         String sql = "SELECT /*+ HBase */ sum(score) FROM person";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -76,7 +76,7 @@ public final class HeterogeneousSelectStatementCheckerTest {
     }
     
     @Test
-    public void assertSelectStatementWithJoinStatement() {
+    void assertSelectStatementWithJoinStatement() {
         String sql = "SELECT /*+ HBase */ * FROM t_order o JOIN t_order_item i ON o.user_id = i.user_id AND o.order_id = i.order_id";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -84,7 +84,7 @@ public final class HeterogeneousSelectStatementCheckerTest {
     }
     
     @Test
-    public void assertSelectStatementWithMultipleInExpression() {
+    void assertSelectStatementWithMultipleInExpression() {
         String sql = "SELECT /*+ HBase */ * FROM t_order WHERE rowKey IN (?, ?) AND id IN (?, ?)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -92,14 +92,14 @@ public final class HeterogeneousSelectStatementCheckerTest {
     }
     
     @Test
-    public void assertSelectStatementWithInExpression() {
+    void assertSelectStatementWithInExpression() {
         String sql = "SELECT /*+ HBase */ * from t_order where rowKey in (1, 2, 3)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         HBaseCheckerFactory.newInstance(sqlStatement).execute();
     }
     
     @Test
-    public void assertSelectStatementWithErrorKey() {
+    void assertSelectStatementWithErrorKey() {
         String sql = "SELECT /*+ HBase */ * from t_order where age in (1, 2, 3)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -107,7 +107,7 @@ public final class HeterogeneousSelectStatementCheckerTest {
     }
     
     @Test
-    public void assertExecuteSelectWithNotIn() {
+    void assertExecuteSelectWithNotIn() {
         String sql = "SELECT /*+ HBase */ * from t_order where rowKey not in (1, 2, 3)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -115,21 +115,21 @@ public final class HeterogeneousSelectStatementCheckerTest {
     }
     
     @Test
-    public void assertExecuteSelectWithParameterMarker() {
+    void assertExecuteSelectWithParameterMarker() {
         String sql = "SELECT /*+ HBase */ * from t_order where rowKey in (?, ?, ?)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         HBaseCheckerFactory.newInstance(sqlStatement).execute();
     }
     
     @Test
-    public void assertSelectStatementUseCrc32() {
+    void assertSelectStatementUseCrc32() {
         String sql = "SELECT /*+ HBase */ crc32(concat_ws('#',rowKey)) from t_order where rowKey in (1, 2, 3)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         HBaseCheckerFactory.newInstance(sqlStatement).execute();
     }
     
     @Test
-    public void assertExecuteSelectWithErrorInExpression() {
+    void assertExecuteSelectWithErrorInExpression() {
         String sql = "SELECT /*+ HBase */ * from t_order where rowKey in (select rowKey from t_order_item)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -137,14 +137,14 @@ public final class HeterogeneousSelectStatementCheckerTest {
     }
     
     @Test
-    public void assertExecuteSelectWithBetween() {
+    void assertExecuteSelectWithBetween() {
         String sql = "SELECT /*+ HBase */ * from t_order where rowKey between 1 and 2";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         HBaseCheckerFactory.newInstance(sqlStatement).execute();
     }
     
     @Test
-    public void assertExecuteSelectWithNotBetween() {
+    void assertExecuteSelectWithNotBetween() {
         String sql = "SELECT /*+ HBase */ * from t_order where rowKey not between 1 and 2";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -152,7 +152,7 @@ public final class HeterogeneousSelectStatementCheckerTest {
     }
     
     @Test
-    public void assertExecuteSelectWithBetweenErrorKey() {
+    void assertExecuteSelectWithBetweenErrorKey() {
         String sql = "SELECT /*+ HBase */ * from t_order where age between 1 and 2";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -160,7 +160,7 @@ public final class HeterogeneousSelectStatementCheckerTest {
     }
     
     @Test
-    public void assertExecuteSelectWithErrorBetweenExpr() {
+    void assertExecuteSelectWithErrorBetweenExpr() {
         String sql = "SELECT /*+ HBase */ * from t_order where rowKey between 1 and now()";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -168,7 +168,7 @@ public final class HeterogeneousSelectStatementCheckerTest {
     }
     
     @Test
-    public void assertSelectWithGroupBy() {
+    void assertSelectWithGroupBy() {
         String sql = "SELECT /*+ HBase */ * from t_order group by order_id";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -176,7 +176,7 @@ public final class HeterogeneousSelectStatementCheckerTest {
     }
     
     @Test
-    public void assertSelectWithNotAllowOperator() {
+    void assertSelectWithNotAllowOperator() {
         String sql = "select /*+ hbase */ * from t_order where rowKey != 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -184,7 +184,7 @@ public final class HeterogeneousSelectStatementCheckerTest {
     }
     
     @Test
-    public void assertSelectWithNotAllowColumn() {
+    void assertSelectWithNotAllowColumn() {
         String sql = "select /*+ hbase */ * from t_order where age = 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -192,7 +192,7 @@ public final class HeterogeneousSelectStatementCheckerTest {
     }
     
     @Test
-    public void assertSelectWithMultipleExpression() {
+    void assertSelectWithMultipleExpression() {
         String sql = "select /*+ hbase */ * from t_order where rowKey = 1 and age = 2";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -200,7 +200,7 @@ public final class HeterogeneousSelectStatementCheckerTest {
     }
     
     @Test
-    public void assertSelectWithNotColumnExpression() {
+    void assertSelectWithNotColumnExpression() {
         String sql = "select /*+ hbase */ * from t_order where 1 = 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
@@ -208,7 +208,7 @@ public final class HeterogeneousSelectStatementCheckerTest {
     }
     
     @Test
-    public void assertSelectWithParameterMarker() {
+    void assertSelectWithParameterMarker() {
         String sql = "select /*+ hbase */ rowKey, name, ? from t_order where rowKey = 'kid'";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());

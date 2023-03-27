@@ -25,10 +25,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class StandardJdbcUrlParserTest {
+class StandardJdbcUrlParserTest {
     
     @Test
-    public void assertParseSimpleJdbcUrl() {
+    void assertParseSimpleJdbcUrl() {
         JdbcUrl actual = new StandardJdbcUrlParser().parse("mock:jdbc://127.0.0.1/");
         assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(-1));
@@ -37,7 +37,7 @@ public final class StandardJdbcUrlParserTest {
     }
     
     @Test
-    public void assertParseMySQLJdbcUrl() {
+    void assertParseMySQLJdbcUrl() {
         JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false&sessionVariables=group_concat_max_len=204800,SQL_SAFE_UPDATES=0");
         assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3306));
@@ -49,7 +49,7 @@ public final class StandardJdbcUrlParserTest {
     }
     
     @Test
-    public void assertParseMySQLJdbcUrlWithReplication() {
+    void assertParseMySQLJdbcUrlWithReplication() {
         JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:mysql:replication://master-ip:3306,slave-1-ip:3306,slave-2-ip:3306/demo_ds?useUnicode=true");
         assertThat(actual.getHostname(), is("master-ip"));
         assertThat(actual.getPort(), is(3306));
@@ -59,7 +59,7 @@ public final class StandardJdbcUrlParserTest {
     }
     
     @Test
-    public void assertParsePostgreSQLJdbcUrl() {
+    void assertParsePostgreSQLJdbcUrl() {
         JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:postgresql://127.0.0.1:5432/demo_ds?prepareThreshold=1&preferQueryMode=extendedForPrepared");
         assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(5432));
@@ -70,7 +70,7 @@ public final class StandardJdbcUrlParserTest {
     }
     
     @Test
-    public void assertParseMicrosoftSQLServerJdbcUrl() {
+    void assertParseMicrosoftSQLServerJdbcUrl() {
         JdbcUrl actual = new StandardJdbcUrlParser().parse("jdbc:microsoft:sqlserver://127.0.0.1:3306/demo_ds");
         assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3306));
@@ -79,12 +79,12 @@ public final class StandardJdbcUrlParserTest {
     }
     
     @Test
-    public void assertParseIncorrectURL() {
+    void assertParseIncorrectURL() {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> new StandardJdbcUrlParser().parse("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL"));
     }
     
     @Test
-    public void assertParseTestContainersJDBCUrl() {
+    void assertParseTestContainersJDBCUrl() {
         assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:mysql:5.7.34:///demo_ds").getDatabase(), is("demo_ds"));
         assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:postgresql:9.6.8:///demo_ds").getDatabase(), is("demo_ds"));
         assertThat(new StandardJdbcUrlParser().parse("jdbc:tc:postgis:9.6-2.5:///demo_ds").getDatabase(), is("demo_ds"));

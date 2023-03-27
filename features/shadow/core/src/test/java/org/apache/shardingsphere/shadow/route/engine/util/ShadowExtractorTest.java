@@ -28,10 +28,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ShadowExtractorTest {
+class ShadowExtractorTest {
     
     @Test
-    public void assertExtractValuesSimpleExpressionSegment() {
+    void assertExtractValuesSimpleExpressionSegment() {
         SimpleExpressionSegment simpleExpressionSegment = new LiteralExpressionSegment(1, 2, "expected");
         List<Object> params = new LinkedList<>();
         assertTrue(ShadowExtractor.extractValues(simpleExpressionSegment, params).isPresent());

@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Whe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtils;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 
 import java.util.Collection;
@@ -72,8 +72,8 @@ public final class CursorStatementContext extends CommonSQLStatementContext<Open
     
     private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SelectStatement select) {
         select.getWhere().ifPresent(whereSegments::add);
-        whereSegments.addAll(WhereExtractUtil.getSubqueryWhereSegments(select));
-        whereSegments.addAll(WhereExtractUtil.getJoinWhereSegments(select));
+        whereSegments.addAll(WhereExtractUtils.getSubqueryWhereSegments(select));
+        whereSegments.addAll(WhereExtractUtils.getJoinWhereSegments(select));
     }
     
     @Override

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,7 +51,7 @@ public final class OnDuplicateUpdateContext {
     public OnDuplicateUpdateContext(final Collection<AssignmentSegment> assignments, final List<Object> params, final int parametersOffset) {
         List<ExpressionSegment> expressionSegments = assignments.stream().map(AssignmentSegment::getValue).collect(Collectors.toList());
         valueExpressions = getValueExpressions(expressionSegments);
-        parameterMarkerExpressions = ExpressionExtractUtil.getParameterMarkerExpressions(expressionSegments);
+        parameterMarkerExpressions = ExpressionExtractUtils.getParameterMarkerExpressions(expressionSegments);
         parameterCount = parameterMarkerExpressions.size();
         parameters = getParameters(params, parametersOffset);
         columns = assignments.stream().map(each -> each.getColumns().get(0)).collect(Collectors.toList());

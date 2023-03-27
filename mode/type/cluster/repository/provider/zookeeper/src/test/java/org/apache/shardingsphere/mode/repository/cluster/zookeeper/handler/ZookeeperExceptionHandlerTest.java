@@ -25,10 +25,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public final class ZookeeperExceptionHandlerTest {
+class ZookeeperExceptionHandlerTest {
     
     @Test
-    public void assertHandleException() {
+    void assertHandleException() {
         ZookeeperExceptionHandler.handleException(null);
         ZookeeperExceptionHandler.handleException(new NoNodeException(""));
         ZookeeperExceptionHandler.handleException(new Exception(new NoNodeException("")));

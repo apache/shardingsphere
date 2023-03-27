@@ -30,17 +30,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class ShardingSphereTransactionManagerEngineTest {
+class ShardingSphereTransactionManagerEngineTest {
     
     private final ShardingSphereTransactionManagerEngine transactionManagerEngine = new ShardingSphereTransactionManagerEngine();
     
     @Test
-    public void assertGetEngine() {
+    void assertGetEngine() {
         assertThat(transactionManagerEngine.getTransactionManager(TransactionType.XA), instanceOf(ShardingSphereTransactionManagerFixture.class));
     }
     
     @Test
-    public void assertRegisterTransactionResource() {
+    void assertRegisterTransactionResource() {
         Runnable caller = mock(Runnable.class);
         ShardingSphereTransactionManagerFixture transactionManager = (ShardingSphereTransactionManagerFixture) transactionManagerEngine.getTransactionManager(TransactionType.XA);
         transactionManager.setCaller(caller);

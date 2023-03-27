@@ -21,11 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableReferenceRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding.DropShardingTableReferenceRuleStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Drop sharding table reference rule statement assert.
@@ -41,8 +41,9 @@ public final class DropShardingTableReferenceRulesStatementAssert {
      * @param expected expected drop sharding table reference rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingTableReferenceRuleStatement actual, final DropShardingTableReferenceRuleStatementTestCase expected) {
-        assertNotNull(actual, assertContext.getText("Actual statement should exist."));
-        assertThat(assertContext.getText("Sharding table reference rule assertion error: "), actual.getNames(), is(expected.getRuleNames()));
-        assertThat(assertContext.getText("Sharding table reference rule assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
+            assertThat(assertContext.getText("Sharding table reference rule assertion error: "), actual.getNames(), is(expected.getRuleNames()));
+            assertThat(assertContext.getText("Sharding table reference rule assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
+        }
     }
 }

@@ -42,10 +42,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowUnusedShardingAuditorsExecutorTest {
+class ShowUnusedShardingAuditorsExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         RQLExecutor<ShowUnusedShardingAuditorsStatement> executor = new ShowUnusedShardingAuditorsExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowUnusedShardingAuditorsStatement.class));
         assertThat(actual.size(), is(1));
@@ -57,7 +57,7 @@ public final class ShowUnusedShardingAuditorsExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         RQLExecutor<ShowUnusedShardingAuditorsStatement> executor = new ShowUnusedShardingAuditorsExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));

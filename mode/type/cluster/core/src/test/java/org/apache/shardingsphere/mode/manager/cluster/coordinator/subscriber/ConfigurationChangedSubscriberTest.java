@@ -83,7 +83,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ConfigurationChangedSubscriberTest {
+class ConfigurationChangedSubscriberTest {
     
     private ConfigurationChangedSubscriber subscriber;
     
@@ -99,7 +99,7 @@ public final class ConfigurationChangedSubscriberTest {
     private ShardingSphereRuleMetaData globalRuleMetaData;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
@@ -127,7 +127,7 @@ public final class ConfigurationChangedSubscriberTest {
     }
     
     @Test
-    public void assertRenewForRuleConfigurationsChanged() {
+    void assertRenewForRuleConfigurationsChanged() {
         when(persistService.getMetaDataVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabase("db"), is(database));
         subscriber.renew(new RuleConfigurationsChangedEvent("db", "0", Collections.emptyList()));
@@ -135,7 +135,7 @@ public final class ConfigurationChangedSubscriberTest {
     }
     
     @Test
-    public void assertRenewForDataSourceChanged() {
+    void assertRenewForDataSourceChanged() {
         when(persistService.getMetaDataVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
         subscriber.renew(new DataSourceChangedEvent("db", "0", createChangedDataSourcePropertiesMap()));
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getResourceMetaData().getDataSources().containsKey("ds_2"));
@@ -151,7 +151,7 @@ public final class ConfigurationChangedSubscriberTest {
     }
     
     @Test
-    public void assertRenewForGlobalRuleConfigurationsChanged() {
+    void assertRenewForGlobalRuleConfigurationsChanged() {
         GlobalRuleConfigurationsChangedEvent event = new GlobalRuleConfigurationsChangedEvent(getChangedGlobalRuleConfigurations());
         subscriber.renew(event);
         assertThat(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), not(globalRuleMetaData));
@@ -174,7 +174,7 @@ public final class ConfigurationChangedSubscriberTest {
     }
     
     @Test
-    public void assertRenewDatabaseVersionChangedEvent() {
+    void assertRenewDatabaseVersionChangedEvent() {
         when(persistService.getDataSourceService().load("db", "1")).thenReturn(getVersionChangedDataSourcePropertiesMap());
         when(persistService.getDatabaseRulePersistService().load("db", "1")).thenReturn(Collections.emptyList());
         Map<String, DataSource> dataSourceMap = initContextManager();
@@ -187,7 +187,7 @@ public final class ConfigurationChangedSubscriberTest {
     }
     
     @Test
-    public void assertRenewProperties() {
+    void assertRenewProperties() {
         subscriber.renew(new PropertiesChangedEvent(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.TRUE.toString()))));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.TRUE.toString()));
     }

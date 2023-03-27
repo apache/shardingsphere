@@ -32,25 +32,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class AbstractExecuteCountAdviceTest {
+class AbstractExecuteCountAdviceTest {
     
     private final MetricConfiguration config = new MetricConfiguration("jdbc_statement_execute_total", MetricCollectorType.COUNTER,
             "Total number of statement execute", Collections.singletonList("statement_type"));
     
     @AfterEach
-    public void reset() {
+    void reset() {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertWithStatement() {
+    void assertWithStatement() {
         StatementExecuteCountAdvice advice = new StatementExecuteCountAdvice();
         advice.afterMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, null, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("statement=1"));
     }
     
     @Test
-    public void assertWithPreparedStatement() {
+    void assertWithPreparedStatement() {
         PreparedStatementExecuteCountAdvice advice = new PreparedStatementExecuteCountAdvice();
         advice.afterMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, null, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("prepared_statement=1"));

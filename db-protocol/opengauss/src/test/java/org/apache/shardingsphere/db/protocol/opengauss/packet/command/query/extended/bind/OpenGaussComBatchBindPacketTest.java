@@ -30,7 +30,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class OpenGaussComBatchBindPacketTest {
+class OpenGaussComBatchBindPacketTest {
     
     private static final byte[] BATCH_BIND_MESSAGE_BYTES = {
             'U', 0x00, 0x00, 0x00, 0x55, 0x00, 0x00, 0x00,
@@ -47,7 +47,7 @@ public final class OpenGaussComBatchBindPacketTest {
     };
     
     @Test
-    public void assertConstructOpenGaussComBatchBindPacket() {
+    void assertConstructOpenGaussComBatchBindPacket() {
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(BATCH_BIND_MESSAGE_BYTES), StandardCharsets.UTF_8);
         assertThat(payload.readInt1(), is((int) 'U'));
         OpenGaussComBatchBindPacket actual = new OpenGaussComBatchBindPacket(payload);

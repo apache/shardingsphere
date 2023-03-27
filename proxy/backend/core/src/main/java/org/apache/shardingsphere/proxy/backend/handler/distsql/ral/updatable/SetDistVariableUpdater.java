@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
-import org.apache.shardingsphere.logging.utils.LoggingUtils;
+import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -37,7 +37,7 @@ import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableExce
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater.ConnectionSessionRequiredRALUpdater;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
+import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtils;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.slf4j.LoggerFactory;
 
@@ -127,7 +127,7 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
                 Boolean agentPluginsEnabled = BooleanUtils.toBooleanObject(sqlStatement.getValue());
-                SystemPropertyUtil.setSystemProperty(variable.name(), null == agentPluginsEnabled ? Boolean.FALSE.toString() : agentPluginsEnabled.toString());
+                SystemPropertyUtils.setSystemProperty(variable.name(), null == agentPluginsEnabled ? Boolean.FALSE.toString() : agentPluginsEnabled.toString());
                 break;
             case TRANSACTION_TYPE:
                 connectionSession.getTransactionStatus().setTransactionType(getTransactionType(sqlStatement.getValue()));

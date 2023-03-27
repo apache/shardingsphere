@@ -41,10 +41,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowShardingAlgorithmExecutorTest {
+class ShowShardingAlgorithmExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         RQLExecutor<ShowShardingAlgorithmsStatement> executor = new ShowShardingAlgorithmExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowShardingAlgorithmsStatement.class));
         assertThat(actual.size(), is(1));
@@ -70,7 +70,7 @@ public final class ShowShardingAlgorithmExecutorTest {
     }
     
     @Test
-    public void assertGetRowDataWithoutShardingRule() {
+    void assertGetRowDataWithoutShardingRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         RQLExecutor<ShowShardingAlgorithmsStatement> executor = new ShowShardingAlgorithmExecutor();
@@ -79,7 +79,7 @@ public final class ShowShardingAlgorithmExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         RQLExecutor<ShowShardingAlgorithmsStatement> executor = new ShowShardingAlgorithmExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));

@@ -30,13 +30,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLNullBitmapTest {
+class MySQLNullBitmapTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertNewMySQLNullBitmapFromPayload() {
+    void assertNewMySQLNullBitmapFromPayload() {
         when(payload.readInt1()).thenReturn(0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80);
         MySQLNullBitmap actual = new MySQLNullBitmap(64, payload);
         assertTrue(actual.isNullParameter(0));
@@ -47,7 +47,7 @@ public final class MySQLNullBitmapTest {
     }
     
     @Test
-    public void assertGetNullBitmap() {
+    void assertGetNullBitmap() {
         MySQLNullBitmap actual = new MySQLNullBitmap(8, 0);
         assertThat(actual.getNullBitmap().length, is(1));
         actual = new MySQLNullBitmap(9, 0);
@@ -55,13 +55,13 @@ public final class MySQLNullBitmapTest {
     }
     
     @Test
-    public void assertIsNotNullParameter() {
+    void assertIsNotNullParameter() {
         MySQLNullBitmap actual = new MySQLNullBitmap(8, 0);
         assertFalse(actual.isNullParameter(0));
     }
     
     @Test
-    public void assertIsNullParameter() {
+    void assertIsNullParameter() {
         MySQLNullBitmap actual = new MySQLNullBitmap(8, 0);
         actual.setNullBit(0);
         assertTrue(actual.isNullParameter(0));

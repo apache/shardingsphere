@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingRouteAlgorithmException;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.sharding.route.engine.fixture.AbstractRoutingEngineTest;
+import org.apache.shardingsphere.sharding.route.engine.fixture.ShardingRoutingEngineFixtureBuilder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -42,18 +42,18 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngineTest {
+class ShardingStandardRoutingEngineTest {
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         HintManager.clear();
     }
     
     @Test
-    public void assertRouteByNonConditions() {
+    void assertRouteByNonConditions() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order",
                 new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class)), mock(SQLStatementContext.class), new HintValueContext());
-        RouteContext routeContext = standardRoutingEngine.route(createBasedShardingRule());
+        RouteContext routeContext = standardRoutingEngine.route(ShardingRoutingEngineFixtureBuilder.createBasedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(4));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
@@ -75,10 +75,10 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByShardingConditions() {
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createShardingConditions("t_order"),
-                mock(SQLStatementContext.class), new HintValueContext());
-        RouteContext routeContext = standardRoutingEngine.route(createBasedShardingRule());
+    void assertRouteByShardingConditions() {
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order",
+                ShardingRoutingEngineFixtureBuilder.createShardingConditions("t_order"), mock(SQLStatementContext.class), new HintValueContext());
+        RouteContext routeContext = standardRoutingEngine.route(ShardingRoutingEngineFixtureBuilder.createBasedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
@@ -88,14 +88,14 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByErrorShardingTableStrategy() {
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createErrorShardingConditions("t_order"),
+    void assertRouteByErrorShardingTableStrategy() {
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", ShardingRoutingEngineFixtureBuilder.createErrorShardingConditions("t_order"),
                 mock(SQLStatementContext.class), new HintValueContext());
-        assertThrows(ShardingRouteAlgorithmException.class, () -> standardRoutingEngine.route(createErrorShardingRule()));
+        assertThrows(ShardingRouteAlgorithmException.class, () -> standardRoutingEngine.route(ShardingRoutingEngineFixtureBuilder.createErrorShardingRule()));
     }
     
     @Test
-    public void assertRouteByHint() {
+    void assertRouteByHint() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_hint_test"));
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_test",
@@ -103,7 +103,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_test", 1);
         hintManager.addTableShardingValue("t_hint_test", 1);
-        RouteContext routeContext = standardRoutingEngine.route(createHintShardingRule());
+        RouteContext routeContext = standardRoutingEngine.route(ShardingRoutingEngineFixtureBuilder.createHintShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
@@ -113,14 +113,14 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByMixedWithHintDataSource() {
+    void assertRouteByMixedWithHintDataSource() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_hint_ds_test"));
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test", createShardingConditions("t_hint_ds_test"),
-                sqlStatementContext, new HintValueContext());
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test",
+                ShardingRoutingEngineFixtureBuilder.createShardingConditions("t_hint_ds_test"), sqlStatementContext, new HintValueContext());
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_ds_test", 1);
-        RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
+        RouteContext routeContext = standardRoutingEngine.route(ShardingRoutingEngineFixtureBuilder.createMixedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
@@ -130,14 +130,14 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByMixedWithHintDataSourceOnly() {
+    void assertRouteByMixedWithHintDataSourceOnly() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_hint_ds_test"));
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test",
                 new ShardingConditions(Collections.emptyList(), sqlStatementContext, mock(ShardingRule.class)), sqlStatementContext, new HintValueContext());
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_ds_test", 1);
-        RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
+        RouteContext routeContext = standardRoutingEngine.route(ShardingRoutingEngineFixtureBuilder.createMixedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(2));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
@@ -151,14 +151,14 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByMixedWithHintTable() {
+    void assertRouteByMixedWithHintTable() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_hint_table_test"));
-        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_table_test", createShardingConditions("t_hint_table_test"),
-                sqlStatementContext, new HintValueContext());
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_table_test",
+                ShardingRoutingEngineFixtureBuilder.createShardingConditions("t_hint_table_test"), sqlStatementContext, new HintValueContext());
         HintManager hintManager = HintManager.getInstance();
         hintManager.addTableShardingValue("t_hint_table_test", 1);
-        RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
+        RouteContext routeContext = standardRoutingEngine.route(ShardingRoutingEngineFixtureBuilder.createMixedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
@@ -168,14 +168,14 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByMixedWithHintTableOnly() {
+    void assertRouteByMixedWithHintTableOnly() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_hint_table_test"));
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_table_test",
                 new ShardingConditions(Collections.emptyList(), sqlStatementContext, mock(ShardingRule.class)), sqlStatementContext, new HintValueContext());
         HintManager hintManager = HintManager.getInstance();
         hintManager.addTableShardingValue("t_hint_table_test", 1);
-        RouteContext routeContext = standardRoutingEngine.route(createMixedShardingRule());
+        RouteContext routeContext = standardRoutingEngine.route(ShardingRoutingEngineFixtureBuilder.createMixedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(2));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
@@ -189,12 +189,12 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByIntervalTableShardingStrategyOnly() {
+    void assertRouteByIntervalTableShardingStrategyOnly() {
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_interval_test"));
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_interval_test",
-                createIntervalShardingConditions("t_interval_test"), sqlStatementContext, new HintValueContext());
-        RouteContext routeContext = standardRoutingEngine.route(createIntervalTableShardingRule());
+                ShardingRoutingEngineFixtureBuilder.createIntervalShardingConditions("t_interval_test"), sqlStatementContext, new HintValueContext());
+        RouteContext routeContext = standardRoutingEngine.route(ShardingRoutingEngineFixtureBuilder.createIntervalTableShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
         assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));

@@ -22,25 +22,25 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class PluginConfigurationValidatorTest {
+class PluginConfigurationValidatorTest {
     
     @Test
-    public void assertValidateHostAndPortSuccess() {
+    void assertValidateHostAndPortSuccess() {
         PluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration("localhost", 8080, "pwd", null));
     }
     
     @Test
-    public void assertValidateHostAndPortWhenHostIsEmpty() {
+    void assertValidateHostAndPortWhenHostIsEmpty() {
         assertThrows(IllegalArgumentException.class, () -> PluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration("", 8080, "pwd", null)));
     }
     
     @Test
-    public void assertValidateHostAndPortWhenHostIsNull() {
+    void assertValidateHostAndPortWhenHostIsNull() {
         assertThrows(IllegalArgumentException.class, () -> PluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration(null, 8080, "pwd", null)));
     }
     
     @Test
-    public void assertValidateHostAndPortWhenPortLessThanOne() {
+    void assertValidateHostAndPortWhenPortLessThanOne() {
         assertThrows(IllegalArgumentException.class, () -> PluginConfigurationValidator.validateHostAndPort("foo_type", new PluginConfiguration("localhost", 0, "pwd", null)));
     }
 }

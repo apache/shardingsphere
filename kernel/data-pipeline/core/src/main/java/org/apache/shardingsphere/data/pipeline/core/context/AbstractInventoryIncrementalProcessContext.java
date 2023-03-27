@@ -24,7 +24,7 @@ import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineReadConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineWriteConfiguration;
-import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtil;
+import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
@@ -52,7 +52,7 @@ public abstract class AbstractInventoryIncrementalProcessContext implements Inve
     private final LazyInitializer<ExecuteEngine> incrementalExecuteEngineLazyInitializer;
     
     public AbstractInventoryIncrementalProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
-        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtil.convertWithDefaultValue(originalProcessConfig);
+        PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(originalProcessConfig);
         this.pipelineProcessConfig = processConfig;
         PipelineReadConfiguration readConfig = processConfig.getRead();
         AlgorithmConfiguration readRateLimiter = readConfig.getRateLimiter();

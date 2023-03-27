@@ -24,20 +24,20 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class MySQLStatusFlagTest {
+class MySQLStatusFlagTest {
     
     @Test
-    public void assertGetValue() {
+    void assertGetValue() {
         assertThat(MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue(), is(0x0001));
     }
     
     @Test
-    public void assertValueOfByInteger() {
+    void assertValueOfByInteger() {
         assertThat(MySQLStatusFlag.valueOf(0x0001), is(MySQLStatusFlag.SERVER_STATUS_IN_TRANS));
     }
     
     @Test
-    public void assertValueOfByIntegerFailure() {
+    void assertValueOfByIntegerFailure() {
         assertThrows(UnknownSQLException.class, () -> MySQLStatusFlag.valueOf(0x0011));
     }
 }

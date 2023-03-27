@@ -32,15 +32,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLDateBinaryProtocolValueTest {
+class PostgreSQLDateBinaryProtocolValueTest {
     
     @Test
-    public void assertGetColumnLength() {
+    void assertGetColumnLength() {
         assertThat(new PostgreSQLDateBinaryProtocolValue().getColumnLength(""), is(4));
     }
     
     @Test
-    public void assertRead() throws PSQLException {
+    void assertRead() throws PSQLException {
         byte[] payloadBytes = new byte[4];
         Date expected = Date.valueOf("2023-01-30");
         new TimestampUtils(false, null).toBinDate(null, payloadBytes, expected);
@@ -49,7 +49,7 @@ public final class PostgreSQLDateBinaryProtocolValueTest {
     }
     
     @Test
-    public void assertWrite() throws PSQLException {
+    void assertWrite() throws PSQLException {
         byte[] actual = new byte[4];
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(actual).writerIndex(0), StandardCharsets.UTF_8);
         Date input = Date.valueOf("2023-01-30");

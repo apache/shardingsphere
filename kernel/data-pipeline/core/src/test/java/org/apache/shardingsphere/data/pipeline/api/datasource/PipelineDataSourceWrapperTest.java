@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class PipelineDataSourceWrapperTest {
+class PipelineDataSourceWrapperTest {
     
     private static final String CLIENT_USERNAME = "username";
     
@@ -62,7 +62,7 @@ public final class PipelineDataSourceWrapperTest {
     private Logger parentLogger;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(dataSource.getConnection(CLIENT_USERNAME, CLIENT_PASSWORD)).thenReturn(connection);
         when(dataSource.getLogWriter()).thenReturn(printWriter);
@@ -72,7 +72,7 @@ public final class PipelineDataSourceWrapperTest {
     }
     
     @Test
-    public void assertGetConnection() throws SQLException {
+    void assertGetConnection() throws SQLException {
         PipelineDataSourceWrapper dataSourceWrapper = new PipelineDataSourceWrapper(dataSource, new H2DatabaseType());
         assertThat(dataSourceWrapper.getConnection(), is(connection));
         assertThat(dataSourceWrapper.getConnection(CLIENT_USERNAME, CLIENT_PASSWORD), is(connection));
@@ -99,25 +99,25 @@ public final class PipelineDataSourceWrapperTest {
     }
     
     @Test
-    public void assertSetLoginTimeoutFailure() throws SQLException {
+    void assertSetLoginTimeoutFailure() throws SQLException {
         doThrow(new SQLException("")).when(dataSource).setLoginTimeout(LOGIN_TIMEOUT);
         assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).setLoginTimeout(LOGIN_TIMEOUT));
     }
     
     @Test
-    public void assertSetLogWriterFailure() throws SQLException {
+    void assertSetLogWriterFailure() throws SQLException {
         doThrow(new SQLException("")).when(dataSource).setLogWriter(printWriter);
         assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).setLogWriter(printWriter));
     }
     
     @Test
-    public void assertCloseExceptionFailure() throws Exception {
+    void assertCloseExceptionFailure() throws Exception {
         doThrow(new Exception("")).when((AutoCloseable) dataSource).close();
         assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).close());
     }
     
     @Test
-    public void assertCloseSQLExceptionFailure() throws Exception {
+    void assertCloseSQLExceptionFailure() throws Exception {
         doThrow(new SQLException("")).when((AutoCloseable) dataSource).close();
         assertThrows(SQLException.class, () -> new PipelineDataSourceWrapper(dataSource, new H2DatabaseType()).close());
     }

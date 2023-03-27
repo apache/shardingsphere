@@ -46,3 +46,5 @@ fragment X:   [Xx];
 fragment Y:   [Yy];
 fragment Z:   [Zz];
 fragment UL_: '_';
+fragment ML_: '-';
+fragment EIGHT_: '8';

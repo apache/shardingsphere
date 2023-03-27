@@ -56,7 +56,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class PostgreSQLCommandExecuteEngineTest {
+class PostgreSQLCommandExecuteEngineTest {
     
     @Mock
     private ChannelHandlerContext channelHandlerContext;
@@ -71,13 +71,13 @@ public final class PostgreSQLCommandExecuteEngineTest {
     private ConnectionSession connectionSession;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(channelHandlerContext.channel()).thenReturn(channel);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
     }
     
     @Test
-    public void assertSimpleQueryWithUpdateResponseWriteQueryData() throws SQLException {
+    void assertSimpleQueryWithUpdateResponseWriteQueryData() throws SQLException {
         PostgreSQLComQueryExecutor comQueryExecutor = mock(PostgreSQLComQueryExecutor.class);
         when(comQueryExecutor.getResponseType()).thenReturn(ResponseType.UPDATE);
         PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
@@ -88,7 +88,7 @@ public final class PostgreSQLCommandExecuteEngineTest {
     }
     
     @Test
-    public void assertWriteQueryDataWithUpdate() throws SQLException {
+    void assertWriteQueryDataWithUpdate() throws SQLException {
         PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
         when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.UPDATE);
         BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
@@ -98,7 +98,7 @@ public final class PostgreSQLCommandExecuteEngineTest {
     }
     
     @Test
-    public void assertWriteQueryDataWithInactiveChannel() throws SQLException {
+    void assertWriteQueryDataWithInactiveChannel() throws SQLException {
         PostgreSQLCommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
         when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.QUERY);
         when(channel.isActive()).thenReturn(false);
@@ -107,7 +107,7 @@ public final class PostgreSQLCommandExecuteEngineTest {
     }
     
     @Test
-    public void assertWriteQueryDataWithHasNextResult() throws SQLException {
+    void assertWriteQueryDataWithHasNextResult() throws SQLException {
         PostgreSQLComQueryExecutor queryCommandExecutor = mock(PostgreSQLComQueryExecutor.class);
         when(queryCommandExecutor.getResponseType()).thenReturn(ResponseType.QUERY);
         when(channel.isActive()).thenReturn(true);

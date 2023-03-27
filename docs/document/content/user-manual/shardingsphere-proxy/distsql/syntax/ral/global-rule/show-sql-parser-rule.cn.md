@@ -5,7 +5,7 @@ weight = 4
 
 ### 描述
 
-`SHOW SQL_PARSER RULE` 语法用于查询解析引擎规则配置
+`SHOW SQL_PARSER RULE` 语法用于查询解析引擎规则配置。
 
 ### 语法
 

@@ -47,12 +47,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ShowCurrentUserExecutorTest {
+class ShowCurrentUserExecutorTest {
     
     private static final Grantee GRANTEE = new Grantee("root", "");
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         ShowCurrentUserExecutor executor = new ShowCurrentUserExecutor();
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

@@ -29,24 +29,24 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ReadwriteSplittingStatementTest extends AbstractShardingSphereDataSourceForReadwriteSplittingTest {
+class ReadwriteSplittingStatementTest extends AbstractShardingSphereDataSourceForReadwriteSplittingTest {
     
     @Test
-    public void assertQueryWithNull() throws SQLException {
+    void assertQueryWithNull() throws SQLException {
         try (Statement statement = getReadwriteSplittingDataSource().getConnection().createStatement()) {
             assertThrows(SQLException.class, () -> statement.executeQuery(null));
         }
     }
     
     @Test
-    public void assertQueryWithEmptyString() throws SQLException {
+    void assertQueryWithEmptyString() throws SQLException {
         try (Statement statement = getReadwriteSplittingDataSource().getConnection().createStatement()) {
             assertThrows(SQLException.class, () -> statement.executeQuery(""));
         }
     }
     
     @Test
-    public void assertGetGeneratedKeys() throws SQLException {
+    void assertGetGeneratedKeys() throws SQLException {
         try (Statement statement = getReadwriteSplittingDataSource().getConnection().createStatement()) {
             statement.executeUpdate("INSERT INTO t_config(status) VALUES('OK');", Statement.RETURN_GENERATED_KEYS);
             ResultSet generatedKeys = statement.getGeneratedKeys();

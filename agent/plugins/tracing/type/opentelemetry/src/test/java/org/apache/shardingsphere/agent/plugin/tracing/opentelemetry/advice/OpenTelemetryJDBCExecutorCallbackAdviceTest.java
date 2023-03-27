@@ -43,14 +43,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @Slf4j
-public final class OpenTelemetryJDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
+class OpenTelemetryJDBCExecutorCallbackAdviceTest extends AbstractJDBCExecutorCallbackAdviceTest {
     
     private final InMemorySpanExporter testExporter = InMemorySpanExporter.create();
     
     private Span parentSpan;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         SdkTracerProvider tracerProvider = SdkTracerProvider.builder().addSpanProcessor(SimpleSpanProcessor.create(testExporter)).build();
         OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).buildAndRegisterGlobal().getTracer(OpenTelemetryConstants.TRACER_NAME);
         parentSpan = GlobalOpenTelemetry.getTracer(OpenTelemetryConstants.TRACER_NAME).spanBuilder("parent").startSpan();
@@ -58,14 +58,14 @@ public final class OpenTelemetryJDBCExecutorCallbackAdviceTest extends AbstractJ
     }
     
     @AfterEach
-    public void clean() {
+    void clean() {
         parentSpan.end();
         GlobalOpenTelemetry.resetForTest();
         testExporter.reset();
     }
     
     @Test
-    public void assertMethod() {
+    void assertMethod() {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, "OpenTelemetry");
         advice.afterMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, null, "OpenTelemetry");
@@ -75,13 +75,13 @@ public final class OpenTelemetryJDBCExecutorCallbackAdviceTest extends AbstractJ
         assertThat(spanData.getName(), is("/ShardingSphere/executeSQL/"));
         Attributes attributes = spanData.getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_TYPE)), is(getDatabaseType(getDataSourceName())));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_INSTANCE)), is(getDataSourceName()));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(getSql()));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_TYPE)), is(getDatabaseType(DATA_SOURCE_NAME)));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_INSTANCE)), is(DATA_SOURCE_NAME));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(SQL));
     }
     
     @Test
-    public void assertExceptionHandle() {
+    void assertExceptionHandle() {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, "OpenTelemetry");
         advice.onThrowing(getTargetObject(), null, new Object[]{getExecutionUnit(), false, getExtraMap()}, new IOException(), "OpenTelemetry");
@@ -92,8 +92,8 @@ public final class OpenTelemetryJDBCExecutorCallbackAdviceTest extends AbstractJ
         assertThat(spanData.getStatus().getStatusCode(), is(StatusCode.ERROR));
         Attributes attributes = spanData.getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_TYPE)), is(getDatabaseType(getDataSourceName())));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_INSTANCE)), is(getDataSourceName()));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(getSql()));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_TYPE)), is(getDatabaseType(DATA_SOURCE_NAME)));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_INSTANCE)), is(DATA_SOURCE_NAME));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(SQL));
     }
 }

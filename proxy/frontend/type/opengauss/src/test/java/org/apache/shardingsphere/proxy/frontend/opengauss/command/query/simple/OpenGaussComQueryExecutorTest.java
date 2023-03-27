@@ -54,7 +54,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class OpenGaussComQueryExecutorTest {
+class OpenGaussComQueryExecutorTest {
     
     @Mock
     private PortalContext portalContext;
@@ -65,7 +65,7 @@ public final class OpenGaussComQueryExecutorTest {
     private OpenGaussComQueryExecutor queryExecutor;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         PostgreSQLComQueryPacket queryPacket = mock(PostgreSQLComQueryPacket.class);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(queryPacket.getSql()).thenReturn("");
@@ -79,7 +79,7 @@ public final class OpenGaussComQueryExecutorTest {
     }
     
     @Test
-    public void assertExecuteQueryAndReturnEmptyResult() throws SQLException {
+    void assertExecuteQueryAndReturnEmptyResult() throws SQLException {
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
         when(proxyBackendHandler.execute()).thenReturn(queryResponseHeader);
         Collection<DatabasePacket<?>> actual = queryExecutor.execute();
@@ -90,7 +90,7 @@ public final class OpenGaussComQueryExecutorTest {
     }
     
     @Test
-    public void assertExecuteQueryAndReturnResult() throws SQLException {
+    void assertExecuteQueryAndReturnResult() throws SQLException {
         QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
         when(queryResponseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(new QueryHeader("schema", "table", "label", "column", 1, "type", 2, 3, true, true, true, true)));
         when(proxyBackendHandler.execute()).thenReturn(queryResponseHeader);
@@ -102,7 +102,7 @@ public final class OpenGaussComQueryExecutorTest {
     }
     
     @Test
-    public void assertExecuteUpdate() throws SQLException {
+    void assertExecuteUpdate() throws SQLException {
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(InsertStatement.class)));
         Collection<DatabasePacket<?>> actual = queryExecutor.execute();
         assertThat(actual.size(), is(1));
@@ -111,14 +111,14 @@ public final class OpenGaussComQueryExecutorTest {
     }
     
     @Test
-    public void assertNext() throws SQLException {
+    void assertNext() throws SQLException {
         when(proxyBackendHandler.next()).thenReturn(true, false);
         assertTrue(queryExecutor.next());
         assertFalse(queryExecutor.next());
     }
     
     @Test
-    public void assertGetQueryRowPacket() throws SQLException {
+    void assertGetQueryRowPacket() throws SQLException {
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.emptyList()));
         PostgreSQLPacket actual = queryExecutor.getQueryRowPacket();
         assertThat(actual, is(instanceOf(PostgreSQLDataRowPacket.class)));

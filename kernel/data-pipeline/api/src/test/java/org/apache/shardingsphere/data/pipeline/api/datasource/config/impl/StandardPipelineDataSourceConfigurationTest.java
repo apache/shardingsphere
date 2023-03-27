@@ -30,7 +30,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public final class StandardPipelineDataSourceConfigurationTest {
+class StandardPipelineDataSourceConfigurationTest {
     
     private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/demo_ds?serverTimezone=UTC&useSSL=false";
     
@@ -39,7 +39,7 @@ public final class StandardPipelineDataSourceConfigurationTest {
     private static final String PASSWORD = "password";
     
     @Test
-    public void assertCreateWithSimpleParameters() {
+    void assertCreateWithSimpleParameters() {
         StandardPipelineDataSourceConfiguration actual = new StandardPipelineDataSourceConfiguration(JDBC_URL, USERNAME, PASSWORD);
         assertGetConfig(actual);
         actual = new StandardPipelineDataSourceConfiguration(actual.getParameter());
@@ -47,7 +47,7 @@ public final class StandardPipelineDataSourceConfigurationTest {
     }
     
     @Test
-    public void assertCreateWithYamlDataSourceConfiguration() {
+    void assertCreateWithYamlDataSourceConfiguration() {
         Map<String, Object> yamlDataSourceConfig = new HashMap<>();
         yamlDataSourceConfig.put("url", JDBC_URL);
         yamlDataSourceConfig.put("username", USERNAME);

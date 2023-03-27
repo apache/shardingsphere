@@ -32,10 +32,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class MaskRuleStatementConverterTest {
+class MaskRuleStatementConverterTest {
     
     @Test
-    public void assertCovert() {
+    void assertCovert() {
         MaskRuleConfiguration actual = MaskRuleStatementConverter.convert(Collections.singleton(new MaskRuleSegment("t_mask", createColumns())));
         assertThat(actual.getTables().iterator().next().getName(), is("t_mask"));
         assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("user_id"));

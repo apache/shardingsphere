@@ -41,10 +41,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowEncryptRuleExecutorTest {
+class ShowEncryptRuleExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         ShardingSphereDatabase database = mockDatabase();
         RQLExecutor<ShowEncryptRulesStatement> executor = new ShowEncryptRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowEncryptRulesStatement.class));
@@ -67,7 +67,7 @@ public final class ShowEncryptRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         RQLExecutor<ShowEncryptRulesStatement> executor = new ShowEncryptRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(13));

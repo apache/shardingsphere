@@ -28,20 +28,20 @@ import java.sql.SQLException;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class HikariDataSourcePoolActiveDetectorTest {
+class HikariDataSourcePoolActiveDetectorTest {
     
     @Test
-    public void assertNotContainsActiveConnectionWhenEmptyPool() {
+    void assertNotContainsActiveConnectionWhenEmptyPool() {
         assertFalse(new HikariDataSourcePoolActiveDetector().containsActiveConnection(new HikariDataSource()));
     }
     
     @Test
-    public void assertNotContainsActiveConnection() {
+    void assertNotContainsActiveConnection() {
         assertFalse(new HikariDataSourcePoolActiveDetector().containsActiveConnection(createHikariDataSource()));
     }
     
     @Test
-    public void assertContainsActiveConnection() throws SQLException {
+    void assertContainsActiveConnection() throws SQLException {
         DataSource dataSource = createHikariDataSource();
         try (Connection ignored = dataSource.getConnection()) {
             assertTrue(new HikariDataSourcePoolActiveDetector().containsActiveConnection(dataSource));

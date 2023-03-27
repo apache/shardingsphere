@@ -52,30 +52,30 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class AlterTableStatementContextTest {
+class AlterTableStatementContextTest {
     
     @Test
-    public void assertMySQLNewInstance() {
+    void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLAlterTableStatement.class));
     }
     
     @Test
-    public void assertPostgreSQLNewInstance() {
+    void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLAlterTableStatement.class));
     }
     
     @Test
-    public void assertOracleNewInstance() {
+    void assertOracleNewInstance() {
         assertNewInstance(mock(OracleAlterTableStatement.class));
     }
     
     @Test
-    public void assertSQLServerNewInstance() {
+    void assertSQLServerNewInstance() {
         assertNewInstance(mock(SQLServerAlterTableStatement.class));
     }
     
     @Test
-    public void assertSQL92NewInstance() {
+    void assertSQL92NewInstance() {
         assertNewInstance(mock(SQL92AlterTableStatement.class));
     }
     

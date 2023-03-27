@@ -34,10 +34,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class GenericSQLRewriteEngineTest {
+class GenericSQLRewriteEngineTest {
     
     @Test
-    public void assertRewrite() {
+    void assertRewrite() {
         DatabaseType databaseType = mock(DatabaseType.class);
         SQLTranslatorRule rule = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration());
         GenericSQLRewriteResult actual = new GenericSQLRewriteEngine(rule, databaseType, Collections.singletonMap("ds_0", databaseType)).rewrite(new SQLRewriteContext(DefaultDatabase.LOGIC_NAME,
@@ -47,7 +47,7 @@ public final class GenericSQLRewriteEngineTest {
     }
     
     @Test
-    public void assertRewriteStorageTypeIsEmpty() {
+    void assertRewriteStorageTypeIsEmpty() {
         SQLTranslatorRule rule = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration());
         GenericSQLRewriteResult actual = new GenericSQLRewriteEngine(rule, mock(DatabaseType.class), Collections.emptyMap()).rewrite(new SQLRewriteContext(DefaultDatabase.LOGIC_NAME,
                 Collections.singletonMap("test", mock(ShardingSphereSchema.class)), mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList(), mock(ConnectionContext.class)));
