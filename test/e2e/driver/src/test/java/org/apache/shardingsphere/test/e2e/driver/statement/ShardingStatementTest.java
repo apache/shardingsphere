@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.driver.statement;
 
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.test.e2e.driver.AbstractShardingSphereDataSourceForShardingTest;
+import org.apache.shardingsphere.test.e2e.driver.AbstractShardingDriverTest;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ShardingSphereStatementTest extends AbstractShardingSphereDataSourceForShardingTest {
+class ShardingStatementTest extends AbstractShardingDriverTest {
     
     @Test
     void assertGetGeneratedKeys() throws SQLException {

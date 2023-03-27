@@ -38,7 +38,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public abstract class AbstractShardingSphereDataSourceForEncryptTest extends AbstractSQLTest {
+public abstract class AbstractEncryptDriverTest extends AbstractDriverTest {
     
     private static ShardingSphereDataSource queryWithPlainDataSource;
     
@@ -62,7 +62,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     
     private static File getFile(final String fileName) {
         return new File(Objects.requireNonNull(
-                AbstractShardingSphereDataSourceForEncryptTest.class.getClassLoader().getResource(fileName), String.format("File `%s` is not existed.", fileName)).getFile());
+                AbstractEncryptDriverTest.class.getClassLoader().getResource(fileName), String.format("File `%s` is not existed.", fileName)).getFile());
     }
     
     private static Map<String, DataSource> getDataSourceMap() {
@@ -72,7 +72,7 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     @BeforeEach
     void initTable() {
         try (Connection connection = queryWithPlainDataSource.getConnection()) {
-            RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractSQLTest.class.getClassLoader().getResourceAsStream("sql/encrypt_data.sql"))));
+            RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractDriverTest.class.getClassLoader().getResourceAsStream("sql/encrypt_data.sql"))));
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }
