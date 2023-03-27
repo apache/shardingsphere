@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerC
 import org.apache.shardingsphere.test.e2e.data.pipeline.command.MigrationDistSQLCommand;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.PipelineE2EEnvironment;
 import org.apache.shardingsphere.test.e2e.data.pipeline.env.enums.PipelineEnvTypeEnum;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtils;
 import org.opengauss.util.PSQLException;
 
 import javax.xml.bind.JAXB;
@@ -77,11 +77,11 @@ public abstract class AbstractMigrationE2EIT {
     }
     
     protected void createSourceSchema(final PipelineContainerComposer containerComposer, final String schemaName) throws SQLException {
-        if (DatabaseTypeUtil.isPostgreSQL(containerComposer.getDatabaseType())) {
+        if (DatabaseTypeUtils.isPostgreSQL(containerComposer.getDatabaseType())) {
             containerComposer.sourceExecuteWithLog(String.format("CREATE SCHEMA IF NOT EXISTS %s", schemaName));
             return;
         }
-        if (DatabaseTypeUtil.isOpenGauss(containerComposer.getDatabaseType())) {
+        if (DatabaseTypeUtils.isOpenGauss(containerComposer.getDatabaseType())) {
             try {
                 containerComposer.sourceExecuteWithLog(String.format("CREATE SCHEMA %s", schemaName));
             } catch (final SQLException ex) {

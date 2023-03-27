@@ -23,10 +23,10 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * SQL builder util.
+ * SQL builder utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLBuilderUtil {
+public final class SQLBuilderUtils {
     
     /**
      * Build insert SQL.

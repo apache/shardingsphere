@@ -27,14 +27,14 @@ import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 import javax.sql.DataSource;
 
 /**
- * Storage container util.
+ * Storage container utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StorageContainerUtil {
+public final class StorageContainerUtils {
     
     /**
-     * Generate datasource. 
-     * 
+     * Generate datasource.
+     *
      * @param jdbcUrl JDBC URL for generating datasource
      * @param username username
      * @param password password
@@ -45,7 +45,7 @@ public final class StorageContainerUtil {
     }
     
     /**
-     * Generate datasource. 
+     * Generate datasource.
      *
      * @param jdbcUrl JDBC URL for generating datasource
      * @param username username

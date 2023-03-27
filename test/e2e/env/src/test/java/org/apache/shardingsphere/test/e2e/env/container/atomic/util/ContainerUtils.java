@@ -23,10 +23,10 @@ import lombok.NoArgsConstructor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Container util.
+ * Container utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ContainerUtil {
+public final class ContainerUtils {
     
     private static final AtomicInteger ATOMIC_MYSQL_SERVER_ID = new AtomicInteger(1);
     
@@ -34,7 +34,7 @@ public final class ContainerUtil {
     
     /**
      * Generate a unique MySQL server id.
-     * 
+     *
      * @return unique MySQL server id
      */
     public static int generateMySQLServerId() {

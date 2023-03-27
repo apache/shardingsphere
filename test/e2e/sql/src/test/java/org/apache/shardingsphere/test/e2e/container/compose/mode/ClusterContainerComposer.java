@@ -31,7 +31,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.Govern
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.impl.StorageContainerConfigurationFactory;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.AdapterContainerUtils;
 import org.apache.shardingsphere.test.e2e.framework.param.model.E2ETestParameter;
 
 import javax.sql.DataSource;
@@ -59,7 +59,7 @@ public final class ClusterContainerComposer implements ContainerComposer {
         storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "", scenario,
                 StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType())));
         AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(
-                scenario, testParam.getDatabaseType(), AdapterContainerUtil.getAdapterContainerImage());
+                scenario, testParam.getDatabaseType(), AdapterContainerUtils.getAdapterContainerImage());
         AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(AdapterMode.valueOf(testParam.getMode().toUpperCase()),
                 AdapterType.valueOf(testParam.getAdapter().toUpperCase()), testParam.getDatabaseType(), storageContainer, scenario, containerConfig);
         if (adapterContainer instanceof DockerITContainer) {

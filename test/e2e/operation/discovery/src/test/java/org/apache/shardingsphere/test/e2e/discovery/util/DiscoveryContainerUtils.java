@@ -26,10 +26,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Discovery container utility.
+ * Discovery container utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DiscoveryContainerUtil {
+public final class DiscoveryContainerUtils {
     
     /**
      * Get container names and quantity.

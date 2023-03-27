@@ -20,10 +20,10 @@ package org.apache.shardingsphere.test.e2e.discovery.framework.container.config;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.e2e.discovery.util.DiscoveryContainerUtil;
+import org.apache.shardingsphere.test.e2e.discovery.util.DiscoveryContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,7 +45,7 @@ public final class MySQLContainerConfigurationFactory {
      * @return created instance
      */
     public static List<StorageContainerConfiguration> newInstance(final String scenario, final DatabaseType databaseType) {
-        Integer containerQuantity = DiscoveryContainerUtil.loadContainerRawNamesAndQuantity(scenario).get(databaseType.getType().toLowerCase());
+        Integer containerQuantity = DiscoveryContainerUtils.loadContainerRawNamesAndQuantity(scenario).get(databaseType.getType().toLowerCase());
         List<StorageContainerConfiguration> result = new LinkedList<>();
         for (int i = 1; i <= containerQuantity; i++) {
             result.add(new StorageContainerConfiguration(getCommand(), getContainerEnvironments(), getMountedResources(scenario, databaseType, i)));
@@ -54,7 +54,7 @@ public final class MySQLContainerConfigurationFactory {
     }
     
     private static String getCommand() {
-        return "--server-id=" + ContainerUtil.generateMySQLServerId();
+        return "--server-id=" + ContainerUtils.generateMySQLServerId();
     }
     
     private static Map<String, String> getContainerEnvironments() {

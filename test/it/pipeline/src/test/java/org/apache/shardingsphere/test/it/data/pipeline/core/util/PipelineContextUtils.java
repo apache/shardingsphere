@@ -57,9 +57,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class PipelineContextUtil {
+/**
+ * Pipeline context utility class.
+ */
+public final class PipelineContextUtils {
     
-    private static final ExecuteEngine EXECUTE_ENGINE = ExecuteEngine.newCachedThreadInstance(PipelineContextUtil.class.getSimpleName());
+    private static final ExecuteEngine EXECUTE_ENGINE = ExecuteEngine.newCachedThreadInstance(PipelineContextUtils.class.getSimpleName());
     
     private static final PipelineChannelCreator PIPELINE_CHANNEL_CREATOR = TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY");
     

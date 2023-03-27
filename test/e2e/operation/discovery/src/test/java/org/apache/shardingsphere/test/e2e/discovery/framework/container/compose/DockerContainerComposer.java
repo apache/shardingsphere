@@ -34,8 +34,8 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.impl.Z
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.StorageContainerConfiguration;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtil;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.ContainerUtils;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.StorageContainerUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
 import javax.sql.DataSource;
@@ -69,7 +69,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         List<StorageContainerConfiguration> containerConfigs = MySQLContainerConfigurationFactory.newInstance(scenario, databaseType);
         containerConfigs.forEach(each -> {
             DockerStorageContainer storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage, null, each));
-            storageContainer.setNetworkAliases(Collections.singletonList(databaseType.getType().toLowerCase() + "_" + ContainerUtil.generateStorageContainerId()));
+            storageContainer.setNetworkAliases(Collections.singletonList(databaseType.getType().toLowerCase() + "_" + ContainerUtils.generateStorageContainerId()));
             storageContainers.add(storageContainer);
         });
         AdaptorContainerConfiguration containerConfig = ProxyClusterContainerConfigurationFactory.newInstance(scenario);
@@ -81,7 +81,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     
     @Override
     public DataSource getProxyDatasource() {
-        return StorageContainerUtil.generateDataSource(DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), ""),
+        return StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), ""),
                 ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
     }
     
@@ -89,7 +89,7 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     public List<DataSource> getMappedDatasource() {
         return getStorageContainers().stream()
                 .map(each -> DataSourceEnvironment.getURL(databaseType, each.getHost(), each.getMappedPort(), ""))
-                .map(each -> StorageContainerUtil.generateDataSource(each, StorageContainerConstants.USERNAME, StorageContainerConstants.PASSWORD))
+                .map(each -> StorageContainerUtils.generateDataSource(each, StorageContainerConstants.USERNAME, StorageContainerConstants.PASSWORD))
                 .collect(Collectors.toList());
     }
 }
