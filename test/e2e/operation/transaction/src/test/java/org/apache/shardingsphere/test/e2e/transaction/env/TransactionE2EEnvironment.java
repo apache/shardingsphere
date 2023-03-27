@@ -76,12 +76,11 @@ public final class TransactionE2EEnvironment {
     }
     
     private Map<String, TransactionTestCaseRegistry> initTransactionTestCaseRegistryMap() {
-        final Map<String, TransactionTestCaseRegistry> transactionTestCaseRegistryMap;
-        transactionTestCaseRegistryMap = new HashMap<>(TransactionTestCaseRegistry.values().length, 1);
+        Map<String, TransactionTestCaseRegistry> result = new HashMap<>(TransactionTestCaseRegistry.values().length, 1);
         for (TransactionTestCaseRegistry each : TransactionTestCaseRegistry.values()) {
-            transactionTestCaseRegistryMap.put(each.getTestCaseClass().getName(), each);
+            result.put(each.getTestCaseClass().getName(), each);
         }
-        return transactionTestCaseRegistryMap;
+        return result;
     }
     
     private List<String> splitProperty(final String key) {

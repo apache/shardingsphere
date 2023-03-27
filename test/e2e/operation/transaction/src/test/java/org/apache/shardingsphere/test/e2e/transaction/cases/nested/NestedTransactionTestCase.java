@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Nested transaction test case.
  */
 @TransactionTestCase(transactionTypes = TransactionType.LOCAL, adapters = TransactionTestConstants.JDBC)
-public class NestedTransactionTestCase extends BaseTransactionTestCase {
+public final class NestedTransactionTestCase extends BaseTransactionTestCase {
     
     public NestedTransactionTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
