@@ -66,8 +66,8 @@ public abstract class AbstractChangedJobConfigurationProcessor implements Change
     
     protected void onDisabled(final JobConfiguration jobConfig) {
         String jobId = jobConfig.getJobName();
-        for (Integer each : PipelineJobCenter.getShardingItems(jobId)) {
-            PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
+        for (int i = 0; i < jobConfig.getShardingTotalCount(); i++) {
+            PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), i);
         }
     }
     

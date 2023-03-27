@@ -376,21 +376,20 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     @Override
     public void rollback(final String jobId) throws SQLException {
         final long startTimeMillis = System.currentTimeMillis();
-        stopAndDropCheckJobs(jobId);
+        dropCheckJobs(jobId);
         stop(jobId);
         cleanTempTableOnRollback(jobId);
         dropJob(jobId);
         log.info("Rollback job {} cost {} ms", jobId, System.currentTimeMillis() - startTimeMillis);
     }
     
-    private void stopAndDropCheckJobs(final String jobId) {
+    private void dropCheckJobs(final String jobId) {
         Collection<String> checkJobIds = PipelineAPIFactory.getGovernanceRepositoryAPI().listCheckJobIds(jobId);
         if (checkJobIds.isEmpty()) {
             return;
         }
         for (String each : checkJobIds) {
             try {
-                stop(each);
                 dropJob(each);
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
@@ -423,7 +422,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         checkModeConfig();
         log.info("Commit job {}", jobId);
         final long startTimeMillis = System.currentTimeMillis();
-        stopAndDropCheckJobs(jobId);
+        dropCheckJobs(jobId);
         stop(jobId);
         dropJob(jobId);
         log.info("Commit cost {} ms", System.currentTimeMillis() - startTimeMillis);
