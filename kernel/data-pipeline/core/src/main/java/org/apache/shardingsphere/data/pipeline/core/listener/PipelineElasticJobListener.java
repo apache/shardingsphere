@@ -25,12 +25,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Pipeline job listener.
+ * Pipeline elastic job listener.
  */
 @Slf4j
-public final class PipelineJobListener implements ElasticJobListener {
+public final class PipelineElasticJobListener implements ElasticJobListener {
     
-    // TODO ElasticJobServiceLoader.getCachedTypedServiceInstance return new class instance, it's the reason why static variables
+    // TODO ElasticJobListenerFactory.createListener return new class instance, it's the reason why static variables
     private static final Map<String, Long> RUNNING_JOBS = new ConcurrentHashMap<>();
     
     @Override
@@ -58,6 +58,6 @@ public final class PipelineJobListener implements ElasticJobListener {
     
     @Override
     public String getType() {
-        return PipelineJobListener.class.getName();
+        return PipelineElasticJobListener.class.getName();
     }
 }
