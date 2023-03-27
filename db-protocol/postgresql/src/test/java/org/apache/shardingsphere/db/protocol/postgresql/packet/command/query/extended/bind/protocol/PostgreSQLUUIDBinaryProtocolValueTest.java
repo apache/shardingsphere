@@ -50,6 +50,6 @@ public final class PostgreSQLUUIDBinaryProtocolValueTest {
         ByteBuf byteBuf = Unpooled.wrappedBuffer(bytes).writerIndex(0);
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
         new PostgreSQLUUIDBinaryProtocolValue().write(payload, expected);
-        assertThat(bytes, is(expected));
+        assertThat(bytes, is(expected)); 
     }
 }
