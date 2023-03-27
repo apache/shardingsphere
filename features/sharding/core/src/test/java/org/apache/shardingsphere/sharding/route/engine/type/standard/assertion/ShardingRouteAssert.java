@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.route.engine.type.standard;
+package org.apache.shardingsphere.sharding.route.engine.type.standard.assertion;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -54,9 +56,20 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public abstract class AbstractSQLRouteTest {
+/**
+ * Sharding route assert.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingRouteAssert {
     
-    protected final RouteContext assertRoute(final String sql, final List<Object> params) {
+    /**
+     * Assert route.
+     * 
+     * @param sql SQL 
+     * @param params parameters
+     * @return route context
+     */
+    public static RouteContext assertRoute(final String sql, final List<Object> params) {
         ShardingRule shardingRule = ShardingRoutingEngineFixtureBuilder.createAllShardingRule();
         SingleRule singleRule = ShardingRoutingEngineFixtureBuilder.createSingleRule(Collections.singletonList(shardingRule));
         TimeServiceRule timeServiceRule = ShardingRoutingEngineFixtureBuilder.createTimeServiceRule();
@@ -75,11 +88,11 @@ public abstract class AbstractSQLRouteTest {
         return new SQLRouteEngine(Arrays.asList(shardingRule, singleRule), props).route(new ConnectionContext(), queryContext, mock(ShardingSphereRuleMetaData.class), database);
     }
     
-    private ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
+    private static ShardingSphereMetaData createShardingSphereMetaData(final ShardingSphereDatabase database) {
         return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
-    private Map<String, ShardingSphereSchema> buildSchemas() {
+    private static Map<String, ShardingSphereSchema> buildSchemas() {
         Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1);
         tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
