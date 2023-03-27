@@ -28,10 +28,10 @@ algorithmDefinition
     ;
 
 algorithmTypeName
-    : STRING_ | buildInAlgorithmTypeName
+    : STRING_ | buildInShadowAlgorithmType
     ;
 
-buildInAlgorithmTypeName
+buildInShadowAlgorithmType
     : VALUE_MATCH
     | REGEX_MATCH
     | SQL_HINT
