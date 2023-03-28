@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDa
 import org.apache.shardingsphere.elasticjob.infra.listener.ElasticJobListener;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
@@ -42,6 +43,10 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         }
         if (!contextManager.getInstanceContext().isCluster()) {
             log.info("mode type is not Cluster, mode type='{}', ignore", modeConfig.getType());
+            return;
+        }
+        // TODO When StandalonePersistRepository is equivalent with ClusterPersistRepository, use STANDALONE mode in pipeline IT and remove this check.
+        if (DefaultDatabase.LOGIC_NAME.equals(databaseName)) {
             return;
         }
         PipelineContextKey contextKey = PipelineContextKey.build(instanceType, databaseName);
