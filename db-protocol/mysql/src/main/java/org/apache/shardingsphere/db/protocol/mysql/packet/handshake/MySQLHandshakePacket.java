@@ -86,6 +86,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
      * From test, the 13th byte is nul byte and should be excluded from authPluginDataPart2.
      *
      * @param payload MySQL packet payload
+     * @return auth plugin data part2
      */
     private byte[] readAuthPluginDataPart2(final MySQLPacketPayload payload) {
         return isClientSecureConnection() ? payload.readStringNulByBytes() : new byte[0];

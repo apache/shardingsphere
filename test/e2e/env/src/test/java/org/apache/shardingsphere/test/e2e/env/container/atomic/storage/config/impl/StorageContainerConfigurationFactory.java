@@ -37,6 +37,7 @@ public final class StorageContainerConfigurationFactory {
      *
      * @param databaseType database type
      * @return created instance
+     * @throws RuntimeException runtime exception
      */
     public static StorageContainerConfiguration newInstance(final DatabaseType databaseType) {
         switch (databaseType.getType()) {

@@ -44,6 +44,7 @@ public final class ShadowValueValidator {
      * @param table table name
      * @param column column name
      * @param shadowValue shadow value
+     * @throws UnsupportedShadowColumnTypeException unsupported shadow column type exception
      */
     public static void validate(final String table, final String column, final Comparable<?> shadowValue) {
         for (Class<?> each : UNSUPPORTED_TYPES) {

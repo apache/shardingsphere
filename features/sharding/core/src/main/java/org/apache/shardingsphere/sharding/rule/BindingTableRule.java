@@ -56,6 +56,8 @@ public final class BindingTableRule {
      * @param otherLogicTable other logic table name in same binding table rule
      * @param otherActualTable other actual table name in same binding table rule
      * @return actual table name
+     * @throws ActualTableNotFoundException actual table not found exception
+     * @throws BindingTableNotFoundException binding table not found exception
      */
     public String getBindingActualTable(final String dataSource, final String logicTable, final String otherLogicTable, final String otherActualTable) {
         Optional<TableRule> otherLogicTableRule = Optional.ofNullable(tableRules.get(otherLogicTable.toLowerCase()));

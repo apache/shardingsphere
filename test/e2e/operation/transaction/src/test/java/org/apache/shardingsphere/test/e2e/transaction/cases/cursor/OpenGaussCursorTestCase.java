@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * OpenGauss cursor transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.OPENGAUSS}, adapters = TransactionTestConstants.PROXY, scenario = "cursor")
+@TransactionTestCase(dbTypes = TransactionTestConstants.OPENGAUSS, adapters = TransactionTestConstants.PROXY, scenario = "cursor")
 @Slf4j
 public final class OpenGaussCursorTestCase extends BaseTransactionTestCase {
     

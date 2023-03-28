@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * MySQL auto commit transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL}, transactionTypes = TransactionType.LOCAL)
+@TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL, transactionTypes = TransactionType.LOCAL)
 public final class MySQLAutoCommitTestCase extends BaseTransactionTestCase {
     
     public MySQLAutoCommitTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {

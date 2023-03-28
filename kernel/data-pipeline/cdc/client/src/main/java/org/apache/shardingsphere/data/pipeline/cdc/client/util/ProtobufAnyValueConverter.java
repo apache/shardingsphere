@@ -47,6 +47,7 @@ public final class ProtobufAnyValueConverter {
      * @param any any
      * @return object
      * @throws InvalidProtocolBufferException invalid protocol buffer exception
+     * @throws UnsupportedOperationException unsupported operation exception
      */
     public static Object convertToObject(final Any any) throws InvalidProtocolBufferException {
         if (null == any || any.is(Empty.class)) {

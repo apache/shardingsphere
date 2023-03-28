@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * MySQL set read only transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
+@TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL)
 @Slf4j
 public final class MySQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     

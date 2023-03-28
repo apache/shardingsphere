@@ -33,6 +33,7 @@ public final class DataSourcePropertiesValidateHandler {
      * Validate data source properties map.
      * 
      * @param dataSourcePropertiesMap data source properties map
+     * @throws InvalidStorageUnitsException invalid storage units exception
      */
     public void validate(final Map<String, DataSourceProperties> dataSourcePropertiesMap) {
         Collection<String> errorMessages = new DataSourcePropertiesValidator().validate(dataSourcePropertiesMap);

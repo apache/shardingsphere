@@ -34,6 +34,7 @@ public final class AggregationUnitFactory {
      * @param type aggregation function type
      * @param isDistinct is distinct
      * @return aggregation unit instance
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static AggregationUnit create(final AggregationType type, final boolean isDistinct) {
         switch (type) {

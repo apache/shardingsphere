@@ -57,8 +57,8 @@ public final class EncryptAssignmentTokenGenerator implements CollectionSQLToken
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext instanceof UpdateStatementContext || (sqlStatementContext instanceof InsertStatementContext
-                && InsertStatementHandler.getSetAssignmentSegment(((InsertStatementContext) sqlStatementContext).getSqlStatement()).isPresent());
+        return sqlStatementContext instanceof UpdateStatementContext || sqlStatementContext instanceof InsertStatementContext
+                && InsertStatementHandler.getSetAssignmentSegment(((InsertStatementContext) sqlStatementContext).getSqlStatement()).isPresent();
     }
     
     @Override

@@ -35,6 +35,7 @@ public enum VariableEnum {
      * 
      * @param variableName variable name
      * @return variable constant
+     * @throws UnsupportedVariableException unsupported variable exception
      */
     public static VariableEnum getValueOf(final String variableName) {
         try {

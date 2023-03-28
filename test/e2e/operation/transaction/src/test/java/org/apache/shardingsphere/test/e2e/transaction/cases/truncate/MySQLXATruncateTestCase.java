@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * MySQL truncate XA transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL}, adapters = TransactionTestConstants.PROXY, transactionTypes = {TransactionType.XA})
+@TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL, adapters = TransactionTestConstants.PROXY, transactionTypes = TransactionType.XA)
 @Slf4j
 public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     

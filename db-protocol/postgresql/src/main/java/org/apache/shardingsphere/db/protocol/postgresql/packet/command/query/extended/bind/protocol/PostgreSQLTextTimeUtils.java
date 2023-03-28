@@ -40,6 +40,7 @@ public final class PostgreSQLTextTimeUtils {
      *
      * @param value text value to be parsed
      * @return time
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static LocalTime parse(final String value) {
         try {

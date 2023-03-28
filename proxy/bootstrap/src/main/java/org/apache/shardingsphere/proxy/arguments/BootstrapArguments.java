@@ -46,6 +46,7 @@ public final class BootstrapArguments {
      * Get port.
      *
      * @return port
+     * @throws IllegalArgumentException illegal argument exception
      */
     public Optional<Integer> getPort() {
         if (0 == args.length) {

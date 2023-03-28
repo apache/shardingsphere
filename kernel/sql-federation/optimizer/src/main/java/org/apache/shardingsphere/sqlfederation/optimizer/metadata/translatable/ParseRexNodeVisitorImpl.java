@@ -296,15 +296,15 @@ public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNo
         for (ArgRangeContext each : ctx.argRange()) {
             BigDecimal lowerValue = BigDecimal.valueOf(Long.MIN_VALUE);
             BigDecimal upperValue = BigDecimal.valueOf(Long.MAX_VALUE);
-            if ((null != each.NEGETIVE_INFINITY_()) && (null != each.INTEGER_(0))) {
+            if (null != each.NEGETIVE_INFINITY_() && null != each.INTEGER_(0)) {
                 String upper = each.INTEGER_(0).getText();
                 upperValue = BigDecimal.valueOf(Long.parseLong(upper));
             }
-            if ((null != each.POSITIVE_INFINITY_()) && (null != each.INTEGER_(0))) {
+            if (null != each.POSITIVE_INFINITY_() && null != each.INTEGER_(0)) {
                 String lower = each.INTEGER_(0).getText();
                 lowerValue = BigDecimal.valueOf(Long.parseLong(lower));
             }
-            if ((null == each.NEGETIVE_INFINITY_()) && (null == each.POSITIVE_INFINITY_())) {
+            if (null == each.NEGETIVE_INFINITY_() && null == each.POSITIVE_INFINITY_()) {
                 String lower = each.INTEGER_(0).getText();
                 String upper = each.INTEGER_(1).getText();
                 lowerValue = BigDecimal.valueOf(Long.parseLong(lower));

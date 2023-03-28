@@ -211,7 +211,7 @@ public final class ProjectionEngine {
         Collection<Projection> remainingProjections = new LinkedList<>();
         for (Projection each : getOriginalProjections(joinTable, projectionSegment)) {
             Collection<Projection> actualProjections = getActualProjections(Collections.singletonList(each));
-            if ((joinTable.getUsing().isEmpty() && !joinTable.isNatural()) || (null != owner && each.getExpression().contains(owner))) {
+            if (joinTable.getUsing().isEmpty() && !joinTable.isNatural() || null != owner && each.getExpression().contains(owner)) {
                 result.addAll(actualProjections);
             } else {
                 remainingProjections.addAll(actualProjections);

@@ -29,7 +29,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -52,9 +51,9 @@ public final class ResultSetUtils {
      * @param value original value
      * @param convertType expected class type
      * @return converted value
-     * @throws SQLException SQL exception
+     * @throws SQLFeatureNotSupportedException SQL feature not supported exception
      */
-    public static Object convertValue(final Object value, final Class<?> convertType) throws SQLException {
+    public static Object convertValue(final Object value, final Class<?> convertType) throws SQLFeatureNotSupportedException {
         ShardingSpherePreconditions.checkState(null != convertType, () -> new SQLFeatureNotSupportedException("Type can not be null"));
         if (null == value) {
             return convertNullValue(convertType);
@@ -108,6 +107,7 @@ public final class ResultSetUtils {
      * @param needScale need scale
      * @param scale scale size
      * @return big decimal
+     * @throws UnsupportedDataTypeConversionException unsupported data type conversion exception
      */
     public static Object convertBigDecimalValue(final Object value, final boolean needScale, final int scale) {
         if (null == value) {
