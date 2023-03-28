@@ -26,8 +26,11 @@ import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
+import org.apache.shardingsphere.data.pipeline.core.listener.PipelineElasticJobListener;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
+import org.apache.shardingsphere.elasticjob.infra.listener.ElasticJobListener;
+import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
@@ -36,6 +39,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Abstract pipeline job.
@@ -113,12 +117,31 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     private void innerStop() {
         stopping = true;
-        if (null != jobBootstrap) {
-            jobBootstrap.shutdown();
-        }
         log.info("stop tasks runner, jobId={}", jobId);
         for (PipelineTasksRunner each : tasksRunnerMap.values()) {
             each.stop();
+        }
+        Optional<ElasticJobListener> pipelineJobListener = ElasticJobServiceLoader.getCachedTypedServiceInstance(ElasticJobListener.class, PipelineElasticJobListener.class.getName());
+        pipelineJobListener.ifPresent(jobListener -> awaitJobStopped((PipelineElasticJobListener) jobListener, jobId, TimeUnit.SECONDS.toMillis(2)));
+        if (null == jobBootstrap) {
+            return;
+        }
+        jobBootstrap.shutdown();
+    }
+    
+    private void awaitJobStopped(final PipelineElasticJobListener jobListener, final String jobId, final long timeoutMillis) {
+        int time = 0;
+        int sleepTime = 50;
+        while (time < timeoutMillis) {
+            if (!jobListener.isJobRunning(jobId)) {
+                break;
+            }
+            try {
+                Thread.sleep(sleepTime);
+            } catch (final InterruptedException ignored) {
+                break;
+            }
+            time += sleepTime;
         }
     }
     
