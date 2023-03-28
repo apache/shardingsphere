@@ -83,7 +83,7 @@ class ReadwriteSplittingRuleStatementConverterTest {
         assertThat(actualMultipleRuleSegmentConvertResultLoadBalancers.size(), is(expectedMultipleReadwriteSplittingRuleSegments.size()));
         List<ReadwriteSplittingDataSourceRuleConfiguration> actualRuleConfigs = new ArrayList<>(actualMultipleRuleSegmentConvertResultDataSources);
         long limit = expectedMultipleReadwriteSplittingRuleSegments.size();
-        for (int i = 0; ; i = i + 1) {
+        for (int i = 0;; i = i + 1) {
             if (0 == limit--) {
                 break;
             }
