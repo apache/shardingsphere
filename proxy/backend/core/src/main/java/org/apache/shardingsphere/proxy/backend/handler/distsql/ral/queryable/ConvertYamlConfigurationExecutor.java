@@ -40,6 +40,7 @@ import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceP
 import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfiguration;
@@ -114,7 +115,7 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
     private String generateDistSQL(final YamlProxyDatabaseConfiguration yamlConfig) {
         StringBuilder result = new StringBuilder();
         appendResourceDistSQL(yamlConfig, result);
-        swapToRuleConfigs(yamlConfig).values().forEach(each -> {
+        for (RuleConfiguration each : swapToRuleConfigs(yamlConfig).values()) {
             if (each instanceof ShardingRuleConfiguration) {
                 appendShardingDistSQL((ShardingRuleConfiguration) each, result);
             } else if (each instanceof ReadwriteSplittingRuleConfiguration) {
@@ -128,13 +129,13 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
             } else if (each instanceof MaskRuleConfiguration) {
                 appendMaskDistSQL((MaskRuleConfiguration) each, result);
             }
-        });
+        }
         return result.toString();
     }
     
     private Map<Integer, RuleConfiguration> swapToRuleConfigs(final YamlProxyDatabaseConfiguration yamlConfig) {
         Map<Integer, RuleConfiguration> result = new TreeMap<>(Comparator.reverseOrder());
-        yamlConfig.getRules().forEach(each -> {
+        for (YamlRuleConfiguration each : yamlConfig.getRules()) {
             if (each instanceof YamlShardingRuleConfiguration) {
                 YamlShardingRuleConfigurationSwapper swapper = new YamlShardingRuleConfigurationSwapper();
                 result.put(swapper.getOrder(), swapper.swapToObject((YamlShardingRuleConfiguration) each));
@@ -154,7 +155,7 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
                 YamlMaskRuleConfigurationSwapper swapper = new YamlMaskRuleConfigurationSwapper();
                 result.put(swapper.getOrder(), swapper.swapToObject((YamlMaskRuleConfiguration) each));
             }
-        });
+        }
         return result;
     }
     

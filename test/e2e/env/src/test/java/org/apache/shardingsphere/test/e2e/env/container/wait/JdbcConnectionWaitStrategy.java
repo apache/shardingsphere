@@ -37,17 +37,19 @@ public final class JdbcConnectionWaitStrategy extends AbstractWaitStrategy {
     
     @Override
     protected void waitUntilReady() {
-        Unreliables.retryUntilSuccess((int) startupTimeout.getSeconds(), TimeUnit.SECONDS, () -> {
-            getRateLimiter().doWhenReady(() -> {
-                try (Connection ignored = connectionSupplier.call()) {
-                    log.info("Container ready.");
-                    // CHECKSTYLE:OFF
-                } catch (final Exception ex) {
-                    // CHECKSTYLE:ON
-                    throw new RuntimeException("Not Ready yet.", ex);
-                }
-            });
-            return true;
+        Unreliables.retryUntilSuccess((int) startupTimeout.getSeconds(), TimeUnit.SECONDS, this::mockRateLimiter);
+    }
+    
+    private boolean mockRateLimiter() {
+        getRateLimiter().doWhenReady(() -> {
+            try (Connection ignored = connectionSupplier.call()) {
+                log.info("Container ready.");
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                throw new RuntimeException("Not Ready yet.", ex);
+            }
         });
+        return true;
     }
 }

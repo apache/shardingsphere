@@ -59,7 +59,7 @@ public final class ShardingTableRuleStatementConverter {
      */
     public static ShardingRuleConfiguration convert(final Collection<AbstractTableRuleSegment> rules) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        rules.forEach(each -> {
+        for (AbstractTableRuleSegment each : rules) {
             result.getKeyGenerators().putAll(createKeyGeneratorConfiguration(each));
             result.getAuditors().putAll(createAuditorConfiguration(each));
             if (each instanceof AutoTableRuleSegment) {
@@ -70,7 +70,7 @@ public final class ShardingTableRuleStatementConverter {
                 result.getShardingAlgorithms().putAll(createAlgorithmConfiguration((TableRuleSegment) each));
                 result.getTables().add(createTableRuleConfiguration((TableRuleSegment) each));
             }
-        });
+        }
         return result;
     }
     

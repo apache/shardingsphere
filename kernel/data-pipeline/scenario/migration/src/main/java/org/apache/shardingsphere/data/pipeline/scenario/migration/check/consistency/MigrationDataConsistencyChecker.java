@@ -21,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.PipelineDataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.api.datanode.DataNodeUtils;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
+import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -85,21 +87,26 @@ public final class MigrationDataConsistencyChecker implements PipelineDataConsis
         PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
         try {
             AtomicBoolean checkFailed = new AtomicBoolean(false);
-            jobConfig.getJobShardingDataNodes().forEach(each -> each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> {
-                if (checkFailed.get()) {
-                    return;
-                }
-                DataConsistencyCheckResult checkResult = checkSingleTable(entry.getLogicTableName(), dataNode, calculateAlgorithm, dataSourceManager);
-                result.put(DataNodeUtils.formatWithSchema(dataNode), checkResult);
-                if (!checkResult.isMatched()) {
-                    log.info("unmatched on table '{}', ignore left tables", each);
-                    checkFailed.set(true);
-                }
-            })));
+            for (JobDataNodeLine each : jobConfig.getJobShardingDataNodes()) {
+                each.getEntries().forEach(entry -> entry.getDataNodes().forEach(dataNode -> check(calculateAlgorithm, result, dataSourceManager, checkFailed, each, entry, dataNode)));
+            }
         } finally {
             dataSourceManager.close();
         }
         return result;
+    }
+    
+    private void check(final DataConsistencyCalculateAlgorithm calculateAlgorithm, final Map<String, DataConsistencyCheckResult> checkResults, final PipelineDataSourceManager dataSourceManager,
+                       final AtomicBoolean checkFailed, final JobDataNodeLine jobDataNodeLine, final JobDataNodeEntry entry, final DataNode dataNode) {
+        if (checkFailed.get()) {
+            return;
+        }
+        DataConsistencyCheckResult checkResult = checkSingleTable(entry.getLogicTableName(), dataNode, calculateAlgorithm, dataSourceManager);
+        checkResults.put(DataNodeUtils.formatWithSchema(dataNode), checkResult);
+        if (!checkResult.isMatched()) {
+            log.info("unmatched on table '{}', ignore left tables", jobDataNodeLine);
+            checkFailed.set(true);
+        }
     }
     
     private DataConsistencyCheckResult checkSingleTable(final String targetTableName, final DataNode dataNode,
