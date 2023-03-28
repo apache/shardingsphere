@@ -30,6 +30,8 @@ import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
+import java.util.Collection;
+
 /**
  * Abstract changed job configuration processor.
  */
@@ -39,16 +41,17 @@ public abstract class AbstractChangedJobConfigurationProcessor implements Change
     @Override
     public void process(final Type eventType, final JobConfiguration jobConfig) {
         boolean disabled = jobConfig.isDisabled();
-        if (disabled) {
-            onDisabled(jobConfig);
-        }
         boolean deleted = Type.DELETED == eventType;
         if (deleted) {
             onDeleted(jobConfig);
         }
         String jobId = jobConfig.getJobName();
         if (disabled || deleted) {
+            Collection<Integer> jobItems = PipelineJobCenter.getShardingItems(jobId);
             PipelineJobCenter.stop(jobId);
+            if (disabled) {
+                onDisabled(jobConfig, jobItems);
+            }
             return;
         }
         switch (eventType) {
@@ -65,10 +68,10 @@ public abstract class AbstractChangedJobConfigurationProcessor implements Change
         }
     }
     
-    protected void onDisabled(final JobConfiguration jobConfig) {
+    protected void onDisabled(final JobConfiguration jobConfig, final Collection<Integer> jobItems) {
         String jobId = jobConfig.getJobName();
         PipelineDistributedBarrier distributedBarrier = PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId));
-        for (Integer each : PipelineJobCenter.getShardingItems(jobId)) {
+        for (Integer each : jobItems) {
             distributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
         }
     }

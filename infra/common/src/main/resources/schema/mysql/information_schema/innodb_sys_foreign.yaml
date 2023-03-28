@@ -15,5 +15,45 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.e2e.driver.fixture.keygen.IncrementKeyGenerateAlgorithmFixture
-org.apache.shardingsphere.test.e2e.driver.fixture.keygen.ResetIncrementKeyGenerateAlgorithmFixture
+name: INNODB_SYS_FOREIGN
+columns:
+  id:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ID
+    primaryKey: false
+    unsigned: false
+    visible: true
+  for_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: FOR_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ref_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: REF_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  n_cols:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: N_COLS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  type:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: TYPE
+    primaryKey: false
+    unsigned: true
+    visible: true

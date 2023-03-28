@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.proxy.distsql;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.example.proxy.distsql.factory.DataSourceFactory;
 import org.apache.shardingsphere.example.proxy.distsql.feature.FeatureType;
-import org.apache.shardingsphere.example.proxy.distsql.utils.FileUtil;
+import org.apache.shardingsphere.example.proxy.distsql.util.FileUtils;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import java.sql.Statement;
 public final class DistSQLFeatureExample {
     
     public static void main(final String[] args) throws IOException {
-        DataSource dataSource = DataSourceFactory.createDataSource(FileUtil.getFile("/client/datasource-config.yaml"));
+        DataSource dataSource = DataSourceFactory.createDataSource(FileUtils.getFile("/client/datasource-config.yaml"));
         execute(dataSource);
     }
     
