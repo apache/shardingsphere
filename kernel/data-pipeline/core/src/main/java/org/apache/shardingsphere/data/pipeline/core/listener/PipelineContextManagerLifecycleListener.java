@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
-import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobWorker;
+import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNodeWatcher;
 import org.apache.shardingsphere.elasticjob.infra.listener.ElasticJobListener;
 import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
@@ -46,7 +46,7 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         }
         PipelineContextKey contextKey = PipelineContextKey.build(instanceType, databaseName);
         PipelineContextManager.putContext(contextKey, new PipelineContext(modeConfig, contextManager));
-        PipelineJobWorker.initialize(contextKey);
+        PipelineMetaDataNodeWatcher.getInstance(contextKey);
         ElasticJobServiceLoader.registerTypedService(ElasticJobListener.class);
     }
     
