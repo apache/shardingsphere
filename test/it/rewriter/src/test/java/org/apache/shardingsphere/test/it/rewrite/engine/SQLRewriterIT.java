@@ -94,7 +94,7 @@ public abstract class SQLRewriterIT {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public final void assertRewrite(final SQLRewriteEngineTestParameters testParams) throws IOException, SQLException {
+    void assertRewrite(final SQLRewriteEngineTestParameters testParams) throws IOException, SQLException {
         Collection<SQLRewriteUnit> actual = createSQLRewriteUnits(testParams);
         assertThat(actual.size(), is(testParams.getOutputSQLs().size()));
         int count = 0;

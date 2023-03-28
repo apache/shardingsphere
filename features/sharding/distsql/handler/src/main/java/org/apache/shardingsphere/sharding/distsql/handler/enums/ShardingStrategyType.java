@@ -159,6 +159,7 @@ public enum ShardingStrategyType {
      *
      * @param name name
      * @return sharding strategy type
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static ShardingStrategyType getValueOf(final String name) {
         try {

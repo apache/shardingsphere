@@ -54,6 +54,7 @@ public final class ExportUtils {
      * 
      * @param filePath file path
      * @param exportedData exported configuration data
+     * @throws FileIOException file IO exception
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void exportToFile(final String filePath, final String exportedData) {

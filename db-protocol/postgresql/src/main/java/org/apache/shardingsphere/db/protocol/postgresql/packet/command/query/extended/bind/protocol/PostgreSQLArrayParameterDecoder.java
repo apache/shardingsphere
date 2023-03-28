@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -176,16 +175,17 @@ public final class PostgreSQLArrayParameterDecoder {
             if ("NULL".equals(each)) {
                 return null;
             }
-            if ('"' == each.charAt(0) && '"' == each.charAt(each.length() - 1)) {
-                each = each.substring(1, each.length() - 1);
+            String result = each;
+            if ('"' == result.charAt(0) && '"' == result.charAt(result.length() - 1)) {
+                result = result.substring(1, result.length() - 1);
             }
-            while (each.contains("\\\"")) {
-                each = each.replace("\\\"", "\"");
+            while (result.contains("\\\"")) {
+                result = result.replace("\\\"", "\"");
             }
-            while (each.contains("\\\\")) {
-                each = each.replace("\\\\", "\\");
+            while (result.contains("\\\\")) {
+                result = result.replace("\\\\", "\\");
             }
-            return each;
-        }).collect(Collectors.toCollection(ArrayList::new));
+            return result;
+        }).collect(Collectors.toList());
     }
 }

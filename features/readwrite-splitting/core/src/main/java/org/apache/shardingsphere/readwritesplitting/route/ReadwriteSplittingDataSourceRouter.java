@@ -76,7 +76,7 @@ public final class ReadwriteSplittingDataSourceRouter {
     }
     
     private boolean isHintWriteRouteOnly(final SQLStatementContext<?> sqlStatementContext) {
-        return HintManager.isWriteRouteOnly() || (sqlStatementContext instanceof CommonSQLStatementContext && ((CommonSQLStatementContext<?>) sqlStatementContext).isHintWriteRouteOnly());
+        return HintManager.isWriteRouteOnly() || sqlStatementContext instanceof CommonSQLStatementContext && ((CommonSQLStatementContext<?>) sqlStatementContext).isHintWriteRouteOnly();
     }
     
     private String routeInTransaction() {

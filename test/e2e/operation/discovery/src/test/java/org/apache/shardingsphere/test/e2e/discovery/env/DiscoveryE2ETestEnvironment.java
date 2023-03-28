@@ -75,11 +75,12 @@ public final class DiscoveryE2ETestEnvironment {
      *
      * @param databaseType database type
      * @return storage container images
+     * @throws UnsupportedOperationException unsupported operation exception
      */
     public List<String> listStorageContainerImages(final DatabaseType databaseType) {
         if ("MySQL".equals(databaseType.getType())) {
             return mysqlVersions;
         }
-        throw new UnsupportedOperationException("Unsupported database type: " + databaseType.getType());
+        throw new UnsupportedOperationException(String.format("Unsupported database type: `%s`", databaseType.getType()));
     }
 }

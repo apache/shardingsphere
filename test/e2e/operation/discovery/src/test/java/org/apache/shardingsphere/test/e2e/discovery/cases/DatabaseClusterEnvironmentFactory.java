@@ -38,11 +38,12 @@ public final class DatabaseClusterEnvironmentFactory {
      * @param dataSources storage data sources
      * @return Database cluster environment instance
      * @throws SQLException SQL exception
+     * @throws UnsupportedOperationException unsupported operation exception
      */
     public static DatabaseClusterEnvironment newInstance(final String environment, final List<DataSource> dataSources) throws SQLException {
         if ("MySQL.MGR".equals(environment)) {
             return new MySQLMGREnvironment(dataSources);
         }
-        throw new UnsupportedOperationException("Unsupported database environment : " + environment);
+        throw new UnsupportedOperationException(String.format("Unsupported database environment: `%s`", environment));
     }
 }

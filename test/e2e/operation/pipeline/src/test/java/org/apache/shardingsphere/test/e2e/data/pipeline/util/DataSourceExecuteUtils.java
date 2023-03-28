@@ -37,6 +37,7 @@ public final class DataSourceExecuteUtils {
      *
      * @param dataSource data source
      * @param sql SQL
+     * @throws RuntimeException runtime exception
      */
     public static void execute(final DataSource dataSource, final String sql) {
         try (Connection connection = dataSource.getConnection()) {
@@ -52,6 +53,7 @@ public final class DataSourceExecuteUtils {
      * @param dataSource data source
      * @param sql SQL
      * @param parameters parameters
+     * @throws RuntimeException runtime exception
      */
     public static void execute(final DataSource dataSource, final String sql, final Object[] parameters) {
         try (Connection connection = dataSource.getConnection()) {
@@ -71,6 +73,7 @@ public final class DataSourceExecuteUtils {
      * @param dataSource data source
      * @param sql SQL
      * @param parameters parameters
+     * @throws RuntimeException runtime exception
      */
     public static void execute(final DataSource dataSource, final String sql, final List<Object[]> parameters) {
         try (Connection connection = dataSource.getConnection()) {

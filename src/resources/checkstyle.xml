@@ -35,6 +35,11 @@
     <module name="UniqueProperties" />
     <module name="SeverityMatchFilter" />
     
+    <module name="LineLength">
+        <property name="fileExtensions" value="java"/>
+        <property name="max" value="200" />
+    </module>
+    
     <module name="TreeWalker">
         
         <!-- Naming Conventions -->
@@ -60,9 +65,6 @@
         <!-- Size Violations -->
         <module name="AnonInnerLength" />
         <module name="MethodLength" />
-        <module name="LineLength">
-            <property name="max" value="200" />
-        </module>
         <module name="MethodCount" />
         <module name="ExecutableStatementCount">
             <property name="max" value="50" />
@@ -122,7 +124,6 @@
         <module name="IllegalImport" />
         <module name="RedundantImport" />
         <module name="UnusedImports" />
-        <module name="CustomImportOrder" />
         
         <!-- Annotations -->
         <module name="AnnotationLocation">
@@ -235,6 +236,7 @@
         <module name="AtclauseOrder">
             <property name="tagOrder" value="@param, @return, @throws, @deprecated" />
         </module>
+        <module name="InvalidJavadocPosition" />
         <module name="NonEmptyAtclauseDescription" />
         <module name="JavadocParagraph" />
         <module name="JavadocStyle" />
@@ -247,9 +249,8 @@
         </module>
         -->
         <module name="JavadocMethod">
-            <property name="scope" value="public" />
             <property name="allowedAnnotations" value="Override, Test, BeforeEach, AfterEach, BeforeAll, AfterAll, ParameterizedTest" />
-            <property name="ignoreMethodNamesRegex" value="^assert.*$|^verify.*$" />
+            <property name="validateThrows" value="true" />
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF" />
         </module>
         

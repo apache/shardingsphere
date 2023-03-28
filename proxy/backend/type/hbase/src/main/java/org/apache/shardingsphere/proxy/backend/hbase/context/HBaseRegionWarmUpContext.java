@@ -79,6 +79,7 @@ public final class HBaseRegionWarmUpContext {
      *
      * @param tableName table name
      * @param connection HBase connection
+     * @throws HBaseOperationException HBase operation exception
      */
     public void loadRegionInfo(final String tableName, final Connection connection) {
         HBaseRegionWarmUpContext.getInstance().addExecuteCount();

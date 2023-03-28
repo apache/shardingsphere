@@ -61,6 +61,7 @@ public final class ColumnValueConvertUtils {
      *
      * @param object object
      * @return protobuf message
+     * @throws RuntimeException runtime exception
      */
     @SuppressWarnings("deprecation")
     public static Message convertToProtobufMessage(final Object object) {
