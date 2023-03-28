@@ -59,22 +59,25 @@ public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRul
     private Collection<LocalDataQueryResultRow> buildColumnData(final EncryptTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> algorithmMap,
                                                                 final boolean queryWithCipherColumn) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        tableRuleConfig.getColumns().forEach(each -> {
+        for (EncryptColumnRuleConfiguration each : tableRuleConfig.getColumns()) {
             AlgorithmConfiguration encryptorAlgorithmConfig = algorithmMap.get(each.getEncryptorName());
             AlgorithmConfiguration assistedQueryEncryptorAlgorithmConfig = algorithmMap.get(each.getAssistedQueryEncryptorName());
             AlgorithmConfiguration likeQueryEncryptorAlgorithmConfig = algorithmMap.get(each.getLikeQueryEncryptorName());
-            result.add(new LocalDataQueryResultRow(Arrays.asList(tableRuleConfig.getName(), each.getLogicColumn(),
+            result.add(new LocalDataQueryResultRow(Arrays.asList(
+                    tableRuleConfig.getName(),
+                    each.getLogicColumn(),
                     each.getCipherColumn(),
                     nullToEmptyString(each.getPlainColumn()),
                     nullToEmptyString(each.getAssistedQueryColumn()),
                     nullToEmptyString(each.getLikeQueryColumn()),
-                    encryptorAlgorithmConfig.getType(), PropertiesConverter.convert(encryptorAlgorithmConfig.getProps()),
+                    encryptorAlgorithmConfig.getType(),
+                    PropertiesConverter.convert(encryptorAlgorithmConfig.getProps()),
                     Objects.isNull(assistedQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : assistedQueryEncryptorAlgorithmConfig.getType(),
                     Objects.isNull(assistedQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : PropertiesConverter.convert(assistedQueryEncryptorAlgorithmConfig.getProps()),
                     Objects.isNull(likeQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : likeQueryEncryptorAlgorithmConfig.getType(),
                     Objects.isNull(likeQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : PropertiesConverter.convert(likeQueryEncryptorAlgorithmConfig.getProps()),
                     isQueryWithCipherColumn(queryWithCipherColumn, tableRuleConfig, each).toString())));
-        });
+        }
         return result;
     }
     

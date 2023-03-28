@@ -171,21 +171,20 @@ public final class PostgreSQLArrayParameterDecoder {
         Preconditions.checkArgument(value.length() >= 2, "value length less than 2");
         Preconditions.checkArgument('{' == value.charAt(0) && '}' == value.charAt(value.length() - 1), "value not start with '{' or not end with '}'");
         String[] elements = value.substring(1, value.length() - 1).split(",");
-        return Arrays.stream(elements).map(each -> {
-            if ("NULL".equals(each)) {
-                return null;
-            }
-            String result = each;
-            if ('"' == result.charAt(0) && '"' == result.charAt(result.length() - 1)) {
-                result = result.substring(1, result.length() - 1);
-            }
-            while (result.contains("\\\"")) {
-                result = result.replace("\\\"", "\"");
-            }
-            while (result.contains("\\\\")) {
-                result = result.replace("\\\\", "\\");
-            }
-            return result;
-        }).collect(Collectors.toList());
+        return Arrays.stream(elements).map(each -> "NULL".equals(each) ? null : decodeElementText(each)).collect(Collectors.toList());
+    }
+    
+    private static String decodeElementText(final String element) {
+        String result = element;
+        if ('"' == result.charAt(0) && '"' == result.charAt(result.length() - 1)) {
+            result = result.substring(1, result.length() - 1);
+        }
+        while (result.contains("\\\"")) {
+            result = result.replace("\\\"", "\"");
+        }
+        while (result.contains("\\\\")) {
+            result = result.replace("\\\\", "\\");
+        }
+        return result;
     }
 }

@@ -300,7 +300,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static void checkStrategy(final String databaseName, final Collection<TableRuleSegment> rules) {
-        rules.forEach(each -> {
+        for (TableRuleSegment each : rules) {
             Optional<ShardingStrategySegment> databaseStrategySegment = Optional.ofNullable(each.getDatabaseStrategySegment());
             if (databaseStrategySegment.isPresent() && !databaseStrategySegment.get().getType().equalsIgnoreCase("none")) {
                 AlgorithmSegment databaseShardingAlgorithm = databaseStrategySegment.get().getShardingAlgorithm();
@@ -311,8 +311,7 @@ public final class ShardingTableRuleStatementChecker {
                                     String.format("auto sharding algorithm cannot be used to create a table in Table mode `%s`", each.getLogicTable())));
                 }
                 ShardingSpherePreconditions.checkState(!isInvalidStrategy(each.getDatabaseStrategySegment()),
-                        () -> new InvalidAlgorithmConfigurationException(databaseName,
-                                null == databaseShardingAlgorithm ? null : databaseShardingAlgorithm.getName()));
+                        () -> new InvalidAlgorithmConfigurationException(databaseName, null == databaseShardingAlgorithm ? null : databaseShardingAlgorithm.getName()));
             }
             Optional<ShardingStrategySegment> tableStrategySegment = Optional.ofNullable(each.getTableStrategySegment());
             if (tableStrategySegment.isPresent() && !tableStrategySegment.get().getType().equalsIgnoreCase("none")) {
@@ -324,10 +323,9 @@ public final class ShardingTableRuleStatementChecker {
                                     String.format("auto sharding algorithm cannot be used to create a table in Table mode `%s`", each.getLogicTable())));
                 }
                 ShardingSpherePreconditions.checkState(!isInvalidStrategy(each.getTableStrategySegment()),
-                        () -> new InvalidAlgorithmConfigurationException(databaseName,
-                                null == tableShardingAlgorithm ? null : tableShardingAlgorithm.getName()));
+                        () -> new InvalidAlgorithmConfigurationException(databaseName, null == tableShardingAlgorithm ? null : tableShardingAlgorithm.getName()));
             }
-        });
+        }
     }
     
     private static boolean isInvalidStrategy(final ShardingStrategySegment shardingStrategySegment) {

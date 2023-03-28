@@ -134,22 +134,24 @@ class MySQLClientTest {
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComBinlogDumpCommandPacket.class));
     }
     
-    @SuppressWarnings("unchecked")
     private void mockChannelResponse(final Object response) {
-        new Thread(() -> {
-            while (true) {
-                Promise<Object> responseCallback;
-                try {
-                    responseCallback = (Promise<Object>) Plugins.getMemberAccessor().get(MySQLClient.class.getDeclaredField("responseCallback"), mysqlClient);
-                } catch (final ReflectiveOperationException ex) {
-                    throw new RuntimeException(ex);
-                }
-                if (null != responseCallback) {
-                    responseCallback.setSuccess(response);
-                    break;
-                }
+        new Thread(() -> mockChannelResponseInThread(response)).start();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void mockChannelResponseInThread(final Object response) {
+        while (true) {
+            Promise<Object> responseCallback;
+            try {
+                responseCallback = (Promise<Object>) Plugins.getMemberAccessor().get(MySQLClient.class.getDeclaredField("responseCallback"), mysqlClient);
+            } catch (final ReflectiveOperationException ex) {
+                throw new RuntimeException(ex);
             }
-        }).start();
+            if (null != responseCallback) {
+                responseCallback.setSuccess(response);
+                break;
+            }
+        }
     }
     
     @Test

@@ -66,7 +66,7 @@ class MultiplexMemoryPipelineChannelTest {
     private void execute(final AckCallback ackCallback, final int recordCount, final Record... records) {
         CountDownLatch countDownLatch = new CountDownLatch(recordCount);
         MultiplexMemoryPipelineChannel memoryChannel = new MultiplexMemoryPipelineChannel(CHANNEL_NUMBER, 10000, ackCallback);
-        fetchWithMultiThreading(memoryChannel, countDownLatch);
+        fetchWithMultiThreads(memoryChannel, countDownLatch);
         for (Record record : records) {
             memoryChannel.pushRecord(record);
         }
@@ -75,19 +75,21 @@ class MultiplexMemoryPipelineChannelTest {
         memoryChannel.close();
     }
     
-    private void fetchWithMultiThreading(final MultiplexMemoryPipelineChannel memoryChannel, final CountDownLatch countDownLatch) {
+    private void fetchWithMultiThreads(final MultiplexMemoryPipelineChannel memoryChannel, final CountDownLatch countDownLatch) {
         for (int i = 0; i < CHANNEL_NUMBER; i++) {
-            new Thread(() -> {
-                int maxLoopCount = 10;
-                for (int j = 1; j <= maxLoopCount; j++) {
-                    List<Record> records = memoryChannel.fetchRecords(100, 1);
-                    memoryChannel.ack(records);
-                    records.forEach(each -> countDownLatch.countDown());
-                    if (!records.isEmpty() && records.get(records.size() - 1) instanceof FinishedRecord) {
-                        break;
-                    }
-                }
-            }).start();
+            new Thread(() -> fetch(memoryChannel, countDownLatch)).start();
+        }
+    }
+    
+    private static void fetch(final MultiplexMemoryPipelineChannel memoryChannel, final CountDownLatch countDownLatch) {
+        int maxLoopCount = 10;
+        for (int j = 1; j <= maxLoopCount; j++) {
+            List<Record> records = memoryChannel.fetchRecords(100, 1);
+            memoryChannel.ack(records);
+            records.forEach(each -> countDownLatch.countDown());
+            if (!records.isEmpty() && records.get(records.size() - 1) instanceof FinishedRecord) {
+                break;
+            }
         }
     }
     
