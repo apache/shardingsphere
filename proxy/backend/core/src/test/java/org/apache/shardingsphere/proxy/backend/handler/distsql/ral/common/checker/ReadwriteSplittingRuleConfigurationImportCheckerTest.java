@@ -85,6 +85,6 @@ class ReadwriteSplittingRuleConfigurationImportCheckerTest {
     private ReadwriteSplittingRuleConfiguration createInvalidLoadBalancerRuleConfig() {
         Map<String, AlgorithmConfiguration> loadBalancer = new HashMap<>();
         loadBalancer.put("invalid_load_balancer", mock(AlgorithmConfiguration.class));
-        return new ReadwriteSplittingRuleConfiguration(mock(Collection.class), loadBalancer);
+        return new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), loadBalancer);
     }
 }
