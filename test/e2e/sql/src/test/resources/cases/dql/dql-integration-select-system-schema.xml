@@ -125,4 +125,44 @@
         <assertion expected-data-file="select_mysql_information_schema_innodb_sys_datafiles.xml" />
     </test-case>
 
+    <test-case sql="select * from information_schema.innodb_sys_fields;" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_fields.xml" />
+    </test-case>
+    
+    <test-case sql="select * from information_schema.innodb_sys_foreign;" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_foreign.xml" />
+    </test-case>
+    
+    <test-case sql="select * from information_schema.innodb_sys_foreign_cols;" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_foreign_cols.xml" />
+    </test-case>
+    
+    <test-case sql="select * from information_schema.innodb_sys_indexes;" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_indexes.xml" />
+    </test-case>
+    
+    <test-case sql="select * from information_schema.innodb_sys_tables;" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_tables.xml" />
+    </test-case>
+    
+    <test-case sql="select * from information_schema.innodb_sys_tablespaces;" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_tablespaces.xml" />
+    </test-case>
+    
+    <test-case sql="select * from information_schema.innodb_sys_tablestats;" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_tablestats.xml" />
+    </test-case>
+    
+    <test-case sql="select * from information_schema.innodb_sys_virtual;" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_innodb_sys_virtual.xml" />
+    </test-case>
+    
+    <test-case sql="select * from information_schema.innodb_temp_table_info;" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_innodb_temp_table_info.xml" />
+    </test-case>
+    
+    <test-case sql="select * from information_schema.innodb_trx;" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_innodb_trx.xml" />
+    </test-case>
+    
 </integration-test-cases>
