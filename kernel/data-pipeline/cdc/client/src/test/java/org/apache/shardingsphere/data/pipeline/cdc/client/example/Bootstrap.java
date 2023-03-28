@@ -17,10 +17,18 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.client.example;
 
+import com.google.protobuf.EmptyProto;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.google.protobuf.TimestampProto;
+import com.google.protobuf.TypeRegistry;
+import com.google.protobuf.WrappersProto;
+import com.google.protobuf.util.JsonFormat;
+import com.google.protobuf.util.JsonFormat.Printer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.CDCClient;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 
 import java.util.Collections;
 
@@ -36,7 +44,18 @@ public final class Bootstrap {
         // Pay attention to the time zone, to avoid the problem of incorrect time zone, it is best to ensure that the time zone of the program is consistent with the time zone of the database server
         // and mysql-connector-java 5.x version will ignore serverTimezone jdbc parameter and use the default time zone in the program
         // TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        StartCDCClientParameter parameter = new StartCDCClientParameter(records -> log.info("records: {}", records));
+        TypeRegistry registry = TypeRegistry.newBuilder().add(EmptyProto.getDescriptor().getMessageTypes()).add(TimestampProto.getDescriptor().getMessageTypes())
+                .add(WrappersProto.getDescriptor().getMessageTypes()).build();
+        Printer printer = JsonFormat.printer().usingTypeRegistry(registry);
+        StartCDCClientParameter parameter = new StartCDCClientParameter(records -> {
+            for (Record each : records) {
+                try {
+                    log.info("record: {}", printer.print(each));
+                } catch (final InvalidProtocolBufferException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
         parameter.setAddress("127.0.0.1");
         parameter.setPort(33071);
         parameter.setUsername("root");
