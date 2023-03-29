@@ -32,6 +32,7 @@ public final class InstanceTypeUtil {
      *
      * @param instanceType instance type
      * @return encoded instance type
+     * @throws UnsupportedOperationException if instance type is unknown
      */
     public static char encode(final InstanceType instanceType) {
         switch (instanceType) {
@@ -49,6 +50,7 @@ public final class InstanceTypeUtil {
      *
      * @param instanceType instance type
      * @return decoded instance type
+     * @throws UnsupportedOperationException if instance type is unknown
      */
     public static InstanceType decode(final char instanceType) {
         switch (instanceType) {
