@@ -65,6 +65,7 @@ public final class JobConfigurationBuilder {
      * Create YAML migration job configuration.
      *
      * @return created job configuration
+     * @throws SQLWrapperException if there's SQLException when creating table
      */
     public static YamlMigrationJobConfiguration createYamlMigrationJobConfiguration() {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
