@@ -41,7 +41,7 @@ public final class CoordinatorRegistryCenterInitializer {
      */
     public CoordinatorRegistryCenter createZookeeperRegistryCenter(final ModeConfiguration modeConfig, final String namespaceRelativePath) {
         ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
-        // TODO now Add registry center cache
+        // TODO Add registry center cache. Refer to RegistryCenterFactory.createCoordinatorRegistryCenter
         CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfig(repositoryConfig, namespaceRelativePath));
         result.init();
         return result;

@@ -105,9 +105,16 @@ public final class PipelineContextUtils {
     
     private static MetaDataContexts renewMetaDataContexts(final MetaDataContexts old, final MetaDataPersistService persistService) {
         Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1);
-        tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false),
+        tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
                 new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_order_item", new ShardingSphereTable("t_order_item", Arrays.asList(
+                new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false, true, false),
+                new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false)),
+                Collections.emptyList(), Collections.emptyList()));
         old.getMetaData().getDatabase("logic_db").getSchema("logic_db").putAll(tables);
         return new MetaDataContexts(persistService, old.getMetaData());
     }

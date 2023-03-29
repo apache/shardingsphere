@@ -23,10 +23,10 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 
 /**
- * Base pipeline job id.
+ * Abstract pipeline job id.
  */
 @Getter
-public class BasePipelineJobId implements PipelineJobId {
+public abstract class AbstractPipelineJobId implements PipelineJobId {
     
     public static final String CURRENT_VERSION = "02";
     
@@ -34,7 +34,7 @@ public class BasePipelineJobId implements PipelineJobId {
     
     private final PipelineContextKey contextKey;
     
-    public BasePipelineJobId(final JobType jobType, final PipelineContextKey contextKey) {
+    public AbstractPipelineJobId(final JobType jobType, final PipelineContextKey contextKey) {
         this.jobType = jobType;
         this.contextKey = contextKey;
     }

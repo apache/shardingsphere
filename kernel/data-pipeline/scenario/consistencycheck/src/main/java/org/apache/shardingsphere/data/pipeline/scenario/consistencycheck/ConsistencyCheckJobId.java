@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.job.BasePipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
 import org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
 
@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.Co
  */
 @Getter
 @ToString(callSuper = true)
-public final class ConsistencyCheckJobId extends BasePipelineJobId {
+public final class ConsistencyCheckJobId extends AbstractPipelineJobId {
     
     private final String parentJobId;
     

@@ -81,7 +81,7 @@ public final class PipelineJobIdUtils {
     public static PipelineContextKey parseContextKey(final String jobId) {
         verifyJobId(jobId);
         String formatVersion = jobId.substring(3, 5);
-        Preconditions.checkArgument(BasePipelineJobId.CURRENT_VERSION.equals(formatVersion), "Format version doesn't match, format version: " + formatVersion);
+        Preconditions.checkArgument(AbstractPipelineJobId.CURRENT_VERSION.equals(formatVersion), "Format version doesn't match, format version: " + formatVersion);
         char instanceType = jobId.charAt(5);
         short databaseNameLength = Shorts.fromByteArray(Hex.decodeHex(jobId.substring(6, 10)));
         String databaseName = new String(Hex.decodeHex(jobId.substring(10, 10 + databaseNameLength)), StandardCharsets.UTF_8);

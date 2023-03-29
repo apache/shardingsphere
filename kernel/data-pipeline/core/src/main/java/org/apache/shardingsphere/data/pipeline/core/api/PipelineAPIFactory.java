@@ -24,19 +24,21 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.GovernanceRepositoryAPIImpl;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.registry.CoordinatorRegistryCenterInitializer;
-import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobOperateAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.operate.JobOperateAPIImpl;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.settings.JobConfigurationAPIImpl;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.statistics.JobStatisticsAPIImpl;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -119,11 +121,10 @@ public final class PipelineAPIFactory {
         private final JobOperateAPI jobOperateAPI;
         
         private ElasticJobAPIHolder(final PipelineContextKey contextKey) {
-            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) PipelineContextManager.getContext(contextKey).getModeConfig().getRepository();
-            String namespace = repositoryConfig.getNamespace() + PipelineMetaDataNode.getElasticJobNamespace();
-            jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(repositoryConfig.getServerLists(), namespace, null);
-            jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(repositoryConfig.getServerLists(), namespace, null);
-            jobOperateAPI = JobAPIFactory.createJobOperateAPI(repositoryConfig.getServerLists(), namespace, null);
+            CoordinatorRegistryCenter registryCenter = getRegistryCenter(contextKey);
+            jobStatisticsAPI = new JobStatisticsAPIImpl(registryCenter);
+            jobConfigurationAPI = new JobConfigurationAPIImpl(registryCenter);
+            jobOperateAPI = new JobOperateAPIImpl(registryCenter);
         }
         
         public static ElasticJobAPIHolder getInstance(final PipelineContextKey contextKey) {
@@ -164,10 +165,12 @@ public final class PipelineAPIFactory {
         
         private static CoordinatorRegistryCenter createRegistryCenter(final PipelineContextKey contextKey) {
             CoordinatorRegistryCenterInitializer registryCenterInitializer = new CoordinatorRegistryCenterInitializer();
-            ModeConfiguration modeConfig = PipelineContextManager.getContext(contextKey).getModeConfig();
+            PipelineContext pipelineContext = PipelineContextManager.getContext(contextKey);
+            ModeConfiguration modeConfig = pipelineContext.getModeConfig();
+            String elasticJobNamespace = PipelineMetaDataNode.getElasticJobNamespace();
             String clusterType = modeConfig.getRepository().getType();
             if ("ZooKeeper".equals(clusterType)) {
-                return registryCenterInitializer.createZookeeperRegistryCenter(modeConfig, PipelineMetaDataNode.getElasticJobNamespace());
+                return registryCenterInitializer.createZookeeperRegistryCenter(modeConfig, elasticJobNamespace);
             } else {
                 throw new IllegalArgumentException("Unsupported cluster type: " + clusterType);
             }

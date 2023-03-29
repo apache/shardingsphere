@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.job.BasePipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ import java.util.List;
  */
 @Getter
 @ToString(callSuper = true)
-public final class MigrationJobId extends BasePipelineJobId {
+public final class MigrationJobId extends AbstractPipelineJobId {
     
     private final List<String> jobShardingDataNodes;
     

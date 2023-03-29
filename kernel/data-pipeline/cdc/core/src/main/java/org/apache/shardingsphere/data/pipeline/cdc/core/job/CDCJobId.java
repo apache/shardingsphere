@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.job.BasePipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ import java.util.List;
  */
 @Getter
 @ToString(callSuper = true)
-public final class CDCJobId extends BasePipelineJobId {
+public final class CDCJobId extends AbstractPipelineJobId {
     
     private final List<String> schemaTableNames;
     
