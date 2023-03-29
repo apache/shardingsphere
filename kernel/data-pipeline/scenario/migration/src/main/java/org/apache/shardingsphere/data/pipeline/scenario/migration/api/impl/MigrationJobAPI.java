@@ -84,7 +84,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -246,7 +245,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     private String generateJobId(final PipelineContextKey contextKey, final YamlMigrationJobConfiguration config) {
-        MigrationJobId jobId = new MigrationJobId(config.getJobShardingDataNodes(), contextKey);
+        MigrationJobId jobId = new MigrationJobId(contextKey, config.getJobShardingDataNodes());
         return marshalJobId(jobId);
     }
     

@@ -207,7 +207,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
     private String generateJobId(final PipelineContextKey contextKey, final YamlCDCJobConfiguration config) {
         // TODO generate parameter add sink type
-        CDCJobId jobId = new CDCJobId(config.getSchemaTableNames(), config.isFull(), contextKey);
+        CDCJobId jobId = new CDCJobId(contextKey, config.getSchemaTableNames(), config.isFull());
         return marshalJobId(jobId);
     }
     

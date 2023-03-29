@@ -33,7 +33,7 @@ public final class MigrationJobId extends AbstractPipelineJobId {
     
     private final List<String> jobShardingDataNodes;
     
-    public MigrationJobId(final List<String> jobShardingDataNodes, final PipelineContextKey contextKey) {
+    public MigrationJobId(final PipelineContextKey contextKey, final List<String> jobShardingDataNodes) {
         super(new MigrationJobType(), contextKey);
         this.jobShardingDataNodes = jobShardingDataNodes;
     }

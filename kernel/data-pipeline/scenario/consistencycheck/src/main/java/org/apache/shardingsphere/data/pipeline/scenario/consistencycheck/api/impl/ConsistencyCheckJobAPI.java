@@ -109,7 +109,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
             }
         }
         PipelineContextKey contextKey = PipelineJobIdUtils.parseContextKey(parentJobId);
-        String result = marshalJobId(latestCheckJobId.map(s -> new ConsistencyCheckJobId(parentJobId, s, contextKey)).orElseGet(() -> new ConsistencyCheckJobId(parentJobId, contextKey)));
+        String result = marshalJobId(latestCheckJobId.map(s -> new ConsistencyCheckJobId(contextKey, parentJobId, s)).orElseGet(() -> new ConsistencyCheckJobId(contextKey, parentJobId)));
         repositoryAPI.persistLatestCheckJobId(parentJobId, result);
         repositoryAPI.deleteCheckJobResult(parentJobId, result);
         dropJob(result);
@@ -217,7 +217,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
         Optional<Integer> previousSequence = ConsistencyCheckSequence.getPreviousSequence(
                 checkJobIds.stream().map(ConsistencyCheckJobId::parseSequence).collect(Collectors.toList()), ConsistencyCheckJobId.parseSequence(latestCheckJobId));
         if (previousSequence.isPresent()) {
-            String checkJobId = marshalJobId(new ConsistencyCheckJobId(parentJobId, previousSequence.get(), contextKey));
+            String checkJobId = marshalJobId(new ConsistencyCheckJobId(contextKey, parentJobId, previousSequence.get()));
             repositoryAPI.persistLatestCheckJobId(parentJobId, checkJobId);
         } else {
             repositoryAPI.deleteLatestCheckJobId(parentJobId);

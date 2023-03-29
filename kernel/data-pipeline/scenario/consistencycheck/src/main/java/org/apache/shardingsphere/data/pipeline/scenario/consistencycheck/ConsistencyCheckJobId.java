@@ -35,15 +35,15 @@ public final class ConsistencyCheckJobId extends AbstractPipelineJobId {
     
     private final int sequence;
     
-    public ConsistencyCheckJobId(final String parentJobId, final PipelineContextKey contextKey) {
-        this(parentJobId, ConsistencyCheckSequence.MIN_SEQUENCE, contextKey);
+    public ConsistencyCheckJobId(final PipelineContextKey contextKey, final String parentJobId) {
+        this(contextKey, parentJobId, ConsistencyCheckSequence.MIN_SEQUENCE);
     }
     
-    public ConsistencyCheckJobId(final String parentJobId, final String latestCheckJobId, final PipelineContextKey contextKey) {
-        this(parentJobId, ConsistencyCheckSequence.getNextSequence(parseSequence(latestCheckJobId)), contextKey);
+    public ConsistencyCheckJobId(final PipelineContextKey contextKey, final String parentJobId, final String latestCheckJobId) {
+        this(contextKey, parentJobId, ConsistencyCheckSequence.getNextSequence(parseSequence(latestCheckJobId)));
     }
     
-    public ConsistencyCheckJobId(final String parentJobId, final int sequence, final PipelineContextKey contextKey) {
+    public ConsistencyCheckJobId(final PipelineContextKey contextKey, final String parentJobId, final int sequence) {
         super(new ConsistencyCheckJobType(), contextKey);
         this.parentJobId = parentJobId;
         this.sequence = sequence > ConsistencyCheckSequence.MAX_SEQUENCE ? ConsistencyCheckSequence.MIN_SEQUENCE : sequence;
