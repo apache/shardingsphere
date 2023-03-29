@@ -64,7 +64,8 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT o.order_id, o.user_id, o.status, o.merchant_id, (SELECT t.merchant_name FROM t_merchant t WHERE t.merchant_id = o.merchant_id) AS merchant_name FROM t_order o WHERE user_id = ? AND order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="10:int, 1000:long" expected-data-source-name="read_dataset" />
+    <test-case sql="SELECT item_id, (SELECT order_id FROM t_order WHERE user_id = ? AND order_id = ?) AS order_id FROM  t_order_item i WHERE i.user_id = ? AND i.order_id = ?;
+" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion parameters="10:int, 1000:long, 10:int, 1000:long" expected-data-source-name="read_dataset" />
     </test-case>
 </integration-test-cases>
