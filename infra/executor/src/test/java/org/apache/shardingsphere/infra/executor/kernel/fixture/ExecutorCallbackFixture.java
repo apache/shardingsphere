@@ -33,10 +33,10 @@ public final class ExecutorCallbackFixture implements ExecutorCallback<Object, S
     @Override
     public Collection<String> execute(final Collection<Object> inputs, final boolean isTrunkThread) {
         List<String> result = new LinkedList<>();
-        for (Object each : inputs) {
+        inputs.forEach(each -> {
             latch.countDown();
             result.add("succeed");
-        }
+        });
         return result;
     }
 }
