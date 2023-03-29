@@ -53,10 +53,10 @@ public final class ShowShardingTableRulesUsedAlgorithmExecutor implements RQLExe
         boolean matchDefaultTableShardingStrategy = null != config.getDefaultTableShardingStrategy()
                 && algorithmName.equals(config.getDefaultTableShardingStrategy().getShardingAlgorithmName());
         config.getTables().forEach(each -> {
-            if (((null == each.getDatabaseShardingStrategy() && matchDefaultDatabaseShardingStrategy)
-                    || (null != each.getDatabaseShardingStrategy() && algorithmName.equals(each.getDatabaseShardingStrategy().getShardingAlgorithmName())))
-                    || ((null == each.getTableShardingStrategy() && matchDefaultTableShardingStrategy)
-                            || (null != each.getTableShardingStrategy() && algorithmName.equals(each.getTableShardingStrategy().getShardingAlgorithmName())))) {
+            if (null == each.getDatabaseShardingStrategy() && matchDefaultDatabaseShardingStrategy
+                    || null != each.getDatabaseShardingStrategy() && algorithmName.equals(each.getDatabaseShardingStrategy().getShardingAlgorithmName())
+                    || null == each.getTableShardingStrategy() && matchDefaultTableShardingStrategy
+                    || null != each.getTableShardingStrategy() && algorithmName.equals(each.getTableShardingStrategy().getShardingAlgorithmName())) {
                 result.add(new LocalDataQueryResultRow("table", each.getLogicTable()));
             }
         });

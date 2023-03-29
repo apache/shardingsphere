@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * PostgreSQL set read only transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.POSTGRESQL})
+@TransactionTestCase(dbTypes = TransactionTestConstants.POSTGRESQL)
 @Slf4j
 public final class PostgreSQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     

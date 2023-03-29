@@ -55,8 +55,9 @@ public final class WALEventConverter {
     /**
      * Convert WAL event to {@code Record}.
      *
-     * @param event of wal
+     * @param event WAL event
      * @return record
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public Record convert(final AbstractWALEvent event) {
         if (filter(event)) {

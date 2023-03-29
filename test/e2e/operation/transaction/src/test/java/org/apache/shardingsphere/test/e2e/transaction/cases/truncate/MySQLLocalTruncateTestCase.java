@@ -31,7 +31,7 @@ import java.sql.SQLException;
 /**
  * MySQL truncate local transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL}, transactionTypes = {TransactionType.LOCAL})
+@TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL, transactionTypes = TransactionType.LOCAL)
 public final class MySQLLocalTruncateTestCase extends BaseTransactionTestCase {
     
     public MySQLLocalTruncateTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {

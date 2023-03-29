@@ -95,6 +95,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
      *
      * @param param create consistency check job parameter
      * @return job id
+     * @throws UncompletedConsistencyCheckJobExistsException uncompleted consistency check job exists exception
      */
     public String createJobAndStart(final CreateConsistencyCheckJobParameter param) {
         String parentJobId = param.getParentJobId();

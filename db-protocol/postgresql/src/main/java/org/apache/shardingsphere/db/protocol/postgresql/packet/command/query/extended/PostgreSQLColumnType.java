@@ -196,6 +196,7 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
      * 
      * @param value value
      * @return PostgreSQL column type
+     * @throws PostgreSQLProtocolException PostgreSQL protocol exception
      */
     public static PostgreSQLColumnType valueOf(final int value) {
         for (PostgreSQLColumnType each : values()) {

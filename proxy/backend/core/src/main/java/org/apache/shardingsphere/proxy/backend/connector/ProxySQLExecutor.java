@@ -39,6 +39,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.executor.sql.prepare.raw.RawExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.ProxyJDBCExecutor;
@@ -98,13 +99,12 @@ public final class ProxySQLExecutor {
      * @param executionContext execution context
      */
     public void checkExecutePrerequisites(final ExecutionContext executionContext) {
-        if (isExecuteDDLInXATransaction(executionContext.getSqlStatementContext().getSqlStatement())
-                || isExecuteDDLInPostgreSQLOpenGaussTransaction(executionContext.getSqlStatementContext().getSqlStatement())) {
-            String tableName = executionContext.getSqlStatementContext() instanceof TableAvailable && !((TableAvailable) executionContext.getSqlStatementContext()).getAllTables().isEmpty()
-                    ? ((TableAvailable) executionContext.getSqlStatementContext()).getAllTables().iterator().next().getTableName().getIdentifier().getValue()
-                    : "unknown_table";
-            throw new TableModifyInTransactionException(tableName);
-        }
+        ShardingSpherePreconditions.checkState(isValidExecutePrerequisites(executionContext), () -> new TableModifyInTransactionException(getTableName(executionContext)));
+    }
+    
+    private boolean isValidExecutePrerequisites(final ExecutionContext executionContext) {
+        return !isExecuteDDLInXATransaction(executionContext.getSqlStatementContext().getSqlStatement())
+                && !isExecuteDDLInPostgreSQLOpenGaussTransaction(executionContext.getSqlStatementContext().getSqlStatement());
     }
     
     private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
@@ -137,6 +137,12 @@ public final class ProxySQLExecutor {
     
     private boolean isPostgreSQLOrOpenGaussStatement(final SQLStatement sqlStatement) {
         return sqlStatement instanceof PostgreSQLStatement || sqlStatement instanceof OpenGaussStatement;
+    }
+    
+    private static String getTableName(final ExecutionContext executionContext) {
+        return executionContext.getSqlStatementContext() instanceof TableAvailable && !((TableAvailable) executionContext.getSqlStatementContext()).getAllTables().isEmpty()
+                ? ((TableAvailable) executionContext.getSqlStatementContext()).getAllTables().iterator().next().getTableName().getIdentifier().getValue()
+                : "unknown_table";
     }
     
     /**

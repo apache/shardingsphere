@@ -67,6 +67,7 @@ public final class PostgreSQLComClosePacket extends PostgreSQLCommandPacket {
          *
          * @param type type
          * @return type
+         * @throws PostgreSQLProtocolException PostgreSQL protocol exception
          */
         public static Type valueOf(final char type) {
             for (Type each : values()) {

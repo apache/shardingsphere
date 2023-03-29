@@ -46,6 +46,7 @@ public final class HBaseExecutor {
      *
      * @param tableName table name
      * @param operation operation
+     * @throws HBaseOperationException HBase operation exception
      */
     public static void executeUpdate(final String tableName, final HBaseUpdateCallback operation) {
         TableName backendTableName = TableName.valueOf(tableName);
@@ -71,6 +72,7 @@ public final class HBaseExecutor {
      * @param operation operation
      * @param <T> type of result
      * @return query result
+     * @throws HBaseOperationException HBase operation exception
      */
     public static <T> T executeQuery(final String tableName, final HBaseQueryCallback<T> operation) {
         TableName backendTableName = TableName.valueOf(tableName);
@@ -92,6 +94,7 @@ public final class HBaseExecutor {
      * @param operation operation
      * @param <T> type of result
      * @return admin result
+     * @throws HBaseOperationException HBase operation exception
      */
     public static <T> T executeAdmin(final Connection connection, final HBaseAdminCallback<T> operation) {
         try (Admin admin = connection.getAdmin()) {

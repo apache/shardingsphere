@@ -91,7 +91,7 @@ public final class ConnectionTransaction {
      * @return hold transaction or not
      */
     public boolean isHoldTransaction(final boolean autoCommit) {
-        return (TransactionType.LOCAL == transactionType && !autoCommit) || (TransactionType.XA == transactionType && isInTransaction());
+        return TransactionType.LOCAL == transactionType && !autoCommit || TransactionType.XA == transactionType && isInTransaction();
     }
     
     /**

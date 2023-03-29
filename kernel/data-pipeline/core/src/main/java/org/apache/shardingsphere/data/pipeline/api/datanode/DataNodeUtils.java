@@ -46,6 +46,7 @@ public final class DataNodeUtils {
      *
      * @param text data node text
      * @return data node
+     * @throws InvalidDataNodesFormatException invalid data nodes format exception
      */
     public static DataNode parseWithSchema(final String text) {
         List<String> segments = Splitter.on(".").splitToList(text);

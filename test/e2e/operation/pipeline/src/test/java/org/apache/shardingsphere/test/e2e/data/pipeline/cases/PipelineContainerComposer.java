@@ -379,6 +379,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
      * 
      * @param sql SQL
      * @return query result
+     * @throws RuntimeException runtime exception
      */
     @SneakyThrows(InterruptedException.class)
     public List<Map<String, Object>> queryForListWithLog(final String sql) {

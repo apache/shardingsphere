@@ -35,6 +35,7 @@ public final class PipelineDataSourceConfigurationFactory {
      * @param type type of pipeline data source configuration
      * @param param parameter of pipeline data source configuration
      * @return created instance
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static PipelineDataSourceConfiguration newInstance(final String type, final String param) {
         switch (type) {

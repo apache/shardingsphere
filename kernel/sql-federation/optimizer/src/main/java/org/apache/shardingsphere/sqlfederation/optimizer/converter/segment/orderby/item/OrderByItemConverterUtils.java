@@ -41,6 +41,7 @@ public final class OrderByItemConverterUtils {
      * 
      * @param orderByItems order by items
      * @return SQL nodes converted by order by item
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static Collection<SqlNode> convert(final Collection<OrderByItemSegment> orderByItems) {
         Collection<SqlNode> result = new LinkedList<>();

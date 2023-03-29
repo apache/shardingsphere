@@ -35,35 +35,42 @@
     <module name="UniqueProperties" />
     <module name="SeverityMatchFilter" />
     
+    <module name="LineLength">
+        <property name="fileExtensions" value="java" />
+        <property name="max" value="200" />
+    </module>
+    
     <module name="TreeWalker">
-        
         <!-- Naming Conventions -->
-        <module name="PackageName">
-            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$" />
-        </module>
-        <module name="TypeName" />
-        <module name="MethodName" />
-        <module name="InterfaceTypeParameterName" />
-        <module name="ClassTypeParameterName" />
-        <module name="MethodTypeParameterName" />
-        <module name="ConstantName" />
-        <module name="StaticVariableName" />
-        <module name="MemberName" />
-        <module name="LocalVariableName" />
-        <module name="LocalFinalVariableName" />
-        <module name="ParameterName" />
-        <module name="CatchParameterName" />
         <module name="AbbreviationAsWordInName">
             <property name="allowedAbbreviationLength" value="8" />
         </module>
+        <module name="CatchParameterName" />
+        <module name="ClassTypeParameterName" />
+        <module name="ConstantName" />
+        <module name="InterfaceTypeParameterName" />
+        <module name="LambdaParameterName" />
+        <module name="LocalFinalVariableName" />
+        <module name="LocalVariableName" />
+        <module name="MemberName" />
+        <module name="MethodName" />
+        <module name="MethodTypeParameterName" />
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$" />
+        </module>
+        <module name="ParameterName" />
+        <module name="PatternVariableName" />
+        <module name="RecordComponentName" />
+        <module name="RecordTypeParameterName" />
+        <module name="StaticVariableName" />
+        <module name="TypeName" />
         
         <!-- Size Violations -->
         <module name="AnonInnerLength" />
+        <module name="LambdaBodyLength" />
         <module name="MethodLength" />
-        <module name="LineLength">
-            <property name="max" value="200" />
-        </module>
         <module name="OuterTypeNumber" />
+        <module name="RecordComponentNumber" />
         
         <!-- Whitespace -->
         <module name="EmptyForInitializerPad" />
@@ -117,7 +124,6 @@
         <module name="IllegalImport" />
         <module name="RedundantImport" />
         <module name="UnusedImports" />
-        <module name="CustomImportOrder" />
         
         <!-- Annotations -->
         <module name="AnnotationLocation">
@@ -220,6 +226,7 @@
         <module name="AtclauseOrder">
             <property name="tagOrder" value="@param, @return, @throws, @deprecated" />
         </module>
+        <module name="InvalidJavadocPosition" />
         <module name="NonEmptyAtclauseDescription" />
         <module name="JavadocParagraph" />
         <module name="JavadocStyle" />
@@ -228,9 +235,8 @@
         <module name="SummaryJavadoc" />
         
         <module name="JavadocMethod">
-            <property name="scope" value="public" />
             <property name="allowedAnnotations" value="Override, Test, BeforeEach, AfterEach, BeforeAll, AfterAll, ParameterizedTest" />
-            <property name="ignoreMethodNamesRegex" value="^assert.*$|^verify.*$" />
+            <property name="validateThrows" value="true" />
             <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF" />
         </module>
         

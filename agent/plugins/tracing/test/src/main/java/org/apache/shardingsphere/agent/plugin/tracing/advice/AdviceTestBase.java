@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.advice;
 
+/**
+ * Advice test base.
+ */
 public interface AdviceTestBase {
     
     /**

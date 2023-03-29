@@ -96,6 +96,7 @@ public final class EncryptTable {
      * 
      * @param cipherColumn cipher column
      * @return logic column
+     * @throws EncryptLogicColumnNotFoundException encrypt logic column not found exception
      */
     public String getLogicColumnByCipherColumn(final String cipherColumn) {
         for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
@@ -111,6 +112,7 @@ public final class EncryptTable {
      *
      * @param plainColumn plain column
      * @return logic column
+     * @throws EncryptLogicColumnNotFoundException encrypt logic column not found exception
      */
     public String getLogicColumnByPlainColumn(final String plainColumn) {
         for (Entry<String, EncryptColumn> entry : columns.entrySet()) {

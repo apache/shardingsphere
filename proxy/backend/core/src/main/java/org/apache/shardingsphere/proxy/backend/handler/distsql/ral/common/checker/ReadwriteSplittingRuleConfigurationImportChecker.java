@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedR
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.Collection;
@@ -52,7 +53,7 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
     private void checkDataSources(final String databaseName, final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         Collection<String> requiredDataSources = new LinkedHashSet<>();
         Collection<String> requiredLogicalDataSources = new LinkedHashSet<>();
-        currentRuleConfig.getDataSources().forEach(each -> {
+        for (ReadwriteSplittingDataSourceRuleConfiguration each : currentRuleConfig.getDataSources()) {
             if (null != each.getDynamicStrategy()) {
                 requiredLogicalDataSources.add(each.getDynamicStrategy().getAutoAwareDataSourceName());
             }
@@ -64,7 +65,7 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
                     requiredDataSources.addAll(each.getStaticStrategy().getReadDataSourceNames());
                 }
             }
-        });
+        }
         Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);
         ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
         Collection<String> logicalDataSources = getLogicDataSources(database);

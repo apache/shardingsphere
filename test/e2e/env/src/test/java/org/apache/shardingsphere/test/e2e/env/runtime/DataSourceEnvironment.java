@@ -29,6 +29,7 @@ public final class DataSourceEnvironment {
      *
      * @param databaseType database type
      * @return driver class name
+     * @throws UnsupportedOperationException unsupported operation exception
      */
     public static String getDriverClassName(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
@@ -56,6 +57,7 @@ public final class DataSourceEnvironment {
      * @param host database host
      * @param port database port
      * @return URL
+     * @throws UnsupportedOperationException unsupported operation exception
      */
     public static String getURL(final DatabaseType databaseType, final String host, final int port) {
         switch (databaseType.getType()) {
@@ -84,6 +86,7 @@ public final class DataSourceEnvironment {
      * @param port database port
      * @param dataSourceName data source name
      * @return URL
+     * @throws UnsupportedOperationException unsupported operation exception
      */
     public static String getURL(final DatabaseType databaseType, final String host, final int port, final String dataSourceName) {
         switch (databaseType.getType()) {

@@ -167,7 +167,7 @@ public final class EncryptConditionEngine {
     }
     
     private Optional<EncryptCondition> createCompareEncryptCondition(final String tableName, final BinaryOperationExpression expression, final ExpressionSegment compareRightValue) {
-        if (!(expression.getLeft() instanceof ColumnSegment) || (compareRightValue instanceof SubqueryExpressionSegment)) {
+        if (!(expression.getLeft() instanceof ColumnSegment) || compareRightValue instanceof SubqueryExpressionSegment) {
             return Optional.empty();
         }
         if (compareRightValue instanceof SimpleExpressionSegment) {

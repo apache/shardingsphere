@@ -6,7 +6,6 @@ weight = 1
 ## 背景信息
 
 Apache ShardingSphere 使用 ThreadLocal 管理主库路由标记进行强制路由。 可以通过编程的方式向 HintManager 中添加主库路由标记，该值仅在当前线程内生效。
-Apache ShardingSphere 还可以通过 SQL 中增加注释的方式进行主库路由。
 
 Hint 在读写分离场景下，主要用于强制在主库进行某些数据操作。
 
@@ -21,21 +20,19 @@ Hint 在读写分离场景下，主要用于强制在主库进行某些数据操
 
 ### 使用 Hint 强制主库路由
 
-#### 使用手动编程的方式
-
-##### 获取 HintManager
+#### 获取 HintManager
 
 与基于 Hint 的数据分片相同。
 
-##### 设置主库路由
+#### 设置主库路由
 
 使用 hintManager.setWriteRouteOnly 设置主库路由。
 
-##### 清除分片键值
+#### 清除分片键值
 
 与基于 Hint 的数据分片相同。
 
-##### 完整代码示例
+#### 完整代码示例
 
 ```java
 String sql = "SELECT * FROM t_order";
@@ -50,32 +47,17 @@ try (HintManager hintManager = HintManager.getInstance();
 }
 ```
 
-#### 使用 SQL 注释的方式
-
-##### 使用规范
-
-SQL Hint 功能的注释格式暂时只支持 `/* */`，内容需要以 `SHARDINGSPHERE_HINT:` 开始，属性名为 `WRITE_ROUTE_ONLY`。
-
-##### 完整示例
-
-```java
-/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */
-SELECT * FROM t_order;
-```
-
 ### 使用 Hint 路由至指定数据库
 
-#### 使用手动编程的方式
-
-##### 获取 HintManager
+#### 获取 HintManager
 
 与基于 Hint 的数据分片相同。
 
-##### 设置路由至指定数据库
+#### 设置路由至指定数据库
 
 - 使用 `hintManager.setDataSourceName` 设置数据库名称。
 
-##### 完整代码示例
+#### 完整代码示例
 
 ```java
 String sql = "SELECT * FROM t_order";
@@ -89,19 +71,6 @@ try (HintManager hintManager = HintManager.getInstance();
         }
     }
 }
-```
-
-#### 使用 SQL 注释的方式
-
-##### 使用规范
-
-SQL Hint 功能目前只支持路由至一个数据源。 注释格式暂时只支持 `/* */`，内容需要以 `SHARDINGSPHERE_HINT:` 开始，属性名为 `DATA_SOURCE_NAME`。
-如果使用 `MySQL` 客户端连接需要添加 `-c` 选项保留注释，客户端默认是 `--skip-comments` 过滤注释。
-
-##### 完整示例
-```sql
-/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=ds_0 */
-SELECT * FROM t_order;
 ```
 
 - [核心特性：读写分离](/cn/features/readwrite-splitting/)

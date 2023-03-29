@@ -38,14 +38,14 @@ public final class AgentReflectionUtils {
      * @param fieldName field name
      * @param <T> type of field value
      * @return field value
+     * @throws IllegalStateException illegal state exception
      */
-    @SneakyThrows(ReflectiveOperationException.class)
     public static <T> T getFieldValue(final Object target, final String fieldName) {
         Optional<Field> field = findField(fieldName, target.getClass());
         if (field.isPresent()) {
             return getFieldValue(target, field.get());
         }
-        throw new NoSuchFieldException(String.format("Can not find field name `%s` in class %s.", fieldName, target.getClass()));
+        throw new IllegalStateException(String.format("Can not find field name `%s` in class %s.", fieldName, target.getClass()));
     }
     
     @SuppressWarnings("unchecked")

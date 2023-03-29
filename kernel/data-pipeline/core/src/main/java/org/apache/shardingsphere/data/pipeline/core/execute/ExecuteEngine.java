@@ -88,6 +88,7 @@ public final class ExecuteEngine {
      *
      * @param futures futures
      * @param executeCallback execute callback on all the futures
+     * @throws RuntimeException runtime exception
      */
     public static void trigger(final Collection<CompletableFuture<?>> futures, final ExecuteCallback executeCallback) {
         BlockingQueue<CompletableFuture<?>> futureQueue = new LinkedBlockingQueue<>();

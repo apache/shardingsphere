@@ -54,7 +54,7 @@ public final class DatabaseBackendHandlerFactory {
         if (sqlStatement instanceof SetStatement && null == connectionSession.getDatabaseName()) {
             return () -> new UpdateResponseHeader(sqlStatement);
         }
-        if (sqlStatement instanceof DALStatement || (sqlStatement instanceof SelectStatement && null == ((SelectStatement) sqlStatement).getFrom())) {
+        if (sqlStatement instanceof DALStatement || sqlStatement instanceof SelectStatement && null == ((SelectStatement) sqlStatement).getFrom()) {
             return new UnicastDatabaseBackendHandler(queryContext, connectionSession);
         }
         return DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getBackendConnection(), preferPreparedStatement);

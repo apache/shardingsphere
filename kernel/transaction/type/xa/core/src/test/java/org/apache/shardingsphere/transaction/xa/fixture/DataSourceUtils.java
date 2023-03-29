@@ -42,6 +42,7 @@ public final class DataSourceUtils {
      * @param databaseType database type
      * @param databaseName database name
      * @return built data source
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static DataSource build(final Class<? extends DataSource> dataSourceClass, final DatabaseType databaseType, final String databaseName) {
         if (HikariDataSource.class == dataSourceClass) {

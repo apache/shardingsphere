@@ -22,6 +22,7 @@ import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.TracingAgentExtension;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.invocation.InvocationOnMock;
 
 import static org.mockito.Mockito.mock;
 
@@ -36,17 +37,21 @@ public abstract class AbstractSQLParserEngineAdviceTest implements AdviceTestBas
     @SuppressWarnings("ConstantConditions")
     @Override
     public final void prepare() {
-        Object parserEngine = mock(ShardingSphereSQLParserEngine.class, invocation -> {
-            switch (invocation.getMethod().getName()) {
-                case "getAttachment":
-                    return attachment;
-                case "setAttachment":
-                    attachment = invocation.getArguments()[0];
-                    return null;
-                default:
-                    return invocation.callRealMethod();
-            }
-        });
+        Object parserEngine = mock(ShardingSphereSQLParserEngine.class, this::mockAttachment);
         targetObject = (TargetAdviceObject) parserEngine;
+    }
+    
+    // CHECKSTYLE:OFF
+    private Object mockAttachment(final InvocationOnMock invocation) throws Throwable {
+        // CHECKSTYLE:ON
+        switch (invocation.getMethod().getName()) {
+            case "getAttachment":
+                return attachment;
+            case "setAttachment":
+                attachment = invocation.getArguments()[0];
+                return null;
+            default:
+                return invocation.callRealMethod();
+        }
     }
 }

@@ -52,6 +52,7 @@ public final class ShardingSphereJDBCContainer implements EmbeddedITContainer {
      * Get target data source.
      *
      * @return target data source
+     * @throws RuntimeException runtime exception
      */
     public DataSource getTargetDataSource() {
         DataSource dataSource = targetDataSourceProvider.get();
