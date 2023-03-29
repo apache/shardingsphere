@@ -21,7 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Response vo.
+ * Response VO.
+ * 
+ * @param <T> type of data
  */
 @Getter
 @Setter

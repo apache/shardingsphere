@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 /**
  * SQL Statement converter.
  * 
+ * @param <S> type of SQL node
  * @param <T> type of SQL statement
  */
 public interface SQLStatementConverter<S extends SQLStatement, T extends SqlNode> {

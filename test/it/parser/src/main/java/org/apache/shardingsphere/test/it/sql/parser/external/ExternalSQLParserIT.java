@@ -46,7 +46,7 @@ public abstract class ExternalSQLParserIT {
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public final void assertParseSQL(final String sqlCaseId, final String databaseType, final String sql, final String reportType) {
+    void assertParseSQL(final String sqlCaseId, final String databaseType, final String sql, final String reportType) {
         boolean isSuccess = true;
         SQLParseResultReporter resultReporter = TypedSPILoader.getService(SQLParseResultReporterCreator.class, reportType).create(databaseType);
         try {

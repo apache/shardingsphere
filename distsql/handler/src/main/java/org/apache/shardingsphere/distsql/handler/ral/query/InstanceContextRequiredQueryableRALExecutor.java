@@ -25,6 +25,8 @@ import java.util.Collection;
 
 /**
  * Instance context required queryable RAL executor.
+ * 
+ * @param <T> type of queryable RAL statement
  */
 public interface InstanceContextRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
     

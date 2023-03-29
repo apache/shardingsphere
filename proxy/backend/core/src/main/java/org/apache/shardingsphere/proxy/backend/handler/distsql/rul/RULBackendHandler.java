@@ -24,11 +24,13 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
  * RUL backend handler.
+ * 
+ * @param <T> type of SQL statement
  */
 @Getter
-public abstract class RULBackendHandler<E extends RULStatement> implements DistSQLBackendHandler {
+public abstract class RULBackendHandler<T extends RULStatement> implements DistSQLBackendHandler {
     
-    private E sqlStatement;
+    private T sqlStatement;
     
     private ConnectionSession connectionSession;
     
@@ -39,7 +41,7 @@ public abstract class RULBackendHandler<E extends RULStatement> implements DistS
      * @param connectionSession connection session
      */
     public final void init(final RULStatement sqlStatement, final ConnectionSession connectionSession) {
-        this.sqlStatement = (E) sqlStatement;
+        this.sqlStatement = (T) sqlStatement;
         this.connectionSession = connectionSession;
     }
 }

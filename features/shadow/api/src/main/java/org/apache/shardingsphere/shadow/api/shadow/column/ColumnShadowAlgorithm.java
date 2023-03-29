@@ -22,6 +22,8 @@ import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 /**
  * Column shadow algorithm.
+ * 
+ * @param <T> type of column shadow value
  */
 public interface ColumnShadowAlgorithm<T extends Comparable<?>> extends ShadowAlgorithm {
     

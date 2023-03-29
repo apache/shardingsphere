@@ -34,13 +34,170 @@
     <module name="Translation" />
     <module name="UniqueProperties" />
     <module name="SeverityMatchFilter" />
-    
     <module name="LineLength">
         <property name="fileExtensions" value="java" />
         <property name="max" value="200" />
     </module>
     
     <module name="TreeWalker">
+        <!-- Annotations -->
+        <module name="AnnotationLocation">
+            <property name="id" value="AnnotationLocationMostCases" />
+            <property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF" />
+        </module>
+        <module name="AnnotationLocation">
+            <property name="id" value="AnnotationLocationVariables" />
+            <property name="tokens" value="VARIABLE_DEF" />
+            <property name="allowSamelineMultipleAnnotations" value="true" />
+        </module>
+        <module name="AnnotationUseStyle" />
+        <module name="MissingDeprecated" />
+        <module name="MissingOverride" />
+        <module name="PackageAnnotation" />
+        <module name="SuppressWarnings" />
+        <module name="SuppressWarningsHolder" />
+        
+        <!-- Block Checks -->
+        <module name="AvoidNestedBlocks" />
+        <module name="EmptyBlock" />
+        <module name="EmptyCatchBlock">
+            <property name="exceptionVariableName" value="expected|ignore" />
+        </module>
+        <module name="LeftCurly" />
+        <module name="RightCurly" />
+        <module name="NeedBraces" />
+        
+        <!-- Class Design -->
+        <module name="FinalClass" />
+        <!-- cannot recognize for lombok @NoArgsConstructor(access = AccessLevel.PRIVATE), just ignore -->
+        <!--<module name="HideUtilityClassConstructor" />-->
+        <module name="InnerTypeLast" />
+        <module name="InterfaceIsType" />
+        <module name="MutableException" />
+        <module name="OneTopLevelClass" />
+        <module name="ThrowsCount">
+            <property name="ignorePrivateMethods" value="false" />
+        </module>
+        <module name="VisibilityModifier" />
+        
+        <!-- Coding -->
+        <module name="AvoidDoubleBraceInitialization" />
+        <module name="AvoidNoArgumentSuperConstructorCall" />
+        <module name="CovariantEquals" />
+        <module name="DeclarationOrder" />
+        <module name="DefaultComesLast" />
+        <module name="EmptyStatement" />
+        <module name="EqualsAvoidNull" />
+        <module name="ExplicitInitialization" />
+        <module name="FallThrough" />
+        <module name="IllegalCatch" />
+        <module name="IllegalInstantiation" />
+        <module name="IllegalThrows" />
+        <module name="IllegalToken" />
+        <module name="IllegalTokenText">
+            <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL" />
+            <property name="format" value="\\u00(09|0(a|A)|0(c|C)|0(d|D)|22|27|5(C|c))|\\(0(10|11|12|14|15|42|47)|134)" />
+            <property name="message" value="Consider using special escape sequence instead of octal value or Unicode escaped value." />
+        </module>
+        <module name="IllegalType" />
+        <module name="MissingSwitchDefault" />
+        <module name="ModifiedControlVariable" />
+        <module name="MultipleVariableDeclarations" />
+        <module name="NestedIfDepth" />
+        <module name="NestedTryDepth" />
+        <module name="NoArrayTrailingComma" />
+        <module name="NoClone" />
+        <module name="NoEnumTrailingComma" />
+        <module name="NoFinalizer" />
+        <module name="OneStatementPerLine" />
+        <module name="OverloadMethodsDeclarationOrder" />
+        <module name="PackageDeclaration" />
+        <module name="ParameterAssignment" />
+        <module name="RequireThis" />
+        <module name="SimplifyBooleanExpression" />
+        <module name="SimplifyBooleanReturn" />
+        <module name="StringLiteralEquality" />
+        <module name="SuperClone" />
+        <module name="SuperFinalize" />
+        <module name="UnnecessaryParentheses" />
+        <module name="UnnecessarySemicolonAfterOuterTypeDeclaration" />
+        <module name="UnnecessarySemicolonAfterTypeMemberDeclaration" />
+        <module name="UnnecessarySemicolonInEnumeration" />
+        <module name="UnnecessarySemicolonInTryWithResources" />
+        <module name="UnusedLocalVariable" />
+        <module name="VariableDeclarationUsageDistance" />
+        
+        <!-- Imports -->
+        <module name="AvoidStarImport" />
+        <module name="AvoidStaticImport">
+            <property name="excludes" value="org.junit.jupiter.api.Assertions.*,org.junit.jupiter.api.Assumptions.*,org.hamcrest.Matchers.*,org.hamcrest.CoreMatchers.*,org.hamcrest.MatcherAssert.*,org.mockito.Mockito.*,org.mockito.ArgumentMatchers.*" />
+        </module>
+        <module name="IllegalImport" />
+        <module name="RedundantImport" />
+        <module name="UnusedImports" />
+        
+        <!-- Javadoc Comments -->
+        <module name="AtclauseOrder">
+            <property name="tagOrder" value="@param, @return, @throws, @deprecated" />
+        </module>
+        <module name="InvalidJavadocPosition" />
+        <module name="JavadocBlockTagLocation" />
+        <module name="JavadocContentLocation" />
+        <module name="JavadocMethod">
+            <property name="allowedAnnotations" value="Override, Test, BeforeEach, AfterEach, BeforeAll, AfterAll, ParameterizedTest" />
+            <property name="validateThrows" value="true" />
+            <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF" />
+        </module>
+        <module name="JavadocMissingLeadingAsterisk" />
+        <module name="JavadocMissingWhitespaceAfterAsterisk" />
+        <module name="JavadocParagraph">
+            <property name="violateExecutionOnNonTightHtml" value="true" />
+            <property name="allowNewlineParagraph" value="false" />
+        </module>
+        <module name="JavadocStyle" />
+        <module name="JavadocTagContinuationIndentation">
+            <property name="violateExecutionOnNonTightHtml" value="true" />
+        </module>
+        <module name="JavadocType" />
+        <module name="MissingJavadocMethod">
+            <property name="allowMissingPropertyJavadoc" value="true" />
+            <property name="tokens" value="METHOD_DEF" />
+        </module>
+        <module name="MissingJavadocPackage" />
+        <module name="NonEmptyAtclauseDescription">
+            <property name="violateExecutionOnNonTightHtml" value="true" />
+        </module>
+        <module name="SingleLineJavadoc">
+            <property name="violateExecutionOnNonTightHtml" value="true" />
+            <property name="ignoreInlineTags" value="false" />
+        </module>
+        <module name="SummaryJavadoc">
+            <property name="violateExecutionOnNonTightHtml" value="true" />
+        </module>
+        
+        <!-- Miscellaneous -->
+        <module name="ArrayTypeStyle" />
+        <module name="AvoidEscapedUnicodeCharacters" />
+        <module name="CommentsIndentation" />
+        <module name="DescendantToken" />
+        <module name="FinalParameters" />
+        <module name="Indentation">
+            <property name="arrayInitIndent" value="2" />
+            <property name="lineWrappingIndentation" value="8" />
+        </module>
+        <module name="NoCodeInFile" />
+        <module name="OuterTypeFilename" />
+        <module name="TodoComment" />
+        <module name="TrailingComment" />
+        <module name="UncommentedMain">
+            <property name="excludedClasses" value="\.Bootstrap" />
+        </module>
+        <module name="UpperEll" />
+        
+        <!-- Modifiers -->
+        <module name="ModifierOrder" />
+        <module name="RedundantModifier" />
+        
         <!-- Naming Conventions -->
         <module name="AbbreviationAsWordInName">
             <property name="allowedAbbreviationLength" value="8" />
@@ -118,139 +275,6 @@
         <module name="TypecastParenPad" />
         <module name="WhitespaceAfter" />
         <module name="WhitespaceAround" />
-        
-        <!-- Imports -->
-        <module name="AvoidStarImport" />
-        <module name="AvoidStaticImport">
-            <property name="excludes" value="org.junit.jupiter.api.Assertions.*,org.junit.jupiter.api.Assumptions.*,org.hamcrest.Matchers.*,org.hamcrest.CoreMatchers.*,org.hamcrest.MatcherAssert.*,org.mockito.Mockito.*,org.mockito.ArgumentMatchers.*" />
-        </module>
-        <module name="IllegalImport" />
-        <module name="RedundantImport" />
-        <module name="UnusedImports" />
-        
-        <!-- Annotations -->
-        <module name="AnnotationLocation">
-            <property name="id" value="AnnotationLocationMostCases" />
-            <property name="tokens" value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, METHOD_DEF, CTOR_DEF" />
-        </module>
-        <module name="AnnotationLocation">
-            <property name="id" value="AnnotationLocationVariables" />
-            <property name="tokens" value="VARIABLE_DEF" />
-            <property name="allowSamelineMultipleAnnotations" value="true" />
-        </module>
-        <module name="AnnotationUseStyle" />
-        <module name="MissingDeprecated" />
-        <module name="MissingOverride" />
-        <module name="PackageAnnotation" />
-        <module name="SuppressWarnings" />
-        <module name="SuppressWarningsHolder" />
-        
-        <!-- Modifiers -->
-        <module name="ModifierOrder" />
-        <module name="RedundantModifier" />
-        
-        <!-- Coding -->
-        <module name="AvoidDoubleBraceInitialization" />
-        <module name="AvoidNoArgumentSuperConstructorCall" />
-        <module name="CovariantEquals" />
-        <module name="DeclarationOrder" />
-        <module name="DefaultComesLast" />
-        <module name="EmptyStatement" />
-        <module name="EqualsAvoidNull" />
-        <module name="ExplicitInitialization" />
-        <module name="FallThrough" />
-        <module name="IllegalCatch" />
-        <module name="IllegalInstantiation" />
-        <module name="IllegalThrows" />
-        <module name="IllegalToken" />
-        <module name="IllegalTokenText">
-            <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL" />
-            <property name="format" value="\\u00(09|0(a|A)|0(c|C)|0(d|D)|22|27|5(C|c))|\\(0(10|11|12|14|15|42|47)|134)" />
-            <property name="message" value="Consider using special escape sequence instead of octal value or Unicode escaped value." />
-        </module>
-        <module name="IllegalType" />
-        <module name="MissingSwitchDefault" />
-        <module name="ModifiedControlVariable" />
-        <module name="MultipleVariableDeclarations" />
-        <module name="NestedIfDepth" />
-        <module name="NestedTryDepth" />
-        <module name="NoArrayTrailingComma" />
-        <module name="NoClone" />
-        <module name="NoEnumTrailingComma" />
-        <module name="NoFinalizer" />
-        <module name="OneStatementPerLine" />
-        <module name="OverloadMethodsDeclarationOrder" />
-        <module name="PackageDeclaration" />
-        <module name="ParameterAssignment" />
-        <module name="RequireThis" />
-        <module name="SimplifyBooleanExpression" />
-        <module name="SimplifyBooleanReturn" />
-        <module name="StringLiteralEquality" />
-        <module name="SuperClone" />
-        <module name="SuperFinalize" />
-        <module name="UnnecessaryParentheses" />
-        <module name="UnnecessarySemicolonAfterOuterTypeDeclaration" />
-        <module name="UnnecessarySemicolonAfterTypeMemberDeclaration" />
-        <module name="UnnecessarySemicolonInEnumeration" />
-        <module name="UnnecessarySemicolonInTryWithResources" />
-        <module name="UnusedLocalVariable" />
-        <module name="VariableDeclarationUsageDistance" />
-        
-        <!-- Block Checks -->
-        <module name="EmptyBlock" />
-        <module name="EmptyCatchBlock">
-            <property name="exceptionVariableName" value="expected|ignore" />
-        </module>
-        <module name="AvoidNestedBlocks" />
-        <module name="NeedBraces" />
-        <module name="LeftCurly" />
-        <module name="RightCurly" />
-        
-        <!-- Class Design -->
-        <module name="FinalClass" />
-        <!-- cannot recognize for lombok @NoArgsConstructor(access = AccessLevel.PRIVATE), just ignore -->
-        <!--<module name="HideUtilityClassConstructor" />-->
-        <module name="OneTopLevelClass" />
-        <module name="InterfaceIsType" />
-        <module name="InnerTypeLast" />
-        <module name="VisibilityModifier" />
-        <module name="MutableException" />
-        <module name="ThrowsCount" />
-        
-        <!-- Miscellaneous -->
-        <module name="ArrayTypeStyle" />
-        <module name="UpperEll" />
-        <module name="AvoidEscapedUnicodeCharacters" />
-        <module name="DescendantToken" />
-        <module name="FinalParameters" />
-        <module name="Indentation">
-            <property name="arrayInitIndent" value="2" />
-            <property name="lineWrappingIndentation" value="8" />
-        </module>
-        <module name="OuterTypeFilename" />
-        <module name="TodoComment" />
-        <module name="TrailingComment" />
-        <module name="UncommentedMain">
-            <property name="excludedClasses" value="\.Bootstrap" />
-        </module>
-        
-        <!-- Javadoc Comments -->
-        <module name="AtclauseOrder">
-            <property name="tagOrder" value="@param, @return, @throws, @deprecated" />
-        </module>
-        <module name="InvalidJavadocPosition" />
-        <module name="NonEmptyAtclauseDescription" />
-        <module name="JavadocParagraph" />
-        <module name="JavadocStyle" />
-        <module name="JavadocTagContinuationIndentation" />
-        <module name="SingleLineJavadoc" />
-        <module name="SummaryJavadoc" />
-        
-        <module name="JavadocMethod">
-            <property name="allowedAnnotations" value="Override, Test, BeforeEach, AfterEach, BeforeAll, AfterAll, ParameterizedTest" />
-            <property name="validateThrows" value="true" />
-            <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF" />
-        </module>
         
         <!-- Filters -->
         <module name="SuppressionCommentFilter" />
