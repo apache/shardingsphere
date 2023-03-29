@@ -159,6 +159,7 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
     private final int value;
     
     static {
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TINYINT, POSTGRESQL_TYPE_INT2);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.SMALLINT, POSTGRESQL_TYPE_INT2);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.INTEGER, POSTGRESQL_TYPE_INT4);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BIGINT, POSTGRESQL_TYPE_INT8);
