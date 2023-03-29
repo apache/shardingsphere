@@ -40,7 +40,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public final class MaskResultDecoratorEngineTest {
+class MaskResultDecoratorEngineTest {
     
     @Mock
     private MaskRule rule;
@@ -49,14 +49,14 @@ public final class MaskResultDecoratorEngineTest {
     private ShardingSphereDatabase database;
     
     @Test
-    public void assertNewInstanceWithSelectStatement() {
+    void assertNewInstanceWithSelectStatement() {
         MaskResultDecoratorEngine engine = (MaskResultDecoratorEngine) OrderedSPILoader.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
         ResultDecorator<?> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(SelectStatementContext.class, RETURNS_DEEP_STUBS));
         assertThat(actual, instanceOf(MaskDQLResultDecorator.class));
     }
     
     @Test
-    public void assertNewInstanceWithOtherStatement() {
+    void assertNewInstanceWithOtherStatement() {
         MaskResultDecoratorEngine engine = (MaskResultDecoratorEngine) OrderedSPILoader.getServices(ResultProcessEngine.class, Collections.singleton(rule)).get(rule);
         ResultDecorator<?> actual = engine.newInstance(database, rule, mock(ConfigurationProperties.class), mock(InsertStatementContext.class));
         assertThat(actual, instanceOf(TransparentResultDecorator.class));

@@ -25,20 +25,20 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class MD5MaskAlgorithmTest {
+class MD5MaskAlgorithmTest {
     
     @Test
-    public void assertMask() {
+    void assertMask() {
         assertThat(createMaskAlgorithm("").mask("abc123456"), is("0659c7992e268962384eb17fafe88364"));
     }
     
     @Test
-    public void assertMaskWhenPlainValueIsNull() {
+    void assertMaskWhenPlainValueIsNull() {
         assertNull(createMaskAlgorithm("").mask(null));
     }
     
     @Test
-    public void assertMaskWhenConfigSalt() {
+    void assertMaskWhenConfigSalt() {
         assertThat(createMaskAlgorithm("202cb962ac5907").mask("abc123456"), is("02d44390e9354b72dd2aa78d55016f7f"));
     }
     

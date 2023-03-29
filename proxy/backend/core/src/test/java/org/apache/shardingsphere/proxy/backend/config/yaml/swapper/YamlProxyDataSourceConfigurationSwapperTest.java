@@ -23,19 +23,19 @@ import org.apache.shardingsphere.infra.datasource.config.PoolConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlProxyDataSourceConfigurationSwapperTest {
+class YamlProxyDataSourceConfigurationSwapperTest {
     
     @Test
-    public void assertSwap() throws IOException {
+    void assertSwap() throws IOException {
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/swap");
         YamlProxyDataSourceConfiguration yamlProxyDataSourceConfig = yamlProxyConfig.getDatabaseConfigurations().get("swapper_test").getDataSources().get("foo_db");
         DataSourceConfiguration actualDataSourceConfig = new YamlProxyDataSourceConfigurationSwapper().swap(yamlProxyDataSourceConfig);

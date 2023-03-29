@@ -27,7 +27,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 /**
- * Timestamp utils of openGauss.
+ * Timestamp utility class of openGauss.
  */
 @RequiredArgsConstructor
 public final class OpenGaussTimestampUtils implements BaseTimestampUtils {

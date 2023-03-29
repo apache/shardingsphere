@@ -75,7 +75,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.executor.FilterableScan
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.ScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtil;
+import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtils;
 import org.apache.shardingsphere.sqlfederation.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.MemoryEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.SQLFederationRowEnumerator;
@@ -232,9 +232,9 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
         String schemaName = executorContext.getSchemaName();
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(optimizerContext.getParserContext(databaseName).getDialectProps());
         ShardingSphereDatabase database = executorContext.getFederationContext().getMetaData().getDatabase(databaseName);
-        CalciteCatalogReader catalogReader = SQLFederationPlannerUtil.createCatalogReader(schemaName,
+        CalciteCatalogReader catalogReader = SQLFederationPlannerUtils.createCatalogReader(schemaName,
                 new FilterableSchema(schemaName, database.getSchema(schemaName), database.getProtocolType(), JAVA_TYPE_FACTORY, null), JAVA_TYPE_FACTORY, connectionConfig);
-        RelOptCluster relOptCluster = RelOptCluster.create(SQLFederationPlannerUtil.createVolcanoPlanner(), new RexBuilder(JAVA_TYPE_FACTORY));
+        RelOptCluster relOptCluster = RelOptCluster.create(SQLFederationPlannerUtils.createVolcanoPlanner(), new RexBuilder(JAVA_TYPE_FACTORY));
         RelBuilder builder = RelFactories.LOGICAL_BUILDER.create(relOptCluster, catalogReader).scan(table.getName()).filter(scanContext.getFilterValues());
         if (null != scanContext.getProjects()) {
             builder.project(createProjections(scanContext.getProjects(), builder, table.getColumnNames()));

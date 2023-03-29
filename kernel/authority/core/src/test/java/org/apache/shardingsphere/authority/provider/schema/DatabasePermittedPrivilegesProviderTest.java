@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -34,10 +34,10 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DatabasePermittedPrivilegesProviderTest {
+class DatabasePermittedPrivilegesProviderTest {
     
     @Test
-    public void assertBuildAuthorityRegistry() {
+    void assertBuildAuthorityRegistry() {
         Properties props = PropertiesBuilder.build(
                 new Property(DatabasePermittedPrivilegesProvider.PROP_USER_DATABASE_MAPPINGS, "root@localhost=test, user1@127.0.0.1=db_dal_admin, user1@=test, user1@=test1, user1@=*"));
         AuthorityProvider provider = TypedSPILoader.getService(AuthorityProvider.class, "DATABASE_PERMITTED", props);

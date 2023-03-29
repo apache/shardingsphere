@@ -67,6 +67,7 @@ public enum MySQLStatusFlag {
      *
      * @param value value
      * @return MySQL status flag
+     * @throws UnknownSQLException unknown SQL exception
      */
     public static MySQLStatusFlag valueOf(final int value) {
         for (MySQLStatusFlag each : values()) {

@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.test.it.data.pipeline.scenario.migration.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.check.consistency.MigrationDataConsistencyChecker;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationProcessContext;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
@@ -31,9 +31,9 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.DataConsistencyCalculateAlgorithmFixture;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
-import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -44,15 +44,15 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class MigrationDataConsistencyCheckerTest {
+class MigrationDataConsistencyCheckerTest {
     
-    @BeforeClass
-    public static void beforeClass() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
+    @BeforeAll
+    static void beforeClass() {
+        PipelineContextUtils.mockModeConfigAndContextManager();
     }
     
     @Test
-    public void assertCountAndDataCheck() throws SQLException {
+    void assertCountAndDataCheck() throws SQLException {
         MigrationJobConfiguration jobConfig = createJobConfiguration();
         JobConfigurationPOJO jobConfigurationPOJO = new JobConfigurationPOJO();
         jobConfigurationPOJO.setJobParameter(YamlEngine.marshal(new YamlMigrationJobConfigurationSwapper().swapToYamlConfiguration(jobConfig)));
@@ -71,7 +71,7 @@ public final class MigrationDataConsistencyCheckerTest {
     }
     
     private MigrationJobConfiguration createJobConfiguration() throws SQLException {
-        MigrationJobItemContext jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
+        MigrationJobItemContext jobItemContext = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
         initTableData(jobItemContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
         initTableData(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
         return jobItemContext.getJobConfig();

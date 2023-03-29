@@ -17,19 +17,16 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategyFactory;
-import org.apache.shardingsphere.readwritesplitting.strategy.type.DynamicReadwriteSplittingStrategy;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Readwrite-splitting data source rule.
@@ -39,16 +36,18 @@ public final class ReadwriteSplittingDataSourceRule {
     
     private final String name;
     
+    private final TransactionalReadQueryStrategy transactionalReadQueryStrategy;
+    
     private final ReadQueryLoadBalanceAlgorithm loadBalancer;
     
     private final ReadwriteSplittingStrategy readwriteSplittingStrategy;
     
-    @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final ReadQueryLoadBalanceAlgorithm loadBalancer,
-                                            final Collection<ShardingSphereRule> builtRules) {
+    public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final TransactionalReadQueryStrategy transactionalReadQueryStrategy,
+                                            final ReadQueryLoadBalanceAlgorithm loadBalancer, final Collection<ShardingSphereRule> builtRules) {
         name = config.getName();
+        this.transactionalReadQueryStrategy = transactionalReadQueryStrategy;
         this.loadBalancer = loadBalancer;
         readwriteSplittingStrategy = ReadwriteSplittingStrategyFactory.newInstance(config, builtRules);
     }
@@ -74,22 +73,5 @@ public final class ReadwriteSplittingDataSourceRule {
         } else {
             disabledDataSourceNames.remove(dataSourceName);
         }
-    }
-    
-    /**
-     * Get enabled replica data sources.
-     *
-     * @return enabled replica data sources
-     */
-    public List<String> getEnabledReplicaDataSources() {
-        List<String> result = readwriteSplittingStrategy.getReadDataSources();
-        if (readwriteSplittingStrategy instanceof DynamicReadwriteSplittingStrategy) {
-            return result;
-        }
-        if (!disabledDataSourceNames.isEmpty()) {
-            result = new LinkedList<>(result);
-            result.removeIf(disabledDataSourceNames::contains);
-        }
-        return result;
     }
 }

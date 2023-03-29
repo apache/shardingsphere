@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -41,10 +41,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SingleDatabaseBroadcastRouteEngineTest {
+class SingleDatabaseBroadcastRouteEngineTest {
     
     @Test
-    public void assertRoute() throws SQLException {
+    void assertRoute() throws SQLException {
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         SingleDatabaseBroadcastRouteEngine engine = new SingleDatabaseBroadcastRouteEngine();

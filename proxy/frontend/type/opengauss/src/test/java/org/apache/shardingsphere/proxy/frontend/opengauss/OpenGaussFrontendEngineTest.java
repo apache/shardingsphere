@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public final class OpenGaussFrontendEngineTest {
+class OpenGaussFrontendEngineTest {
     
     private final OpenGaussFrontendEngine openGaussFrontendEngine = new OpenGaussFrontendEngine();
     
@@ -43,33 +43,33 @@ public final class OpenGaussFrontendEngineTest {
     private PostgreSQLFrontendEngine mockPostgreSQLFrontendEngine;
     
     @BeforeEach
-    public void setup() throws ReflectiveOperationException {
+    void setup() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(OpenGaussFrontendEngine.class.getDeclaredField("postgreSQLFrontendEngine"), openGaussFrontendEngine, mockPostgreSQLFrontendEngine);
     }
     
     @Test
-    public void assertGetCommandExecuteEngine() {
+    void assertGetCommandExecuteEngine() {
         assertThat(openGaussFrontendEngine.getCommandExecuteEngine(), instanceOf(OpenGaussCommandExecuteEngine.class));
     }
     
     @Test
-    public void assertGetFrontendContext() {
+    void assertGetFrontendContext() {
         openGaussFrontendEngine.getFrontendContext();
         verify(mockPostgreSQLFrontendEngine).getFrontendContext();
     }
     
     @Test
-    public void assertGetCodecEngine() {
+    void assertGetCodecEngine() {
         assertThat(openGaussFrontendEngine.getCodecEngine(), instanceOf(OpenGaussPacketCodecEngine.class));
     }
     
     @Test
-    public void assertGetAuthenticationEngine() {
+    void assertGetAuthenticationEngine() {
         assertThat(openGaussFrontendEngine.getAuthenticationEngine(), instanceOf(OpenGaussAuthenticationEngine.class));
     }
     
     @Test
-    public void assertRelease() {
+    void assertRelease() {
         ConnectionSession connection = mock(ConnectionSession.class);
         openGaussFrontendEngine.release(connection);
         verify(mockPostgreSQLFrontendEngine).release(connection);

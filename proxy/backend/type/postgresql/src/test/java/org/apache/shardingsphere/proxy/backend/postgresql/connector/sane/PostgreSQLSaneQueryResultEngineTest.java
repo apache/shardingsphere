@@ -17,22 +17,22 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.connector.sane;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLSaneQueryResultEngineTest {
+class PostgreSQLSaneQueryResultEngineTest {
     
     @Test
-    public void assertGetSaneQueryResult() {
+    void assertGetSaneQueryResult() {
         assertThat(new PostgreSQLSaneQueryResultEngine().getSaneQueryResult(null, null), is(Optional.empty()));
     }
     
     @Test
-    public void assertGetType() {
+    void assertGetType() {
         assertThat(new PostgreSQLSaneQueryResultEngine().getType(), is("PostgreSQL"));
     }
 }

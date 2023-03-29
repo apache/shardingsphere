@@ -19,16 +19,16 @@ package org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler;
 
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterPersistRepositoryException;
 import org.apache.zookeeper.KeeperException.NoNodeException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public final class ZookeeperExceptionHandlerTest {
+class ZookeeperExceptionHandlerTest {
     
     @Test
-    public void assertHandleException() {
+    void assertHandleException() {
         ZookeeperExceptionHandler.handleException(null);
         ZookeeperExceptionHandler.handleException(new NoNodeException(""));
         ZookeeperExceptionHandler.handleException(new Exception(new NoNodeException("")));

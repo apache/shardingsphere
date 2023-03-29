@@ -20,31 +20,31 @@ package org.apache.shardingsphere.logging.rule;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 import org.apache.shardingsphere.logging.logger.ShardingSphereAppender;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public final class LoggingRuleTest {
+class LoggingRuleTest {
     
     private LoggingRule loggingRule;
     
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         loggingRule = new LoggingRule(new LoggingRuleConfiguration(Collections.singleton(new ShardingSphereLogger("ROOT", "INFO", true, "console")),
                 Collections.singleton(new ShardingSphereAppender("console", "ch.qos.logback.core.ConsoleAppender", "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n"))));
     }
     
     @Test
-    public void assertGetType() {
+    void assertGetType() {
         assertThat(loggingRule.getType(), is(LoggingRule.class.getSimpleName()));
     }
     
     @Test
-    public void assertFields() {
+    void assertFields() {
         assertThat(loggingRule.getConfiguration().getLoggers().size(), is(1));
         assertThat(loggingRule.getConfiguration().getAppenders().size(), is(1));
     }

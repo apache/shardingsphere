@@ -21,22 +21,22 @@ import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 import org.apache.shardingsphere.infra.util.exception.internal.ShardingSphereInternalException;
 import org.apache.shardingsphere.infra.util.exception.external.server.ShardingSphereServerException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ExpectedExceptionsTest {
+class ExpectedExceptionsTest {
     
     @Test
-    public void assertIsExpected() {
+    void assertIsExpected() {
         assertTrue(ExpectedExceptions.isExpected(ShardingSphereServerException.class));
         assertTrue(ExpectedExceptions.isExpected(SQLDialectException.class));
         assertTrue(ExpectedExceptions.isExpected(ShardingSphereSQLException.class));
     }
     
     @Test
-    public void assertIsNotExpected() {
+    void assertIsNotExpected() {
         assertFalse(ExpectedExceptions.isExpected(Exception.class));
         assertFalse(ExpectedExceptions.isExpected(IllegalArgumentException.class));
         assertFalse(ExpectedExceptions.isExpected(ShardingSphereInternalException.class));

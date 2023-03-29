@@ -97,8 +97,8 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
     
     private List<FetchOrderByValueGroup> getFetchOrderByValueGroups(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,
                                                                     final ShardingSphereSchema schema, final String cursorName, final ConnectionContext connectionContext) throws SQLException {
-        long actualFetchCount = Math.max(fetchCount - connectionContext.getCursorConnectionContext().getMinGroupRowCounts().getOrDefault(cursorName, 0L), 0);
-        List<FetchGroup> fetchGroups = connectionContext.getCursorConnectionContext().getOrderByValueGroups().computeIfAbsent(cursorName, key -> createFetchOrderByValueGroups(queryResults.size()));
+        long actualFetchCount = Math.max(fetchCount - connectionContext.getCursorContext().getMinGroupRowCounts().getOrDefault(cursorName, 0L), 0);
+        List<FetchGroup> fetchGroups = connectionContext.getCursorContext().getOrderByValueGroups().computeIfAbsent(cursorName, key -> createFetchOrderByValueGroups(queryResults.size()));
         List<FetchOrderByValueGroup> result = new ArrayList<>(fetchGroups.size());
         for (FetchGroup each : fetchGroups) {
             result.add((FetchOrderByValueGroup) each);
@@ -107,7 +107,7 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
         if (actualFetchCount <= 0 && !DirectionType.isAllDirectionType(directionType)) {
             return result;
         }
-        if (connectionContext.getCursorConnectionContext().getExecutedAllDirections().containsKey(cursorName)) {
+        if (connectionContext.getCursorContext().getExecutedAllDirections().containsKey(cursorName)) {
             result.forEach(each -> each.getOrderByValues().clear());
             return result;
         }
@@ -155,20 +155,20 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
     
     private void setMinResultSetRowCount(final String cursorName, final ConnectionContext connectionContext) {
         Collection<Long> rowCounts = new LinkedList<>();
-        List<FetchGroup> fetchOrderByValueGroups = connectionContext.getCursorConnectionContext().getOrderByValueGroups().getOrDefault(cursorName, new LinkedList<>());
+        List<FetchGroup> fetchOrderByValueGroups = connectionContext.getCursorContext().getOrderByValueGroups().getOrDefault(cursorName, new LinkedList<>());
         for (FetchGroup each : fetchOrderByValueGroups) {
             rowCounts.add(getGroupRowCount((FetchOrderByValueGroup) each));
         }
         long minResultSetRowCount = DirectionType.isAllDirectionType(directionType) ? 0 : Collections.min(rowCounts) - fetchCount;
-        connectionContext.getCursorConnectionContext().getMinGroupRowCounts().put(cursorName, Math.max(minResultSetRowCount, 0L));
+        connectionContext.getCursorContext().getMinGroupRowCounts().put(cursorName, Math.max(minResultSetRowCount, 0L));
     }
     
     private void handleExecutedAllDirections(final ConnectionContext connectionContext, final String cursorName) {
-        if (connectionContext.getCursorConnectionContext().getExecutedAllDirections().containsKey(cursorName)) {
+        if (connectionContext.getCursorContext().getExecutedAllDirections().containsKey(cursorName)) {
             isExecutedAllDirection = true;
         }
         if (DirectionType.isAllDirectionType(directionType)) {
-            connectionContext.getCursorConnectionContext().getExecutedAllDirections().put(cursorName, true);
+            connectionContext.getCursorContext().getExecutedAllDirections().put(cursorName, true);
         }
     }
     

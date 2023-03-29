@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLColumnValueRead
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.ColumnValueReader;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
@@ -31,30 +31,30 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class PipelineTypedSPILoaderTest {
+class PipelineTypedSPILoaderTest {
     
     @Test
-    public void assertFindDatabaseTypedService() {
+    void assertFindDatabaseTypedService() {
         Optional<PipelineSQLBuilder> actual = PipelineTypedSPILoader.findDatabaseTypedService(PipelineSQLBuilder.class, "MariaDB");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getType(), is("MySQL"));
     }
     
     @Test
-    public void assertGetPipelineSQLBuilder() {
+    void assertGetPipelineSQLBuilder() {
         PipelineSQLBuilder actual = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, "MariaDB");
         assertNotNull(actual);
         assertThat(actual.getType(), is("MySQL"));
     }
     
     @Test
-    public void assertFindColumnValueReaderByUnknown() {
+    void assertFindColumnValueReaderByUnknown() {
         Optional<ColumnValueReader> actual = PipelineTypedSPILoader.findDatabaseTypedService(ColumnValueReader.class, "Unknown");
         assertFalse(actual.isPresent());
     }
     
     @Test
-    public void assertGetColumnValueReaderByBranchDB() {
+    void assertGetColumnValueReaderByBranchDB() {
         ColumnValueReader actual = PipelineTypedSPILoader.getDatabaseTypedService(ColumnValueReader.class, "MariaDB");
         assertNotNull(actual);
         assertThat(actual.getClass().getName(), is(MySQLColumnValueReader.class.getName()));

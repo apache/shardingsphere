@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -30,27 +30,27 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class MemoryPipelineChannelCreatorTest {
+class MemoryPipelineChannelCreatorTest {
     
     @Test
-    public void assertInitWithBlockQueueSize() throws Exception {
+    void assertInitWithBlockQueueSize() throws Exception {
         PipelineChannelCreator creator = TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY", PropertiesBuilder.build(new Property("block-queue-size", "200")));
         assertThat(Plugins.getMemberAccessor().get(MemoryPipelineChannelCreator.class.getDeclaredField("blockQueueSize"), creator), is(200));
     }
     
     @Test
-    public void assertInitWithoutBlockQueueSize() throws Exception {
+    void assertInitWithoutBlockQueueSize() throws Exception {
         PipelineChannelCreator creator = TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY");
         assertThat(Plugins.getMemberAccessor().get(MemoryPipelineChannelCreator.class.getDeclaredField("blockQueueSize"), creator), is(10000));
     }
     
     @Test
-    public void assertCreateSimpleMemoryPipelineChannel() {
+    void assertCreateSimpleMemoryPipelineChannel() {
         assertThat(TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY").createPipelineChannel(1, mock(AckCallback.class)), instanceOf(SimpleMemoryPipelineChannel.class));
     }
     
     @Test
-    public void assertCreateMultiplexMemoryPipelineChannel() {
+    void assertCreateMultiplexMemoryPipelineChannel() {
         assertThat(TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY").createPipelineChannel(2, mock(AckCallback.class)), instanceOf(MultiplexMemoryPipelineChannel.class));
     }
 }

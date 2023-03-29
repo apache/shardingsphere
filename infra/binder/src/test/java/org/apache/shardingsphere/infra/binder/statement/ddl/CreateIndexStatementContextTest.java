@@ -38,25 +38,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class CreateIndexStatementContextTest {
+class CreateIndexStatementContextTest {
     
     @Test
-    public void assertMySQLNewInstance() {
+    void assertMySQLNewInstance() {
         assertNewInstance(mock(MySQLCreateIndexStatement.class));
     }
     
     @Test
-    public void assertPostgreSQLNewInstance() {
+    void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLCreateIndexStatement.class));
     }
     
     @Test
-    public void assertOracleSQLNewInstance() {
+    void assertOracleSQLNewInstance() {
         assertNewInstance(mock(OracleCreateIndexStatement.class));
     }
     
     @Test
-    public void assertSQLServerSQLNewInstance() {
+    void assertSQLServerSQLNewInstance() {
         assertNewInstance(mock(SQLServerCreateIndexStatement.class));
     }
     

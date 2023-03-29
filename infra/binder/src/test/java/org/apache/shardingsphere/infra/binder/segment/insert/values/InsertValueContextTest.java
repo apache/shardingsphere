@@ -38,10 +38,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class InsertValueContextTest {
+class InsertValueContextTest {
     
     @Test
-    public void assertInstanceConstructedOk() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    void assertInstanceConstructedOk() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         InsertValueContext insertValueContext = new InsertValueContext(Collections.emptyList(), Collections.emptyList(), 0);
         assertThat(insertValueContext.getValueExpressions(), is(
                 Plugins.getMemberAccessor().invoke(InsertValueContext.class.getDeclaredMethod("getValueExpressions", Collection.class), insertValueContext, Collections.emptyList())));
@@ -50,7 +50,7 @@ public final class InsertValueContextTest {
     }
     
     @Test
-    public void assertGetLiteralValueWithParameterMarker() {
+    void assertGetLiteralValueWithParameterMarker() {
         Collection<ExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
         String parameterValue = "test";
         InsertValueContext insertValueContext = new InsertValueContext(assignments, Collections.singletonList(parameterValue), 0);
@@ -60,7 +60,7 @@ public final class InsertValueContextTest {
     }
     
     @Test
-    public void assertGetLiteralValueWhenParameterIsNull() {
+    void assertGetLiteralValueWhenParameterIsNull() {
         Collection<ExpressionSegment> assignments = makeParameterMarkerExpressionSegment();
         int parametersOffset = 0;
         InsertValueContext insertValueContext = new InsertValueContext(assignments, Collections.singletonList(null), parametersOffset);
@@ -73,7 +73,7 @@ public final class InsertValueContextTest {
     }
     
     @Test
-    public void assertGetLiteralValueWhenLiteralExpressionSegment() {
+    void assertGetLiteralValueWhenLiteralExpressionSegment() {
         Object literalObject = new Object();
         Collection<ExpressionSegment> assignments = makeLiteralExpressionSegment(literalObject);
         InsertValueContext insertValueContext = new InsertValueContext(assignments, Collections.emptyList(), 0);
@@ -87,7 +87,7 @@ public final class InsertValueContextTest {
     }
     
     @Test
-    public void assertGetParameterCount() {
+    void assertGetParameterCount() {
         Collection<ExpressionSegment> expressions = Arrays.asList(
                 new LiteralExpressionSegment(0, 10, null),
                 new ExpressionProjectionSegment(0, 10, ""),

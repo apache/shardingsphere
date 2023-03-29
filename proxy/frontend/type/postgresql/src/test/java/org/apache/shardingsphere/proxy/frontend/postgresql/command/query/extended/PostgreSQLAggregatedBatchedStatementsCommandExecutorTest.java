@@ -77,7 +77,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
+class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
     
     private static final int CONNECTION_ID = 1;
     
@@ -90,7 +90,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
     private final ShardingSphereSQLParserEngine parserEngine = new ShardingSphereSQLParserEngine("PostgreSQL", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         ConnectionSession connectionSession = mockConnectionSession();
         PostgreSQLAggregatedBatchedStatementsCommandExecutor executor = new PostgreSQLAggregatedBatchedStatementsCommandExecutor(connectionSession, createPackets());
         ContextManager contextManager = mockContextManager();

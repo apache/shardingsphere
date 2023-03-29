@@ -34,6 +34,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobHas
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.UnsupportedModeTypeException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
+import org.apache.shardingsphere.data.pipeline.core.listener.PipelineElasticJobListener;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -115,6 +117,7 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         String createTimeFormat = LocalDateTime.now().format(DATE_TIME_FORMATTER);
         result.getProps().setProperty("create_time", createTimeFormat);
         result.getProps().setProperty("start_time_millis", System.currentTimeMillis() + "");
+        result.setJobListenerTypes(Collections.singletonList(PipelineElasticJobListener.class.getName()));
         return result;
     }
     
@@ -143,6 +146,9 @@ public abstract class AbstractPipelineJobAPIImpl implements PipelineJobAPI {
         PipelineDistributedBarrier pipelineDistributedBarrier = PipelineDistributedBarrier.getInstance();
         pipelineDistributedBarrier.unregister(PipelineMetaDataNode.getJobBarrierEnablePath(jobId));
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        if (jobConfigPOJO.isDisabled()) {
+            return;
+        }
         jobConfigPOJO.setDisabled(true);
         jobConfigPOJO.getProps().setProperty("stop_time", LocalDateTime.now().format(DATE_TIME_FORMATTER));
         jobConfigPOJO.getProps().setProperty("stop_time_millis", System.currentTimeMillis() + "");

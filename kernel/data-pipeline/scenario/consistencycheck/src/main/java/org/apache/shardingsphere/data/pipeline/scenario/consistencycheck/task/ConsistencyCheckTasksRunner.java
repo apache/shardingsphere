@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.config.job.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
@@ -35,6 +34,7 @@ import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.ConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
@@ -141,8 +141,6 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             }
             log.info("onFailure, check job id: {}, parent job id: {}", checkJobId, parentJobId, throwable);
             checkJobAPI.persistJobItemErrorMessage(checkJobId, 0, throwable);
-            jobItemContext.setStatus(JobStatus.CONSISTENCY_CHECK_FAILURE);
-            checkJobAPI.persistJobItemProgress(jobItemContext);
             checkJobAPI.stop(checkJobId);
         }
     }

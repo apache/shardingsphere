@@ -28,20 +28,13 @@ import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListSt
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationSourceStorageUnitsStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationStatusStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.cdc.ShowStreamingListStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.cdc.ShowStreamingStatusStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.query.ShowMigrationCheckAlgorithmsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.query.ShowMigrationCheckStatusStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.query.ShowMigrationListStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.query.ShowMigrationSourceStorageUnitsStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.query.ShowMigrationStatusStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowMigrationListStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc.ShowStreamingListStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc.ShowStreamingStatusStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationCheckAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationCheckStatusStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationSourceStorageUnitsStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationStatusStatementTestCase;
 
 /**
@@ -60,17 +53,17 @@ public final class QueryableScalingRALStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final QueryableScalingRALStatement actual, final SQLParserTestCase expected) {
         // TODO add more test case
         if (actual instanceof ShowMigrationListStatement) {
-            ShowMigrationListStatementAssert.assertIs(assertContext, (ShowMigrationListStatement) actual, (ShowMigrationListStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowMigrationCheckAlgorithmsStatement) {
-            ShowMigrationCheckAlgorithmsStatementAssert.assertIs(assertContext, (ShowMigrationCheckAlgorithmsStatement) actual, (ShowMigrationCheckAlgorithmsStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowMigrationCheckStatusStatement) {
             ShowMigrationCheckStatusStatementAssert.assertIs(assertContext, (ShowMigrationCheckStatusStatement) actual, (ShowMigrationCheckStatusStatementTestCase) expected);
         } else if (actual instanceof ShowMigrationStatusStatement) {
             ShowMigrationStatusStatementAssert.assertIs(assertContext, (ShowMigrationStatusStatement) actual, (ShowMigrationStatusStatementTestCase) expected);
         } else if (actual instanceof ShowMigrationSourceStorageUnitsStatement) {
-            ShowMigrationSourceStorageUnitsStatementAssert.assertIs(assertContext, (ShowMigrationSourceStorageUnitsStatement) actual, (ShowMigrationSourceStorageUnitsStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowStreamingListStatement) {
-            ShowStreamingListStatementAssert.assertIs(assertContext, (ShowStreamingListStatement) actual, (ShowStreamingListStatementTestCase) expected);
+            ExistingAssert.assertIs(assertContext, actual, expected);
         } else if (actual instanceof ShowStreamingStatusStatement) {
             ShowStreamingStatusStatementAssert.assertIs(assertContext, (ShowStreamingStatusStatement) actual, (ShowStreamingStatusStatementTestCase) expected);
         }

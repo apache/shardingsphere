@@ -38,7 +38,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLComCloseExecutorTest {
+class PostgreSQLComCloseExecutorTest {
     
     @Mock
     private PortalContext portalContext;
@@ -50,7 +50,7 @@ public final class PostgreSQLComCloseExecutorTest {
     private ConnectionSession connectionSession;
     
     @Test
-    public void assertExecuteClosePreparedStatement() throws SQLException {
+    void assertExecuteClosePreparedStatement() throws SQLException {
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(packet.getType()).thenReturn(PostgreSQLComClosePacket.Type.PREPARED_STATEMENT);
         when(packet.getName()).thenReturn("S_1");
@@ -61,7 +61,7 @@ public final class PostgreSQLComCloseExecutorTest {
     }
     
     @Test
-    public void assertExecuteClosePortal() throws SQLException {
+    void assertExecuteClosePortal() throws SQLException {
         when(packet.getType()).thenReturn(PostgreSQLComClosePacket.Type.PORTAL);
         String portalName = "C_1";
         when(packet.getName()).thenReturn(portalName);

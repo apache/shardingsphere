@@ -34,5 +34,7 @@ public final class YamlReadwriteSplittingDataSourceRuleConfiguration implements 
     
     private YamlDynamicReadwriteSplittingStrategyConfiguration dynamicStrategy;
     
+    private String transactionalReadQueryStrategy;
+    
     private String loadBalancerName;
 }

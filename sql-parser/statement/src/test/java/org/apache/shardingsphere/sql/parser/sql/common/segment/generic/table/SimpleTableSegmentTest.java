@@ -19,21 +19,21 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table;
 
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class SimpleTableSegmentTest {
+class SimpleTableSegmentTest {
     
     @Test
-    public void getStartIndexWithoutOwner() {
+    void getStartIndexWithoutOwner() {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl")));
         assertThat(tableSegment.getStartIndex(), is(10));
     }
     
     @Test
-    public void getStartIndexWithOwner() {
+    void getStartIndexWithOwner() {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl")));
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("o")));
         assertThat(tableSegment.getStartIndex(), is(7));

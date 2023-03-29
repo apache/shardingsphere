@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class EncryptLiteralAssignmentTokenTest {
+class EncryptLiteralAssignmentTokenTest {
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         EncryptLiteralAssignmentToken actual = new EncryptLiteralAssignmentToken(0, 1);
         actual.addAssignment("c1", "c1");
         actual.addAssignment("c2", 1);

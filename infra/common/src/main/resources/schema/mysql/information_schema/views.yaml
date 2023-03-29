@@ -23,6 +23,7 @@ columns:
     generated: false
     name: TABLE_CATALOG
     primaryKey: false
+    unsigned: false
     visible: true
   table_schema:
     caseSensitive: false
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: TABLE_SCHEMA
     primaryKey: false
+    unsigned: false
     visible: true
   table_name:
     caseSensitive: false
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: TABLE_NAME
     primaryKey: false
+    unsigned: false
     visible: true
   view_definition:
     caseSensitive: false
@@ -44,6 +47,7 @@ columns:
     generated: false
     name: VIEW_DEFINITION
     primaryKey: false
+    unsigned: false
     visible: true
   check_option:
     caseSensitive: false
@@ -51,6 +55,7 @@ columns:
     generated: false
     name: CHECK_OPTION
     primaryKey: false
+    unsigned: false
     visible: true
   is_updatable:
     caseSensitive: false
@@ -58,6 +63,7 @@ columns:
     generated: false
     name: IS_UPDATABLE
     primaryKey: false
+    unsigned: false
     visible: true
   definer:
     caseSensitive: false
@@ -65,6 +71,7 @@ columns:
     generated: false
     name: DEFINER
     primaryKey: false
+    unsigned: false
     visible: true
   security_type:
     caseSensitive: false
@@ -72,6 +79,7 @@ columns:
     generated: false
     name: SECURITY_TYPE
     primaryKey: false
+    unsigned: false
     visible: true
   character_set_client:
     caseSensitive: false
@@ -79,6 +87,7 @@ columns:
     generated: false
     name: CHARACTER_SET_CLIENT
     primaryKey: false
+    unsigned: false
     visible: true
   collation_connection:
     caseSensitive: false
@@ -86,4 +95,5 @@ columns:
     generated: false
     name: COLLATION_CONNECTION
     primaryKey: false
+    unsigned: false
     visible: true

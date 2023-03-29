@@ -63,10 +63,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SQLStatementContextFactoryTest {
+class SQLStatementContextFactoryTest {
     
     @Test
-    public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSelectStatement() {
+    void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSelectStatement() {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setLimit(new LimitSegment(0, 10, null, null));
@@ -76,7 +76,7 @@ public final class SQLStatementContextFactoryTest {
     }
     
     @Test
-    public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfMySQLInsertStatement() {
+    void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfMySQLInsertStatement() {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         List<ColumnSegment> columnSegments = new LinkedList<>();
         columnSegments.add(new ColumnSegment(0, 0, new IdentifierValue("IdentifierValue")));
@@ -87,22 +87,22 @@ public final class SQLStatementContextFactoryTest {
     }
     
     @Test
-    public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfOracleInsertStatement() {
+    void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfOracleInsertStatement() {
         assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new OracleInsertStatement());
     }
     
     @Test
-    public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfPostgreSQLInsertStatement() {
+    void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfPostgreSQLInsertStatement() {
         assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new PostgreSQLInsertStatement());
     }
     
     @Test
-    public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSQL92InsertStatement() {
+    void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSQL92InsertStatement() {
         assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new SQL92InsertStatement());
     }
     
     @Test
-    public void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSQLServerInsertStatement() {
+    void assertSQLStatementContextCreatedWhenSQLStatementInstanceOfSQLServerInsertStatement() {
         assertSQLStatementContextCreatedWhenSQLStatementInstanceOfInsertStatement(new SQLServerInsertStatement());
     }
     
@@ -113,13 +113,13 @@ public final class SQLStatementContextFactoryTest {
     }
     
     @Test
-    public void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
+    void assertSQLStatementContextCreatedWhenSQLStatementNotInstanceOfSelectStatementAndInsertStatement() {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(mockMetaData(), Collections.emptyList(), mock(MySQLStatement.class), DefaultDatabase.LOGIC_NAME);
         assertThat(sqlStatementContext, instanceOf(CommonSQLStatementContext.class));
     }
     
     @Test
-    public void assertNewInstanceForCursorStatement() {
+    void assertNewInstanceForCursorStatement() {
         OpenGaussCursorStatement cursorStatement = mock(OpenGaussCursorStatement.class, RETURNS_DEEP_STUBS);
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class, RETURNS_DEEP_STUBS);
         when(selectStatement.getProjections().isDistinctRow()).thenReturn(false);
@@ -129,19 +129,19 @@ public final class SQLStatementContextFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceForCloseStatement() {
+    void assertNewInstanceForCloseStatement() {
         SQLStatementContext<?> actual = SQLStatementContextFactory.newInstance(mockMetaData(), Collections.emptyList(), mock(OpenGaussCloseStatement.class), DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(CloseStatementContext.class));
     }
     
     @Test
-    public void assertNewInstanceForMoveStatement() {
+    void assertNewInstanceForMoveStatement() {
         SQLStatementContext<?> actual = SQLStatementContextFactory.newInstance(mockMetaData(), Collections.emptyList(), mock(OpenGaussMoveStatement.class), DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(MoveStatementContext.class));
     }
     
     @Test
-    public void assertNewInstanceForFetchStatement() {
+    void assertNewInstanceForFetchStatement() {
         SQLStatementContext<?> actual = SQLStatementContextFactory.newInstance(mockMetaData(), Collections.emptyList(), mock(OpenGaussFetchStatement.class), DefaultDatabase.LOGIC_NAME);
         assertThat(actual, instanceOf(FetchStatementContext.class));
     }

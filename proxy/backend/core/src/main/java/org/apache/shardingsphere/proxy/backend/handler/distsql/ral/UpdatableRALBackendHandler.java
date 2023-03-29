@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -33,8 +32,7 @@ import java.sql.SQLException;
  * Updatable RAL backend handler.
  */
 @RequiredArgsConstructor
-@Setter
-public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> extends RALBackendHandler<T> {
+public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> implements RALBackendHandler {
     
     private final UpdatableRALStatement sqlStatement;
     

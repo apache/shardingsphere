@@ -23,6 +23,7 @@ columns:
     generated: false
     name: SPECIFIC_NAME
     primaryKey: false
+    unsigned: false
     visible: true
   routine_catalog:
     caseSensitive: false
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: ROUTINE_CATALOG
     primaryKey: false
+    unsigned: false
     visible: true
   routine_schema:
     caseSensitive: false
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: ROUTINE_SCHEMA
     primaryKey: false
+    unsigned: false
     visible: true
   routine_name:
     caseSensitive: false
@@ -44,6 +47,7 @@ columns:
     generated: false
     name: ROUTINE_NAME
     primaryKey: false
+    unsigned: false
     visible: true
   routine_type:
     caseSensitive: false
@@ -51,6 +55,7 @@ columns:
     generated: false
     name: ROUTINE_TYPE
     primaryKey: false
+    unsigned: false
     visible: true
   data_type:
     caseSensitive: false
@@ -58,6 +63,7 @@ columns:
     generated: false
     name: DATA_TYPE
     primaryKey: false
+    unsigned: false
     visible: true
   character_maximum_length:
     caseSensitive: false
@@ -65,6 +71,7 @@ columns:
     generated: false
     name: CHARACTER_MAXIMUM_LENGTH
     primaryKey: false
+    unsigned: false
     visible: true
   character_octet_length:
     caseSensitive: false
@@ -72,13 +79,15 @@ columns:
     generated: false
     name: CHARACTER_OCTET_LENGTH
     primaryKey: false
+    unsigned: false
     visible: true
   numeric_precision:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: NUMERIC_PRECISION
     primaryKey: false
+    unsigned: true
     visible: true
   numeric_scale:
     caseSensitive: false
@@ -86,13 +95,15 @@ columns:
     generated: false
     name: NUMERIC_SCALE
     primaryKey: false
+    unsigned: false
     visible: true
   datetime_precision:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: DATETIME_PRECISION
     primaryKey: false
+    unsigned: true
     visible: true
   character_set_name:
     caseSensitive: false
@@ -100,6 +111,7 @@ columns:
     generated: false
     name: CHARACTER_SET_NAME
     primaryKey: false
+    unsigned: false
     visible: true
   collation_name:
     caseSensitive: false
@@ -107,6 +119,7 @@ columns:
     generated: false
     name: COLLATION_NAME
     primaryKey: false
+    unsigned: false
     visible: true
   dtd_identifier:
     caseSensitive: false
@@ -114,6 +127,7 @@ columns:
     generated: false
     name: DTD_IDENTIFIER
     primaryKey: false
+    unsigned: false
     visible: true
   routine_body:
     caseSensitive: false
@@ -121,6 +135,7 @@ columns:
     generated: false
     name: ROUTINE_BODY
     primaryKey: false
+    unsigned: false
     visible: true
   routine_definition:
     caseSensitive: false
@@ -128,6 +143,7 @@ columns:
     generated: false
     name: ROUTINE_DEFINITION
     primaryKey: false
+    unsigned: false
     visible: true
   external_name:
     caseSensitive: false
@@ -135,6 +151,7 @@ columns:
     generated: false
     name: EXTERNAL_NAME
     primaryKey: false
+    unsigned: false
     visible: true
   external_language:
     caseSensitive: false
@@ -142,6 +159,7 @@ columns:
     generated: false
     name: EXTERNAL_LANGUAGE
     primaryKey: false
+    unsigned: false
     visible: true
   parameter_style:
     caseSensitive: false
@@ -149,6 +167,7 @@ columns:
     generated: false
     name: PARAMETER_STYLE
     primaryKey: false
+    unsigned: false
     visible: true
   is_deterministic:
     caseSensitive: false
@@ -156,6 +175,7 @@ columns:
     generated: false
     name: IS_DETERMINISTIC
     primaryKey: false
+    unsigned: false
     visible: true
   sql_data_access:
     caseSensitive: false
@@ -163,6 +183,7 @@ columns:
     generated: false
     name: SQL_DATA_ACCESS
     primaryKey: false
+    unsigned: false
     visible: true
   sql_path:
     caseSensitive: false
@@ -170,6 +191,7 @@ columns:
     generated: false
     name: SQL_PATH
     primaryKey: false
+    unsigned: false
     visible: true
   security_type:
     caseSensitive: false
@@ -177,6 +199,7 @@ columns:
     generated: false
     name: SECURITY_TYPE
     primaryKey: false
+    unsigned: false
     visible: true
   created:
     caseSensitive: false
@@ -184,6 +207,7 @@ columns:
     generated: false
     name: CREATED
     primaryKey: false
+    unsigned: false
     visible: true
   last_altered:
     caseSensitive: false
@@ -191,6 +215,7 @@ columns:
     generated: false
     name: LAST_ALTERED
     primaryKey: false
+    unsigned: false
     visible: true
   sql_mode:
     caseSensitive: false
@@ -198,6 +223,7 @@ columns:
     generated: false
     name: SQL_MODE
     primaryKey: false
+    unsigned: false
     visible: true
   routine_comment:
     caseSensitive: false
@@ -205,6 +231,7 @@ columns:
     generated: false
     name: ROUTINE_COMMENT
     primaryKey: false
+    unsigned: false
     visible: true
   definer:
     caseSensitive: false
@@ -212,6 +239,7 @@ columns:
     generated: false
     name: DEFINER
     primaryKey: false
+    unsigned: false
     visible: true
   character_set_client:
     caseSensitive: false
@@ -219,6 +247,7 @@ columns:
     generated: false
     name: CHARACTER_SET_CLIENT
     primaryKey: false
+    unsigned: false
     visible: true
   collation_connection:
     caseSensitive: false
@@ -226,6 +255,7 @@ columns:
     generated: false
     name: COLLATION_CONNECTION
     primaryKey: false
+    unsigned: false
     visible: true
   database_collation:
     caseSensitive: false
@@ -233,4 +263,5 @@ columns:
     generated: false
     name: DATABASE_COLLATION
     primaryKey: false
+    unsigned: false
     visible: true

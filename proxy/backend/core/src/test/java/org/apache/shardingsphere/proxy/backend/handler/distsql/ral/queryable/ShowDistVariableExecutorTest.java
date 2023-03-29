@@ -28,11 +28,11 @@ import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigur
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
+import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtils;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,14 +45,14 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowDistVariableExecutorTest {
+class ShowDistVariableExecutorTest {
     
     private final ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
     
     private final ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(2));
@@ -62,7 +62,7 @@ public final class ShowDistVariableExecutorTest {
     }
     
     @Test
-    public void assertShowTransactionType() {
+    void assertShowTransactionType() {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariableStatement("TRANSACTION_TYPE"));
@@ -73,7 +73,7 @@ public final class ShowDistVariableExecutorTest {
     }
     
     @Test
-    public void assertShowCachedConnections() {
+    void assertShowCachedConnections() {
         when(connectionSession.getBackendConnection().getConnectionSize()).thenReturn(1);
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariableStatement("CACHED_CONNECTIONS"));
@@ -84,8 +84,8 @@ public final class ShowDistVariableExecutorTest {
     }
     
     @Test
-    public void assertShowAgentPluginsEnabled() {
-        SystemPropertyUtil.setSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString());
+    void assertShowAgentPluginsEnabled() {
+        SystemPropertyUtils.setSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString());
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariableStatement("AGENT_PLUGINS_ENABLED"));
         assertThat(actual.size(), is(1));
@@ -95,7 +95,7 @@ public final class ShowDistVariableExecutorTest {
     }
     
     @Test
-    public void assertShowPropsVariable() {
+    void assertShowPropsVariable() {
         when(metaData.getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("sql-show", Boolean.TRUE.toString()))));
         when(metaData.getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
@@ -107,7 +107,7 @@ public final class ShowDistVariableExecutorTest {
     }
     
     @Test
-    public void assertShowInternalPropsVariable() {
+    void assertShowInternalPropsVariable() {
         when(metaData.getInternalProps()).thenReturn(new InternalConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariableStatement("PROXY_META_DATA_COLLECTOR_ENABLED"));
@@ -118,7 +118,7 @@ public final class ShowDistVariableExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithInvalidVariableName() {
+    void assertExecuteWithInvalidVariableName() {
         assertThrows(UnsupportedVariableException.class, () -> new ShowDistVariableExecutor().getRows(metaData, connectionSession, new ShowDistVariableStatement("wrong_name")));
     }
 }

@@ -30,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLInt24BinlogProtocolValueTest {
+class MySQLInt24BinlogProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
@@ -42,7 +42,7 @@ public final class MySQLInt24BinlogProtocolValueTest {
     private MySQLBinlogColumnDef columnDef;
     
     @Test
-    public void assertRead() {
+    void assertRead() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
         when(byteBuf.readMediumLE()).thenReturn(1);
         MySQLInt24BinlogProtocolValue actual = new MySQLInt24BinlogProtocolValue();

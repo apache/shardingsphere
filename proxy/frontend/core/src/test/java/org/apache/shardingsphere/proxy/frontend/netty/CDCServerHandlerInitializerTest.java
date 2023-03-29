@@ -23,17 +23,17 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class CDCServerHandlerInitializerTest {
+class CDCServerHandlerInitializerTest {
     
     @Test
-    public void assertInitChannel() {
+    void assertInitChannel() {
         SocketChannel channel = mock(SocketChannel.class);
         ChannelPipeline pipeline = mock(ChannelPipeline.class);
         when(channel.pipeline()).thenReturn(pipeline);

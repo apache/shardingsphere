@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.dal;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLFlushStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public final class FlushStatementHandlerTest {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class FlushStatementHandlerTest {
     
     @Test
-    public void assertGetSimpleTableSegmentForMySQL() {
+    void assertGetSimpleTableSegmentForMySQL() {
         MySQLFlushStatement mySQLFlushStatement = new MySQLFlushStatement();
         assertTrue(FlushStatementHandler.getSimpleTableSegment(mySQLFlushStatement).isEmpty());
         mySQLFlushStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 2, new IdentifierValue("foo_table"))));
@@ -38,7 +38,7 @@ public final class FlushStatementHandlerTest {
     }
     
     @Test
-    public void assertGetSimpleTableSegmentForOtherDatabases() {
+    void assertGetSimpleTableSegmentForOtherDatabases() {
         assertTrue(FlushStatementHandler.getSimpleTableSegment(null).isEmpty());
     }
 }

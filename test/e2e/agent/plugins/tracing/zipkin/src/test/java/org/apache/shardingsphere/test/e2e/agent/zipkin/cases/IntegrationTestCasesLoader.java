@@ -61,16 +61,16 @@ public final class IntegrationTestCasesLoader {
     
     /**
      * Load integration test cases.
-     *
+     * @param adapter adapter
      * @return integration test cases
      */
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
-    public Collection<SpanTestCase> loadIntegrationTestCases() {
+    public Collection<SpanTestCase> loadIntegrationTestCases(final String adapter) {
         if (null != integrationTestCases) {
             return integrationTestCases;
         }
         integrationTestCases = new LinkedList<>();
-        URL url = Objects.requireNonNull(IntegrationTestCasesLoader.class.getClassLoader().getResource("cases/"));
+        URL url = Objects.requireNonNull(IntegrationTestCasesLoader.class.getClassLoader().getResource(String.format("cases/%s", adapter)));
         Collection<File> files = getFiles(url);
         for (File each : files) {
             integrationTestCases.addAll(unmarshal(each.getPath()).getTestCases());

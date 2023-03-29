@@ -24,25 +24,25 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class SQLMatchTrafficAlgorithmTest {
+class SQLMatchTrafficAlgorithmTest {
     
     private SQLMatchTrafficAlgorithm sqlMatchAlgorithm;
     
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         sqlMatchAlgorithm = (SQLMatchTrafficAlgorithm) TypedSPILoader.getService(TrafficAlgorithm.class, "SQL_MATCH",
                 PropertiesBuilder.build(new Property("sql", "SELECT * FROM t_order; UPDATE t_order SET order_id = ? WHERE user_id = ?;")));
     }
     
     @Test
-    public void assertMatchWhenExistSQLMatch() {
+    void assertMatchWhenExistSQLMatch() {
         SQLStatement sqlStatement = mock(SelectStatement.class);
         assertTrue(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "SELECT * FROM t_order")));
         assertTrue(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "select *  from  t_order;")));
@@ -52,7 +52,7 @@ public final class SQLMatchTrafficAlgorithmTest {
     }
     
     @Test
-    public void assertMatchWhenNotExistSQLMatch() {
+    void assertMatchWhenNotExistSQLMatch() {
         SQLStatement sqlStatement = mock(SelectStatement.class);
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "select *  from `t_order` where order_id = ?;")));
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "TRUNCATE TABLE `t_order` ")));

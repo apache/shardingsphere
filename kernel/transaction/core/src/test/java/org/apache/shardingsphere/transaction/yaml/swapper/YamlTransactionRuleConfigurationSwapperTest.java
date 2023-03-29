@@ -19,17 +19,17 @@ package org.apache.shardingsphere.transaction.yaml.swapper;
 
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.yaml.config.YamlTransactionRuleConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlTransactionRuleConfigurationSwapperTest {
+class YamlTransactionRuleConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlTransactionRuleConfiguration actual = new YamlTransactionRuleConfigurationSwapper().swapToYamlConfiguration(new TransactionRuleConfiguration("default", "provider", new Properties()));
         assertThat(actual.getDefaultType(), is("default"));
         assertThat(actual.getProviderType(), is("provider"));
@@ -37,7 +37,7 @@ public final class YamlTransactionRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlTransactionRuleConfiguration yamlConfig = new YamlTransactionRuleConfiguration();
         yamlConfig.setDefaultType("default");
         yamlConfig.setProviderType("provider");

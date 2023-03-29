@@ -20,12 +20,13 @@ package org.apache.shardingsphere.agent.core.plugin.config.yaml.loader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlAgentConfiguration;
+import org.apache.shardingsphere.agent.core.yaml.AgentYamlConstructor;
+import org.apache.shardingsphere.agent.core.yaml.AgentYamlEngine;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Optional;
 
 /**
@@ -42,10 +43,9 @@ public final class YamlPluginConfigurationLoader {
      * @throws IOException IO exception
      */
     public static Optional<YamlAgentConfiguration> load(final File yamlFile) throws IOException {
-        try (
-                FileInputStream fileInputStream = new FileInputStream(yamlFile);
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream)) {
-            YamlAgentConfiguration result = new Yaml().loadAs(inputStreamReader, YamlAgentConfiguration.class);
+        Yaml yaml = new Yaml(new AgentYamlConstructor(YamlAgentConfiguration.class));
+        try (FileInputStream fileInputStream = new FileInputStream(yamlFile)) {
+            YamlAgentConfiguration result = AgentYamlEngine.unmarshalYamlAgentConfiguration(fileInputStream);
             return null == result ? Optional.empty() : Optional.of(result);
         }
     }

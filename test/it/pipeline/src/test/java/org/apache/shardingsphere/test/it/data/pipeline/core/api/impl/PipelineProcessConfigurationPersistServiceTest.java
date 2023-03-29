@@ -18,33 +18,33 @@
 package org.apache.shardingsphere.test.it.data.pipeline.core.api.impl;
 
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineProcessConfigurationPersistService;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
-import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineProcessConfiguration;
-import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineProcessConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineReadConfiguration;
-import org.apache.shardingsphere.data.pipeline.yaml.process.YamlPipelineWriteConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PipelineProcessConfigurationPersistServiceTest {
+class PipelineProcessConfigurationPersistServiceTest {
     
-    @BeforeClass
-    public static void beforeClass() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
+    @BeforeAll
+    static void beforeClass() {
+        PipelineContextUtils.mockModeConfigAndContextManager();
     }
     
     @Test
-    public void assertLoadAndPersist() {
+    void assertLoadAndPersist() {
         YamlPipelineProcessConfiguration yamlProcessConfig = new YamlPipelineProcessConfiguration();
         YamlPipelineReadConfiguration yamlReadConfig = YamlPipelineReadConfiguration.buildWithDefaultValue();
         yamlReadConfig.fillInNullFieldsWithDefaultValue();

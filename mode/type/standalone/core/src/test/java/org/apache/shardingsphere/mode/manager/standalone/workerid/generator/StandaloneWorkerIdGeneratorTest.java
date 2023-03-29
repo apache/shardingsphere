@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.standalone.workerid.generator;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
@@ -28,25 +28,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class StandaloneWorkerIdGeneratorTest {
+class StandaloneWorkerIdGeneratorTest {
     
     @Test
-    public void assertGenerateWithNullProperties() {
+    void assertGenerateWithNullProperties() {
         assertThat(new StandaloneWorkerIdGenerator().generate(null), is(WorkerIdGenerator.DEFAULT_WORKER_ID));
     }
     
     @Test
-    public void assertGenerateWithEmptyProperties() {
+    void assertGenerateWithEmptyProperties() {
         assertThat(new StandaloneWorkerIdGenerator().generate(new Properties()), is(WorkerIdGenerator.DEFAULT_WORKER_ID));
     }
     
     @Test
-    public void assertGenerateWithProperties() {
+    void assertGenerateWithProperties() {
         assertThat(new StandaloneWorkerIdGenerator().generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "1"))), is(1));
     }
     
     @Test
-    public void assertGenerateWithInvalidProperties() {
+    void assertGenerateWithInvalidProperties() {
         assertThrows(IllegalStateException.class, () -> new StandaloneWorkerIdGenerator().generate(PropertiesBuilder.build(new Property(WorkerIdGenerator.WORKER_ID_KEY, "1024"))));
     }
 }

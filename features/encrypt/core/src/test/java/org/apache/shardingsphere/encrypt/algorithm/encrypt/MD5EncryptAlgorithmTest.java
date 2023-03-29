@@ -31,34 +31,34 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 
-public final class MD5EncryptAlgorithmTest {
+class MD5EncryptAlgorithmTest {
     
     private StandardEncryptAlgorithm<Object, String> encryptAlgorithm;
     
     @SuppressWarnings("unchecked")
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         encryptAlgorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "MD5");
     }
     
     @Test
-    public void assertEncrypt() {
+    void assertEncrypt() {
         assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("098f6bcd4621d373cade4e832627b4f6"));
     }
     
     @Test
-    public void assertEncryptWithNullPlaintext() {
+    void assertEncryptWithNullPlaintext() {
         assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
     @Test
-    public void assertEncryptWhenConfigSalt() {
+    void assertEncryptWhenConfigSalt() {
         encryptAlgorithm.init(PropertiesBuilder.build(new Property("salt", "202cb962ac5907")));
         assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("0c243d2934937738f36514035d95344a"));
     }
     
     @Test
-    public void assertDecrypt() {
+    void assertDecrypt() {
         assertThat(encryptAlgorithm.decrypt("test", mock(EncryptContext.class)).toString(), is("test"));
     }
 }

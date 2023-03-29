@@ -41,7 +41,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class OpenTelemetrySQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
+class OpenTelemetrySQLParserEngineAdviceTest extends AbstractSQLParserEngineAdviceTest {
     
     private static final String SQL_STATEMENT = "select 1";
     
@@ -50,7 +50,7 @@ public final class OpenTelemetrySQLParserEngineAdviceTest extends AbstractSQLPar
     private Span parentSpan;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         SdkTracerProvider tracerProvider = SdkTracerProvider.builder().addSpanProcessor(SimpleSpanProcessor.create(testExporter)).build();
         OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).buildAndRegisterGlobal().getTracer(OpenTelemetryConstants.TRACER_NAME);
         parentSpan = GlobalOpenTelemetry.getTracer(OpenTelemetryConstants.TRACER_NAME).spanBuilder("parent").startSpan();
@@ -58,14 +58,14 @@ public final class OpenTelemetrySQLParserEngineAdviceTest extends AbstractSQLPar
     }
     
     @AfterEach
-    public void clean() {
+    void clean() {
         parentSpan.end();
         GlobalOpenTelemetry.resetForTest();
         testExporter.reset();
     }
     
     @Test
-    public void assertMethod() {
+    void assertMethod() {
         OpenTelemetrySQLParserEngineAdvice advice = new OpenTelemetrySQLParserEngineAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, "OpenTelemetry");
         advice.afterMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, null, "OpenTelemetry");
@@ -79,7 +79,7 @@ public final class OpenTelemetrySQLParserEngineAdviceTest extends AbstractSQLPar
     }
     
     @Test
-    public void assertExceptionHandle() {
+    void assertExceptionHandle() {
         OpenTelemetrySQLParserEngineAdvice advice = new OpenTelemetrySQLParserEngineAdvice();
         advice.beforeMethod(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, "OpenTelemetry");
         advice.onThrowing(getTargetObject(), null, new Object[]{SQL_STATEMENT, true}, new IOException(), "OpenTelemetry");

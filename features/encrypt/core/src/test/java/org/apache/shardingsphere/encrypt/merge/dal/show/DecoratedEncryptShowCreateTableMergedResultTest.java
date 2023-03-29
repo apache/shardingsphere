@@ -45,24 +45,24 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class DecoratedEncryptShowCreateTableMergedResultTest {
+class DecoratedEncryptShowCreateTableMergedResultTest {
     
     @Mock
     private MergedResult mergedResult;
     
     @Test
-    public void assertNextWhenNextExist() throws SQLException {
+    void assertNextWhenNextExist() throws SQLException {
         assertFalse(createDecoratedEncryptShowCreateTableMergedResult(mergedResult, mock(EncryptRule.class)).next());
     }
     
     @Test
-    public void assertNextWhenNextNotExist() throws SQLException {
+    void assertNextWhenNextNotExist() throws SQLException {
         when(mergedResult.next()).thenReturn(true);
         assertTrue(createDecoratedEncryptShowCreateTableMergedResult(mergedResult, mock(EncryptRule.class)).next());
     }
     
     @Test
-    public void assertGetValueWhenConfigPlainColumn() throws SQLException {
+    void assertGetValueWhenConfigPlainColumn() throws SQLException {
         when(mergedResult.next()).thenReturn(true).thenReturn(false);
         when(mergedResult.getValue(2, String.class)).thenReturn(
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
@@ -75,7 +75,7 @@ public final class DecoratedEncryptShowCreateTableMergedResultTest {
     }
     
     @Test
-    public void assertGetValueWhenConfigAssistedQueryColumn() throws SQLException {
+    void assertGetValueWhenConfigAssistedQueryColumn() throws SQLException {
         when(mergedResult.next()).thenReturn(true).thenReturn(false);
         when(mergedResult.getValue(2, String.class)).thenReturn(
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
@@ -88,7 +88,7 @@ public final class DecoratedEncryptShowCreateTableMergedResultTest {
     }
     
     @Test
-    public void assertGetValueWhenConfigLikeQueryColumn() throws SQLException {
+    void assertGetValueWhenConfigLikeQueryColumn() throws SQLException {
         when(mergedResult.next()).thenReturn(true).thenReturn(false);
         when(mergedResult.getValue(2, String.class)).thenReturn(
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
@@ -102,7 +102,7 @@ public final class DecoratedEncryptShowCreateTableMergedResultTest {
     }
     
     @Test
-    public void assertGetValueWhenConfigPlainColumnAndAssistedQueryColumn() throws SQLException {
+    void assertGetValueWhenConfigPlainColumnAndAssistedQueryColumn() throws SQLException {
         when(mergedResult.next()).thenReturn(true).thenReturn(false);
         when(mergedResult.getValue(2, String.class)).thenReturn(
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, `user_id` VARCHAR(100) NOT NULL, "
@@ -115,7 +115,7 @@ public final class DecoratedEncryptShowCreateTableMergedResultTest {
     }
     
     @Test
-    public void assertGetValueWhenConfigPlainColumnAndLikeQueryColumn() throws SQLException {
+    void assertGetValueWhenConfigPlainColumnAndLikeQueryColumn() throws SQLException {
         when(mergedResult.next()).thenReturn(true).thenReturn(false);
         when(mergedResult.getValue(2, String.class)).thenReturn(
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, `user_id` VARCHAR(100) NOT NULL, "
@@ -136,7 +136,7 @@ public final class DecoratedEncryptShowCreateTableMergedResultTest {
     }
     
     @Test
-    public void assertGetValueWhenConfigMultiColumn() throws SQLException {
+    void assertGetValueWhenConfigMultiColumn() throws SQLException {
         when(mergedResult.next()).thenReturn(true).thenReturn(false);
         when(mergedResult.getValue(2, String.class)).thenReturn(
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, `user_id` VARCHAR(100) NOT NULL, `user_id_like` VARCHAR(100) NOT NULL, "
@@ -152,7 +152,7 @@ public final class DecoratedEncryptShowCreateTableMergedResultTest {
     }
     
     @Test
-    public void assertWasNull() throws SQLException {
+    void assertWasNull() throws SQLException {
         assertFalse(createDecoratedEncryptShowCreateTableMergedResult(mergedResult, mock(EncryptRule.class)).wasNull());
     }
     

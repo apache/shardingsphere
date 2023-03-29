@@ -25,10 +25,10 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ConnectionPropertySynonymsTest {
+class ConnectionPropertySynonymsTest {
     
     @Test
-    public void assertGetStandardPropertiesWithStandardProperties() {
+    void assertGetStandardPropertiesWithStandardProperties() {
         ConnectionPropertySynonyms actual = new ConnectionPropertySynonyms(createStandardProperties(), createPropertySynonyms());
         assertThat(actual.getStandardProperties().size(), is(3));
         assertThat(actual.getStandardProperties().get("url"), is("jdbc:mock://127.0.0.1/foo_ds"));
@@ -37,7 +37,7 @@ public final class ConnectionPropertySynonymsTest {
     }
     
     @Test
-    public void assertGetStandardPropertiesWithLocalProperties() {
+    void assertGetStandardPropertiesWithLocalProperties() {
         ConnectionPropertySynonyms actual = new ConnectionPropertySynonyms(createLocalProperties(), createPropertySynonyms());
         assertThat(actual.getStandardProperties().size(), is(3));
         assertThat(actual.getStandardProperties().get("url"), is("jdbc:mock://127.0.0.1/foo_ds"));
@@ -46,7 +46,7 @@ public final class ConnectionPropertySynonymsTest {
     }
     
     @Test
-    public void assertGetLocalPropertiesWithStandardProperties() {
+    void assertGetLocalPropertiesWithStandardProperties() {
         ConnectionPropertySynonyms actual = new ConnectionPropertySynonyms(createStandardProperties(), createPropertySynonyms());
         assertThat(actual.getLocalProperties().size(), is(3));
         assertThat(actual.getLocalProperties().get("jdbcUrl"), is("jdbc:mock://127.0.0.1/foo_ds"));
@@ -55,7 +55,7 @@ public final class ConnectionPropertySynonymsTest {
     }
     
     @Test
-    public void assertGetLocalPropertiesWithLocalProperties() {
+    void assertGetLocalPropertiesWithLocalProperties() {
         ConnectionPropertySynonyms actual = new ConnectionPropertySynonyms(createLocalProperties(), createPropertySynonyms());
         assertThat(actual.getLocalProperties().size(), is(3));
         assertThat(actual.getLocalProperties().get("jdbcUrl"), is("jdbc:mock://127.0.0.1/foo_ds"));

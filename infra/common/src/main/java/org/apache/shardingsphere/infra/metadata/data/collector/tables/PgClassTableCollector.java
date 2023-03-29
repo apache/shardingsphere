@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.metadata.data.collector.tables;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereDataCollector;
-import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereTableDataCollectorUtil;
+import org.apache.shardingsphere.infra.metadata.data.collector.ShardingSphereTableDataCollectorUtils;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -51,7 +51,7 @@ public final class PgClassTableCollector implements ShardingSphereDataCollector 
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
-        Collection<ShardingSphereRowData> rows = ShardingSphereTableDataCollectorUtil.collectRowData(shardingSphereDatabases.get(databaseName),
+        Collection<ShardingSphereRowData> rows = ShardingSphereTableDataCollectorUtils.collectRowData(shardingSphereDatabases.get(databaseName),
                 SELECT_SQL, table, Arrays.stream(COLUMN_NAMES.split(",")).map(String::trim).collect(Collectors.toList()));
         Collection<ShardingSphereRowData> rowData = decorateTableName(rows, table, shardingSphereDatabases.get(databaseName).getRuleMetaData().getRules());
         ShardingSphereTableData result = new ShardingSphereTableData(PG_CLASS);

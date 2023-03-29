@@ -26,10 +26,11 @@ import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 public final class ShardingSphereDriverURLManager {
     
     /**
-     * Get config content from url.
+     * Get config content from URL.
      * 
-     * @param url the driver url
-     * @return the config content
+     * @param url driver URL
+     * @return configuration content
+     * @throws DriverURLProviderNotFoundException driver URL provider not found exception
      */
     public static byte[] getContent(final String url) {
         for (ShardingSphereDriverURLProvider each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereDriverURLProvider.class)) {

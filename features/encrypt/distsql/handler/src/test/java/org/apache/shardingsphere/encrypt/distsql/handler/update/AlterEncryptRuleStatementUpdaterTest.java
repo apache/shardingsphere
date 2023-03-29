@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegme
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
@@ -46,7 +46,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
-public final class AlterEncryptRuleStatementUpdaterTest {
+class AlterEncryptRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -54,23 +54,23 @@ public final class AlterEncryptRuleStatementUpdaterTest {
     private final AlterEncryptRuleStatementUpdater updater = new AlterEncryptRuleStatementUpdater();
     
     @Test
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    void assertCheckSQLStatementWithoutCurrentRule() {
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement("MD5"), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutToBeAlteredRules() {
+    void assertCheckSQLStatementWithoutToBeAlteredRules() {
         assertThrows(MissingRequiredRuleException.class,
                 () -> updater.checkSQLStatement(database, createSQLStatement("MD5"), new EncryptRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutToBeAlteredEncryptors() {
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration()));
+    void assertCheckSQLStatementWithoutToBeAlteredEncryptors() {
+        assertThrows(ServiceProviderNotFoundServerException.class, () -> updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration()));
     }
     
     @Test
-    public void assertCheckSQLStatementWithIncompleteDataType() {
+    void assertCheckSQLStatementWithIncompleteDataType() {
         EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
                 "int varchar(10)", null, null, null, null, new AlgorithmSegment("test", new Properties()),
                 new AlgorithmSegment("test", new Properties()),
@@ -81,7 +81,7 @@ public final class AlterEncryptRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfigurationWithInUsedEncryptor() {
+    void assertUpdateCurrentRuleConfigurationWithInUsedEncryptor() {
         EncryptRuleConfiguration currentRuleConfiguration = createCurrentRuleConfigurationWithMultipleTableRules();
         updater.updateCurrentRuleConfiguration(currentRuleConfiguration, createToBeAlteredRuleConfiguration());
         assertThat(currentRuleConfiguration.getEncryptors().size(), is(1));

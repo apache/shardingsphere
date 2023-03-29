@@ -32,13 +32,13 @@ import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.standalone.StandaloneModeContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
-import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
+import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtils;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -54,13 +54,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class SetDistVariableUpdaterTest {
+class SetDistVariableUpdaterTest {
     
     @Mock
     private ConnectionSession connectionSession;
     
     @Test
-    public void assertExecuteWithTransactionType() {
+    void assertExecuteWithTransactionType() {
         SetDistVariableStatement statement = new SetDistVariableStatement("transaction_type", "local");
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.XA));
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
@@ -69,16 +69,16 @@ public final class SetDistVariableUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithAgent() {
+    void assertExecuteWithAgent() {
         SetDistVariableStatement statement = new SetDistVariableStatement("AGENT_PLUGINS_ENABLED", Boolean.FALSE.toString());
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
         updater.executeUpdate(connectionSession, statement);
-        String actualValue = SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
+        String actualValue = SystemPropertyUtils.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
         assertThat(actualValue, is(Boolean.FALSE.toString()));
     }
     
     @Test
-    public void assertExecuteWithConfigurationKey() {
+    void assertExecuteWithConfigurationKey() {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_flush_threshold", "1024");
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
         ContextManager contextManager = mockContextManager();
@@ -90,7 +90,7 @@ public final class SetDistVariableUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithInternalConfigurationKey() {
+    void assertExecuteWithInternalConfigurationKey() {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_meta_data_collector_enabled", "false");
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
         ContextManager contextManager = mockContextManager();
@@ -102,7 +102,7 @@ public final class SetDistVariableUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithSystemLogLevel() {
+    void assertExecuteWithSystemLogLevel() {
         SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "debug");
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
         ContextManager contextManager = mockContextManager();
@@ -114,7 +114,7 @@ public final class SetDistVariableUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithWrongSystemLogLevel() {
+    void assertExecuteWithWrongSystemLogLevel() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "invalid");

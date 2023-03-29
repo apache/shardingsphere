@@ -36,11 +36,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingParameterRewriterBuilderTest {
+class ShardingParameterRewriterBuilderTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertGetParameterRewritersWhenPaginationIsNeedRewrite() {
+    void assertGetParameterRewritersWhenPaginationIsNeedRewrite() {
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(statementContext.getPaginationContext().isHasPagination()).thenReturn(true);
         Collection<ParameterRewriter> actual = new ShardingParameterRewriterBuilder(
@@ -50,7 +50,7 @@ public final class ShardingParameterRewriterBuilderTest {
     }
     
     @Test
-    public void assertGetParameterRewritersWhenPaginationIsNotNeedRewrite() {
+    void assertGetParameterRewritersWhenPaginationIsNotNeedRewrite() {
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.isSingleRouting()).thenReturn(true);
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);

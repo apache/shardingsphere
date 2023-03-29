@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.repository.cluster.nacos.entity;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -49,9 +50,7 @@ public final class ServiceMetaData {
      */
     public int getPort() {
         int result = port.incrementAndGet();
-        if (result == Integer.MIN_VALUE) {
-            throw new IllegalStateException("Specified cluster ip exceeded the maximum number of persisting");
-        }
+        Preconditions.checkState(Integer.MIN_VALUE != result, "Specified cluster ip exceeded the maximum number of persisting");
         return result;
     }
 }

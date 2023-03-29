@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.importer;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
@@ -36,8 +37,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.Pipelin
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineImporterJobWriteException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
+import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
@@ -134,6 +134,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
         ShardingSpherePreconditions.checkState(!isRunning() || success, PipelineImporterJobWriteException::new);
     }
     
+    @SneakyThrows(InterruptedException.class)
     private boolean tryFlush(final DataSource dataSource, final List<DataRecord> buffer) {
         for (int i = 0; isRunning() && i <= importerConfig.getRetryTimes(); i++) {
             try {
@@ -141,7 +142,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
                 return true;
             } catch (final SQLException ex) {
                 log.error("flush failed {}/{} times.", i, importerConfig.getRetryTimes(), ex);
-                ThreadUtil.sleep(Math.min(5 * 60 * 1000L, 1000L << i));
+                Thread.sleep(Math.min(5 * 60 * 1000L, 1000L << i));
             }
         }
         return false;
@@ -206,10 +207,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     
     private void executeUpdate(final Connection connection, final DataRecord record) throws SQLException {
         Set<String> shardingColumns = importerConfig.getShardingColumns(record.getTableName());
-        if (null == shardingColumns) {
-            log.error("executeUpdate, could not get shardingColumns, tableName={}, logicTableNames={}", record.getTableName(), importerConfig.getLogicTableNames());
-        }
-        List<Column> conditionColumns = RecordUtil.extractConditionColumns(record, shardingColumns);
+        List<Column> conditionColumns = RecordUtils.extractConditionColumns(record, shardingColumns);
         List<Column> updatedColumns = pipelineSqlBuilder.extractUpdatedColumns(record);
         String updateSql = pipelineSqlBuilder.buildUpdateSQL(getSchemaName(record.getTableName()), record, conditionColumns);
         try (PreparedStatement preparedStatement = connection.prepareStatement(updateSql)) {
@@ -232,13 +230,13 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     
     private void executeBatchDelete(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
         DataRecord dataRecord = dataRecords.get(0);
-        List<Column> conditionColumns = RecordUtil.extractConditionColumns(dataRecord, importerConfig.getShardingColumns(dataRecord.getTableName()));
+        List<Column> conditionColumns = RecordUtils.extractConditionColumns(dataRecord, importerConfig.getShardingColumns(dataRecord.getTableName()));
         String deleteSQL = pipelineSqlBuilder.buildDeleteSQL(getSchemaName(dataRecord.getTableName()), dataRecord, conditionColumns);
         try (PreparedStatement preparedStatement = connection.prepareStatement(deleteSQL)) {
             batchDeleteStatement = preparedStatement;
             preparedStatement.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
-                conditionColumns = RecordUtil.extractConditionColumns(each, importerConfig.getShardingColumns(each.getTableName()));
+                conditionColumns = RecordUtils.extractConditionColumns(each, importerConfig.getShardingColumns(each.getTableName()));
                 for (int i = 0; i < conditionColumns.size(); i++) {
                     preparedStatement.setObject(i + 1, conditionColumns.get(i).getValue());
                 }

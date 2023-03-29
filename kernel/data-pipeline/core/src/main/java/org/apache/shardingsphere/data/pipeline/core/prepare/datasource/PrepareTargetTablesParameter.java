@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.config.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 
 /**
  * Prepare target tables parameter.
@@ -34,5 +34,5 @@ public final class PrepareTargetTablesParameter {
     
     private final PipelineDataSourceManager dataSourceManager;
     
-    private final ShardingSphereSQLParserEngine sqlParserEngine;
+    private final SQLParserEngine sqlParserEngine;
 }

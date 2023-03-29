@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.datasource;
 
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,10 +27,10 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PipelineDataSourceFactoryTest {
+class PipelineDataSourceFactoryTest {
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         Map<String, Object> yamlDataSourceConfig = new HashMap<>(3, 1);
         yamlDataSourceConfig.put("url", "jdbc:mysql://localhost:3306/database");
         yamlDataSourceConfig.put("username", "username");

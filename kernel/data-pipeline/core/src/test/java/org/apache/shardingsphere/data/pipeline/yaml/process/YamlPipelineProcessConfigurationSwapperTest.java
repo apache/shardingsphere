@@ -20,20 +20,24 @@ package org.apache.shardingsphere.data.pipeline.yaml.process;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineReadConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineProcessConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineReadConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineWriteConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.swapper.YamlPipelineProcessConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class YamlPipelineProcessConfigurationSwapperTest {
+class YamlPipelineProcessConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         PipelineProcessConfiguration actual = new YamlPipelineProcessConfigurationSwapper().swapToObject(createYamlConfiguration());
         assertThat(actual.getRead().getWorkerThread(), is(40));
         assertThat(actual.getRead().getBatchSize(), is(1000));
@@ -63,7 +67,7 @@ public final class YamlPipelineProcessConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         PipelineReadConfiguration readConfig = new PipelineReadConfiguration(40, 1000, 10000000,
                 new AlgorithmConfiguration("INPUT", PropertiesBuilder.build(new Property("batch-size", "1000"), new Property("qps", "50"))));
         PipelineWriteConfiguration writeConfig = new PipelineWriteConfiguration(40, 1000,
@@ -87,12 +91,12 @@ public final class YamlPipelineProcessConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToYamlConfigurationWithNull() {
+    void assertSwapToYamlConfigurationWithNull() {
         assertNull(new YamlPipelineProcessConfigurationSwapper().swapToYamlConfiguration(null));
     }
     
     @Test
-    public void assertSwapToObjectWithNull() {
+    void assertSwapToObjectWithNull() {
         assertNull(new YamlPipelineProcessConfigurationSwapper().swapToObject(null));
     }
 }

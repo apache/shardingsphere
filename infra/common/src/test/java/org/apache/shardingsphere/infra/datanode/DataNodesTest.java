@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -26,8 +28,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -36,30 +38,24 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DataNodesTest {
-    
-    private static final Map<String, Collection<String>> READ_WRITE_SPLITTING_DATASOURCE_MAP = new HashMap<>();
-    
-    static {
-        READ_WRITE_SPLITTING_DATASOURCE_MAP.putIfAbsent("readwrite_ds", Arrays.asList("primary_ds", "replica_ds_0", "replica_ds_1"));
-    }
+class DataNodesTest {
     
     @Test
-    public void assertGetDataNodesForShardingTableWithoutDataNodeContainedRule() {
+    void assertGetDataNodesForShardingTableWithoutDataNodeContainedRule() {
         DataNodes dataNodes = new DataNodes(Collections.singletonList(mockDataSourceContainedRule()));
         Collection<DataNode> actual = dataNodes.getDataNodes("t_order");
         assertThat(actual, is(Collections.emptyList()));
     }
     
     @Test
-    public void assertGetDataNodesForSingleTableWithoutDataNodeContainedRule() {
+    void assertGetDataNodesForSingleTableWithoutDataNodeContainedRule() {
         DataNodes dataNodes = new DataNodes(Collections.singletonList(mockDataSourceContainedRule()));
         Collection<DataNode> actual = dataNodes.getDataNodes("t_single");
         assertThat(actual, is(Collections.emptyList()));
     }
     
     @Test
-    public void assertGetDataNodesForShardingTableWithDataNodeContainedRuleWithoutDataSourceContainedRule() {
+    void assertGetDataNodesForShardingTableWithDataNodeContainedRuleWithoutDataSourceContainedRule() {
         DataNodes dataNodes = new DataNodes(mockDataNodeContainedRules());
         Collection<DataNode> actual = dataNodes.getDataNodes("t_order");
         assertThat(actual.size(), is(2));
@@ -73,7 +69,7 @@ public final class DataNodesTest {
     }
     
     @Test
-    public void assertGetDataNodesForSingleTableWithDataNodeContainedRuleWithoutDataSourceContainedRule() {
+    void assertGetDataNodesForSingleTableWithDataNodeContainedRuleWithoutDataSourceContainedRule() {
         DataNodes dataNodes = new DataNodes(mockDataNodeContainedRules());
         Collection<DataNode> actual = dataNodes.getDataNodes("t_single");
         assertThat(actual.size(), is(1));
@@ -84,7 +80,7 @@ public final class DataNodesTest {
     }
     
     @Test
-    public void assertGetDataNodesForShardingTableWithDataNodeContainedRuleAndDataSourceContainedRule() {
+    void assertGetDataNodesForShardingTableWithDataNodeContainedRuleAndDataSourceContainedRule() {
         DataNodes dataNodes = new DataNodes(mockShardingSphereRules());
         Collection<DataNode> actual = dataNodes.getDataNodes("t_order");
         assertThat(actual.size(), is(6));
@@ -110,7 +106,7 @@ public final class DataNodesTest {
     }
     
     @Test
-    public void assertGetDataNodesForSingleTableWithDataNodeContainedRuleAndDataSourceContainedRule() {
+    void assertGetDataNodesForSingleTableWithDataNodeContainedRuleAndDataSourceContainedRule() {
         DataNodes dataNodes = new DataNodes(mockShardingSphereRules());
         Collection<DataNode> actual = dataNodes.getDataNodes("t_single");
         assertThat(actual.size(), is(3));
@@ -135,18 +131,21 @@ public final class DataNodesTest {
     
     private ShardingSphereRule mockDataSourceContainedRule() {
         DataSourceContainedRule result = mock(FixtureRule.class);
-        when(result.getDataSourceMapper()).thenReturn(READ_WRITE_SPLITTING_DATASOURCE_MAP);
+        Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = new LinkedHashMap<>();
+        dataSourceMapper.put("readwrite_ds", Arrays.asList(new DataSourceRoleInfo("primary_ds", DataSourceRole.PRIMARY),
+                new DataSourceRoleInfo("replica_ds_0", DataSourceRole.MEMBER), new DataSourceRoleInfo("replica_ds_1", DataSourceRole.MEMBER)));
+        when(result.getDataSourceMapper()).thenReturn(dataSourceMapper);
         return result;
     }
     
     private Collection<ShardingSphereRule> mockDataNodeContainedRules() {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        result.add(mockSingleTableRule());
+        result.add(mockSingleRule());
         result.add(mockShardingRule());
         return result;
     }
     
-    private ShardingSphereRule mockSingleTableRule() {
+    private ShardingSphereRule mockSingleRule() {
         DataNodeContainedRule result = mock(DataNodeContainedRule.class);
         when(result.getDataNodesByTableName("t_single")).thenReturn(Collections.singletonList(new DataNode("readwrite_ds", "t_single")));
         return result;

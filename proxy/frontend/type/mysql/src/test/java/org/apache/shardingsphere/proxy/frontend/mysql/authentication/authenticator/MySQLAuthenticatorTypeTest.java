@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.impl.MySQLClearPasswordAuthenticator;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.impl.MySQLNativePasswordAuthenticator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -32,12 +32,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLAuthenticatorTypeTest {
+class MySQLAuthenticatorTypeTest {
     
     private final AuthorityRule rule = mock(AuthorityRule.class);
     
     @Test
-    public void assertDefaultAuthenticatorType() {
+    void assertDefaultAuthenticatorType() {
         when(rule.getAuthenticatorType(any())).thenReturn("");
         Authenticator authenticator = new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
         assertThat(authenticator, instanceOf(MySQLNativePasswordAuthenticator.class));
@@ -45,7 +45,7 @@ public final class MySQLAuthenticatorTypeTest {
     }
     
     @Test
-    public void assertAuthenticatorTypeWithErrorName() {
+    void assertAuthenticatorTypeWithErrorName() {
         when(rule.getAuthenticatorType(any())).thenReturn("error");
         Authenticator authenticator = new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
         assertThat(authenticator, instanceOf(MySQLNativePasswordAuthenticator.class));
@@ -53,7 +53,7 @@ public final class MySQLAuthenticatorTypeTest {
     }
     
     @Test
-    public void assertAuthenticatorTypeWithNative() {
+    void assertAuthenticatorTypeWithNative() {
         when(rule.getAuthenticatorType(any())).thenReturn("NATIVE");
         Authenticator authenticator = new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
         assertThat(authenticator, instanceOf(MySQLNativePasswordAuthenticator.class));
@@ -61,7 +61,7 @@ public final class MySQLAuthenticatorTypeTest {
     }
     
     @Test
-    public void assertAuthenticatorTypeWithPassword() {
+    void assertAuthenticatorTypeWithPassword() {
         when(rule.getAuthenticatorType(any())).thenReturn("CLEAR_TEXT");
         Authenticator authenticator = new AuthenticatorFactory<>(MySQLAuthenticatorType.class, rule).newInstance(mock(ShardingSphereUser.class));
         assertThat(authenticator, instanceOf(MySQLClearPasswordAuthenticator.class));

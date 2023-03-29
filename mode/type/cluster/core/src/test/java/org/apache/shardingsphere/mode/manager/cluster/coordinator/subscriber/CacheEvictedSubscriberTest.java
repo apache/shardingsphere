@@ -20,16 +20,16 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.cache.OrderedServicesCache;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-public final class CacheEvictedSubscriberTest {
+class CacheEvictedSubscriberTest {
     
     @Test
-    public void assertOnGovernanceEvent() {
+    void assertOnGovernanceEvent() {
         EventBusContext eventBusContext = new EventBusContext();
         new CacheEvictedSubscriber(eventBusContext);
         OrderedServicesCache.cacheServices(getClass(), Collections.emptyList(), Collections.emptyMap());

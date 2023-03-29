@@ -5,7 +5,7 @@ weight = 3
 
 ### 描述
 
-`PREVIEW SQL` 语法用于预览 `SQL` 执行计划  
+`PREVIEW SQL` 语法用于预览 `SQL` 执行计划。
 
 ### 语法
 

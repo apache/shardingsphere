@@ -31,12 +31,12 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlMaskTableRuleConfigurationSwapperTest {
+class YamlMaskTableRuleConfigurationSwapperTest {
     
     private final YamlMaskTableRuleConfigurationSwapper swapper = new YamlMaskTableRuleConfigurationSwapper();
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         Collection<MaskColumnRuleConfiguration> encryptColumnRuleConfigs = Arrays.asList(
                 new MaskColumnRuleConfiguration("mask_column_1", "md5_mask"),
                 new MaskColumnRuleConfiguration("mask_column_2", "keep_from_x_to_y"),
@@ -55,7 +55,7 @@ public final class YamlMaskTableRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlMaskColumnRuleConfiguration encryptColumnRuleConfig = new YamlMaskColumnRuleConfiguration();
         encryptColumnRuleConfig.setLogicColumn("mask_column");
         encryptColumnRuleConfig.setMaskAlgorithm("md5_mask");

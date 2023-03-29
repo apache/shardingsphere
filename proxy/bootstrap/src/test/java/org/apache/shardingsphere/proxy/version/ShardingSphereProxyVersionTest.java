@@ -48,21 +48,21 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ShardingSphereProxyVersionTest {
+class ShardingSphereProxyVersionTest {
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION)).thenReturn("5.7.22");
     }
     
     @Test
-    public void assertSetVersionWhenStorageTypeSameWithProtocolType() throws SQLException {
+    void assertSetVersionWhenStorageTypeSameWithProtocolType() throws SQLException {
         ShardingSphereProxyVersion.setVersion(mockContextManager("MySQL", "5.7.22"));
         assertThat(MySQLServerInfo.getServerVersion("foo_db"), startsWith("5.7.22"));
     }
     
     @Test
-    public void assertSetVersionWhenStorageTypeDifferentWithProtocolType() throws SQLException {
+    void assertSetVersionWhenStorageTypeDifferentWithProtocolType() throws SQLException {
         ShardingSphereProxyVersion.setVersion(mockContextManager("Oracle", "12.0.0"));
         assertThat(MySQLServerInfo.getServerVersion("foo_db"), startsWith("5.7.22"));
     }

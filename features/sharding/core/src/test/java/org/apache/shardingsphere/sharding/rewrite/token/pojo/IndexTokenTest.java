@@ -34,10 +34,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class IndexTokenTest {
+class IndexTokenTest {
     
     @Test
-    public void assertToString() {
+    void assertToString() {
         IndexToken indexToken = new IndexToken(0, 0,
                 new IdentifierValue("t_order_index"), mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class), mock(ShardingSphereSchema.class));
         RouteUnit routeUnit = mock(RouteUnit.class);

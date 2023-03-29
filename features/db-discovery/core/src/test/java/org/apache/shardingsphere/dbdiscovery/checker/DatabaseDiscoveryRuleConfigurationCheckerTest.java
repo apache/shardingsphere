@@ -30,11 +30,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
+class DatabaseDiscoveryRuleConfigurationCheckerTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertValidCheck() {
+    void assertValidCheck() {
         DatabaseDiscoveryRuleConfiguration config = getValidConfiguration();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         checker.check("test", config, Collections.emptyMap(), Collections.emptyList());
@@ -50,7 +50,7 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    public void assertInvalidCheck() {
+    void assertInvalidCheck() {
         DatabaseDiscoveryRuleConfiguration config = getInvalidConfiguration();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
         assertThrows(MissingRequiredDBDiscoveryConfigurationException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.yaml.job;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfiguration.YamlSinkConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
@@ -28,10 +28,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlCDCJobConfigurationSwapperTest {
+class YamlCDCJobConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlCDCJobConfiguration yamlJobConfig = new YamlCDCJobConfiguration();
         yamlJobConfig.setJobId("j51017f973ac82cb1edea4f5238a258c25e89");
         yamlJobConfig.setDatabaseName("test_db");

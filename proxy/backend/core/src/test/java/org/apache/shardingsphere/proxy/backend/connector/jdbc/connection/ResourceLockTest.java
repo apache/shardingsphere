@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.connection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ResourceLockTest {
+class ResourceLockTest {
     
     @Test
-    public void assertDoAwait() {
+    void assertDoAwait() {
         ResourceLock resourceLock = new ResourceLock();
         long startTime = System.currentTimeMillis();
         resourceLock.doAwait();
@@ -35,7 +35,7 @@ public final class ResourceLockTest {
     }
     
     @Test
-    public void assertDoNotify() {
+    void assertDoNotify() {
         ResourceLock resourceLock = new ResourceLock();
         long startTime = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(1);

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XAData
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import org.h2.jdbc.JdbcConnection;
 import org.h2.jdbcx.JdbcXAConnection;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
@@ -39,12 +39,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class H2XAConnectionWrapperTest {
+class H2XAConnectionWrapperTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
     
     @Test
-    public void assertWrap() throws SQLException {
+    void assertWrap() throws SQLException {
         XAConnection actual = TypedSPILoader.getService(XAConnectionWrapper.class, databaseType.getType()).wrap(createXADataSource(), mockConnection());
         assertThat(actual.getXAResource(), instanceOf(JdbcXAConnection.class));
     }

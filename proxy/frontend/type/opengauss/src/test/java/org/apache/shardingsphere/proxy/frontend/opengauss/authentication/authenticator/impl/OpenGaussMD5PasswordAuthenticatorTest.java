@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLRandomGenerator;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.impl.PostgreSQLMD5PasswordAuthenticator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,19 +29,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class OpenGaussMD5PasswordAuthenticatorTest {
+class OpenGaussMD5PasswordAuthenticatorTest {
     
     private final String username = "root";
     
     private final String password = "password";
     
     @Test
-    public void assertAuthenticationMethodName() {
+    void assertAuthenticationMethodName() {
         assertThat(new OpenGaussMD5PasswordAuthenticator().getAuthenticationMethod().getMethodName(), is("md5"));
     }
     
     @Test
-    public void assertAuthenticate() {
+    void assertAuthenticate() {
         ShardingSphereUser user = new ShardingSphereUser(username, password, "");
         byte[] md5Salt = PostgreSQLRandomGenerator.getInstance().generateRandomBytes(4);
         String md5Digest = md5Encode(md5Salt);

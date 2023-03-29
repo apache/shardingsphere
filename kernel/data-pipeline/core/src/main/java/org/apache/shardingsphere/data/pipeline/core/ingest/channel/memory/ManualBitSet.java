@@ -85,6 +85,7 @@ public final class ManualBitSet {
      * @param fromIndex from index
      * @param size true bit size
      * @return index
+     * @throws IndexOutOfBoundsException index out of bounds exception
      */
     public synchronized long getEndIndex(final long fromIndex, final int size) {
         if (0 == size) {

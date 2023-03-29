@@ -19,10 +19,10 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ConvertYamlConfigurationStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
@@ -38,9 +38,7 @@ public final class ConvertYamlConfigurationStatementAssert {
      * @param expected expected convert yaml configuration statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ConvertYamlConfigurationStatement actual, final ConvertYamlConfigurationStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should no exist."));
-        } else {
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             assertThat(actual.getFilePath(), is(expected.getFilePath()));
         }
     }

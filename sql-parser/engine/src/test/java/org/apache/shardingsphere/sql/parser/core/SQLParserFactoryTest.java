@@ -21,18 +21,18 @@ import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.fixture.LexerFixture;
 import org.apache.shardingsphere.sql.parser.fixture.ParserFixture;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.instanceOf;
 
-public final class SQLParserFactoryTest {
+class SQLParserFactoryTest {
     
     private static final String SQL = "SELECT COUNT(*) FROM user";
     
     @Test
-    public void newInstance() {
+    void newInstance() {
         SQLLexer sqlLexer = mock(LexerFixture.class);
         SQLParser sqlParser = mock(ParserFixture.class);
         SQLParser result = SQLParserFactory.newInstance(SQL, sqlLexer.getClass(), sqlParser.getClass());

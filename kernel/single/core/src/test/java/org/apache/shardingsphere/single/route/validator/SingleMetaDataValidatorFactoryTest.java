@@ -19,21 +19,21 @@ package org.apache.shardingsphere.single.route.validator;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class SingleMetaDataValidatorFactoryTest {
+class SingleMetaDataValidatorFactoryTest {
     
     @Test
-    public void assertNewInstanceForDropSchemaStatement() {
+    void assertNewInstanceForDropSchemaStatement() {
         assertTrue(SingleMetaDataValidatorFactory.newInstance(mock(DropSchemaStatement.class)).isPresent());
     }
     
     @Test
-    public void assertNewInstanceForNotDropSchemaStatement() {
+    void assertNewInstanceForNotDropSchemaStatement() {
         assertFalse(SingleMetaDataValidatorFactory.newInstance(mock(SQLStatement.class)).isPresent());
     }
 }

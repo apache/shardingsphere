@@ -27,45 +27,45 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class OwnerTokenTest {
+class OwnerTokenTest {
     
     @Test
-    public void assertOwnerTokenWithOwnerNameEqualsTableName() {
+    void assertOwnerTokenWithOwnerNameEqualsTableName() {
         OwnerToken ownerToken = new OwnerToken(0, 1, new IdentifierValue("t_user"), new IdentifierValue("t_user"));
         assertThat(ownerToken.toString(buildRouteUnit()), is("t_user_0."));
         assertTokenGrid(ownerToken);
     }
     
     @Test
-    public void assertOwnerTokenWithOwnerNameNotEqualsTableName() {
+    void assertOwnerTokenWithOwnerNameNotEqualsTableName() {
         OwnerToken ownerToken = new OwnerToken(0, 1, new IdentifierValue("u"), new IdentifierValue("t_user"));
         assertThat(ownerToken.toString(buildRouteUnit()), is("u."));
         assertTokenGrid(ownerToken);
     }
     
     @Test
-    public void assertOwnerTokenWithNoRouteUnitAndOwnerNameEqualsTableName() {
+    void assertOwnerTokenWithNoRouteUnitAndOwnerNameEqualsTableName() {
         OwnerToken ownerToken = new OwnerToken(0, 1, new IdentifierValue("t_user_detail"), new IdentifierValue("t_user_detail"));
         assertThat(ownerToken.toString(), is("t_user_detail."));
         assertTokenGrid(ownerToken);
     }
     
     @Test
-    public void assertOwnerTokenWithNoRouteUnitAndOwnerNameNotEqualsTableName() {
+    void assertOwnerTokenWithNoRouteUnitAndOwnerNameNotEqualsTableName() {
         OwnerToken ownerToken = new OwnerToken(0, 1, new IdentifierValue("ud"), new IdentifierValue("t_user_detail"));
         assertThat(ownerToken.toString(), is("ud."));
         assertTokenGrid(ownerToken);
     }
     
     @Test
-    public void assertOwnerTokenWithNoRouteUnitAndOwnerNameValueIsEmpty() {
+    void assertOwnerTokenWithNoRouteUnitAndOwnerNameValueIsEmpty() {
         OwnerToken ownerToken = new OwnerToken(0, 1, new IdentifierValue(""), new IdentifierValue("t_user_detail"));
         assertThat(ownerToken.toString(), is(""));
         assertTokenGrid(ownerToken);
     }
     
     @Test
-    public void assertOwnerTokenWithNoRouteUnitAndOwnerNameIsEmpty() {
+    void assertOwnerTokenWithNoRouteUnitAndOwnerNameIsEmpty() {
         OwnerToken ownerToken = new OwnerToken(0, 1, null, new IdentifierValue("t_user_detail"));
         assertThat(ownerToken.toString(), is(""));
         assertTokenGrid(ownerToken);

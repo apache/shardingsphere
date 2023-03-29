@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 
@@ -61,7 +61,7 @@ public final class SQLFederationDeciderEngine {
     public SQLFederationDeciderContext decide(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         SQLFederationDeciderContext result = new SQLFederationDeciderContext();
         SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
-        // TODO move this logic to SQLFederationDecider implement class when we remove sqlFederationEnabled
+        // TODO move this logic to SQLFederationDecider implement class when we remove sql federation type
         if (isSelectStatementContainsSystemSchema(sqlStatementContext, database)) {
             result.setUseSQLFederation(true);
             return result;
@@ -80,6 +80,6 @@ public final class SQLFederationDeciderEngine {
     
     private boolean isSelectStatementContainsSystemSchema(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) {
         return sqlStatementContext instanceof SelectStatementContext
-                && SystemSchemaUtil.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
+                && SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
     }
 }

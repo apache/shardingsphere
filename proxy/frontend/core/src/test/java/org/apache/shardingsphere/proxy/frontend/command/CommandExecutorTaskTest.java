@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
@@ -59,7 +59,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class CommandExecutorTaskTest {
+class CommandExecutorTaskTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private DatabaseProtocolFrontendEngine engine;
@@ -99,21 +99,21 @@ public final class CommandExecutorTaskTest {
     private FrontendContext frontendContext;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(handlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(
+                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
     }
     
     @Test
-    public void assertRunNeedFlushByFalse() throws SQLException, BackendConnectionException {
+    void assertRunNeedFlushByFalse() throws SQLException, BackendConnectionException {
         when(queryCommandExecutor.execute()).thenReturn(Collections.emptyList());
         when(engine.getCommandExecuteEngine().getCommandPacket(payload, commandPacketType, connectionSession)).thenReturn(commandPacket);
         when(engine.getCommandExecuteEngine().getCommandExecutor(commandPacketType, commandPacket, connectionSession)).thenReturn(queryCommandExecutor);
         when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(
-                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
         actual.run();
         verify(queryCommandExecutor).close();
         verify(backendConnection).closeExecutionResources();
@@ -121,15 +121,13 @@ public final class CommandExecutorTaskTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertRunNeedFlushByTrue() throws SQLException, BackendConnectionException {
+    void assertRunNeedFlushByTrue() throws SQLException, BackendConnectionException {
         when(queryCommandExecutor.execute()).thenReturn(Collections.singleton(databasePacket));
         when(engine.getCommandExecuteEngine().getCommandPacket(payload, commandPacketType, connectionSession)).thenReturn(commandPacket);
         when(engine.getCommandExecuteEngine().getCommandExecutor(commandPacketType, commandPacket, connectionSession)).thenReturn(queryCommandExecutor);
         when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(
-                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
         actual.run();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
@@ -140,7 +138,7 @@ public final class CommandExecutorTaskTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertRunByCommandExecutor() throws SQLException, BackendConnectionException {
+    void assertRunByCommandExecutor() throws SQLException, BackendConnectionException {
         when(engine.getFrontendContext()).thenReturn(frontendContext);
         when(commandExecutor.execute()).thenReturn(Collections.singleton(databasePacket));
         when(engine.getCommandExecuteEngine().getCommandPacket(payload, commandPacketType, connectionSession)).thenReturn(commandPacket);
@@ -148,8 +146,6 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(
-                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
         actual.run();
         verify(handlerContext).write(databasePacket);
         verify(handlerContext).flush();
@@ -159,7 +155,7 @@ public final class CommandExecutorTaskTest {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertRunWithException() throws BackendConnectionException, SQLException {
+    void assertRunWithException() throws BackendConnectionException, SQLException {
         RuntimeException mockException = new RuntimeException("mock");
         doThrow(mockException).when(commandExecutor).execute();
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
@@ -169,8 +165,6 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getErrorPacket(mockException)).thenReturn(databasePacket);
         when(engine.getCommandExecuteEngine().getOtherPacket(connectionSession)).thenReturn(Optional.of(databasePacket));
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(
-                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
         actual.run();
         verify(handlerContext, times(2)).write(databasePacket);
         verify(handlerContext).flush();
@@ -178,7 +172,7 @@ public final class CommandExecutorTaskTest {
     }
     
     @Test
-    public void assertRunWithOOMError() throws BackendConnectionException, SQLException {
+    void assertRunWithOOMError() throws BackendConnectionException, SQLException {
         doThrow(OutOfMemoryError.class).when(commandExecutor).execute();
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
         when(engine.getCommandExecuteEngine().getCommandPacket(payload, commandPacketType, connectionSession)).thenReturn(commandPacket);
@@ -187,8 +181,6 @@ public final class CommandExecutorTaskTest {
         when(engine.getCommandExecuteEngine().getErrorPacket(any(RuntimeException.class))).thenReturn(databasePacket);
         when(engine.getCommandExecuteEngine().getOtherPacket(connectionSession)).thenReturn(Optional.of(databasePacket));
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(
-                new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
         actual.run();
         verify(handlerContext, times(2)).write(databasePacket);
         verify(handlerContext).flush();

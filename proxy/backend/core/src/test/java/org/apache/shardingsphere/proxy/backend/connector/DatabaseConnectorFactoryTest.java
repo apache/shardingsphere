@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -44,10 +44,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class DatabaseConnectorFactoryTest {
+class DatabaseConnectorFactoryTest {
     
     @Test
-    public void assertNewDatabaseConnectorWithoutParameter() {
+    void assertNewDatabaseConnectorWithoutParameter() {
         BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("foo_db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
@@ -62,7 +62,7 @@ public final class DatabaseConnectorFactoryTest {
     }
     
     @Test
-    public void assertNewDatabaseConnectorWithParameters() {
+    void assertNewDatabaseConnectorWithParameters() {
         BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("foo_db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);

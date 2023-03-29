@@ -55,7 +55,6 @@
         <java.version>1.8</java.version>
         <maven.version.range>[3.0.4,)</maven.version.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.locale>zh_CN</project.build.locale>
         <maven.deploy.skip>false</maven.deploy.skip>
         <shade.package>org.apache.shardingsphere.shade</shade.package>
         
@@ -69,7 +68,7 @@
         <snakeyaml.version>1.33</snakeyaml.version>
         <gson.version>2.9.1</gson.version>
         <jackson.version>2.13.4</jackson.version>
-        <groovy.version>4.0.6</groovy.version>
+        <groovy.version>4.0.10</groovy.version>
         <freemarker.version>2.3.31</freemarker.version>
         <caffeine.version>2.9.3</caffeine.version>
         
@@ -105,10 +104,9 @@
         <hikari-cp.version>4.0.3</hikari-cp.version>
         <commons-dbcp2.version>2.9.0</commons-dbcp2.version>
         
-        <junit5.version>5.9.2</junit5.version>
-        <junit4.version>4.13.2</junit4.version>
-        <hamcrest.version>1.3</hamcrest.version>
-        <mockito.version>4.8.0</mockito.version>
+        <junit.version>5.9.2</junit.version>
+        <hamcrest.version>2.2</hamcrest.version>
+        <mockito.version>4.11.0</mockito.version>
         
         <protobuf-java.version>3.21.12</protobuf-java.version>
         <awaitility.version>4.2.0</awaitility.version>
@@ -131,13 +129,14 @@
         <maven-plugin-plugin.version>3.4</maven-plugin-plugin.version>
         <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
         <maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
+        <jandex-maven-plugin.version>3.0.5</jandex-maven-plugin.version>
         
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <findbugs-maven-plugin.version>3.0.2</findbugs-maven-plugin.version>
-        <maven-checkstyle-plugin.version>3.1.0</maven-checkstyle-plugin.version>
+        <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
         <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
@@ -516,32 +515,26 @@
             </dependency>
             
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit4.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.vintage</groupId>
-                <artifactId>junit-vintage-engine</artifactId>
-                <version>${junit5.version}</version>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-api</artifactId>
-                <version>${junit5.version}</version>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-params</artifactId>
-                <version>${junit5.version}</version>
+                <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
-                <artifactId>hamcrest-library</artifactId>
+                <artifactId>hamcrest</artifactId>
                 <version>${hamcrest.version}</version>
                 <scope>test</scope>
             </dependency>
@@ -550,12 +543,6 @@
                 <artifactId>mockito-core</artifactId>
                 <version>${mockito.version}</version>
                 <scope>test</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.hamcrest</groupId>
-                        <artifactId>hamcrest-core</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
@@ -636,16 +623,12 @@
         </dependency>
         
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
+            <artifactId>junit-jupiter-engine</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -653,7 +636,7 @@
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-library</artifactId>
+            <artifactId>hamcrest</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -1144,6 +1127,19 @@
                             <goal>report</goal>
                         </goals>
                         <phase>test</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.smallrye</groupId>
+                <artifactId>jandex-maven-plugin</artifactId>
+                <version>${jandex-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>make-index</id>
+                        <goals>
+                            <goal>jandex</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

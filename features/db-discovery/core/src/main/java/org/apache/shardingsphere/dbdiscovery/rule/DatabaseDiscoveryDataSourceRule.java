@@ -24,6 +24,8 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.exception.MissingRequiredDataSourceNamesConfigurationException;
 import org.apache.shardingsphere.dbdiscovery.exception.MissingRequiredGroupNameConfigurationException;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
@@ -129,14 +131,18 @@ public final class DatabaseDiscoveryDataSourceRule {
      *
      * @return data source mapper
      */
-    public Map<String, Collection<String>> getDataSourceMapper() {
+    public Map<String, Collection<DataSourceRoleInfo>> getDataSourceMapper() {
         return Collections.singletonMap(groupName, getActualDataSourceNames());
     }
     
-    private Collection<String> getActualDataSourceNames() {
-        Collection<String> result = new LinkedHashSet<>();
-        result.add(primaryDataSourceName);
-        result.addAll(dataSourceNames);
+    private Collection<DataSourceRoleInfo> getActualDataSourceNames() {
+        Collection<DataSourceRoleInfo> result = new LinkedHashSet<>();
+        result.add(new DataSourceRoleInfo(primaryDataSourceName, DataSourceRole.PRIMARY));
+        dataSourceNames.forEach(each -> {
+            if (!primaryDataSourceName.equals(each)) {
+                result.add(new DataSourceRoleInfo(each, DataSourceRole.MEMBER));
+            }
+        });
         return result;
     }
 }

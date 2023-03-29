@@ -19,22 +19,22 @@ package org.apache.shardingsphere.parser.yaml.swapper;
 
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public final class YamlSQLParserCacheOptionConfigurationSwapperTest {
+class YamlSQLParserCacheOptionConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlSQLParserCacheOptionRuleConfiguration actual = new YamlSQLParserCacheOptionConfigurationSwapper().swapToYamlConfiguration(new CacheOption(2, 5));
         assertThat(actual.getInitialCapacity(), is(2));
         assertThat(actual.getMaximumSize(), is(5L));
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlSQLParserCacheOptionRuleConfiguration cacheOptionRuleConfig = new YamlSQLParserCacheOptionRuleConfiguration();
         cacheOptionRuleConfig.setInitialCapacity(2);
         cacheOptionRuleConfig.setMaximumSize(5L);

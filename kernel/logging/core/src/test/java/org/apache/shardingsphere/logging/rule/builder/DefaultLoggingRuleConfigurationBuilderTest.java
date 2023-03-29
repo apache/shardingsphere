@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.logging.rule.builder;
 
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class DefaultLoggingRuleConfigurationBuilderTest {
+class DefaultLoggingRuleConfigurationBuilderTest {
     
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         LoggingRuleConfiguration actual = new DefaultLoggingRuleConfigurationBuilder().build();
         assertThat(actual.getLoggers().size(), is(4));
         assertThat(actual.getAppenders().size(), is(1));

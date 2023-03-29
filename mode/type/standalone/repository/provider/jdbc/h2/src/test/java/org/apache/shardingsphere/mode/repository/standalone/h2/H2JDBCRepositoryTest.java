@@ -20,9 +20,9 @@ package org.apache.shardingsphere.mode.repository.standalone.h2;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Properties;
@@ -30,12 +30,12 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class H2JDBCRepositoryTest {
+class H2JDBCRepositoryTest {
     
     private final JDBCRepository repository = new JDBCRepository();
     
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         Properties props = PropertiesBuilder.build(
                 new Property("jdbc_url", "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"),
                 new Property("username", "sa"),
@@ -44,13 +44,13 @@ public final class H2JDBCRepositoryTest {
         repository.init(props);
     }
     
-    @After
-    public void stop() {
+    @AfterEach
+    void stop() {
         repository.close();
     }
     
     @Test
-    public void assertPersistAndGet() {
+    void assertPersistAndGet() {
         repository.persist("/testPath/test1", "test1_content");
         assertThat(repository.getDirectly("/testPath/test1"), is("test1_content"));
         repository.persist("/testPath/test1", "modify_content");
@@ -58,7 +58,7 @@ public final class H2JDBCRepositoryTest {
     }
     
     @Test
-    public void assertPersistAndGetChildrenKeys() {
+    void assertPersistAndGetChildrenKeys() {
         repository.persist("/testPath/test1", "test1_content");
         repository.persist("/testPath/test2", "test2_content");
         List<String> childrenKeys = repository.getChildrenKeys("/testPath");
@@ -67,7 +67,7 @@ public final class H2JDBCRepositoryTest {
     }
     
     @Test
-    public void assertDelete() {
+    void assertDelete() {
         repository.delete("/testPath");
         assertThat(repository.getDirectly("/testPath"), is(""));
     }

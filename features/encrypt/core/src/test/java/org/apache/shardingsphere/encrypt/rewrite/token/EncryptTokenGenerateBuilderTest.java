@@ -46,13 +46,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class EncryptTokenGenerateBuilderTest {
+class EncryptTokenGenerateBuilderTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private EncryptRule encryptRule;
     
     @Test
-    public void assertGetSQLTokenGenerators() {
+    void assertGetSQLTokenGenerators() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getAllTables().isEmpty()).thenReturn(false);
         when(selectStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("table"));

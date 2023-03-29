@@ -29,10 +29,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DataSourcePropertiesValidatorTest {
+class DataSourcePropertiesValidatorTest {
     
     @Test
-    public void assertValidateSuccess() {
+    void assertValidateSuccess() {
         assertTrue(new DataSourcePropertiesValidator().validate(Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createValidProperties()))).isEmpty());
     }
     
@@ -46,7 +46,7 @@ public final class DataSourcePropertiesValidatorTest {
     }
     
     @Test
-    public void assertValidateFailed() {
+    void assertValidateFailed() {
         Collection<String> actual = new DataSourcePropertiesValidator().validate(
                 Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createInvalidProperties())));
         assertThat(actual, is(Collections.singletonList("Invalid data source `name`, error message is: The URL `InvalidJdbcUrl` is not recognized, please refer to the pattern `jdbc:.*`.")));

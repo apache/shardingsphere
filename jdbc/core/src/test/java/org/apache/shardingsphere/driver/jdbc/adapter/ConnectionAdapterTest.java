@@ -26,8 +26,8 @@ import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -35,49 +35,54 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ConnectionAdapterTest {
+class ConnectionAdapterTest {
+    
+    @AfterEach
+    void tearDown() {
+        TransactionTypeHolder.clear();
+    }
     
     @Test
-    public void assertGetWarnings() throws SQLException {
+    void assertGetWarnings() throws SQLException {
         assertNull(createConnectionAdaptor().getWarnings());
     }
     
     @Test
-    public void assertClearWarnings() throws SQLException {
+    void assertClearWarnings() throws SQLException {
         createConnectionAdaptor().clearWarnings();
     }
     
     @Test
-    public void assertGetHoldability() throws SQLException {
+    void assertGetHoldability() throws SQLException {
         assertThat(createConnectionAdaptor().getHoldability(), is(ResultSet.CLOSE_CURSORS_AT_COMMIT));
     }
     
     @Test
-    public void assertSetHoldability() throws SQLException {
+    void assertSetHoldability() throws SQLException {
         createConnectionAdaptor().setHoldability(ResultSet.CONCUR_READ_ONLY);
         assertThat(createConnectionAdaptor().getHoldability(), is(ResultSet.CLOSE_CURSORS_AT_COMMIT));
     }
     
     @Test
-    public void assertGetCatalog() throws SQLException {
+    void assertGetCatalog() throws SQLException {
         assertNull(createConnectionAdaptor().getCatalog());
     }
     
     @Test
-    public void assertSetCatalog() throws SQLException {
+    void assertSetCatalog() throws SQLException {
         Connection actual = createConnectionAdaptor();
         actual.setCatalog("");
         assertNull(actual.getCatalog());
     }
     
     @Test
-    public void assertSetSchema() throws SQLException {
+    void assertSetSchema() throws SQLException {
         Connection actual = createConnectionAdaptor();
         String originalSchema = actual.getSchema();
         actual.setSchema("");
@@ -89,10 +94,5 @@ public final class ConnectionAdapterTest {
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(
                 new ShardingSphereRuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()))));
         return new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, contextManager, mock(JDBCContext.class));
-    }
-    
-    @After
-    public void tearDown() {
-        TransactionTypeHolder.clear();
     }
 }

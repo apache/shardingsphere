@@ -24,10 +24,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public final class InstanceMetaDataFactoryTest {
+class InstanceMetaDataFactoryTest {
     
     @Test
-    public void assertCreateJDBCInstanceMetaDataWithInstanceId() {
+    void assertCreateJDBCInstanceMetaDataWithInstanceId() {
         InstanceMetaData actual = InstanceMetaDataFactory.create("foo_id", InstanceType.JDBC, "", "foo_version");
         assertThat(actual.getId(), is("foo_id"));
         assertNotNull(actual.getIp());
@@ -37,7 +37,7 @@ public final class InstanceMetaDataFactoryTest {
     }
     
     @Test
-    public void assertCreateProxyInstanceMetaDataWithInstanceId() {
+    void assertCreateProxyInstanceMetaDataWithInstanceId() {
         ProxyInstanceMetaData actual = (ProxyInstanceMetaData) InstanceMetaDataFactory.create("foo_id", InstanceType.PROXY, "127.0.0.1@3307", "foo_version");
         assertThat(actual.getId(), is("foo_id"));
         assertThat(actual.getIp(), is("127.0.0.1"));

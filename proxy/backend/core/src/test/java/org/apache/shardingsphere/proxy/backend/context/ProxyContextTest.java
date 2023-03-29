@@ -27,10 +27,10 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -48,24 +48,24 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ProxyContextTest {
+class ProxyContextTest {
     
     private static final String SCHEMA_PATTERN = "db_%s";
     
     private ContextManager currentContextManager;
     
-    @Before
-    public void recordCurrentContextManager() {
+    @BeforeEach
+    void recordCurrentContextManager() {
         currentContextManager = ProxyContext.getInstance().getContextManager();
     }
     
-    @After
-    public void restorePreviousContextManager() {
+    @AfterEach
+    void restorePreviousContextManager() {
         ProxyContext.init(currentContextManager);
     }
     
     @Test
-    public void assertInit() {
+    void assertInit() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData());
         ProxyContext.init(new ContextManager(metaDataContexts, mock(InstanceContext.class, RETURNS_DEEP_STUBS)));
         assertThat(ProxyContext.getInstance().getContextManager().getClusterStateContext(), is(ProxyContext.getInstance().getContextManager().getClusterStateContext()));
@@ -76,7 +76,7 @@ public final class ProxyContextTest {
     }
     
     @Test
-    public void assertDatabaseExists() {
+    void assertDatabaseExists() {
         Map<String, ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
@@ -88,17 +88,17 @@ public final class ProxyContextTest {
     }
     
     @Test
-    public void assertGetDatabaseWithNull() {
+    void assertGetDatabaseWithNull() {
         assertThrows(NoDatabaseSelectedException.class, () -> assertNull(ProxyContext.getInstance().getDatabase(null)));
     }
     
     @Test
-    public void assertGetDatabaseWithEmptyString() {
+    void assertGetDatabaseWithEmptyString() {
         assertThrows(NoDatabaseSelectedException.class, () -> assertNull(ProxyContext.getInstance().getDatabase("")));
     }
     
     @Test
-    public void assertGetDatabaseWhenNotExisted() {
+    void assertGetDatabaseWhenNotExisted() {
         Map<String, ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
@@ -109,7 +109,7 @@ public final class ProxyContextTest {
     }
     
     @Test
-    public void assertGetDatabase() {
+    void assertGetDatabase() {
         Map<String, ShardingSphereDatabase> databases = mockDatabases();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
@@ -120,7 +120,7 @@ public final class ProxyContextTest {
     }
     
     @Test
-    public void assertGetAllDatabaseNames() {
+    void assertGetAllDatabaseNames() {
         Map<String, ShardingSphereDatabase> databases = createDatabases();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),

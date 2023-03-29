@@ -36,10 +36,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class YamlShardingStrategyConfigurationSwapperTest {
+class YamlShardingStrategyConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYamlWithStandard() {
+    void assertSwapToYamlWithStandard() {
         YamlShardingStrategyConfiguration actual = new YamlShardingStrategyConfigurationSwapper().swapToYamlConfiguration(new StandardShardingStrategyConfiguration("id", "standard"));
         assertThat(actual.getStandard().getShardingColumn(), is("id"));
         assertThat(actual.getStandard().getShardingAlgorithmName(), is("standard"));
@@ -49,7 +49,7 @@ public final class YamlShardingStrategyConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToYamlWithComplex() {
+    void assertSwapToYamlWithComplex() {
         YamlShardingStrategyConfiguration actual = new YamlShardingStrategyConfigurationSwapper().swapToYamlConfiguration(new ComplexShardingStrategyConfiguration("id, creation_date", "complex"));
         assertThat(actual.getComplex().getShardingColumns(), is("id, creation_date"));
         assertThat(actual.getComplex().getShardingAlgorithmName(), is("complex"));
@@ -60,7 +60,7 @@ public final class YamlShardingStrategyConfigurationSwapperTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertSwapToYamlWithHint() {
+    void assertSwapToYamlWithHint() {
         HintShardingAlgorithm hintShardingAlgorithm = mock(HintShardingAlgorithm.class);
         when(hintShardingAlgorithm.getType()).thenReturn("CORE.HINT.FIXTURE");
         YamlShardingStrategyConfiguration actual = new YamlShardingStrategyConfigurationSwapper().swapToYamlConfiguration(new HintShardingStrategyConfiguration("hint"));
@@ -71,7 +71,7 @@ public final class YamlShardingStrategyConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToYamlWithNone() {
+    void assertSwapToYamlWithNone() {
         YamlShardingStrategyConfiguration actual = new YamlShardingStrategyConfigurationSwapper().swapToYamlConfiguration(new NoneShardingStrategyConfiguration());
         assertNull(actual.getStandard());
         assertNull(actual.getComplex());
@@ -80,7 +80,7 @@ public final class YamlShardingStrategyConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithStandardWithRangeShardingAlgorithm() {
+    void assertSwapToObjectWithStandardWithRangeShardingAlgorithm() {
         StandardShardingStrategyConfiguration actual = (StandardShardingStrategyConfiguration) new YamlShardingStrategyConfigurationSwapper().swapToObject(
                 createStandardShardingStrategyConfiguration());
         assertThat(actual.getShardingColumn(), is("id"));
@@ -88,7 +88,7 @@ public final class YamlShardingStrategyConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithStandardWithoutRangeShardingAlgorithm() {
+    void assertSwapToObjectWithStandardWithoutRangeShardingAlgorithm() {
         StandardShardingStrategyConfiguration actual = (StandardShardingStrategyConfiguration) new YamlShardingStrategyConfigurationSwapper().swapToObject(
                 createStandardShardingStrategyConfiguration());
         assertThat(actual.getShardingColumn(), is("id"));
@@ -105,7 +105,7 @@ public final class YamlShardingStrategyConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithComplex() {
+    void assertSwapToObjectWithComplex() {
         ComplexShardingStrategyConfiguration actual = (ComplexShardingStrategyConfiguration) new YamlShardingStrategyConfigurationSwapper().swapToObject(createComplexShardingStrategyConfiguration());
         assertThat(actual.getShardingColumns(), is("id, creation_date"));
         assertThat(actual.getShardingAlgorithmName(), is("complex"));
@@ -121,7 +121,7 @@ public final class YamlShardingStrategyConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithHint() {
+    void assertSwapToObjectWithHint() {
         HintShardingStrategyConfiguration actual = (HintShardingStrategyConfiguration) new YamlShardingStrategyConfigurationSwapper().swapToObject(createHintShardingStrategyConfiguration());
         assertThat(actual.getShardingAlgorithmName(), is("hint"));
     }
@@ -135,7 +135,7 @@ public final class YamlShardingStrategyConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithNone() {
+    void assertSwapToObjectWithNone() {
         NoneShardingStrategyConfiguration actual = (NoneShardingStrategyConfiguration) new YamlShardingStrategyConfigurationSwapper().swapToObject(createNoneShardingStrategyConfiguration());
         assertThat(actual, instanceOf(NoneShardingStrategyConfiguration.class));
     }
@@ -148,7 +148,7 @@ public final class YamlShardingStrategyConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithNull() {
+    void assertSwapToObjectWithNull() {
         assertNull(new YamlShardingStrategyConfigurationSwapper().swapToObject(new YamlShardingStrategyConfiguration()));
     }
 }

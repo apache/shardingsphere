@@ -32,13 +32,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLComSyncExecutorTest {
+class PostgreSQLComSyncExecutorTest {
     
     @Mock
     private ConnectionSession connectionSession;
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
         PostgreSQLComSyncExecutor actual = new PostgreSQLComSyncExecutor(connectionSession);
         assertThat(actual.execute().iterator().next(), is(instanceOf(PostgreSQLReadyForQueryPacket.class)));

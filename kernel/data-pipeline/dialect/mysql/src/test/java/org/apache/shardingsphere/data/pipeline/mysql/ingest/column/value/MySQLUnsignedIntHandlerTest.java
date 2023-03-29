@@ -18,19 +18,19 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value;
 
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.column.value.impl.MySQLUnsignedIntHandler;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLUnsignedIntHandlerTest {
+class MySQLUnsignedIntHandlerTest {
     
     private final MySQLUnsignedIntHandler handler = new MySQLUnsignedIntHandler();
     
     @Test
-    public void assertHandle() {
+    void assertHandle() {
         Serializable actual = handler.handle(1);
         assertThat(actual, is(1L));
         actual = handler.handle(-1);

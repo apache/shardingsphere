@@ -18,29 +18,29 @@
 package org.apache.shardingsphere.proxy.frontend.connection;
 
 import lombok.SneakyThrows;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ConnectionIdGeneratorTest {
+class ConnectionIdGeneratorTest {
     
-    @Before
-    @After
-    public void resetConnectionId() {
+    @BeforeEach
+    @AfterEach
+    void resetConnectionId() {
         setCurrentConnectionId(0);
     }
     
     @Test
-    public void assertNextId() {
+    void assertNextId() {
         assertThat(ConnectionIdGenerator.getInstance().nextId(), is(1));
     }
     
     @Test
-    public void assertMaxNextId() {
+    void assertMaxNextId() {
         setCurrentConnectionId(Integer.MAX_VALUE);
         assertThat(ConnectionIdGenerator.getInstance().nextId(), is(1));
     }

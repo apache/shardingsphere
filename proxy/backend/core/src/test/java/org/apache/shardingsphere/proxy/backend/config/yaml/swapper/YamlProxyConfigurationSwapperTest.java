@@ -27,7 +27,7 @@ import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -41,10 +41,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlProxyConfigurationSwapperTest {
+class YamlProxyConfigurationSwapperTest {
     
     @Test
-    public void assertSwap() throws IOException {
+    void assertSwap() throws IOException {
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/swap");
         ProxyConfiguration actual = new YamlProxyConfigurationSwapper().swap(yamlProxyConfig);
         assertDataSources(actual);

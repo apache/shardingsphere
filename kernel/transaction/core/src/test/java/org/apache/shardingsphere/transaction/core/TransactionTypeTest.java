@@ -18,21 +18,21 @@
 package org.apache.shardingsphere.transaction.core;
 
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class TransactionTypeTest {
+class TransactionTypeTest {
     
     @Test
-    public void assertIsDistributedTransaction() {
+    void assertIsDistributedTransaction() {
         assertTrue(TransactionType.isDistributedTransaction(TransactionType.XA));
         assertTrue(TransactionType.isDistributedTransaction(TransactionType.BASE));
     }
     
     @Test
-    public void assertIsNotDistributedTransaction() {
+    void assertIsNotDistributedTransaction() {
         assertFalse(TransactionType.isDistributedTransaction(TransactionType.LOCAL));
     }
 }

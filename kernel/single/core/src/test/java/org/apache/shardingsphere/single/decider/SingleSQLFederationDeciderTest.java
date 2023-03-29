@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.single.rule.SingleRule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,10 +46,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SingleSQLFederationDeciderTest {
+class SingleSQLFederationDeciderTest {
     
     @Test
-    public void assertDecideWhenNotContainsSingleTable() {
+    void assertDecideWhenNotContainsSingleTable() {
         SingleSQLFederationDecider federationDecider = new SingleSQLFederationDecider();
         SelectStatementContext select = createStatementContext();
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
@@ -60,9 +60,9 @@ public final class SingleSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenAllSingleTablesInSameDataSource() {
+    void assertDecideWhenAllSingleTablesInSameDataSource() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
-        SingleRule rule = createSingleTableRule(qualifiedTables);
+        SingleRule rule = createSingleRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(true);
         SelectStatementContext select = createStatementContext();
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
@@ -74,9 +74,9 @@ public final class SingleSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenAllSingleTablesNotInSameDataSource() {
+    void assertDecideWhenAllSingleTablesNotInSameDataSource() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
-        SingleRule rule = createSingleTableRule(qualifiedTables);
+        SingleRule rule = createSingleRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(false);
         SelectStatementContext select = createStatementContext();
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
@@ -88,9 +88,9 @@ public final class SingleSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenAllTablesInSameDataSource() {
+    void assertDecideWhenAllTablesInSameDataSource() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
-        SingleRule rule = createSingleTableRule(qualifiedTables);
+        SingleRule rule = createSingleRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(true);
         SelectStatementContext select = createStatementContext();
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
@@ -103,9 +103,9 @@ public final class SingleSQLFederationDeciderTest {
     }
     
     @Test
-    public void assertDecideWhenAllTablesNotInSameDataSource() {
+    void assertDecideWhenAllTablesNotInSameDataSource() {
         Collection<QualifiedTable> qualifiedTables = Arrays.asList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order"), new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order_item"));
-        SingleRule rule = createSingleTableRule(qualifiedTables);
+        SingleRule rule = createSingleRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(true);
         SelectStatementContext select = createStatementContext();
         QueryContext queryContext = new QueryContext(select, "", Collections.emptyList());
@@ -117,7 +117,7 @@ public final class SingleSQLFederationDeciderTest {
         assertTrue(actual.isUseSQLFederation());
     }
     
-    private static SingleRule createSingleTableRule(final Collection<QualifiedTable> qualifiedTables) {
+    private static SingleRule createSingleRule(final Collection<QualifiedTable> qualifiedTables) {
         SingleRule result = mock(SingleRule.class);
         when(result.getSingleTableNames(any())).thenReturn(qualifiedTables);
         when(result.findSingleTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order")).thenReturn(Optional.of(new DataNode("ds_0", "t_order")));

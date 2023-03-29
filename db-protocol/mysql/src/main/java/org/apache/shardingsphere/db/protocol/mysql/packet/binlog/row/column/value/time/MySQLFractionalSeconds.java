@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.time;
 
+import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
@@ -26,41 +27,29 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
  */
 public final class MySQLFractionalSeconds {
     
-    private final int fraction;
+    @Getter
+    private final int nanos;
     
     private final int fractionalSecondsPrecision;
     
     public MySQLFractionalSeconds(final int columnMeta, final MySQLPacketPayload payload) {
         fractionalSecondsPrecision = columnMeta;
-        fraction = readFraction(payload);
+        nanos = convertFractionalSecondsToNanos(payload);
     }
     
-    private int readFraction(final MySQLPacketPayload payload) {
+    private int convertFractionalSecondsToNanos(final MySQLPacketPayload payload) {
         switch (fractionalSecondsPrecision) {
             case 1:
             case 2:
-                return payload.readInt1() * 10000;
+                return payload.readInt1() * 10000 * 1000;
             case 3:
             case 4:
-                return payload.getByteBuf().readUnsignedShort() * 100;
+                return payload.getByteBuf().readUnsignedShort() * 100 * 1000;
             case 5:
             case 6:
-                return payload.getByteBuf().readUnsignedMedium();
+                return payload.getByteBuf().readUnsignedMedium() * 1000;
             default:
                 return 0;
         }
-    }
-    
-    @Override
-    public String toString() {
-        if (0 == fractionalSecondsPrecision) {
-            return "";
-        }
-        StringBuilder result = new StringBuilder(Integer.toString(fraction));
-        for (int i = result.length(); i < fractionalSecondsPrecision; i++) {
-            result.append("0");
-        }
-        result.setLength(fractionalSecondsPrecision);
-        return "." + result;
     }
 }

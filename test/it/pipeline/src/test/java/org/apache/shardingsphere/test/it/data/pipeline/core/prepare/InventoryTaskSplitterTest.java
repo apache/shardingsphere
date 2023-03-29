@@ -19,22 +19,22 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.prepare;
 
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtil;
+import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.prepare.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
-import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -48,7 +48,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class InventoryTaskSplitterTest {
+class InventoryTaskSplitterTest {
     
     private MigrationJobItemContext jobItemContext;
     
@@ -58,13 +58,13 @@ public final class InventoryTaskSplitterTest {
     
     private InventoryTaskSplitter inventoryTaskSplitter;
     
-    @BeforeClass
-    public static void beforeClass() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
+    @BeforeAll
+    static void beforeClass() {
+        PipelineContextUtils.mockModeConfigAndContextManager();
     }
     
-    @Before
-    public void setUp() throws ReflectiveOperationException {
+    @BeforeEach
+    void setUp() {
         initJobItemContext();
         dumperConfig = new InventoryDumperConfiguration(jobItemContext.getTaskConfig().getDumperConfig());
         PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "int", false, true, true);
@@ -74,17 +74,17 @@ public final class InventoryTaskSplitterTest {
     
     private void initJobItemContext() {
         MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
+        jobItemContext = PipelineContextUtils.mockMigrationJobItemContext(jobConfig);
         dataSourceManager = (PipelineDataSourceManager) jobItemContext.getImporterConnector().getConnector();
     }
     
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         dataSourceManager.close();
     }
     
     @Test
-    public void assertSplitInventoryDataWithEmptyTable() throws SQLException {
+    void assertSplitInventoryDataWithEmptyTable() throws SQLException {
         initEmptyTablePrimaryEnvironment(dumperConfig);
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(1));
@@ -94,7 +94,7 @@ public final class InventoryTaskSplitterTest {
     }
     
     @Test
-    public void assertSplitInventoryDataWithIntPrimary() throws SQLException {
+    void assertSplitInventoryDataWithIntPrimary() throws SQLException {
         initIntPrimaryEnvironment(dumperConfig);
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(10));
@@ -104,23 +104,23 @@ public final class InventoryTaskSplitterTest {
     }
     
     @Test
-    public void assertSplitInventoryDataWithCharPrimary() throws SQLException {
+    void assertSplitInventoryDataWithCharPrimary() throws SQLException {
         initCharPrimaryEnvironment(dumperConfig);
         inventoryTaskSplitter.splitInventoryData(jobItemContext);
     }
     
     @Test
-    public void assertSplitInventoryDataWithoutPrimaryButWithUniqueIndex() throws SQLException {
+    void assertSplitInventoryDataWithoutPrimaryButWithUniqueIndex() throws SQLException {
         initUniqueIndexOnNotNullColumnEnvironment(dumperConfig);
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
         assertThat(actual.size(), is(1));
     }
     
     @Test
-    public void assertSplitInventoryDataWithMultipleColumnsKey() throws SQLException {
+    void assertSplitInventoryDataWithMultipleColumnsKey() throws SQLException {
         initUnionPrimaryEnvironment(dumperConfig);
         try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig())) {
-            List<PipelineColumnMetaData> uniqueKeyColumns = PipelineTableMetaDataUtil.getUniqueKeyColumns(null, "t_order", new StandardPipelineTableMetaDataLoader(dataSource));
+            List<PipelineColumnMetaData> uniqueKeyColumns = PipelineTableMetaDataUtils.getUniqueKeyColumns(null, "t_order", new StandardPipelineTableMetaDataLoader(dataSource));
             dumperConfig.setUniqueKeyColumns(uniqueKeyColumns);
             List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
             assertThat(actual.size(), is(1));
@@ -128,10 +128,10 @@ public final class InventoryTaskSplitterTest {
     }
     
     @Test
-    public void assertSplitInventoryDataWithoutPrimaryAndUniqueIndex() throws SQLException {
+    void assertSplitInventoryDataWithoutPrimaryAndUniqueIndex() throws SQLException {
         initNoPrimaryEnvironment(dumperConfig);
         try (PipelineDataSourceWrapper dataSource = dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig())) {
-            List<PipelineColumnMetaData> uniqueKeyColumns = PipelineTableMetaDataUtil.getUniqueKeyColumns(null, "t_order", new StandardPipelineTableMetaDataLoader(dataSource));
+            List<PipelineColumnMetaData> uniqueKeyColumns = PipelineTableMetaDataUtils.getUniqueKeyColumns(null, "t_order", new StandardPipelineTableMetaDataLoader(dataSource));
             assertTrue(uniqueKeyColumns.isEmpty());
             List<InventoryTask> inventoryTasks = inventoryTaskSplitter.splitInventoryData(jobItemContext);
             assertThat(inventoryTasks.size(), is(1));

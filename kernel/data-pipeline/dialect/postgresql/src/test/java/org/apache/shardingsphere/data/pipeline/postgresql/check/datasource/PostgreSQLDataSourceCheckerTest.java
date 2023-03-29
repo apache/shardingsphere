@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLDataSourceCheckerTest {
+class PostgreSQLDataSourceCheckerTest {
     
     @Mock
     private DataSource dataSource;
@@ -57,7 +57,7 @@ public final class PostgreSQLDataSourceCheckerTest {
     private ResultSet resultSet;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(metaData);
         when(metaData.getUserName()).thenReturn("postgres");
@@ -67,7 +67,7 @@ public final class PostgreSQLDataSourceCheckerTest {
     }
     
     @Test
-    public void assertCheckRolReplication() throws SQLException {
+    void assertCheckRolReplication() throws SQLException {
         PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
         when(resultSet.getString("rolreplication")).thenReturn("t");
         when(resultSet.getString("rolsuper")).thenReturn("f");
@@ -76,7 +76,7 @@ public final class PostgreSQLDataSourceCheckerTest {
     }
     
     @Test
-    public void assertCheckRolSuper() throws SQLException {
+    void assertCheckRolSuper() throws SQLException {
         PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
         when(resultSet.getString("rolsuper")).thenReturn("t");
         when(resultSet.getString("rolreplication")).thenReturn("f");
@@ -85,7 +85,7 @@ public final class PostgreSQLDataSourceCheckerTest {
     }
     
     @Test
-    public void asserCheckNoPrivilege() throws SQLException {
+    void asserCheckNoPrivilege() throws SQLException {
         PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
         when(resultSet.getString("rolsuper")).thenReturn("f");
         when(resultSet.getString("rolreplication")).thenReturn("f");

@@ -29,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLLongLongBinlogProtocolValueTest {
+class MySQLLongLongBinlogProtocolValueTest {
     
     @Mock
     private MySQLPacketPayload payload;
@@ -38,7 +38,7 @@ public final class MySQLLongLongBinlogProtocolValueTest {
     private MySQLBinlogColumnDef columnDef;
     
     @Test
-    public void assertRead() {
+    void assertRead() {
         when(payload.readInt8()).thenReturn(1L);
         MySQLLongLongBinlogProtocolValue actual = new MySQLLongLongBinlogProtocolValue();
         assertThat(actual.read(columnDef, payload), is(1L));

@@ -5,7 +5,7 @@ weight = 12
 
 ### 描述
 
-`SHOW MIGRATION CHECK STATUS` 语法用于查询指定数据迁移作业的数据校验情况
+`SHOW MIGRATION CHECK STATUS` 语法用于查询指定数据迁移作业的数据校验情况。
 
 ### 语法
 

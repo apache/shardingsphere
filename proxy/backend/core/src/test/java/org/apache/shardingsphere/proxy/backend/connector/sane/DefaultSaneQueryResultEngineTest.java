@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
@@ -31,15 +31,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DefaultSaneQueryResultEngineTest {
+class DefaultSaneQueryResultEngineTest {
     
     @Test
-    public void assertGetSaneQueryResultForOtherStatement() {
+    void assertGetSaneQueryResultForOtherStatement() {
         assertThat(TypedSPILoader.getService(SaneQueryResultEngine.class, null).getSaneQueryResult(() -> 0, null), is(Optional.empty()));
     }
     
     @Test
-    public void assertGetSaneQueryResultForSelectStatement() {
+    void assertGetSaneQueryResultForSelectStatement() {
         Optional<ExecuteResult> actual = TypedSPILoader.getService(SaneQueryResultEngine.class, null).getSaneQueryResult(new SelectStatement() {
         }, null);
         assertTrue(actual.isPresent());

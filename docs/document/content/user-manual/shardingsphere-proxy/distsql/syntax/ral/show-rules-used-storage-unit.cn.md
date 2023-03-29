@@ -5,7 +5,7 @@ weight = 11
 
 ### 描述
 
-`SHOW RULES USED STORAGE UNIT` 语法用于查询指定逻辑库中使用指定存储单元的规则
+`SHOW RULES USED STORAGE UNIT` 语法用于查询指定逻辑库中使用指定存储单元的规则。
 
 ### 语法
 

@@ -17,32 +17,32 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.service;
 
-import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
-import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
+import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class ClusterStatusServiceTest {
+@ExtendWith(MockitoExtension.class)
+class ClusterStatusServiceTest {
     
     @Mock
     private ClusterPersistRepository repository;
     
     @Test
-    public void assertPersistClusterState() {
+    void assertPersistClusterState() {
         ClusterStatusService clusterStatusService = new ClusterStatusService(repository);
         clusterStatusService.persistClusterState(new ClusterStateContext());
         verify(repository).persist(ComputeNode.getClusterStatusNodePath(), ClusterState.OK.name());
     }
     
     @Test
-    public void assertLoadClusterStatus() {
+    void assertLoadClusterStatus() {
         new ClusterStatusService(repository).loadClusterStatus();
         verify(repository).getDirectly(ComputeNode.getClusterStatusNodePath());
     }

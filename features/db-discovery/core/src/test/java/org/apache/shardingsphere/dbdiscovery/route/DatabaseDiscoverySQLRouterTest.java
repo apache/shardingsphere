@@ -58,7 +58,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public final class DatabaseDiscoverySQLRouterTest {
+class DatabaseDiscoverySQLRouterTest {
     
     private static final String DATA_SOURCE_NAME = "ds";
     
@@ -74,7 +74,7 @@ public final class DatabaseDiscoverySQLRouterTest {
     private DatabaseDiscoverySQLRouter sqlRouter;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ScheduleContextFactory.newInstance(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class)));
         DatabaseDiscoveryDataSourceRuleConfiguration dataSourceConfig = new DatabaseDiscoveryDataSourceRuleConfiguration(
                 DATA_SOURCE_NAME, Collections.singletonList(PRIMARY_DATA_SOURCE), "", "CORE.FIXTURE");
@@ -88,7 +88,7 @@ public final class DatabaseDiscoverySQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextToPrimaryWithoutRouteUnits() {
+    void assertCreateRouteContextToPrimaryWithoutRouteUnits() {
         QueryContext queryContext = new QueryContext(mock(SQLStatementContext.class), "", Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS),
                 new ShardingSphereRuleMetaData(Collections.singleton(rule)), Collections.emptyMap());
@@ -99,7 +99,7 @@ public final class DatabaseDiscoverySQLRouterTest {
     }
     
     @Test
-    public void assertDecorateRouteContextToPrimaryDataSource() {
+    void assertDecorateRouteContextToPrimaryDataSource() {
         RouteContext actual = mockRouteContext();
         QueryContext queryContext = new QueryContext(mock(SQLStatementContext.class), "", Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS),
@@ -111,7 +111,7 @@ public final class DatabaseDiscoverySQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextToPrimaryDataSourceWithLock() {
+    void assertCreateRouteContextToPrimaryDataSourceWithLock() {
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS),
                 new ShardingSphereRuleMetaData(Collections.singleton(rule)), Collections.emptyMap());
@@ -122,7 +122,7 @@ public final class DatabaseDiscoverySQLRouterTest {
     }
     
     @Test
-    public void assertDecorateRouteContextToPrimaryDataSourceWithLock() {
+    void assertDecorateRouteContextToPrimaryDataSourceWithLock() {
         RouteContext actual = mockRouteContext();
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS),
@@ -134,7 +134,7 @@ public final class DatabaseDiscoverySQLRouterTest {
     }
     
     @Test
-    public void assertCreateRouteContextToPrimaryDataSource() {
+    void assertCreateRouteContextToPrimaryDataSource() {
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS),
                 new ShardingSphereRuleMetaData(Collections.singleton(rule)), Collections.emptyMap());

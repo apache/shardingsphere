@@ -30,15 +30,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DataSourcePoolDestroyerTest {
+class DataSourcePoolDestroyerTest {
     
     @Test
-    public void assertAsyncDestroyWithoutAutoCloseable() {
+    void assertAsyncDestroyWithoutAutoCloseable() {
         new DataSourcePoolDestroyer(new MockedDataSource()).asyncDestroy();
     }
     
     @Test
-    public void assertAsyncDestroyHikariDataSource() throws SQLException {
+    void assertAsyncDestroyHikariDataSource() throws SQLException {
         HikariDataSource dataSource = createHikariDataSource();
         try (Connection ignored = dataSource.getConnection()) {
             new DataSourcePoolDestroyer(dataSource).asyncDestroy();

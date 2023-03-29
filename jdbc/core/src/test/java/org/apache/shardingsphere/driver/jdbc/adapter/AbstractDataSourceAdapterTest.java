@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -35,15 +35,15 @@ import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class AbstractDataSourceAdapterTest {
+class AbstractDataSourceAdapterTest {
     
     private ShardingSphereDataSource shardingSphereDataSource;
     
-    @Before
-    public void setUp() throws SQLException {
+    @BeforeEach
+    void setUp() throws SQLException {
         shardingSphereDataSource = new ShardingSphereDataSource(DefaultDatabase.LOGIC_NAME, null, Collections.singletonMap("ds", new MockedDataSource()), getRuleConfigurations(), new Properties());
     }
     
@@ -55,14 +55,14 @@ public final class AbstractDataSourceAdapterTest {
     }
     
     @Test
-    public void assertSetLogWriter() {
+    void assertSetLogWriter() {
         assertThat(shardingSphereDataSource.getLogWriter(), instanceOf(PrintWriter.class));
         shardingSphereDataSource.setLogWriter(null);
         assertNull(shardingSphereDataSource.getLogWriter());
     }
     
     @Test
-    public void assertGetParentLogger() {
+    void assertGetParentLogger() {
         assertThat(shardingSphereDataSource.getParentLogger().getName(), is(Logger.GLOBAL_LOGGER_NAME));
     }
 }

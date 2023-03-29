@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.mysql.datasource;
 
 import org.apache.shardingsphere.data.pipeline.spi.datasource.JdbcQueryPropertiesExtension;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -29,10 +29,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class MySQLJdbcQueryPropertiesExtensionTest {
+class MySQLJdbcQueryPropertiesExtensionTest {
     
     @Test
-    public void assertExtendQueryProperties() {
+    void assertExtendQueryProperties() {
         Optional<JdbcQueryPropertiesExtension> extension = TypedSPILoader.findService(JdbcQueryPropertiesExtension.class, "MySQL");
         assertTrue(extension.isPresent());
         assertExtension(extension.get());

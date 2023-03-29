@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -36,10 +36,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowConnectionIdExecutorTest {
+class ShowConnectionIdExecutorTest {
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         ShowConnectionIdExecutor executor = new ShowConnectionIdExecutor(mockSelectStatement());
         executor.execute(mockConnectionSession());
         QueryResultMetaData metaData = executor.getQueryResultMetaData();
@@ -52,7 +52,7 @@ public final class ShowConnectionIdExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithAlias() throws SQLException {
+    void assertExecuteWithAlias() throws SQLException {
         ShowConnectionIdExecutor executor = new ShowConnectionIdExecutor(mockSelectStatementWithAlias());
         executor.execute(mockConnectionSession());
         QueryResultMetaData metaData = executor.getQueryResultMetaData();

@@ -24,17 +24,17 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.OpenGaussExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dal.SQLServerExplainStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ExplainStatementHandlerTest {
+class ExplainStatementHandlerTest {
     
     @Test
-    public void assertGetSimpleTableSegmentWithSimpleTableSegmentForMySQL() {
+    void assertGetSimpleTableSegmentWithSimpleTableSegmentForMySQL() {
         MySQLExplainStatement explainStatement = new MySQLExplainStatement();
         explainStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         Optional<SimpleTableSegment> simpleTableSegment = ExplainStatementHandler.getSimpleTableSegment(explainStatement);
@@ -42,14 +42,14 @@ public final class ExplainStatementHandlerTest {
     }
     
     @Test
-    public void assertGetSimpleTableSegmentWithoutSimpleTableSegmentForMySQL() {
+    void assertGetSimpleTableSegmentWithoutSimpleTableSegmentForMySQL() {
         MySQLExplainStatement explainStatement = new MySQLExplainStatement();
         Optional<SimpleTableSegment> simpleTableSegment = ExplainStatementHandler.getSimpleTableSegment(explainStatement);
         assertFalse(simpleTableSegment.isPresent());
     }
     
     @Test
-    public void assertGetSimpleTableSegmentForOtherDatabases() {
+    void assertGetSimpleTableSegmentForOtherDatabases() {
         assertFalse(ExplainStatementHandler.getSimpleTableSegment(new OpenGaussExplainStatement()).isPresent());
         assertFalse(ExplainStatementHandler.getSimpleTableSegment(new PostgreSQLExplainStatement()).isPresent());
         assertFalse(ExplainStatementHandler.getSimpleTableSegment(new SQLServerExplainStatement()).isPresent());

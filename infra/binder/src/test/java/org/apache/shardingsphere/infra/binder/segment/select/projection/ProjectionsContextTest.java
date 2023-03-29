@@ -39,48 +39,48 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class ProjectionsContextTest {
+class ProjectionsContextTest {
     
     @Test
-    public void assertUnqualifiedShorthandProjectionWithEmptyItems() {
+    void assertUnqualifiedShorthandProjectionWithEmptyItems() {
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.emptySet());
         assertFalse(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
-    public void assertUnqualifiedShorthandProjectionWithWrongProjection() {
+    void assertUnqualifiedShorthandProjectionWithWrongProjection() {
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(getColumnProjection()));
         assertFalse(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
-    public void assertUnqualifiedShorthandProjectionWithWrongShortProjection() {
+    void assertUnqualifiedShorthandProjectionWithWrongShortProjection() {
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(getShorthandProjection()));
         assertFalse(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
-    public void assertUnqualifiedShorthandProjection() {
+    void assertUnqualifiedShorthandProjection() {
         Projection projection = new ShorthandProjection(null, Collections.emptyList());
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
         assertTrue(projectionsContext.isUnqualifiedShorthandProjection());
     }
     
     @Test
-    public void assertFindAliasWithOutAlias() {
+    void assertFindAliasWithOutAlias() {
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.emptyList());
         assertFalse(projectionsContext.findAlias("").isPresent());
     }
     
     @Test
-    public void assertFindAlias() {
+    void assertFindAlias() {
         Projection projection = getColumnProjectionWithAlias();
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
         assertTrue(projectionsContext.findAlias(projection.getExpression()).isPresent());
     }
     
     @Test
-    public void assertFindProjectionIndex() {
+    void assertFindProjectionIndex() {
         Projection projection = getColumnProjection();
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
         Optional<Integer> actual = projectionsContext.findProjectionIndex(projection.getExpression());
@@ -89,7 +89,7 @@ public final class ProjectionsContextTest {
     }
     
     @Test
-    public void assertFindProjectionIndexFailure() {
+    void assertFindProjectionIndexFailure() {
         Projection projection = getColumnProjection();
         ProjectionsContext projectionsContext = new ProjectionsContext(0, 0, true, Collections.singleton(projection));
         Optional<Integer> actual = projectionsContext.findProjectionIndex("");
@@ -97,7 +97,7 @@ public final class ProjectionsContextTest {
     }
     
     @Test
-    public void assertGetAggregationProjections() {
+    void assertGetAggregationProjections() {
         Projection projection = getAggregationProjection();
         List<AggregationProjection> items = new ProjectionsContext(0, 0, true, Arrays.asList(projection, getColumnProjection())).getAggregationProjections();
         assertTrue(items.contains(projection));
@@ -105,7 +105,7 @@ public final class ProjectionsContextTest {
     }
     
     @Test
-    public void assertGetAggregationDistinctProjections() {
+    void assertGetAggregationDistinctProjections() {
         Projection projection = getAggregationDistinctProjection();
         Collection<AggregationDistinctProjection> items = new ProjectionsContext(0, 0, true, Arrays.asList(projection, getColumnProjection())).getAggregationDistinctProjections();
         assertTrue(items.contains(projection));
@@ -134,7 +134,7 @@ public final class ProjectionsContextTest {
     }
     
     @Test
-    public void assertGetExpandProjections() {
+    void assertGetExpandProjections() {
         ColumnProjection columnProjection1 = new ColumnProjection(null, "col1", null);
         ColumnProjection columnProjection2 = new ColumnProjection(null, "col2", null);
         ColumnProjection columnProjection3 = new ColumnProjection(null, "col3", null);
@@ -148,7 +148,7 @@ public final class ProjectionsContextTest {
     }
     
     @Test
-    public void assertIsContainsLastInsertIdProjection() {
+    void assertIsContainsLastInsertIdProjection() {
         ProjectionsContext lastInsertIdProjection = new ProjectionsContext(0, 0, false, Collections.singletonList(new ExpressionProjection("LAST_INSERT_ID()", "id")));
         assertTrue(lastInsertIdProjection.isContainsLastInsertIdProjection());
         ProjectionsContext maxProjection = new ProjectionsContext(0, 0, false, Collections.singletonList(new ExpressionProjection("MAX(id)", "max")));

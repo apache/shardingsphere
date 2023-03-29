@@ -44,6 +44,7 @@ public final class DistSQLBackendHandlerFactory {
      * @param sqlStatement DistSQL statement
      * @param connectionSession connection session
      * @return proxy backend handler
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static ProxyBackendHandler newInstance(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof RQLStatement) {

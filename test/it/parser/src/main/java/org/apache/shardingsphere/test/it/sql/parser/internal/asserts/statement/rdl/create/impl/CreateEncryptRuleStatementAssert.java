@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegme
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.distsql.rdl.EncryptRuleAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedEncryptRule;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.encrypt.CreateEncryptRuleStatementTestCase;
 
@@ -48,10 +49,7 @@ public final class CreateEncryptRuleStatementAssert {
      * @param expected expected create encrypt rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateEncryptRuleStatement actual, final CreateEncryptRuleStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should not exist."));
-        } else {
-            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             assertThat(assertContext.getText("if not exists segment assertion error: "), actual.isIfNotExists(), is(expected.isIfNotExists()));
             assertEncryptRules(assertContext, actual.getRules(), expected.getRules());
         }

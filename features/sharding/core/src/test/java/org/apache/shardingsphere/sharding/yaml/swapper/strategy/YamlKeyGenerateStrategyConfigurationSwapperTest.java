@@ -24,17 +24,17 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlKeyGenerateStrategyConfigurationSwapperTest {
+class YamlKeyGenerateStrategyConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlKeyGenerateStrategyConfiguration actual = new YamlKeyGenerateStrategyConfigurationSwapper().swapToYamlConfiguration(new KeyGenerateStrategyConfiguration("id", "test"));
         assertThat(actual.getColumn(), is("id"));
         assertThat(actual.getKeyGeneratorName(), is("test"));
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlKeyGenerateStrategyConfiguration yamlConfig = new YamlKeyGenerateStrategyConfiguration();
         yamlConfig.setColumn("id");
         yamlConfig.setKeyGeneratorName("test");

@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public final class DropDefaultShadowAlgorithmStatementUpdaterTest {
+class DropDefaultShadowAlgorithmStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -46,18 +46,18 @@ public final class DropDefaultShadowAlgorithmStatementUpdaterTest {
     private final DropDefaultShadowAlgorithmStatementUpdater updater = new DropDefaultShadowAlgorithmStatementUpdater();
     
     @Test
-    public void assertCheckWithoutDefaultAlgorithm() {
+    void assertCheckWithoutDefaultAlgorithm() {
         assertThrows(MissingRequiredAlgorithmException.class, () -> updater.checkSQLStatement(database, new DropDefaultShadowAlgorithmStatement(false), currentConfig));
     }
     
     @Test
-    public void assertCheckWithIfExists() {
+    void assertCheckWithIfExists() {
         updater.checkSQLStatement(database, new DropDefaultShadowAlgorithmStatement(true), currentConfig);
         updater.checkSQLStatement(database, new DropDefaultShadowAlgorithmStatement(true), null);
     }
     
     @Test
-    public void assertUpdate() {
+    void assertUpdate() {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         ruleConfig.setDefaultShadowAlgorithmName("default");
         ruleConfig.getShadowAlgorithms().put(ruleConfig.getDefaultShadowAlgorithmName(), mock(AlgorithmConfiguration.class));

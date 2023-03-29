@@ -5,7 +5,7 @@ weight = 8
 
 ### 描述
 
-`SHOW TABLE METADATA` 语法用于查询表的元数据
+`SHOW TABLE METADATA` 语法用于查询表的元数据。
 
 ### 语法
 

@@ -21,16 +21,16 @@ import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.parser.segment.CacheOptionSegment;
 import org.apache.shardingsphere.parser.distsql.parser.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class AlterSQLParserRuleStatementUpdaterTest {
+class AlterSQLParserRuleStatementUpdaterTest {
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         AlterSQLParserRuleStatementUpdater updater = new AlterSQLParserRuleStatementUpdater();
         AlterSQLParserRuleStatement sqlStatement = new AlterSQLParserRuleStatement(true, new CacheOptionSegment(64, 512L), new CacheOptionSegment(1000, 1000L));
         SQLParserRuleConfiguration actual = updater.buildAlteredRuleConfiguration(getSQLParserRuleConfiguration(), sqlStatement);

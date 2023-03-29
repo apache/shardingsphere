@@ -23,6 +23,7 @@ import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowRuleSegment
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.distsql.rdl.ShadowRuleAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedShadowRule;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.shadow.CreateShadowRuleStatementTestCase;
 
@@ -48,10 +49,7 @@ public final class CreateShadowRuleStatementAssert {
      * @param expected expected create shadow rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateShadowRuleStatement actual, final CreateShadowRuleStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should not exist."));
-        } else {
-            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             assertThat(assertContext.getText("if not exists segment assertion error: "), actual.isIfNotExists(), is(expected.isIfNotExists()));
             assertShadowRule(assertContext, actual.getRules(), expected.getRules());
         }

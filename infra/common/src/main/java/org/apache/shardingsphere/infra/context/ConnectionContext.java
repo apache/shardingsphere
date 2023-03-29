@@ -36,9 +36,9 @@ import java.util.Optional;
 @Getter
 public final class ConnectionContext implements AutoCloseable {
     
-    private final CursorConnectionContext cursorConnectionContext = new CursorConnectionContext();
+    private final CursorConnectionContext cursorContext = new CursorConnectionContext();
     
-    private final TransactionConnectionContext transactionConnectionContext = new TransactionConnectionContext();
+    private final TransactionConnectionContext transactionContext = new TransactionConnectionContext();
     
     @Getter(AccessLevel.NONE)
     private final PreferredDataSourceProvider preferredDataSourceProvider;
@@ -47,7 +47,7 @@ public final class ConnectionContext implements AutoCloseable {
     private String trafficInstanceId;
     
     public ConnectionContext() {
-        preferredDataSourceProvider = Collections::emptySet;
+        this(Collections::emptySet);
     }
     
     /**
@@ -86,13 +86,13 @@ public final class ConnectionContext implements AutoCloseable {
      * Clear cursor connection context.
      */
     public void clearCursorConnectionContext() {
-        cursorConnectionContext.close();
+        cursorContext.close();
     }
     
     /**
      * Clear transaction connection context.
      */
     public void clearTransactionConnectionContext() {
-        transactionConnectionContext.close();
+        transactionContext.close();
     }
 }

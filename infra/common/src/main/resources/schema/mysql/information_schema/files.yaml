@@ -1,0 +1,323 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: FILES
+columns:
+  file_id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: FILE_ID
+    primaryKey: false
+    unsigned: false
+    visible: true
+  file_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: FILE_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  file_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: FILE_TYPE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  tablespace_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TABLESPACE_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  table_catalog:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TABLE_CATALOG
+    primaryKey: false
+    unsigned: false
+    visible: true
+  table_schema:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TABLE_SCHEMA
+    primaryKey: false
+    unsigned: false
+    visible: true
+  table_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TABLE_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  logfile_group_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: LOGFILE_GROUP_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  logfile_group_number:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: LOGFILE_GROUP_NUMBER
+    primaryKey: false
+    unsigned: false
+    visible: true
+  engine:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ENGINE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  fulltext_keys:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: FULLTEXT_KEYS
+    primaryKey: false
+    unsigned: false
+    visible: true
+  deleted_rows:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: DELETED_ROWS
+    primaryKey: false
+    unsigned: false
+    visible: true
+  update_count:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: UPDATE_COUNT
+    primaryKey: false
+    unsigned: false
+    visible: true
+  free_extents:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: FREE_EXTENTS
+    primaryKey: false
+    unsigned: false
+    visible: true
+  total_extents:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: TOTAL_EXTENTS
+    primaryKey: false
+    unsigned: false
+    visible: true
+  extent_size:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: EXTENT_SIZE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  initial_size:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: INITIAL_SIZE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  maximum_size:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAXIMUM_SIZE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  autoextend_size:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AUTOEXTEND_SIZE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  creation_time:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: CREATION_TIME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_update_time:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_UPDATE_TIME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_access_time:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_ACCESS_TIME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  recover_time:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: RECOVER_TIME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  transaction_counter:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: TRANSACTION_COUNTER
+    primaryKey: false
+    unsigned: false
+    visible: true
+  version:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: VERSION
+    primaryKey: false
+    unsigned: true
+    visible: true
+  row_format:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ROW_FORMAT
+    primaryKey: false
+    unsigned: false
+    visible: true
+  table_rows:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: TABLE_ROWS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_row_length:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_ROW_LENGTH
+    primaryKey: false
+    unsigned: true
+    visible: true
+  data_length:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: DATA_LENGTH
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_data_length:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_DATA_LENGTH
+    primaryKey: false
+    unsigned: true
+    visible: true
+  index_length:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: INDEX_LENGTH
+    primaryKey: false
+    unsigned: true
+    visible: true
+  data_free:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: DATA_FREE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  create_time:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: CREATE_TIME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  update_time:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: UPDATE_TIME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  check_time:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: CHECK_TIME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  checksum:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: CHECKSUM
+    primaryKey: false
+    unsigned: true
+    visible: true
+  status:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: STATUS
+    primaryKey: false
+    unsigned: false
+    visible: true
+  extra:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EXTRA
+    primaryKey: false
+    unsigned: false
+    visible: true

@@ -25,10 +25,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlRuleConfigurationShortcutsTest {
+class YamlRuleConfigurationShortcutsTest {
     
     @Test
-    public void assertGetYamlShortcuts() {
+    void assertGetYamlShortcuts() {
         Map<String, Class<?>> actual = new YamlRuleConfigurationShortcuts().getYamlShortcuts();
         assertThat(actual.size(), is(1));
         assertTrue(actual.containsKey("!FIXTURE"));

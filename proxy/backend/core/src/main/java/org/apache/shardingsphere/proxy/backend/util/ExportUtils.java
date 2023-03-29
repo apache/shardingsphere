@@ -47,13 +47,14 @@ import java.util.Map.Entry;
  * Export utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ExportUtils {
+public final class ExportUtils {
     
     /**
      * Export configuration data to specified file.
      * 
      * @param filePath file path
      * @param exportedData exported configuration data
+     * @throws FileIOException file IO exception
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void exportToFile(final String filePath, final String exportedData) {
@@ -71,7 +72,7 @@ public class ExportUtils {
     
     /**
      * Generate configuration data of ShardingSphere database.
-     * 
+     *
      * @param database ShardingSphere database
      * @return configuration data
      */

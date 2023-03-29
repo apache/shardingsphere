@@ -39,8 +39,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SafeNumberOperationUtils;
 import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
 
 import java.util.ArrayList;
@@ -91,7 +91,7 @@ public final class WhereClauseShardingConditionEngine {
     }
     
     private Collection<ShardingCondition> createShardingConditions(final ExpressionSegment expression, final List<Object> params, final Map<String, String> columnExpressionTableNames) {
-        Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(expression);
+        Collection<AndPredicate> andPredicates = ExpressionExtractUtils.getAndPredicates(expression);
         Collection<ShardingCondition> result = new LinkedList<>();
         for (AndPredicate each : andPredicates) {
             Map<Column, Collection<ShardingConditionValue>> shardingConditionValues = createShardingConditionValueMap(each.getPredicates(), params, columnExpressionTableNames);
@@ -183,13 +183,13 @@ public final class WhereClauseShardingConditionEngine {
     }
     
     private Range<Comparable<?>> mergeRangeShardingValues(final Range<Comparable<?>> value1, final Range<Comparable<?>> value2) {
-        return null == value2 ? value1 : SafeNumberOperationUtil.safeIntersection(value1, value2);
+        return null == value2 ? value1 : SafeNumberOperationUtils.safeIntersection(value1, value2);
     }
     
     private Collection<Comparable<?>> mergeListAndRangeShardingValues(final Collection<Comparable<?>> listValue, final Range<Comparable<?>> rangeValue) {
         Collection<Comparable<?>> result = new LinkedList<>();
         for (Comparable<?> each : listValue) {
-            if (SafeNumberOperationUtil.safeContains(rangeValue, each)) {
+            if (SafeNumberOperationUtils.safeContains(rangeValue, each)) {
                 result.add(each);
             }
         }

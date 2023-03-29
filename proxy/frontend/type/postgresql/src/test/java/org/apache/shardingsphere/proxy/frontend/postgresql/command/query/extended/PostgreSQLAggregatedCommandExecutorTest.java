@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedResponsesPacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -34,10 +34,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLAggregatedCommandExecutorTest {
+class PostgreSQLAggregatedCommandExecutorTest {
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         int commandCount = 16;
         List<CommandExecutor> executors = new ArrayList<>(commandCount);
         for (int i = 0; i < commandCount; i++) {

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfig
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -40,10 +40,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ProxyConfigurationLoaderTest {
+class ProxyConfigurationLoaderTest {
     
     @Test
-    public void assertLoadEmptyConfiguration() throws IOException {
+    void assertLoadEmptyConfiguration() throws IOException {
         YamlProxyConfiguration actual = ProxyConfigurationLoader.load("/conf/empty/");
         YamlProxyServerConfiguration serverConfig = actual.getServerConfiguration();
         assertNull(serverConfig.getMode());
@@ -55,7 +55,7 @@ public final class ProxyConfigurationLoaderTest {
     }
     
     @Test
-    public void assertLoad() throws IOException {
+    void assertLoad() throws IOException {
         YamlProxyConfiguration actual = ProxyConfigurationLoader.load("/conf/config_loader/");
         Iterator<YamlRuleConfiguration> actualGlobalRules = actual.getServerConfiguration().getRules().iterator();
         // TODO assert mode

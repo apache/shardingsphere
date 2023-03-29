@@ -17,25 +17,25 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class HikariCPPropertyProviderTest {
+class HikariCPPropertyProviderTest {
     
     @Test
-    public void assertGetURLPropertyName() {
+    void assertGetURLPropertyName() {
         assertThat(new HikariCPPropertyProvider().getURLPropertyName(), is("jdbcUrl"));
     }
     
     @Test
-    public void assertGetUsernamePropertyName() {
+    void assertGetUsernamePropertyName() {
         assertThat(new HikariCPPropertyProvider().getUsernamePropertyName(), is("username"));
     }
     
     @Test
-    public void assertGetPasswordPropertyName() {
+    void assertGetPasswordPropertyName() {
         assertThat(new HikariCPPropertyProvider().getPasswordPropertyName(), is("password"));
     }
 }

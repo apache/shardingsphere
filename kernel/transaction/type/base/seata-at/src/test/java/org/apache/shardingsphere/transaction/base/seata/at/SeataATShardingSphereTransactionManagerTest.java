@@ -35,11 +35,11 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.base.seata.at.fixture.MockSeataServer;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
@@ -57,7 +57,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class SeataATShardingSphereTransactionManagerTest {
+class SeataATShardingSphereTransactionManagerTest {
     
     private static final MockSeataServer MOCK_SEATA_SERVER = new MockSeataServer();
     
@@ -69,8 +69,8 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     private final Queue<Object> responseQueue = MOCK_SEATA_SERVER.getMessageHandler().getResponseQueue();
     
-    @BeforeClass
-    public static void before() {
+    @BeforeAll
+    static void before() {
         Executors.newSingleThreadExecutor().submit(MOCK_SEATA_SERVER::start);
         while (true) {
             if (MOCK_SEATA_SERVER.getInitialized().get()) {
@@ -79,19 +79,19 @@ public final class SeataATShardingSphereTransactionManagerTest {
         }
     }
     
-    @AfterClass
-    public static void after() {
+    @AfterAll
+    static void after() {
         MOCK_SEATA_SERVER.shutdown();
     }
     
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         seataTransactionManager.init(Collections.singletonMap("sharding_db.ds_0", TypedSPILoader.getService(DatabaseType.class, "MySQL")),
                 Collections.singletonMap(DATA_SOURCE_UNIQUE_NAME, new MockedDataSource()), "Seata");
     }
     
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         SeataXIDContext.remove();
         RootContext.unbind();
         SeataTransactionHolder.clear();
@@ -102,7 +102,7 @@ public final class SeataATShardingSphereTransactionManagerTest {
     }
     
     @Test
-    public void assertInit() {
+    void assertInit() {
         Map<String, DataSource> actual = getDataSourceMap();
         assertThat(actual.size(), is(1));
         assertThat(actual.get(DATA_SOURCE_UNIQUE_NAME), instanceOf(DataSourceProxy.class));
@@ -110,27 +110,27 @@ public final class SeataATShardingSphereTransactionManagerTest {
     }
     
     @Test
-    public void assertGetConnection() throws SQLException {
+    void assertGetConnection() throws SQLException {
         Connection actual = seataTransactionManager.getConnection("sharding_db", "ds_0");
         assertThat(actual, instanceOf(ConnectionProxy.class));
     }
     
     @Test
-    public void assertBegin() {
+    void assertBegin() {
         seataTransactionManager.begin();
         assertTrue(seataTransactionManager.isInTransaction());
         assertResult();
     }
     
     @Test
-    public void assertBeginTimeout() {
+    void assertBeginTimeout() {
         seataTransactionManager.begin(30);
         assertTrue(seataTransactionManager.isInTransaction());
         assertResult();
     }
     
     @Test
-    public void assertCommit() {
+    void assertCommit() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
         setXID("testXID");
         seataTransactionManager.commit(false);
@@ -138,13 +138,13 @@ public final class SeataATShardingSphereTransactionManagerTest {
     }
     
     @Test
-    public void assertCommitWithoutBegin() {
+    void assertCommitWithoutBegin() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
         assertThrows(IllegalStateException.class, () -> seataTransactionManager.commit(false));
     }
     
     @Test
-    public void assertRollback() {
+    void assertRollback() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
         setXID("testXID");
         seataTransactionManager.rollback();
@@ -152,7 +152,7 @@ public final class SeataATShardingSphereTransactionManagerTest {
     }
     
     @Test
-    public void assertRollbackWithoutBegin() {
+    void assertRollbackWithoutBegin() {
         SeataTransactionHolder.set(GlobalTransactionContext.getCurrentOrCreate());
         assertThrows(IllegalStateException.class, seataTransactionManager::rollback);
     }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.distsql.parser.statement.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,10 +38,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowSQLParserRuleExecutorTest {
+class ShowSQLParserRuleExecutorTest {
     
     @Test
-    public void assertSQLParserRule() {
+    void assertSQLParserRule() {
         ShardingSphereMetaData metaData = mockMetaData();
         ShowSQLParserRuleExecutor executor = new ShowSQLParserRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowSQLParserRuleStatement.class));
@@ -54,7 +54,7 @@ public final class ShowSQLParserRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         ShowSQLParserRuleExecutor executor = new ShowSQLParserRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(3));

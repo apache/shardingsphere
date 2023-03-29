@@ -35,10 +35,10 @@ import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ComplexInlineShardingAlgorithmTest {
+class ComplexInlineShardingAlgorithmTest {
     
     @Test
-    public void assertDoSharding() {
+    void assertDoSharding() {
         Properties props = PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${type % 2}_${order_id % 2}"), new Property("sharding-columns", "type,order_id"));
         ComplexInlineShardingAlgorithm algorithm = (ComplexInlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "COMPLEX_INLINE", props);
         List<String> availableTargetNames = Arrays.asList("t_order_0_0", "t_order_0_1", "t_order_1_0", "t_order_1_1");
@@ -47,7 +47,7 @@ public final class ComplexInlineShardingAlgorithmTest {
     }
     
     @Test
-    public void assertDoShardingWithMultiValue() {
+    void assertDoShardingWithMultiValue() {
         Properties props = PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${type % 2}_${order_id % 2}"), new Property("sharding-columns", "type,order_id"));
         ComplexInlineShardingAlgorithm algorithm = (ComplexInlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "COMPLEX_INLINE", props);
         List<String> availableTargetNames = Arrays.asList("t_order_0_0", "t_order_0_1", "t_order_1_0", "t_order_1_1");
@@ -63,7 +63,7 @@ public final class ComplexInlineShardingAlgorithmTest {
     }
     
     @Test
-    public void assertDoShardingWithRangeValue() {
+    void assertDoShardingWithRangeValue() {
         Properties props = PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${type % 2}_${order_id % 2}"),
                 new Property("sharding-columns", "type,order_id"), new Property("allow-range-query-with-inline-sharding", Boolean.TRUE.toString()));
         ComplexInlineShardingAlgorithm algorithm = (ComplexInlineShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "COMPLEX_INLINE", props);

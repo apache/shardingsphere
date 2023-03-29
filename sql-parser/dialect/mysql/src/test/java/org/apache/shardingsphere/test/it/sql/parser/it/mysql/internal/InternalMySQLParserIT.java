@@ -21,5 +21,5 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
 
 @InternalSQLParserITSettings({"MySQL", "H2"})
-public final class InternalMySQLParserIT extends InternalSQLParserIT {
+class InternalMySQLParserIT extends InternalSQLParserIT {
 }

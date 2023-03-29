@@ -25,9 +25,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
@@ -36,23 +36,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowVersionExecutorTest {
+class ShowVersionExecutorTest {
     
     private String previousVersion;
     
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         previousVersion = MySQLServerInfo.getServerVersion("foo_db");
         MySQLServerInfo.setServerVersion("foo_db", "8.0.26");
     }
     
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         MySQLServerInfo.setServerVersion("foo_db", previousVersion);
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getProjections()).thenReturn(createProjectionsSegmentWithoutAlias());
         ShowVersionExecutor executor = new ShowVersionExecutor(selectStatement);
@@ -74,7 +74,7 @@ public final class ShowVersionExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithAlias() throws SQLException {
+    void assertExecuteWithAlias() throws SQLException {
         SelectStatement selectStatement = mock(SelectStatement.class);
         when(selectStatement.getProjections()).thenReturn(createProjectionsSegmentWithAlias());
         ShowVersionExecutor executor = new ShowVersionExecutor(selectStatement);

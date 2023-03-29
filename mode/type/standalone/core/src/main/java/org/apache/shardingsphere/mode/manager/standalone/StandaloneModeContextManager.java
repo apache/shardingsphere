@@ -31,12 +31,12 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRul
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.cache.OrderedServicesCache;
+import org.apache.shardingsphere.metadata.persist.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerAware;
 import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
 import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -198,7 +198,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     public void registerStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeRegisterStorageUnitProps) throws SQLException {
         SwitchingResource switchingResource =
                 new ResourceSwitchManager().create(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeRegisterStorageUnitProps);
-        contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.createChangedDatabases(databaseName, switchingResource, null));
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.createChangedDatabases(databaseName, false, switchingResource, null));
         contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class)
                 .forEach(each -> each.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName)));
         contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getSchemas()
@@ -213,11 +213,9 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     public void alterStorageUnits(final String databaseName, final Map<String, DataSourceProperties> toBeUpdatedStorageUnitProps) throws SQLException {
         SwitchingResource switchingResource =
                 new ResourceSwitchManager().create(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeUpdatedStorageUnitProps);
-        contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.createChangedDatabases(databaseName, switchingResource, null));
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.createChangedDatabases(databaseName, true, switchingResource, null));
         contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class)
                 .forEach(each -> each.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName)));
-        contextManager.getMetaDataContexts().getMetaData().getDatabases()
-                .putAll(contextManager.newShardingSphereDatabase(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName)));
         contextManager.getMetaDataContexts().getPersistService().getDataSourceService().append(contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName),
                 toBeUpdatedStorageUnitProps);
         switchingResource.closeStaleDataSources();
@@ -233,7 +231,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
                 new ResourceSwitchManager().createByDropResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeDeletedDataSourcePropsMap);
         contextManager.getMetaDataContexts().getMetaData().getDatabases()
                 .putAll(contextManager.renewDatabase(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName), switchingResource));
-        MetaDataContexts reloadMetaDataContexts = contextManager.createMetaDataContexts(databaseName, switchingResource, null);
+        MetaDataContexts reloadMetaDataContexts = contextManager.createMetaDataContexts(databaseName, false, switchingResource, null);
         contextManager.alterSchemaMetaData(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         contextManager.deletedSchemaNames(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         contextManager.renewMetaDataContexts(reloadMetaDataContexts);
@@ -274,6 +272,11 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
             contextManager.getMetaDataContexts().getPersistService().getPropsService().persist(props);
         }
         clearServiceCache();
+    }
+    
+    @Override
+    public Map<String, ShardingSphereSchema> getSchemas(final String databaseName) {
+        return contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService().loadSchemas(databaseName);
     }
     
     private void clearServiceCache() {

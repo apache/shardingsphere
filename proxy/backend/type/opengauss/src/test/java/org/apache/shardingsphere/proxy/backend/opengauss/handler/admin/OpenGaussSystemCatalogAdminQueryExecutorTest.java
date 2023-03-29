@@ -41,10 +41,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class OpenGaussSystemCatalogAdminQueryExecutorTest {
+class OpenGaussSystemCatalogAdminQueryExecutorTest {
     
     @Test
-    public void assertExecuteSelectFromPgDatabase() throws SQLException {
+    void assertExecuteSelectFromPgDatabase() throws SQLException {
         when(ProxyContext.getInstance()).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Arrays.asList("foo", "bar", "sharding_db", "other_db"));
         OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select datname, datcompatibility from pg_database where datname = 'sharding_db'");
@@ -62,7 +62,7 @@ public final class OpenGaussSystemCatalogAdminQueryExecutorTest {
     }
     
     @Test
-    public void assertExecuteSelectVersion() throws SQLException {
+    void assertExecuteSelectVersion() throws SQLException {
         when(ProxyContext.getInstance()).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
         OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select VERSION()");
         ConnectionSession connectionSession = mock(ConnectionSession.class);
@@ -77,7 +77,7 @@ public final class OpenGaussSystemCatalogAdminQueryExecutorTest {
     }
     
     @Test
-    public void assertExecuteSelectGsPasswordDeadlineAndIntervalToNum() throws SQLException {
+    void assertExecuteSelectGsPasswordDeadlineAndIntervalToNum() throws SQLException {
         when(ProxyContext.getInstance()).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
         OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select intervaltonum(gs_password_deadline())");
         ConnectionSession connectionSession = mock(ConnectionSession.class);
@@ -92,7 +92,7 @@ public final class OpenGaussSystemCatalogAdminQueryExecutorTest {
     }
     
     @Test
-    public void assertExecuteSelectGsPasswordNotifyTime() throws SQLException {
+    void assertExecuteSelectGsPasswordNotifyTime() throws SQLException {
         when(ProxyContext.getInstance()).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
         OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select gs_password_notifytime()");
         ConnectionSession connectionSession = mock(ConnectionSession.class);

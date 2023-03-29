@@ -54,7 +54,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLCommandPacketFactoryTest {
+class MySQLCommandPacketFactoryTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MySQLPacketPayload payload;
@@ -63,34 +63,34 @@ public final class MySQLCommandPacketFactoryTest {
     private ConnectionSession connectionSession;
     
     @Test
-    public void assertNewInstanceWithComQuitPacket() {
+    void assertNewInstanceWithComQuitPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_QUIT, payload, connectionSession, false), instanceOf(MySQLComQuitPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComInitDbPacket() {
+    void assertNewInstanceWithComInitDbPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_INIT_DB, payload, connectionSession, false), instanceOf(MySQLComInitDbPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComFieldListPacket() {
+    void assertNewInstanceWithComFieldListPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_FIELD_LIST, payload, connectionSession, false), instanceOf(MySQLComFieldListPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComQueryPacket() {
+    void assertNewInstanceWithComQueryPacket() {
         when(payload.readStringEOF()).thenReturn("SHOW TABLES");
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_QUERY, payload, connectionSession, false), instanceOf(MySQLComQueryPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtPreparePacket() {
+    void assertNewInstanceWithComStmtPreparePacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STMT_PREPARE, payload, connectionSession, false), instanceOf(MySQLComStmtPreparePacket.class));
     }
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertNewInstanceWithComStmtExecutePacket() {
+    void assertNewInstanceWithComStmtExecutePacket() {
         when(payload.readInt1()).thenReturn(MySQLNewParametersBoundFlag.PARAMETER_TYPE_EXIST.getValue());
         when(payload.readInt4()).thenReturn(1);
         when(payload.getByteBuf().getIntLE(anyInt())).thenReturn(1);
@@ -103,132 +103,132 @@ public final class MySQLCommandPacketFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithComStmtClosePacket() {
+    void assertNewInstanceWithComStmtClosePacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STMT_CLOSE, payload, connectionSession, false), instanceOf(MySQLComStmtClosePacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComPingPacket() {
+    void assertNewInstanceWithComPingPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_PING, payload, connectionSession, false), instanceOf(MySQLComPingPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComResetConnectionPacket() {
+    void assertNewInstanceWithComResetConnectionPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_RESET_CONNECTION, payload, connectionSession, false), instanceOf(MySQLComResetConnectionPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComSleepPacket() {
+    void assertNewInstanceWithComSleepPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_SLEEP, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComCreateDbPacket() {
+    void assertNewInstanceWithComCreateDbPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_CREATE_DB, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComDropDbPacket() {
+    void assertNewInstanceWithComDropDbPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_DROP_DB, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComRefreshPacket() {
+    void assertNewInstanceWithComRefreshPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_REFRESH, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComShutDownPacket() {
+    void assertNewInstanceWithComShutDownPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_SHUTDOWN, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStatisticsPacket() {
+    void assertNewInstanceWithComStatisticsPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STATISTICS, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComProcessInfoPacket() {
+    void assertNewInstanceWithComProcessInfoPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_PROCESS_INFO, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComConnectPacket() {
+    void assertNewInstanceWithComConnectPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_CONNECT, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComProcessKillPacket() {
+    void assertNewInstanceWithComProcessKillPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_PROCESS_KILL, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComDebugPacket() {
+    void assertNewInstanceWithComDebugPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_DEBUG, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComTimePacket() {
+    void assertNewInstanceWithComTimePacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_TIME, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComDelayedInsertPacket() {
+    void assertNewInstanceWithComDelayedInsertPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_DELAYED_INSERT, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComChangeUserPacket() {
+    void assertNewInstanceWithComChangeUserPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_CHANGE_USER, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComBinlogDumpPacket() {
+    void assertNewInstanceWithComBinlogDumpPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_BINLOG_DUMP, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComTableDumpPacket() {
+    void assertNewInstanceWithComTableDumpPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_TABLE_DUMP, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComConnectOutPacket() {
+    void assertNewInstanceWithComConnectOutPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_CONNECT_OUT, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComRegisterSlavePacket() {
+    void assertNewInstanceWithComRegisterSlavePacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_REGISTER_SLAVE, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtSendLongDataPacket() {
+    void assertNewInstanceWithComStmtSendLongDataPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STMT_SEND_LONG_DATA, payload, connectionSession, false), instanceOf(MySQLComStmtSendLongDataPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtResetPacket() {
+    void assertNewInstanceWithComStmtResetPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STMT_RESET, payload, connectionSession, false), instanceOf(MySQLComStmtResetPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComSetOptionPacket() {
+    void assertNewInstanceWithComSetOptionPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_SET_OPTION, payload, connectionSession, false), instanceOf(MySQLComSetOptionPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComStmtFetchPacket() {
+    void assertNewInstanceWithComStmtFetchPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STMT_FETCH, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComDaemonPacket() {
+    void assertNewInstanceWithComDaemonPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_DAEMON, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
     
     @Test
-    public void assertNewInstanceWithComBinlogDumpGTIDPacket() {
+    void assertNewInstanceWithComBinlogDumpGTIDPacket() {
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_BINLOG_DUMP_GTID, payload, connectionSession, false), instanceOf(MySQLUnsupportedCommandPacket.class));
     }
 }

@@ -24,9 +24,9 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.DataMatchDataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.Connection;
@@ -40,22 +40,22 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DataMatchDataConsistencyCalculateAlgorithmTest {
+class DataMatchDataConsistencyCalculateAlgorithmTest {
     
     private static PipelineDataSourceWrapper source;
     
     private static PipelineDataSourceWrapper target;
     
-    @BeforeClass
-    public static void setUp() throws Exception {
+    @BeforeAll
+    static void setUp() throws Exception {
         source = new PipelineDataSourceWrapper(createHikariDataSource("source_ds"), new H2DatabaseType());
         createTableAndInitData(source, "t_order_copy");
         target = new PipelineDataSourceWrapper(createHikariDataSource("target_ds"), new H2DatabaseType());
         createTableAndInitData(target, "t_order");
     }
     
-    @AfterClass
-    public static void tearDown() throws Exception {
+    @AfterAll
+    static void tearDown() throws Exception {
         source.close();
         target.close();
     }
@@ -87,7 +87,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
     }
     
     @Test
-    public void assertCalculateFromBegin() throws ReflectiveOperationException {
+    void assertCalculateFromBegin() throws ReflectiveOperationException {
         DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
         Plugins.getMemberAccessor().set(DataMatchDataConsistencyCalculateAlgorithm.class.getDeclaredField("chunkSize"), calculateAlgorithm, 5);
         DataConsistencyCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 0);
@@ -104,7 +104,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithmTest {
     }
     
     @Test
-    public void assertCalculateFromMiddle() throws ReflectiveOperationException {
+    void assertCalculateFromMiddle() throws ReflectiveOperationException {
         DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
         Plugins.getMemberAccessor().set(DataMatchDataConsistencyCalculateAlgorithm.class.getDeclaredField("chunkSize"), calculateAlgorithm, 5);
         DataConsistencyCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 5);

@@ -21,14 +21,14 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
 
 import java.util.List;
 
 /**
  * Sharding audit algorithm.
  */
-public interface ShardingAuditAlgorithm extends TypedSPI {
+public interface ShardingAuditAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Sharding audit algorithm SQL check.

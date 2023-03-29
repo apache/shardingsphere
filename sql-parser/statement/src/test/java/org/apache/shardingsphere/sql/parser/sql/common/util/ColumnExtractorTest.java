@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -32,10 +32,10 @@ import java.util.LinkedList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ColumnExtractorTest {
+class ColumnExtractorTest {
     
     @Test
-    public void assertExtractColumnSegments() {
+    void assertExtractColumnSegments() {
         Collection<ColumnSegment> columnSegments = new LinkedList<>();
         ColumnExtractor.extractColumnSegments(columnSegments, createWhereSegments());
         assertThat(columnSegments.size(), is(2));

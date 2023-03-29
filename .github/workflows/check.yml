@@ -23,8 +23,10 @@ on:
     paths:
       - '**/src/main/**'
       - '**/src/test/**'
+      - 'src/resources/**'
       - '.github/workflows/checkstyle-and-license-check.yml'
       - 'examples/shardingsphere-example-generator/**'
+      - 'test/e2e/agent/plugins/**'
       - '!examples/**'
       - '!*.md'
   pull_request:

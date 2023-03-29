@@ -20,15 +20,15 @@ package org.apache.shardingsphere.sql.parser.core.database.cache;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ParseTreeCacheBuilderTest {
+class ParseTreeCacheBuilderTest {
     
     @Test
-    public void assertParseTreeCacheBuild() {
+    void assertParseTreeCacheBuild() {
         LoadingCache<String, ParseASTNode> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10), "MySQL");
         assertThat(cache, isA(LoadingCache.class));
     }

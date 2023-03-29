@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class EncryptDALResultDecoratorTest {
+class EncryptDALResultDecoratorTest {
     
     @Mock
     private EncryptRule rule;
@@ -57,7 +57,7 @@ public final class EncryptDALResultDecoratorTest {
     private SQLStatementContext<?> sqlStatementContext;
     
     @Test
-    public void assertMergedResultWithDescribeStatement() {
+    void assertMergedResultWithDescribeStatement() {
         sqlStatementContext = getDescribeStatementContext();
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
         assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, rule), instanceOf(MergedEncryptShowColumnsMergedResult.class));
@@ -65,7 +65,7 @@ public final class EncryptDALResultDecoratorTest {
     }
     
     @Test
-    public void assertMergedResultWithShowColumnsStatement() {
+    void assertMergedResultWithShowColumnsStatement() {
         sqlStatementContext = getShowColumnsStatementContext();
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
         assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, rule), instanceOf(MergedEncryptShowColumnsMergedResult.class));
@@ -73,7 +73,7 @@ public final class EncryptDALResultDecoratorTest {
     }
     
     @Test
-    public void assertMergedResultWithShowCreateTableStatement() {
+    void assertMergedResultWithShowCreateTableStatement() {
         sqlStatementContext = getShowCreateTableStatementContext();
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
         assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, rule), instanceOf(MergedEncryptShowCreateTableMergedResult.class));
@@ -81,7 +81,7 @@ public final class EncryptDALResultDecoratorTest {
     }
     
     @Test
-    public void assertMergedResultWithOtherStatement() {
+    void assertMergedResultWithOtherStatement() {
         sqlStatementContext = mock(SQLStatementContext.class);
         EncryptDALResultDecorator encryptDALResultDecorator = new EncryptDALResultDecorator();
         assertThat(encryptDALResultDecorator.decorate(mock(QueryResult.class), sqlStatementContext, rule), instanceOf(TransparentMergedResult.class));

@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
 
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,22 +39,22 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ReadwriteSplittingRuleConfigurationImportCheckerTest {
+class ReadwriteSplittingRuleConfigurationImportCheckerTest {
     
     private final ReadwriteSplittingRuleConfigurationImportChecker importChecker = new ReadwriteSplittingRuleConfigurationImportChecker();
     
     @Test
-    public void assertCheckDataSources() {
+    void assertCheckDataSources() {
         ShardingSphereDatabase database = mockDatabaseWithDataSource();
         ReadwriteSplittingRuleConfiguration currentRuleConfig = getRuleConfigWithNotExistedDataSources();
         assertThrows(MissingRequiredStorageUnitsException.class, () -> importChecker.check(database, currentRuleConfig));
     }
     
     @Test
-    public void assertCheckLoadBalancers() {
+    void assertCheckLoadBalancers() {
         ShardingSphereDatabase database = mockDatabase();
         ReadwriteSplittingRuleConfiguration currentRuleConfig = createInvalidLoadBalancerRuleConfig();
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> importChecker.check(database, currentRuleConfig));
+        assertThrows(ServiceProviderNotFoundServerException.class, () -> importChecker.check(database, currentRuleConfig));
     }
     
     private ShardingSphereDatabase mockDatabaseWithDataSource() {
@@ -85,6 +85,6 @@ public final class ReadwriteSplittingRuleConfigurationImportCheckerTest {
     private ReadwriteSplittingRuleConfiguration createInvalidLoadBalancerRuleConfig() {
         Map<String, AlgorithmConfiguration> loadBalancer = new HashMap<>();
         loadBalancer.put("invalid_load_balancer", mock(AlgorithmConfiguration.class));
-        return new ReadwriteSplittingRuleConfiguration(mock(Collection.class), loadBalancer);
+        return new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), loadBalancer);
     }
 }

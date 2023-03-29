@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMeta
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,10 +39,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowComputeNodesExecutorTest {
+class ShowComputeNodesExecutorTest {
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(8));
@@ -58,7 +58,7 @@ public final class ShowComputeNodesExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithStandaloneMode() {
+    void assertExecuteWithStandaloneMode() {
         ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(createStandaloneInstanceContext(), mock(ShowComputeNodesStatement.class));
         assertThat(actual.size(), is(1));
@@ -74,7 +74,7 @@ public final class ShowComputeNodesExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithClusterMode() {
+    void assertExecuteWithClusterMode() {
         ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(createClusterInstanceContext(), mock(ShowComputeNodesStatement.class));
         assertThat(actual.size(), is(1));

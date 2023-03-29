@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.migration.prepare;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.CreateTableConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
@@ -39,14 +38,16 @@ import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTa
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 import org.apache.shardingsphere.mode.lock.GlobalLockDefinition;
 
 import java.sql.SQLException;
@@ -90,14 +91,14 @@ public final class MigrationJobPreparer {
                 jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private void prepareAndCheckTargetWithLock(final MigrationJobItemContext jobItemContext) throws SQLException {
         MigrationJobConfiguration jobConfig = jobItemContext.getJobConfig();
-        String lockName = "prepare-" + jobConfig.getJobId();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         if (!jobAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem()).isPresent()) {
             jobAPI.persistJobItemProgress(jobItemContext);
         }
-        LockDefinition lockDefinition = new GlobalLockDefinition(lockName);
+        LockDefinition lockDefinition = new GlobalLockDefinition(String.format(GlobalLockNames.PREPARE.getLockName(), jobConfig.getJobId()));
         long startTimeMillis = System.currentTimeMillis();
         if (lockContext.tryLock(lockDefinition, 600000)) {
             log.info("try lock success, jobId={}, shardingItem={}, cost {} ms", jobConfig.getJobId(), jobItemContext.getShardingItem(), System.currentTimeMillis() - startTimeMillis);
@@ -114,7 +115,7 @@ public final class MigrationJobPreparer {
                 lockContext.unlock(lockDefinition);
             }
         } else {
-            log.warn("jobId={}, shardingItem={} try lock failed", jobConfig.getJobId(), jobItemContext.getShardingItem());
+            log.warn("try lock failed, jobId={}, shardingItem={}", jobConfig.getJobId(), jobItemContext.getShardingItem());
         }
     }
     
@@ -123,7 +124,7 @@ public final class MigrationJobPreparer {
             prepareTarget(jobItemContext);
         }
         InventoryIncrementalJobItemProgress initProgress = jobItemContext.getInitProgress();
-        if (null == initProgress || initProgress.getStatus() == JobStatus.PREPARING_FAILURE) {
+        if (null == initProgress) {
             PipelineDataSourceWrapper targetDataSource = ((PipelineDataSourceManager) jobItemContext.getImporterConnector().getConnector())
                     .getDataSource(jobItemContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
             PipelineJobPreparerUtils.checkTargetDataSource(jobItemContext.getJobConfig().getTargetDatabaseType(), jobItemContext.getTaskConfig().getImporterConfig(),
@@ -139,7 +140,7 @@ public final class MigrationJobPreparer {
         PrepareTargetSchemasParameter prepareTargetSchemasParam = new PrepareTargetSchemasParameter(
                 PipelineTypedSPILoader.getDatabaseTypedService(DatabaseType.class, targetDatabaseType), createTableConfig, dataSourceManager);
         PipelineJobPreparerUtils.prepareTargetSchema(targetDatabaseType, prepareTargetSchemasParam);
-        ShardingSphereSQLParserEngine sqlParserEngine = PipelineJobPreparerUtils.getSQLParserEngine(jobConfig.getTargetDatabaseName());
+        SQLParserEngine sqlParserEngine = PipelineJobPreparerUtils.getSQLParserEngine(jobConfig.getTargetDatabaseName());
         PipelineJobPreparerUtils.prepareTargetTables(targetDatabaseType, new PrepareTargetTablesParameter(createTableConfig, dataSourceManager, sqlParserEngine));
     }
     

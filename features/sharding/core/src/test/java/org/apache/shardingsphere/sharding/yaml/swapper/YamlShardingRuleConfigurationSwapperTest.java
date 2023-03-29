@@ -36,12 +36,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
-public final class YamlShardingRuleConfigurationSwapperTest {
+class YamlShardingRuleConfigurationSwapperTest {
     
     private final YamlShardingRuleConfigurationSwapper swapper = new YamlShardingRuleConfigurationSwapper();
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlShardingRuleConfiguration actual = swapper.swapToYamlConfiguration(createShardingRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getBindingTables().size(), is(1));
@@ -70,7 +70,7 @@ public final class YamlShardingRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         ShardingRuleConfiguration actual = swapper.swapToObject(createYamlShardingRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getBindingTableGroups().size(), is(1));

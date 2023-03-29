@@ -23,7 +23,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 
 /**
- * logical replication decoding plugin interface.
+ * Logical replication decoding plugin interface.
  */
 public interface BaseTimestampUtils {
     

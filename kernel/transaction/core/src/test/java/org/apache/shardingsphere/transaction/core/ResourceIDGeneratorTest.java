@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.transaction.core;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ResourceIDGeneratorTest {
+class ResourceIDGeneratorTest {
     
     @Test
-    public void assertNextIdProperly() {
+    void assertNextIdProperly() {
         assertTrue(isStartWithNumber(ResourceIDGenerator.getInstance().nextId()));
     }
     

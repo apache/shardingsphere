@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.AlgorithmInUsedException;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -39,7 +37,6 @@ import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Alter shadow rule statement updater.
@@ -88,10 +85,8 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
     }
     
     private void checkAlgorithmType(final AlterShadowRuleStatement sqlStatement) {
-        Collection<String> invalidAlgorithmTypes = sqlStatement.getRules().stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream)
-                .map(each -> each.getAlgorithmSegment().getName()).collect(Collectors.toSet()).stream()
-                .filter(each -> !TypedSPILoader.contains(ShadowAlgorithm.class, each)).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(invalidAlgorithmTypes.isEmpty(), () -> new InvalidAlgorithmConfigurationException("shadow", invalidAlgorithmTypes));
+        sqlStatement.getRules().stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream)
+                .map(ShadowAlgorithmSegment::getAlgorithmSegment).forEach(each -> TypedSPILoader.checkService(ShadowAlgorithm.class, each.getName(), each.getProps()));
     }
     
     private void checkAlgorithms(final String databaseName, final Collection<ShadowRuleSegment> segments) {

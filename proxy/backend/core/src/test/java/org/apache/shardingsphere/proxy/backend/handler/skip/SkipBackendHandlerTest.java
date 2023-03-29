@@ -19,15 +19,15 @@ package org.apache.shardingsphere.proxy.backend.handler.skip;
 
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class SkipBackendHandlerTest {
+class SkipBackendHandlerTest {
     
     @Test
-    public void assertExecuteSkipBackendHandler() {
+    void assertExecuteSkipBackendHandler() {
         SkipBackendHandler skipBackendHandler = new SkipBackendHandler(null);
         ResponseHeader actual = skipBackendHandler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));

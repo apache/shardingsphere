@@ -68,17 +68,17 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQL
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStopSlaveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXAStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class MySQLComStmtPrepareCheckerTest {
+class MySQLComStmtPrepareCheckerTest {
     
     @Test
-    public void assertIsStatementAllowed() {
+    void assertIsStatementAllowed() {
         Collection<SQLStatement> sqlStatements = Arrays.asList(
                 new MySQLAlterTableStatement(), new MySQLAlterUserStatement(), new MySQLAnalyzeTableStatement(), new MySQLCacheIndexStatement(),
                 new MySQLCallStatement(), new MySQLChangeMasterStatement(), new MySQLChecksumTableStatement(), new MySQLCommitStatement(), new MySQLCreateIndexStatement(),

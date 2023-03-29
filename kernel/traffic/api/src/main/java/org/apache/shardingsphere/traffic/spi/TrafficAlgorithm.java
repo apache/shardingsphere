@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.traffic.spi;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
 
 /**
  * Traffic algorithm.
  */
-public interface TrafficAlgorithm extends TypedSPI {
+public interface TrafficAlgorithm extends ShardingSphereAlgorithm {
 }

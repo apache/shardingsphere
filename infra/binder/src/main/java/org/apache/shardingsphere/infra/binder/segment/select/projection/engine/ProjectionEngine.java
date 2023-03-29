@@ -194,7 +194,7 @@ public final class ProjectionEngine {
         Collection<Projection> result = new LinkedList<>();
         for (Projection each : projections) {
             if (each instanceof ShorthandProjection) {
-                result.addAll(getSubqueryTableActualProjections(((ShorthandProjection) each).getActualColumns().values(), subqueryTableAlias));
+                result.addAll(getSubqueryTableActualProjections(((ShorthandProjection) each).getActualColumns(), subqueryTableAlias));
             } else if (!(each instanceof DerivedProjection)) {
                 result.add(each.cloneWithOwner(subqueryTableAlias));
             }
@@ -211,7 +211,7 @@ public final class ProjectionEngine {
         Collection<Projection> remainingProjections = new LinkedList<>();
         for (Projection each : getOriginalProjections(joinTable, projectionSegment)) {
             Collection<Projection> actualProjections = getActualProjections(Collections.singletonList(each));
-            if ((joinTable.getUsing().isEmpty() && !joinTable.isNatural()) || (null != owner && each.getExpression().contains(owner))) {
+            if (joinTable.getUsing().isEmpty() && !joinTable.isNatural() || null != owner && each.getExpression().contains(owner)) {
                 result.addAll(actualProjections);
             } else {
                 remainingProjections.addAll(actualProjections);
@@ -237,7 +237,7 @@ public final class ProjectionEngine {
         Collection<Projection> result = new LinkedList<>();
         for (Projection each : projections) {
             if (each instanceof ShorthandProjection) {
-                result.addAll(((ShorthandProjection) each).getActualColumns().values());
+                result.addAll(((ShorthandProjection) each).getActualColumns());
             } else if (!(each instanceof DerivedProjection)) {
                 result.add(each);
             }

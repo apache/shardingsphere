@@ -30,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLBitBinlogProtocolValueTest {
+class MySQLBitBinlogProtocolValueTest {
     
     @Mock
     private MySQLBinlogColumnDef columnDef;
@@ -41,33 +41,33 @@ public final class MySQLBitBinlogProtocolValueTest {
     private MySQLBitBinlogProtocolValue actual;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         actual = new MySQLBitBinlogProtocolValue();
     }
     
     @Test
-    public void assertReadWithLength1() {
+    void assertReadWithLength1() {
         when(columnDef.getColumnMeta()).thenReturn(1);
         when(payload.readLong(1)).thenReturn(1L);
         assertThat(actual.read(columnDef, payload), is(1L));
     }
     
     @Test
-    public void assertReadWithLength3() {
+    void assertReadWithLength3() {
         when(columnDef.getColumnMeta()).thenReturn(516);
         when(payload.readLong(3)).thenReturn(1L);
         assertThat(actual.read(columnDef, payload), is(1L));
     }
     
     @Test
-    public void assertReadWithLength5() {
+    void assertReadWithLength5() {
         when(columnDef.getColumnMeta()).thenReturn(1280);
         when(payload.readLong(5)).thenReturn(1L);
         assertThat(actual.read(columnDef, payload), is(1L));
     }
     
     @Test
-    public void assertReadWithLength8() {
+    void assertReadWithLength8() {
         when(columnDef.getColumnMeta()).thenReturn(2048);
         when(payload.readLong(8)).thenReturn(-1L);
         assertThat(actual.read(columnDef, payload), is(-1L));

@@ -20,20 +20,20 @@ package org.apache.shardingsphere.proxy.backend.state.impl;
 import org.apache.shardingsphere.proxy.backend.exception.ReadOnlyException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-public final class ReadOnlyProxyStateTest {
+class ReadOnlyProxyStateTest {
     
     @Test
-    public void assertExecuteWithUnsupportedSQL() {
+    void assertExecuteWithUnsupportedSQL() {
         assertThrows(ReadOnlyException.class, () -> new ReadOnlyProxyState().check(mock(InsertStatement.class)));
     }
     
     @Test
-    public void executeWithSupportedSQL() {
+    void executeWithSupportedSQL() {
         new ReadOnlyProxyState().check(mock(SelectStatement.class));
     }
 }

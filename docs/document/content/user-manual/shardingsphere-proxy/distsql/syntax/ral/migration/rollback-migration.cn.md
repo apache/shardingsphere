@@ -5,7 +5,7 @@ weight = 17
 
 ### 描述
 
-`ROLLBACK MIGRATION` 语法用于撤销指定的数据迁移作业
+`ROLLBACK MIGRATION` 语法用于撤销指定的数据迁移作业。
 
 ### 语法
 

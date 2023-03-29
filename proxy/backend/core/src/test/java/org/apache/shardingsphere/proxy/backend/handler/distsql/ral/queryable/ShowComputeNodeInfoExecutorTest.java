@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMeta
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -37,10 +37,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowComputeNodeInfoExecutorTest {
+class ShowComputeNodeInfoExecutorTest {
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         ShowComputeNodeInfoExecutor executor = new ShowComputeNodeInfoExecutor();
         Collection<String> actual = executor.getColumnNames();
         assertThat(actual.size(), is(8));
@@ -56,7 +56,7 @@ public final class ShowComputeNodeInfoExecutorTest {
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         ShowComputeNodesExecutor executor = new ShowComputeNodesExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(createInstanceContext(), mock(ShowComputeNodesStatement.class));
         assertThat(actual.size(), is(1));

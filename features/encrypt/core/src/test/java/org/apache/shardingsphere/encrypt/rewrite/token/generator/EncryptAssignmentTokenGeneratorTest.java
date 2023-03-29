@@ -50,7 +50,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(InsertStatementHandler.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class EncryptAssignmentTokenGeneratorTest {
+class EncryptAssignmentTokenGeneratorTest {
     
     private final EncryptAssignmentTokenGenerator tokenGenerator = new EncryptAssignmentTokenGenerator();
     
@@ -67,7 +67,7 @@ public final class EncryptAssignmentTokenGeneratorTest {
     private SetAssignmentSegment setAssignmentSegment;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         tokenGenerator.setEncryptRule(mockEncryptRule());
         when(updateStatement.getAllTables().iterator().next().getTableName().getIdentifier().getValue()).thenReturn("table");
         when(updateStatement.getSqlStatement().getSetAssignment().getAssignments()).thenReturn(Collections.singleton(assignmentSegment));
@@ -83,36 +83,36 @@ public final class EncryptAssignmentTokenGeneratorTest {
     }
     
     @Test
-    public void assertIsGenerateSQLTokenUpdateSQLSuccess() {
+    void assertIsGenerateSQLTokenUpdateSQLSuccess() {
         assertTrue(tokenGenerator.isGenerateSQLToken(updateStatement));
     }
     
     @Test
-    public void assertIsGenerateSQLTokenUpdateSQLFail() {
+    void assertIsGenerateSQLTokenUpdateSQLFail() {
         when(InsertStatementHandler.getSetAssignmentSegment(any())).thenReturn(Optional.of(setAssignmentSegment));
         assertTrue(tokenGenerator.isGenerateSQLToken(insertStatement));
     }
     
     @Test
-    public void assertGenerateSQLTokenWithUpdateParameterMarkerExpressionSegment() {
+    void assertGenerateSQLTokenWithUpdateParameterMarkerExpressionSegment() {
         when(assignmentSegment.getValue()).thenReturn(mock(ParameterMarkerExpressionSegment.class));
         assertThat(tokenGenerator.generateSQLTokens(updateStatement).size(), is(1));
     }
     
     @Test
-    public void assertGenerateSQLTokenWithUpdateLiteralExpressionSegment() {
+    void assertGenerateSQLTokenWithUpdateLiteralExpressionSegment() {
         when(assignmentSegment.getValue()).thenReturn(mock(LiteralExpressionSegment.class));
         assertThat(tokenGenerator.generateSQLTokens(updateStatement).size(), is(1));
     }
     
     @Test
-    public void assertGenerateSQLTokenWithUpdateEmpty() {
+    void assertGenerateSQLTokenWithUpdateEmpty() {
         when(assignmentSegment.getValue()).thenReturn(null);
         assertTrue(tokenGenerator.generateSQLTokens(updateStatement).isEmpty());
     }
     
     @Test
-    public void assertGenerateSQLTokenWithInsertLiteralExpressionSegment() {
+    void assertGenerateSQLTokenWithInsertLiteralExpressionSegment() {
         when(InsertStatementHandler.getSetAssignmentSegment(any())).thenReturn(Optional.of(setAssignmentSegment));
         when(assignmentSegment.getValue()).thenReturn(mock(LiteralExpressionSegment.class));
         assertThat(tokenGenerator.generateSQLTokens(insertStatement).size(), is(1));

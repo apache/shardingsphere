@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 
 import java.util.Map.Entry;
 import java.util.Optional;

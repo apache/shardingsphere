@@ -38,8 +38,6 @@ import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.Unic
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.UseDatabaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.UseStatement;
@@ -106,10 +104,10 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             if (null == selectStatement.getFrom()) {
                 return getSelectFunctionOrVariableExecutor(selectStatement, sql, databaseName);
             }
-            if (isQueryInformationSchema(selectStatement)) {
+            if (isQueryInformationSchema(databaseName)) {
                 return MySQLInformationSchemaExecutorFactory.newInstance(selectStatement, sql);
             }
-            if (isQueryPerformanceSchema(selectStatement)) {
+            if (isQueryPerformanceSchema(databaseName)) {
                 // TODO
                 return Optional.empty();
             }
@@ -148,20 +146,13 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
                 && functionName.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText());
     }
     
-    private boolean isQueryInformationSchema(final SelectStatement sqlStatement) {
-        return isQuerySpecialSchema(sqlStatement, INFORMATION_SCHEMA);
+    private boolean isQueryInformationSchema(final String databaseName) {
+        // TODO remove DefaultDatabaseMetaDataExecutor when sql federation can support all system table query
+        return INFORMATION_SCHEMA.equalsIgnoreCase(databaseName) && !ProxyContext.getInstance().getDatabase(databaseName).isComplete();
     }
     
-    private boolean isQueryPerformanceSchema(final SelectStatement sqlStatement) {
-        return isQuerySpecialSchema(sqlStatement, PERFORMANCE_SCHEMA);
-    }
-    
-    private boolean isQuerySpecialSchema(final SelectStatement sqlStatement, final String specialSchemaName) {
-        TableSegment tableSegment = sqlStatement.getFrom();
-        if (!(tableSegment instanceof SimpleTableSegment)) {
-            return false;
-        }
-        return ((SimpleTableSegment) tableSegment).getOwner().isPresent() && specialSchemaName.equalsIgnoreCase(((SimpleTableSegment) tableSegment).getOwner().get().getIdentifier().getValue());
+    private boolean isQueryPerformanceSchema(final String databaseName) {
+        return PERFORMANCE_SCHEMA.equalsIgnoreCase(databaseName);
     }
     
     private Optional<DatabaseAdminExecutor> mockExecutor(final String databaseName, final SelectStatement sqlStatement, final String sql) {

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.metadata.database.schema.reviser;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema.SchemaMetaDataReviseEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.schema.SchemaMetaDataReviseEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import javax.sql.DataSource;
@@ -48,8 +48,9 @@ public final class MetaDataReviseEngine {
     public Map<String, SchemaMetaData> revise(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap.size(), 1);
         for (Entry<String, SchemaMetaData> entry : schemaMetaDataMap.entrySet()) {
-            DatabaseType databaseType = material.getStorageTypes().get(entry.getKey());
-            DataSource dataSource = material.getDataSourceMap().get(entry.getKey());
+            // TODO establish a corresponding relationship between tables and data sources
+            DatabaseType databaseType = material.getStorageTypes().values().stream().findFirst().orElse(null);
+            DataSource dataSource = material.getDataSourceMap().values().stream().findFirst().orElse(null);
             result.put(entry.getKey(), new SchemaMetaDataReviseEngine(rules, material.getProps(), databaseType, dataSource).revise(entry.getValue()));
         }
         return result;

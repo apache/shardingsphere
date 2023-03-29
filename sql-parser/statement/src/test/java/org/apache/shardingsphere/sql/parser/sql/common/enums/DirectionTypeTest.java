@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DirectionTypeTest {
+class DirectionTypeTest {
     
     @Test
-    public void assertIsAggregationType() {
+    void assertIsAggregationType() {
         assertFalse(DirectionType.isAllDirectionType(DirectionType.NEXT));
         assertFalse(DirectionType.isAllDirectionType(DirectionType.PRIOR));
         assertFalse(DirectionType.isAllDirectionType(DirectionType.FIRST));

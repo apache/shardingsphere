@@ -26,11 +26,11 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.Migrati
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureImporterConnector;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
-import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -42,34 +42,34 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class IncrementalTaskTest {
+class IncrementalTaskTest {
     
     private IncrementalTask incrementalTask;
     
-    @BeforeClass
-    public static void beforeClass() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
+    @BeforeAll
+    static void beforeClass() {
+        PipelineContextUtils.mockModeConfigAndContextManager();
     }
     
-    @Before
-    public void setUp() {
-        MigrationTaskConfiguration taskConfig = PipelineContextUtil.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
+    @BeforeEach
+    void setUp() {
+        MigrationTaskConfiguration taskConfig = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
         taskConfig.getDumperConfig().setPosition(new PlaceholderPosition());
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(mock(PipelineDataSourceWrapper.class));
         incrementalTask = new IncrementalTask(3, taskConfig.getDumperConfig(), taskConfig.getImporterConfig(),
-                PipelineContextUtil.getPipelineChannelCreator(), new FixtureImporterConnector(), metaDataLoader, PipelineContextUtil.getExecuteEngine(),
+                PipelineContextUtils.getPipelineChannelCreator(), new FixtureImporterConnector(), metaDataLoader, PipelineContextUtils.getExecuteEngine(),
                 new FixtureInventoryIncrementalJobItemContext());
     }
     
+    @AfterEach
+    void tearDown() {
+        incrementalTask.stop();
+    }
+    
     @Test
-    public void assertStart() throws ExecutionException, InterruptedException, TimeoutException {
+    void assertStart() throws ExecutionException, InterruptedException, TimeoutException {
         CompletableFuture.allOf(incrementalTask.start().toArray(new CompletableFuture[0])).get(10, TimeUnit.SECONDS);
         assertThat(incrementalTask.getTaskId(), is("ds_0"));
         assertThat(incrementalTask.getTaskProgress().getPosition(), instanceOf(PlaceholderPosition.class));
-    }
-    
-    @After
-    public void tearDown() {
-        incrementalTask.stop();
     }
 }

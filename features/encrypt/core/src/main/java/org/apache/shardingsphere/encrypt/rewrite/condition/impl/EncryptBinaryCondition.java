@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 
@@ -49,6 +50,8 @@ public final class EncryptBinaryCondition implements EncryptCondition {
     
     private final int stopIndex;
     
+    private final ExpressionSegment expressionSegment;
+    
     private final Map<Integer, Integer> positionIndexMap = new LinkedHashMap<>();
     
     private final Map<Integer, Object> positionValueMap = new LinkedHashMap<>();
@@ -59,14 +62,20 @@ public final class EncryptBinaryCondition implements EncryptCondition {
         this.operator = operator;
         this.startIndex = startIndex;
         this.stopIndex = stopIndex;
-        putPositionMap(expressionSegment);
+        this.expressionSegment = expressionSegment;
+        putPositionMap(0, expressionSegment);
     }
     
-    private void putPositionMap(final ExpressionSegment expressionSegment) {
+    private void putPositionMap(final int index, final ExpressionSegment expressionSegment) {
         if (expressionSegment instanceof ParameterMarkerExpressionSegment) {
-            positionIndexMap.put(0, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
+            positionIndexMap.put(index, ((ParameterMarkerExpressionSegment) expressionSegment).getParameterMarkerIndex());
         } else if (expressionSegment instanceof LiteralExpressionSegment) {
-            positionValueMap.put(0, ((LiteralExpressionSegment) expressionSegment).getLiterals());
+            positionValueMap.put(index, ((LiteralExpressionSegment) expressionSegment).getLiterals());
+        } else if (expressionSegment instanceof FunctionSegment && "CONCAT".equalsIgnoreCase(((FunctionSegment) expressionSegment).getFunctionName())) {
+            int parameterIndex = index;
+            for (ExpressionSegment each : ((FunctionSegment) expressionSegment).getParameters()) {
+                putPositionMap(parameterIndex++, each);
+            }
         }
     }
     

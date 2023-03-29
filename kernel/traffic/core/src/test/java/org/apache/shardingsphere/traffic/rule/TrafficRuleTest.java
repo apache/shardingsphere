@@ -36,7 +36,7 @@ import org.apache.shardingsphere.traffic.algorithm.traffic.hint.SQLHintTrafficAl
 import org.apache.shardingsphere.traffic.algorithm.traffic.transaction.ProxyTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,10 +51,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class TrafficRuleTest {
+class TrafficRuleTest {
     
     @Test
-    public void assertFindMatchedStrategyRuleWhenSQLHintMatch() {
+    void assertFindMatchedStrategyRuleWhenSQLHintMatch() {
         TrafficRule trafficRule = new TrafficRule(createTrafficRuleConfig());
         Optional<TrafficStrategyRule> actual = trafficRule.findMatchedStrategyRule(createQueryContext(true), false);
         assertTrue(actual.isPresent());
@@ -65,12 +65,12 @@ public final class TrafficRuleTest {
     }
     
     @Test
-    public void assertFindMatchedStrategyRuleWhenSQLHintNotMatch() {
+    void assertFindMatchedStrategyRuleWhenSQLHintNotMatch() {
         assertFalse(new TrafficRule(createTrafficRuleConfig()).findMatchedStrategyRule(createQueryContext(false), false).isPresent());
     }
     
     @Test
-    public void assertFindMatchedStrategyRuleWhenInTransaction() {
+    void assertFindMatchedStrategyRuleWhenInTransaction() {
         TrafficRule trafficRule = new TrafficRule(createTrafficRuleConfig());
         Optional<TrafficStrategyRule> actual = trafficRule.findMatchedStrategyRule(createQueryContext(false), true);
         assertTrue(actual.isPresent());
@@ -81,7 +81,7 @@ public final class TrafficRuleTest {
     }
     
     @Test
-    public void assertGetLabels() {
+    void assertGetLabels() {
         assertThat(new TrafficRule(createTrafficRuleConfig()).getLabels(), is(new HashSet<>(Arrays.asList("OLAP", "OLTP"))));
     }
     

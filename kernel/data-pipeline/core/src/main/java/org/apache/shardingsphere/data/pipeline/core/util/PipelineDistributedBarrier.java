@@ -99,7 +99,7 @@ public final class PipelineDistributedBarrier {
      * @param barrierPath barrier path
      */
     public void unregister(final String barrierPath) {
-        getRepository().delete(String.join("/", barrierPath));
+        getRepository().delete(barrierPath);
         InnerCountDownLatchHolder holder = countDownLatchHolders.remove(barrierPath);
         if (null != holder) {
             holder.getCountDownLatch().countDown();

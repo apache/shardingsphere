@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.scenario.migration.yaml;
 
-import org.apache.shardingsphere.data.pipeline.api.config.job.MigrationJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.yaml.job.YamlMigrationJobConfigurationSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlMigrationJobConfigurationSwapperTest {
+class YamlMigrationJobConfigurationSwapperTest {
     
     @Test
-    public void assertMarsharlUnmarshal() {
+    void assertMarsharlUnmarshal() {
         YamlMigrationJobConfiguration yamlJobConfig = JobConfigurationBuilder.createYamlMigrationJobConfiguration();
         YamlMigrationJobConfigurationSwapper swapper = new YamlMigrationJobConfigurationSwapper();
         MigrationJobConfiguration jobConfig = swapper.swapToObject(yamlJobConfig);

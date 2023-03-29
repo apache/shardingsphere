@@ -21,7 +21,7 @@ import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -32,10 +32,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class MySQLComStmtCloseExecutorTest {
+class MySQLComStmtCloseExecutorTest {
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         MySQLComStmtClosePacket packet = new MySQLComStmtClosePacket(new MySQLPacketPayload(Unpooled.wrappedBuffer(new byte[]{0x01, 0x00, 0x00, 0x00}), StandardCharsets.UTF_8));
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         assertThat(new MySQLComStmtCloseExecutor(packet, connectionSession).execute(), is(Collections.emptyList()));

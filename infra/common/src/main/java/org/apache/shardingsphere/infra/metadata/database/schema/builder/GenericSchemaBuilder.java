@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Con
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.util.SchemaMetaDataUtil;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.SchemaMetaDataUtils;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
@@ -95,7 +95,7 @@ public final class GenericSchemaBuilder {
     
     private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) throws SQLException {
         boolean checkMetaDataEnable = material.getProps().getValue(ConfigurationPropertyKey.CHECK_TABLE_META_DATA_ENABLED);
-        Collection<SchemaMetaDataLoaderMaterial> schemaMetaDataLoaderMaterials = SchemaMetaDataUtil.getSchemaMetaDataLoaderMaterials(tableNames, material, checkMetaDataEnable);
+        Collection<SchemaMetaDataLoaderMaterial> schemaMetaDataLoaderMaterials = SchemaMetaDataUtils.getSchemaMetaDataLoaderMaterials(tableNames, material, checkMetaDataEnable);
         if (schemaMetaDataLoaderMaterials.isEmpty()) {
             return Collections.emptyMap();
         }

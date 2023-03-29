@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class AggregationTypeTest {
+class AggregationTypeTest {
     
     @Test
-    public void assertIsAggregationType() {
+    void assertIsAggregationType() {
         assertTrue(AggregationType.isAggregationType("MAX"));
         assertTrue(AggregationType.isAggregationType("MIN"));
         assertTrue(AggregationType.isAggregationType("SUM"));

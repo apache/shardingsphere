@@ -17,21 +17,21 @@
 
 package org.apache.shardingsphere.proxy.backend.session;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class RequiredSessionVariableRecorderTest {
+class RequiredSessionVariableRecorderTest {
     
     @Test
-    public void assertRecordMySQLVariables() {
+    void assertRecordMySQLVariables() {
         RequiredSessionVariableRecorder recorder = new RequiredSessionVariableRecorder();
         assertTrue(recorder.isEmpty());
         String databaseType = "MySQL";
@@ -48,7 +48,7 @@ public final class RequiredSessionVariableRecorderTest {
     }
     
     @Test
-    public void assertRecordPostgreSQLVariables() {
+    void assertRecordPostgreSQLVariables() {
         RequiredSessionVariableRecorder recorder = new RequiredSessionVariableRecorder();
         assertTrue(recorder.isEmpty());
         String databaseType = "PostgreSQL";
@@ -65,7 +65,7 @@ public final class RequiredSessionVariableRecorderTest {
     }
     
     @Test
-    public void assertRecordUnsupportedDatabaseType() {
+    void assertRecordUnsupportedDatabaseType() {
         RequiredSessionVariableRecorder recorder = new RequiredSessionVariableRecorder();
         assertTrue(recorder.isEmpty());
         recorder.setVariable("key", "value");

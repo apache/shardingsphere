@@ -53,7 +53,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingDropIndexStatementValidatorTest {
+class ShardingDropIndexStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
@@ -65,7 +65,7 @@ public final class ShardingDropIndexStatementValidatorTest {
     private RouteContext routeContext;
     
     @Test
-    public void assertPreValidateDropIndexWhenIndexExistForPostgreSQL() {
+    void assertPreValidateDropIndexWhenIndexExistForPostgreSQL() {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
@@ -80,7 +80,7 @@ public final class ShardingDropIndexStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateDropIndexWhenIndexNotExistForPostgreSQL() {
+    void assertPreValidateDropIndexWhenIndexNotExistForPostgreSQL() {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
@@ -96,7 +96,7 @@ public final class ShardingDropIndexStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateDropIndexWithSameRouteResultShardingTableIndexForPostgreSQL() {
+    void assertPostValidateDropIndexWithSameRouteResultShardingTableIndexForPostgreSQL() {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
@@ -117,7 +117,7 @@ public final class ShardingDropIndexStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateDropIndexWithDifferentRouteResultShardingTableIndexForPostgreSQL() {
+    void assertPostValidateDropIndexWithDifferentRouteResultShardingTableIndexForPostgreSQL() {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index_new"))));
@@ -137,7 +137,7 @@ public final class ShardingDropIndexStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateDropIndexWithSameRouteResultBroadcastTableIndexForPostgreSQL() {
+    void assertPostValidateDropIndexWithSameRouteResultBroadcastTableIndexForPostgreSQL() {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_config_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_config_index_new"))));
@@ -158,7 +158,7 @@ public final class ShardingDropIndexStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateDropIndexWithDifferentRouteResultBroadcastTableIndexForPostgreSQL() {
+    void assertPostValidateDropIndexWithDifferentRouteResultBroadcastTableIndexForPostgreSQL() {
         PostgreSQLDropIndexStatement sqlStatement = new PostgreSQLDropIndexStatement(false);
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_config_index"))));
         sqlStatement.getIndexes().add(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_config_index_new"))));

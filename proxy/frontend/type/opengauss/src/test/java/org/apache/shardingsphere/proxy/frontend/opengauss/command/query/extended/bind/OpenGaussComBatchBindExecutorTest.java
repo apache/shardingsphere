@@ -72,13 +72,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class OpenGaussComBatchBindExecutorTest {
+class OpenGaussComBatchBindExecutorTest {
     
     private final ShardingSphereSQLParserEngine parserEngine = new ShardingSphereSQLParserEngine("openGauss", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
     
     @SuppressWarnings("rawtypes")
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         String statement = "S_1";
         String sql = "insert into bmsql (id) values (?)";
         SQLStatement sqlStatement = parserEngine.parse(sql, false);

@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.sql.DataSource;
@@ -43,35 +43,35 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class XAShardingSphereTransactionManagerTest {
+class XAShardingSphereTransactionManagerTest {
     
     private final XAShardingSphereTransactionManager xaTransactionManager = new XAShardingSphereTransactionManager();
     
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         Map<String, DataSource> dataSources = createDataSources(TypedSPILoader.getService(DatabaseType.class, "H2"));
         Map<String, DatabaseType> databaseTypes = createDatabaseTypes(TypedSPILoader.getService(DatabaseType.class, "H2"));
         xaTransactionManager.init(databaseTypes, dataSources, "Atomikos");
     }
     
-    @After
-    public void tearDown() throws Exception {
+    @AfterEach
+    void tearDown() throws Exception {
         xaTransactionManager.close();
     }
     
     @Test
-    public void assertGetTransactionType() {
+    void assertGetTransactionType() {
         assertThat(xaTransactionManager.getTransactionType(), is(TransactionType.XA));
     }
     
     @Test
-    public void assertRegisterXADataSource() {
+    void assertRegisterXADataSource() {
         Map<String, XATransactionDataSource> cachedXADataSourceMap = getCachedDataSources();
         assertThat(cachedXADataSourceMap.size(), is(3));
     }
     
     @Test
-    public void assertIsInTransaction() {
+    void assertIsInTransaction() {
         assertFalse(xaTransactionManager.isInTransaction());
         xaTransactionManager.begin();
         assertTrue(xaTransactionManager.isInTransaction());
@@ -79,7 +79,7 @@ public final class XAShardingSphereTransactionManagerTest {
     }
     
     @Test
-    public void assertGetConnection() throws SQLException {
+    void assertGetConnection() throws SQLException {
         xaTransactionManager.begin();
         Connection actual1 = xaTransactionManager.getConnection("sharding_db", "ds_0");
         Connection actual2 = xaTransactionManager.getConnection("sharding_db", "ds_1");
@@ -91,7 +91,7 @@ public final class XAShardingSphereTransactionManagerTest {
     }
     
     @Test
-    public void assertGetConnectionOfNestedTransaction() throws SQLException {
+    void assertGetConnectionOfNestedTransaction() throws SQLException {
         ThreadLocal<Map<Transaction, Connection>> transactions = getEnlistedTransactions(getCachedDataSources().get("sharding_db.ds_1"));
         xaTransactionManager.begin();
         assertTrue(transactions.get().isEmpty());
@@ -112,14 +112,14 @@ public final class XAShardingSphereTransactionManagerTest {
     }
     
     @Test
-    public void assertClose() throws Exception {
+    void assertClose() throws Exception {
         xaTransactionManager.close();
         Map<String, XATransactionDataSource> cachedSingleXADataSourceMap = getCachedDataSources();
         assertTrue(cachedSingleXADataSourceMap.isEmpty());
     }
     
     @Test
-    public void assertCommit() {
+    void assertCommit() {
         xaTransactionManager.begin();
         assertTrue(xaTransactionManager.isInTransaction());
         xaTransactionManager.commit(false);
@@ -127,7 +127,7 @@ public final class XAShardingSphereTransactionManagerTest {
     }
     
     @Test
-    public void assertRollback() {
+    void assertRollback() {
         xaTransactionManager.begin();
         assertTrue(xaTransactionManager.isInTransaction());
         xaTransactionManager.rollback();

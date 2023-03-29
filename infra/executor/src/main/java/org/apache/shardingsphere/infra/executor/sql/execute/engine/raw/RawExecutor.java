@@ -69,7 +69,7 @@ public final class RawExecutor {
     private <T> List<T> execute(final ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext,
                                 final RawSQLExecutorCallback firstCallback, final RawSQLExecutorCallback callback) throws SQLException {
         try {
-            return (List<T>) executorEngine.execute(executionGroupContext, firstCallback, callback, connectionContext.getTransactionConnectionContext().isInTransaction());
+            return (List<T>) executorEngine.execute(executionGroupContext, firstCallback, callback, connectionContext.getTransactionContext().isInTransaction());
         } catch (final SQLException ex) {
             SQLExecutorExceptionHandler.handleException(ex);
             return Collections.emptyList();

@@ -31,16 +31,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class AggregationProjectionTest {
+class AggregationProjectionTest {
     
     @Test
-    public void assertGetExpression() {
+    void assertGetExpression() {
         Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", null, mock(DatabaseType.class));
         assertThat(projection.getExpression(), is("COUNT( A.\"DIRECTION\" )"));
     }
     
     @Test
-    public void assertGetAlias() {
+    void assertGetAlias() {
         Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", "AVG_DERIVED_COUNT_0", mock(DatabaseType.class));
         Optional<String> actual = projection.getAlias();
         assertTrue(actual.isPresent());
@@ -48,25 +48,25 @@ public final class AggregationProjectionTest {
     }
     
     @Test
-    public void assertGetColumnLabelWithAlias() {
+    void assertGetColumnLabelWithAlias() {
         Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", "AVG_DERIVED_COUNT_0", mock(DatabaseType.class));
         assertThat(projection.getColumnLabel(), is("AVG_DERIVED_COUNT_0"));
     }
     
     @Test
-    public void assertGetColumnLabelWithoutAlias() {
+    void assertGetColumnLabelWithoutAlias() {
         Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", null, mock(DatabaseType.class));
         assertThat(projection.getColumnLabel(), is("COUNT( A.\"DIRECTION\" )"));
     }
     
     @Test
-    public void assertGetColumnLabelWithoutAliasForPostgreSQL() {
+    void assertGetColumnLabelWithoutAliasForPostgreSQL() {
         Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", null, mock(PostgreSQLDatabaseType.class));
         assertThat(projection.getColumnLabel(), is("count"));
     }
     
     @Test
-    public void assertGetColumnLabelWithoutAliasForOpenGauss() {
+    void assertGetColumnLabelWithoutAliasForOpenGauss() {
         Projection projection = new AggregationProjection(AggregationType.COUNT, "( A.\"DIRECTION\" )", null, mock(OpenGaussDatabaseType.class));
         assertThat(projection.getColumnLabel(), is("count"));
     }

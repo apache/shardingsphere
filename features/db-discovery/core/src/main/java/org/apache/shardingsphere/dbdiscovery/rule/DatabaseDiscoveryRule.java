@@ -29,6 +29,7 @@ import org.apache.shardingsphere.dbdiscovery.heartbeat.HeartbeatJob;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProvider;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
@@ -42,9 +43,9 @@ import org.apache.shardingsphere.infra.schedule.CronJob;
 import org.apache.shardingsphere.infra.schedule.ScheduleContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
-import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
-import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceDeletedEvent;
+import org.apache.shardingsphere.mode.event.storage.PrimaryDataSourceChangedEvent;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceDeletedEvent;
 import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
 
 import javax.sql.DataSource;
@@ -151,8 +152,8 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
     }
     
     @Override
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>();
+    public Map<String, Collection<DataSourceRoleInfo>> getDataSourceMapper() {
+        Map<String, Collection<DataSourceRoleInfo>> result = new LinkedHashMap<>();
         for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
             result.putAll(entry.getValue().getDataSourceMapper());
         }

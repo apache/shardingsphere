@@ -17,30 +17,30 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class MySQLStatementIDGeneratorTest {
+class MySQLStatementIDGeneratorTest {
     
     private static final int CONNECTION_ID = 1;
     
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         MySQLStatementIDGenerator.getInstance().registerConnection(CONNECTION_ID);
     }
     
-    @Test
-    public void assertNextStatementId() {
-        assertThat(MySQLStatementIDGenerator.getInstance().nextStatementId(CONNECTION_ID), is(1));
-        assertThat(MySQLStatementIDGenerator.getInstance().nextStatementId(CONNECTION_ID), is(2));
+    @AfterEach
+    void tearDown() {
+        MySQLStatementIDGenerator.getInstance().unregisterConnection(CONNECTION_ID);
     }
     
-    @After
-    public void tearDown() {
-        MySQLStatementIDGenerator.getInstance().unregisterConnection(CONNECTION_ID);
+    @Test
+    void assertNextStatementId() {
+        assertThat(MySQLStatementIDGenerator.getInstance().nextStatementId(CONNECTION_ID), is(1));
+        assertThat(MySQLStatementIDGenerator.getInstance().nextStatementId(CONNECTION_ID), is(2));
     }
 }

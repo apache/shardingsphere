@@ -31,17 +31,17 @@ import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class GenericTableRandomReplaceAlgorithmTest {
+class GenericTableRandomReplaceAlgorithmTest {
     
     private GenericTableRandomReplaceAlgorithm maskAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         this.maskAlgorithm = new GenericTableRandomReplaceAlgorithm();
     }
     
     @Test
-    public void assertMask() {
+    void assertMask() {
         maskAlgorithm.init(PropertiesBuilder.build(new Property("uppercase-letter-codes", "A,B,C,D"), new Property("lowercase-letter-codes", "a,b,c,d"), new Property("digital-codes", "1,2,3,4"),
                 new Property("special-codes", "~!@#")));
         assertThat(maskAlgorithm.mask(""), is(""));
@@ -52,7 +52,7 @@ public final class GenericTableRandomReplaceAlgorithmTest {
     }
     
     @Test
-    public void assertInitWithEmptyProps() {
+    void assertInitWithEmptyProps() {
         maskAlgorithm.init(new Properties());
         assertThat(maskAlgorithm.mask("Ab1!").substring(0, 1), anyOf(Arrays.stream("ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")).map(CoreMatchers::is).collect(Collectors.toList())));
         assertThat(maskAlgorithm.mask("Ab1!").substring(1, 2), anyOf(Arrays.stream("abcdefghijklmnopqrstuvwxyz".split("")).map(CoreMatchers::is).collect(Collectors.toList())));

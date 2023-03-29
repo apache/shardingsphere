@@ -24,12 +24,12 @@ import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactor
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 /**
  * ShardingSphere SQL parser engine.
  */
-public final class ShardingSphereSQLParserEngine {
+public final class ShardingSphereSQLParserEngine implements SQLParserEngine {
     
     private final SQLStatementParserEngine sqlStatementParserEngine;
     
@@ -46,19 +46,13 @@ public final class ShardingSphereSQLParserEngine {
      *
      * @see <a href="https://github.com/apache/skywalking/blob/master/docs/en/guides/Java-Plugin-Development-Guide.md#user-content-plugin-development-guide">Plugin Development Guide</a>
      */
-    /**
-     * Parse to SQL statement.
-     *
-     * @param sql SQL to be parsed
-     * @param useCache whether use cache
-     * @return SQL statement
-     */
+    @Override
     public SQLStatement parse(final String sql, final boolean useCache) {
         try {
             return sqlStatementParserEngine.parse(sql, useCache);
         } catch (final SQLParsingException | ParseCancellationException originalEx) {
             try {
-                String trimSQL = SQLUtil.trimComment(sql);
+                String trimSQL = SQLUtils.trimComment(sql);
                 return distSQLStatementParserEngine.parse(trimSQL);
             } catch (final SQLParsingException ignored) {
                 throw originalEx;

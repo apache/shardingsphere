@@ -36,10 +36,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class RowCountTokenGeneratorTest {
+class RowCountTokenGeneratorTest {
     
     @Test
-    public void assertIsGenerateSQLToken() {
+    void assertIsGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         RowCountTokenGenerator rowCountTokenGenerator = new RowCountTokenGenerator();
         assertFalse(rowCountTokenGenerator.isGenerateSQLToken(insertStatementContext));
@@ -52,7 +52,7 @@ public final class RowCountTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLToken() {
+    void assertGenerateSQLToken() {
         final int testOffsetSegmentValue = 12;
         NumberLiteralLimitValueSegment offsetSegment = new NumberLiteralLimitValueSegment(1, 2, testOffsetSegmentValue);
         final int testRowCountSegmentValue = 8;

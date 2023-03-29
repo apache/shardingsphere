@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedCRC32DataConsistencyCalculateAlgorithmException;
-import org.apache.shardingsphere.data.pipeline.core.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.DatabaseTypeUtils;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractDataConsistencyCalculateAlgorithm {
     
-    private static final Collection<String> SUPPORTED_DATABASE_TYPES = DatabaseTypeUtil.getTrunkAndBranchDatabaseTypes(Collections.singleton(new MySQLDatabaseType().getType()));
+    private static final Collection<String> SUPPORTED_DATABASE_TYPES = DatabaseTypeUtils.getTrunkAndBranchDatabaseTypes(Collections.singleton(new MySQLDatabaseType().getType()));
     
     @Override
     public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter param) {

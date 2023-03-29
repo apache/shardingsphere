@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<integration-test-cases>
+    <test-case sql="CREATE TABLE t_order_details(id int, description varchar(10))" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
+        <assertion expected-data-file="create_table.xml">
+            <initial-sql affected-table="t_order_details" />
+            <destroy-sql sql="DROP TABLE t_order_details" />
+        </assertion>
+    </test-case>
+    
+    <test-case sql="CREATE TABLE t_broadcast_table_for_ddl(id int, description varchar(10))" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+        <assertion expected-data-file="create_broadcast_table.xml">
+            <initial-sql affected-table="t_broadcast_table_for_ddl" />
+            <destroy-sql sql="DROP TABLE t_broadcast_table_for_ddl" />
+        </assertion>
+    </test-case>
+    
+    <test-case sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number VARCHAR(45), description varchar(10))" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
+        <assertion expected-data-file="create_table.xml">
+            <initial-sql affected-table="t_user_details" />
+            <destroy-sql sql="DROP TABLE t_user_details" />
+        </assertion>
+    </test-case>
+</integration-test-cases>

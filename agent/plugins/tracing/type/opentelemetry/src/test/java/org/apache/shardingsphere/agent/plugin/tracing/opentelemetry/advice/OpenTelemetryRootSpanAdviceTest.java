@@ -27,7 +27,7 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.tracing.AgentExtension;
+import org.apache.shardingsphere.agent.plugin.tracing.TracingAgentExtension;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -52,16 +52,16 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({AgentExtension.class, AutoMockExtension.class})
+@ExtendWith({TracingAgentExtension.class, AutoMockExtension.class})
 @StaticMockSettings(ProxyContext.class)
-public final class OpenTelemetryRootSpanAdviceTest {
+class OpenTelemetryRootSpanAdviceTest {
     
     private final InMemorySpanExporter testExporter = InMemorySpanExporter.create();
     
     private TargetAdviceObject targetObject;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         SdkTracerProvider tracerProvider = SdkTracerProvider.builder().addSpanProcessor(SimpleSpanProcessor.create(testExporter)).build();
         OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).buildAndRegisterGlobal().getTracer(OpenTelemetryConstants.TRACER_NAME);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
@@ -71,13 +71,13 @@ public final class OpenTelemetryRootSpanAdviceTest {
     }
     
     @AfterEach
-    public void clean() {
+    void clean() {
         GlobalOpenTelemetry.resetForTest();
         testExporter.reset();
     }
     
     @Test
-    public void assertMethod() {
+    void assertMethod() {
         OpenTelemetryRootSpanAdvice advice = new OpenTelemetryRootSpanAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{}, "OpenTelemetry");
         advice.afterMethod(targetObject, null, new Object[]{}, null, "OpenTelemetry");
@@ -90,7 +90,7 @@ public final class OpenTelemetryRootSpanAdviceTest {
     }
     
     @Test
-    public void assertExceptionHandle() {
+    void assertExceptionHandle() {
         OpenTelemetryRootSpanAdvice advice = new OpenTelemetryRootSpanAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{}, "OpenTelemetry");
         advice.onThrowing(targetObject, null, new Object[]{}, new IOException(), "OpenTelemetry");

@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.generic;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLComTerminationExecutorTest {
+class PostgreSQLComTerminationExecutorTest {
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         PostgreSQLComTerminationExecutor actual = new PostgreSQLComTerminationExecutor();
         assertThat(actual.execute(), is(Collections.emptyList()));
     }

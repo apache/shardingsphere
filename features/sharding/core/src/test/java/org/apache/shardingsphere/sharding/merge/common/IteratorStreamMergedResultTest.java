@@ -45,12 +45,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class IteratorStreamMergedResultTest {
+class IteratorStreamMergedResultTest {
     
     private SelectStatementContext selectStatementContext;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
@@ -63,7 +63,7 @@ public final class IteratorStreamMergedResultTest {
     }
     
     @Test
-    public void assertNextForResultSetsAllEmpty() throws SQLException {
+    void assertNextForResultSetsAllEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
@@ -73,7 +73,7 @@ public final class IteratorStreamMergedResultTest {
     }
     
     @Test
-    public void assertNextForResultSetsAllNotEmpty() throws SQLException {
+    void assertNextForResultSetsAllNotEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         for (QueryResult each : queryResults) {
             when(each.next()).thenReturn(true, false);
@@ -89,7 +89,7 @@ public final class IteratorStreamMergedResultTest {
     }
     
     @Test
-    public void assertNextForFirstResultSetsNotEmptyOnly() throws SQLException {
+    void assertNextForFirstResultSetsNotEmptyOnly() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         when(queryResults.get(0).next()).thenReturn(true, false);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
@@ -101,7 +101,7 @@ public final class IteratorStreamMergedResultTest {
     }
     
     @Test
-    public void assertNextForMiddleResultSetsNotEmpty() throws SQLException {
+    void assertNextForMiddleResultSetsNotEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         when(queryResults.get(1).next()).thenReturn(true, false);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
@@ -113,7 +113,7 @@ public final class IteratorStreamMergedResultTest {
     }
     
     @Test
-    public void assertNextForLastResultSetsNotEmptyOnly() throws SQLException {
+    void assertNextForLastResultSetsNotEmptyOnly() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         when(queryResults.get(2).next()).thenReturn(true, false);
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
@@ -125,7 +125,7 @@ public final class IteratorStreamMergedResultTest {
     }
     
     @Test
-    public void assertNextForMix() throws SQLException {
+    void assertNextForMix() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS),
                 mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         when(queryResults.get(1).next()).thenReturn(true, false);

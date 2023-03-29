@@ -39,10 +39,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class GeneratedKeyInsertValuesTokenGeneratorTest {
+class GeneratedKeyInsertValuesTokenGeneratorTest {
     
     @Test
-    public void assertGenerateSQLToken() {
+    void assertGenerateSQLToken() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class);
         GeneratedKeyContext generatedKeyContext = getGeneratedKeyContext();
         when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));

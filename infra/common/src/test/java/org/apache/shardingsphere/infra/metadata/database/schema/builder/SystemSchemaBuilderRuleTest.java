@@ -20,31 +20,28 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class SystemSchemaBuilderRuleTest {
+class SystemSchemaBuilderRuleTest {
     
     @Test
-    public void assertValueOfSchemaPathSuccess() {
+    void assertValueOfSchemaPathSuccess() {
         SystemSchemaBuilderRule actual = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "information_schema");
         assertThat(actual, is(SystemSchemaBuilderRule.MYSQL_INFORMATION_SCHEMA));
-        assertThat(actual.getTables(), is(new HashSet<>(Arrays.asList("columns", "engines", "parameters", "routines", "schemata", "tables", "views"))));
+        assertThat(actual.getTables().size(), is(45));
     }
     
     @Test
-    public void assertValueOfSchemaPathFailure() {
+    void assertValueOfSchemaPathFailure() {
         assertThrows(NullPointerException.class, () -> SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "test"));
     }
     
     @Test
-    public void assertIsisSystemTable() {
+    void assertIsisSystemTable() {
         assertTrue(SystemSchemaBuilderRule.isSystemTable("information_schema", "columns"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_database"));
         assertFalse(SystemSchemaBuilderRule.isSystemTable("sharding_db", "t_order"));

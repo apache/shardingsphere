@@ -47,6 +47,7 @@ public final class ProxyJDBCExecutorCallbackFactory {
      * @param isExceptionThrown is exception thrown or not
      * @param isFetchMetaData is fetch meta data or not
      * @return created instance
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static ProxyJDBCExecutorCallback newInstance(final String type, final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement,
                                                         final DatabaseConnector databaseConnector, final boolean isReturnGeneratedKeys, final boolean isExceptionThrown,

@@ -19,17 +19,17 @@ package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class RandomTrafficLoadBalanceAlgorithmTest {
+class RandomTrafficLoadBalanceAlgorithmTest {
     
     @Test
-    public void assertGetInstanceId() {
+    void assertGetInstanceId() {
         RandomTrafficLoadBalanceAlgorithm randomAlgorithm = new RandomTrafficLoadBalanceAlgorithm();
         List<InstanceMetaData> instances = Arrays.asList(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307", "foo_verison"),
                 new ProxyInstanceMetaData("bar_id", "127.0.0.1@3308", "foo_verison"));

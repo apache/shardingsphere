@@ -24,14 +24,14 @@ import org.apache.shardingsphere.logging.yaml.config.YamlLoggingRuleConfiguratio
 import org.apache.shardingsphere.logging.yaml.swapper.YamlAppenderSwapper;
 import org.apache.shardingsphere.logging.yaml.swapper.YamlLoggerSwapper;
 import org.apache.shardingsphere.logging.yaml.swapper.YamlLoggingRuleConfigurationSwapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlLoggingRuleConfigurationSwapperTest {
+class YamlLoggingRuleConfigurationSwapperTest {
     
     private final YamlLoggingRuleConfigurationSwapper swapper = new YamlLoggingRuleConfigurationSwapper();
     
@@ -40,7 +40,7 @@ public final class YamlLoggingRuleConfigurationSwapperTest {
     private final YamlAppenderSwapper appenderSwapper = new YamlAppenderSwapper();
     
     @Test
-    public void swapToYamlConfiguration() {
+    void swapToYamlConfiguration() {
         YamlLoggingRuleConfiguration yamlLoggingRuleConfiguration = swapper.swapToYamlConfiguration(createLoggingRuleConfiguration());
         assertThat(yamlLoggingRuleConfiguration.getLoggers().size(), is(1));
         assertThat(yamlLoggingRuleConfiguration.getAppenders().size(), is(1));
@@ -52,7 +52,7 @@ public final class YamlLoggingRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void swapToObject() {
+    void swapToObject() {
         LoggingRuleConfiguration loggingRuleConfiguration = swapper.swapToObject(createYamlLoggingRuleConfiguration());
         assertThat(loggingRuleConfiguration.getLoggers().size(), is(1));
         assertThat(loggingRuleConfiguration.getAppenders().size(), is(1));

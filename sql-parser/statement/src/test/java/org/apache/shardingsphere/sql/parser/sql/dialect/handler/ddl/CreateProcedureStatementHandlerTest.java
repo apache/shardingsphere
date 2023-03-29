@@ -23,17 +23,17 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateProcedureStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class CreateProcedureStatementHandlerTest {
+class CreateProcedureStatementHandlerTest {
     
     @Test
-    public void assertGetRoutineBodySegmentWithRoutineBodySegmentForMySQL() {
+    void assertGetRoutineBodySegmentWithRoutineBodySegmentForMySQL() {
         MySQLCreateProcedureStatement createProcedureStatement = new MySQLCreateProcedureStatement();
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
         createProcedureStatement.setRoutineBody(routineBody);
@@ -42,14 +42,14 @@ public final class CreateProcedureStatementHandlerTest {
     }
     
     @Test
-    public void assertGetRoutineBodySegmentWithoutRoutineBodySegmentForMySQL() {
+    void assertGetRoutineBodySegmentWithoutRoutineBodySegmentForMySQL() {
         MySQLCreateProcedureStatement createProcedureStatement = new MySQLCreateProcedureStatement();
         Optional<RoutineBodySegment> routineBodySegment = CreateProcedureStatementHandler.getRoutineBodySegment(createProcedureStatement);
         assertFalse(routineBodySegment.isPresent());
     }
     
     @Test
-    public void assertGetRoutineBodySegmentForOtherDatabases() {
+    void assertGetRoutineBodySegmentForOtherDatabases() {
         assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new OpenGaussCreateProcedureStatement()).isPresent());
         assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new OracleCreateProcedureStatement()).isPresent());
         assertFalse(CreateProcedureStatementHandler.getRoutineBodySegment(new PostgreSQLCreateProcedureStatement()).isPresent());

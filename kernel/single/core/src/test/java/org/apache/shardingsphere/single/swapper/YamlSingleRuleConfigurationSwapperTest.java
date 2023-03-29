@@ -20,18 +20,18 @@ package org.apache.shardingsphere.single.swapper;
 import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.yaml.config.pojo.YamlSingleRuleConfiguration;
 import org.apache.shardingsphere.single.yaml.config.swapper.YamlSingleRuleConfigurationSwapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlSingleRuleConfigurationSwapperTest {
+class YamlSingleRuleConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlSingleRuleConfiguration yamlConfig = new YamlSingleRuleConfiguration();
         yamlConfig.setDefaultDataSource("ds_0");
         SingleRuleConfiguration ruleConfig = new YamlSingleRuleConfigurationSwapper().swapToObject(yamlConfig);
@@ -40,17 +40,17 @@ public final class YamlSingleRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithoutDataSource() {
+    void assertSwapToObjectWithoutDataSource() {
         assertFalse(new YamlSingleRuleConfigurationSwapper().swapToObject(new YamlSingleRuleConfiguration()).getDefaultDataSource().isPresent());
     }
     
     @Test
-    public void assertSwapToYaml() {
+    void assertSwapToYaml() {
         assertThat(new YamlSingleRuleConfigurationSwapper().swapToYamlConfiguration(new SingleRuleConfiguration("ds_0")).getDefaultDataSource(), is("ds_0"));
     }
     
     @Test
-    public void assertSwapToYamlWithoutDataSource() {
+    void assertSwapToYamlWithoutDataSource() {
         assertNull(new YamlSingleRuleConfigurationSwapper().swapToYamlConfiguration(new SingleRuleConfiguration()).getDefaultDataSource());
     }
 }

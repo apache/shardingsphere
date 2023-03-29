@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
 
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,28 +37,28 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingRuleConfigurationImportCheckerTest {
+class ShardingRuleConfigurationImportCheckerTest {
     
     @Test
-    public void assertCheckLogicTables() {
+    void assertCheckLogicTables() {
         assertThrows(DuplicateRuleException.class, () -> new ShardingRuleConfigurationImportChecker().check(mock(ShardingSphereDatabase.class), createDuplicatedTablesRuleConfiguration()));
     }
     
     @Test
-    public void assertCheckDataSources() {
+    void assertCheckDataSources() {
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
         currentRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..2}.t_order_${0..2}"));
         assertThrows(MissingRequiredStorageUnitsException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabaseWithDataSource(), currentRuleConfig));
     }
     
     @Test
-    public void assertCheckKeyGenerators() {
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidKeyGeneratorRuleConfiguration()));
+    void assertCheckKeyGenerators() {
+        assertThrows(ServiceProviderNotFoundServerException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidKeyGeneratorRuleConfiguration()));
     }
     
     @Test
-    public void assertCheckShardingAlgorithms() {
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidShardingAlgorithmRuleConfiguration()));
+    void assertCheckShardingAlgorithms() {
+        assertThrows(ServiceProviderNotFoundServerException.class, () -> new ShardingRuleConfigurationImportChecker().check(mockDatabase(), createInvalidShardingAlgorithmRuleConfiguration()));
     }
     
     private ShardingRuleConfiguration createDuplicatedTablesRuleConfiguration() {

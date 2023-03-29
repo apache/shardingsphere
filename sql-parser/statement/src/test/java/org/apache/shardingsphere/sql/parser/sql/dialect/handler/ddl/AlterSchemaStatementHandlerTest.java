@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerAlterSchemaStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
@@ -30,10 +30,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class AlterSchemaStatementHandlerTest {
+class AlterSchemaStatementHandlerTest {
     
     @Test
-    public void assertGetRenameSchemaForPostgreSQL() {
+    void assertGetRenameSchemaForPostgreSQL() {
         PostgreSQLAlterSchemaStatement alterSchemaStatement = new PostgreSQLAlterSchemaStatement();
         alterSchemaStatement.setRenameSchema(new IdentifierValue("new_schema"));
         Optional<IdentifierValue> actual = AlterSchemaStatementHandler.getRenameSchema(alterSchemaStatement);
@@ -42,7 +42,7 @@ public final class AlterSchemaStatementHandlerTest {
     }
     
     @Test
-    public void assertGetRenameSchemaForOpenGauss() {
+    void assertGetRenameSchemaForOpenGauss() {
         OpenGaussAlterSchemaStatement alterSchemaStatement = new OpenGaussAlterSchemaStatement();
         alterSchemaStatement.setRenameSchema(new IdentifierValue("new_schema"));
         Optional<IdentifierValue> actual = AlterSchemaStatementHandler.getRenameSchema(alterSchemaStatement);
@@ -51,7 +51,7 @@ public final class AlterSchemaStatementHandlerTest {
     }
     
     @Test
-    public void assertGetRenameSchemaForSQLServer() {
+    void assertGetRenameSchemaForSQLServer() {
         SQLServerAlterSchemaStatement alterSchemaStatement = new SQLServerAlterSchemaStatement();
         assertFalse(AlterSchemaStatementHandler.getRenameSchema(alterSchemaStatement).isPresent());
     }

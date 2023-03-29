@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLHandshakePacketTest {
+class MySQLHandshakePacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
@@ -43,7 +43,7 @@ public final class MySQLHandshakePacketTest {
     private final byte[] part2 = {68, 102, 53, 122, 65, 49, 84, 79, 85, 115, 116, 113};
     
     @Test
-    public void assertNewWithPayload() {
+    void assertNewWithPayload() {
         when(payload.readInt1()).thenReturn(MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.DEFAULT_CHARSET.getId(), 0);
         when(payload.readStringNul()).thenReturn(MySQLServerInfo.getDefaultServerVersion());
         when(payload.readStringNulByBytes()).thenReturn(part1, part2);
@@ -63,7 +63,7 @@ public final class MySQLHandshakePacketTest {
     }
     
     @Test
-    public void assertNewWithClientPluginAuthPayload() {
+    void assertNewWithClientPluginAuthPayload() {
         when(payload.readInt1()).thenReturn(MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.DEFAULT_CHARSET.getId(), 0);
         when(payload.readStringNul()).thenReturn(MySQLServerInfo.getDefaultServerVersion(), MySQLAuthenticationMethod.NATIVE.getMethodName());
         when(payload.readStringNulByBytes()).thenReturn(part1, part2);
@@ -84,7 +84,7 @@ public final class MySQLHandshakePacketTest {
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         MySQLAuthenticationPluginData authPluginData = new MySQLAuthenticationPluginData(part1, part2);
         new MySQLHandshakePacket(1000, authPluginData).write(payload);
         verify(payload).writeInt1(MySQLServerInfo.PROTOCOL_VERSION);
@@ -101,7 +101,7 @@ public final class MySQLHandshakePacketTest {
     }
     
     @Test
-    public void assertWriteWithClientPluginAuth() {
+    void assertWriteWithClientPluginAuth() {
         MySQLAuthenticationPluginData authPluginData = new MySQLAuthenticationPluginData(part1, part2);
         MySQLHandshakePacket actual = new MySQLHandshakePacket(1000, authPluginData);
         actual.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);

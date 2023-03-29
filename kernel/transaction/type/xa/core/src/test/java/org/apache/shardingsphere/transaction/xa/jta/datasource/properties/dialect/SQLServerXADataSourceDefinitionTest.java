@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.transaction.xa.jta.datasource.properties.dialect;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class SQLServerXADataSourceDefinitionTest {
+class SQLServerXADataSourceDefinitionTest {
     
     @Test
-    public void assertGetXADriverClassName() {
+    void assertGetXADriverClassName() {
         assertThat(new SQLServerXADataSourceDefinition().getXADriverClassNames(), is(Collections.singletonList("com.microsoft.sqlserver.jdbc.SQLServerXADataSource")));
     }
 }

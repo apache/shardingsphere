@@ -20,31 +20,29 @@ package org.apache.shardingsphere.mode.manager.standalone;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.manager.standalone.yaml.StandaloneYamlPersistRepositoryConfigurationSwapper;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class StandaloneYamlPersistRepositoryConfigurationSwapperTest {
-    
-    public static final String TEST_TYPE = "TEST_TYPE";
+class StandaloneYamlPersistRepositoryConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYamlConfiguration() {
-        StandalonePersistRepositoryConfiguration standalonePersistRepositoryConfig = new StandalonePersistRepositoryConfiguration(TEST_TYPE, new Properties());
+    void assertSwapToYamlConfiguration() {
+        StandalonePersistRepositoryConfiguration standalonePersistRepositoryConfig = new StandalonePersistRepositoryConfiguration("TEST", new Properties());
         YamlPersistRepositoryConfiguration actual = new StandaloneYamlPersistRepositoryConfigurationSwapper().swapToYamlConfiguration(standalonePersistRepositoryConfig);
         assertThat(actual.getProps(), is(new Properties()));
-        assertThat(actual.getType(), is(TEST_TYPE));
+        assertThat(actual.getType(), is("TEST"));
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlPersistRepositoryConfiguration yamlPersistRepositoryConfig = new YamlPersistRepositoryConfiguration();
-        yamlPersistRepositoryConfig.setType(TEST_TYPE);
+        yamlPersistRepositoryConfig.setType("TEST");
         StandalonePersistRepositoryConfiguration actual = new StandaloneYamlPersistRepositoryConfigurationSwapper().swapToObject(yamlPersistRepositoryConfig);
         assertThat(actual.getProps(), is(new Properties()));
-        assertThat(actual.getType(), is(TEST_TYPE));
+        assertThat(actual.getType(), is("TEST"));
     }
 }

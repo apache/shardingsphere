@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.mode.lock;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class GlobalLockDefinitionTest {
+class GlobalLockDefinitionTest {
     
     @Test
-    public void assertGetLockKey() {
+    void assertGetLockKey() {
         assertThat(new GlobalLockDefinition("foo_lock").getLockKey(), is("/lock/exclusive/locks/foo_lock"));
     }
 }

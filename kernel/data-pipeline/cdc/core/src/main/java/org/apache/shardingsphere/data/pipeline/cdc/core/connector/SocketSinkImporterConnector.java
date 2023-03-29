@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.cdc.core.connector;
 
 import io.netty.channel.Channel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
@@ -32,12 +32,11 @@ import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.SocketSinkImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
-import org.apache.shardingsphere.data.pipeline.cdc.util.CDCDataRecordUtil;
-import org.apache.shardingsphere.data.pipeline.cdc.util.DataRecordResultConvertUtil;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
-import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterType;
+import org.apache.shardingsphere.data.pipeline.cdc.util.CDCDataRecordUtils;
+import org.apache.shardingsphere.data.pipeline.cdc.util.DataRecordResultConvertUtils;
+import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -58,7 +57,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Socket sink importer connector.
  */
 @Slf4j
-public final class SocketSinkImporterConnector implements ImporterConnector {
+public final class SocketSinkImporterConnector implements ImporterConnector, AutoCloseable {
     
     private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200L;
     
@@ -69,8 +68,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
     @Setter
     private volatile boolean incrementalTaskRunning = true;
     
-    @Getter
-    private final String database;
+    private final ShardingSphereDatabase database;
     
     private final Channel channel;
     
@@ -86,7 +84,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
     
     private Thread incrementalImporterTask;
     
-    public SocketSinkImporterConnector(final Channel channel, final String database, final int jobShardingCount, final Collection<String> schemaTableNames,
+    public SocketSinkImporterConnector(final Channel channel, final ShardingSphereDatabase database, final int jobShardingCount, final Collection<String> schemaTableNames,
                                        final Comparator<DataRecord> dataRecordComparator) {
         this.channel = channel;
         this.database = database;
@@ -122,7 +120,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
                 socketSinkImporter.ackWithLastDataRecord(new CDCAckPosition(lastRecord, 0));
                 return;
             }
-            importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(RecordUtil.getLastNormalRecord(recordList), dataRecordCount));
+            importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(RecordUtils.getLastNormalRecord(recordList), dataRecordCount));
             writeImmediately(recordList, importerDataRecordMap);
         } else if (ImporterType.INCREMENTAL == importerType) {
             writeIntoQueue(recordList, socketSinkImporter);
@@ -142,10 +140,10 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
                 continue;
             }
             DataRecord dataRecord = (DataRecord) each;
-            records.add(DataRecordResultConvertUtil.convertDataRecordToRecord(database, tableNameSchemaMap.get(dataRecord.getTableName()), dataRecord));
+            records.add(DataRecordResultConvertUtils.convertDataRecordToRecord(database.getName(), tableNameSchemaMap.get(dataRecord.getTableName()), dataRecord));
         }
         String ackId = CDCAckHolder.getInstance().bindAckIdWithPosition(importerDataRecordMap);
-        DataRecordResult dataRecordResult = DataRecordResult.newBuilder().addAllRecords(records).setAckId(ackId).build();
+        DataRecordResult dataRecordResult = DataRecordResult.newBuilder().addAllRecord(records).setAckId(ackId).build();
         channel.writeAndFlush(CDCResponseGenerator.succeedBuilder("").setDataRecordResult(dataRecordResult).build());
     }
     
@@ -207,25 +205,31 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
         return CDCSinkType.SOCKET.name();
     }
     
+    @Override
+    public void close() throws Exception {
+        channel.close();
+    }
+    
     @RequiredArgsConstructor
     private final class CDCIncrementalImporterTask implements Runnable {
         
         private final int batchSize;
         
+        @SneakyThrows(InterruptedException.class)
         @Override
         public void run() {
             while (incrementalTaskRunning) {
                 Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap = new HashMap<>();
                 List<DataRecord> dataRecords = new LinkedList<>();
                 for (int i = 0; i < batchSize; i++) {
-                    DataRecord minimumDataRecord = CDCDataRecordUtil.findMinimumDataRecordAndSavePosition(incrementalRecordMap, dataRecordComparator, cdcAckPositionMap);
+                    DataRecord minimumDataRecord = CDCDataRecordUtils.findMinimumDataRecordAndSavePosition(incrementalRecordMap, dataRecordComparator, cdcAckPositionMap);
                     if (null == minimumDataRecord) {
                         break;
                     }
                     dataRecords.add(minimumDataRecord);
                 }
                 if (dataRecords.isEmpty()) {
-                    ThreadUtil.sleep(200, TimeUnit.MILLISECONDS);
+                    Thread.sleep(200L);
                 } else {
                     writeImmediately(dataRecords, cdcAckPositionMap);
                 }

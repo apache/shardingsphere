@@ -23,17 +23,17 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class GeneratedKeyInsertColumnTokenTest {
+class GeneratedKeyInsertColumnTokenTest {
     
     private GeneratedKeyInsertColumnToken generatedKeyInsertColumnToken;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         generatedKeyInsertColumnToken = new GeneratedKeyInsertColumnToken(0, "id");
     }
     
     @Test
-    public void assertGeneratedKeyInsertColumnTokenTest() {
+    void assertGeneratedKeyInsertColumnTokenTest() {
         assertThat(generatedKeyInsertColumnToken.toString(), is(", id"));
     }
 }

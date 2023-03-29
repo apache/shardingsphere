@@ -64,10 +64,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class MySQLMultiStatementsHandlerTest {
+class MySQLMultiStatementsHandlerTest {
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         String sql = "update t set v=v+1 where id=1;update t set v=v+1 where id=2;update t set v=v+1 where id=3";
         ConnectionSession connectionSession = mockConnectionSession();
         MySQLUpdateStatement expectedStatement = mock(MySQLUpdateStatement.class);
@@ -98,7 +98,7 @@ public final class MySQLMultiStatementsHandlerTest {
         return result;
     }
     
-    private static ContextManager mockContextManager() {
+    private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db").getResourceMetaData().getAllInstanceDataSourceNames())
                 .thenReturn(Collections.singletonList("foo_ds"));

@@ -62,7 +62,7 @@ public final class OkHttpUtils {
      * @param url url
      * @param clazz clazz
      * @return type parameter class bean
-     * @throws IOException the IOException
+     * @throws IOException IO exception
      */
     public <T> T get(final String url, final Class<T> clazz) throws IOException {
         return GSON.fromJson(get(url), clazz);
@@ -73,12 +73,24 @@ public final class OkHttpUtils {
      *
      * @param url url
      * @return response json
-     * @throws IOException the IOException
+     * @throws IOException IO exception
      */
     public String get(final String url) throws IOException {
         Request request = new Request.Builder().url(url).build();
         Response response = client.newCall(request).execute();
         assertNotNull(response.body());
         return response.body().string();
+    }
+    
+    /**
+     * Get response.
+     *
+     * @param url url
+     * @return response
+     * @throws IOException IO exception
+     */
+    public Response getResponse(final String url) throws IOException {
+        Request request = new Request.Builder().url(url).build();
+        return client.newCall(request).execute();
     }
 }

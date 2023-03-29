@@ -24,10 +24,10 @@ import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
-import org.apache.shardingsphere.mode.metadata.storage.event.DataSourceDisabledEvent;
-import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
+import org.apache.shardingsphere.mode.event.storage.DataSourceDisabledEvent;
+import org.apache.shardingsphere.mode.event.storage.PrimaryDataSourceChangedEvent;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

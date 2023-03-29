@@ -28,7 +28,7 @@ import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.infra.parser.SQLParserEngine;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -113,7 +113,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     }
     
     protected final String getCreateTargetTableSQL(final CreateTableEntry createTableEntry, final PipelineDataSourceManager dataSourceManager,
-                                                   final ShardingSphereSQLParserEngine sqlParserEngine) throws SQLException {
+                                                   final SQLParserEngine sqlParserEngine) throws SQLException {
         DatabaseType databaseType = createTableEntry.getSourceDataSourceConfig().getDatabaseType();
         DataSource sourceDataSource = dataSourceManager.getDataSource(createTableEntry.getSourceDataSourceConfig());
         String schemaName = createTableEntry.getSourceName().getSchemaName().getOriginal();

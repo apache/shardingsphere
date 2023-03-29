@@ -20,15 +20,15 @@ package org.apache.shardingsphere.proxy.frontend.mysql;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class MySQLFrontendContextTest {
+class MySQLFrontendContextTest {
     
     @Test
-    public void assertIsRequiredSameThreadForConnection() {
+    void assertIsRequiredSameThreadForConnection() {
         MySQLFrontendContext actual = new MySQLFrontendContext();
         ByteBuf comStmtExecuteMessage = Unpooled.wrappedBuffer(new byte[]{0x00, (byte) MySQLCommandPacketType.COM_STMT_EXECUTE.getValue()});
         ByteBuf comStmtSendLongData = Unpooled.wrappedBuffer(new byte[]{0x00, (byte) MySQLCommandPacketType.COM_STMT_SEND_LONG_DATA.getValue()});
@@ -45,7 +45,7 @@ public final class MySQLFrontendContextTest {
     }
     
     @Test
-    public void assertNoEnoughReadableBytes() {
+    void assertNoEnoughReadableBytes() {
         MySQLFrontendContext actual = new MySQLFrontendContext();
         assertFalse(actual.isRequiredSameThreadForConnection(Unpooled.wrappedBuffer(new byte[1])));
     }

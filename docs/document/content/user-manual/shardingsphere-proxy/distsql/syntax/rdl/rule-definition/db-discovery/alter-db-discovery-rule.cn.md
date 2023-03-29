@@ -5,7 +5,7 @@ weight = 3
 
 ## 描述
 
-`ALTER DB_DISCOVERY RULE` 语法用于修改数据库发现规则
+`ALTER DB_DISCOVERY RULE` 语法用于修改数据库发现规则。
 
 ### 语法定义
 

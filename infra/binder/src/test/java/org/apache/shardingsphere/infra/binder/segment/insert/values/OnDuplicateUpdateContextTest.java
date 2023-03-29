@@ -38,10 +38,10 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class OnDuplicateUpdateContextTest {
+class OnDuplicateUpdateContextTest {
     
     @Test
-    public void assertInstanceConstructedOk() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    void assertInstanceConstructedOk() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(Collections.emptyList(), Collections.emptyList(), 0);
         assertThat(onDuplicateUpdateContext.getValueExpressions(), is(Plugins.getMemberAccessor()
                 .invoke(OnDuplicateUpdateContext.class.getDeclaredMethod("getValueExpressions", Collection.class), onDuplicateUpdateContext, Collections.emptyList())));
@@ -50,7 +50,7 @@ public final class OnDuplicateUpdateContextTest {
     }
     
     @Test
-    public void assertGetValueWhenParameterMarker() {
+    void assertGetValueWhenParameterMarker() {
         Collection<AssignmentSegment> assignments = createParameterMarkerExpressionAssignmentSegment();
         String parameterValue1 = "test1";
         String parameterValue2 = "test2";
@@ -71,7 +71,7 @@ public final class OnDuplicateUpdateContextTest {
     }
     
     @Test
-    public void assertGetValueWhenLiteralExpressionSegment() {
+    void assertGetValueWhenLiteralExpressionSegment() {
         Object literalObject = new Object();
         Collection<AssignmentSegment> assignments = createLiteralExpressionSegment(literalObject);
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, Collections.emptyList(), 0);
@@ -102,7 +102,7 @@ public final class OnDuplicateUpdateContextTest {
     }
     
     @Test
-    public void assertGetColumn() {
+    void assertGetColumn() {
         Object literalObject = new Object();
         Collection<AssignmentSegment> assignments = createLiteralExpressionSegment(literalObject);
         OnDuplicateUpdateContext onDuplicateUpdateContext = new OnDuplicateUpdateContext(assignments, Collections.emptyList(), 0);
@@ -111,7 +111,7 @@ public final class OnDuplicateUpdateContextTest {
     }
     
     @Test
-    public void assertParameterCount() {
+    void assertParameterCount() {
         List<AssignmentSegment> assignments = Arrays.asList(
                 createAssignmentSegment(createBinaryOperationExpression()),
                 createAssignmentSegment(new ParameterMarkerExpressionSegment(0, 10, 5)),

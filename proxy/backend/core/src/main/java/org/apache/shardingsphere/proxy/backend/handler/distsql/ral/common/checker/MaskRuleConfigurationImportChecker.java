@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
 
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -62,9 +60,7 @@ public final class MaskRuleConfigurationImportChecker {
     }
     
     private void checkMaskAlgorithms(final MaskRuleConfiguration currentRuleConfig) {
-        Collection<String> notExistedAlgorithms = currentRuleConfig.getMaskAlgorithms().values().stream().map(AlgorithmConfiguration::getType)
-                .filter(each -> !TypedSPILoader.contains(MaskAlgorithm.class, each)).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(notExistedAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Mask algorithms", notExistedAlgorithms));
+        currentRuleConfig.getMaskAlgorithms().values().forEach(each -> TypedSPILoader.checkService(MaskAlgorithm.class, each.getType(), each.getProps()));
     }
     
     private void checkMaskAlgorithmsExisted(final MaskRuleConfiguration currentRuleConfig, final String databaseName) {

@@ -20,17 +20,17 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.job;
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class CDCJobIdTest {
+class CDCJobIdTest {
     
     @Test
-    public void parseJobType() {
+    void parseJobType() {
         CDCJobId pipelineJobId = new CDCJobId("sharding_db", Arrays.asList("test", "t_order"), false);
         String jobId = PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + "abcd";
         JobType actualJobType = PipelineJobIdUtils.parseJobType(jobId);

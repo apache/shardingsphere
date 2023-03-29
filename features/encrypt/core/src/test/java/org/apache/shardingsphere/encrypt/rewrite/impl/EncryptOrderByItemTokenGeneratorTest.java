@@ -47,12 +47,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class EncryptOrderByItemTokenGeneratorTest {
+class EncryptOrderByItemTokenGeneratorTest {
     
     private EncryptOrderByItemTokenGenerator generator;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         generator = new EncryptOrderByItemTokenGenerator();
         generator.setEncryptRule(buildEncryptRule());
         generator.setDatabaseName("db_schema");
@@ -60,7 +60,7 @@ public final class EncryptOrderByItemTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLTokens() {
+    void assertGenerateSQLTokens() {
         assertThat(generator.generateSQLTokens(buildSelectStatementContext()).size(), is(1));
     }
     

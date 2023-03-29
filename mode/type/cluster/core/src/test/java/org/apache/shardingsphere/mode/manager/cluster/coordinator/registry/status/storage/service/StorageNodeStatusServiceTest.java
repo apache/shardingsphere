@@ -30,13 +30,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class StorageNodeStatusServiceTest {
+class StorageNodeStatusServiceTest {
     
     @Mock
     private ClusterPersistRepository repository;
     
     @Test
-    public void assertLoadDisabledDataSources() {
+    void assertLoadDisabledDataSources() {
         List<String> disabledDataSources = Arrays.asList("replica_query_db.readwrite_ds.replica_ds_0", "other_schema.other_ds.other_ds0");
         when(repository.getChildrenKeys(anyString())).thenReturn(disabledDataSources);
         new StorageNodeStatusService(repository).loadStorageNodes();

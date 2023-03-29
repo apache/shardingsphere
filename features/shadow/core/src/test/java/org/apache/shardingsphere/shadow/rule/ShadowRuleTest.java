@@ -37,12 +37,12 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ShadowRuleTest {
+class ShadowRuleTest {
     
     private ShadowRule shadowRule;
     
     @BeforeEach
-    public void init() {
+    void init() {
         shadowRule = new ShadowRule(createShadowRuleConfiguration());
     }
     
@@ -93,7 +93,7 @@ public final class ShadowRuleTest {
     }
     
     @Test
-    public void assertNewShadowRulSuccessByShadowRuleConfiguration() {
+    void assertNewShadowRulSuccessByShadowRuleConfiguration() {
         assertShadowDataSourceMappings(shadowRule.getShadowDataSourceMappings());
         assertShadowTableRules(shadowRule.getShadowTableRules());
     }
@@ -122,14 +122,14 @@ public final class ShadowRuleTest {
     }
     
     @Test
-    public void assertGetRelatedShadowTables() {
+    void assertGetRelatedShadowTables() {
         Collection<String> relatedShadowTables = shadowRule.getRelatedShadowTables(Arrays.asList("t_user", "t_auto"));
         assertThat(relatedShadowTables.size(), is(1));
         assertThat(relatedShadowTables.iterator().next(), is("t_user"));
     }
     
     @Test
-    public void assertGetAllShadowTableNames() {
+    void assertGetAllShadowTableNames() {
         Collection<String> allShadowTableNames = shadowRule.getAllShadowTableNames();
         assertThat(allShadowTableNames.size(), is(2));
         Iterator<String> iterator = allShadowTableNames.iterator();

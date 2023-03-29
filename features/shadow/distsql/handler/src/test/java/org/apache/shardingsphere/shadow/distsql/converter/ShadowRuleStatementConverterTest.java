@@ -32,10 +32,10 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class ShadowRuleStatementConverterTest {
+class ShadowRuleStatementConverterTest {
     
     @Test
-    public void assertConvert() {
+    void assertConvert() {
         ShadowRuleConfiguration config = ShadowRuleStatementConverter.convert(Collections.singleton(createTableRuleSegment()));
         ShadowDataSourceConfiguration shadowDataSourceConfig = config.getDataSources().iterator().next();
         assertThat(shadowDataSourceConfig.getProductionDataSourceName(), is("source"));

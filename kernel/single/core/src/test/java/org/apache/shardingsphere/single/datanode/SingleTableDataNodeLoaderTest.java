@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -44,18 +44,22 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SingleTableDataNodeLoaderTest {
+class SingleTableDataNodeLoaderTest {
     
     private static final String TABLE_TYPE = "TABLE";
     
     private static final String VIEW_TYPE = "VIEW";
     
+    private static final String SYSTEM_TABLE_TYPE = "SYSTEM TABLE";
+    
+    private static final String SYSTEM_VIEW_TYPE = "SYSTEM VIEW";
+    
     private static final String TABLE_NAME = "TABLE_NAME";
     
     private Map<String, DataSource> dataSourceMap;
     
-    @Before
-    public void setUp() throws SQLException {
+    @BeforeEach
+    void setUp() throws SQLException {
         dataSourceMap = new LinkedHashMap<>(2, 1);
         dataSourceMap.put("ds0", mockDataSource("ds0", Arrays.asList("employee", "dept", "salary")));
         dataSourceMap.put("ds1", mockDataSource("ds1", Arrays.asList("student", "teacher", "class", "salary")));
@@ -65,7 +69,7 @@ public final class SingleTableDataNodeLoaderTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getCatalog()).thenReturn(dataSourceName);
         ResultSet resultSet = mockResultSet(tableNames);
-        when(connection.getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, VIEW_TYPE})).thenReturn(resultSet);
+        when(connection.getMetaData().getTables(dataSourceName, null, null, new String[]{TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE})).thenReturn(resultSet);
         return new MockedDataSource(connection);
     }
     
@@ -81,7 +85,7 @@ public final class SingleTableDataNodeLoaderTest {
     }
     
     @Test
-    public void assertLoad() {
+    void assertLoad() {
         Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, excludedTables);
         assertFalse(actual.containsKey("employee"));
@@ -96,7 +100,7 @@ public final class SingleTableDataNodeLoaderTest {
     }
     
     @Test
-    public void assertLoadWithConflictTables() {
+    void assertLoadWithConflictTables() {
         Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, Collections.emptyList());
         assertTrue(actual.containsKey("employee"));
         assertTrue(actual.containsKey("salary"));

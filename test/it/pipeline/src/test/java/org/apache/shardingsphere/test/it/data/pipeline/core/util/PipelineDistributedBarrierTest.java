@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.it.data.pipeline.core.util;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
-import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Map;
@@ -32,15 +32,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class PipelineDistributedBarrierTest {
+class PipelineDistributedBarrierTest {
     
-    @BeforeClass
-    public static void setUp() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
+    @BeforeAll
+    static void setUp() {
+        PipelineContextUtils.mockModeConfigAndContextManager();
     }
     
     @Test
-    public void assertRegisterAndRemove() throws ReflectiveOperationException {
+    void assertRegisterAndRemove() throws ReflectiveOperationException {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
         PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");
@@ -55,7 +55,7 @@ public final class PipelineDistributedBarrierTest {
     }
     
     @Test
-    public void assertAwait() {
+    void assertAwait() {
         String jobId = "j0130317c3054317c7363616c696e675f626d73716c";
         PersistRepository repository = PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository();
         repository.persist(PipelineMetaDataNode.getJobRootPath(jobId), "");

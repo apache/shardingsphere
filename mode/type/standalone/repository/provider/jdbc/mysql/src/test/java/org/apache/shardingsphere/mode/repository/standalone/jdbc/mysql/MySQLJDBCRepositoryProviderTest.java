@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class MySQLJDBCRepositoryProviderTest {
+class MySQLJDBCRepositoryProviderTest {
     
     @Mock
     private Connection connection;
@@ -61,7 +61,7 @@ public class MySQLJDBCRepositoryProviderTest {
     private final JDBCRepository repository = new JDBCRepository();
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         construction = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(connection));
         when(connection.createStatement()).thenReturn(mock(Statement.class));
         repository.init(PropertiesBuilder.build(new Property("jdbc_url", "jdbc:mysql://localhost:3306/config"),
@@ -69,13 +69,13 @@ public class MySQLJDBCRepositoryProviderTest {
     }
     
     @AfterEach
-    public void stop() {
+    void stop() {
         repository.close();
         construction.close();
     }
     
     @Test
-    public void assertPersistAndGet() throws SQLException {
+    void assertPersistAndGet() throws SQLException {
         when(connection.prepareStatement(provider.selectByKeySQL())).thenReturn(preparedStatement);
         when(connection.prepareStatement(provider.insertSQL())).thenReturn(preparedStatement);
         when(connection.prepareStatement(provider.updateSQL())).thenReturn(preparedStatement);
@@ -89,7 +89,7 @@ public class MySQLJDBCRepositoryProviderTest {
     }
     
     @Test
-    public void assertPersistAndGetChildrenKeys() throws SQLException {
+    void assertPersistAndGetChildrenKeys() throws SQLException {
         when(connection.prepareStatement(provider.selectByKeySQL())).thenReturn(preparedStatement);
         when(connection.prepareStatement(provider.insertSQL())).thenReturn(preparedStatement);
         when(connection.prepareStatement(provider.selectByParentKeySQL())).thenReturn(preparedStatement);
@@ -104,7 +104,7 @@ public class MySQLJDBCRepositoryProviderTest {
     }
     
     @Test
-    public void assertDelete() throws SQLException {
+    void assertDelete() throws SQLException {
         when(connection.prepareStatement(provider.selectByKeySQL())).thenReturn(preparedStatement);
         when(connection.prepareStatement(provider.deleteSQL())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);

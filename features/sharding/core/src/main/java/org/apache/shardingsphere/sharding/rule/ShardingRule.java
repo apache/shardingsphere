@@ -58,8 +58,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOp
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtil;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -354,6 +354,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      *
      * @param logicTableName logic table name
      * @return table rule
+     * @throws ShardingTableRuleNotFoundException sharding table rule not found exception
      */
     public TableRule getTableRule(final String logicTableName) {
         Optional<TableRule> tableRule = findTableRule(logicTableName);
@@ -414,7 +415,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
         SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
-        Collection<WhereSegment> joinSegments = WhereExtractUtil.getJoinWhereSegments(select.getSqlStatement());
+        Collection<WhereSegment> joinSegments = WhereExtractUtils.getJoinWhereSegments(select.getSqlStatement());
         return isJoinConditionContainsShardingColumns(schema, select, logicTableNames, joinSegments)
                 || isJoinConditionContainsShardingColumns(schema, select, logicTableNames, select.getWhereSegments());
     }
@@ -655,16 +656,6 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
                 .orElseGet(Collections::emptyMap);
     }
     
-    /**
-     * Get logic tables via actual table name.
-     *
-     * @param actualTable actual table name
-     * @return logic tables
-     */
-    public Collection<String> getLogicTablesByActualTable(final String actualTable) {
-        return tableRules.values().stream().filter(each -> each.isExisted(actualTable)).map(TableRule::getLogicTable).collect(Collectors.toSet());
-    }
-    
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
         return shardingTableDataNodes;
@@ -672,6 +663,9 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     @Override
     public Collection<DataNode> getDataNodesByTableName(final String tableName) {
+        if (isBroadcastTable(tableName)) {
+            return new TableRule(dataSourceNames, tableName).getActualDataNodes();
+        }
         return shardingTableDataNodes.getOrDefault(tableName.toLowerCase(), Collections.emptyList());
     }
     
@@ -715,7 +709,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         Collection<String> databaseJoinConditionTables = new HashSet<>(tableNames.size());
         Collection<String> tableJoinConditionTables = new HashSet<>(tableNames.size());
         for (WhereSegment each : whereSegments) {
-            Collection<AndPredicate> andPredicates = ExpressionExtractUtil.getAndPredicates(each.getExpr());
+            Collection<AndPredicate> andPredicates = ExpressionExtractUtils.getAndPredicates(each.getExpr());
             if (andPredicates.size() > 1) {
                 return false;
             }

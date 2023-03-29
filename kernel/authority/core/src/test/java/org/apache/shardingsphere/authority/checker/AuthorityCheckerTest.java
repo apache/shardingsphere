@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,17 +34,17 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class AuthorityCheckerTest {
+class AuthorityCheckerTest {
     
     @Test
-    public void assertCheckIsAuthorizedDatabase() {
+    void assertCheckIsAuthorizedDatabase() {
         Collection<ShardingSphereUser> users = Collections.singleton(new ShardingSphereUser("root", "", "localhost"));
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null);
         assertTrue(new AuthorityChecker(new AuthorityRule(ruleConfig, Collections.emptyMap()), new Grantee("root", "localhost")).isAuthorized("db0"));
     }
     
     @Test
-    public void assertCheckPrivileges() {
+    void assertCheckPrivileges() {
         Collection<ShardingSphereUser> users = Collections.singleton(new ShardingSphereUser("root", "", "localhost"));
         AuthorityRule rule = new AuthorityRule(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties()), null), Collections.emptyMap());
         AuthorityChecker authorityChecker = new AuthorityChecker(rule, new Grantee("root", "localhost"));

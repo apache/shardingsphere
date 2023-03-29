@@ -22,6 +22,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.driver.executor.DriverExecutor;
+import org.apache.shardingsphere.driver.executor.batch.BatchStatementExecutor;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteCallback;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteUpdateCallback;
 import org.apache.shardingsphere.driver.executor.callback.impl.StatementExecuteQueryCallback;
@@ -75,7 +76,9 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.rule.identifier.type.ColumnContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -126,6 +129,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     @Getter(AccessLevel.PROTECTED)
     private final StatementManager statementManager;
     
+    private final BatchStatementExecutor batchStatementExecutor;
+    
     private boolean returnGeneratedKeys;
     
     private ExecutionContext executionContext;
@@ -153,6 +158,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         kernelProcessor = new KernelProcessor();
         trafficRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
         statementManager = new StatementManager();
+        batchStatementExecutor = new BatchStatementExecutor(this);
     }
     
     @Override
@@ -177,7 +183,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             executionContext = createExecutionContext(queryContext);
             List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
-            result = new ShardingSphereResultSet(getResultSets(), mergedResult, this, executionContext);
+            result = new ShardingSphereResultSet(getResultSets(), mergedResult, this, isTransparentStatement(queryContext.getSqlStatementContext(),
+                    metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData()), executionContext);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -240,6 +247,31 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connection.getConnectionManager(), statementManager, statementOption,
                 metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData().getRules(),
                 metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes());
+    }
+    
+    private boolean isTransparentStatement(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereRuleMetaData ruleMetaData) {
+        Optional<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleForShardingRule(ruleMetaData.findRules(DataNodeContainedRule.class));
+        Collection<ColumnContainedRule> columnContainedRules = ruleMetaData.findRules(ColumnContainedRule.class);
+        for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
+            return (!dataNodeContainedRule.isPresent() || !dataNodeContainedRule.get().getAllTables().contains(each)) && !containsInColumnContainedRule(each, columnContainedRules);
+        }
+        return true;
+    }
+    
+    private Optional<DataNodeContainedRule> getDataNodeContainedRuleForShardingRule(final Collection<DataNodeContainedRule> dataNodeContainedRules) {
+        for (DataNodeContainedRule each : dataNodeContainedRules) {
+            if (!(each instanceof MutableDataNodeRule)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private boolean containsInColumnContainedRule(final String tableName, final Collection<ColumnContainedRule> columnContainedRules) {
+        for (ColumnContainedRule each : columnContainedRules) {
+            return each.getTables().contains(tableName);
+        }
+        return false;
     }
     
     @Override
@@ -480,7 +512,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private void checkSameDatabaseNameInTransaction(final SQLStatementContext<?> sqlStatementContext, final String connectionDatabaseName) {
-        if (!connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction()) {
+        if (!connection.getConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()) {
             return;
         }
         if (sqlStatementContext instanceof TableAvailable) {
@@ -505,6 +537,21 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             each.close();
         }
         statements.clear();
+    }
+    
+    @Override
+    public void addBatch(final String sql) throws SQLException {
+        batchStatementExecutor.addBatch(sql);
+    }
+    
+    @Override
+    public void clearBatch() {
+        batchStatementExecutor.clear();
+    }
+    
+    @Override
+    public int[] executeBatch() throws SQLException {
+        return batchStatementExecutor.executeBatch();
     }
     
     private QueryContext createQueryContext(final String originSQL) {
@@ -539,7 +586,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private boolean isNeedImplicitCommitTransaction(final ExecutionContext executionContext) {
         ConnectionTransaction connectionTransaction = connection.getConnectionManager().getConnectionTransaction();
-        boolean isInTransaction = connection.getConnectionManager().getConnectionContext().getTransactionConnectionContext().isInTransaction();
+        boolean isInTransaction = connection.getConnectionManager().getConnectionContext().getTransactionContext().isInTransaction();
         SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
         return TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) && !isInTransaction && sqlStatement instanceof DMLStatement
                 && !(sqlStatement instanceof SelectStatement) && executionContext.getExecutionUnits().size() > 1;
@@ -615,7 +662,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 return currentResultSet;
             }
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
-            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, executionContext);
+            currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, isTransparentStatement(executionContext.getSqlStatementContext(),
+                    metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getRuleMetaData()), executionContext);
         }
         return currentResultSet;
     }

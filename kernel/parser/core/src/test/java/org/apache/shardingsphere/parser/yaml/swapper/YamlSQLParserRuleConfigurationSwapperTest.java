@@ -21,16 +21,16 @@ import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlSQLParserRuleConfigurationSwapperTest {
+class YamlSQLParserRuleConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlSQLParserRuleConfiguration actual =
                 new YamlSQLParserRuleConfigurationSwapper().swapToYamlConfiguration(new SQLParserRuleConfiguration(true, new CacheOption(2, 5), new CacheOption(4, 7)));
         assertTrue(actual.isSqlCommentParseEnabled());
@@ -41,7 +41,7 @@ public final class YamlSQLParserRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObjectWithDefaultConfig() {
+    void assertSwapToObjectWithDefaultConfig() {
         YamlSQLParserRuleConfiguration yamlConfig = new YamlSQLParserRuleConfiguration();
         yamlConfig.setSqlCommentParseEnabled(true);
         SQLParserRuleConfiguration actual = new YamlSQLParserRuleConfigurationSwapper().swapToObject(yamlConfig);
@@ -52,7 +52,7 @@ public final class YamlSQLParserRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlSQLParserRuleConfiguration yamlConfig = new YamlSQLParserRuleConfiguration();
         yamlConfig.setSqlCommentParseEnabled(true);
         yamlConfig.setParseTreeCache(new YamlSQLParserCacheOptionRuleConfiguration());

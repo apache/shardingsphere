@@ -30,11 +30,11 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.Migrati
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureImporterConnector;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
-import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -49,42 +49,42 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class InventoryTaskTest {
+class InventoryTaskTest {
     
     private static final PipelineDataSourceManager DATA_SOURCE_MANAGER = new DefaultPipelineDataSourceManager();
     
     private MigrationTaskConfiguration taskConfig;
     
-    @BeforeClass
-    public static void beforeClass() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
+    @BeforeAll
+    static void beforeClass() {
+        PipelineContextUtils.mockModeConfigAndContextManager();
     }
     
-    @AfterClass
-    public static void afterClass() {
+    @AfterAll
+    static void afterClass() {
         DATA_SOURCE_MANAGER.close();
     }
     
-    @Before
-    public void setUp() {
-        taskConfig = PipelineContextUtil.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
+    @BeforeEach
+    void setUp() {
+        taskConfig = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
     }
     
     @Test
-    public void assertStartWithGetEstimatedRowsFailure() {
+    void assertStartWithGetEstimatedRowsFailure() {
         InventoryDumperConfiguration inventoryDumperConfig = createInventoryDumperConfiguration("t_non_exist", "t_non_exist");
         PipelineDataSourceWrapper dataSource = DATA_SOURCE_MANAGER.getDataSource(inventoryDumperConfig.getDataSourceConfig());
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
         try (
                 InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
-                        PipelineContextUtil.getPipelineChannelCreator(), new FixtureImporterConnector(), dataSource,
-                        metaDataLoader, PipelineContextUtil.getExecuteEngine(), PipelineContextUtil.getExecuteEngine(), new FixtureInventoryIncrementalJobItemContext())) {
+                        PipelineContextUtils.getPipelineChannelCreator(), new FixtureImporterConnector(), dataSource,
+                        metaDataLoader, PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(), new FixtureInventoryIncrementalJobItemContext())) {
             assertThrows(ExecutionException.class, () -> CompletableFuture.allOf(inventoryTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS));
         }
     }
     
     @Test
-    public void assertGetProgress() throws SQLException, ExecutionException, InterruptedException, TimeoutException {
+    void assertGetProgress() throws SQLException, ExecutionException, InterruptedException, TimeoutException {
         initTableData(taskConfig.getDumperConfig());
         // TODO use t_order_0, and also others
         InventoryDumperConfiguration inventoryDumperConfig = createInventoryDumperConfiguration("t_order", "t_order");
@@ -92,8 +92,8 @@ public final class InventoryTaskTest {
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
         try (
                 InventoryTask inventoryTask = new InventoryTask(inventoryDumperConfig, taskConfig.getImporterConfig(),
-                        PipelineContextUtil.getPipelineChannelCreator(), new FixtureImporterConnector(), dataSource,
-                        metaDataLoader, PipelineContextUtil.getExecuteEngine(), PipelineContextUtil.getExecuteEngine(), new FixtureInventoryIncrementalJobItemContext())) {
+                        PipelineContextUtils.getPipelineChannelCreator(), new FixtureImporterConnector(), dataSource,
+                        metaDataLoader, PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(), new FixtureInventoryIncrementalJobItemContext())) {
             CompletableFuture.allOf(inventoryTask.start().toArray(new CompletableFuture[0])).get(10L, TimeUnit.SECONDS);
             assertThat(inventoryTask.getTaskProgress().getPosition(), instanceOf(IntegerPrimaryKeyPosition.class));
         }
@@ -116,7 +116,7 @@ public final class InventoryTaskTest {
         InventoryDumperConfiguration result = new InventoryDumperConfiguration(taskConfig.getDumperConfig());
         result.setLogicTableName(logicTableName);
         result.setActualTableName(actualTableName);
-        result.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtil.mockOrderIdColumnMetaData()));
+        result.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
         result.setPosition(null == taskConfig.getDumperConfig().getPosition() ? new IntegerPrimaryKeyPosition(0, 1000) : taskConfig.getDumperConfig().getPosition());
         return result;
     }

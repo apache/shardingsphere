@@ -23,17 +23,17 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateFunctionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateFunctionStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class CreateFunctionStatementHandlerTest {
+class CreateFunctionStatementHandlerTest {
     
     @Test
-    public void assertGetRoutineBodySegmentWithRoutineBodySegmentForMySQL() {
+    void assertGetRoutineBodySegmentWithRoutineBodySegmentForMySQL() {
         MySQLCreateFunctionStatement createFunctionStatement = new MySQLCreateFunctionStatement();
         RoutineBodySegment routineBody = new RoutineBodySegment(0, 0);
         createFunctionStatement.setRoutineBody(routineBody);
@@ -42,14 +42,14 @@ public final class CreateFunctionStatementHandlerTest {
     }
     
     @Test
-    public void assertGetRoutineBodySegmentWithoutRoutineBodySegmentForMySQL() {
+    void assertGetRoutineBodySegmentWithoutRoutineBodySegmentForMySQL() {
         MySQLCreateFunctionStatement createFunctionStatement = new MySQLCreateFunctionStatement();
         Optional<RoutineBodySegment> routineBodySegment = CreateFunctionStatementHandler.getRoutineBodySegment(createFunctionStatement);
         assertFalse(routineBodySegment.isPresent());
     }
     
     @Test
-    public void assertGetRoutineBodySegmentForOtherDatabases() {
+    void assertGetRoutineBodySegmentForOtherDatabases() {
         assertFalse(CreateFunctionStatementHandler.getRoutineBodySegment(new OpenGaussCreateFunctionStatement()).isPresent());
         assertFalse(CreateFunctionStatementHandler.getRoutineBodySegment(new OracleCreateFunctionStatement()).isPresent());
         assertFalse(CreateFunctionStatementHandler.getRoutineBodySegment(new PostgreSQLCreateFunctionStatement()).isPresent());

@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.traffic.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.apache.shardingsphere.traffic.distsql.parser.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.traffic.distsql.parser.statement.updatable.AlterTrafficRuleStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,10 +38,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class AlterTrafficRuleStatementUpdaterTest {
+class AlterTrafficRuleStatementUpdaterTest {
     
     @Test
-    public void assertExecuteWithNotExistRuleName() {
+    void assertExecuteWithNotExistRuleName() {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_3", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
@@ -50,16 +50,16 @@ public final class AlterTrafficRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithInvalidAlgorithmType() {
+    void assertExecuteWithInvalidAlgorithmType() {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment(
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("invalid", new Properties()), new AlgorithmSegment("invalid", new Properties()));
         AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
-        assertThrows(InvalidAlgorithmConfigurationException.class,
+        assertThrows(ServiceProviderNotFoundServerException.class,
                 () -> updater.checkSQLStatement(createTrafficRuleConfiguration(), new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment))));
     }
     
     @Test
-    public void assertExecuteWithLoadBalancerCannotBeNull() {
+    void assertExecuteWithLoadBalancerCannotBeNull() {
         TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("rule_name_1", Arrays.asList("olap", "order_by"),
                 new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
         AlterTrafficRuleStatementUpdater updater = new AlterTrafficRuleStatementUpdater();
@@ -70,7 +70,7 @@ public final class AlterTrafficRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         TrafficRuleSegment trafficRuleSegment1 = new TrafficRuleSegment(
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment(

@@ -81,7 +81,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ZookeeperRepositoryTest {
+class ZookeeperRepositoryTest {
     
     private static final ZookeeperRepository REPOSITORY = new ZookeeperRepository();
     
@@ -121,7 +121,7 @@ public final class ZookeeperRepositoryTest {
     private Builder builder;
     
     @BeforeEach
-    public void init() {
+    void init() {
         mockClient();
         mockBuilder();
         ClusterPersistRepositoryConfiguration config = new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS, new Properties());
@@ -162,28 +162,28 @@ public final class ZookeeperRepositoryTest {
     }
     
     @Test
-    public void assertPersist() throws Exception {
+    void assertPersist() throws Exception {
         when(protect.withMode(CreateMode.PERSISTENT)).thenReturn(protect);
         REPOSITORY.persist("/test", "value1");
         verify(protect).forPath("/test", "value1".getBytes(StandardCharsets.UTF_8));
     }
     
     @Test
-    public void assertUpdate() throws Exception {
+    void assertUpdate() throws Exception {
         when(existsBuilder.forPath("/test")).thenReturn(new Stat());
         REPOSITORY.persist("/test", "value2");
         verify(setDataBuilder).forPath("/test", "value2".getBytes(StandardCharsets.UTF_8));
     }
     
     @Test
-    public void assertPersistEphemeralNotExist() throws Exception {
+    void assertPersistEphemeralNotExist() throws Exception {
         when(protect.withMode(CreateMode.EPHEMERAL)).thenReturn(protect);
         REPOSITORY.persistEphemeral("/test/ephemeral", "value3");
         verify(protect).forPath("/test/ephemeral", "value3".getBytes(StandardCharsets.UTF_8));
     }
     
     @Test
-    public void assertPersistEphemeralExist() throws Exception {
+    void assertPersistEphemeralExist() throws Exception {
         when(existsBuilder.forPath("/test/ephemeral")).thenReturn(new Stat());
         when(protect.withMode(CreateMode.EPHEMERAL)).thenReturn(protect);
         REPOSITORY.persistEphemeral("/test/ephemeral", "value4");
@@ -192,7 +192,7 @@ public final class ZookeeperRepositoryTest {
     }
     
     @Test
-    public void assertGetChildrenKeys() throws Exception {
+    void assertGetChildrenKeys() throws Exception {
         List<String> keys = Arrays.asList("/test/children/keys/1", "/test/children/keys/2");
         when(getChildrenBuilder.forPath("/test/children/keys")).thenReturn(keys);
         List<String> childrenKeys = REPOSITORY.getChildrenKeys("/test/children/keys");
@@ -200,7 +200,7 @@ public final class ZookeeperRepositoryTest {
     }
     
     @Test
-    public void assertWatchUpdatedChangedType() throws ExecutionException, InterruptedException {
+    void assertWatchUpdatedChangedType() throws ExecutionException, InterruptedException {
         mockCache("/test/children_updated/1");
         ChildData oldData = new ChildData("/test/children_updated/1", null, "value1".getBytes());
         ChildData data = new ChildData("/test/children_updated/1", null, "value2".getBytes());
@@ -214,7 +214,7 @@ public final class ZookeeperRepositoryTest {
     }
     
     @Test
-    public void assertWatchDeletedChangedType() throws ExecutionException, InterruptedException {
+    void assertWatchDeletedChangedType() throws ExecutionException, InterruptedException {
         mockCache("/test/children_deleted/5");
         ChildData oldData = new ChildData("/test/children_deleted/5", null, "value5".getBytes());
         ChildData data = new ChildData("/test/children_deleted/5", null, "value5".getBytes());
@@ -228,7 +228,7 @@ public final class ZookeeperRepositoryTest {
     }
     
     @Test
-    public void assertWatchAddedChangedType() throws ExecutionException, InterruptedException {
+    void assertWatchAddedChangedType() throws ExecutionException, InterruptedException {
         mockCache("/test/children_added/4");
         ChildData data = new ChildData("/test/children_added/4", null, "value4".getBytes());
         doAnswer(AdditionalAnswers.answerVoid(getListenerAnswer(CuratorCacheListener.Type.NODE_CREATED, null, data))).when(listenable).addListener(any(CuratorCacheListener.class));
@@ -253,7 +253,7 @@ public final class ZookeeperRepositoryTest {
     }
     
     @Test
-    public void assertBuildCuratorClientWithCustomConfig() {
+    void assertBuildCuratorClientWithCustomConfig() {
         Properties props = PropertiesBuilder.build(
                 new Property(ZookeeperPropertyKey.RETRY_INTERVAL_MILLISECONDS.getKey(), "1000"),
                 new Property(ZookeeperPropertyKey.MAX_RETRIES.getKey(), "1"),
@@ -263,32 +263,32 @@ public final class ZookeeperRepositoryTest {
     }
     
     @Test
-    public void assertBuildCuratorClientWithTimeToLiveSecondsEqualsZero() {
+    void assertBuildCuratorClientWithTimeToLiveSecondsEqualsZero() {
         REPOSITORY.init(new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS,
                 PropertiesBuilder.build(new Property(ZookeeperPropertyKey.TIME_TO_LIVE_SECONDS.getKey(), "0"))));
     }
     
     @Test
-    public void assertBuildCuratorClientWithOperationTimeoutMillisecondsEqualsZero() {
+    void assertBuildCuratorClientWithOperationTimeoutMillisecondsEqualsZero() {
         REPOSITORY.init(new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS,
                 PropertiesBuilder.build(new Property(ZookeeperPropertyKey.OPERATION_TIMEOUT_MILLISECONDS.getKey(), "0"))));
     }
     
     @Test
-    public void assertBuildCuratorClientWithDigest() {
+    void assertBuildCuratorClientWithDigest() {
         REPOSITORY.init(new ClusterPersistRepositoryConfiguration(REPOSITORY.getType(), "governance", SERVER_LISTS,
                 PropertiesBuilder.build(new Property(ZookeeperPropertyKey.DIGEST.getKey(), "any"))));
         verify(builder).aclProvider(any(ACLProvider.class));
     }
     
     @Test
-    public void assertDeleteNotExistKey() {
+    void assertDeleteNotExistKey() {
         REPOSITORY.delete("/test/children/1");
         verify(client, times(0)).delete();
     }
     
     @Test
-    public void assertDeleteExistKey() throws Exception {
+    void assertDeleteExistKey() throws Exception {
         when(existsBuilder.forPath("/test/children/1")).thenReturn(new Stat());
         when(deleteBuilder.deletingChildrenIfNeeded()).thenReturn(backgroundVersionable);
         REPOSITORY.delete("/test/children/1");

@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class WorkerIdNodeTest {
+class WorkerIdNodeTest {
     
     @Test
-    public void assertGetWorkerIdGeneratorPath() {
+    void assertGetWorkerIdGeneratorPath() {
         assertThat(WorkerIdNode.getWorkerIdGeneratorPath("instanceId"), is("/worker_id/instanceId"));
     }
 }

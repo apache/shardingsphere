@@ -45,33 +45,33 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class DeleteStatementContextTest {
+class DeleteStatementContextTest {
     
     @Mock
     private WhereSegment whereSegment;
     
     @Test
-    public void assertMySQLNewInstance() {
+    void assertMySQLNewInstance() {
         assertNewInstance(new MySQLDeleteStatement());
     }
     
     @Test
-    public void assertOracleNewInstance() {
+    void assertOracleNewInstance() {
         assertNewInstance(new OracleDeleteStatement());
     }
     
     @Test
-    public void assertPostgreSQLNewInstance() {
+    void assertPostgreSQLNewInstance() {
         assertNewInstance(new PostgreSQLDeleteStatement());
     }
     
     @Test
-    public void assertSQL92NewInstance() {
+    void assertSQL92NewInstance() {
         assertNewInstance(new SQL92DeleteStatement());
     }
     
     @Test
-    public void assertSQLServerNewInstance() {
+    void assertSQLServerNewInstance() {
         assertNewInstance(new SQLServerDeleteStatement());
     }
     

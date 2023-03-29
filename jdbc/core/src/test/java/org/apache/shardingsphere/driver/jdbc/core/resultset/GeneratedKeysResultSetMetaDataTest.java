@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.sql.rowset.RowSetMetaDataImpl;
 import java.sql.ResultSetMetaData;
@@ -28,138 +28,138 @@ import java.sql.Types;
 import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class GeneratedKeysResultSetMetaDataTest {
+class GeneratedKeysResultSetMetaDataTest {
     
     private ResultSetMetaData actualMetaData;
     
-    @Before
-    public void init() {
+    @BeforeEach
+    void init() {
         actualMetaData = new GeneratedKeysResultSet("order_id", Arrays.<Comparable<?>>asList(1L, 2L).iterator(), mock(Statement.class)).getMetaData();
     }
     
     @Test
-    public void assertGetColumnCount() throws SQLException {
+    void assertGetColumnCount() throws SQLException {
         assertThat(actualMetaData.getColumnCount(), is(1));
     }
     
     @Test
-    public void assertIsAutoIncrement() throws SQLException {
+    void assertIsAutoIncrement() throws SQLException {
         assertTrue(actualMetaData.isAutoIncrement(1));
     }
     
     @Test
-    public void assertIsCaseSensitive() throws SQLException {
+    void assertIsCaseSensitive() throws SQLException {
         assertTrue(actualMetaData.isCaseSensitive(1));
     }
     
     @Test
-    public void assertIsSearchable() throws SQLException {
+    void assertIsSearchable() throws SQLException {
         assertFalse(actualMetaData.isSearchable(1));
     }
     
     @Test
-    public void assertIsCurrency() throws SQLException {
+    void assertIsCurrency() throws SQLException {
         assertFalse(actualMetaData.isCurrency(1));
     }
     
     @Test
-    public void assertIsNullable() throws SQLException {
+    void assertIsNullable() throws SQLException {
         assertThat(actualMetaData.isNullable(1), is(ResultSetMetaData.columnNoNulls));
     }
     
     @Test
-    public void assertIsSigned() throws SQLException {
+    void assertIsSigned() throws SQLException {
         assertTrue(actualMetaData.isSigned(1));
     }
     
     @Test
-    public void assertGetColumnDisplaySize() throws SQLException {
+    void assertGetColumnDisplaySize() throws SQLException {
         assertThat(actualMetaData.getColumnDisplaySize(1), is(0));
     }
     
     @Test
-    public void assertGetColumnLabel() throws SQLException {
+    void assertGetColumnLabel() throws SQLException {
         assertThat(actualMetaData.getColumnLabel(1), is("order_id"));
     }
     
     @Test
-    public void assertGetColumnName() throws SQLException {
+    void assertGetColumnName() throws SQLException {
         assertThat(actualMetaData.getColumnName(1), is("order_id"));
     }
     
     @Test
-    public void getSchemaName() throws SQLException {
+    void getSchemaName() throws SQLException {
         assertThat(actualMetaData.getSchemaName(1), is(""));
     }
     
     @Test
-    public void assertGetPrecision() throws SQLException {
+    void assertGetPrecision() throws SQLException {
         assertThat(actualMetaData.getPrecision(1), is(0));
     }
     
     @Test
-    public void assertGetScale() throws SQLException {
+    void assertGetScale() throws SQLException {
         assertThat(actualMetaData.getScale(1), is(0));
     }
     
     @Test
-    public void assertGetTableName() throws SQLException {
+    void assertGetTableName() throws SQLException {
         assertThat(actualMetaData.getTableName(1), is(""));
     }
     
     @Test
-    public void assertGetCatalogName() throws SQLException {
+    void assertGetCatalogName() throws SQLException {
         assertThat(actualMetaData.getCatalogName(1), is(""));
     }
     
     @Test
-    public void assertGetColumnType() throws SQLException {
+    void assertGetColumnType() throws SQLException {
         assertThat(actualMetaData.getColumnType(1), is(Types.BIGINT));
     }
     
     @Test
-    public void assertGetColumnTypeName() throws SQLException {
+    void assertGetColumnTypeName() throws SQLException {
         assertThat(actualMetaData.getColumnTypeName(1), is(""));
     }
     
     @Test
-    public void assertIsReadOnly() throws SQLException {
+    void assertIsReadOnly() throws SQLException {
         assertTrue(actualMetaData.isReadOnly(1));
     }
     
     @Test
-    public void assertIsWritable() throws SQLException {
+    void assertIsWritable() throws SQLException {
         assertFalse(actualMetaData.isWritable(1));
     }
     
     @Test
-    public void assertIsDefinitelyWritable() throws SQLException {
+    void assertIsDefinitelyWritable() throws SQLException {
         assertFalse(actualMetaData.isDefinitelyWritable(1));
     }
     
     @Test
-    public void assertGetColumnClassName() throws SQLException {
+    void assertGetColumnClassName() throws SQLException {
         assertThat(actualMetaData.getColumnClassName(1), is("java.lang.Number"));
     }
     
     @Test
-    public void assertUnwrap() throws SQLException {
+    void assertUnwrap() throws SQLException {
         assertThat(actualMetaData.unwrap(GeneratedKeysResultSetMetaData.class), is((GeneratedKeysResultSetMetaData) actualMetaData));
     }
     
     @Test
-    public void assertUnwrapError() {
+    void assertUnwrapError() {
         assertThrows(SQLException.class, () -> actualMetaData.unwrap(RowSetMetaDataImpl.class));
     }
     
     @Test
-    public void assertIsWrapperFor() throws SQLException {
+    void assertIsWrapperFor() throws SQLException {
         assertTrue(actualMetaData.isWrapperFor(GeneratedKeysResultSetMetaData.class));
     }
 }

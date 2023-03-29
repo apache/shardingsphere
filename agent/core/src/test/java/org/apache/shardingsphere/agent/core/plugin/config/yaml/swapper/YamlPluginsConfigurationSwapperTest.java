@@ -21,13 +21,12 @@ import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlPluginCategoryConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlPluginConfiguration;
+import org.apache.shardingsphere.agent.core.yaml.AgentYamlEngine;
 import org.junit.jupiter.api.Test;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collections;
@@ -39,19 +38,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlPluginsConfigurationSwapperTest {
+class YamlPluginsConfigurationSwapperTest {
     
     private static final String CONFIG_PATH = "/conf/agent.yaml";
     
     @Test
-    public void assertSwapWithNullPlugins() {
+    void assertSwapWithNullPlugins() {
         YamlAgentConfiguration yamlAgentConfig = new YamlAgentConfiguration();
         yamlAgentConfig.setPlugins(new YamlPluginCategoryConfiguration());
         assertTrue(YamlPluginsConfigurationSwapper.swap(yamlAgentConfig).isEmpty());
     }
     
     @Test
-    public void assertSwapWithSinglePluginConfiguration() {
+    void assertSwapWithSinglePluginConfiguration() {
         YamlPluginCategoryConfiguration yamlPluginCategoryConfig = new YamlPluginCategoryConfiguration();
         yamlPluginCategoryConfig.setLogging(Collections.singletonMap("log_fixture", createYamlPluginConfiguration("localhost", "random", 8080, new Properties())));
         YamlAgentConfiguration yamlAgentConfig = new YamlAgentConfiguration();
@@ -66,7 +65,7 @@ public final class YamlPluginsConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapWithMultiplePluginConfigurations() {
+    void assertSwapWithMultiplePluginConfigurations() {
         YamlPluginCategoryConfiguration yamlPluginCategoryConfig = new YamlPluginCategoryConfiguration();
         yamlPluginCategoryConfig.setLogging(Collections.singletonMap("log_fixture", createYamlPluginConfiguration(null, null, 8080, createProperties())));
         yamlPluginCategoryConfig.setMetrics(Collections.singletonMap("metrics_fixture", createYamlPluginConfiguration("localhost", "random", 8081, createProperties())));
@@ -81,8 +80,8 @@ public final class YamlPluginsConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapWithFile() throws IOException {
-        YamlAgentConfiguration yamlAgentConfig = new Yaml().loadAs(new InputStreamReader(new FileInputStream(new File(getResourceURL(), CONFIG_PATH))), YamlAgentConfiguration.class);
+    void assertSwapWithFile() throws IOException {
+        YamlAgentConfiguration yamlAgentConfig = AgentYamlEngine.unmarshalYamlAgentConfiguration(new FileInputStream(new File(getResourceURL(), CONFIG_PATH)));
         Map<String, PluginConfiguration> actual = YamlPluginsConfigurationSwapper.swap(yamlAgentConfig);
         assertThat(actual.size(), is(3));
         assertLogFixturePluginConfiguration(actual.get("log_fixture"));

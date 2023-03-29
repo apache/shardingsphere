@@ -673,6 +673,7 @@ public enum SQLVisitorRule {
      * 
      * @param parseTreeClass parse tree class
      * @return visitor rule
+     * @throws SQLASTVisitorException SQL AST visitor exception
      */
     public static SQLVisitorRule valueOf(final Class<? extends ParseTree> parseTreeClass) {
         String parseTreeClassName = parseTreeClass.getSimpleName();

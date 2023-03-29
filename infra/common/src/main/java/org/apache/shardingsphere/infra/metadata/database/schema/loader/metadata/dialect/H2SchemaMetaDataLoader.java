@@ -51,20 +51,20 @@ public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader
     
     private static final String TABLE_META_DATA_SQL = TABLE_META_DATA_NO_ORDER + ORDER_BY_ORDINAL_POSITION;
     
-    private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_NO_ORDER + " AND TABLE_NAME IN (%s)" + ORDER_BY_ORDINAL_POSITION;
+    private static final String TABLE_META_DATA_SQL_IN_TABLES = TABLE_META_DATA_NO_ORDER + " AND UPPER(TABLE_NAME) IN (%s)" + ORDER_BY_ORDINAL_POSITION;
     
     private static final String INDEX_META_DATA_SQL = "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES"
-            + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND TABLE_NAME IN (%s)";
+            + " WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN (%s)";
     
     private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?"
             + " AND INDEX_TYPE_NAME = 'PRIMARY KEY'";
     
-    private static final String PRIMARY_KEY_META_DATA_SQL_IN_TABLES = PRIMARY_KEY_META_DATA_SQL + " AND TABLE_NAME IN (%s)";
+    private static final String PRIMARY_KEY_META_DATA_SQL_IN_TABLES = PRIMARY_KEY_META_DATA_SQL + " AND UPPER(TABLE_NAME) IN (%s)";
     
     private static final String GENERATED_INFO_SQL = "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(I.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C"
             + " RIGHT JOIN INFORMATION_SCHEMA.INDEXES I ON C.TABLE_NAME=I.TABLE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=?";
     
-    private static final String GENERATED_INFO_SQL_IN_TABLES = GENERATED_INFO_SQL + " AND C.TABLE_NAME IN (%s)";
+    private static final String GENERATED_INFO_SQL_IN_TABLES = GENERATED_INFO_SQL + " AND UPPER(C.TABLE_NAME) IN (%s)";
     
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
@@ -115,7 +115,7 @@ public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader
     
     private String getTableMetaDataSQL(final Collection<String> tables) {
         return tables.isEmpty() ? TABLE_META_DATA_SQL
-                : String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+                : String.format(TABLE_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each).toUpperCase()).collect(Collectors.joining(",")));
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final Connection connection, final Collection<String> tableNames) throws SQLException {
@@ -138,12 +138,12 @@ public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader
     }
     
     private String getIndexMetaDataSQL(final Collection<String> tableNames) {
-        return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+        return String.format(INDEX_META_DATA_SQL, tableNames.stream().map(each -> String.format("'%s'", each).toUpperCase()).collect(Collectors.joining(",")));
     }
     
     private String getPrimaryKeyMetaDataSQL(final Collection<String> tables) {
         return tables.isEmpty() ? PRIMARY_KEY_META_DATA_SQL
-                : String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+                : String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each).toUpperCase()).collect(Collectors.joining(",")));
     }
     
     private Map<String, Collection<String>> loadTablePrimaryKeys(final Connection connection, final Collection<String> tableNames) throws SQLException {
@@ -164,7 +164,7 @@ public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader
     
     private String getGeneratedInfoSQL(final Collection<String> tables) {
         return tables.isEmpty() ? GENERATED_INFO_SQL
-                : String.format(GENERATED_INFO_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+                : String.format(GENERATED_INFO_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each).toUpperCase()).collect(Collectors.joining(",")));
     }
     
     private Map<String, Map<String, Boolean>> loadTableGenerated(final Connection connection, final Collection<String> tableNames) throws SQLException {

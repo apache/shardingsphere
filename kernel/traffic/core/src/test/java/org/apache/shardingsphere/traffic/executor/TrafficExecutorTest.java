@@ -20,7 +20,7 @@ package org.apache.shardingsphere.traffic.executor;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -32,10 +32,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class TrafficExecutorTest {
+class TrafficExecutorTest {
     
     @Test
-    public void assertClose() throws SQLException {
+    void assertClose() throws SQLException {
         Statement statement = mock(Statement.class, RETURNS_DEEP_STUBS);
         try (TrafficExecutor trafficExecutor = new TrafficExecutor()) {
             JDBCExecutionUnit executionUnit = mock(JDBCExecutionUnit.class);

@@ -21,7 +21,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -34,10 +34,10 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class GlobalRuleChangedWatcherTest {
+class GlobalRuleChangedWatcherTest {
     
     @Test
-    public void assertCreateEvent() {
+    void assertCreateEvent() {
         Optional<GlobalRuleConfigurationsChangedEvent> event = new GlobalRuleChangedWatcher().createGovernanceEvent(new DataChangedEvent("/rules", readYAML(), Type.UPDATED));
         assertTrue(event.isPresent());
         assertThat(event.get(), instanceOf(GlobalRuleConfigurationsChangedEvent.class));

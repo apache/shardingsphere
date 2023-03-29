@@ -24,10 +24,10 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class AccumulationAggregationUnitTest {
+class AccumulationAggregationUnitTest {
     
     @Test
-    public void assertAccumulationAggregation() {
+    void assertAccumulationAggregation() {
         AccumulationAggregationUnit accumulationAggregationUnit = new AccumulationAggregationUnit();
         accumulationAggregationUnit.merge(null);
         accumulationAggregationUnit.merge(Collections.singletonList(null));

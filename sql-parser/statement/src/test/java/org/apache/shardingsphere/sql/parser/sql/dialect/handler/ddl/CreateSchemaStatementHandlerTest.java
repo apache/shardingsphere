@@ -21,7 +21,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.SQLServerCreateSchemaStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
@@ -30,10 +30,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class CreateSchemaStatementHandlerTest {
+class CreateSchemaStatementHandlerTest {
     
     @Test
-    public void assertGetUsernameForPostgreSQL() {
+    void assertGetUsernameForPostgreSQL() {
         PostgreSQLCreateSchemaStatement createSchemaStatement = new PostgreSQLCreateSchemaStatement();
         createSchemaStatement.setUsername(new IdentifierValue("root"));
         Optional<IdentifierValue> actual = CreateSchemaStatementHandler.getUsername(createSchemaStatement);
@@ -42,7 +42,7 @@ public final class CreateSchemaStatementHandlerTest {
     }
     
     @Test
-    public void assertGetUsernameForOpenGauss() {
+    void assertGetUsernameForOpenGauss() {
         OpenGaussCreateSchemaStatement createSchemaStatement = new OpenGaussCreateSchemaStatement();
         createSchemaStatement.setUsername(new IdentifierValue("root"));
         Optional<IdentifierValue> actual = CreateSchemaStatementHandler.getUsername(createSchemaStatement);
@@ -51,7 +51,7 @@ public final class CreateSchemaStatementHandlerTest {
     }
     
     @Test
-    public void assertGetUsernameForSQLServerStatement() {
+    void assertGetUsernameForSQLServerStatement() {
         SQLServerCreateSchemaStatement createSchemaStatement = new SQLServerCreateSchemaStatement();
         Optional<IdentifierValue> actual = CreateSchemaStatementHandler.getUsername(createSchemaStatement);
         assertFalse(actual.isPresent());

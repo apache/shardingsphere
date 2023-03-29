@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proc
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.manager.cluster.process.subscriber.ProcessRegistrySubscriber;
-import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
-import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
+import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ProcessRegistrySubscriberTest {
+class ProcessRegistrySubscriberTest {
     
     @Mock
     private ClusterPersistRepository repository;
@@ -47,12 +47,12 @@ public final class ProcessRegistrySubscriberTest {
     private ProcessRegistrySubscriber processRegistrySubscriber;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         processRegistrySubscriber = new ProcessRegistrySubscriber(repository, eventBusContext);
     }
     
     @Test
-    public void assertLoadShowProcessListData() {
+    void assertLoadShowProcessListData() {
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.JDBC))).thenReturn(Collections.emptyList());
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
         when(repository.getDirectly(any())).thenReturn(null);

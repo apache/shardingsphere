@@ -25,10 +25,10 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class UnsupportedSQLOperationExceptionTest {
+class UnsupportedSQLOperationExceptionTest {
     
     @Test
-    public void assertToSQLException() {
+    void assertToSQLException() {
         SQLException actual = new UnsupportedSQLOperationException("foo_reason").toSQLException();
         assertThat(actual.getSQLState(), is(XOpenSQLState.FEATURE_NOT_SUPPORTED.getValue()));
         assertThat(actual.getErrorCode(), is(30001));

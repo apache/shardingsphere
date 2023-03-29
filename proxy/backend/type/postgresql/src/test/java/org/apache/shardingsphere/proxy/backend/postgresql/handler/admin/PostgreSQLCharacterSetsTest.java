@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
@@ -26,25 +26,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class PostgreSQLCharacterSetsTest {
+class PostgreSQLCharacterSetsTest {
     
     @Test
-    public void assertFindSqlAscii() {
+    void assertFindSqlAscii() {
         assertThat(PostgreSQLCharacterSets.findCharacterSet("SQL_ASCII"), is(StandardCharsets.US_ASCII));
     }
     
     @Test
-    public void assertFindUTF8() {
+    void assertFindUTF8() {
         assertThat(PostgreSQLCharacterSets.findCharacterSet("utf8"), is(StandardCharsets.UTF_8));
     }
     
     @Test
-    public void assertFindUTF8WithQuotes() {
+    void assertFindUTF8WithQuotes() {
         assertThat(PostgreSQLCharacterSets.findCharacterSet("'utf-8'"), is(StandardCharsets.UTF_8));
     }
     
     @Test
-    public void assertFindUnsupportedCharset() {
+    void assertFindUnsupportedCharset() {
         assertThrows(UnsupportedCharsetException.class, () -> PostgreSQLCharacterSets.findCharacterSet("unknown_charset"));
     }
 }

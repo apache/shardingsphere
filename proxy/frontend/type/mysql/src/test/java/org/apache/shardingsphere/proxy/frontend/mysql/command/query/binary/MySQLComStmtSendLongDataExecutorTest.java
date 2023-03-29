@@ -22,7 +22,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -33,10 +33,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLComStmtSendLongDataExecutorTest {
+class MySQLComStmtSendLongDataExecutorTest {
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         MySQLComStmtSendLongDataPacket packet = mock(MySQLComStmtSendLongDataPacket.class);
         when(packet.getStatementId()).thenReturn(1);
         when(packet.getParamId()).thenReturn(0);

@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class YamlMaskColumnRuleConfigurationSwapperTest {
+class YamlMaskColumnRuleConfigurationSwapperTest {
     
     @Test
-    public void assertSwapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlMaskColumnRuleConfigurationSwapper swapper = new YamlMaskColumnRuleConfigurationSwapper();
         MaskColumnRuleConfiguration encryptColumnRuleConfig =
                 new MaskColumnRuleConfiguration("logicColumn", "md5_mask");
@@ -37,7 +37,7 @@ public final class YamlMaskColumnRuleConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapToObject() {
+    void assertSwapToObject() {
         YamlMaskColumnRuleConfigurationSwapper swapper = new YamlMaskColumnRuleConfigurationSwapper();
         YamlMaskColumnRuleConfiguration yamlMaskColumnRuleConfig = new YamlMaskColumnRuleConfiguration();
         yamlMaskColumnRuleConfig.setLogicColumn("logicColumn");

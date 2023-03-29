@@ -21,16 +21,16 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class DatabaseTimeServiceTest {
+class DatabaseTimeServiceTest {
     
     @Test
-    public void assertGetDatetime() {
+    void assertGetDatetime() {
         Properties props = PropertiesBuilder.build(
                 new Property("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource"),
                 new Property("jdbcUrl", "jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"),

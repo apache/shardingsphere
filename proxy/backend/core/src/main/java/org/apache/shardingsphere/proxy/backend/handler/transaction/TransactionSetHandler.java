@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.TransactionUtil;
+import org.apache.shardingsphere.proxy.backend.util.TransactionUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionAccessType;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -65,8 +65,8 @@ public final class TransactionSetHandler implements ProxyBackendHandler {
             return;
         }
         connectionSession.setDefaultIsolationLevel(sqlStatement instanceof MySQLStatement
-                ? TransactionUtil.getTransactionIsolationLevel(Connection.TRANSACTION_REPEATABLE_READ)
-                : TransactionUtil.getTransactionIsolationLevel(Connection.TRANSACTION_READ_COMMITTED));
+                ? TransactionUtils.getTransactionIsolationLevel(Connection.TRANSACTION_REPEATABLE_READ)
+                : TransactionUtils.getTransactionIsolationLevel(Connection.TRANSACTION_READ_COMMITTED));
         connectionSession.setIsolationLevel(sqlStatement.getIsolationLevel().get());
     }
 }

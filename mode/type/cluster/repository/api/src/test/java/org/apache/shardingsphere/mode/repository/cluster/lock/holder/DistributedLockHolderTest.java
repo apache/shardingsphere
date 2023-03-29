@@ -21,8 +21,8 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.impl.DefaultDistributedLock;
 import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
@@ -30,17 +30,17 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class DistributedLockHolderTest {
+class DistributedLockHolderTest {
     
     private DistributedLockHolder defaultDistributedLockHolder;
     
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         defaultDistributedLockHolder = new DistributedLockHolder("default", mock(ClusterPersistRepository.class), new DefaultLockTypedProperties(new Properties()));
     }
     
     @Test
-    public void assertGetDistributedLock() {
+    void assertGetDistributedLock() {
         DistributedLock distributedLock = defaultDistributedLockHolder.getDistributedLock("lock/key");
         assertThat(distributedLock, instanceOf(DefaultDistributedLock.class));
     }

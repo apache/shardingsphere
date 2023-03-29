@@ -5,7 +5,7 @@ weight = 4
 
 ### 描述
 
-`SET DIST VARIABLE` 语法用于设置系统变量
+`SET DIST VARIABLE` 语法用于设置系统变量。
 
 ### 语法
 
@@ -40,6 +40,8 @@ agentPluginsEnable ::=
 - `transaction_type` 为当前连接的事务类型, 支持 `LOCAL`、`XA`、`BASE`
 
 - `agent_plugins_enable` 为 `agent` 插件的启用状态，默认值 `FALSE`
+
+- `system_log_level` 为 系统日志等级，仅影响 `PROXY` 的日志打印，默认值 `INFO`
 
 ### 示例
 

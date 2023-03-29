@@ -41,6 +41,7 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
      * @param shardingRule sharding rule
      * @param operation operation
      * @param tables tables
+     * @throws UnsupportedShardingOperationException unsupported sharding operation exception
      */
     protected void validateShardingTable(final ShardingRule shardingRule, final String operation, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
@@ -56,6 +57,7 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
      *
      * @param schema ShardingSphere schema
      * @param tables tables
+     * @throws NoSuchTableException no such table exception
      */
     protected void validateTableExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
@@ -71,6 +73,7 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
      *
      * @param schema ShardingSphere schema
      * @param tables tables
+     * @throws TableExistsException table exists exception
      */
     protected void validateTableNotExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {

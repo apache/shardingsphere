@@ -28,21 +28,17 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.api.metadata.SchemaTableName;
-import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
-import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
-import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
-import org.apache.shardingsphere.data.pipeline.core.util.CloseUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -69,9 +65,9 @@ public final class SingleTableInventoryDataConsistencyChecker {
     
     private final SchemaTableName targetTable;
     
-    private final PipelineColumnMetaData uniqueKey;
+    private final List<String> columnNames;
     
-    private final PipelineTableMetaDataLoader metaDataLoader;
+    private final PipelineColumnMetaData uniqueKey;
     
     private final JobRateLimitAlgorithm readRateLimitAlgorithm;
     
@@ -99,27 +95,24 @@ public final class SingleTableInventoryDataConsistencyChecker {
         String targetDatabaseType = targetDataSource.getDatabaseType().getType();
         String schemaName = sourceTable.getSchemaName().getOriginal();
         String sourceTableName = sourceTable.getTableName().getOriginal();
-        PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaName, sourceTableName);
-        ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new PipelineTableDataConsistencyCheckLoadingFailedException(schemaName, sourceTableName));
-        Collection<String> columnNames = tableMetaData.getColumnNames();
         Map<String, Object> tableCheckPositions = progressContext.getTableCheckPositions();
         DataConsistencyCalculateParameter sourceParam = buildParameter(
                 sourceDataSource, schemaName, sourceTableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey, tableCheckPositions.get(sourceTableName));
         String targetTableName = targetTable.getTableName().getOriginal();
         DataConsistencyCalculateParameter targetParam = buildParameter(targetDataSource, targetTable.getSchemaName().getOriginal(), targetTableName,
                 columnNames, targetDatabaseType, sourceDatabaseType, uniqueKey, tableCheckPositions.get(targetTableName));
-        Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults = calculateAlgorithm.calculate(sourceParam).iterator();
-        Iterator<DataConsistencyCalculatedResult> targetCalculatedResults = calculateAlgorithm.calculate(targetParam).iterator();
+        Iterator<DataConsistencyCalculatedResult> sourceCalculatedResults = waitFuture(executor.submit(() -> calculateAlgorithm.calculate(sourceParam))).iterator();
+        Iterator<DataConsistencyCalculatedResult> targetCalculatedResults = waitFuture(executor.submit(() -> calculateAlgorithm.calculate(targetParam))).iterator();
         try {
             return check0(sourceCalculatedResults, targetCalculatedResults, executor);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             if (null != sourceParam.getCalculationContext()) {
-                CloseUtil.closeQuietly(sourceParam.getCalculationContext());
+                CloseUtils.closeQuietly(sourceParam.getCalculationContext());
             }
             if (null != targetParam.getCalculationContext()) {
-                CloseUtil.closeQuietly(targetParam.getCalculationContext());
+                CloseUtils.closeQuietly(targetParam.getCalculationContext());
             }
             throw ex;
         }
@@ -134,10 +127,8 @@ public final class SingleTableInventoryDataConsistencyChecker {
             if (null != readRateLimitAlgorithm) {
                 readRateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
             }
-            Future<DataConsistencyCalculatedResult> sourceFuture = executor.submit(sourceCalculatedResults::next);
-            Future<DataConsistencyCalculatedResult> targetFuture = executor.submit(targetCalculatedResults::next);
-            DataConsistencyCalculatedResult sourceCalculatedResult = waitFuture(sourceFuture);
-            DataConsistencyCalculatedResult targetCalculatedResult = waitFuture(targetFuture);
+            DataConsistencyCalculatedResult sourceCalculatedResult = waitFuture(executor.submit(sourceCalculatedResults::next));
+            DataConsistencyCalculatedResult targetCalculatedResult = waitFuture(executor.submit(targetCalculatedResults::next));
             sourceRecordsCount += sourceCalculatedResult.getRecordsCount();
             targetRecordsCount += targetCalculatedResult.getRecordsCount();
             contentMatched = Objects.equals(sourceCalculatedResult, targetCalculatedResult);
@@ -162,7 +153,7 @@ public final class SingleTableInventoryDataConsistencyChecker {
     }
     
     private DataConsistencyCalculateParameter buildParameter(final PipelineDataSourceWrapper sourceDataSource,
-                                                             final String schemaName, final String tableName, final Collection<String> columnNames,
+                                                             final String schemaName, final String tableName, final List<String> columnNames,
                                                              final String sourceDatabaseType, final String targetDatabaseType, final PipelineColumnMetaData uniqueKey,
                                                              final Object tableCheckPosition) {
         return new DataConsistencyCalculateParameter(sourceDataSource, schemaName, tableName, columnNames, sourceDatabaseType, targetDatabaseType, uniqueKey, tableCheckPosition);

@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.parser.rule.builder;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.hamcrest.Matchers.is;
-
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.constant.SQLParserOrder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public final class DefaultSQLParserRuleConfigurationBuilderTest {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+class DefaultSQLParserRuleConfigurationBuilderTest {
     
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         SQLParserRuleConfiguration actual = new DefaultSQLParserRuleConfigurationBuilder().build();
         assertFalse(actual.isSqlCommentParseEnabled());
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(128));
@@ -38,12 +38,12 @@ public final class DefaultSQLParserRuleConfigurationBuilderTest {
     }
     
     @Test
-    public void assertGetOrder() {
+    void assertGetOrder() {
         assertThat(new DefaultSQLParserRuleConfigurationBuilder().getOrder(), is(SQLParserOrder.ORDER));
     }
     
     @Test
-    public void assertGetTypeClass() {
+    void assertGetTypeClass() {
         assertThat(new DefaultSQLParserRuleConfigurationBuilder().getTypeClass().toString(), is(SQLParserRuleBuilder.class.toString()));
     }
 }

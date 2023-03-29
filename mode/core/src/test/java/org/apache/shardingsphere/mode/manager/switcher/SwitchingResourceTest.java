@@ -19,17 +19,17 @@ package org.apache.shardingsphere.mode.manager.switcher;
 
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class SwitchingResourceTest {
+class SwitchingResourceTest {
     
     @Test
-    public void assertCloseStaleDataSources() {
+    void assertCloseStaleDataSources() {
         MockedDataSource staleDataSource = new MockedDataSource();
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         new SwitchingResource(resourceMetaData, Collections.singletonMap("new_ds", new MockedDataSource()), Collections.singletonMap("stale_ds", staleDataSource)).closeStaleDataSources();

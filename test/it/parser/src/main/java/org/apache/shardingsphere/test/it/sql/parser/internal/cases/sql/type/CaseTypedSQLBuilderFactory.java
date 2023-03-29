@@ -33,6 +33,7 @@ public final class CaseTypedSQLBuilderFactory {
      * 
      * @param caseType SQL case type
      * @return created instance
+     * @throws UnsupportedOperationException unsupported operation exception
      */
     public static CaseTypedSQLBuilder newInstance(final SQLCaseType caseType) {
         switch (caseType) {

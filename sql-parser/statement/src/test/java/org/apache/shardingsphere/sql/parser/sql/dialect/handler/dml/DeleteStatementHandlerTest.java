@@ -17,12 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.LinkedList;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.LimitSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OutputSegment;
@@ -33,15 +27,21 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.dml.SQL92DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dml.SQLServerDeleteStatement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Optional;
 
-public final class DeleteStatementHandlerTest {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class DeleteStatementHandlerTest {
     
     @Test
-    public void assertGetOrderBySegmentForMySQL() {
+    void assertGetOrderBySegmentForMySQL() {
         MySQLDeleteStatement deleteStatement = new MySQLDeleteStatement();
         deleteStatement.setOrderBy(new OrderBySegment(0, 0, Collections.emptyList()));
         Optional<OrderBySegment> orderBySegment = DeleteStatementHandler.getOrderBySegment(deleteStatement);
@@ -51,7 +51,7 @@ public final class DeleteStatementHandlerTest {
     }
     
     @Test
-    public void assertGetOrderBySegmentForOtherDatabases() {
+    void assertGetOrderBySegmentForOtherDatabases() {
         assertFalse(DeleteStatementHandler.getOrderBySegment(new OpenGaussDeleteStatement()).isPresent());
         assertFalse(DeleteStatementHandler.getOrderBySegment(new OracleDeleteStatement()).isPresent());
         assertFalse(DeleteStatementHandler.getOrderBySegment(new PostgreSQLDeleteStatement()).isPresent());
@@ -60,7 +60,7 @@ public final class DeleteStatementHandlerTest {
     }
     
     @Test
-    public void assertGetLimitSegmentForMySQL() {
+    void assertGetLimitSegmentForMySQL() {
         MySQLDeleteStatement deleteStatement = new MySQLDeleteStatement();
         deleteStatement.setLimit(new LimitSegment(0, 0, null, null));
         Optional<LimitSegment> limitSegment = DeleteStatementHandler.getLimitSegment(deleteStatement);
@@ -70,7 +70,7 @@ public final class DeleteStatementHandlerTest {
     }
     
     @Test
-    public void assertGetLimitSegmentForOtherDatabases() {
+    void assertGetLimitSegmentForOtherDatabases() {
         assertFalse(DeleteStatementHandler.getLimitSegment(new OpenGaussDeleteStatement()).isPresent());
         assertFalse(DeleteStatementHandler.getLimitSegment(new OracleDeleteStatement()).isPresent());
         assertFalse(DeleteStatementHandler.getLimitSegment(new PostgreSQLDeleteStatement()).isPresent());
@@ -79,7 +79,7 @@ public final class DeleteStatementHandlerTest {
     }
     
     @Test
-    public void assertGetOutputSegmentForSQLServer() {
+    void assertGetOutputSegmentForSQLServer() {
         SQLServerDeleteStatement deleteStatement = new SQLServerDeleteStatement();
         deleteStatement.setOutputSegment(new OutputSegment(0, 0));
         Optional<OutputSegment> outputSegment = DeleteStatementHandler.getOutputSegment(deleteStatement);
@@ -89,7 +89,7 @@ public final class DeleteStatementHandlerTest {
     }
     
     @Test
-    public void assertGetOutputSegmentForOtherDatabases() {
+    void assertGetOutputSegmentForOtherDatabases() {
         assertFalse(DeleteStatementHandler.getOutputSegment(new MySQLDeleteStatement()).isPresent());
         assertFalse(DeleteStatementHandler.getOutputSegment(new OpenGaussDeleteStatement()).isPresent());
         assertFalse(DeleteStatementHandler.getOutputSegment(new OracleDeleteStatement()).isPresent());
@@ -98,7 +98,7 @@ public final class DeleteStatementHandlerTest {
     }
     
     @Test
-    public void assertGetWithSegmentForSQLServer() {
+    void assertGetWithSegmentForSQLServer() {
         SQLServerDeleteStatement deleteStatement = new SQLServerDeleteStatement();
         deleteStatement.setWithSegment(new WithSegment(0, 0, new LinkedList<>()));
         Optional<WithSegment> withSegment = DeleteStatementHandler.getWithSegment(deleteStatement);
@@ -108,7 +108,7 @@ public final class DeleteStatementHandlerTest {
     }
     
     @Test
-    public void assertGetWithSegmentForOtherDatabases() {
+    void assertGetWithSegmentForOtherDatabases() {
         assertFalse(DeleteStatementHandler.getWithSegment(new MySQLDeleteStatement()).isPresent());
         assertFalse(DeleteStatementHandler.getWithSegment(new OpenGaussDeleteStatement()).isPresent());
         assertFalse(DeleteStatementHandler.getWithSegment(new OracleDeleteStatement()).isPresent());

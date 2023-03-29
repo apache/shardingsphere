@@ -26,10 +26,10 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
+import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtils;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
@@ -39,19 +39,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-public final class SetDistVariableUpdatableRALBackendHandlerTest {
+class SetDistVariableUpdatableRALBackendHandlerTest {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
     private ConnectionSession connectionSession;
     
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
     }
     
     @Test
-    public void assertSwitchTransactionTypeXA() throws SQLException {
+    void assertSwitchTransactionTypeXA() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement("transaction_type", "XA"), connectionSession);
         ResponseHeader actual = handler.execute();
@@ -60,7 +60,7 @@ public final class SetDistVariableUpdatableRALBackendHandlerTest {
     }
     
     @Test
-    public void assertSwitchTransactionTypeBASE() throws SQLException {
+    void assertSwitchTransactionTypeBASE() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement("transaction_type", "BASE"), connectionSession);
         ResponseHeader actual = handler.execute();
@@ -69,7 +69,7 @@ public final class SetDistVariableUpdatableRALBackendHandlerTest {
     }
     
     @Test
-    public void assertSwitchTransactionTypeLOCAL() throws SQLException {
+    void assertSwitchTransactionTypeLOCAL() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement("transaction_type", "LOCAL"), connectionSession);
         ResponseHeader actual = handler.execute();
@@ -78,42 +78,42 @@ public final class SetDistVariableUpdatableRALBackendHandlerTest {
     }
     
     @Test
-    public void assertSwitchTransactionTypeFailed() {
+    void assertSwitchTransactionTypeFailed() {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement("transaction_type", "XXX"), connectionSession);
         assertThrows(UnsupportedVariableException.class, handler::execute);
     }
     
     @Test
-    public void assertNotSupportedVariable() {
+    void assertNotSupportedVariable() {
         UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement("@@session", "XXX"), connectionSession);
         assertThrows(UnsupportedVariableException.class, handler::execute);
     }
     
     @Test
-    public void assertSetAgentPluginsEnabledTrue() throws SQLException {
+    void assertSetAgentPluginsEnabledTrue() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()), null);
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.TRUE.toString()));
+        assertThat(SystemPropertyUtils.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.TRUE.toString()));
     }
     
     @Test
-    public void assertSetAgentPluginsEnabledFalse() throws SQLException {
+    void assertSetAgentPluginsEnabledFalse() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), null);
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
+        assertThat(SystemPropertyUtils.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
     }
     
     @Test
-    public void assertSetAgentPluginsEnabledFalseWithUnknownValue() throws SQLException {
+    void assertSetAgentPluginsEnabledFalseWithUnknownValue() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
         UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), connectionSession);
         ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
+        assertThat(SystemPropertyUtils.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
     }
 }

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -38,6 +39,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -73,17 +75,24 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         ShardingSphereResourceMetaData resourceMetaData = database.getResourceMetaData();
         Map<String, DataSourceProperties> dataSourcePropsMap = getDataSourcePropsMap(database, sqlStatement);
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        dataSourcePropsMap.forEach((key, value) -> {
-            DataSourceMetaData metaData = resourceMetaData.getDataSourceMetaData(key);
-            DataSourceProperties dataSourceProps = dataSourcePropsMap.get(key);
+        for (String each : dataSourcePropsMap.keySet()) {
+            DataSourceMetaData metaData = resourceMetaData.getDataSourceMetaData(each);
+            DataSourceProperties dataSourceProps = dataSourcePropsMap.get(each);
             Map<String, Object> standardProps = dataSourceProps.getPoolPropertySynonyms().getStandardProperties();
             Map<String, Object> otherProps = dataSourceProps.getCustomDataSourceProperties().getProperties();
-            result.add(new LocalDataQueryResultRow(key, resourceMetaData.getStorageType(key).getType(), metaData.getHostname(), metaData.getPort(), metaData.getCatalog(),
-                    getStandardProperty(standardProps, CONNECTION_TIMEOUT_MILLISECONDS), getStandardProperty(standardProps, IDLE_TIMEOUT_MILLISECONDS),
-                    getStandardProperty(standardProps, MAX_LIFETIME_MILLISECONDS), getStandardProperty(standardProps, MAX_POOL_SIZE),
-                    getStandardProperty(standardProps, MIN_POOL_SIZE), getStandardProperty(standardProps, READ_ONLY),
+            result.add(new LocalDataQueryResultRow(each,
+                    resourceMetaData.getStorageType(each).getType(),
+                    metaData.getHostname(),
+                    metaData.getPort(),
+                    metaData.getCatalog(),
+                    getStandardProperty(standardProps, CONNECTION_TIMEOUT_MILLISECONDS),
+                    getStandardProperty(standardProps, IDLE_TIMEOUT_MILLISECONDS),
+                    getStandardProperty(standardProps, MAX_LIFETIME_MILLISECONDS),
+                    getStandardProperty(standardProps, MAX_POOL_SIZE),
+                    getStandardProperty(standardProps, MIN_POOL_SIZE),
+                    getStandardProperty(standardProps, READ_ONLY),
                     otherProps.isEmpty() ? "" : new Gson().toJson(otherProps)));
-        });
+        }
         return result;
     }
     
@@ -118,11 +127,8 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     }
     
     private Collection<String> getInUsedResourceNames(final DataSourceContainedRule rule) {
-        Set<String> result = new HashSet<>();
-        for (Collection<String> each : rule.getDataSourceMapper().values()) {
-            result.addAll(each);
-        }
-        return result;
+        return rule.getDataSourceMapper().values().stream().flatMap(Collection::stream)
+                .map(DataSourceRoleInfo::getName).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
     private Collection<String> getInUsedResourceNames(final DataNodeContainedRule rule) {
