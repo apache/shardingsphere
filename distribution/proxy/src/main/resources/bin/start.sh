@@ -234,7 +234,7 @@ echo "The classpath is ${CLASS_PATH}"
 echo "main class ${MAIN_CLASS}"
 
 if [ -n "${IS_DOCKER}" ]; then
-  exec $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS}
+  exec $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${AGENT_PARAM} ${MAIN_CLASS}
   exit 0
 fi
 
