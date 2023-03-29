@@ -80,11 +80,18 @@
         <!-- Whitespace -->
         <module name="EmptyForInitializerPad" />
         <module name="EmptyForIteratorPad" />
+        <module name="EmptyLineSeparator">
+            <property name="allowMultipleEmptyLines" value="false" />
+            <property name="allowMultipleEmptyLinesInsideClassMembers" value="false" />
+        </module>
+        <module name="GenericWhitespace" />
         <module name="MethodParamPad" />
-        <module name="ParenPad" />
-        <module name="TypecastParenPad" />
         <module name="NoLineWrap" />
+        <module name="NoWhitespaceAfter" />
+        <module name="NoWhitespaceBefore" />
+        <module name="NoWhitespaceBeforeCaseDefaultColon" />
         <module name="OperatorWrap" />
+        <module name="ParenPad" />
         <module name="SeparatorWrap">
             <property name="id" value="SeparatorWrapDot" />
             <property name="tokens" value="DOT" />
@@ -110,16 +117,12 @@
             <property name="tokens" value="METHOD_REF" />
             <property name="option" value="nl" />
         </module>
-        <module name="GenericWhitespace" />
-        <module name="NoWhitespaceBefore" />
-        <module name="NoWhitespaceAfter" />
-        <module name="WhitespaceAround" />
-        <module name="WhitespaceAfter" />
-        <module name="SingleSpaceSeparator" />
-        <module name="EmptyLineSeparator">
-            <property name="allowMultipleEmptyLines" value="false" />
-            <property name="allowMultipleEmptyLinesInsideClassMembers" value="false" />
+        <module name="SingleSpaceSeparator">
+            <property name="validateComments" value="true" />
         </module>
+        <module name="TypecastParenPad" />
+        <module name="WhitespaceAfter" />
+        <module name="WhitespaceAround" />
         
         <!-- Imports -->
         <module name="AvoidStarImport" />
@@ -141,9 +144,10 @@
             <property name="allowSamelineMultipleAnnotations" value="true" />
         </module>
         <module name="AnnotationUseStyle" />
-        <module name="MissingOverride" />
-        <module name="SuppressWarnings" />
         <module name="MissingDeprecated" />
+        <module name="MissingOverride" />
+        <module name="PackageAnnotation" />
+        <module name="SuppressWarnings" />
         <module name="SuppressWarningsHolder" />
         
         <!-- Modifiers -->
@@ -151,44 +155,53 @@
         <module name="RedundantModifier" />
         
         <!-- Coding -->
-        <module name="ArrayTrailingComma" />
+        <module name="AvoidDoubleBraceInitialization" />
+        <module name="AvoidNoArgumentSuperConstructorCall" />
         <module name="CovariantEquals" />
-        <module name="DefaultComesLast" />
         <module name="DeclarationOrder" />
+        <module name="DefaultComesLast" />
         <module name="EmptyStatement" />
         <module name="EqualsAvoidNull" />
         <module name="EqualsHashCode" />
         <module name="ExplicitInitialization" />
         <module name="FallThrough" />
-        <module name="IllegalInstantiation" />
         <module name="IllegalCatch" />
+        <module name="IllegalInstantiation" />
         <module name="IllegalThrows" />
-        <module name="IllegalType">
-            <property name="tokens" value="METHOD_DEF,PARAMETER_DEF,VARIABLE_DEF" />
-        </module>
+        <module name="IllegalToken" />
         <module name="IllegalTokenText">
             <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL" />
             <property name="format" value="\\u00(09|0(a|A)|0(c|C)|0(d|D)|22|27|5(C|c))|\\(0(10|11|12|14|15|42|47)|134)" />
             <property name="message" value="Consider using special escape sequence instead of octal value or Unicode escaped value." />
         </module>
+        <module name="IllegalType" />
+        <module name="MagicNumber" />
         <module name="MissingSwitchDefault" />
         <module name="ModifiedControlVariable" />
         <module name="MultipleVariableDeclarations" />
         <module name="NestedForDepth" />
         <module name="NestedIfDepth" />
         <module name="NestedTryDepth" />
+        <module name="NoArrayTrailingComma" />
         <module name="NoClone" />
+        <module name="NoEnumTrailingComma" />
         <module name="NoFinalizer" />
-        <module name="SuperClone" />
-        <module name="SuperFinalize" />
         <module name="OneStatementPerLine" />
         <module name="OverloadMethodsDeclarationOrder" />
         <module name="PackageDeclaration" />
         <module name="ParameterAssignment" />
+        <module name="RequireThis" />
         <module name="SimplifyBooleanExpression" />
         <module name="SimplifyBooleanReturn" />
         <module name="StringLiteralEquality" />
+        <module name="SuperClone" />
+        <module name="SuperFinalize" />
         <module name="UnnecessaryParentheses" />
+        <module name="UnnecessarySemicolonAfterOuterTypeDeclaration" />
+        <module name="UnnecessarySemicolonAfterTypeMemberDeclaration" />
+        <module name="UnnecessarySemicolonInEnumeration" />
+        <module name="UnnecessarySemicolonInTryWithResources" />
+        <module name="UnusedLocalVariable" />
         <module name="VariableDeclarationUsageDistance" />
         
         <!-- Block Checks -->

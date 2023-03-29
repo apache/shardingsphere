@@ -43,7 +43,7 @@ class MySQLTextResultSetRowPacketTest {
     @Test
     void assertNew() {
         when(payload.readStringLenenc()).thenReturn("value_a", null, "value_c");
-        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(payload, 3);
+        new MySQLTextResultSetRowPacket(payload, 3);
         verify(payload, times(3)).readStringLenenc();
     }
     

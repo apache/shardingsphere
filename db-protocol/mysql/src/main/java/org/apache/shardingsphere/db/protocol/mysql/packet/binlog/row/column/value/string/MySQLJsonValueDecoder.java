@@ -105,7 +105,7 @@ public final class MySQLJsonValueDecoder {
     private static void decodeJsonObject(final boolean isSmall, final ByteBuf byteBuf, final StringBuilder result) {
         result.append('{');
         int count = getIntBasedObjectSize(byteBuf, isSmall);
-        int size = getIntBasedObjectSize(byteBuf, isSmall);
+        getIntBasedObjectSize(byteBuf, isSmall);
         String[] keys = new String[count];
         for (int i = 0; i < count; i++) {
             keys[i] = decodeKeyEntry(isSmall, byteBuf);
@@ -123,7 +123,7 @@ public final class MySQLJsonValueDecoder {
     private static void decodeJsonArray(final boolean isSmall, final ByteBuf byteBuf, final StringBuilder result) {
         result.append('[');
         int count = getIntBasedObjectSize(byteBuf, isSmall);
-        int size = getIntBasedObjectSize(byteBuf, isSmall);
+        getIntBasedObjectSize(byteBuf, isSmall);
         for (int i = 0; i < count; i++) {
             if (0 < i) {
                 result.append(',');
