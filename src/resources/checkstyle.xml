@@ -18,9 +18,11 @@
 
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://checkstyle.sourceforge.net/dtds/configuration_1_3.dtd">
 <module name="Checker">
-    <property name="charset" value="UTF-8" />
-    <property name="severity" value="warning" />
-    <property name="fileExtensions" value="java, properties, xml" />
+    <property name="severity" value="error" />
+    <property name="fileExtensions" value="java, xml, properties" />
+    
+    <module name="SeverityMatchFilter" />
+    
     <module name="Header">
         <property name="fileExtensions" value="java" />
     </module>
@@ -28,19 +30,19 @@
         <property name="eachLine" value="true" />
     </module>
     <module name="FileLength" />
+    <module name="LineLength">
+        <property name="fileExtensions" value="java" />
+        <property name="max" value="200" />
+    </module>
     <module name="NewlineAtEndOfFile">
         <property name="lineSeparator" value="lf" />
     </module>
     <module name="Translation" />
     <module name="UniqueProperties" />
-    <module name="SeverityMatchFilter" />
-    
-    <module name="LineLength">
-        <property name="fileExtensions" value="java" />
-        <property name="max" value="200" />
-    </module>
     
     <module name="TreeWalker">
+        <module name="SuppressionCommentFilter" />
+        
         <!-- Annotations -->
         <module name="AnnotationLocation">
             <property name="id" value="AnnotationLocationMostCases" />
@@ -69,7 +71,6 @@
         <module name="NeedBraces" />
         
         <!-- Class Design -->
-        <module name="DesignForExtension" />
         <module name="FinalClass" />
         <!-- cannot recognize for lombok @NoArgsConstructor(access = AccessLevel.PRIVATE), just ignore -->
         <!--<module name="HideUtilityClassConstructor" />-->
@@ -90,7 +91,9 @@
         <module name="DefaultComesLast" />
         <module name="EmptyStatement" />
         <module name="EqualsAvoidNull" />
-        <module name="EqualsHashCode" />
+        <module name="EqualsHashCode">
+            <property name="severity" value="warning" />
+        </module>
         <module name="ExplicitInitialization" />
         <module name="FallThrough" />
         <module name="IllegalCatch" />
@@ -103,11 +106,15 @@
             <property name="message" value="Consider using special escape sequence instead of octal value or Unicode escaped value." />
         </module>
         <module name="IllegalType" />
-        <module name="MagicNumber" />
+        <module name="MagicNumber">
+            <property name="severity" value="warning" />
+        </module>
         <module name="MissingSwitchDefault" />
         <module name="ModifiedControlVariable" />
         <module name="MultipleVariableDeclarations" />
-        <module name="NestedForDepth" />
+        <module name="NestedForDepth">
+            <property name="severity" value="warning" />
+        </module>
         <module name="NestedIfDepth" />
         <module name="NestedTryDepth" />
         <module name="NoArrayTrailingComma" />
@@ -181,14 +188,25 @@
         </module>
         
         <!-- Metrics -->
-        <module name="BooleanExpressionComplexity" />
+        <module name="BooleanExpressionComplexity">
+            <property name="severity" value="warning" />
+        </module>
         <module name="ClassDataAbstractionCoupling">
+            <property name="severity" value="warning" />
             <property name="max" value="10" />
         </module>
-        <module name="ClassFanOutComplexity" />
-        <module name="CyclomaticComplexity" />
-        <module name="JavaNCSS" />
-        <module name="NPathComplexity" />
+        <module name="ClassFanOutComplexity">
+            <property name="severity" value="warning" />
+        </module>
+        <module name="CyclomaticComplexity">
+            <property name="severity" value="warning" />
+        </module>
+        <module name="JavaNCSS">
+            <property name="severity" value="warning" />
+        </module>
+        <module name="NPathComplexity">
+            <property name="severity" value="warning" />
+        </module>
         
         <!-- Miscellaneous -->
         <module name="ArrayTypeStyle" />
@@ -240,13 +258,15 @@
         <!-- Size Violations -->
         <module name="AnonInnerLength" />
         <module name="ExecutableStatementCount">
+            <property name="severity" value="warning" />
             <property name="max" value="50" />
         </module>
         <module name="LambdaBodyLength" />
-        <module name="MethodCount" />
+        <module name="MethodCount">
+            <property name="severity" value="warning" />
+        </module>
         <module name="MethodLength" />
         <module name="OuterTypeNumber" />
-        <module name="ParameterNumber" />
         <module name="RecordComponentNumber" />
         
         <!-- Whitespace -->
@@ -295,9 +315,5 @@
         <module name="TypecastParenPad" />
         <module name="WhitespaceAfter" />
         <module name="WhitespaceAround" />
-        
-        <!-- Filters -->
-        <module name="SuppressionCommentFilter" />
-        <module name="SuppressWithNearbyCommentFilter" />
     </module>
 </module>
