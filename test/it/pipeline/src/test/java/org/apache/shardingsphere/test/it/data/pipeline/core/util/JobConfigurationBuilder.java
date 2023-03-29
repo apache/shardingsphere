@@ -77,7 +77,8 @@ public final class JobConfigurationBuilder {
         result.setTargetTableSchemaMap(targetTableSchemaMap);
         result.setTablesFirstDataNodes("t_order:ds_0.t_order");
         result.setJobShardingDataNodes(Collections.singletonList("t_order:ds_0.t_order"));
-        result.setJobId(generateMigrationJobId(result));
+        PipelineContextKey contextKey = PipelineContextKey.build(InstanceType.PROXY, RandomStringUtils.randomAlphabetic(32));
+        result.setJobId(generateMigrationJobId(contextKey, result));
         Map<String, YamlPipelineDataSourceConfiguration> sources = new LinkedHashMap<>();
         String databaseNameSuffix = RandomStringUtils.randomAlphabetic(9);
         PipelineDataSourceConfiguration sourceDataSourceConfig = new StandardPipelineDataSourceConfiguration(
@@ -94,12 +95,11 @@ public final class JobConfigurationBuilder {
         result.setSources(sources);
         result.setTarget(createYamlPipelineDataSourceConfiguration(new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtils.readFile("migration_sharding_sphere_jdbc_target.yaml").replace("${databaseNameSuffix}", databaseNameSuffix))));
-        TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION").extendYamlJobConfiguration(result);
+        TypedSPILoader.getService(PipelineJobAPI.class, "MIGRATION").extendYamlJobConfiguration(contextKey, result);
         return result;
     }
     
-    private static String generateMigrationJobId(final YamlMigrationJobConfiguration yamlJobConfig) {
-        PipelineContextKey contextKey = PipelineContextKey.build(InstanceType.PROXY, RandomStringUtils.randomAlphabetic(32));
+    private static String generateMigrationJobId(final PipelineContextKey contextKey, final YamlMigrationJobConfiguration yamlJobConfig) {
         MigrationJobId migrationJobId = new MigrationJobId(yamlJobConfig.getJobShardingDataNodes(), contextKey);
         return new MigrationJobAPI().marshalJobId(migrationJobId);
     }

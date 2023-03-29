@@ -339,8 +339,7 @@ public final class ConsistencyCheckJobAPI extends AbstractPipelineJobAPIImpl {
     }
     
     @Override
-    public void extendYamlJobConfiguration(final YamlPipelineJobConfiguration yamlJobConfig) {
-        throw new UnsupportedOperationException();
+    public void extendYamlJobConfiguration(final PipelineContextKey contextKey, final YamlPipelineJobConfiguration yamlJobConfig) {
     }
     
     @Override

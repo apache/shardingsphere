@@ -182,7 +182,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         result.setTargetTableSchemaMap(buildTargetTableSchemaMap(sourceDataNodes));
         result.setTablesFirstDataNodes(new JobDataNodeLine(tablesFirstDataNodes).marshal());
         result.setJobShardingDataNodes(JobDataNodeLineConvertUtils.convertDataNodesToLines(sourceDataNodes).stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
-        extendYamlJobConfiguration(result);
+        extendYamlJobConfiguration(contextKey, result);
         return result;
     }
     
@@ -238,15 +238,14 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     @Override
-    public void extendYamlJobConfiguration(final YamlPipelineJobConfiguration yamlJobConfig) {
+    public void extendYamlJobConfiguration(final PipelineContextKey contextKey, final YamlPipelineJobConfiguration yamlJobConfig) {
         YamlMigrationJobConfiguration config = (YamlMigrationJobConfiguration) yamlJobConfig;
         if (null == yamlJobConfig.getJobId()) {
-            config.setJobId(generateJobId(config));
+            config.setJobId(generateJobId(contextKey, config));
         }
     }
     
-    private String generateJobId(final YamlMigrationJobConfiguration config) {
-        PipelineContextKey contextKey = PipelineContextKey.build(InstanceType.PROXY, config.getDatabaseName());
+    private String generateJobId(final PipelineContextKey contextKey, final YamlMigrationJobConfiguration config) {
         MigrationJobId jobId = new MigrationJobId(config.getJobShardingDataNodes(), contextKey);
         return marshalJobId(jobId);
     }

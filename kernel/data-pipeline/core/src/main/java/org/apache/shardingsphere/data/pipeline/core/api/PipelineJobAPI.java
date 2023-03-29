@@ -60,9 +60,10 @@ public interface PipelineJobAPI extends TypedSPI {
     /**
      * Extend YAML job configuration.
      *
+     * @param contextKey context key
      * @param yamlJobConfig YAML job configuration
      */
-    void extendYamlJobConfiguration(YamlPipelineJobConfiguration yamlJobConfig);
+    void extendYamlJobConfiguration(PipelineContextKey contextKey, YamlPipelineJobConfiguration yamlJobConfig);
     
     /**
      * Build task configuration.
