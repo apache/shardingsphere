@@ -51,7 +51,7 @@ public final class SetParameterStatementAssert {
         }
     }
     
-    public static void assertVariable(final SQLCaseAssertContext assertContext, final VariableSegment actual, final ExpectedVariable expected) {
+    private static void assertVariable(final SQLCaseAssertContext assertContext, final VariableSegment actual, final ExpectedVariable expected) {
         assertThat(assertContext.getText("variable assertion error: "), actual.getVariable(), is(expected.getName()));
         assertThat(assertContext.getText("scope assertion error: "), actual.getScope(), is(expected.getScope()));
     }

@@ -23,9 +23,12 @@ import java.lang.reflect.ParameterizedType;
 
 /**
  * Empty row enumerator.
+ * 
+ * @param <T> type of row
  */
 public final class EmptyRowEnumerator<T> implements Enumerator<T> {
     
+    @SuppressWarnings("unchecked")
     @Override
     public T current() {
         ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();

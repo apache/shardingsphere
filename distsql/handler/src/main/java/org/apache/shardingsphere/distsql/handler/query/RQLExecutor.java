@@ -27,6 +27,8 @@ import java.util.Collection;
 
 /**
  * RQL executor.
+ * 
+ * @param <T> type of RQL statement
  */
 @SingletonSPI
 public interface RQLExecutor<T extends RQLStatement> extends TypedSPI {
