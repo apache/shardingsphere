@@ -65,6 +65,6 @@
     </test-case>
     
     <test-case sql="SELECT o.order_id, o.user_id, o.status, o.merchant_id, (SELECT t.merchant_name FROM t_merchant t WHERE t.merchant_id = o.merchant_id) AS merchant_name FROM t_order o WHERE user_id = ? AND order_id = ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
-        <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
+        <assertion parameters="10:int, 1000:long" expected-data-source-name="read_dataset" />
     </test-case>
 </integration-test-cases>
