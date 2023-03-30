@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.util.expr;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledInNativeImage;
 
 import java.util.Collections;
 import java.util.List;
@@ -120,9 +121,8 @@ class InlineExpressionParserTest {
      * Because `org.graalvm.polyglot.Value#as` does not allow this type to be returned from the guest JVM.
      */
     @Test
+    @DisabledInNativeImage
     void assertEvaluateClosure() {
-        if (!System.getProperty("java.vm.name").equals("Substrate VM")) {
-            assertThat(new InlineExpressionParser("${1+2}").evaluateClosure().call().toString(), is("3"));
-        }
+        assertThat(new InlineExpressionParser("${1+2}").evaluateClosure().call().toString(), is("3"));
     }
 }
