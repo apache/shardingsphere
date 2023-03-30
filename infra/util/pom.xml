@@ -60,7 +60,7 @@
                         <goals>
                             <goal>copy</goal>
                         </goals>
-                        <phase>process-test-classes</phase>
+                        <phase>prepare-package</phase>
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
