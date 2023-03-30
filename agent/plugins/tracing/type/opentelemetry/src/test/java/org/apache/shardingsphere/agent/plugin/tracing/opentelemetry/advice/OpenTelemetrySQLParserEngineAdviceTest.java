@@ -47,6 +47,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @ExtendWith(AgentExtension.class)
+@AdviceTargetSetting("org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine")
 class OpenTelemetrySQLParserEngineAdviceTest {
     
     private static final String SQL_STATEMENT = "select 1";
@@ -76,30 +77,28 @@ class OpenTelemetrySQLParserEngineAdviceTest {
     }
     
     @Test
-    @AdviceTargetSetting("org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine")
     void assertMethod() {
         OpenTelemetrySQLParserEngineAdvice advice = new OpenTelemetrySQLParserEngineAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{SQL_STATEMENT, true}, "OpenTelemetry");
         advice.afterMethod(targetObject, null, new Object[]{SQL_STATEMENT, true}, null, "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
-        assertThat(spanItems.size(), is(1));
-        assertThat(spanItems.get(0).getName(), is("/ShardingSphere/parseSQL/"));
-        assertThat(spanItems.get(0).getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
-        Attributes attributes = spanItems.get(0).getAttributes();
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(SQL_STATEMENT));
+        assertCommonData(spanItems);
+        assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.OK));
     }
     
     @Test
-    @AdviceTargetSetting("org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine")
     void assertExceptionHandle() {
         OpenTelemetrySQLParserEngineAdvice advice = new OpenTelemetrySQLParserEngineAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{SQL_STATEMENT, true}, "OpenTelemetry");
         advice.onThrowing(targetObject, null, new Object[]{SQL_STATEMENT, true}, new IOException(), "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
+        assertCommonData(spanItems);
+        assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.ERROR));
+    }
+    
+    private void assertCommonData(final List<SpanData> spanItems) {
         assertThat(spanItems.size(), is(1));
         assertThat(spanItems.get(0).getName(), is("/ShardingSphere/parseSQL/"));
-        assertThat(spanItems.get(0).getStatus().getStatusCode(), is(StatusCode.ERROR));
         assertThat(spanItems.get(0).getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
         Attributes attributes = spanItems.get(0).getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));

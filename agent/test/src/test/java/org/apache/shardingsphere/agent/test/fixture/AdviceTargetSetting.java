@@ -20,14 +20,25 @@ package org.apache.shardingsphere.agent.test.fixture;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
+/**
+ * Advice target setting.
+ */
+@Target(ElementType.TYPE)
 @ExtendWith(MockitoExtension.class)
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AdviceTargetSetting {
     
+    /**
+     * Target class name.
+     * 
+     * @return target class name.
+     */
     String value();
 }

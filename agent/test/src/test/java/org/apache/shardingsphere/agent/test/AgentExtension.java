@@ -22,6 +22,8 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.agent.builder.ResettableClassFileTransformer;
+import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.dynamic.DynamicType.Builder;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.jar.asm.Opcodes;
@@ -29,92 +31,50 @@ import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.test.fixture.AdviceTargetSetting;
 import org.junit.jupiter.api.extension.AfterAllCallback;
-import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-
+/**
+ * Agent extension.
+ */
 @Slf4j
-public class AgentExtension implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback {
+public final class AgentExtension implements BeforeAllCallback, AfterAllCallback {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
     
-    private static ResettableClassFileTransformer byteBuddyAgent;
-    
-    private static final String[] ENHANCEMENT_CLASSES = {
-            "org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask",
-            "org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback",
-            "org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine",
-            "org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory",
-            "org.apache.shardingsphere.infra.route.engine.SQLRouteEngine"
-    };
+    private ResettableClassFileTransformer byteBuddyAgent;
     
     @Override
     public void beforeAll(final ExtensionContext context) {
-        log.info("beforeAll:{}", context.getRequiredTestClass().getName());
+        AdviceTargetSetting adviceTargetSetting = context.getRequiredTestClass().getAnnotation(AdviceTargetSetting.class);
+        if (null == adviceTargetSetting) {
+            return;
+        }
+        String targetClassName = adviceTargetSetting.value();
+        ByteBuddyAgent.install();
+        byteBuddyAgent = new AgentBuilder.Default()
+                .with(new ByteBuddy().with(TypeValidation.ENABLED))
+                .type(ElementMatchers.named(targetClassName))
+                .transform((builder, typeDescription, classLoader, module) -> build(builder, typeDescription, targetClassName))
+                .with(AgentBuilder.RedefinitionStrategy.RETRANSFORMATION)
+                .installOnByteBuddyAgent();
     }
     
     @Override
     public void afterAll(final ExtensionContext context) {
-        log.info("afterAll:{}", context.getRequiredTestClass().getName());
-        clean();
-    }
-    
-    @Override
-    public void beforeEach(final ExtensionContext context) {
-        log.info("beforeEach:{}", context.getRequiredTestMethod().getName());
-        advice(context);
-    }
-    
-    @Override
-    public void afterEach(final ExtensionContext context) throws Exception {
-        log.info("afterEach:{}", context.getRequiredTestMethod().getName());
-        clean();
-    }
-    
-    private void clean() {
         if (null != byteBuddyAgent) {
-            byteBuddyAgent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
+            boolean reset = byteBuddyAgent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
+            log.info("afterAll reset:{} class:{}", reset, context.getRequiredTestClass().getName());
         }
     }
     
-    private void advice(final ExtensionContext context) {
-        AdviceTargetSetting setting = context.getRequiredTestMethod().getAnnotation(AdviceTargetSetting.class);
-        log.info("setting is null:{}", null == setting);
-        String targetName = null;
-        if (null != setting) {
-            targetName = setting.value();
+    private Builder<?> build(final Builder<?> builder, final TypeDescription typeDescription, final String targetClassName) {
+        Builder<?> result = builder;
+        if (targetClassName.equals(typeDescription.getTypeName())) {
+            result = builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
+                    .implement(TargetAdviceObject.class)
+                    .intercept(FieldAccessor.ofField(EXTRA_DATA));
         }
-        log.info("targetName is {}", targetName);
-        if (null == targetName) {
-            log.error("targetName is null");
-            return;
-        }
-        ByteBuddyAgent.install();
-        Collection<String> classes = new HashSet<>(Arrays.asList(ENHANCEMENT_CLASSES));
-        classes.clear();
-        classes.add(targetName);
-        byteBuddyAgent = new AgentBuilder.Default()
-                .with(new ByteBuddy().with(TypeValidation.ENABLED))
-                .type(ElementMatchers.namedOneOf(ENHANCEMENT_CLASSES))
-                .transform((builder, typeDescription, classLoader, module) -> {
-                    if (classes.contains(typeDescription.getTypeName())) {
-                        log.info("transform:{}", typeDescription.getTypeName());
-                        return builder.defineField(EXTRA_DATA, Object.class, Opcodes.ACC_PRIVATE | Opcodes.ACC_VOLATILE)
-                                .implement(TargetAdviceObject.class)
-                                .intercept(FieldAccessor.ofField(EXTRA_DATA));
-                    }
-                    return builder;
-                }).installOnByteBuddyAgent();
-        classes.forEach(each -> {
-            try {
-                Class.forName(each);
-            } catch (final ClassNotFoundException ignored) {
-            }
-        });
+        return result;
     }
 }

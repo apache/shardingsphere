@@ -28,7 +28,6 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
@@ -66,13 +65,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@Slf4j
 @ExtendWith(AgentExtension.class)
+@AdviceTargetSetting("org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback")
 class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     
     public static final String DATA_SOURCE_NAME = "mock.db";
     
     public static final String SQL = "SELECT 1";
+    
+    private static final String DB_TYPE = "MySQL";
     
     private final InMemorySpanExporter testExporter = InMemorySpanExporter.create();
     
@@ -90,12 +91,12 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).buildAndRegisterGlobal().getTracer(OpenTelemetryConstants.TRACER_NAME);
         parentSpan = GlobalOpenTelemetry.getTracer(OpenTelemetryConstants.TRACER_NAME).spanBuilder("parent").startSpan();
         RootSpanContext.set(parentSpan);
-        prepareData();
+        prepare();
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
-    public void prepareData() {
+    public void prepare() {
         Statement statement = mock(Statement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
@@ -116,7 +117,6 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
                 return Optional.empty();
             }
         };
-        
         Map<String, DataSourceMetaData> cachedDatasourceMetaData = (Map<String, DataSourceMetaData>) Plugins.getMemberAccessor()
                 .get(JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA"), jdbcExecutorCallback);
         cachedDatasourceMetaData.put("mock_url", mock(DataSourceMetaData.class));
@@ -133,41 +133,33 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     }
     
     @Test
-    @AdviceTargetSetting("org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback")
     void assertMethod() {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
         advice.afterMethod(targetObject, null, new Object[]{executionUnit, false}, null, "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
-        assertThat(spanItems.size(), is(1));
-        SpanData spanData = spanItems.get(0);
-        assertThat(spanData.getName(), is("/ShardingSphere/executeSQL/"));
-        Attributes attributes = spanData.getAttributes();
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_TYPE)), is(getDatabaseType(DATA_SOURCE_NAME)));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_INSTANCE)), is(DATA_SOURCE_NAME));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(SQL));
+        assertCommonData(spanItems);
+        assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.OK));
     }
     
     @Test
-    @AdviceTargetSetting("org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback")
     void assertExceptionHandle() {
         OpenTelemetryJDBCExecutorCallbackAdvice advice = new OpenTelemetryJDBCExecutorCallbackAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{executionUnit, false}, "OpenTelemetry");
         advice.onThrowing(targetObject, null, new Object[]{executionUnit, false}, new IOException(), "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
+        assertCommonData(spanItems);
+        assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.ERROR));
+    }
+    
+    private void assertCommonData(final List<SpanData> spanItems) {
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
         assertThat(spanData.getName(), is("/ShardingSphere/executeSQL/"));
-        assertThat(spanData.getStatus().getStatusCode(), is(StatusCode.ERROR));
         Attributes attributes = spanData.getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_TYPE)), is(getDatabaseType(DATA_SOURCE_NAME)));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_TYPE)), is(DB_TYPE));
         assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_INSTANCE)), is(DATA_SOURCE_NAME));
         assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(SQL));
-    }
-    
-    private String getDatabaseType(final String databaseName) {
-        return storageTypes.get(databaseName).getType();
     }
 }

@@ -51,6 +51,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith({AgentExtension.class, AutoMockExtension.class})
 @StaticMockSettings(ProxyContext.class)
+@AdviceTargetSetting("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
 class OpenTelemetryRootSpanAdviceTest {
     
     private final InMemorySpanExporter testExporter = InMemorySpanExporter.create();
@@ -73,31 +74,30 @@ class OpenTelemetryRootSpanAdviceTest {
     }
     
     @Test
-    @AdviceTargetSetting("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
     void assertMethod() {
         OpenTelemetryRootSpanAdvice advice = new OpenTelemetryRootSpanAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{}, "OpenTelemetry");
         advice.afterMethod(targetObject, null, new Object[]{}, null, "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
-        assertThat(spanItems.size(), is(1));
-        SpanData spanData = spanItems.get(0);
-        assertThat(spanData.getName(), is("/ShardingSphere/rootInvoke/"));
-        assertThat(spanData.getAttributes().get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
-        assertThat(spanData.getAttributes().get(AttributeKey.stringKey(AttributeConstants.SPAN_KIND)), is(AttributeConstants.SPAN_KIND_CLIENT));
+        assertCommonData(spanItems);
+        assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.OK));
     }
     
     @Test
-    @AdviceTargetSetting("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
     void assertExceptionHandle() {
         OpenTelemetryRootSpanAdvice advice = new OpenTelemetryRootSpanAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{}, "OpenTelemetry");
         advice.onThrowing(targetObject, null, new Object[]{}, new IOException(), "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
+        assertCommonData(spanItems);
+        assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.ERROR));
+    }
+    
+    private void assertCommonData(final List<SpanData> spanItems) {
         assertThat(spanItems.size(), is(1));
         SpanData spanData = spanItems.get(0);
         assertThat(spanData.getName(), is("/ShardingSphere/rootInvoke/"));
         assertThat(spanData.getAttributes().get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
         assertThat(spanData.getAttributes().get(AttributeKey.stringKey(AttributeConstants.SPAN_KIND)), is(AttributeConstants.SPAN_KIND_CLIENT));
-        assertThat(spanData.getStatus().getStatusCode(), is(StatusCode.ERROR));
     }
 }

@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 
+/**
+ * Target advice object fixture.
+ */
 @Getter
 @Setter
 public final class TargetAdviceObjectFixture implements TargetAdviceObject {
