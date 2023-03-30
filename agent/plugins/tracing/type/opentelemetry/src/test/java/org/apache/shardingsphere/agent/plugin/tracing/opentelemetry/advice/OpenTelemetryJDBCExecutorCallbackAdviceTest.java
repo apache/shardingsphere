@@ -33,7 +33,7 @@ import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
 import org.apache.shardingsphere.agent.test.AgentExtension;
-import org.apache.shardingsphere.agent.test.fixture.AdviceTargetSetting;
+import org.apache.shardingsphere.agent.test.AdviceTargetClassSetting;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -66,7 +66,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AgentExtension.class)
-@AdviceTargetSetting("org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback")
+@AdviceTargetClassSetting("org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback")
 class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     
     public static final String DATA_SOURCE_NAME = "mock.db";
@@ -83,8 +83,6 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     
     private JDBCExecutionUnit executionUnit;
     
-    private Map<String, DatabaseType> storageTypes;
-    
     @BeforeEach
     void setup() {
         SdkTracerProvider tracerProvider = SdkTracerProvider.builder().addSpanProcessor(SimpleSpanProcessor.create(testExporter)).build();
@@ -96,7 +94,7 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @SneakyThrows({ReflectiveOperationException.class, SQLException.class})
-    public void prepare() {
+    private void prepare() {
         Statement statement = mock(Statement.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
@@ -120,15 +118,15 @@ class OpenTelemetryJDBCExecutorCallbackAdviceTest {
         Map<String, DataSourceMetaData> cachedDatasourceMetaData = (Map<String, DataSourceMetaData>) Plugins.getMemberAccessor()
                 .get(JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA"), jdbcExecutorCallback);
         cachedDatasourceMetaData.put("mock_url", mock(DataSourceMetaData.class));
-        storageTypes = Collections.singletonMap(DATA_SOURCE_NAME, new MySQLDatabaseType());
+        Map<String, DatabaseType> storageTypes = Collections.singletonMap(DATA_SOURCE_NAME, new MySQLDatabaseType());
         Plugins.getMemberAccessor().set(JDBCExecutorCallback.class.getDeclaredField("storageTypes"), jdbcExecutorCallback, storageTypes);
         targetObject = (TargetAdviceObject) jdbcExecutorCallback;
     }
     
     @AfterEach
     void clean() {
-        parentSpan.end();
         GlobalOpenTelemetry.resetForTest();
+        parentSpan.end();
         testExporter.reset();
     }
     

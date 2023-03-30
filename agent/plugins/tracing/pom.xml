@@ -31,8 +31,6 @@
     <modules>
         <module>core</module>
         <module>type</module>
-        
-        <module>test</module>
     </modules>
     
     <properties>

@@ -25,14 +25,11 @@ import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
-import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
-import org.apache.shardingsphere.agent.test.AgentExtension;
-import org.apache.shardingsphere.agent.test.fixture.AdviceTargetSetting;
+import org.apache.shardingsphere.agent.test.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.AfterEach;
@@ -49,22 +46,17 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({AgentExtension.class, AutoMockExtension.class})
+@ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-@AdviceTargetSetting("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
 class OpenTelemetryRootSpanAdviceTest {
     
     private final InMemorySpanExporter testExporter = InMemorySpanExporter.create();
-    
-    private TargetAdviceObject targetObject;
     
     @BeforeEach
     void setup() {
         SdkTracerProvider tracerProvider = SdkTracerProvider.builder().addSpanProcessor(SimpleSpanProcessor.create(testExporter)).build();
         OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).buildAndRegisterGlobal().getTracer(OpenTelemetryConstants.TRACER_NAME);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        Object executorTask = new CommandExecutorTask(null, null, null, null);
-        targetObject = (TargetAdviceObject) executorTask;
     }
     
     @AfterEach
@@ -76,8 +68,8 @@ class OpenTelemetryRootSpanAdviceTest {
     @Test
     void assertMethod() {
         OpenTelemetryRootSpanAdvice advice = new OpenTelemetryRootSpanAdvice();
-        advice.beforeMethod(targetObject, null, new Object[]{}, "OpenTelemetry");
-        advice.afterMethod(targetObject, null, new Object[]{}, null, "OpenTelemetry");
+        advice.beforeMethod(new TargetAdviceObjectFixture(), null, new Object[]{}, "OpenTelemetry");
+        advice.afterMethod(new TargetAdviceObjectFixture(), null, new Object[]{}, null, "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertCommonData(spanItems);
         assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.OK));
@@ -86,8 +78,8 @@ class OpenTelemetryRootSpanAdviceTest {
     @Test
     void assertExceptionHandle() {
         OpenTelemetryRootSpanAdvice advice = new OpenTelemetryRootSpanAdvice();
-        advice.beforeMethod(targetObject, null, new Object[]{}, "OpenTelemetry");
-        advice.onThrowing(targetObject, null, new Object[]{}, new IOException(), "OpenTelemetry");
+        advice.beforeMethod(new TargetAdviceObjectFixture(), null, new Object[]{}, "OpenTelemetry");
+        advice.onThrowing(new TargetAdviceObjectFixture(), null, new Object[]{}, new IOException(), "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertCommonData(spanItems);
         assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.ERROR));

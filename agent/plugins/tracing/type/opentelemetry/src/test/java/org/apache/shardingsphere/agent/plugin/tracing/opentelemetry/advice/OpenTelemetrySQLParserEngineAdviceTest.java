@@ -27,18 +27,13 @@ import io.opentelemetry.sdk.testing.exporter.InMemorySpanExporter;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
-import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
-import org.apache.shardingsphere.agent.test.AgentExtension;
-import org.apache.shardingsphere.agent.test.fixture.AdviceTargetSetting;
-import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
-import org.apache.shardingsphere.sql.parser.api.CacheOption;
+import org.apache.shardingsphere.agent.test.fixture.TargetAdviceObjectFixture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,17 +41,13 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@ExtendWith(AgentExtension.class)
-@AdviceTargetSetting("org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine")
 class OpenTelemetrySQLParserEngineAdviceTest {
     
-    private static final String SQL_STATEMENT = "select 1";
+    private static final String SQL = "select 1";
     
     private final InMemorySpanExporter testExporter = InMemorySpanExporter.create();
     
     private Span parentSpan;
-    
-    private TargetAdviceObject targetObject;
     
     @BeforeEach
     void setup() {
@@ -64,23 +55,21 @@ class OpenTelemetrySQLParserEngineAdviceTest {
         OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).buildAndRegisterGlobal().getTracer(OpenTelemetryConstants.TRACER_NAME);
         parentSpan = GlobalOpenTelemetry.getTracer(OpenTelemetryConstants.TRACER_NAME).spanBuilder("parent").startSpan();
         RootSpanContext.set(parentSpan);
-        CacheOption cacheOption = new CacheOption(0, 0);
-        Object executorTask = new ShardingSphereSQLParserEngine("MySQL", cacheOption, cacheOption, false);
-        targetObject = (TargetAdviceObject) executorTask;
     }
     
     @AfterEach
     void clean() {
-        parentSpan.end();
         GlobalOpenTelemetry.resetForTest();
+        parentSpan.end();
         testExporter.reset();
     }
     
     @Test
     void assertMethod() {
+        TargetAdviceObjectFixture adviceObjectFixture = new TargetAdviceObjectFixture();
         OpenTelemetrySQLParserEngineAdvice advice = new OpenTelemetrySQLParserEngineAdvice();
-        advice.beforeMethod(targetObject, null, new Object[]{SQL_STATEMENT, true}, "OpenTelemetry");
-        advice.afterMethod(targetObject, null, new Object[]{SQL_STATEMENT, true}, null, "OpenTelemetry");
+        advice.beforeMethod(adviceObjectFixture, null, new Object[]{SQL, true}, "OpenTelemetry");
+        advice.afterMethod(adviceObjectFixture, null, new Object[]{SQL, true}, null, "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertCommonData(spanItems);
         assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.OK));
@@ -88,9 +77,10 @@ class OpenTelemetrySQLParserEngineAdviceTest {
     
     @Test
     void assertExceptionHandle() {
+        TargetAdviceObjectFixture adviceObjectFixture = new TargetAdviceObjectFixture();
         OpenTelemetrySQLParserEngineAdvice advice = new OpenTelemetrySQLParserEngineAdvice();
-        advice.beforeMethod(targetObject, null, new Object[]{SQL_STATEMENT, true}, "OpenTelemetry");
-        advice.onThrowing(targetObject, null, new Object[]{SQL_STATEMENT, true}, new IOException(), "OpenTelemetry");
+        advice.beforeMethod(adviceObjectFixture, null, new Object[]{SQL, true}, "OpenTelemetry");
+        advice.onThrowing(adviceObjectFixture, null, new Object[]{SQL, true}, new IOException(), "OpenTelemetry");
         List<SpanData> spanItems = testExporter.getFinishedSpanItems();
         assertCommonData(spanItems);
         assertThat(spanItems.iterator().next().getStatus().getStatusCode(), is(StatusCode.ERROR));
@@ -102,6 +92,6 @@ class OpenTelemetrySQLParserEngineAdviceTest {
         assertThat(spanItems.get(0).getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
         Attributes attributes = spanItems.get(0).getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
-        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(SQL_STATEMENT));
+        assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(SQL));
     }
 }

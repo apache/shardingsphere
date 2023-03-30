@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.test;
 
-import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
@@ -29,7 +28,6 @@ import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.jar.asm.Opcodes;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.test.fixture.AdviceTargetSetting;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -37,7 +35,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 /**
  * Agent extension.
  */
-@Slf4j
 public final class AgentExtension implements BeforeAllCallback, AfterAllCallback {
     
     private static final String EXTRA_DATA = "_$EXTRA_DATA$_";
@@ -46,7 +43,7 @@ public final class AgentExtension implements BeforeAllCallback, AfterAllCallback
     
     @Override
     public void beforeAll(final ExtensionContext context) {
-        AdviceTargetSetting adviceTargetSetting = context.getRequiredTestClass().getAnnotation(AdviceTargetSetting.class);
+        AdviceTargetClassSetting adviceTargetSetting = context.getRequiredTestClass().getAnnotation(AdviceTargetClassSetting.class);
         if (null == adviceTargetSetting) {
             return;
         }
@@ -63,8 +60,7 @@ public final class AgentExtension implements BeforeAllCallback, AfterAllCallback
     @Override
     public void afterAll(final ExtensionContext context) {
         if (null != byteBuddyAgent) {
-            boolean reset = byteBuddyAgent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
-            log.info("afterAll reset:{} class:{}", reset, context.getRequiredTestClass().getName());
+            byteBuddyAgent.reset(ByteBuddyAgent.getInstrumentation(), AgentBuilder.RedefinitionStrategy.RETRANSFORMATION);
         }
     }
     

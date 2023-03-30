@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.test.fixture;
+package org.apache.shardingsphere.agent.test;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
 @ExtendWith(MockitoExtension.class)
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AdviceTargetSetting {
+public @interface AdviceTargetClassSetting {
     
     /**
      * Target class name.
