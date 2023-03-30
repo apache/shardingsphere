@@ -25,6 +25,8 @@ import java.sql.SQLException;
 
 /**
  * Connection session required RAL updater.
+ * 
+ * @param <T> type of SQL statement
  */
 public interface ConnectionSessionRequiredRALUpdater<T extends SQLStatement> extends RALUpdater<T> {
     

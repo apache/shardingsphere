@@ -25,6 +25,8 @@ import java.io.Serializable;
 
 /**
  * Http result.
+ * 
+ * @param <T> type of data
  */
 @NoArgsConstructor
 @Getter

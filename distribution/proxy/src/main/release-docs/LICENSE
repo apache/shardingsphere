@@ -231,23 +231,23 @@ The text of each license is the standard Apache 2.0 license.
     commons-lang 2.4: https://github.com/apache/commons-lang, Apache 2.0
     commons-lang3 3.12.0: https://github.com/apache/commons-lang, Apache 2.0
     commons-logging 1.1.3: https://github.com/apache/commons-logging, Apache 2.0
-    curator-client 5.3.0:  https://github.com/apache/curator, Apache 2.0
-    curator-framework 5.3.0:  https://github.com/apache/curator, Apache 2.0
-    curator-recipes 5.3.0:  https://github.com/apache/curator, Apache 2.0
+    curator-client 5.4.0:  https://github.com/apache/curator, Apache 2.0
+    curator-framework 5.4.0:  https://github.com/apache/curator, Apache 2.0
+    curator-recipes 5.4.0:  https://github.com/apache/curator, Apache 2.0
     cosid-core 1.16.0: https://github.com/Ahoo-Wang/CosId, Apache 2.0
     error_prone_annotations 2.10.0: https://github.com/google/error-prone, Apache 2.0
     failsafe 2.4.4: https://github.com/jhalterman/failsafe, Apache 2.0
     failureaccess 1.0.1: https://github.com/google/guava, Apache 2.0 
     freemarker 2.3.31: https://freemarker.apache.org/, Apache 2.0
     groovy 4.0.10: https://groovy.apache.org/, Apache 2.0
-    grpc-api 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-context 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-core 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-grpclb 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-netty 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-protobuf-lite 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
-    grpc-stub 1.48.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-api 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-context 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-core 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-grpclb 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-netty 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-protobuf-lite 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
+    grpc-stub 1.51.0: https://github.com/grpc/grpc-java, Apache 2.0
     gson 2.9.1: https://github.com/google/gson, Apache 2.0
     guava 30.0-jre: https://github.com/google/guava, Apache 2.0
     HikariCP 4.0.3: https://github.com/brettwooldridge/HikariCP, Apache 2.0
@@ -277,8 +277,6 @@ The text of each license is the standard Apache 2.0 license.
     netty-handler 4.1.87.Final: https://github.com/netty, Apache 2.0
     netty-handler-proxy 4.1.87.Final: https://github.com/netty, Apache 2.0
     netty-resolver 4.1.87.Final: https://github.com/netty, Apache 2.0
-    netty-tcnative 2.0.48.Final: https://github.com/netty/netty-tcnative, Apache 2.0
-    netty-tcnative-classes 2.0.48.Final: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-transport 4.1.87.Final: https://github.com/netty, Apache 2.0
     netty-transport-classes-epoll 4.1.87.Final: https://github.com/netty, Apache 2.0
     netty-transport-native-epoll 4.1.87.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
@@ -368,4 +366,5 @@ UPL licenses
 The following components are provided under the UPL License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
-    truffle-api 21.2.0: http://www.graalvm.org/, UPL
+    graal-sdk 21.2.0: https://github.com/oracle/graal/tree/master/sdk, UPL 1.0
+    truffle-api 21.2.0: https://github.com/oracle/graal/tree/master/truffle, UPL 1.0

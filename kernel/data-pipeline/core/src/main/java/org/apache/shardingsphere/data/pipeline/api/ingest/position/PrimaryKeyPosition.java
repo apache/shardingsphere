@@ -19,6 +19,8 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 
 /**
  * Primary key position.
+ * 
+ * @param <T> type of value
  */
 public abstract class PrimaryKeyPosition<T> {
     

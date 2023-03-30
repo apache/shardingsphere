@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra</artifactId>
-        <version>5.3.2-SNAPSHOT</version>
+        <version>5.3.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra-util</artifactId>
     
@@ -60,17 +60,16 @@
                         <goals>
                             <goal>copy</goal>
                         </goals>
-                        <phase>process-test-classes</phase>
+                        <phase>prepare-package</phase>
                         <configuration>
                             <artifactItems>
-                                <!--TODO Need to explore and change to `org.apache.shardingsphere:shardingsphere-infra-util-groovy:${project.version}`-->
                                 <artifactItem>
                                     <groupId>org.apache.shardingsphere</groupId>
-                                    <artifactId>shardingsphere-infra-util</artifactId>
-                                    <version>5.3.1</version>
+                                    <artifactId>shardingsphere-infra-util-groovy</artifactId>
+                                    <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
-                                    <destFileName>shardingsphere-infra-util.jar</destFileName>
+                                    <destFileName>shardingsphere-infra-util-groovy.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.groovy</groupId>

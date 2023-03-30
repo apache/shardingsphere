@@ -26,6 +26,8 @@ import java.util.Collection;
 
 /**
  * Sharding value for hint.
+ * 
+ * @param <T> type of sharding value
  */
 @RequiredArgsConstructor
 @Getter

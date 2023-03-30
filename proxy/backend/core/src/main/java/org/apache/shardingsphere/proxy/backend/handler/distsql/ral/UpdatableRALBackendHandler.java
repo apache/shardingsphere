@@ -30,6 +30,8 @@ import java.sql.SQLException;
 
 /**
  * Updatable RAL backend handler.
+ * 
+ * @param <T> type of SQL statement
  */
 @RequiredArgsConstructor
 public final class UpdatableRALBackendHandler<T extends UpdatableRALStatement> implements RALBackendHandler {

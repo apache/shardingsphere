@@ -27,6 +27,8 @@ import java.util.List;
 
 /**
  * Sharding condition value for range.
+ * 
+ * @param <T> type of sharding condition value
  */
 @RequiredArgsConstructor
 @Getter
