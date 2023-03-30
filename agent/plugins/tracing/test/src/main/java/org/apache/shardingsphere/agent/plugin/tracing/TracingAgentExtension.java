@@ -48,7 +48,7 @@ public final class TracingAgentExtension implements BeforeAllCallback, AfterAllC
     private static final String[] ENHANCEMENT_CLASSES = {
             "org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask",
             "org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback",
-            "org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine",
+            "org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine"
     };
     
     @Override

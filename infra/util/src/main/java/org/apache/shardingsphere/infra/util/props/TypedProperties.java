@@ -29,6 +29,8 @@ import java.util.Properties;
 
 /**
  * Typed properties with a specified enum.
+ * 
+ * @param <E> type of enum
  */
 public abstract class TypedProperties<E extends Enum<?> & TypedPropertyKey> {
     

@@ -26,6 +26,8 @@ import java.util.Arrays;
 
 /**
  * Authenticator factory.
+ * 
+ * @param <E> type of enum
  */
 @RequiredArgsConstructor
 public final class AuthenticatorFactory<E extends Enum<E> & AuthenticatorType> {

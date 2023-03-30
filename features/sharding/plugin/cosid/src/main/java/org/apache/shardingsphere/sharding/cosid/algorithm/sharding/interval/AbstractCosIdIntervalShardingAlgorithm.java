@@ -37,6 +37,8 @@ import java.util.Properties;
 
 /**
  * Abstract interval range sharding algorithm with CosId.
+ * 
+ * @param <T> type of sharding value
  */
 public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparable<?>> implements StandardShardingAlgorithm<T> {
     

@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -62,10 +63,7 @@ public final class ClasspathDriverURLProvider implements ShardingSphereDriverURL
     }
     
     private InputStream getResourceAsStream(final String resource) {
-        ClassLoader[] classLoaders = new ClassLoader[]{
-                Thread.currentThread().getContextClassLoader(), getClass().getClassLoader(), ClassLoader.getSystemClassLoader(),
-        };
-        for (ClassLoader each : classLoaders) {
+        for (ClassLoader each : Arrays.asList(Thread.currentThread().getContextClassLoader(), getClass().getClassLoader(), ClassLoader.getSystemClassLoader())) {
             if (null != each) {
                 InputStream result = each.getResourceAsStream(resource);
                 if (null == result) {
