@@ -122,12 +122,13 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         for (PipelineTasksRunner each : tasksRunnerMap.values()) {
             each.stop();
         }
-        Optional<ElasticJobListener> pipelineJobListener = ElasticJobServiceLoader.getCachedTypedServiceInstance(ElasticJobListener.class, PipelineElasticJobListener.class.getName());
-        pipelineJobListener.ifPresent(jobListener -> awaitJobStopped((PipelineElasticJobListener) jobListener, jobId, TimeUnit.SECONDS.toMillis(2)));
-        if (null == jobBootstrap) {
-            return;
+        if (null != jobId) {
+            Optional<ElasticJobListener> pipelineJobListener = ElasticJobServiceLoader.getCachedTypedServiceInstance(ElasticJobListener.class, PipelineElasticJobListener.class.getName());
+            pipelineJobListener.ifPresent(jobListener -> awaitJobStopped((PipelineElasticJobListener) jobListener, jobId, TimeUnit.SECONDS.toMillis(2)));
         }
-        jobBootstrap.shutdown();
+        if (null != jobBootstrap) {
+            jobBootstrap.shutdown();
+        }
     }
     
     private void awaitJobStopped(final PipelineElasticJobListener jobListener, final String jobId, final long timeoutMillis) {
