@@ -41,11 +41,11 @@ class OpenGaussPipelineSQLBuilderTest {
     private DataRecord mockDataRecord(final String tableName) {
         DataRecord result = new DataRecord(new PlaceholderPosition(), 4);
         result.setTableName(tableName);
-        result.addColumn(new Column("id", "", false, true));
-        result.addColumn(new Column("c0", "", false, false));
-        result.addColumn(new Column("c1", "", true, false));
-        result.addColumn(new Column("c2", "", true, false));
-        result.addColumn(new Column("c3", "", true, false));
+        result.addColumn(new Column("id", null, "", false, true));
+        result.addColumn(new Column("c0", null, "", false, false));
+        result.addColumn(new Column("c1", null, "", true, false));
+        result.addColumn(new Column("c2", null, "", true, false));
+        result.addColumn(new Column("c3", null, "", true, false));
         return result;
     }
     

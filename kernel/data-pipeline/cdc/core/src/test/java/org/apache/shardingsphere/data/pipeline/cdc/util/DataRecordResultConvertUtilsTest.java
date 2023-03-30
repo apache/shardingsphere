@@ -55,24 +55,24 @@ class DataRecordResultConvertUtilsTest {
     @Test
     void assertConvertDataRecordToRecord() throws InvalidProtocolBufferException, SQLException {
         DataRecord dataRecord = new DataRecord(new IntegerPrimaryKeyPosition(0, 1), 2);
-        dataRecord.addColumn(new Column("order_id", BigInteger.ONE, false, true));
-        dataRecord.addColumn(new Column("price", BigDecimal.valueOf(123), false, false));
-        dataRecord.addColumn(new Column("user_id", Long.MAX_VALUE, false, false));
-        dataRecord.addColumn(new Column("item_id", Integer.MAX_VALUE, false, false));
-        dataRecord.addColumn(new Column("create_date", LocalDate.now(), false, false));
-        dataRecord.addColumn(new Column("create_date2", Date.valueOf(LocalDate.now()), false, false));
-        dataRecord.addColumn(new Column("create_time", LocalTime.now(), false, false));
-        dataRecord.addColumn(new Column("create_time2", OffsetTime.now(), false, false));
-        dataRecord.addColumn(new Column("create_datetime", LocalDateTime.now(), false, false));
-        dataRecord.addColumn(new Column("create_datetime2", OffsetDateTime.now(), false, false));
-        dataRecord.addColumn(new Column("empty", null, false, false));
+        dataRecord.addColumn(new Column("order_id", null, BigInteger.ONE, false, true));
+        dataRecord.addColumn(new Column("price", null, BigDecimal.valueOf(123), false, false));
+        dataRecord.addColumn(new Column("user_id", null, Long.MAX_VALUE, false, false));
+        dataRecord.addColumn(new Column("item_id", null, Integer.MAX_VALUE, false, false));
+        dataRecord.addColumn(new Column("create_date", null, LocalDate.now(), false, false));
+        dataRecord.addColumn(new Column("create_date2", null, Date.valueOf(LocalDate.now()), false, false));
+        dataRecord.addColumn(new Column("create_time", null, LocalTime.now(), false, false));
+        dataRecord.addColumn(new Column("create_time2", null, OffsetTime.now(), false, false));
+        dataRecord.addColumn(new Column("create_datetime", null, LocalDateTime.now(), false, false));
+        dataRecord.addColumn(new Column("create_datetime2", null, OffsetDateTime.now(), false, false));
+        dataRecord.addColumn(new Column("empty", null, null, false, false));
         Blob mockedBlob = mock(Blob.class);
         when(mockedBlob.getBytes(anyLong(), anyInt())).thenReturn(new byte[]{-1, 0, 1});
-        dataRecord.addColumn(new Column("data_blob", mockedBlob, false, false));
+        dataRecord.addColumn(new Column("data_blob", null, mockedBlob, false, false));
         Clob mockedClob = mock(Clob.class);
         when(mockedClob.getSubString(anyLong(), anyInt())).thenReturn("clob\n");
-        dataRecord.addColumn(new Column("text_clob", mockedClob, false, false));
-        dataRecord.addColumn(new Column("update_time", new Timestamp(System.currentTimeMillis()), false, false));
+        dataRecord.addColumn(new Column("text_clob", null, mockedClob, false, false));
+        dataRecord.addColumn(new Column("update_time", null, new Timestamp(System.currentTimeMillis()), false, false));
         dataRecord.setTableName("t_order");
         dataRecord.setType("INSERT");
         TypeRegistry registry = TypeRegistry.newBuilder().add(EmptyProto.getDescriptor().getMessageTypes()).add(TimestampProto.getDescriptor().getMessageTypes())

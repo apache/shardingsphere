@@ -44,9 +44,9 @@ class PostgreSQLPipelineSQLBuilderTest {
     private DataRecord mockDataRecord() {
         DataRecord result = new DataRecord(new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))), 2);
         result.setTableName("t_order");
-        result.addColumn(new Column("order_id", 1, true, true));
-        result.addColumn(new Column("user_id", 2, true, false));
-        result.addColumn(new Column("status", "ok", true, false));
+        result.addColumn(new Column("order_id", null, 1, true, true));
+        result.addColumn(new Column("user_id", null, 2, true, false));
+        result.addColumn(new Column("status", null, "ok", true, false));
         return result;
     }
     
