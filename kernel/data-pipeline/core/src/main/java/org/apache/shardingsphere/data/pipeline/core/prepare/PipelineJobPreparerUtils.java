@@ -52,7 +52,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Pipeline job preparer utils.
+ * Pipeline job preparer utility class.
  */
 @Slf4j
 public final class PipelineJobPreparerUtils {

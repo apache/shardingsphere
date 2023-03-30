@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.session.transaction;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.exception.SwitchTypeInTransactionException;
 
@@ -46,9 +47,7 @@ public final class TransactionStatus {
      * @param transactionType transaction type
      */
     public void setTransactionType(final TransactionType transactionType) {
-        if (inTransaction) {
-            throw new SwitchTypeInTransactionException();
-        }
+        ShardingSpherePreconditions.checkState(!inTransaction, SwitchTypeInTransactionException::new);
         this.transactionType = transactionType;
     }
     

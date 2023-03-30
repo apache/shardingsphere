@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 @Getter
-public abstract class AbstractHBaseQueryResultSetTest {
+abstract class AbstractHBaseQueryResultSetTest {
     
     @Mock
     private Admin admin;

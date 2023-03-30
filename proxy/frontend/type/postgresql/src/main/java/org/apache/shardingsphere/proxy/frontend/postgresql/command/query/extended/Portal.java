@@ -107,6 +107,7 @@ public final class Portal {
      * Describe portal.
      *
      * @return portal description packet
+     * @throws IllegalStateException illegal state exception
      */
     public PostgreSQLPacket describe() {
         if (responseHeader instanceof QueryResponseHeader) {

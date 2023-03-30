@@ -24,6 +24,9 @@ import java.sql.Timestamp;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Binary timestamp utility class of PostgreSQL.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLBinaryTimestampUtils {
     
@@ -52,6 +55,9 @@ public final class PostgreSQLBinaryTimestampUtils {
     /**
      * Refer to <a href="https://github.com/pgjdbc/pgjdbc/blob/e5e36bd3e8ac87ae554ac5cd1ac664fcd0010073/pgjdbc/src/main/java/org/postgresql/jdbc/TimestampUtils.java#L1453-L1475">
      * org.postgresql.jdbc.TimestampUtils</a>.
+     * 
+     * @param seconds seconds
+     * @return epoch of PostgreSQL
      */
     private static long convertJavaEpochToPgEpoch(final long seconds) {
         long offsetSeconds = seconds - POSTGRESQL_SECONDS_OFFSET;

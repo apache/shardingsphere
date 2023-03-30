@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.task;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
@@ -119,32 +120,8 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
     public Collection<CompletableFuture<?>> start() {
         taskProgress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         Collection<CompletableFuture<?>> result = new LinkedList<>();
-        result.add(incrementalExecuteEngine.submit(dumper, new ExecuteCallback() {
-            
-            @Override
-            public void onSuccess() {
-            }
-            
-            @Override
-            public void onFailure(final Throwable throwable) {
-                log.error("incremental dumper onFailure, taskId={}", taskId);
-                stop();
-                close();
-            }
-        }));
-        importers.forEach(each -> result.add(incrementalExecuteEngine.submit(each, new ExecuteCallback() {
-            
-            @Override
-            public void onSuccess() {
-            }
-            
-            @Override
-            public void onFailure(final Throwable throwable) {
-                log.error("importer onFailure, taskId={}", taskId);
-                stop();
-                close();
-            }
-        })));
+        result.add(incrementalExecuteEngine.submit(dumper, new JobExecuteCallback(taskId, "incremental dumper")));
+        importers.forEach(each -> result.add(incrementalExecuteEngine.submit(each, new JobExecuteCallback(taskId, "importer"))));
         return result;
     }
     
@@ -159,5 +136,24 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
     @Override
     public void close() {
         channel.close();
+    }
+    
+    @RequiredArgsConstructor
+    private class JobExecuteCallback implements ExecuteCallback {
+        
+        private final String taskId;
+        
+        private final String jobType;
+        
+        @Override
+        public void onSuccess() {
+        }
+        
+        @Override
+        public void onFailure(final Throwable throwable) {
+            log.error("{} on failure, task ID={}", jobType, taskId);
+            IncrementalTask.this.stop();
+            IncrementalTask.this.close();
+        }
     }
 }

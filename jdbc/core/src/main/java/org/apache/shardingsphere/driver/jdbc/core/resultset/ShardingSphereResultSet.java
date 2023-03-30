@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
@@ -66,7 +66,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
                                    final ExecutionContext executionContext) throws SQLException {
         super(resultSets, statement, transparentStatement, executionContext);
         this.mergeResultSet = mergeResultSet;
-        columnLabelAndIndexMap = ShardingSphereResultSetUtil.createColumnLabelAndIndexMap(executionContext.getSqlStatementContext(), resultSets.get(0).getMetaData());
+        columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(executionContext.getSqlStatementContext(), resultSets.get(0).getMetaData());
     }
     
     public ShardingSphereResultSet(final List<ResultSet> resultSets, final MergedResult mergeResultSet, final Statement statement, final boolean transparentStatement,
@@ -88,7 +88,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public boolean getBoolean(final int columnIndex) throws SQLException {
-        return (boolean) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, boolean.class), boolean.class);
+        return (boolean) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, boolean.class), boolean.class);
     }
     
     @Override
@@ -98,7 +98,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public byte getByte(final int columnIndex) throws SQLException {
-        return (byte) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, byte.class), byte.class);
+        return (byte) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, byte.class), byte.class);
     }
     
     @Override
@@ -108,7 +108,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public short getShort(final int columnIndex) throws SQLException {
-        return (short) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, short.class), short.class);
+        return (short) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, short.class), short.class);
     }
     
     @Override
@@ -118,7 +118,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public int getInt(final int columnIndex) throws SQLException {
-        return (int) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, int.class), int.class);
+        return (int) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, int.class), int.class);
     }
     
     @Override
@@ -128,7 +128,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public long getLong(final int columnIndex) throws SQLException {
-        return (long) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, long.class), long.class);
+        return (long) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, long.class), long.class);
     }
     
     @Override
@@ -138,7 +138,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public float getFloat(final int columnIndex) throws SQLException {
-        return (float) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, float.class), float.class);
+        return (float) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, float.class), float.class);
     }
     
     @Override
@@ -148,7 +148,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public double getDouble(final int columnIndex) throws SQLException {
-        return (double) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, double.class), double.class);
+        return (double) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, double.class), double.class);
     }
     
     @Override
@@ -158,7 +158,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public String getString(final int columnIndex) throws SQLException {
-        return (String) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, String.class), String.class);
+        return (String) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, String.class), String.class);
     }
     
     @Override
@@ -178,7 +178,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
-        return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
+        return (BigDecimal) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
     @Override
@@ -188,7 +188,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
-        return (BigDecimal) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
+        return (BigDecimal) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
     @Override
@@ -198,7 +198,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public byte[] getBytes(final int columnIndex) throws SQLException {
-        return (byte[]) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, byte[].class), byte[].class);
+        return (byte[]) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, byte[].class), byte[].class);
     }
     
     @Override
@@ -208,7 +208,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Date getDate(final int columnIndex) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Date.class), Date.class);
+        return (Date) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, Date.class), Date.class);
     }
     
     @Override
@@ -218,7 +218,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Date getDate(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnIndex, Date.class, cal), Date.class);
+        return (Date) ResultSetUtils.convertValue(mergeResultSet.getCalendarValue(columnIndex, Date.class, cal), Date.class);
     }
     
     @Override
@@ -228,7 +228,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Time getTime(final int columnIndex) throws SQLException {
-        return (Time) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Time.class), Time.class);
+        return (Time) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, Time.class), Time.class);
     }
     
     @Override
@@ -238,7 +238,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Time getTime(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Time) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnIndex, Time.class, cal), Time.class);
+        return (Time) ResultSetUtils.convertValue(mergeResultSet.getCalendarValue(columnIndex, Time.class, cal), Time.class);
     }
     
     @Override
@@ -248,7 +248,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Timestamp getTimestamp(final int columnIndex) throws SQLException {
-        return (Timestamp) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), Timestamp.class);
+        return (Timestamp) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), Timestamp.class);
     }
     
     @Override
@@ -258,7 +258,7 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     
     @Override
     public Timestamp getTimestamp(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Timestamp) ResultSetUtil.convertValue(mergeResultSet.getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
+        return (Timestamp) ResultSetUtils.convertValue(mergeResultSet.getCalendarValue(columnIndex, Timestamp.class, cal), Timestamp.class);
     }
     
     @Override
@@ -379,9 +379,9 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
             return (T) getClob(columnIndex);
         }
         if (LocalDateTime.class.equals(type) || LocalDate.class.equals(type) || LocalTime.class.equals(type) || OffsetDateTime.class.equals(type)) {
-            return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type);
+            return (T) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, Timestamp.class), type);
         }
-        return (T) ResultSetUtil.convertValue(mergeResultSet.getValue(columnIndex, type), type);
+        return (T) ResultSetUtils.convertValue(mergeResultSet.getValue(columnIndex, type), type);
     }
     
     @Override

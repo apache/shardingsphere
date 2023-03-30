@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
-import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,11 +60,11 @@ class InventoryTaskSplitterTest {
     
     @BeforeAll
     static void beforeClass() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
+        PipelineContextUtils.mockModeConfigAndContextManager();
     }
     
     @BeforeEach
-    void setUp() throws ReflectiveOperationException {
+    void setUp() {
         initJobItemContext();
         dumperConfig = new InventoryDumperConfiguration(jobItemContext.getTaskConfig().getDumperConfig());
         PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "int", false, true, true);
@@ -74,7 +74,7 @@ class InventoryTaskSplitterTest {
     
     private void initJobItemContext() {
         MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        jobItemContext = PipelineContextUtil.mockMigrationJobItemContext(jobConfig);
+        jobItemContext = PipelineContextUtils.mockMigrationJobItemContext(jobConfig);
         dataSourceManager = (PipelineDataSourceManager) jobItemContext.getImporterConnector().getConnector();
     }
     

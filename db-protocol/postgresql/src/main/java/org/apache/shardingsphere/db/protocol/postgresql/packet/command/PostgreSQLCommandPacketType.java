@@ -67,6 +67,7 @@ public enum PostgreSQLCommandPacketType implements CommandPacketType, PostgreSQL
      * 
      * @param value integer value
      * @return command packet type enum
+     * @throws PostgreSQLProtocolException PostgreSQL protocol exception
      */
     public static PostgreSQLCommandPacketType valueOf(final int value) {
         for (PostgreSQLCommandPacketType each : values()) {

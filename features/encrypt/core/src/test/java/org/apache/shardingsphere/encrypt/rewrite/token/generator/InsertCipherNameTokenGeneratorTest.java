@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,13 +30,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-class InsertCipherNameTokenGeneratorTest extends EncryptGeneratorBaseTest {
+class InsertCipherNameTokenGeneratorTest {
     
     private final InsertCipherNameTokenGenerator generator = new InsertCipherNameTokenGenerator();
     
     @BeforeEach
     void setup() {
-        generator.setEncryptRule(createEncryptRule());
+        generator.setEncryptRule(EncryptGeneratorFixtureBuilder.createEncryptRule());
     }
     
     @Test
@@ -45,11 +46,11 @@ class InsertCipherNameTokenGeneratorTest extends EncryptGeneratorBaseTest {
     
     @Test
     void assertIsGenerateSQLTokenWithInsertStatementContext() {
-        assertTrue(generator.isGenerateSQLToken(createInsertStatementContext(Collections.emptyList())));
+        assertTrue(generator.isGenerateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())));
     }
     
     @Test
     void assertGenerateSQLTokensWithInsertStatementContext() {
-        assertThat(generator.generateSQLTokens(createInsertStatementContext(Collections.emptyList())).size(), is(1));
+        assertThat(generator.generateSQLTokens(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())).size(), is(1));
     }
 }

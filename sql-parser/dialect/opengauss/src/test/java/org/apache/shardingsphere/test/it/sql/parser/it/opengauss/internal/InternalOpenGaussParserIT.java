@@ -21,5 +21,5 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
 
 @InternalSQLParserITSettings("openGauss")
-public final class InternalOpenGaussParserIT extends InternalSQLParserIT {
+class InternalOpenGaussParserIT extends InternalSQLParserIT {
 }

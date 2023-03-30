@@ -52,7 +52,7 @@ public abstract class InternalSQLParserIT {
     
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public final void assertSupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType, final String visitorType) {
+    void assertSupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType, final String visitorType) {
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());
         Object actual = parseSQLStatement("H2".equals(databaseType) ? "MySQL" : databaseType, visitorType, sql);
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES.get(sqlCaseId);

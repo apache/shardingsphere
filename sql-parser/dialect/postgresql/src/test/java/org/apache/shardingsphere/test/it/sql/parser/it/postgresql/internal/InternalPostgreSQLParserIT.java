@@ -21,5 +21,5 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserIT
 import org.apache.shardingsphere.test.it.sql.parser.internal.InternalSQLParserITSettings;
 
 @InternalSQLParserITSettings("PostgreSQL")
-public final class InternalPostgreSQLParserIT extends InternalSQLParserIT {
+class InternalPostgreSQLParserIT extends InternalSQLParserIT {
 }

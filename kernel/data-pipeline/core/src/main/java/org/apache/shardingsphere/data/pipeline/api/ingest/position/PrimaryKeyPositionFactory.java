@@ -32,6 +32,7 @@ public final class PrimaryKeyPositionFactory {
      *
      * @param data string data
      * @return primary key position
+     * @throws IllegalArgumentException illegal argument exception
      */
     public static IngestPosition<?> newInstance(final String data) {
         List<String> parts = Splitter.on(',').splitToList(data);

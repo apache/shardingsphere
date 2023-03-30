@@ -20,7 +20,7 @@ grammar BaseRule;
 import Symbol, Keyword, Literals;
 
 literal
-    : STRING_ | (MINUS_)? INT_
+    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
     ;
 
 algorithmDefinition
@@ -28,24 +28,23 @@ algorithmDefinition
     ;
 
 algorithmTypeName
-    : buildinAlgorithmTypeName | STRING_
+    : STRING_ | buildInMaskAlgorithmType
     ;
 
-buildinAlgorithmTypeName
+buildInMaskAlgorithmType
     : MD5
     | KEEP_FIRST_N_LAST_M
     | KEEP_FROM_X_TO_Y
     | MASK_FIRST_N_LAST_M
     | MASK_FROM_X_TO_Y
-    | MASK_BEFORE_SPECIAL_CHAR
-    | MASK_AFTER_SPECIAL_CHAR
+    | MASK_BEFORE_SPECIAL_CHARS
+    | MASK_AFTER_SPECIAL_CHARS
     | PERSONAL_IDENTITY_NUMBER_RANDOM_REPLACE
     | MILITARY_IDENTITY_NUMBER_RANDOM_REPLACE
     | LANDLINE_NUMBER_RANDOM_REPLACE
     | TELEPHONE_RANDOM_REPLACE
     | UNIFIED_CREDIT_CODE_RANDOM_REPLACE
     | GENERIC_TABLE_RANDOM_REPLACE
-    | ADDRESS_RANDOM_REPLACE
     ;
 
 propertiesDefinition

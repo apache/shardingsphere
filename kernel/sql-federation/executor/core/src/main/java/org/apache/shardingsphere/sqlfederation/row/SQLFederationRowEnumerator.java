@@ -27,6 +27,8 @@ import java.util.Iterator;
 
 /**
  * SQL federation row enumerator.
+ * 
+ * @param <T> type of row
  */
 public final class SQLFederationRowEnumerator<T> implements Enumerator<T> {
     

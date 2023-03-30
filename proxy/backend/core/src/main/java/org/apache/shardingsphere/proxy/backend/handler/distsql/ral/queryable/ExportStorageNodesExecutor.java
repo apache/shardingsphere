@@ -31,12 +31,14 @@ import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedStorageNod
 import org.apache.shardingsphere.proxy.backend.util.ExportUtils;
 import org.apache.shardingsphere.proxy.backend.util.JsonUtils;
 
+import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
@@ -86,17 +88,17 @@ public final class ExportStorageNodesExecutor implements MetaDataRequiredQueryab
     
     private Map<String, Collection<ExportedStorageNode>> generateDatabaseExportStorageNodesData(final ShardingSphereDatabase database) {
         Map<String, ExportedStorageNode> storageNodes = new LinkedHashMap<>();
-        database.getResourceMetaData().getDataSources().forEach((key, value) -> {
-            DataSourceMetaData dataSourceMetaData = database.getResourceMetaData().getDataSourceMetaData(key);
+        for (Entry<String, DataSource> entry : database.getResourceMetaData().getDataSources().entrySet()) {
+            DataSourceMetaData dataSourceMetaData = database.getResourceMetaData().getDataSourceMetaData(entry.getKey());
             String databaseInstanceIp = getDatabaseInstanceIp(dataSourceMetaData);
             if (storageNodes.containsKey(databaseInstanceIp)) {
-                return;
+                continue;
             }
-            Map<String, Object> standardProperties = DataSourcePropertiesCreator.create(value).getConnectionPropertySynonyms().getStandardProperties();
+            Map<String, Object> standardProperties = DataSourcePropertiesCreator.create(entry.getValue()).getConnectionPropertySynonyms().getStandardProperties();
             ExportedStorageNode exportedStorageNode = new ExportedStorageNode(dataSourceMetaData.getHostname(), String.valueOf(dataSourceMetaData.getPort()),
                     String.valueOf(standardProperties.get("username")), String.valueOf(standardProperties.get("password")), dataSourceMetaData.getCatalog());
             storageNodes.put(databaseInstanceIp, exportedStorageNode);
-        });
+        }
         return Collections.singletonMap(database.getName(), storageNodes.values());
     }
     

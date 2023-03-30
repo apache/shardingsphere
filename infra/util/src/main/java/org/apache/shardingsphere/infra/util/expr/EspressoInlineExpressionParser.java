@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Espresso Inline expression parser.
  */
-public class EspressoInlineExpressionParser {
+public final class EspressoInlineExpressionParser {
     
     private static final Context POLYGLOT;
     

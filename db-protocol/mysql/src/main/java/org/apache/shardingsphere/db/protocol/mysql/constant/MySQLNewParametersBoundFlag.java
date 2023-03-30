@@ -41,6 +41,7 @@ public enum MySQLNewParametersBoundFlag {
      * 
      * @param value value
      * @return new parameters bound flag
+     * @throws MySQLProtocolException MySQL protocol exception
      */
     public static MySQLNewParametersBoundFlag valueOf(final int value) {
         for (MySQLNewParametersBoundFlag each : values()) {

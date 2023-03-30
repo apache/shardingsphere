@@ -103,8 +103,16 @@ COUNT
     : C O U N T
     ;
 
-MYSQLMGR
+MYSQL_MGR
     : M Y S Q L DOT_ M G R
+    ;
+
+MYSQL_NORMAL_REPLICATION
+    : M Y S Q L DOT_ N O R M A L UL_ R E P L I C A T I O N
+    ;
+
+OPENGAUSS_NORMAL_REPLICATION
+    : O P E N G A U S S DOT_ N O R M A L UL_ R E P L I C A T I O N
     ;
 
 NOT

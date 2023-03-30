@@ -30,7 +30,7 @@ import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.Pipeline
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ESettings.PipelineE2EDatabaseSettings;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineE2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.param.PipelineTestParameter;
-import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtils;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
@@ -45,14 +45,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/scenario/primary_key/text_primary_key/mysql.xml"),
         @PipelineE2EDatabaseSettings(type = "PostgreSQL", scenarioFiles = "env/scenario/primary_key/text_primary_key/postgresql.xml"),
         @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/scenario/primary_key/text_primary_key/postgresql.xml")})
-public final class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
+class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private static final String TARGET_TABLE_NAME = "t_order";
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
-    public void assertTextPrimaryMigrationSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
+    void assertTextPrimaryMigrationSuccess(final PipelineTestParameter testParam) throws SQLException, InterruptedException {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
             containerComposer.createSourceOrderTable(getSourceTableName(containerComposer));
             try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
@@ -76,7 +76,7 @@ public final class TextPrimaryKeyMigrationE2EIT extends AbstractMigrationE2EIT {
     }
     
     private String getSourceTableName(final PipelineContainerComposer containerComposer) {
-        return DatabaseTypeUtil.isMySQL(containerComposer.getDatabaseType()) ? "T_ORDER" : "t_order";
+        return DatabaseTypeUtils.isMySQL(containerComposer.getDatabaseType()) ? "T_ORDER" : "t_order";
     }
     
     private static boolean isEnabled() {

@@ -44,6 +44,7 @@ public final class AdapterContainerFactory {
      * @param scenario scenario
      * @param containerConfig adaptor container configuration
      * @return created instance
+     * @throws RuntimeException runtime exception
      */
     public static AdapterContainer newInstance(final AdapterMode mode, final AdapterType adapter, final DatabaseType databaseType,
                                                final StorageContainer storageContainer, final String scenario, final AdaptorContainerConfiguration containerConfig) {

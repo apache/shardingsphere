@@ -20,7 +20,7 @@ package org.apache.shardingsphere.example.generator.core.impl;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 import org.apache.shardingsphere.example.generator.core.ExampleGenerator;
-import org.apache.shardingsphere.example.generator.core.GenerateUtil;
+import org.apache.shardingsphere.example.generator.core.GenerateUtils;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -33,17 +33,17 @@ public final class ProxyExampleGenerator implements ExampleGenerator {
     
     @Override
     public void generate(final Configuration templateConfig, final Map<String, String> dataModel, final String relativePath) throws IOException, TemplateException {
-        GenerateUtil.generateDirs(templateConfig, dataModel, Collections.singleton("conf"), relativePath + RESOURCES_PATH);
-        String outputPath = GenerateUtil.generatePath(templateConfig, dataModel, relativePath);
+        GenerateUtils.generateDirs(templateConfig, dataModel, Collections.singleton("conf"), relativePath + RESOURCES_PATH);
+        String outputPath = GenerateUtils.generatePath(templateConfig, dataModel, relativePath);
         processFile(templateConfig, dataModel, outputPath);
     }
     
     private void processFile(final Configuration templateConfig, final Map<String, String> dataModel,
                              final String baseOutputPath) throws TemplateException, IOException {
         String outputPath = baseOutputPath + RESOURCES_PATH + "/conf/";
-        GenerateUtil.processFile(templateConfig, dataModel, getType() + "/config-example_db.ftl", outputPath + "config-example_db.yaml");
-        GenerateUtil.processFile(templateConfig, dataModel, getType() + "/server.ftl", outputPath + "server.yaml");
-        GenerateUtil.processFile(templateConfig, dataModel, getType() + "/pom.ftl", baseOutputPath + "pom.xml");
+        GenerateUtils.processFile(templateConfig, dataModel, getType() + "/config-example_db.ftl", outputPath + "config-example_db.yaml");
+        GenerateUtils.processFile(templateConfig, dataModel, getType() + "/server.ftl", outputPath + "server.yaml");
+        GenerateUtils.processFile(templateConfig, dataModel, getType() + "/pom.ftl", baseOutputPath + "pom.xml");
     }
     
     public String getType() {

@@ -49,7 +49,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SQLRewriterITSettings("scenario/sharding/case")
-public final class ShardingSQLRewriterIT extends SQLRewriterIT {
+class ShardingSQLRewriterIT extends SQLRewriterIT {
     
     @Override
     protected YamlRootConfiguration createRootConfiguration(final SQLRewriteEngineTestParameters testParams) throws IOException {

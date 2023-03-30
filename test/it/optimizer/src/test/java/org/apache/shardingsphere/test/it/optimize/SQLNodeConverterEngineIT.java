@@ -58,7 +58,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class SQLNodeConverterEngineIT {
+class SQLNodeConverterEngineIT {
     
     private static final SQLCases SQL_CASES = SQLCasesRegistry.getInstance().getCases();
     
@@ -68,7 +68,7 @@ public final class SQLNodeConverterEngineIT {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertConvert(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
+    void assertConvert(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, SQL_PARSER_TEST_CASES.get(sqlCaseId).getParameters());
         SqlNode actual = SQLNodeConverterEngine.convert(parseSQLStatement(databaseType, sql));
         SqlNode expected = parseSQLNode(databaseType, sql);

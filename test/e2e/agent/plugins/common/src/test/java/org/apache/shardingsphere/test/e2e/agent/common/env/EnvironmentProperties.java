@@ -35,6 +35,7 @@ public final class EnvironmentProperties {
      * 
      * @param propsFileName properties file name
      * @return properties
+     * @throws RuntimeException runtime exception
      */
     @SuppressWarnings("AccessOfSystemProperties")
     public static Properties loadProperties(final String propsFileName) {

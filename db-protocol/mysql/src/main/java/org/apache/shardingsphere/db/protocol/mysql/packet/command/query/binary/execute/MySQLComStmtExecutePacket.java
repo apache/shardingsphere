@@ -41,7 +41,7 @@ import java.util.Set;
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-execute.html">COM_STMT_EXECUTE</a>
  */
-@ToString(of = {"statementId"})
+@ToString(of = "statementId")
 public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
     
     private static final int ITERATION_COUNT = 1;

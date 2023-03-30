@@ -24,7 +24,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 /**
- * Utils for PostgreSQL time.
+ * Text time utility class of PostgreSQL.
  */
 public final class PostgreSQLTextTimeUtils {
     
@@ -40,6 +40,7 @@ public final class PostgreSQLTextTimeUtils {
      *
      * @param value text value to be parsed
      * @return time
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static LocalTime parse(final String value) {
         try {

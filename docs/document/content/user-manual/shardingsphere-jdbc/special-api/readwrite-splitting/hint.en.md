@@ -6,7 +6,6 @@ weight = 1
 ## Background
 
 Apache ShardingSphere uses `ThreadLocal` to manage primary database routing marks for mandatory routing. A primary database routing mark can be added to `HintManager` through programming, and this value is valid only in the current thread.
-Apache ShardingSphere can also route the primary database by adding comments to SQL.
 
 `Hint` is mainly used to perform mandatory data operations in the primary database for read/write splitting scenarios.
 
@@ -21,21 +20,19 @@ Apache ShardingSphere can also route the primary database by adding comments to 
 
 ### Primary Route with Hint
 
-#### Use manual programming
-
-##### Get HintManager
+#### Get HintManager
 
 The same as sharding based on hint.
 
-##### Configure Primary Database Route
+#### Configure Primary Database Route
 
 - Use `hintManager.setWriteRouteOnly` to configure primary database route.
 
-##### Clean Hint Value
+#### Clean Hint Value
 
 The same as data sharding based on hint.
 
-##### Code:
+#### Code:
 
 ```java
 String sql = "SELECT * FROM t_order";
@@ -51,31 +48,17 @@ try (HintManager hintManager = HintManager.getInstance();
 }
 ```
 
-#### Use special SQL comments
-
-##### Terms of Use
-
-For the SQL Hint function, the comment format only supports `/* */` for now. The content needs to start with `SHARDINGSPHERE_HINT:`, and the attribute name needs to be `WRITE_ROUTE_ONLY`.
-
-##### Code:
-```sql
-/* SHARDINGSPHERE_HINT: WRITE_ROUTE_ONLY=true */
-SELECT * FROM t_order;
-```
-
 ### Route to the specified database with Hint
 
-#### Use manual programming
-
-##### Get HintManager
+#### Get HintManager
 
 The same as sharding based on hint.
 
-##### Configure Database Route
+#### Configure Database Route
 
 - Use `hintManager.setDataSourceName` to configure database route.
 
-##### Code:
+#### Code:
 
 ```java
 String sql = "SELECT * FROM t_order";
@@ -89,20 +72,6 @@ try (HintManager hintManager = HintManager.getInstance();
         }
     }
 }
-```
-
-#### Use special SQL comments
-
-##### Terms of Use:
-
-Currently, the SQL Hint function only supports routing to one data source.
-The comment format only supports `/* */` for now. The content needs to start with `SHARDINGSPHERE_HINT:`, and the attribute name needs to be `DATA_SOURCE_NAME`.
-Client connections using `MySQL` need to add the `-c` option to preserve comments, because the client defaults to `--skip-comments` to filter comments.
-
-##### Code:
-```sql
-/* SHARDINGSPHERE_HINT: DATA_SOURCE_NAME=ds_0 */
-SELECT * FROM t_order;
 ```
 
 ## Related References

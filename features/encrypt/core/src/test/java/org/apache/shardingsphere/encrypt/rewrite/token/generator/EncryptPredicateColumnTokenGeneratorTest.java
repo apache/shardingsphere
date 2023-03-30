@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -28,24 +30,27 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class EncryptPredicateColumnTokenGeneratorTest extends EncryptGeneratorBaseTest {
+class EncryptPredicateColumnTokenGeneratorTest {
+    
+    private final EncryptPredicateColumnTokenGenerator generator = new EncryptPredicateColumnTokenGenerator();
+    
+    @BeforeEach
+    void setup() {
+        generator.setEncryptRule(EncryptGeneratorFixtureBuilder.createEncryptRule());
+    }
     
     @Test
     void assertIsGenerateSQLToken() {
-        EncryptPredicateColumnTokenGenerator tokenGenerator = new EncryptPredicateColumnTokenGenerator();
-        tokenGenerator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
-        tokenGenerator.setEncryptRule(createEncryptRule());
-        tokenGenerator.setSchemas(Collections.emptyMap());
-        assertTrue(tokenGenerator.isGenerateSQLToken(createUpdatesStatementContext()));
+        generator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
+        generator.setSchemas(Collections.emptyMap());
+        assertTrue(generator.isGenerateSQLToken(EncryptGeneratorFixtureBuilder.createUpdateStatementContext()));
     }
     
     @Test
     void assertGenerateSQLTokenFromGenerateNewSQLToken() {
-        EncryptPredicateColumnTokenGenerator tokenGenerator = new EncryptPredicateColumnTokenGenerator();
-        tokenGenerator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
-        tokenGenerator.setEncryptRule(createEncryptRule());
-        tokenGenerator.setSchemas(Collections.emptyMap());
-        Collection<SubstitutableColumnNameToken> substitutableColumnNameTokens = tokenGenerator.generateSQLTokens(createUpdatesStatementContext());
+        generator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
+        generator.setSchemas(Collections.emptyMap());
+        Collection<SubstitutableColumnNameToken> substitutableColumnNameTokens = generator.generateSQLTokens(EncryptGeneratorFixtureBuilder.createUpdateStatementContext());
         assertThat(substitutableColumnNameTokens.size(), is(1));
         assertThat(substitutableColumnNameTokens.iterator().next().toString(null), is("pwd_plain"));
     }

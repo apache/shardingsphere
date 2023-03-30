@@ -55,27 +55,27 @@ public final class TestCaseClassScanner {
      */
     @SneakyThrows({IOException.class, ClassNotFoundException.class})
     public static List<Class<? extends BaseTransactionTestCase>> scan() {
-        final Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(TEST_CASE_PACKAGE_NAME.replace(".", File.separator));
+        Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(TEST_CASE_PACKAGE_NAME.replace(".", File.separator));
         return scanURL(urls);
     }
     
     private static List<Class<? extends BaseTransactionTestCase>> scanURL(final Enumeration<URL> urls) throws IOException, ClassNotFoundException {
-        List<Class<? extends BaseTransactionTestCase>> caseClasses = new LinkedList<>();
+        List<Class<? extends BaseTransactionTestCase>> result = new LinkedList<>();
         while (urls.hasMoreElements()) {
             URL url = urls.nextElement();
             String protocol = url.getProtocol();
             switch (protocol) {
                 case "file":
-                    addTestCaseClassesFromClassFiles(url, caseClasses);
+                    addTestCaseClassesFromClassFiles(url, result);
                     break;
                 case "jar":
-                    addTestCaseClassesInJars(url, caseClasses);
+                    addTestCaseClassesInJars(url, result);
                     break;
                 default:
                     break;
             }
         }
-        return caseClasses;
+        return result;
     }
     
     private static void addTestCaseClassesFromClassFiles(final URL url, final List<Class<? extends BaseTransactionTestCase>> caseClasses) throws UnsupportedEncodingException, ClassNotFoundException {

@@ -27,6 +27,8 @@ import java.util.Collection;
 
 /**
  * Connection session required queryable RAL executor.
+ * 
+ * @param <T> type of SQL statement
  */
 public interface ConnectionSessionRequiredQueryableRALExecutor<T extends QueryableRALStatement> extends QueryableRALExecutor<T> {
     

@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.is;
  * Set transaction type test case.
  */
 @TransactionTestCase(adapters = TransactionTestConstants.PROXY, transactionTypes = TransactionType.XA)
-public class SetTransactionTypeTestCase extends BaseTransactionTestCase {
+public final class SetTransactionTypeTestCase extends BaseTransactionTestCase {
     
     public SetTransactionTypeTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);

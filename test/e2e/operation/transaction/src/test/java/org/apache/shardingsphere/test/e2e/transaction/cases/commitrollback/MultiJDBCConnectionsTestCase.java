@@ -32,7 +32,7 @@ import java.sql.SQLException;
 /**
  * Multiple jdbc connections in one thread test case.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL}, transactionTypes = TransactionType.XA)
+@TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL, transactionTypes = TransactionType.XA)
 public final class MultiJDBCConnectionsTestCase extends BaseTransactionTestCase {
     
     public MultiJDBCConnectionsTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {

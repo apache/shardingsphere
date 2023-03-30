@@ -1,0 +1,41 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="pool_id" />
+        <column name="block_id" />
+        <column name="space" />
+        <column name="page_number" />
+        <column name="page_type" />
+        <column name="flush_type" />
+        <column name="fix_count" />
+        <column name="is_hashed" />
+        <column name="newest_modification" />
+        <column name="oldest_modification" />
+        <column name="access_time" />
+        <column name="table_name" />
+        <column name="index_name" />
+        <column name="number_records" />
+        <column name="data_size" />
+        <column name="compressed_size" />
+        <column name="page_state" />
+        <column name="io_fix" />
+        <column name="is_old" />
+        <column name="free_page_clock" />
+    </metadata>
+</dataset>

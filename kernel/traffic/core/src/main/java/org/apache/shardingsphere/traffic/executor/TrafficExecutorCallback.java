@@ -22,6 +22,8 @@ import java.sql.Statement;
 
 /**
  * Traffic executor callback.
+ * 
+ * @param <T> type of return value
  */
 public interface TrafficExecutorCallback<T> {
     

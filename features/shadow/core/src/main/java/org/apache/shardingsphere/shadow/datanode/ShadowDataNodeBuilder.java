@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.datanode;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeBuilder;
-import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
+import org.apache.shardingsphere.infra.datanode.DataNodeUtils;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 
@@ -35,7 +35,7 @@ public final class ShadowDataNodeBuilder implements DataNodeBuilder<ShadowRule> 
     public Collection<DataNode> build(final Collection<DataNode> dataNodes, final ShadowRule rule) {
         Collection<DataNode> result = new LinkedList<>();
         for (DataNode each : dataNodes) {
-            result.addAll(DataNodeUtil.buildDataNode(each, rule.getDataSourceMapper()));
+            result.addAll(DataNodeUtils.buildDataNode(each, rule.getDataSourceMapper()));
         }
         return result;
     }

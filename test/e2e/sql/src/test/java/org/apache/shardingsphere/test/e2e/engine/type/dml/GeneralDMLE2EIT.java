@@ -40,12 +40,12 @@ import java.text.ParseException;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @E2ETestCaseSettings(SQLCommandType.DML)
-public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
+class GeneralDMLE2EIT extends BaseDMLE2EIT {
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    public void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+    void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
@@ -80,7 +80,7 @@ public final class GeneralDMLE2EIT extends BaseDMLE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    public void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+    void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;

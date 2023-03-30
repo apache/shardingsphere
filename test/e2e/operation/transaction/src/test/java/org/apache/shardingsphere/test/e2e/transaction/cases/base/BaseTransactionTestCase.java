@@ -94,7 +94,7 @@ public abstract class BaseTransactionTestCase {
     
     protected static void assertTableRowCount(final Connection connection, final String tableName, final int rowNum) throws SQLException {
         Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("select * from " + tableName);
+        ResultSet resultSet = statement.executeQuery(String.format("select * from %s", tableName));
         int resultSetCount = 0;
         while (resultSet.next()) {
             resultSetCount++;

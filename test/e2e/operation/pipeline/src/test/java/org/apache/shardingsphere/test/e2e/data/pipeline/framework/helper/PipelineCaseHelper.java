@@ -69,7 +69,8 @@ public final class PipelineCaseHelper {
      * @param databaseType database type
      * @param keyGenerateAlgorithm key generate algorithm
      * @param insertRows insert rows
-     * @return order insert data.
+     * @return order insert data
+     * @throws UnsupportedOperationException Unsupported operation exception
      */
     public static List<Object[]> generateOrderInsertData(final DatabaseType databaseType, final KeyGenerateAlgorithm keyGenerateAlgorithm, final int insertRows) {
         List<Object[]> result = new ArrayList<>(insertRows);

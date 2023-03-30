@@ -28,7 +28,7 @@ import java.sql.SQLException;
 /**
  * MySQL savepoint transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
+@TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL)
 public final class MySQLSavePointTestCase extends BaseSavePointTestCase {
     
     public MySQLSavePointTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {

@@ -38,6 +38,7 @@ public final class TargetObjectFixture {
      * Call instance method when exception thrown.
      *
      * @param queue queue
+     * @throws UnsupportedOperationException unsupported operation exception
      */
     public void callWhenExceptionThrown(final List<String> queue) {
         throw new UnsupportedOperationException();
@@ -56,6 +57,7 @@ public final class TargetObjectFixture {
      * Call static method when exception thrown.
      *
      * @param queue queue
+     * @throws UnsupportedOperationException unsupported operation exception
      */
     public static void staticCallWhenExceptionThrown(final List<String> queue) {
         throw new UnsupportedOperationException();

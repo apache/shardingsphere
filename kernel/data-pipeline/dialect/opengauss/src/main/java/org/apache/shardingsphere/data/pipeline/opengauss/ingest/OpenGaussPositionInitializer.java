@@ -61,6 +61,7 @@ public final class OpenGaussPositionInitializer implements PositionInitializer {
      * Create logical replication slot if it does not exist.
      *
      * @param connection connection
+     * @param slotNameSuffix slotName suffix
      * @throws SQLException SQL exception
      */
     private void createSlotIfNotExist(final Connection connection, final String slotNameSuffix) throws SQLException {

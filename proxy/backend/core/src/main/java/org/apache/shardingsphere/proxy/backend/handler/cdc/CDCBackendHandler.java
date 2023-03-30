@@ -50,6 +50,7 @@ import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBoo
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.sql.SQLException;
@@ -83,9 +84,7 @@ public final class CDCBackendHandler {
      */
     public CDCResponse streamData(final String requestId, final StreamDataRequestBody requestBody, final CDCConnectionContext connectionContext, final Channel channel) {
         ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(requestBody.getDatabase());
-        if (null == database) {
-            throw new CDCExceptionWrapper(requestId, new CDCServerException(String.format("%s database is not exists", requestBody.getDatabase())));
-        }
+        ShardingSpherePreconditions.checkNotNull(database, () -> new CDCExceptionWrapper(requestId, new CDCServerException(String.format("%s database is not exists", requestBody.getDatabase()))));
         Map<String, Set<String>> schemaTableNameMap;
         Collection<String> tableNames;
         Set<String> schemaTableNames = new HashSet<>();
@@ -99,9 +98,7 @@ public final class CDCBackendHandler {
                     .collect(Collectors.toList())));
             tableNames = schemaTableNames;
         }
-        if (tableNames.isEmpty()) {
-            throw new CDCExceptionWrapper(requestId, new NotFindStreamDataSourceTableException());
-        }
+        ShardingSpherePreconditions.checkState(!tableNames.isEmpty(), () -> new CDCExceptionWrapper(requestId, new NotFindStreamDataSourceTableException()));
         ShardingRule shardingRule = database.getRuleMetaData().getSingleRule(ShardingRule.class);
         Map<String, List<DataNode>> actualDataNodesMap = new HashMap<>();
         // TODO need support case-insensitive later
@@ -135,9 +132,7 @@ public final class CDCBackendHandler {
      */
     public void startStreaming(final String jobId, final CDCConnectionContext connectionContext, final Channel channel) {
         CDCJobConfiguration cdcJobConfig = jobAPI.getJobConfiguration(jobId);
-        if (null == cdcJobConfig) {
-            throw new PipelineJobNotFoundException(jobId);
-        }
+        ShardingSpherePreconditions.checkNotNull(cdcJobConfig, () -> new PipelineJobNotFoundException(jobId));
         if (PipelineJobCenter.isJobExisting(jobId)) {
             PipelineJobCenter.stop(jobId);
         }

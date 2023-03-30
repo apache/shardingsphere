@@ -34,14 +34,14 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.sql.SQLException;
 import java.util.stream.Stream;
 
-public final class MySQLMGRDiscoveryE2EIT {
+class MySQLMGRDiscoveryE2EIT {
     
     private static final MySQLDatabaseType DATABASE_TYPE = new MySQLDatabaseType();
     
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertDiscoveryMySQLMGR(final DiscoveryTestParameter testParam) throws SQLException {
+    void assertDiscoveryMySQLMGR(final DiscoveryTestParameter testParam) throws SQLException {
         try (DiscoveryContainerComposer composer = new DiscoveryContainerComposer(testParam)) {
             DatabaseClusterEnvironment databaseClusterEnv = DatabaseClusterEnvironmentFactory.newInstance("MySQL.MGR", composer.getMappedDataSources());
             new DiscoveryTestAction(composer, databaseClusterEnv).execute();

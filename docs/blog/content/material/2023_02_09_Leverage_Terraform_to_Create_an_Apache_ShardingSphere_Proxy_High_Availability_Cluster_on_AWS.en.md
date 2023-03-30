@@ -12,9 +12,9 @@ With this in mind, we plan to use Terraform to create a ShardingSphere-Proxy hig
 
 ## Terraform
 
-[Terraform](https://www.terraform.io/) is [Hashicorp](https://www.hashicorp.com/)’s open source infrastructure automation orchestration tool that uses IaC philosophy to manage infrastructure changes.
+[Terraform](https://www.terraform.io/) is [Hashicorp](https://www.hashicorp.com/)'s open source infrastructure automation orchestration tool that uses IaC philosophy to manage infrastructure changes.
 
-It’s supported by public cloud vendors such as AWS, GCP, AZURE and a variety of other providers from the community, and has become one of the most popular practices in the “Infrastructure as Code” space.
+It's supported by public cloud vendors such as AWS, GCP, AZURE and a variety of other providers from the community, and has become one of the most popular practices in the "Infrastructure as Code" space.
 
 **Terraform has the following advantages:**
 
@@ -24,7 +24,7 @@ Terraform is suitable for multi-cloud scenarios, deploying similar infrastructur
 
 *Automated management infrastructure*
 
-Terraform’s ability to create reusable modules reduces human-induced deployment and management errors.
+Terraform's ability to create reusable modules reduces human-induced deployment and management errors.
 
 *Infrastructure as code*
 
@@ -129,7 +129,7 @@ We used the `count` parameter to deploy the ZooKeeper service, which indicates t
 
 When creating a ZooKeeper instance, we use the `ignore_changes`parameter to ignore artificial changes to the `tag` to avoid the instance being recreated the next time Terraform is run.
 
-We use `cloud-init` to reboot the ZooKeeper-related configuration, as described in [here](https://raw.githubusercontent.com/apache/shardingsphere-on-cloud/main/terraform/amazon/zk/cloud-init.yml).
+We use `cloud-init` to reboot the ZooKeeper-related configuration, as described in [here](https://raw.githubusercontent.com/apache/shardingsphere-on-cloud/main/terraform/amazon/modules/zk/cloud-init.yml).
 
 We create a domain name for each ZooKeeper service and the application only needs to use the domain name to avoid problems with changing the IP address when the ZooKeeper service is restarted.
 
@@ -309,11 +309,11 @@ variable "zk_servers" {
 
 **Configure AutoScalingGroup**
 
-We’ll create an AutoScalingGroup to allow it to manage ShardingSphere-Proxy instances. The health check type of the AutoScalingGroup is changed to “ELB” to allow the AutoScalingGroup to move out bad nodes in time after load balancing fails to perform a health check on the instance.
+We'll create an AutoScalingGroup to allow it to manage ShardingSphere-Proxy instances. The health check type of the AutoScalingGroup is changed to "ELB" to allow the AutoScalingGroup to move out bad nodes in time after load balancing fails to perform a health check on the instance.
 
 The changes to `load_balancers` and `target_group_arns` are ignored when creating the AutoScalingGroup.
 
-We also use `cloud-init` to configure the ShardingSphere-Proxy instance, as described [here](https://raw.githubusercontent.com/apache/shardingsphere-on-cloud/main/terraform/amazon/shardingsphere/cloud-init.yml).
+We also use `cloud-init` to configure the ShardingSphere-Proxy instance, as described [here](https://raw.githubusercontent.com/apache/shardingsphere-on-cloud/main/terraform/amazon/modules/shardingsphere/cloud-init.yml).
 
 ```yaml
 resource "aws_launch_template" "ss" {
@@ -447,7 +447,7 @@ We will go through the STS to create a role with CloudWatch permissions, which w
 
 The runtime logs of the ShardingSphere-Proxy will be captured by the CloudWatch Agent on CloudWatch. A `log_group` named `shardingsphere-proxy.log` is created by default.
 
-The specific configuration of CloudWatch is described [here](https://raw.githubusercontent.com/apache/shardingsphere-on-cloud/main/terraform/amazon/shardingsphere/cloudwatch-agent.json).
+The specific configuration of CloudWatch is described [here](https://raw.githubusercontent.com/apache/shardingsphere-on-cloud/main/terraform/amazon/modules/shardingsphere/cloudwatch-agent.json).
 
 ```yaml
 resource "aws_iam_role" "sts" {
@@ -504,13 +504,13 @@ resource "aws_iam_instance_profile" "ss" {
 
 ## Deployment
 
-Once all Terraform configurations have been created, you’ll be ready to deploy the ShardingSphere-Proxy cluster. Before actually deploying, it’s recommended that you use the following command to check that the configuration performs as expected.
+Once all Terraform configurations have been created, you'll be ready to deploy the ShardingSphere-Proxy cluster. Before actually deploying, it's recommended that you use the following command to check that the configuration performs as expected.
 
 ```markdown
 terraform plan
 ```
 
-After confirming the plan, it’s time to go ahead and actually execute it by running the following command
+After confirming the plan, it's time to go ahead and actually execute it by running the following command
 
 ```markdown
 terraform apply
@@ -528,7 +528,7 @@ By default, we create an internal domain `proxy.shardingsphere.org` and the user
 
 **Description:**
 
-DistSQL (Distributed SQL) is Apache ShardingSphere’s SQL-like operational language. It’s used in exactly the same way as standard SQL to provide SQL-level manipulation capabilities for incremental functionality, as described [here](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/).
+DistSQL (Distributed SQL) is Apache ShardingSphere's SQL-like operational language. It's used in exactly the same way as standard SQL to provide SQL-level manipulation capabilities for incremental functionality, as described [here](https://shardingsphere.apache.org/document/current/cn/user-manual/shardingsphere-proxy/distsql/).
 
 # Conclusion
 

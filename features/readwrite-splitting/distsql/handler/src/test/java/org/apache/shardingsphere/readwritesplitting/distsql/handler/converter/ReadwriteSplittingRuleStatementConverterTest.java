@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -83,22 +82,24 @@ class ReadwriteSplittingRuleStatementConverterTest {
         assertThat(actualMultipleRuleSegmentConvertResultDataSources.size(), is(expectedMultipleReadwriteSplittingRuleSegments.size()));
         assertThat(actualMultipleRuleSegmentConvertResultLoadBalancers.size(), is(expectedMultipleReadwriteSplittingRuleSegments.size()));
         List<ReadwriteSplittingDataSourceRuleConfiguration> actualRuleConfigs = new ArrayList<>(actualMultipleRuleSegmentConvertResultDataSources);
-        Stream.iterate(0, i -> i + 1)
-                .limit(expectedMultipleReadwriteSplittingRuleSegments.size())
-                .forEach(each -> {
-                    ReadwriteSplittingRuleSegment expectedReadwriteSplittingRuleSegment = expectedMultipleReadwriteSplittingRuleSegments.get(each);
-                    ReadwriteSplittingDataSourceRuleConfiguration actualRuleConfig = actualRuleConfigs.get(each);
-                    assertThat(actualRuleConfig.getName(), is(expectedReadwriteSplittingRuleSegment.getName()));
-                    String expectedLoadBalancerName = String.format("%s_%s", expectedReadwriteSplittingRuleSegment.getName(), expectedReadwriteSplittingRuleSegment.getLoadBalancer().getName());
-                    assertThat(actualRuleConfig.getLoadBalancerName(), is(expectedLoadBalancerName));
-                    assertThat(getWriteDataSourceName(actualRuleConfig), is(expectedReadwriteSplittingRuleSegment.getWriteDataSource()));
-                    assertThat(getReadDataSourceNames(actualRuleConfig), is(
-                            null == expectedReadwriteSplittingRuleSegment.getReadDataSources() ? Collections.emptyList() : expectedReadwriteSplittingRuleSegment.getReadDataSources()));
-                    assertTrue(actualMultipleRuleSegmentConvertResultLoadBalancers.containsKey(expectedLoadBalancerName));
-                    AlgorithmConfiguration actualSphereAlgorithmConfig = actualMultipleRuleSegmentConvertResultLoadBalancers.get(actualRuleConfig.getLoadBalancerName());
-                    assertThat(actualSphereAlgorithmConfig.getType(), is(expectedReadwriteSplittingRuleSegment.getLoadBalancer().getName()));
-                    assertThat(actualSphereAlgorithmConfig.getProps(), is(expectedReadwriteSplittingRuleSegment.getLoadBalancer().getProps()));
-                });
+        long limit = expectedMultipleReadwriteSplittingRuleSegments.size();
+        for (int i = 0;; i = i + 1) {
+            if (0 == limit--) {
+                break;
+            }
+            ReadwriteSplittingRuleSegment expectedReadwriteSplittingRuleSegment = expectedMultipleReadwriteSplittingRuleSegments.get(i);
+            ReadwriteSplittingDataSourceRuleConfiguration actualRuleConfig = actualRuleConfigs.get(i);
+            assertThat(actualRuleConfig.getName(), is(expectedReadwriteSplittingRuleSegment.getName()));
+            String expectedLoadBalancerName = String.format("%s_%s", expectedReadwriteSplittingRuleSegment.getName(), expectedReadwriteSplittingRuleSegment.getLoadBalancer().getName());
+            assertThat(actualRuleConfig.getLoadBalancerName(), is(expectedLoadBalancerName));
+            assertThat(getWriteDataSourceName(actualRuleConfig), is(expectedReadwriteSplittingRuleSegment.getWriteDataSource()));
+            assertThat(getReadDataSourceNames(actualRuleConfig),
+                    is(null == expectedReadwriteSplittingRuleSegment.getReadDataSources() ? Collections.emptyList() : expectedReadwriteSplittingRuleSegment.getReadDataSources()));
+            assertTrue(actualMultipleRuleSegmentConvertResultLoadBalancers.containsKey(expectedLoadBalancerName));
+            AlgorithmConfiguration actualSphereAlgorithmConfig = actualMultipleRuleSegmentConvertResultLoadBalancers.get(actualRuleConfig.getLoadBalancerName());
+            assertThat(actualSphereAlgorithmConfig.getType(), is(expectedReadwriteSplittingRuleSegment.getLoadBalancer().getName()));
+            assertThat(actualSphereAlgorithmConfig.getProps(), is(expectedReadwriteSplittingRuleSegment.getLoadBalancer().getProps()));
+        }
     }
     
     private String getWriteDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration ruleConfig) {

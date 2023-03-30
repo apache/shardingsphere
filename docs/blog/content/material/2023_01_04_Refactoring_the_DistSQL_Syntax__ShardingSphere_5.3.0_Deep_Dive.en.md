@@ -10,7 +10,7 @@ chapter = true
 
 [DistSQL (Distributed SQL)](https://shardingsphere.apache.org/document/5.1.0/en/concepts/distsql/) is ShardingSphere's SQL-like functional language. Since we released[ version 5.0.0-Beta](https://shardingsphere.apache.org/blog/en/material/ss_5.0.0beta/), we've been iterating rapidly and providing users with features including rule management, cluster management, and metadata management. It was an incremental improvement process including many steps.
 
-At the same time, DistSQL is still releatively young. The[ ShardingSphere](https://shardingsphere.apache.org/) community often receives fresh ideas and suggestions about DistSQL, which means fast growth with lots of possible different development directions.
+At the same time, DistSQL is still releatively young. The [ShardingSphere](https://shardingsphere.apache.org/) community often receives fresh ideas and suggestions about DistSQL, which means fast growth with lots of possible different development directions.
 
 Before releasing [version 5.3.0](https://medium.com/faun/shardingsphere-5-3-0-is-released-new-features-and-improvements-bf4d1c43b09b?source=your_stories_page-------------------------------------), our community refactored DistSQL systematically and optimized its syntax. This blog post will illustrate those adjustments one by one.
 
@@ -92,7 +92,7 @@ The new release 5.3.0 has upgraded DistSQL. We have completely sorted out and re
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_01_04_Refactoring_the_DistSQL_Syntax__ShardingSphere_5.3.0_Deep_Dive4.png)
 
-*Description: keyword* `INSTANCE` *is updated to* `COMPUTE NODE`*.*
+*Description: keyword* `INSTANCE` *is updated to* `COMPUTE NODE`.
 
 **Storage Node**
 
@@ -100,7 +100,7 @@ The new release 5.3.0 has upgraded DistSQL. We have completely sorted out and re
 
 *Description:*
 
-*Keyword* `RESOURCE` *is updated to* `STORAGE NODE / STORAGE UNIT`*, which corresponds to instance-level storage and database-level storage respectively.*
+*Keyword* `RESOURCE` *is updated to* `STORAGE NODE / STORAGE UNIT`, *which corresponds to instance-level storage and database-level storage respectively*.
 
 *The* `STORAGE NODE` *is reserved and is not used currently.*
 
@@ -122,7 +122,7 @@ Global rule syntax is not adjusted this time.
 
 *Description:*
 
-`PROCESS CONFIGURATION` *keyword is changed to* `RULE`*.*
+`PROCESS CONFIGURATION` *keyword is changed to* `RULE`.
 
 *Remove* `CREATE` *and* `DROP` *operations because* `MIGRATION RULE` *has default values.*
 
@@ -134,7 +134,7 @@ Global rule syntax is not adjusted this time.
 
 *Description:*
 
-`CONFIG` *is changed to* `CONFIGURATION`*, which is more accurate.*
+`CONFIG` *is changed to* `CONFIGURATION`, *which is more accurate*.
 
 *The* `REFRESH DATABASE METADATA` *statement is added to pull the configuration from the governance center to forcibly refresh the local metadata.*
 
@@ -156,7 +156,7 @@ The syntax related to data encryption is not adjusted this time. Please refer to
 
 *Description:*
 
-*Remove the syntax for independently creating sharding algorithms and distributed ID generators and integrate them into the rule definition of* `CREATE SHARDING TABLE RULE`*.*
+*Remove the syntax for independently creating sharding algorithms and distributed ID generators and integrate them into the rule definition of* `CREATE SHARDING TABLE RULE`.
 
 *Other syntax is not adjusted.*
 
@@ -164,7 +164,7 @@ The syntax related to data encryption is not adjusted this time. Please refer to
 
 ![img](https://shardingsphere.apache.org/blog/img/2023_01_04_Refactoring_the_DistSQL_Syntax__ShardingSphere_5.3.0_Deep_Dive11.png)
 
-*Description: by default, only one single-table router can be created. And* `CREATE` *is updated to* `SET`*.*
+*Description: by default, only one single-table router can be created. And* `CREATE` *is updated to* `SET`.
 
 ## **Relation Object**
 
@@ -174,7 +174,7 @@ The syntax related to data encryption is not adjusted this time. Please refer to
 
 *Description:*
 
-*Remove the syntax for creating a* `DB_DISCOVERY TYPE` *and* `HEARTBEAT` *independently and integrate them into the rule definition of the* `CREATE DB_DISCOVERY RULE`*.*
+*Remove the syntax for creating a* `DB_DISCOVERY TYPE` *and* `HEARTBEAT` *independently and integrate them into the rule definition of the* `CREATE DB_DISCOVERY RULE`.
 
 *Other syntax is not adjusted.*
 
@@ -204,9 +204,9 @@ TYPE(NAME="random")
 
 *Description:*
 
-*Remove syntax for creating shadow algorithms independently and integrate it into the rule definition of* `CREATE SHADOW RULE`*.*
+*Remove syntax for creating shadow algorithms independently and integrate it into the rule definition of* `CREATE SHADOW RULE`.
 
-*Add statements to* `ALTER` *and* `SHOW` *default shadow algorithm, corresponding to* `CREATE DEFAULT SHADOW ALGORITHM`*.*
+*Add statements to* `ALTER` *and* `SHOW` *default shadow algorithm, corresponding to* `CREATE DEFAULT SHADOW ALGORITHM`.
 
 # Property Specification Optimization
 
