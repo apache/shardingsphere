@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.advice;
 
-import io.netty.util.DefaultAttributeMap;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.StatusCode;
@@ -27,17 +26,15 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
-import org.apache.shardingsphere.agent.plugin.tracing.TracingAgentExtension;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.agent.test.AgentExtension;
+import org.apache.shardingsphere.agent.test.fixture.AdviceTargetSetting;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,7 +49,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith({TracingAgentExtension.class, AutoMockExtension.class})
+@ExtendWith({AgentExtension.class, AutoMockExtension.class})
 @StaticMockSettings(ProxyContext.class)
 class OpenTelemetryRootSpanAdviceTest {
     
@@ -65,8 +62,7 @@ class OpenTelemetryRootSpanAdviceTest {
         SdkTracerProvider tracerProvider = SdkTracerProvider.builder().addSpanProcessor(SimpleSpanProcessor.create(testExporter)).build();
         OpenTelemetrySdk.builder().setTracerProvider(tracerProvider).buildAndRegisterGlobal().getTracer(OpenTelemetryConstants.TRACER_NAME);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        ConnectionSession connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.BASE, new DefaultAttributeMap());
-        Object executorTask = new CommandExecutorTask(null, connectionSession, null, null);
+        Object executorTask = new CommandExecutorTask(null, null, null, null);
         targetObject = (TargetAdviceObject) executorTask;
     }
     
@@ -77,6 +73,7 @@ class OpenTelemetryRootSpanAdviceTest {
     }
     
     @Test
+    @AdviceTargetSetting("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
     void assertMethod() {
         OpenTelemetryRootSpanAdvice advice = new OpenTelemetryRootSpanAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{}, "OpenTelemetry");
@@ -90,6 +87,7 @@ class OpenTelemetryRootSpanAdviceTest {
     }
     
     @Test
+    @AdviceTargetSetting("org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask")
     void assertExceptionHandle() {
         OpenTelemetryRootSpanAdvice advice = new OpenTelemetryRootSpanAdvice();
         advice.beforeMethod(targetObject, null, new Object[]{}, "OpenTelemetry");
