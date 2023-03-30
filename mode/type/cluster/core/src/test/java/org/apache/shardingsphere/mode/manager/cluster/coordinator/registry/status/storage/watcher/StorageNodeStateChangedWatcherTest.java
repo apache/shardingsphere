@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
@@ -34,17 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StorageNodeStateChangedWatcherTest {
-    
-    @Test
-    void assertCreatePrimaryStateChangedEvent() {
-        Optional<GovernanceEvent> actual = new StorageNodeStateChangedWatcher().createGovernanceEvent(
-                new DataChangedEvent("/nodes/storage_nodes/replica_query_db.readwrite_ds.replica_ds_0", "role: PRIMARY\nstatus: ENABLED\n", Type.ADDED));
-        assertTrue(actual.isPresent());
-        PrimaryStateChangedEvent actualEvent = (PrimaryStateChangedEvent) actual.get();
-        assertThat(actualEvent.getQualifiedDatabase().getDatabaseName(), is("replica_query_db"));
-        assertThat(actualEvent.getQualifiedDatabase().getGroupName(), is("readwrite_ds"));
-        assertThat(actualEvent.getQualifiedDatabase().getDataSourceName(), is("replica_ds_0"));
-    }
     
     @Test
     void assertCreateEnabledStorageNodeChangedEvent() {

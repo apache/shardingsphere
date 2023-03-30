@@ -31,7 +31,6 @@
     <modules>
         <module>pipeline</module>
         <module>transaction</module>
-        <module>discovery</module>
         <module>showprocesslist</module>
     </modules>
 </project>

@@ -31,7 +31,6 @@
     <modules>
         <module>sharding</module>
         <module>readwrite-splitting</module>
-        <module>db-discovery</module>
         <module>encrypt</module>
         <module>shadow</module>
         <module>mask</module>

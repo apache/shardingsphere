@@ -32,15 +32,11 @@ dropReadwriteSplittingRule
     ;
 
 readwriteSplittingRuleDefinition
-    : ruleName LP_ (staticReadwriteSplittingRuleDefinition | dynamicReadwriteSplittingRuleDefinition) (COMMA_ algorithmDefinition)? RP_
+    : ruleName LP_ staticReadwriteSplittingRuleDefinition (COMMA_ algorithmDefinition)? RP_
     ;
 
 staticReadwriteSplittingRuleDefinition
     : WRITE_STORAGE_UNIT EQ_ writeStorageUnitName COMMA_ READ_STORAGE_UNITS LP_ readStorageUnitsNames RP_
-    ;
-
-dynamicReadwriteSplittingRuleDefinition
-    : AUTO_AWARE_RESOURCE EQ_ resourceName
     ;
 
 ruleName

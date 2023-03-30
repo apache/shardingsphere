@@ -76,36 +76,6 @@
         <rule-name>ms_group_1</rule-name>
     </drop-readwrite-splitting-rule>
     
-    <drop-database-discovery-rule sql-case-id="drop-database-discovery-rule">
-        <rule-name>ha_group_0</rule-name>
-        <rule-name>ha_group_1</rule-name>
-    </drop-database-discovery-rule>
-    
-    <drop-database-discovery-rule sql-case-id="drop-database-discovery-rule-if-exists" if-exists="true">
-        <rule-name>ha_group_0</rule-name>
-        <rule-name>ha_group_1</rule-name>
-    </drop-database-discovery-rule>
-    
-    <drop-database-discovery-type sql-case-id="drop-database-discovery-type">
-        <type>type_name_0</type>
-        <type>type_name_1</type>
-    </drop-database-discovery-type>
-    
-    <drop-database-discovery-type sql-case-id="drop-database-discovery-type-if-exists" if-exists="true">
-        <type>type_name_0</type>
-        <type>type_name_1</type>
-    </drop-database-discovery-type>
-    
-    <drop-database-discovery-heartbeat sql-case-id="drop-database-discovery-heartbeat">
-        <heartbeat>heartbeat_name_0</heartbeat>
-        <heartbeat>heartbeat_name_1</heartbeat>
-    </drop-database-discovery-heartbeat>
-    
-    <drop-database-discovery-heartbeat sql-case-id="drop-database-discovery-heartbeat-if-exists" if-exists="true">
-        <heartbeat>heartbeat_name_0</heartbeat>
-        <heartbeat>heartbeat_name_1</heartbeat>
-    </drop-database-discovery-heartbeat>
-    
     <drop-encrypt-rule sql-case-id="drop-encrypt-rule">
         <rule-name>t_encrypt</rule-name>
         <rule-name>t_encrypt_order</rule-name>
