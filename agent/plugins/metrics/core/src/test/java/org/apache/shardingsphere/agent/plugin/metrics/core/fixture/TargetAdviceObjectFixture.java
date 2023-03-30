@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector;
+package org.apache.shardingsphere.agent.plugin.metrics.core.fixture;
 
 import lombok.Getter;
 import lombok.Setter;

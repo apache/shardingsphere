@@ -21,7 +21,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsColl
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.TargetAdviceObjectFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
