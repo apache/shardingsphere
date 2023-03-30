@@ -34,7 +34,7 @@ public enum ConsulPropertyKey implements TypedPropertyKey {
     TIME_TO_LIVE_SECONDS("timeToLiveSeconds", "30s", String.class),
     
     /**
-     *Block query time seconds.
+     * Block query time seconds.
      */
     BLOCK_QUERY_TIME_TO_SECONDS("blockQueryTimeToSeconds", "60", long.class);
     

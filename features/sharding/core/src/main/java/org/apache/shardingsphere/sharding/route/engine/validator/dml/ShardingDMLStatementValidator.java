@@ -43,7 +43,9 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Sharding dml statement validator.
+ * Sharding DML statement validator.
+ * 
+ * @param <T> type of SQL statement
  */
 public abstract class ShardingDMLStatementValidator<T extends SQLStatement> implements ShardingStatementValidator<T> {
     

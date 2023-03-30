@@ -74,7 +74,7 @@ public abstract class BaseDMLE2EIT {
     }
     
     @AfterEach
-    public final void tearDown() {
+    void tearDown() {
         // TODO make sure test case can not be null
         if (null != dataSetEnvironmentManager) {
             dataSetEnvironmentManager.cleanData();

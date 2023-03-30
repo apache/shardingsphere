@@ -31,7 +31,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatemen
 import java.util.Collection;
 
 /**
- * Sharding ddl statement validator.
+ * Sharding DDL statement validator.
+ * 
+ * @param <T> type of SQL statement
  */
 public abstract class ShardingDDLStatementValidator<T extends DDLStatement> implements ShardingStatementValidator<T> {
     
