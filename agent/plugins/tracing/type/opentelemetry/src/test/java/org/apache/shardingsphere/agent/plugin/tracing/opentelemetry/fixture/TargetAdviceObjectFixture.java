@@ -15,30 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.test;
+package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.fixture;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 
 /**
- * Advice target setting.
+ * Target advice object fixture.
  */
-@Target(ElementType.TYPE)
-@ExtendWith(MockitoExtension.class)
-@Inherited
-@Retention(RetentionPolicy.RUNTIME)
-public @interface AdviceTargetClassSetting {
+@Getter
+@Setter
+public final class TargetAdviceObjectFixture implements TargetAdviceObject {
     
-    /**
-     * Target class name.
-     * 
-     * @return target class name.
-     */
-    String value();
+    private Object attachment;
 }

@@ -30,7 +30,7 @@ import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import org.apache.shardingsphere.agent.plugin.tracing.core.RootSpanContext;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
-import org.apache.shardingsphere.agent.test.fixture.TargetAdviceObjectFixture;
+import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.fixture.TargetAdviceObjectFixture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -88,9 +88,10 @@ class OpenTelemetrySQLParserEngineAdviceTest {
     
     private void assertCommonData(final List<SpanData> spanItems) {
         assertThat(spanItems.size(), is(1));
-        assertThat(spanItems.get(0).getName(), is("/ShardingSphere/parseSQL/"));
-        assertThat(spanItems.get(0).getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
-        Attributes attributes = spanItems.get(0).getAttributes();
+        SpanData spanData = spanItems.iterator().next();
+        assertThat(spanData.getName(), is("/ShardingSphere/parseSQL/"));
+        assertThat(spanData.getParentSpanId(), is(parentSpan.getSpanContext().getSpanId()));
+        Attributes attributes = spanItems.iterator().next().getAttributes();
         assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
         assertThat(attributes.get(AttributeKey.stringKey(AttributeConstants.DB_STATEMENT)), is(SQL));
     }

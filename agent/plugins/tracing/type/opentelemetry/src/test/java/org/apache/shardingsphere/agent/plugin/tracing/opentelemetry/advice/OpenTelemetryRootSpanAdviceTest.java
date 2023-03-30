@@ -27,7 +27,7 @@ import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import org.apache.shardingsphere.agent.plugin.tracing.core.constant.AttributeConstants;
 import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.constant.OpenTelemetryConstants;
-import org.apache.shardingsphere.agent.test.fixture.TargetAdviceObjectFixture;
+import org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -87,7 +87,7 @@ class OpenTelemetryRootSpanAdviceTest {
     
     private void assertCommonData(final List<SpanData> spanItems) {
         assertThat(spanItems.size(), is(1));
-        SpanData spanData = spanItems.get(0);
+        SpanData spanData = spanItems.iterator().next();
         assertThat(spanData.getName(), is("/ShardingSphere/rootInvoke/"));
         assertThat(spanData.getAttributes().get(AttributeKey.stringKey(AttributeConstants.COMPONENT)), is(AttributeConstants.COMPONENT_NAME));
         assertThat(spanData.getAttributes().get(AttributeKey.stringKey(AttributeConstants.SPAN_KIND)), is(AttributeConstants.SPAN_KIND_CLIENT));
