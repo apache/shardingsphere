@@ -26,10 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class PipelineContextKeyTest {
+final class PipelineContextKeyTest {
     
     @Test
-    public void assertHashCodeEqualsForProxyMode() {
+    void assertHashCodeEqualsForProxyMode() {
         PipelineContextKey contextKey1 = PipelineContextKey.build(InstanceType.PROXY, null);
         PipelineContextKey contextKey2 = PipelineContextKey.build(InstanceType.PROXY, "sharding_db");
         assertThat(contextKey1.hashCode(), is(contextKey2.hashCode()));
@@ -37,7 +37,7 @@ public final class PipelineContextKeyTest {
     }
     
     @Test
-    public void assertHashCodeEqualsForJdbcMode() {
+    void assertHashCodeEqualsForJdbcMode() {
         PipelineContextKey contextKey1 = PipelineContextKey.build(InstanceType.JDBC, "logic_db");
         PipelineContextKey contextKey2 = PipelineContextKey.build(InstanceType.JDBC, "sharding_db");
         assertTrue(contextKey1.hashCode() != contextKey2.hashCode());

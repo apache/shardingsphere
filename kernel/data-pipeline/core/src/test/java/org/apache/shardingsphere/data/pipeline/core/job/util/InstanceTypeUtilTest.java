@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class InstanceTypeUtilTest {
+final class InstanceTypeUtilTest {
     
     @Test
-    public void assertEncodeAndDecode() {
+    void assertEncodeAndDecode() {
         for (InstanceType each : InstanceType.values()) {
             assertThat(InstanceTypeUtil.decode(InstanceTypeUtil.encode(each)), is(each));
         }
