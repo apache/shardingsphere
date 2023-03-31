@@ -44,12 +44,13 @@ public final class OpenTelemetryRootSpanAdvice extends TracingRootSpanAdvice<Spa
     
     @Override
     protected void finishRootSpan(final Span rootSpan, final TargetAdviceObject target) {
+        rootSpan.setStatus(StatusCode.OK);
         rootSpan.end();
     }
     
     @Override
     protected void recordException(final Span rootSpan, final TargetAdviceObject target, final Throwable throwable) {
         rootSpan.setStatus(StatusCode.ERROR).recordException(throwable);
-        finishRootSpan(rootSpan, target);
+        rootSpan.end();
     }
 }
