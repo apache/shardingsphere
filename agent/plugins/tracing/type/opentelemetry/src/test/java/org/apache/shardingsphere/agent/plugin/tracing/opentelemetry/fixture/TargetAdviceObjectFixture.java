@@ -15,15 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.plugin.tracing.advice;
+package org.apache.shardingsphere.agent.plugin.tracing.opentelemetry.fixture;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.agent.api.advice.TargetAdviceObject;
 
 /**
- * Advice test base.
+ * Target advice object fixture.
  */
-public interface AdviceTestBase {
+@Getter
+@Setter
+public final class TargetAdviceObjectFixture implements TargetAdviceObject {
     
-    /**
-     * Prepare env for testing.
-     */
-    void prepare();
+    private Object attachment;
 }

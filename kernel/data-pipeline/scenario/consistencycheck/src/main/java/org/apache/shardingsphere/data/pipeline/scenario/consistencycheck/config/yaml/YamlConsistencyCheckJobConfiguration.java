@@ -41,7 +41,7 @@ public final class YamlConsistencyCheckJobConfiguration implements YamlPipelineJ
     private Properties algorithmProps;
     
     @Override
-    public String getTargetDatabaseName() {
+    public String getDatabaseName() {
         throw new UnsupportedOperationException("");
     }
 }

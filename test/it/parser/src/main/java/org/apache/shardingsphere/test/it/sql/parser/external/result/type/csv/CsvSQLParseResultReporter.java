@@ -25,6 +25,7 @@ import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResu
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * SQL parse result reporter for CSV.
@@ -33,28 +34,43 @@ public final class CsvSQLParseResultReporter implements SQLParseResultReporter {
     
     private final CSVPrinter printer;
     
-    @SneakyThrows
+    @SneakyThrows(IOException.class)
     public CsvSQLParseResultReporter(final String databaseType) {
         File csvFile = new File(SQLParserExternalITEnvironment.getInstance().getResultPath() + databaseType + "-result.csv");
         printHeader(csvFile);
         printer = new CSVPrinter(new FileWriter(csvFile, true), CSVFormat.DEFAULT.builder().setSkipHeaderRecord(true).build());
     }
     
-    @SneakyThrows
+    @SneakyThrows(IOException.class)
     private void printHeader(final File csvFile) {
         if (csvFile.exists()) {
             return;
         }
-        try (CSVPrinter csvHeaderPrinter = new CSVPrinter(new FileWriter(csvFile), CSVFormat.DEFAULT.builder().setSkipHeaderRecord(false).build())) {
+        try (
+                FileWriter fileWriter = new FileWriter(csvFile);
+                CSVPrinter csvHeaderPrinter = new CSVPrinter(fileWriter, CSVFormat.DEFAULT.builder().setSkipHeaderRecord(false).build())) {
             csvHeaderPrinter.printRecord("SQLCaseId", "DatabaseType", "Result", "SQL");
             csvHeaderPrinter.flush();
         }
     }
     
-    @SneakyThrows
+    /**
+     * Print result.
+     * 
+     * @param sqlCaseId SQL case ID
+     * @param databaseType database type
+     * @param isSuccess whether success
+     * @param sql SQL
+     */
+    @SneakyThrows(IOException.class)
     @Override
     public void printResult(final String sqlCaseId, final String databaseType, final boolean isSuccess, final String sql) {
         printer.printRecord(sqlCaseId, databaseType, isSuccess ? "success" : "failed", sql);
         printer.flush();
+    }
+    
+    @Override
+    public void close() throws IOException {
+        printer.close();
     }
 }

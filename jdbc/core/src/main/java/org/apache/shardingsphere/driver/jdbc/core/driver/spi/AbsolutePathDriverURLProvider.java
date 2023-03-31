@@ -29,7 +29,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Objects;
 
 /**
  * Absolute path driver URL provider.
@@ -49,9 +48,9 @@ public final class AbsolutePathDriverURLProvider implements ShardingSphereDriver
         String configuredFile = url.substring("jdbc:shardingsphere:".length(), url.contains("?") ? url.indexOf("?") : url.length());
         String file = configuredFile.substring(PATH_TYPE.length());
         Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere driver URL.");
-        try (InputStream stream = Files.newInputStream(new File(file).toPath())) {
-            Objects.requireNonNull(stream, String.format("Can not find configuration file `%s`.", file));
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+        try (
+                InputStream stream = Files.newInputStream(new File(file).toPath());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
             StringBuilder builder = new StringBuilder();
             String line;
             while (null != (line = reader.readLine())) {

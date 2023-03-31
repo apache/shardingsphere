@@ -57,7 +57,7 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
         StorageContainer storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(testParam.getDatabaseType(), "", testParam.getScenario(),
                 StorageContainerConfigurationFactory.newInstance(testParam.getDatabaseType())));
         AdaptorContainerConfiguration containerConfig = new AdaptorContainerConfiguration(testParam.getScenario(),
-                getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getRunMode()), AdapterContainerUtils.getAdapterContainerImage());
+                getMountedResources(testParam.getScenario(), testParam.getDatabaseType(), testParam.getRunMode(), testParam.getGovernanceCenter()), AdapterContainerUtils.getAdapterContainerImage());
         jdbcContainer = AdapterContainerFactory.newInstance(
                 AdapterMode.valueOf(testParam.getRunMode().toUpperCase()), AdapterType.JDBC, testParam.getDatabaseType(), storageContainer, testParam.getScenario(), containerConfig);
         proxyContainer = AdapterContainerFactory.newInstance(
@@ -72,9 +72,10 @@ public final class ClusterShowProcessListContainerComposer implements AutoClosea
         containers.registerContainer(jdbcContainer);
     }
     
-    private Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType, final String runMode) {
+    private Map<String, String> getMountedResources(final String scenario, final DatabaseType databaseType, final String runMode, final String governanceCenter) {
         Map<String, String> result = new HashMap<>(2, 1);
-        result.put(isClusterMode(runMode) ? "/env/common/cluster/proxy/conf/" : "/env/common/standalone/proxy/conf/", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
+        result.put(isClusterMode(runMode) ? String.format("/env/common/cluster/proxy/%s/conf/", governanceCenter.toLowerCase())
+                : "/env/common/standalone/proxy/conf/", ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         result.put("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), ProxyContainerConstants.CONFIG_PATH_IN_CONTAINER);
         return result;
     }

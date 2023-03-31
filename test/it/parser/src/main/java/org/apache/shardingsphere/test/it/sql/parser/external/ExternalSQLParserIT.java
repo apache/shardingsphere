@@ -46,16 +46,17 @@ public abstract class ExternalSQLParserIT {
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertParseSQL(final String sqlCaseId, final String databaseType, final String sql, final String reportType) {
+    void assertParseSQL(final String sqlCaseId, final String databaseType, final String sql, final String reportType) throws Exception {
         boolean isSuccess = true;
-        SQLParseResultReporter resultReporter = TypedSPILoader.getService(SQLParseResultReporterCreator.class, reportType).create(databaseType);
-        try {
-            ParseASTNode parseASTNode = new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false);
-            new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseASTNode);
-        } catch (final ShardingSphereExternalException | ClassCastException | NullPointerException | IllegalArgumentException | IndexOutOfBoundsException ignore) {
-            isSuccess = false;
+        try (SQLParseResultReporter resultReporter = TypedSPILoader.getService(SQLParseResultReporterCreator.class, reportType).create(databaseType)) {
+            try {
+                ParseASTNode parseASTNode = new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false);
+                new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseASTNode);
+            } catch (final ShardingSphereExternalException | ClassCastException | NullPointerException | IllegalArgumentException | IndexOutOfBoundsException ignore) {
+                isSuccess = false;
+            }
+            resultReporter.printResult(sqlCaseId, databaseType, isSuccess, sql);
         }
-        resultReporter.printResult(sqlCaseId, databaseType, isSuccess, sql);
     }
     
     private static boolean isEnabled() {

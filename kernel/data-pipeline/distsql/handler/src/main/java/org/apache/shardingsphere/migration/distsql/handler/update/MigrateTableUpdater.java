@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.migration.distsql.handler.update;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.MissingRequiredTargetDatabaseException;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
@@ -36,7 +37,7 @@ public final class MigrateTableUpdater implements RALUpdater<MigrateTableStateme
     public void executeUpdate(final String databaseName, final MigrateTableStatement sqlStatement) {
         String targetDatabaseName = null == sqlStatement.getTargetDatabaseName() ? databaseName : sqlStatement.getTargetDatabaseName();
         ShardingSpherePreconditions.checkNotNull(targetDatabaseName, MissingRequiredTargetDatabaseException::new);
-        jobAPI.createJobAndStart(new MigrateTableStatement(sqlStatement.getSourceTargetEntries(), targetDatabaseName));
+        jobAPI.createJobAndStart(PipelineContextKey.buildForProxy(), new MigrateTableStatement(sqlStatement.getSourceTargetEntries(), targetDatabaseName));
     }
     
     @Override

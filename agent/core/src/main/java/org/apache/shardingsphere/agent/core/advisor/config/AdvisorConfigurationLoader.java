@@ -45,14 +45,13 @@ public final class AdvisorConfigurationLoader {
      * 
      * @param pluginJars plugin jars
      * @param pluginTypes plugin types
-     * @param isEnhancedForProxy is enhanced for proxy
      * @return loaded configurations
      */
-    public static Map<String, AdvisorConfiguration> load(final Collection<JarFile> pluginJars, final Collection<String> pluginTypes, final boolean isEnhancedForProxy) {
+    public static Map<String, AdvisorConfiguration> load(final Collection<JarFile> pluginJars, final Collection<String> pluginTypes) {
         Map<String, AdvisorConfiguration> result = new HashMap<>();
         AgentPluginClassLoader agentPluginClassLoader = new AgentPluginClassLoader(AdvisorConfigurationLoader.class.getClassLoader(), pluginJars);
         for (String each : pluginTypes) {
-            InputStream advisorsResourceStream = getResourceStream(agentPluginClassLoader, each, isEnhancedForProxy);
+            InputStream advisorsResourceStream = getResourceStream(agentPluginClassLoader, each);
             if (null == advisorsResourceStream) {
                 LOGGER.info("No configuration of advisor for type `{}`.", each);
             } else {
@@ -62,17 +61,8 @@ public final class AdvisorConfigurationLoader {
         return result;
     }
     
-    private static InputStream getResourceStream(final ClassLoader pluginClassLoader, final String pluginType, final boolean isEnhancedForProxy) {
-        InputStream accurateResourceStream = getResourceStream(pluginClassLoader, getFileName(pluginType, isEnhancedForProxy));
-        return null == accurateResourceStream ? getResourceStream(pluginClassLoader, getFileName(pluginType)) : accurateResourceStream;
-    }
-    
-    private static InputStream getResourceStream(final ClassLoader pluginClassLoader, final String fileName) {
-        return pluginClassLoader.getResourceAsStream(String.join(File.separator, "META-INF", "conf", fileName));
-    }
-    
-    private static String getFileName(final String pluginType, final boolean isEnhancedForProxy) {
-        return String.join("-", pluginType.toLowerCase(), isEnhancedForProxy ? "proxy" : "jdbc", "advisors.yaml");
+    private static InputStream getResourceStream(final ClassLoader pluginClassLoader, final String pluginType) {
+        return pluginClassLoader.getResourceAsStream(String.join(File.separator, "META-INF", "conf", getFileName(pluginType)));
     }
     
     private static String getFileName(final String pluginType) {
