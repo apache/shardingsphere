@@ -112,16 +112,6 @@
         <Class name="org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient" />
         <Bug code="IS" />
     </Match>
-    <!-- TODO chuxin fix the ignored bug -->
-    <Match>
-        <Class name="org.apache.shardingsphere.data.pipeline.core.execute.ShardingSphereDataJobWorker" />
-        <Bug code="JLM" />
-    </Match>
-    <!-- TODO chuxin fix the ignored bug -->
-    <Match>
-        <Class name="org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobWorker" />
-        <Bug code="JLM" />
-    </Match>
     <!-- TODO zhengqiang fix the ignored bug -->
     <Match>
         <Class name="org.apache.shardingsphere.sqlfederation.original.OriginalSQLFederationExecutor" />
@@ -131,10 +121,5 @@
     <Match>
         <Class name="org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.OpenGaussSystemCatalogAdminQueryExecutor" />
         <Bug code="ODR" />
-    </Match>
-    <!-- TODO hongsheng fix the ignored bug -->
-    <Match>
-        <Class name="org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory" />
-        <Bug code="JLM" />
     </Match>
 </FindBugsFilter>

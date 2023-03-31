@@ -35,18 +35,11 @@ public final class ShardingSphereDataJobWorker {
      * @param contextManager context manager
      */
     public static void initialize(final ContextManager contextManager) {
-        if (WORKER_INITIALIZED.get()) {
-            return;
-        }
-        synchronized (WORKER_INITIALIZED) {
-            if (WORKER_INITIALIZED.get()) {
-                return;
-            }
+        if (WORKER_INITIALIZED.compareAndSet(false, true)) {
             boolean collectorEnabled = contextManager.getMetaDataContexts().getMetaData().getInternalProps().getValue(InternalConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED);
             if (collectorEnabled) {
                 startScheduleThread(contextManager);
             }
-            WORKER_INITIALIZED.set(true);
         }
     }
     
