@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.external.result;
 /**
  * SQL parse result reporter.
  */
-public interface SQLParseResultReporter {
+public interface SQLParseResultReporter extends AutoCloseable {
     
     /**
      * Print result.
