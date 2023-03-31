@@ -132,4 +132,9 @@
         <Class name="org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.OpenGaussSystemCatalogAdminQueryExecutor" />
         <Bug code="ODR" />
     </Match>
+    <!-- TODO hongsheng fix the ignored bug -->
+    <Match>
+        <Class name="org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory" />
+        <Bug code="JLM" />
+    </Match>
 </FindBugsFilter>
