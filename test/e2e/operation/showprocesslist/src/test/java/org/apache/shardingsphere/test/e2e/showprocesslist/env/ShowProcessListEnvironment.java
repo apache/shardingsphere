@@ -41,11 +41,14 @@ public final class ShowProcessListEnvironment {
     
     private final Collection<String> scenarios;
     
+    private final Collection<String> governanceCenters;
+    
     private ShowProcessListEnvironment() {
         props = loadProperties();
         runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes"));
         itEnvType = ShowProcessListEnvTypeEnum.valueOf(props.getProperty("it.env.type", ShowProcessListEnvTypeEnum.NONE.name()).toUpperCase());
         scenarios = getScenarios(props);
+        governanceCenters = Splitter.on(",").trimResults().splitToList(props.getProperty("it.governance.centers"));
     }
     
     /**
