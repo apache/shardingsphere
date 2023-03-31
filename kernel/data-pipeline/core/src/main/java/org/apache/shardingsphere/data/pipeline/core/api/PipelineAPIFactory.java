@@ -128,7 +128,7 @@ public final class PipelineAPIFactory {
         }
         
         public static ElasticJobAPIHolder getInstance(final PipelineContextKey contextKey) {
-            return  INSTANCE_MAP.computeIfAbsent(contextKey, key -> new ElasticJobAPIHolder(contextKey));
+            return INSTANCE_MAP.computeIfAbsent(contextKey, key -> new ElasticJobAPIHolder(contextKey));
         }
     }
     
