@@ -70,7 +70,7 @@ public abstract class AgentExtraClassLoader extends ClassLoader {
                 definePackage(name, each);
                 return defineClass(name, each, entry);
             } catch (final IOException ex) {
-                throw new ClassNotFoundException(name);
+                throw new ClassNotFoundException(name, ex);
             }
         }
         throw new ClassNotFoundException(name);
