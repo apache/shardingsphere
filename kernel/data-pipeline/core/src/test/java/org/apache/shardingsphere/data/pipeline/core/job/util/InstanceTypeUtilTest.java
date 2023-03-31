@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.migration;
+package org.apache.shardingsphere.data.pipeline.core.job.util;
 
-import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * Migration job id.
- */
-@Getter
-@ToString(callSuper = true)
-public final class MigrationJobId extends AbstractPipelineJobId {
+final class InstanceTypeUtilTest {
     
-    private final List<String> jobShardingDataNodes;
-    
-    public MigrationJobId(final PipelineContextKey contextKey, final List<String> jobShardingDataNodes) {
-        super(new MigrationJobType(), contextKey);
-        this.jobShardingDataNodes = jobShardingDataNodes;
+    @Test
+    void assertEncodeAndDecode() {
+        for (InstanceType each : InstanceType.values()) {
+            assertThat(InstanceTypeUtil.decode(InstanceTypeUtil.encode(each)), is(each));
+        }
     }
 }

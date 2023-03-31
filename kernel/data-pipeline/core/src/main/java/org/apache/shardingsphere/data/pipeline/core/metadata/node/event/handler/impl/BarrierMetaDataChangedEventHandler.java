@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.impl;
 
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.event.handler.PipelineMetaDataChangedEventHandler;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
@@ -36,9 +37,9 @@ public final class BarrierMetaDataChangedEventHandler implements PipelineMetaDat
     }
     
     @Override
-    public void handle(final DataChangedEvent event) {
+    public void handle(final String jobId, final DataChangedEvent event) {
         if (event.getType() == Type.ADDED) {
-            PipelineDistributedBarrier.getInstance().notifyChildrenNodeCountCheck(event.getKey());
+            PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId)).notifyChildrenNodeCountCheck(event.getKey());
         }
     }
 }

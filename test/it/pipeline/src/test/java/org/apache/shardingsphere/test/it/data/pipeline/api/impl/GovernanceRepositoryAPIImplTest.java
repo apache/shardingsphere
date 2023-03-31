@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.it.data.pipeline.api.impl;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstan
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.importer.connector.DataSourceImporterConnector;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
@@ -68,7 +66,7 @@ class GovernanceRepositoryAPIImplTest {
     @BeforeAll
     static void beforeClass() {
         PipelineContextUtils.mockModeConfigAndContextManager();
-        governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
+        governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey());
     }
     
     @Test
@@ -139,7 +137,6 @@ class GovernanceRepositoryAPIImplTest {
         MigrationJobItemContext result = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
         MigrationTaskConfiguration taskConfig = result.getTaskConfig();
         result.getInventoryTasks().add(mockInventoryTask(taskConfig));
-        result.getIncrementalTasks().add(mockIncrementalTask(taskConfig));
         return result;
     }
     
@@ -158,13 +155,5 @@ class GovernanceRepositoryAPIImplTest {
     
     private ImporterConnector mockImporterConnector() {
         return new DataSourceImporterConnector(new DefaultPipelineDataSourceManager());
-    }
-    
-    private IncrementalTask mockIncrementalTask(final MigrationTaskConfiguration taskConfig) {
-        DumperConfiguration dumperConfig = taskConfig.getDumperConfig();
-        dumperConfig.setPosition(new PlaceholderPosition());
-        PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(mock(PipelineDataSourceWrapper.class));
-        return new IncrementalTask(3, dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtils.getPipelineChannelCreator(), mockImporterConnector(),
-                metaDataLoader, PipelineContextUtils.getExecuteEngine(), new FixtureInventoryIncrementalJobItemContext());
     }
 }

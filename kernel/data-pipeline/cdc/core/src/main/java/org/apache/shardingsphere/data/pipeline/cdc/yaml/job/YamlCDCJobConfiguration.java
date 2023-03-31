@@ -56,11 +56,6 @@ public final class YamlCDCJobConfiguration implements YamlPipelineJobConfigurati
     
     private int retryTimes;
     
-    @Override
-    public String getTargetDatabaseName() {
-        throw new UnsupportedOperationException();
-    }
-    
     /**
      * Sink configuration for YAML.
      */

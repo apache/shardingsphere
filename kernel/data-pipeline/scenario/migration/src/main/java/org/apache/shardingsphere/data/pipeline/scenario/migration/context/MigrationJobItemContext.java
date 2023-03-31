@@ -125,6 +125,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
         return sourceMetaDataLoaderLazyInitializer.get();
     }
     
+    // TODO Use SPI, configurable
     @Override
     public ImporterConnector getImporterConnector() {
         return new DataSourceImporterConnector(dataSourceManager);

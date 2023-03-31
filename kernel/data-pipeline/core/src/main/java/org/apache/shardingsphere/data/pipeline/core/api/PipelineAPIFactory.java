@@ -25,16 +25,23 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.GovernanceRepositoryAPIImpl;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.registry.CoordinatorRegistryCenterInitializer;
-import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobAPIFactory;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobOperateAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.operate.JobOperateAPIImpl;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.settings.JobConfigurationAPIImpl;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.internal.statistics.JobStatisticsAPIImpl;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Pipeline API factory.
@@ -42,64 +49,70 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineAPIFactory {
     
-    private static final LazyInitializer<GovernanceRepositoryAPI> REPOSITORY_API_LAZY_INITIALIZER = new LazyInitializer<GovernanceRepositoryAPI>() {
-        
-        @Override
-        protected GovernanceRepositoryAPI initialize() {
-            return new GovernanceRepositoryAPIImpl((ClusterPersistRepository) PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository());
-        }
-    };
+    private static final Map<PipelineContextKey, LazyInitializer<GovernanceRepositoryAPI>> GOVERNANCE_REPOSITORY_API_MAP = new ConcurrentHashMap<>();
     
     /**
      * Get governance repository API.
      *
+     * @param contextKey context key
      * @return governance repository API
      */
     @SneakyThrows(ConcurrentException.class)
-    public static GovernanceRepositoryAPI getGovernanceRepositoryAPI() {
-        return REPOSITORY_API_LAZY_INITIALIZER.get();
+    public static GovernanceRepositoryAPI getGovernanceRepositoryAPI(final PipelineContextKey contextKey) {
+        return GOVERNANCE_REPOSITORY_API_MAP.computeIfAbsent(contextKey, key -> new LazyInitializer<GovernanceRepositoryAPI>() {
+            
+            @Override
+            protected GovernanceRepositoryAPI initialize() {
+                ContextManager contextManager = PipelineContextManager.getContext(contextKey).getContextManager();
+                return new GovernanceRepositoryAPIImpl((ClusterPersistRepository) contextManager.getMetaDataContexts().getPersistService().getRepository());
+            }
+        }).get();
     }
     
     /**
      * Get job statistics API.
      *
+     * @param contextKey context key
      * @return job statistics API
      */
-    public static JobStatisticsAPI getJobStatisticsAPI() {
-        return ElasticJobAPIHolder.getInstance().getJobStatisticsAPI();
+    public static JobStatisticsAPI getJobStatisticsAPI(final PipelineContextKey contextKey) {
+        return ElasticJobAPIHolder.getInstance(contextKey).getJobStatisticsAPI();
     }
     
     /**
      * Get job configuration API.
      *
+     * @param contextKey context key
      * @return job configuration API
      */
-    public static JobConfigurationAPI getJobConfigurationAPI() {
-        return ElasticJobAPIHolder.getInstance().getJobConfigurationAPI();
+    public static JobConfigurationAPI getJobConfigurationAPI(final PipelineContextKey contextKey) {
+        return ElasticJobAPIHolder.getInstance(contextKey).getJobConfigurationAPI();
     }
     
     /**
      * Get job operate API.
      *
+     * @param contextKey context key
      * @return job operate API
      */
-    public static JobOperateAPI getJobOperateAPI() {
-        return ElasticJobAPIHolder.getInstance().getJobOperateAPI();
+    public static JobOperateAPI getJobOperateAPI(final PipelineContextKey contextKey) {
+        return ElasticJobAPIHolder.getInstance(contextKey).getJobOperateAPI();
     }
     
     /**
      * Get registry center.
      *
+     * @param contextKey context key
      * @return Coordinator registry center
      */
-    public static CoordinatorRegistryCenter getRegistryCenter() {
-        return RegistryCenterHolder.getInstance();
+    public static CoordinatorRegistryCenter getRegistryCenter(final PipelineContextKey contextKey) {
+        return RegistryCenterHolder.getInstance(contextKey);
     }
     
     @Getter
     private static final class ElasticJobAPIHolder {
         
-        private static volatile ElasticJobAPIHolder instance;
+        private static final Map<PipelineContextKey, ElasticJobAPIHolder> INSTANCE_MAP = new ConcurrentHashMap<>();
         
         private final JobStatisticsAPI jobStatisticsAPI;
         
@@ -107,45 +120,60 @@ public final class PipelineAPIFactory {
         
         private final JobOperateAPI jobOperateAPI;
         
-        private ElasticJobAPIHolder() {
-            ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) PipelineContext.getModeConfig().getRepository();
-            String namespace = repositoryConfig.getNamespace() + PipelineMetaDataNode.getElasticJobNamespace();
-            jobStatisticsAPI = JobAPIFactory.createJobStatisticsAPI(repositoryConfig.getServerLists(), namespace, null);
-            jobConfigurationAPI = JobAPIFactory.createJobConfigurationAPI(repositoryConfig.getServerLists(), namespace, null);
-            jobOperateAPI = JobAPIFactory.createJobOperateAPI(repositoryConfig.getServerLists(), namespace, null);
+        private ElasticJobAPIHolder(final PipelineContextKey contextKey) {
+            CoordinatorRegistryCenter registryCenter = getRegistryCenter(contextKey);
+            jobStatisticsAPI = new JobStatisticsAPIImpl(registryCenter);
+            jobConfigurationAPI = new JobConfigurationAPIImpl(registryCenter);
+            jobOperateAPI = new JobOperateAPIImpl(registryCenter);
         }
         
-        public static ElasticJobAPIHolder getInstance() {
-            if (null == instance) {
-                synchronized (PipelineAPIFactory.class) {
-                    if (null == instance) {
-                        instance = new ElasticJobAPIHolder();
-                    }
+        public static ElasticJobAPIHolder getInstance(final PipelineContextKey contextKey) {
+            ElasticJobAPIHolder result = INSTANCE_MAP.get(contextKey);
+            if (null != result) {
+                return result;
+            }
+            synchronized (INSTANCE_MAP) {
+                result = INSTANCE_MAP.get(contextKey);
+                if (null == result) {
+                    result = new ElasticJobAPIHolder(contextKey);
+                    INSTANCE_MAP.put(contextKey, result);
                 }
             }
-            return instance;
+            return result;
         }
     }
     
     private static final class RegistryCenterHolder {
         
-        private static volatile CoordinatorRegistryCenter instance;
+        private static final Map<PipelineContextKey, CoordinatorRegistryCenter> INSTANCE_MAP = new ConcurrentHashMap<>();
         
-        public static CoordinatorRegistryCenter getInstance() {
-            if (null == instance) {
-                synchronized (PipelineAPIFactory.class) {
-                    if (null == instance) {
-                        instance = createRegistryCenter();
-                    }
+        public static CoordinatorRegistryCenter getInstance(final PipelineContextKey contextKey) {
+            // TODO Extract common method; Reduce lock time
+            CoordinatorRegistryCenter result = INSTANCE_MAP.get(contextKey);
+            if (null != result) {
+                return result;
+            }
+            synchronized (INSTANCE_MAP) {
+                result = INSTANCE_MAP.get(contextKey);
+                if (null == result) {
+                    result = createRegistryCenter(contextKey);
+                    INSTANCE_MAP.put(contextKey, result);
                 }
             }
-            return instance;
+            return result;
         }
         
-        private static CoordinatorRegistryCenter createRegistryCenter() {
+        private static CoordinatorRegistryCenter createRegistryCenter(final PipelineContextKey contextKey) {
             CoordinatorRegistryCenterInitializer registryCenterInitializer = new CoordinatorRegistryCenterInitializer();
-            ModeConfiguration modeConfig = PipelineContext.getModeConfig();
-            return registryCenterInitializer.createRegistryCenter(modeConfig, PipelineMetaDataNode.getElasticJobNamespace());
+            PipelineContext pipelineContext = PipelineContextManager.getContext(contextKey);
+            ModeConfiguration modeConfig = pipelineContext.getModeConfig();
+            String elasticJobNamespace = PipelineMetaDataNode.getElasticJobNamespace();
+            String clusterType = modeConfig.getRepository().getType();
+            if ("ZooKeeper".equals(clusterType)) {
+                return registryCenterInitializer.createZookeeperRegistryCenter(modeConfig, elasticJobNamespace);
+            } else {
+                throw new IllegalArgumentException("Unsupported cluster type: " + clusterType);
+            }
         }
     }
 }

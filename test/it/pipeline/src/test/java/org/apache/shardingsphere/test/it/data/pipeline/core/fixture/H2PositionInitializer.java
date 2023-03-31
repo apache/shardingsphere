@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.migration;
+package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import lombok.Getter;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
+import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
 
-import java.util.List;
+import javax.sql.DataSource;
 
-/**
- * Migration job id.
- */
-@Getter
-@ToString(callSuper = true)
-public final class MigrationJobId extends AbstractPipelineJobId {
+public final class H2PositionInitializer implements PositionInitializer {
     
-    private final List<String> jobShardingDataNodes;
+    @Override
+    public PlaceholderPosition init(final DataSource dataSource, final String slotNameSuffix) {
+        return new PlaceholderPosition();
+    }
     
-    public MigrationJobId(final PipelineContextKey contextKey, final List<String> jobShardingDataNodes) {
-        super(new MigrationJobType(), contextKey);
-        this.jobShardingDataNodes = jobShardingDataNodes;
+    @Override
+    public PlaceholderPosition init(final String data) {
+        return new PlaceholderPosition();
+    }
+    
+    @Override
+    public String getType() {
+        return "H2";
     }
 }

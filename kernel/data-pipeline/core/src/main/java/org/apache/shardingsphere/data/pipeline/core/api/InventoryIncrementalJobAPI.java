@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 
 import java.sql.SQLException;
@@ -42,16 +43,18 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     /**
      * Alter process configuration.
      *
+     * @param contextKey context key
      * @param processConfig process configuration
      */
-    void alterProcessConfiguration(PipelineProcessConfiguration processConfig);
+    void alterProcessConfiguration(PipelineContextKey contextKey, PipelineProcessConfiguration processConfig);
     
     /**
      * Show process configuration.
      *
+     * @param contextKey context key
      * @return process configuration, non-null
      */
-    PipelineProcessConfiguration showProcessConfiguration();
+    PipelineProcessConfiguration showProcessConfiguration(PipelineContextKey contextKey);
     
     /**
      * Persist job offset info.

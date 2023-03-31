@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJobId;
 import org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.ConsistencyCheckSequence;
@@ -30,22 +31,20 @@ import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util.Co
 @ToString(callSuper = true)
 public final class ConsistencyCheckJobId extends AbstractPipelineJobId {
     
-    public static final String CURRENT_VERSION = "01";
-    
     private final String parentJobId;
     
     private final int sequence;
     
-    public ConsistencyCheckJobId(final String parentJobId) {
-        this(parentJobId, ConsistencyCheckSequence.MIN_SEQUENCE);
+    public ConsistencyCheckJobId(final PipelineContextKey contextKey, final String parentJobId) {
+        this(contextKey, parentJobId, ConsistencyCheckSequence.MIN_SEQUENCE);
     }
     
-    public ConsistencyCheckJobId(final String parentJobId, final String latestCheckJobId) {
-        this(parentJobId, ConsistencyCheckSequence.getNextSequence(parseSequence(latestCheckJobId)));
+    public ConsistencyCheckJobId(final PipelineContextKey contextKey, final String parentJobId, final String latestCheckJobId) {
+        this(contextKey, parentJobId, ConsistencyCheckSequence.getNextSequence(parseSequence(latestCheckJobId)));
     }
     
-    public ConsistencyCheckJobId(final String parentJobId, final int sequence) {
-        super(new ConsistencyCheckJobType(), CURRENT_VERSION);
+    public ConsistencyCheckJobId(final PipelineContextKey contextKey, final String parentJobId, final int sequence) {
+        super(new ConsistencyCheckJobType(), contextKey);
         this.parentJobId = parentJobId;
         this.sequence = sequence > ConsistencyCheckSequence.MAX_SEQUENCE ? ConsistencyCheckSequence.MIN_SEQUENCE : sequence;
     }
