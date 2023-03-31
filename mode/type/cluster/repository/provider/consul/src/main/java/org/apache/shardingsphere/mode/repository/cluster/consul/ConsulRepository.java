@@ -145,10 +145,10 @@ public final class ConsulRepository implements ClusterPersistRepository {
             Long index = response.getConsulIndex();
             if (null != index && 0 == currentIndex) {
                 currentIndex = index;
-                Collection<String> watchKeys = watchKeyMap.get(key);
-                if (null == watchKeys) {
-                    watchKeys = new HashSet<>();
+                if (!watchKeyMap.containsKey(key)) {
+                    watchKeyMap.put(key, new HashSet<>());
                 }
+                Collection<String> watchKeys = watchKeyMap.get(key);
                 for (GetValue each : response.getValue()) {
                     watchKeys.add(each.getKey());
                 }

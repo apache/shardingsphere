@@ -23,6 +23,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropsChecker;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -38,6 +39,8 @@ public final class UnifiedCreditCodeRandomReplaceAlgorithm implements MaskAlgori
     private static final String CATEGORY_CODES = "category-codes";
     
     private static final String ADMINISTRATIVE_DIVISION_CODES = "administrative-division-codes";
+    
+    private final Random random = new SecureRandom();
     
     private List<Character> registrationDepartmentCodes;
     
@@ -81,7 +84,6 @@ public final class UnifiedCreditCodeRandomReplaceAlgorithm implements MaskAlgori
     }
     
     private String randomReplace() {
-        Random random = new Random();
         StringBuilder result = new StringBuilder();
         result.append(registrationDepartmentCodes.get(random.nextInt(registrationDepartmentCodes.size())));
         result.append(categoryCodes.get(random.nextInt(categoryCodes.size())));
