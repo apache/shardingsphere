@@ -1014,10 +1014,10 @@
                 <configuration>
                     <java>
                         <eclipse>
-                            <file>${maven.multiModuleProjectDirectory}/src/resources/spotless_shardingsphere_formatter.xml</file>
+                            <file>src/resources/spotless.xml</file>
                         </eclipse>
                         <licenseHeader>
-                            <file>${maven.multiModuleProjectDirectory}/src/resources/license-header</file>
+                            <file>src/resources/license-header</file>
                         </licenseHeader>
                     </java>
                     <pom>
