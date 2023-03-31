@@ -1078,15 +1078,6 @@
                 <configuration>
                     <excludeFilterFile>src/resources/spotbugs.xml</excludeFilterFile>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>validate</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>validate</phase>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>

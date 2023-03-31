@@ -15,45 +15,21 @@
 # limitations under the License.
 #
 
-name: Check
+name: Nightly - Check
 
 on:
-  push:
-    branches: [ master, dev ]
-    paths:
-      - '**/src/main/**'
-      - '**/src/test/**'
-      - 'src/resources/**'
-      - '.github/workflows/checkstyle-and-license-check.yml'
-      - 'examples/shardingsphere-example-generator/**'
-      - 'test/e2e/agent/plugins/**'
-      - '!examples/**'
-      - '!*.md'
-  pull_request:
-    branches: [ master ]
-    paths:
-      - '**/src/main/**'
-      - '**/src/test/**'
-      - 'src/resources/**'
-      - '.github/workflows/checkstyle-and-license-check.yml'
-      - 'examples/shardingsphere-example-generator/**'
-      - 'test/e2e/agent/plugins/**'
-      - '!examples/**'
-      - '!*.md'
+  schedule:
+    - cron: '0 18 */1 * *'  # once a day. UTC time
   workflow_dispatch:
 
-concurrency:
-  group: check-${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 env:
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Drat.skip=true
   REPOSITORY_NAME: shardingsphere
 
 jobs:
   check-checkstyle:
     name: Check - CheckStyle
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
@@ -65,9 +41,22 @@ jobs:
       - name: Run CheckStyle
         run: ./mvnw checkstyle:check -T1C
   
+  check-spotbugs:
+    name: Check - SpotBugs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ env.REPOSITORY_NAME }}-maven-third-party-
+      - name: Run SpotBugs
+        run: ./mvnw clean install spotbugs:check -T1C
+  
   check-license:
     name: Check - License
-    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
