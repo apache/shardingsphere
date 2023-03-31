@@ -119,7 +119,9 @@ class ShowProcessListE2EIT {
             Collection<Arguments> result = new LinkedList<>();
             for (String each : ENV.getScenarios()) {
                 for (String runMode : ENV.getRunModes()) {
-                    result.add(Arguments.of(new ShowProcessListTestParameter(new MySQLDatabaseType(), each, runMode)));
+                    for (String governanceType : ENV.getGovernanceCenters()) {
+                        result.add(Arguments.of(new ShowProcessListTestParameter(new MySQLDatabaseType(), each, runMode, governanceType)));
+                    }
                 }
             }
             return result.stream();
