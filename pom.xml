@@ -113,12 +113,9 @@
         <awaitility.version>4.2.0</awaitility.version>
         
         <!-- Plugin versions -->
-        <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
-        
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
         <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
         <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
         <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
@@ -126,12 +123,14 @@
         <maven-assembly-plugin.version>3.5.0</maven-assembly-plugin.version>
         <maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
         <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
-        <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
         <maven-dependency-plugin.version>3.5.0</maven-dependency-plugin.version>
+        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
         <maven-site-plugin.version>4.0.0-M6</maven-site-plugin.version>
         <maven-project-info-reports-plugin.version>3.4.2</maven-project-info-reports-plugin.version>
+        <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
         <maven-plugin-plugin.version>3.8.1</maven-plugin-plugin.version>
         
+        <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
         <jandex-maven-plugin.version>3.0.5</jandex-maven-plugin.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
@@ -675,15 +674,6 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>org.apache.rat</groupId>
-                    <artifactId>apache-rat-plugin</artifactId>
-                    <version>${apache-rat-plugin.version}</version>
-                    <configuration>
-                        <excludesFile>src/resources/rat.txt</excludesFile>
-                    </configuration>
-                </plugin>
-                
-                <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
                     <configuration>
@@ -700,13 +690,6 @@
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>${maven-resources-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven-javadoc-plugin.version}</version>
-                    <configuration>
-                        <source>${java.version}</source>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
@@ -765,8 +748,39 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>${maven-site-plugin.version}</version>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven-enforcer-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-banned-dependencies</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireMavenVersion>
+                                        <version>${maven.version.range}</version>
+                                    </requireMavenVersion>
+                                    <requireJavaVersion>
+                                        <version>${java.version}</version>
+                                    </requireJavaVersion>
+                                </rules>
+                                <fail>true</fail>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven-dependency-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven-javadoc-plugin.version}</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-plugin-plugin</artifactId>
@@ -780,6 +794,15 @@
                             <phase>process-classes</phase>
                         </execution>
                     </executions>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.rat</groupId>
+                    <artifactId>apache-rat-plugin</artifactId>
+                    <version>${apache-rat-plugin.version}</version>
+                    <configuration>
+                        <excludesFile>src/resources/rat.txt</excludesFile>
+                    </configuration>
                 </plugin>
                 
                 <plugin>
@@ -859,11 +882,6 @@
                         </execution>
                     </executions>
                 </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>${maven-dependency-plugin.version}</version>
-                </plugin>
             </plugins>
         </pluginManagement>
         
@@ -880,6 +898,7 @@
                     </execution>
                 </executions>
             </plugin>
+            
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
@@ -905,29 +924,6 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>${maven-enforcer-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>enforce-banned-dependencies</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>${maven.version.range}</version>
-                                </requireMavenVersion>
-                                <requireJavaVersion>
-                                    <version>${java.version}</version>
-                                </requireJavaVersion>
-                            </rules>
-                            <fail>true</fail>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -1100,10 +1096,9 @@
     <reporting>
         <plugins>
             <plugin>
-                <groupId>org.apache.rat</groupId>
-                <artifactId>apache-rat-plugin</artifactId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>${maven-site-plugin.version}</version>
             </plugin>
-            
             <plugin>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>${maven-project-info-reports-plugin.version}</version>
@@ -1113,7 +1108,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>${maven-javadoc-plugin.version}</version>
                 <configuration>
                     <charset>${project.build.sourceEncoding}</charset>
                     <encoding>${project.build.sourceEncoding}</encoding>
@@ -1132,6 +1126,11 @@
                         <inherited>false</inherited>
                     </reportSet>
                 </reportSets>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
             </plugin>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
