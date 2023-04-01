@@ -15,46 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.route;
+package org.apache.shardingsphere.readwritesplitting.route.qualified.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.route.qualified.QualifiedReadwriteSplittingDataSourceRouter;
-import org.apache.shardingsphere.readwritesplitting.route.qualified.type.QualifiedReadwriteSplittingPrimaryDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.route.standard.StandardReadwriteSplittingDataSourceRouter;
-import org.apache.shardingsphere.readwritesplitting.route.qualified.type.QualifiedReadwriteSplittingTransactionalDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 /**
- * Data source router for readwrite-splitting.
+ * Qualified data source transactional router for readwrite-splitting.
  */
 @RequiredArgsConstructor
-public final class ReadwriteSplittingDataSourceRouter {
-    
-    private final ReadwriteSplittingDataSourceRule rule;
+public final class QualifiedReadwriteSplittingTransactionalDataSourceRouter implements QualifiedReadwriteSplittingDataSourceRouter {
     
     private final ConnectionContext connectionContext;
     
-    /**
-     * Route.
-     * 
-     * @param sqlStatementContext SQL statement context
-     * @return data source name
-     */
-    public String route(final SQLStatementContext<?> sqlStatementContext) {
-        for (QualifiedReadwriteSplittingDataSourceRouter each : getQualifiedRouters(connectionContext)) {
-            if (each.isQualified(sqlStatementContext)) {
-                return each.route(rule);
-            }
-        }
-        return new StandardReadwriteSplittingDataSourceRouter().route(rule);
+    private final StandardReadwriteSplittingDataSourceRouter standardRouter = new StandardReadwriteSplittingDataSourceRouter();
+    
+    @Override
+    public boolean isQualified(final SQLStatementContext<?> sqlStatementContext) {
+        return connectionContext.getTransactionContext().isInTransaction();
     }
     
-    private Collection<QualifiedReadwriteSplittingDataSourceRouter> getQualifiedRouters(final ConnectionContext connectionContext) {
-        return Arrays.asList(new QualifiedReadwriteSplittingPrimaryDataSourceRouter(), new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext));
+    @Override
+    public String route(final ReadwriteSplittingDataSourceRule rule) {
+        switch (rule.getTransactionalReadQueryStrategy()) {
+            case FIXED:
+                if (null == connectionContext.getTransactionContext().getReadWriteSplitReplicaRoute()) {
+                    connectionContext.getTransactionContext().setReadWriteSplitReplicaRoute(standardRouter.route(rule));
+                }
+                return connectionContext.getTransactionContext().getReadWriteSplitReplicaRoute();
+            case DYNAMIC:
+                return standardRouter.route(rule);
+            case PRIMARY:
+            default:
+                return rule.getWriteDataSource();
+        }
     }
 }
