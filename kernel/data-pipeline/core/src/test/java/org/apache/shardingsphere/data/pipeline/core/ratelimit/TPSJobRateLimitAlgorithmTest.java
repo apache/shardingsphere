@@ -29,16 +29,16 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TPSJobRateLimitAlgorithmTest {
-
+    
     private TPSJobRateLimitAlgorithm tpsJobRateLimitAlgorithm;
-
+    
     private static final String TPS_KEY = "tps";
-
+    
     @BeforeEach
     void setup() {
         tpsJobRateLimitAlgorithm = (TPSJobRateLimitAlgorithm) TypedSPILoader.getService(JobRateLimitAlgorithm.class, "TPS");
     }
-
+    
     @Test
     void assertJobRateLimitWithWrongArgumentForTPS() {
         Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property(TPS_KEY, "0"));

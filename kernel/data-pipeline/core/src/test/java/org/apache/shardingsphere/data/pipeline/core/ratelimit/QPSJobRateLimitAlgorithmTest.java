@@ -37,7 +37,7 @@ public class QPSJobRateLimitAlgorithmTest {
     private QPSJobRateLimitAlgorithm qpsJobRateLimitAlgorithm;
     
     private static final String QPS_KEY = "qps";
-
+    
     @BeforeEach
     void setup() {
         qpsJobRateLimitAlgorithm = (QPSJobRateLimitAlgorithm) TypedSPILoader.getService(JobRateLimitAlgorithm.class, "QPS");
