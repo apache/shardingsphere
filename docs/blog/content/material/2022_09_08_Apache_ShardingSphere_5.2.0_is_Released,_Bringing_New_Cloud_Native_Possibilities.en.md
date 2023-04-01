@@ -356,8 +356,6 @@ Below are all the update logs of ShardingSphere 5.2.0. To deliver a better user 
 
 - DistSQL: Optimize the execution logic of CREATE TRAFFIC RULE
 
-- DistSQL: Add paramter writeDataSourceQueryEnabled for RDL READWRITE_SPLITTING RULE.
-
 - DistSQL: Support assistEncryptor for Encrypt RDL
 
 - DistSQL: Add sharding algorithm type check when CREATE SHARDING TABLE RULE
