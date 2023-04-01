@@ -210,7 +210,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | HY000     | 20092       | Clock is moving backwards, last time is %d milliseconds, current time is %d milliseconds.                                        |
 | HY000     | 20099       | Sharding plugin error, reason is: %s                                                                                             |
 
-### Readwrite Splitting
+### Readwrite-splitting
 
 | SQL State | Vendor Code | Reason |
 | --------- | ----------- | ------ |

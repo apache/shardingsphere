@@ -33,7 +33,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
- * Count readwrite splitting rule executor.
+ * Count readwrite-splitting rule executor.
  */
 public final class CountReadwriteSplittingRuleExecutor implements RQLExecutor<CountReadwriteSplittingRuleStatement> {
     
