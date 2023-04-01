@@ -29,6 +29,4 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 public final class YamlDynamicReadwriteSplittingStrategyConfiguration implements YamlConfiguration {
     
     private String autoAwareDataSourceName;
-    
-    private String writeDataSourceQueryEnabled;
 }
