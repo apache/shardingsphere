@@ -15,22 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.route.filter;
+package org.apache.shardingsphere.readwritesplitting.route.qualified;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
- * Disabled read data sources filter.
+ * Qualified data source router for readwrite-splitting.
  */
-public final class DisabledReadDataSourcesFilter implements ReadDataSourcesFilter {
+public interface QualifiedReadwriteSplittingDataSourceRouter {
     
-    @Override
-    public List<String> filter(final ReadwriteSplittingDataSourceRule rule, final List<String> toBeFilteredReadDataSources) {
-        List<String> result = new LinkedList<>(toBeFilteredReadDataSources);
-        result.removeIf(rule.getDisabledDataSourceNames()::contains);
-        return result;
-    }
+    /**
+     * Judge whether qualified to route.
+     * 
+     * @param sqlStatementContext SQL statement context
+     * @return qualified to route or not
+     */
+    boolean isQualified(SQLStatementContext<?> sqlStatementContext);
+    
+    /**
+     * Route to data source.
+     *
+     * @param rule Readwrite-splitting data source rule
+     * @return routed data source name
+     */
+    String route(ReadwriteSplittingDataSourceRule rule);
 }

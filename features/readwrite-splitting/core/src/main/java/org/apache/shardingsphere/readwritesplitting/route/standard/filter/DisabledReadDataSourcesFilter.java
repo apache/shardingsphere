@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.route.filter;
+package org.apache.shardingsphere.readwritesplitting.route.standard.filter;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Read data sources filter.
+ * Disabled read data sources filter.
  */
-@SingletonSPI
-public interface ReadDataSourcesFilter {
+public final class DisabledReadDataSourcesFilter implements ReadDataSourcesFilter {
     
-    /**
-     * Filter replica data sources.
-     * 
-     * @param rule readwrite-splitting data source rule
-     * @param toBeFilteredReadDataSources to be filtered read data sources
-     * @return filtered read data sources
-     */
-    List<String> filter(ReadwriteSplittingDataSourceRule rule, List<String> toBeFilteredReadDataSources);
+    @Override
+    public List<String> filter(final ReadwriteSplittingDataSourceRule rule, final List<String> toBeFilteredReadDataSources) {
+        List<String> result = new LinkedList<>(toBeFilteredReadDataSources);
+        result.removeIf(rule.getDisabledDataSourceNames()::contains);
+        return result;
+    }
 }
