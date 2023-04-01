@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.core.classloader;
+package org.apache.shardingsphere.agent.core.plugin.classloader;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.agent.core.plugin.classloader.AgentPluginClassLoader;
 
 import java.util.Collection;
 import java.util.Map;
@@ -32,7 +31,7 @@ import java.util.jar.JarFile;
 @RequiredArgsConstructor
 public final class ClassLoaderContext {
     
-    private static final Map<ClassLoader, AgentExtraClassLoader> AGENT_CLASS_LOADERS = new ConcurrentHashMap<>();
+    private static final Map<ClassLoader, AgentPluginClassLoader> AGENT_CLASS_LOADERS = new ConcurrentHashMap<>();
     
     @Getter
     private final ClassLoader appClassLoader;
@@ -44,7 +43,7 @@ public final class ClassLoaderContext {
      *
      * @return plugin class loader
      */
-    public AgentExtraClassLoader getPluginClassLoader() {
+    public AgentPluginClassLoader getPluginClassLoader() {
         return AGENT_CLASS_LOADERS.computeIfAbsent(appClassLoader, key -> new AgentPluginClassLoader(key, pluginJars));
     }
 }
