@@ -61,6 +61,9 @@ public final class AdviceExecutorFactory {
                 advices.get(each.getPluginType()).add(adviceFactory.getAdvice(each.getAdviceClassName()));
             }
         }
+        if (advices.isEmpty()) {
+            return Optional.empty();
+        }
         if (isConstructor(methodDescription)) {
             return Optional.of(new ConstructorAdviceExecutor(convert(advices)));
         }
