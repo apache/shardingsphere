@@ -20,10 +20,6 @@ package org.apache.shardingsphere.data.pipeline.core.ratelimit;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.ratelimit.JobRateLimitAlgorithmInitializationException;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.sharding.algorithm.sharding.mod.HashModShardingAlgorithm;
-import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,9 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class QPSJobRateLimitAlgorithmTest {
     
-    private QPSJobRateLimitAlgorithm qpsJobRateLimitAlgorithm;
+    private String qps = "qps";
     
-    private static final String QPS_KEY = "qps";
+    private QPSJobRateLimitAlgorithm qpsJobRateLimitAlgorithm;
     
     @BeforeEach
     void setup() {
@@ -45,7 +41,7 @@ public class QPSJobRateLimitAlgorithmTest {
     
     @Test
     void assertJobRateLimitWithWrongArgumentForQPS() {
-        Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property(QPS_KEY, "0"));
+        Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property(qps, "0"));
         assertThrows(JobRateLimitAlgorithmInitializationException.class, () -> TypedSPILoader.getService(JobRateLimitAlgorithm.class, "QPS", props));
     }
 }
