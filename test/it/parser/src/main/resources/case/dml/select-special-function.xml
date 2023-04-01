@@ -186,7 +186,11 @@
         <projections start-index="7" stop-index="26">
             <expression-projection text="WEIGHT_STRING('bar')" start-index="7" stop-index="26">
                 <expr>
-                    <function function-name="WEIGHT_STRING" start-index="7" stop-index="26" text="WEIGHT_STRING('bar')" />
+                    <function function-name="WEIGHT_STRING" start-index="7" stop-index="26" text="WEIGHT_STRING('bar')" >
+                        <parameter>
+                            <literal-expression value="bar" start-index="21" stop-index="25" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
