@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLS
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.feature.FeatureSQLException;
 
 /**
- * Readwrite splitting SQL exception.
+ * Readwrite-splitting SQL exception.
  */
 public abstract class ReadwriteSplittingSQLException extends FeatureSQLException {
     

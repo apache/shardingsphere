@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Dynamic readwrite splitting strategy.
+ * Dynamic readwrite-splitting strategy.
  */
 @RequiredArgsConstructor
 @Getter

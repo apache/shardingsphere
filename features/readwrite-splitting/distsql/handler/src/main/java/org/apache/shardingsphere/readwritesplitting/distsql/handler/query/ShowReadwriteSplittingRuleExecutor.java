@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Show readwrite splitting rule executor.
+ * Show readwrite-splitting rule executor.
  */
 public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<ShowReadwriteSplittingRulesStatement> {
     

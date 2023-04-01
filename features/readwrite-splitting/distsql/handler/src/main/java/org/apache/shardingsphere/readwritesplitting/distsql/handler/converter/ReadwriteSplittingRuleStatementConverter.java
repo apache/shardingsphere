@@ -33,16 +33,16 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Readwrite splitting rule statement converter.
+ * Readwrite-splitting rule statement converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingRuleStatementConverter {
     
     /**
-     * Convert readwrite splitting rule segments to readwrite splitting rule configuration.
+     * Convert readwrite-splitting rule segments to readwrite-splitting rule configuration.
      *
-     * @param ruleSegments readwrite splitting rule segments
-     * @return readwrite splitting rule configuration
+     * @param ruleSegments readwrite-splitting rule segments
+     * @return readwrite-splitting rule configuration
      */
     public static ReadwriteSplittingRuleConfiguration convert(final Collection<ReadwriteSplittingRuleSegment> ruleSegments) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();

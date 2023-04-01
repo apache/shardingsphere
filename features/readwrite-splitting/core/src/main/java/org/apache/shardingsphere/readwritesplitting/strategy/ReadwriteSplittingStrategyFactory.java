@@ -31,13 +31,13 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Readwrite splitting strategy factory.
+ * Readwrite-splitting strategy factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingStrategyFactory {
     
     /**
-     * Create new instance of readwrite splitting strategy.
+     * Create new instance of readwrite-splitting strategy.
      * 
      * @param readwriteSplittingConfig readwrite-splitting rule config
      * @param builtRules built rules
