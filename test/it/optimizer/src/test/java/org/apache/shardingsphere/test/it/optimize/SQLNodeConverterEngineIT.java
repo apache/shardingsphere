@@ -192,6 +192,7 @@ class SQLNodeConverterEngineIT {
             result.add("select_order_by_for_nulls_first");
             result.add("select_order_by_for_nulls_last");
             result.add("select_char");
+            result.add("select_weight_string");
             return result;
         }
         // CHECKSTYLE:ON
