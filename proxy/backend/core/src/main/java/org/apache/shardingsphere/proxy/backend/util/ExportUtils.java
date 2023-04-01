@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -126,8 +125,6 @@ public final class ExportUtils {
             return shardingRuleConfig.getTables().isEmpty() && shardingRuleConfig.getAutoTables().isEmpty();
         } else if (ruleConfig instanceof ReadwriteSplittingRuleConfiguration) {
             return ((ReadwriteSplittingRuleConfiguration) ruleConfig).getDataSources().isEmpty();
-        } else if (ruleConfig instanceof DatabaseDiscoveryRuleConfiguration) {
-            return ((DatabaseDiscoveryRuleConfiguration) ruleConfig).getDataSources().isEmpty();
         } else if (ruleConfig instanceof EncryptRuleConfiguration) {
             return ((EncryptRuleConfiguration) ruleConfig).getTables().isEmpty();
         } else if (ruleConfig instanceof ShadowRuleConfiguration) {

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -68,8 +67,8 @@ class ReadwriteSplittingRuleConfigurationImportCheckerTest {
     
     private ReadwriteSplittingRuleConfiguration getRuleConfigWithNotExistedDataSources() {
         StaticReadwriteSplittingStrategyConfiguration staticStrategy = new StaticReadwriteSplittingStrategyConfiguration("write_ds", Collections.emptyList());
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("data_source", staticStrategy,
-                mock(DynamicReadwriteSplittingStrategyConfiguration.class), "load_balancer");
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
+                new ReadwriteSplittingDataSourceRuleConfiguration("data_source", staticStrategy, "load_balancer");
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
         dataSources.add(dataSourceRuleConfig);
         return new ReadwriteSplittingRuleConfiguration(dataSources, Collections.emptyMap());

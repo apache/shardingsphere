@@ -65,11 +65,6 @@ class ImportDatabaseConfigurationUpdaterTest {
     }
     
     @Test
-    void assertImportDatabaseExecutorForDatabaseDiscovery() throws SQLException {
-        assertExecute("database_discovery_db", "/conf/import/config-database-discovery.yaml");
-    }
-    
-    @Test
     void assertImportDatabaseExecutorForEncrypt() throws SQLException {
         assertExecute("encrypt_db", "/conf/import/config-encrypt.yaml");
     }
