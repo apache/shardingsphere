@@ -24,7 +24,7 @@ import org.apache.shardingsphere.agent.core.advisor.config.MethodAdvisorConfigur
 import org.apache.shardingsphere.agent.core.advisor.executor.type.ConstructorAdviceExecutor;
 import org.apache.shardingsphere.agent.core.advisor.executor.type.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.advisor.executor.type.StaticMethodAdviceExecutor;
-import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
+import org.apache.shardingsphere.agent.core.plugin.classloader.ClassLoaderContext;
 
 import java.util.Collection;
 import java.util.HashMap;
