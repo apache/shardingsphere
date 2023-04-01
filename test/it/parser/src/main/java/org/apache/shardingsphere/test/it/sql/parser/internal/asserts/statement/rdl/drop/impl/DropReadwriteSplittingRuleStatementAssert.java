@@ -42,8 +42,8 @@ public final class DropReadwriteSplittingRuleStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropReadwriteSplittingRuleStatement actual, final DropReadwriteSplittingRuleStatementTestCase expected) {
         if (ExistingAssert.assertIs(assertContext, actual, expected)) {
-            assertThat(assertContext.getText("readwrite splitting assertion error: "), actual.getNames(), is(expected.getNames()));
-            assertThat(assertContext.getText("readwrite splitting assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
+            assertThat(assertContext.getText("readwrite-splitting assertion error: "), actual.getNames(), is(expected.getNames()));
+            assertThat(assertContext.getText("readwrite-splitting assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }
     }
 }

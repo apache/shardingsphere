@@ -31,7 +31,7 @@ public interface ReadDataSourcesFilter {
     /**
      * Filter replica data sources.
      * 
-     * @param rule readwrite splitting data source rule
+     * @param rule readwrite-splitting data source rule
      * @param toBeFilteredReadDataSources to be filtered read data sources
      * @return filtered read data sources
      */

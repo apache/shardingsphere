@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromD
 import java.util.Optional;
 
 /**
- * Show status from readwrite splitting rules statement.
+ * Show status from readwrite-splitting rules statement.
  */
 
 @Getter

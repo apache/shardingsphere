@@ -124,8 +124,8 @@
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
         <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
         <maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
-        <maven-site-plugin.version>3.4</maven-site-plugin.version>
-        <maven-project-info-reports-plugin.version>2.8</maven-project-info-reports-plugin.version>
+        <maven-site-plugin.version>4.0.0-M6</maven-site-plugin.version>
+        <maven-project-info-reports-plugin.version>3.4.2</maven-project-info-reports-plugin.version>
         <maven-plugin-plugin.version>3.4</maven-plugin-plugin.version>
         <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
         <maven-dependency-plugin.version>3.5.0</maven-dependency-plugin.version>
@@ -137,6 +137,8 @@
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
         <spotbugs-maven-plugin.version>4.7.2.1</spotbugs-maven-plugin.version>
+        <fb-contrib.version>7.6.0</fb-contrib.version>
+        <findsecbugs.version>1.12.0</findsecbugs.version>
         <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
@@ -1014,10 +1016,10 @@
                 <configuration>
                     <java>
                         <eclipse>
-                            <file>${maven.multiModuleProjectDirectory}/src/resources/spotless_shardingsphere_formatter.xml</file>
+                            <file>src/resources/spotless.xml</file>
                         </eclipse>
                         <licenseHeader>
-                            <file>${maven.multiModuleProjectDirectory}/src/resources/license-header</file>
+                            <file>src/resources/license-header</file>
                         </licenseHeader>
                     </java>
                     <pom>
@@ -1077,6 +1079,18 @@
                 <version>${spotbugs-maven-plugin.version}</version>
                 <configuration>
                     <excludeFilterFile>src/resources/spotbugs.xml</excludeFilterFile>
+                    <plugins>
+                        <plugin>
+                            <groupId>com.mebigfatguy.fb-contrib</groupId>
+                            <artifactId>fb-contrib</artifactId>
+                            <version>${fb-contrib.version}</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>com.h3xstream.findsecbugs</groupId>
+                            <artifactId>findsecbugs-plugin</artifactId>
+                            <version>${findsecbugs.version}</version>
+                        </plugin>
+                    </plugins>
                 </configuration>
             </plugin>
             <plugin>

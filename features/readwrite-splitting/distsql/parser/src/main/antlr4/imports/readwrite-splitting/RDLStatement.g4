@@ -55,10 +55,6 @@ ifExists
     : IF EXISTS
     ;
 
-writeDataSourceQueryEnabled
-    : TRUE | FALSE
-    ;
-
 ifNotExists
     : IF NOT EXISTS
     ;

@@ -15,7 +15,7 @@ Apache ShardingSphere provides compute nodes and reuse database as storage nodes
 
 ## Challenges
 
-Apache ShardingSphere needs to detect high availability solution of diversified storage nodes automatically, and can also integrate the readwrite splitting dynamically, which is the main challenge of implementation.
+Apache ShardingSphere needs to detect high availability solution of diversified storage nodes automatically, and can also integrate the readwrite-splitting dynamically, which is the main challenge of implementation.
 
 ![Overview](https://shardingsphere.apache.org/document/current/img/discovery/overview.en.png)
 

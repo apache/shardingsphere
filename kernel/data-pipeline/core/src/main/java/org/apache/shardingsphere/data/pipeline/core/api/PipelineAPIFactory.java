@@ -128,18 +128,7 @@ public final class PipelineAPIFactory {
         }
         
         public static ElasticJobAPIHolder getInstance(final PipelineContextKey contextKey) {
-            ElasticJobAPIHolder result = INSTANCE_MAP.get(contextKey);
-            if (null != result) {
-                return result;
-            }
-            synchronized (INSTANCE_MAP) {
-                result = INSTANCE_MAP.get(contextKey);
-                if (null == result) {
-                    result = new ElasticJobAPIHolder(contextKey);
-                    INSTANCE_MAP.put(contextKey, result);
-                }
-            }
-            return result;
+            return INSTANCE_MAP.computeIfAbsent(contextKey, key -> new ElasticJobAPIHolder(contextKey));
         }
     }
     
@@ -148,19 +137,7 @@ public final class PipelineAPIFactory {
         private static final Map<PipelineContextKey, CoordinatorRegistryCenter> INSTANCE_MAP = new ConcurrentHashMap<>();
         
         public static CoordinatorRegistryCenter getInstance(final PipelineContextKey contextKey) {
-            // TODO Extract common method; Reduce lock time
-            CoordinatorRegistryCenter result = INSTANCE_MAP.get(contextKey);
-            if (null != result) {
-                return result;
-            }
-            synchronized (INSTANCE_MAP) {
-                result = INSTANCE_MAP.get(contextKey);
-                if (null == result) {
-                    result = createRegistryCenter(contextKey);
-                    INSTANCE_MAP.put(contextKey, result);
-                }
-            }
-            return result;
+            return INSTANCE_MAP.computeIfAbsent(contextKey, key -> createRegistryCenter(contextKey));
         }
         
         private static CoordinatorRegistryCenter createRegistryCenter(final PipelineContextKey contextKey) {
