@@ -391,7 +391,6 @@
 1. DistSQL: Improve the result of `EXPORT DATABASE CONFIG`
 1. DistSQL: Support more databases for `FORMAT SQL`
 1. DistSQL: Optimize the execution logic of `CREATE TRAFFIC RULE`
-1. DistSQL: Add paramter `writeDataSourceQueryEnabled` for RDL READWRITE_SPLITTING RULE.
 1. DistSQL: Support `assistEncryptor` for Encrypt RDL
 1. DistSQL: Add sharding algorithm type check when `CREATE SHARDING TABLE RULE`
 1. Support database discovery to configure multiple groups of high availability under the same logic database
