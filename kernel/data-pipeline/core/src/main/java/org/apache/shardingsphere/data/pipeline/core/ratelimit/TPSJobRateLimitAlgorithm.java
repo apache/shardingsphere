@@ -20,7 +20,9 @@ package org.apache.shardingsphere.data.pipeline.core.ratelimit;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.RateLimiter;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
+import org.apache.shardingsphere.data.pipeline.core.exception.job.ratelimit.JobRateLimitAlgorithmInitializationException;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Properties;
 
@@ -39,7 +41,9 @@ public final class TPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     public void init(final Properties props) {
         String tpsValue = props.getProperty(TPS_KEY);
         if (!Strings.isNullOrEmpty(tpsValue)) {
-            tps = Integer.parseInt(tpsValue);
+            int value = Integer.parseInt(tpsValue);
+            ShardingSpherePreconditions.checkState(value > 0, () -> new JobRateLimitAlgorithmInitializationException(getType(), "TPS must be a positive number"));
+            tps = value;
         }
         rateLimiter = RateLimiter.create(tps);
     }
