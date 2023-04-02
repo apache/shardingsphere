@@ -107,14 +107,6 @@ rules:
         type: SNOWFLAKE
   - !READWRITE_SPLITTING
     dataSources:
-      replica_ds_0:
-        dynamicStrategy:
-          autoAwareDataSourceName: readwrite_ds_0
-      replica_ds_1:
-        dynamicStrategy:
-          autoAwareDataSourceName: readwrite_ds_1
-  - !READWRITE_SPLITTING
-    dataSources:
       readwrite_ds_0:
         staticStrategy:
           writeDataSourceName: ds_0
