@@ -37,6 +37,15 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     
     private final String loadBalancerName;
     
+    /**
+     * Will remove soon.
+     * 
+     * @param name name
+     * @param staticStrategy static strategy
+     * @param loadBalancerName load balancer name
+     * @deprecated will remove soon
+     */
+    @Deprecated
     public ReadwriteSplittingDataSourceRuleConfiguration(final String name, final StaticReadwriteSplittingStrategyConfiguration staticStrategy, final String loadBalancerName) {
         this(name, staticStrategy, TransactionalReadQueryStrategy.DYNAMIC, loadBalancerName);
     }
