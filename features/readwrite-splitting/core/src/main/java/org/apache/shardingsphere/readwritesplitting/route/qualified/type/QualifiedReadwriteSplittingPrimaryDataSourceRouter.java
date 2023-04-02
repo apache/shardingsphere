@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatem
 public final class QualifiedReadwriteSplittingPrimaryDataSourceRouter implements QualifiedReadwriteSplittingDataSourceRouter {
     
     @Override
-    public boolean isQualified(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isQualified(final SQLStatementContext<?> sqlStatementContext, final ReadwriteSplittingDataSourceRule rule) {
         return isPrimaryRoute(sqlStatementContext);
     }
     
