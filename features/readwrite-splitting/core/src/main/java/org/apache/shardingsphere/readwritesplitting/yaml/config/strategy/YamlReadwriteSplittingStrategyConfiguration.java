@@ -29,6 +29,4 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 public final class YamlReadwriteSplittingStrategyConfiguration implements YamlConfiguration {
     
     private YamlStaticReadwriteSplittingStrategyConfiguration staticStrategy;
-    
-    private YamlDynamicReadwriteSplittingStrategyConfiguration dynamicStrategy;
 }
