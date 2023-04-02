@@ -1088,6 +1088,18 @@
             </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <reportSets>
+                    <reportSet>
+                        <id>html</id>
+                        <reports>
+                            <report>javadoc</report>
+                        </reports>
+                        <configuration>
+                            <doctitle>API for ${project.name} ${project.version}</doctitle>
+                            <windowtitle>API for ${project.name} ${project.version}</windowtitle>
+                        </configuration>
+                    </reportSet>
+                </reportSets>
             </plugin>
             <plugin>
                 <artifactId>maven-jxr-plugin</artifactId>
