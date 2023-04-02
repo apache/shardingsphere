@@ -917,7 +917,7 @@
                             <file>src/resources/spotless.xml</file>
                         </eclipse>
                         <licenseHeader>
-                            <file>src/resources/license-header</file>
+                            <file>src/resources/copyright.txt</file>
                         </licenseHeader>
                     </java>
                     <pom>
