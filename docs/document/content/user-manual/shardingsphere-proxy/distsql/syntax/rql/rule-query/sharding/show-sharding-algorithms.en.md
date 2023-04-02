@@ -31,7 +31,7 @@ databaseName ::=
 ### Return value description
 
 | Column | Description                   |
-| ------ | ----------------------------- |
+|--------|-------------------------------|
 | name   | Sharding algorithm name       |
 | type   | Sharding algorithm type       |
 | props  | Sharding algorithm properties |

@@ -14,12 +14,12 @@ weight = 6
 
 可配置属性：
 
-| *名称*                      | *数据类型*                                    | *说明*               |
-| -------------------------- | -------------------------------------------- | ------------------- |
+| *名称*                       | *数据类型*                                       | *说明*         |
+|----------------------------|----------------------------------------------|--------------|
 | dataSources                | Map\<String, ShadowDataSourceConfiguration\> | 影子数据源映射名称和配置 |
-| tables                     | Map\<String, ShadowTableConfiguration\>      | 影子表名称和配置        |
-| shadowAlgorithms           | Map\<String, AlgorithmConfiguration\>        | 影子算法名称和配置      |
-| defaultShadowAlgorithmName | String                                       | 默认影子算法名称        |
+| tables                     | Map\<String, ShadowTableConfiguration\>      | 影子表名称和配置     |
+| shadowAlgorithms           | Map\<String, AlgorithmConfiguration\>        | 影子算法名称和配置    |
+| defaultShadowAlgorithmName | String                                       | 默认影子算法名称     |
 
 ### 影子数据源配置
 
@@ -27,10 +27,10 @@ weight = 6
 
 可配置属性：
 
-| *名称*                    | *数据类型* | *说明*       |
-| ------------------------ | --------- | ----------- |
-| productionDataSourceName | String    | 生产数据源名称 |
-| shadowDataSourceName     | String    | 影子数据源名称 |
+| *名称*                     | *数据类型* | *说明*    |
+|--------------------------|--------|---------|
+| productionDataSourceName | String | 生产数据源名称 |
+| shadowDataSourceName     | String | 影子数据源名称 |
 
 ### 影子表配置
 
@@ -38,10 +38,10 @@ weight = 6
 
 可配置属性：
 
-| *名称*                | *数据类型*            | *说明*                      |
-| -------------------- | -------------------- | -------------------------- |
+| *名称*                 | *数据类型*               | *说明*             |
+|----------------------|----------------------|------------------|
 | dataSourceNames      | Collection\<String\> | 影子表关联影子数据源映射名称列表 |
-| shadowAlgorithmNames | Collection\<String\> | 影子表关联影子算法名称列表      |
+| shadowAlgorithmNames | Collection\<String\> | 影子表关联影子算法名称列表    |
 
 ### 影子算法配置
 
@@ -49,9 +49,9 @@ weight = 6
 
 可配置属性：
 
-| *名称*  | *数据类型* | *说明* |
-| ------- | ---------- | ------- |
-| type | String | 影子算法类型 |
+| *名称*  | *数据类型*     | *说明*   |
+|-------|------------|--------|
+| type  | String     | 影子算法类型 |
 | props | Properties | 影子算法配置 |
 
 算法类型的详情，请参见[内置影子算法列表](/cn/user-manual/common-config/builtin-algorithm/shadow)。
