@@ -1,7 +1,7 @@
 +++
-pre = "<b>5.10. </b>"
+pre = "<b>5.9. </b>"
 title = "Distributed Transaction"
-weight = 10
+weight = 9
 chapter = true
 +++
 

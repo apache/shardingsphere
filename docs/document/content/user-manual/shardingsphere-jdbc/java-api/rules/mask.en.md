@@ -1,6 +1,6 @@
 +++
 title = "Data Masking"
-weight = 10
+weight = 5
 +++
 
 ## Background

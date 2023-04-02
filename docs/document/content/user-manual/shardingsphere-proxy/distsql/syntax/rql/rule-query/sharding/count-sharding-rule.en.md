@@ -1,6 +1,6 @@
 +++
 title = "COUNT SHARDING RULE"
-weight = 16
+weight = 15
 +++
 
 ### Description

@@ -1,6 +1,6 @@
 +++
 title = "Readwrite-Splitting"
-weight = 1
+weight = 3
 chapter = true
 +++
 

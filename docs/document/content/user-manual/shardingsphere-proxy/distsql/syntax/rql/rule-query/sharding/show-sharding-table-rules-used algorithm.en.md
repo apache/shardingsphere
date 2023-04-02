@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHARDING TABLE NODES"
-weight = 11
+weight = 10
 
 +++
 

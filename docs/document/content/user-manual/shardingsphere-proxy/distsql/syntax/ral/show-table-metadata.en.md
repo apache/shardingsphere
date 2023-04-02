@@ -1,6 +1,6 @@
 +++
 title = "SHOW TABLE METADATA"
-weight = 8
+weight = 7
 +++
 
 ### Description

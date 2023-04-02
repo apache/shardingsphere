@@ -1,6 +1,6 @@
 +++
 title = "SHOW ENCRYPT RULES"
-weight = 2
+weight = 1
 +++
 
 ### 描述

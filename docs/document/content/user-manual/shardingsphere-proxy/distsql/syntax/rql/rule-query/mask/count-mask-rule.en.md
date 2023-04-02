@@ -1,6 +1,6 @@
 +++
 title = "COUNT MASK RULE"
-weight = 3
+weight = 2
 +++
 
 ### Description

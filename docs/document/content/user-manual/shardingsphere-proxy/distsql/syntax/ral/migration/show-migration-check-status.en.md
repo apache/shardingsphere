@@ -1,6 +1,6 @@
 +++
 title = "SHOW MIGRATION CHECK STATUS"
-weight = 12
+weight = 11
 +++
 
 ### Description
