@@ -30,7 +30,7 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class StandardReadwriteSplittingDataSourceRouterTest {
+class StandardReadwriteSplittingDataSourceRouterTest {
     
     private ReadwriteSplittingDataSourceRule rule;
     
