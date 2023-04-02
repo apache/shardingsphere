@@ -1,6 +1,6 @@
 +++
 title = "SHOW UNUSED SHARDING KEY GENERATORS"
-weight = 7
+weight = 6
 
 +++
 

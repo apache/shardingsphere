@@ -1,6 +1,6 @@
 +++
 title = "SHOW SINGLE TABLE"
-weight = 3
+weight = 1
 +++
 
 ### Description

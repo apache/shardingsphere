@@ -1,6 +1,6 @@
 +++
 title = "SHOW DEFAULT SHADOW ALGORITHM"
-weight = 5
+weight = 4
 +++
 
 ### Description

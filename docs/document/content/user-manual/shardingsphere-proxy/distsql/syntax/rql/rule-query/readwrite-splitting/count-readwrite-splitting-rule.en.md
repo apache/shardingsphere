@@ -1,6 +1,6 @@
 +++
 title = "COUNT READWRITE_SPLITTING RULE"
-weight = 3
+weight = 2
 +++
 
 ### Description

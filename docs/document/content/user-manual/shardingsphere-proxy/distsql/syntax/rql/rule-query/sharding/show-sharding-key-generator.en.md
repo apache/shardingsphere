@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHARDING KEY GENERATORS"
-weight = 6
+weight = 5
 +++
 
 ### Description

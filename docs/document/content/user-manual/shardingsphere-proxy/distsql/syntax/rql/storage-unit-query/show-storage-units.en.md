@@ -1,6 +1,6 @@
 +++
 title = "SHOW STORAGE UNITS"
-weight = 2
+weight = 1
 +++
 
 ### Description

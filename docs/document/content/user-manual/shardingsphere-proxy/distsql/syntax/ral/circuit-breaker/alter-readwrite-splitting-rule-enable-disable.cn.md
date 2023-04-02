@@ -1,6 +1,6 @@
 +++
 title = "ALTER READWRITE_SPLITTING RULE ENABLE/DISABLE"
-weight = 2
+weight = 1
 +++
 
 ## 描述

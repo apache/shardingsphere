@@ -1,6 +1,6 @@
 +++
 title = "SHOW MIGRATION RULE"
-weight = 2
+weight = 1
 +++
 
 ### Description

@@ -1,6 +1,6 @@
 +++
 title = "UNLABEL COMPUTE NODE"
-weight = 7
+weight = 6
 +++
 
 ### 描述

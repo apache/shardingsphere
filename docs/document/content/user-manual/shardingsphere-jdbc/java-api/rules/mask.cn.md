@@ -1,6 +1,6 @@
 +++
 title = "数据脱敏"
-weight = 10
+weight = 5
 +++
 
 ## 背景信息

@@ -1,6 +1,6 @@
 +++
 title = "SHOW MASK RULES"
-weight = 2
+weight = 1
 +++
 
 ### 描述

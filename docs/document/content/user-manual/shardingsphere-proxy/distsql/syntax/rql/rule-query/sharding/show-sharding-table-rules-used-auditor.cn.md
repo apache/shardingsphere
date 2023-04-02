@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHARDING TABLE RULES USED AUDITOR"
-weight = 13
+weight = 12
 +++
 
 ### 描述

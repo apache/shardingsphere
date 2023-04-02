@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHARDING TABLE RULES USED ALGORITHM"
-weight = 11
+weight = 10
 +++
 
 ### 描述

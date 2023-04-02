@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHARDING TABLE RULES USED KEY GENERATOR"
-weight = 12
+weight = 11
 
 +++
 

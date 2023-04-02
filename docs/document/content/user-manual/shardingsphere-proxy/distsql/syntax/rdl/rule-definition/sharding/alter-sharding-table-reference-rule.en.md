@@ -1,6 +1,6 @@
 +++
 title = "ALTER SHARDING TABLE REFERENCE RULE"
-weight = 14
+weight = 13
 +++
 
 ## Description

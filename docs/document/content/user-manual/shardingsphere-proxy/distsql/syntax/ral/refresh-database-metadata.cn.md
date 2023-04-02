@@ -1,6 +1,6 @@
 +++
 title = "REFRESH DATABASE METADATA FROM GOVERNANCE CENTER"
-weight = 7
+weight = 6
 +++
 
 ### 描述
