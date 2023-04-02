@@ -16,7 +16,7 @@ The shadow DB feature carries out shadow measurement to SQL statements executed.
 Type：VALUE_MATCH
 
 | *Attribute Name* | *Data Type* | *Description*                                       |
-| ---------------- | ----------- | --------------------------------------------------- |
+|------------------|-------------|-----------------------------------------------------|
 | column           | String      | shadow column                                       |
 | operation        | String      | SQL operation type (INSERT, UPDATE, DELETE, SELECT) |
 | value            | String      | value matched by shadow column                      |
@@ -26,9 +26,9 @@ Type：VALUE_MATCH
 Type：REGEX_MATCH
 
 | *Attribute Name* | *Data Type* | *Description*                                      |
-| ---------------- | ----------- | -------------------------------------------------- |
+|------------------|-------------|----------------------------------------------------|
 | column           | String      | match a column                                     |
-| operation        | String      | SQL operation type（INSERT, UPDATE, DELETE, SELECT）|
+| operation        | String      | SQL operation type（INSERT, UPDATE, DELETE, SELECT） |
 | regex            | String      | shadow column matching Regex                       |
 
 ### Hint-based shadow algorithm

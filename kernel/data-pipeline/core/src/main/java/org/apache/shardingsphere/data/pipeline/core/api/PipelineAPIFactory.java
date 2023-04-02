@@ -110,8 +110,6 @@ public final class PipelineAPIFactory {
     
     private static final class ElasticJobAPIHolder {
         
-        private static final Object LOCK = new Object();
-        
         private static final Map<PipelineContextKey, ElasticJobAPIHolder> INSTANCE_MAP = new ConcurrentHashMap<>();
         
         private final JobStatisticsAPI jobStatisticsAPI;
@@ -128,24 +126,11 @@ public final class PipelineAPIFactory {
         }
         
         public static ElasticJobAPIHolder getInstance(final PipelineContextKey contextKey) {
-            ElasticJobAPIHolder result = INSTANCE_MAP.get(contextKey);
-            if (null != result) {
-                return result;
-            }
-            synchronized (LOCK) {
-                result = INSTANCE_MAP.get(contextKey);
-                if (null == result) {
-                    result = new ElasticJobAPIHolder(contextKey);
-                    INSTANCE_MAP.put(contextKey, result);
-                }
-            }
-            return result;
+            return INSTANCE_MAP.computeIfAbsent(contextKey, key -> new ElasticJobAPIHolder(contextKey));
         }
     }
     
     private static final class RegistryCenterHolder {
-        
-        private static final Object LOCK = new Object();
         
         private static final Map<PipelineContextKey, RegistryCenterHolder> INSTANCE_MAP = new ConcurrentHashMap<>();
         
@@ -169,19 +154,7 @@ public final class PipelineAPIFactory {
         }
         
         public static RegistryCenterHolder getInstance(final PipelineContextKey contextKey) {
-            // TODO Extract common method; Reduce lock time
-            RegistryCenterHolder result = INSTANCE_MAP.get(contextKey);
-            if (null != result) {
-                return result;
-            }
-            synchronized (LOCK) {
-                result = INSTANCE_MAP.get(contextKey);
-                if (null == result) {
-                    result = new RegistryCenterHolder(contextKey);
-                    INSTANCE_MAP.put(contextKey, result);
-                }
-            }
-            return result;
+            return INSTANCE_MAP.computeIfAbsent(contextKey, key -> new RegistryCenterHolder(contextKey));
         }
     }
 }

@@ -34,7 +34,7 @@ Mode: Cluster
 Attributes:
 
 | *Name*                       | *Type* | *Description*                     | *Default Value* |
-| ---------------------------- | ------ | --------------------------------- | --------------- |
+|------------------------------|--------|-----------------------------------|-----------------|
 | retryIntervalMilliseconds    | int    | Milliseconds of retry interval    | 500             |
 | maxRetries                   | int    | Max retries of client connection  | 3               |
 | timeToLiveSeconds            | int    | Seconds of ephemeral data live    | 60              |
@@ -49,10 +49,10 @@ Mode: Cluster
 
 Attributes:
 
-| *Name*                       | *Type* | *Description*                     | *Default Value* |
-| ---------------------------- | ------ | --------------------------------- | --------------- |
-| timeToLiveSeconds            | long   | Seconds of ephemeral data live    | 30              |
-| connectionTimeout            | long   | Seconds of connection timeout     | 30              |
+| *Name*            | *Type* | *Description*                  | *Default Value* |
+|-------------------|--------|--------------------------------|-----------------|
+| timeToLiveSeconds | long   | Seconds of ephemeral data live | 30              |
+| connectionTimeout | long   | Seconds of connection timeout  | 30              |
 
 ### Nacos Repository
 
@@ -62,12 +62,12 @@ Mode: Cluster
 
 Attributes:
 
-| *Name*                       | *Type* | *Description*                                     | *Default Value* |
-| ---------------------------- | ------ | ------------------------------------------------- | --------------- |
-| clusterIp                    | String | Unique identifier in cluster                      | Host IP         |
-| retryIntervalMilliseconds    | long   | Milliseconds of retry interval                    | 500             |
-| maxRetries                   | int    | Max retries for client to check data availability | 3               |
-| timeToLiveSeconds            | int    | Seconds of ephemeral instance live                | 30              |
+| *Name*                    | *Type* | *Description*                                     | *Default Value* |
+|---------------------------|--------|---------------------------------------------------|-----------------|
+| clusterIp                 | String | Unique identifier in cluster                      | Host IP         |
+| retryIntervalMilliseconds | long   | Milliseconds of retry interval                    | 500             |
+| maxRetries                | int    | Max retries for client to check data availability | 3               |
+| timeToLiveSeconds         | int    | Seconds of ephemeral instance live                | 30              |
 
 ### Consul Repository
 
@@ -77,10 +77,10 @@ Mode: Cluster
 
 Attributes:
 
-| *Name*                       | *Type*  | *Description*                                     | *Default Value* |
-| ---------------------------- | ------- | ------------------------------------------------- | --------------- |
-| timeToLiveSeconds            | String  | Seconds of ephemeral instance live                | 30s             |
-| blockQueryTimeToSeconds      | long    | Seconds of query timeout                          | 60              |
+| *Name*                  | *Type* | *Description*                      | *Default Value* |
+|-------------------------|--------|------------------------------------|-----------------|
+| timeToLiveSeconds       | String | Seconds of ephemeral instance live | 30s             |
+| blockQueryTimeToSeconds | long   | Seconds of query timeout           | 60              |
 
 ## Procedure
 

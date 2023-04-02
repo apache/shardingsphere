@@ -34,10 +34,10 @@ databaseName ::=
 
 ### Return value description
 
-| Columns     | Descriptions       |
-| ------------| -------------------|
-| name        | Sharding rule name |
-| nodes       | Sharding nodes     |
+| Columns | Descriptions       |
+|---------|--------------------|
+| name    | Sharding rule name |
+| nodes   | Sharding nodes     |
 
 ### Example
 

@@ -55,12 +55,6 @@ import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguratio
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 </#if>
-<#if feature?contains("db-discovery")>
-import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-</#if>
 <#if feature?contains("mask")>
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
@@ -132,9 +126,6 @@ public final class Configuration {
         Collection<RuleConfiguration> result = new LinkedList<>();
     <#if transaction!="local">
         result.add(createTransactionRuleConfiguration());
-    </#if>
-    <#if feature?contains("db-discovery")>
-        result.add(createDatabaseDiscoveryRuleConfiguration());
     </#if>
     <#if feature?contains("encrypt")>
         result.add(createEncryptRuleConfiguration());

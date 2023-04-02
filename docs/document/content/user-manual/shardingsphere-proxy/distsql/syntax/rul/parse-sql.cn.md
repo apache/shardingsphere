@@ -23,10 +23,10 @@ ParseSql ::=
 
 ### 返回值说明
 
-| 列                       | 说明            |
-|--------------------------|----------------|
-| parsed_statement         | 解析SQL语句类型  |
-| parsed_statement_detail  | 解析SQL语句细节  |
+| 列                       | 说明        |
+|-------------------------|-----------|
+| parsed_statement        | 解析SQL语句类型 |
+| parsed_statement_detail | 解析SQL语句细节 |
 
 ### 示例
 

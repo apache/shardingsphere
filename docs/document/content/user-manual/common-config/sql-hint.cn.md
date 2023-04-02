@@ -24,7 +24,7 @@ ShardingSphere 的 SQL Hint 语法格式如下：
 
 ShardingSphere SQL Hint 中可以定义如下的属性，为了兼容低版本 SQL Hint 语法，也可以使用别名中定义的属性： 
 
-| *名称*                       | *别名*                | *数据类型*  | *说明*                                  | *默认值* |
+| *名称*                        | *别名*                  | *数据类型*     | *说明*                                  | *默认值* |
 |-----------------------------|-----------------------|------------|---------------------------------------|-------|
 | SHARDING_DATABASE_VALUE (?) | shardingDatabaseValue | Comparable | 数据分片分库值，和 Hint 分片策略配合使用               | -     |
 | SHARDING_TABLE_VALUE (?)    | shardingTableValue    | Comparable | 数据分片分表值，和 Hint 分片策略配合使用               | -     |

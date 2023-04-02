@@ -27,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Static readwrite splitting strategy.
+ * Static readwrite-splitting strategy.
  */
 @RequiredArgsConstructor
 public final class StaticReadwriteSplittingStrategy implements ReadwriteSplittingStrategy {

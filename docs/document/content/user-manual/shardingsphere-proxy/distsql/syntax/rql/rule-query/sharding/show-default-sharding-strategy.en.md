@@ -31,7 +31,7 @@ databaseName ::=
 ### Return value description
 
 | Column                   | Description                   |
-| ------------------------ | ----------------------------- |
+|--------------------------|-------------------------------|
 | name                     | Sharding strategy scope       |
 | type                     | Sharding strategy type        |
 | sharding_column          | Sharding column               |

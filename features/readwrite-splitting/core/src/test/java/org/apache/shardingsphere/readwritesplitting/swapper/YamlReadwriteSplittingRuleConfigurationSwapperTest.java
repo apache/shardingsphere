@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigur
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.strategy.YamlStaticReadwriteSplittingStrategyConfiguration;
@@ -45,7 +46,7 @@ class YamlReadwriteSplittingRuleConfigurationSwapperTest {
     void assertSwapToYamlWithLoadBalanceAlgorithm() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig =
                 new ReadwriteSplittingDataSourceRuleConfiguration("ds",
-                        new StaticReadwriteSplittingStrategyConfiguration("write", Collections.singletonList("read")), null, "roundRobin");
+                        new StaticReadwriteSplittingStrategyConfiguration("write", Collections.singletonList("read")), TransactionalReadQueryStrategy.FIXED, "roundRobin");
         YamlReadwriteSplittingRuleConfiguration actual = getYamlReadwriteSplittingRuleConfigurationSwapper().swapToYamlConfiguration(new ReadwriteSplittingRuleConfiguration(
                 Collections.singleton(dataSourceConfig), Collections.singletonMap("roundRobin", new AlgorithmConfiguration("ROUND_ROBIN", new Properties()))));
         assertNotNull(actual.getDataSources().get("ds").getStaticStrategy());
@@ -57,7 +58,7 @@ class YamlReadwriteSplittingRuleConfigurationSwapperTest {
     @Test
     void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds",
-                new StaticReadwriteSplittingStrategyConfiguration("write", Collections.singletonList("read")), null, null);
+                new StaticReadwriteSplittingStrategyConfiguration("write", Collections.singletonList("read")), TransactionalReadQueryStrategy.FIXED, null);
         YamlReadwriteSplittingRuleConfiguration actual = getYamlReadwriteSplittingRuleConfigurationSwapper().swapToYamlConfiguration(
                 new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap()));
         assertNotNull(actual.getDataSources().get("ds").getStaticStrategy());

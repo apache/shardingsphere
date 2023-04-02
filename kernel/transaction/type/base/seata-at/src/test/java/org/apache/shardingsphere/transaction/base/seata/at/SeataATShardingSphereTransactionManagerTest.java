@@ -20,10 +20,10 @@ package org.apache.shardingsphere.transaction.base.seata.at;
 import io.seata.core.context.RootContext;
 import io.seata.core.protocol.MergeResultMessage;
 import io.seata.core.protocol.MergedWarpMessage;
-import io.seata.core.protocol.RegisterRMRequest;
 import io.seata.core.protocol.RegisterRMResponse;
 import io.seata.core.protocol.RegisterTMRequest;
 import io.seata.core.protocol.RegisterTMResponse;
+import io.seata.core.protocol.transaction.GlobalBeginRequest;
 import io.seata.core.rpc.netty.RmNettyRemotingClient;
 import io.seata.core.rpc.netty.TmNettyRemotingClient;
 import io.seata.rm.datasource.ConnectionProxy;
@@ -160,8 +160,8 @@ class SeataATShardingSphereTransactionManagerTest {
     private void assertResult() {
         int requestQueueSize = requestQueue.size();
         if (3 == requestQueueSize) {
-            assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
             assertThat(requestQueue.poll(), instanceOf(RegisterTMRequest.class));
+            assertThat(requestQueue.poll(), instanceOf(GlobalBeginRequest.class));
             assertThat(requestQueue.poll(), instanceOf(MergedWarpMessage.class));
         }
         int responseQueueSize = responseQueue.size();

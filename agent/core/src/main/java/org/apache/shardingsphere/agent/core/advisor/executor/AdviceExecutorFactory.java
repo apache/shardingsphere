@@ -24,7 +24,7 @@ import org.apache.shardingsphere.agent.core.advisor.config.MethodAdvisorConfigur
 import org.apache.shardingsphere.agent.core.advisor.executor.type.ConstructorAdviceExecutor;
 import org.apache.shardingsphere.agent.core.advisor.executor.type.InstanceMethodAdviceExecutor;
 import org.apache.shardingsphere.agent.core.advisor.executor.type.StaticMethodAdviceExecutor;
-import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
+import org.apache.shardingsphere.agent.core.plugin.classloader.ClassLoaderContext;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -61,6 +61,9 @@ public final class AdviceExecutorFactory {
                 advices.get(each.getPluginType()).add(adviceFactory.getAdvice(each.getAdviceClassName()));
             }
         }
+        if (advices.isEmpty()) {
+            return Optional.empty();
+        }
         if (isConstructor(methodDescription)) {
             return Optional.of(new ConstructorAdviceExecutor(convert(advices)));
         }
@@ -87,7 +90,7 @@ public final class AdviceExecutorFactory {
     
     @SuppressWarnings("unchecked")
     private <T extends AgentAdvice> Map<String, Collection<T>> convert(final Map<String, Collection<AgentAdvice>> advices) {
-        Map<String, Collection<T>> result = new HashMap<>();
+        Map<String, Collection<T>> result = new HashMap<>(advices.size(), 1);
         for (Entry<String, Collection<AgentAdvice>> entry : advices.entrySet()) {
             result.put(entry.getKey(), new LinkedList<>());
             for (AgentAdvice each : entry.getValue()) {
