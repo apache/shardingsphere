@@ -27,11 +27,12 @@ public interface QualifiedReadwriteSplittingDataSourceRouter {
     
     /**
      * Judge whether qualified to route.
-     * 
+     *
      * @param sqlStatementContext SQL statement context
+     * @param rule readwrite splitting datasource rule
      * @return qualified to route or not
      */
-    boolean isQualified(SQLStatementContext<?> sqlStatementContext);
+    boolean isQualified(SQLStatementContext<?> sqlStatementContext, ReadwriteSplittingDataSourceRule rule);
     
     /**
      * Route to data source.
