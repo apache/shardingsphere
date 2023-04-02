@@ -33,12 +33,12 @@ databaseName ::=
 
 ### Return value description
 
-| Column       | Description            |
-| ------------ | ---------------------- |
-| rule_name    | Shadow rule name       |
-| source_name  | Data source name       |
-| shadow_name  | Shadow data source name|
-| shadow_table | Shadow table           |
+| Column       | Description             |
+|--------------|-------------------------|
+| rule_name    | Shadow rule name        |
+| source_name  | Data source name        |
+| shadow_name  | Shadow data source name |
+| shadow_table | Shadow table            |
 
 
 

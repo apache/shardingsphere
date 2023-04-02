@@ -26,10 +26,10 @@ variableName ::=
 
 ### Return Value Description
 
-| Columns       | Description            |
-|---------------|------------------------|
-| variable_name | system variable name   |
-| variable_value| systen variable value  |
+| Columns        | Description           |
+|----------------|-----------------------|
+| variable_name  | system variable name  |
+| variable_value | systen variable value |
 
 ### Supplement
 

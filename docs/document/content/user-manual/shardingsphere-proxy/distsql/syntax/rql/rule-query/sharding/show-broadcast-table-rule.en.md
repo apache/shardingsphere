@@ -30,9 +30,9 @@ databaseName ::=
 
 ### Return value description
 
-| Column                | Description           |
-| --------------------- | --------------------- |
-| broadcast_table       | Broadcast table name  |
+| Column          | Description          |
+|-----------------|----------------------|
+| broadcast_table | Broadcast table name |
 
 ### Example
 

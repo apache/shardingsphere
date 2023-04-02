@@ -15,7 +15,7 @@ Class name: org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRu
 Attributes:
 
 | *Name*                  | *Data Type*                                                | *Description*                         |
-| ----------------------- | ---------------------------------------------------------- | ------------------------------------- |
+|-------------------------|------------------------------------------------------------|---------------------------------------|
 | dataSources (+)         | Collection\<DatabaseDiscoveryDataSourceRuleConfiguration\> | Data source configuration             |
 | discoveryHeartbeats (+) | Map\<String, DatabaseDiscoveryHeartBeatConfiguration\>     | Detect heartbeat configuration        |
 | discoveryTypes (+)      | Map\<String, AlgorithmConfiguration\>                      | Database discovery type configuration |
@@ -40,7 +40,7 @@ Class name: org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscov
 Attributes:
 
 | *Name*    | *Data Type* | *Description*                                                                                                      |
-| --------- | ----------- | ------------------------------------------------------------------------------------------------------------------ |
+|-----------|-------------|--------------------------------------------------------------------------------------------------------------------|
 | props (+) | Properties  | Detect heartbeat attribute configuration, keep-alive-cron configuration, cron expression. Such as: `0/5 * * * * ?` |
 
 ### Database Discovery Type Configuration
@@ -50,7 +50,7 @@ Class name: org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfigurat
 Attributes：
 
 | *Name*    | *Data Type* | *Description*                                                             |
-| --------- | ----------- | ------------------------------------------------------------------------- |
+|-----------|-------------|---------------------------------------------------------------------------|
 | type (+)  | String      | Database discovery type, such as: MySQL.MGR                               |
 | props (?) | Properties  | Required parameters for high-availability types, such as MGR’s group-name |
 
