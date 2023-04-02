@@ -714,9 +714,6 @@
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
                         <trimStackTrace>false</trimStackTrace>
-                        <excludes>
-                            <exclude />
-                        </excludes>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -1189,9 +1186,6 @@
                             <artifactId>maven-surefire-plugin</artifactId>
                             <configuration>
                                 <trimStackTrace>false</trimStackTrace>
-                                <excludes>
-                                    <exclude />
-                                </excludes>
                                 <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED</argLine>
                             </configuration>
                         </plugin>
