@@ -30,11 +30,9 @@ import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class StandardReadwriteSplittingDataSourceRouterTest {
+class StandardReadwriteSplittingDataSourceRouterTest {
     
     private ReadwriteSplittingDataSourceRule rule;
-    
-    private StandardReadwriteSplittingDataSourceRouter router;
     
     @BeforeEach
     void setUp() {
@@ -42,17 +40,16 @@ public class StandardReadwriteSplittingDataSourceRouterTest {
                 new ReadwriteSplittingDataSourceRuleConfiguration("test_config",
                         new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), TransactionalReadQueryStrategy.DYNAMIC, null),
                 TransactionalReadQueryStrategy.DYNAMIC, new RoundRobinReadQueryLoadBalanceAlgorithm());
-        router = new StandardReadwriteSplittingDataSourceRouter();
     }
     
     @Test
-    void assertGetReadDataSource() {
-        assertThat(router.route(rule), is("read_ds_0"));
+    void assertRoute() {
+        assertThat(new StandardReadwriteSplittingDataSourceRouter().route(rule), is("read_ds_0"));
     }
     
     @Test
-    void assertGetReadDataSourceWithFilter() {
+    void assertRouteWithFilter() {
         rule.updateDisabledDataSourceNames("read_ds_0", true);
-        assertThat(router.route(rule), is("read_ds_1"));
+        assertThat(new StandardReadwriteSplittingDataSourceRouter().route(rule), is("read_ds_1"));
     }
 }
