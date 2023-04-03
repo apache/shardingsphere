@@ -145,8 +145,6 @@
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
-        <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
-        <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
         <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
         <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
     </properties>
@@ -797,6 +795,53 @@
                         <excludesFile>src/resources/rat.txt</excludesFile>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>${spotless-maven-plugin.version}</version>
+                    <configuration>
+                        <java>
+                            <eclipse>
+                                <file>src/resources/spotless/java.xml</file>
+                            </eclipse>
+                            <licenseHeader>
+                                <file>src/resources/spotless/copyright.txt</file>
+                            </licenseHeader>
+                        </java>
+                        <pom>
+                            <sortPom>
+                                <encoding>UTF-8</encoding>
+                                <nrOfIndentSpace>4</nrOfIndentSpace>
+                                <keepBlankLines>true</keepBlankLines>
+                                <indentBlankLines>true</indentBlankLines>
+                                <indentSchemaLocation>true</indentSchemaLocation>
+                                <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
+                                <sortModules>false</sortModules>
+                                <sortExecutions>false</sortExecutions>
+                                <predefinedSortOrder>custom_1</predefinedSortOrder>
+                                <expandEmptyElements>false</expandEmptyElements>
+                                <sortProperties>false</sortProperties>
+                            </sortPom>
+                            <replace>
+                                <name>Leading blank line</name>
+                                <search>--&gt;
+&lt;project</search>
+                                <replacement>--&gt;
+
+&lt;project</replacement>
+                            </replace>
+                        </pom>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${maven-checkstyle-plugin.version}</version>
+                    <configuration>
+                        <configLocation>src/resources/checkstyle.xml</configLocation>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                        <excludes>**/autogen/**/*</excludes>
+                    </configuration>
+                </plugin>
                 
                 <plugin>
                     <groupId>org.antlr</groupId>
@@ -814,40 +859,6 @@
                     <groupId>com.dkanejs.maven.plugins</groupId>
                     <artifactId>docker-compose-maven-plugin</artifactId>
                     <version>${docker-compose-maven-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>templating-maven-plugin</artifactId>
-                    <version>${templating-maven-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>pl.project13.maven</groupId>
-                    <artifactId>git-commit-id-plugin</artifactId>
-                    <version>${git-commit-id-plugin.version}</version>
-                    <configuration>
-                        <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                        <generateGitPropertiesFilename>${project.build.outputDirectory}/current-git-commit.properties</generateGitPropertiesFilename>
-                        <failOnNoGitDirectory>false</failOnNoGitDirectory>
-                        <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
-                        <offline>true</offline>
-                        <injectIntoSysProperties>false</injectIntoSysProperties>
-                        <includeOnlyProperties>
-                            <includeOnlyProperty>^git\.branch$</includeOnlyProperty>
-                            <includeOnlyProperty>^git\.build\.(time|version)$</includeOnlyProperty>
-                            <includeOnlyProperty>^git\.commit\.id(\.abbrev)?$</includeOnlyProperty>
-                            <includeOnlyProperty>^git\.commit\.message\.short$</includeOnlyProperty>
-                            <includeOnlyProperty>^git\.(dirty|tags)$</includeOnlyProperty>
-                        </includeOnlyProperties>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>get-the-git-infos</id>
-                            <goals>
-                                <goal>revision</goal>
-                            </goals>
-                            <phase>initialize</phase>
-                        </execution>
-                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -867,43 +878,10 @@
                     </execution>
                 </executions>
             </plugin>
+            
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>${spotless-maven-plugin.version}</version>
-                <configuration>
-                    <java>
-                        <eclipse>
-                            <file>src/resources/spotless/java.xml</file>
-                        </eclipse>
-                        <licenseHeader>
-                            <file>src/resources/spotless/copyright.txt</file>
-                        </licenseHeader>
-                    </java>
-                    <pom>
-                        <sortPom>
-                            <encoding>UTF-8</encoding>
-                            <nrOfIndentSpace>4</nrOfIndentSpace>
-                            <keepBlankLines>true</keepBlankLines>
-                            <indentBlankLines>true</indentBlankLines>
-                            <indentSchemaLocation>true</indentSchemaLocation>
-                            <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
-                            <sortModules>false</sortModules>
-                            <sortExecutions>false</sortExecutions>
-                            <predefinedSortOrder>custom_1</predefinedSortOrder>
-                            <expandEmptyElements>false</expandEmptyElements>
-                            <sortProperties>false</sortProperties>
-                        </sortPom>
-                        <replace>
-                            <name>Leading blank line</name>
-                            <search>--&gt;
-&lt;project</search>
-                            <replacement>--&gt;
-
-&lt;project</replacement>
-                        </replace>
-                    </pom>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -915,12 +893,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${maven-checkstyle-plugin.version}</version>
-                <configuration>
-                    <configLocation>src/resources/checkstyle.xml</configLocation>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <excludes>**/autogen/**/*</excludes>
-                </configuration>
                 <executions>
                     <execution>
                         <id>validate</id>
@@ -1076,12 +1048,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${maven-checkstyle-plugin.version}</version>
-                <configuration>
-                    <configLocation>src/resources/checkstyle.xml</configLocation>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <excludes>**/autogen/**/*</excludes>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
