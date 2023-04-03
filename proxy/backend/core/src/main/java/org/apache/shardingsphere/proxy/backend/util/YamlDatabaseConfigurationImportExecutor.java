@@ -156,37 +156,37 @@ public final class YamlDatabaseConfigurationImportExecutor {
         Collection<RuleConfiguration> allRuleConfigs = new LinkedList<>();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-        Map<Integer, Collection<RuleConfiguration>> ruleConfigMap = new HashMap<>();
+        Map<Integer, Collection<RuleConfiguration>> ruleConfigsMap = new HashMap<>();
         for (YamlRuleConfiguration each : yamlRuleConfigs) {
             if (each instanceof YamlShardingRuleConfiguration) {
                 YamlShardingRuleConfigurationSwapper swapper = new YamlShardingRuleConfigurationSwapper();
                 ShardingRuleConfiguration shardingRuleConfig = swapper.swapToObject((YamlShardingRuleConfiguration) each);
-                ruleConfigMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
-                ruleConfigMap.get(swapper.getOrder()).add(shardingRuleConfig);
+                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
+                ruleConfigsMap.get(swapper.getOrder()).add(shardingRuleConfig);
             } else if (each instanceof YamlReadwriteSplittingRuleConfiguration) {
                 YamlReadwriteSplittingRuleConfigurationSwapper swapper = new YamlReadwriteSplittingRuleConfigurationSwapper();
                 ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = swapper.swapToObject((YamlReadwriteSplittingRuleConfiguration) each);
-                ruleConfigMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
-                ruleConfigMap.get(swapper.getOrder()).add(readwriteSplittingRuleConfig);
+                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
+                ruleConfigsMap.get(swapper.getOrder()).add(readwriteSplittingRuleConfig);
             } else if (each instanceof YamlEncryptRuleConfiguration) {
                 YamlEncryptRuleConfigurationSwapper swapper = new YamlEncryptRuleConfigurationSwapper();
                 EncryptRuleConfiguration encryptRuleConfig = swapper.swapToObject((YamlEncryptRuleConfiguration) each);
-                ruleConfigMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
-                ruleConfigMap.get(swapper.getOrder()).add(encryptRuleConfig);
+                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
+                ruleConfigsMap.get(swapper.getOrder()).add(encryptRuleConfig);
             } else if (each instanceof YamlShadowRuleConfiguration) {
                 YamlShadowRuleConfigurationSwapper swapper = new YamlShadowRuleConfigurationSwapper();
                 ShadowRuleConfiguration shadowRuleConfig = swapper.swapToObject((YamlShadowRuleConfiguration) each);
-                ruleConfigMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
-                ruleConfigMap.get(swapper.getOrder()).add(shadowRuleConfig);
+                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
+                ruleConfigsMap.get(swapper.getOrder()).add(shadowRuleConfig);
             } else if (each instanceof YamlMaskRuleConfiguration) {
                 YamlMaskRuleConfigurationSwapper swapper = new YamlMaskRuleConfigurationSwapper();
                 MaskRuleConfiguration maskRuleConfig = swapper.swapToObject((YamlMaskRuleConfiguration) each);
-                ruleConfigMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
-                ruleConfigMap.get(swapper.getOrder()).add(maskRuleConfig);
+                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
+                ruleConfigsMap.get(swapper.getOrder()).add(maskRuleConfig);
             }
         }
-        ruleConfigMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())
-                .forEach(each -> addRulesAndCheck(allRuleConfigs, ruleConfigMap.get(each), database));
+        ruleConfigsMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())
+                .forEach(each -> addRulesAndCheck(allRuleConfigs, ruleConfigsMap.get(each), database));
         metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), allRuleConfigs);
     }
     
