@@ -55,6 +55,6 @@ public class TPSJobRateLimitAlgorithmTest {
     
     @Test
     void assertIntercept() {
-        assertAll(() -> tpsJobRateLimitAlgorithm.intercept(JobOperationType.UPDATE, 1));
+        tpsJobRateLimitAlgorithm.intercept(JobOperationType.UPDATE, 1);
     }
 }
