@@ -27,6 +27,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -42,7 +44,7 @@ public class QPSJobRateLimitAlgorithmTest {
     @Test
     void assertInit() {
         Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property("qps", "1"));
-        assertAll(() -> TypedSPILoader.getService(JobRateLimitAlgorithm.class, "QPS", props));
+        assertThat(TypedSPILoader.getService(JobRateLimitAlgorithm.class, "QPS", props), instanceOf(QPSJobRateLimitAlgorithm.class));
     }
     
     @Test
