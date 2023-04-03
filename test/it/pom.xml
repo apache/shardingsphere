@@ -24,7 +24,7 @@
         <artifactId>shardingsphere-test</artifactId>
         <version>5.3.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test-it</artifactId>
+    <artifactId>shardingsphere-it</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     

@@ -21,10 +21,10 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
-        <artifactId>shardingsphere-test-it</artifactId>
+        <artifactId>shardingsphere-it</artifactId>
         <version>5.3.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-test-it-rewriter</artifactId>
+    <artifactId>shardingsphere-it-rewriter</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
