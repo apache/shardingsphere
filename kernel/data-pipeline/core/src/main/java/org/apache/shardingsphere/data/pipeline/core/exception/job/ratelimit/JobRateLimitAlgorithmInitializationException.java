@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.exception.job.ratelimit;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
-public class JobRateLimitAlgorithmInitializationException extends ShardingSQLException {
+public final class JobRateLimitAlgorithmInitializationException extends ShardingSQLException {
     
     private static final long serialVersionUID = 11009186982914568L;
     
