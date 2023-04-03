@@ -842,6 +842,26 @@
                         <excludes>**/autogen/**/*</excludes>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>${spotbugs-maven-plugin.version}</version>
+                    <configuration>
+                        <excludeFilterFile>src/resources/spotbugs.xml</excludeFilterFile>
+                        <plugins>
+                            <plugin>
+                                <groupId>com.mebigfatguy.fb-contrib</groupId>
+                                <artifactId>fb-contrib</artifactId>
+                                <version>${fb-contrib.version}</version>
+                            </plugin>
+                            <plugin>
+                                <groupId>com.h3xstream.findsecbugs</groupId>
+                                <artifactId>findsecbugs-plugin</artifactId>
+                                <version>${findsecbugs.version}</version>
+                            </plugin>
+                        </plugins>
+                    </configuration>
+                </plugin>
                 
                 <plugin>
                     <groupId>org.antlr</groupId>
@@ -906,22 +926,6 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>${spotbugs-maven-plugin.version}</version>
-                <configuration>
-                    <excludeFilterFile>src/resources/spotbugs.xml</excludeFilterFile>
-                    <plugins>
-                        <plugin>
-                            <groupId>com.mebigfatguy.fb-contrib</groupId>
-                            <artifactId>fb-contrib</artifactId>
-                            <version>${fb-contrib.version}</version>
-                        </plugin>
-                        <plugin>
-                            <groupId>com.h3xstream.findsecbugs</groupId>
-                            <artifactId>findsecbugs-plugin</artifactId>
-                            <version>${findsecbugs.version}</version>
-                        </plugin>
-                    </plugins>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
