@@ -854,19 +854,6 @@
         
         <plugins>
             <plugin>
-                <groupId>org.apache.rat</groupId>
-                <artifactId>apache-rat-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>verify</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            
-            <plugin>
                 <artifactId>maven-source-plugin</artifactId>
             </plugin>
             <plugin>
@@ -887,10 +874,10 @@
                 <configuration>
                     <java>
                         <eclipse>
-                            <file>src/resources/spotless.xml</file>
+                            <file>src/resources/spotless/java.xml</file>
                         </eclipse>
                         <licenseHeader>
-                            <file>src/resources/copyright.txt</file>
+                            <file>src/resources/spotless/copyright.txt</file>
                         </licenseHeader>
                     </java>
                     <pom>
