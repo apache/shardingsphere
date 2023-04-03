@@ -24,10 +24,10 @@ ShowSqlParserRule ::=
 ### 返回值说明
 
 | 列                        | 说明          |
-|---------------------------|-------------|
-| sql_comment_parse_enable  | sql注释解析启用状态 |
-| parse_tree_cache          | 语法树缓存       |
-| sql_statement_cache       | sql语句缓存     |
+|--------------------------|-------------|
+| sql_comment_parse_enable | sql注释解析启用状态 |
+| parse_tree_cache         | 语法树缓存       |
+| sql_statement_cache      | sql语句缓存     |
 
 ### 示例
 

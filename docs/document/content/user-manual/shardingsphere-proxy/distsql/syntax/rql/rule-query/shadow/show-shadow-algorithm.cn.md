@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHADOW ALGORITHM"
-weight = 4
+weight = 3
 +++
 
 ### 描述
@@ -30,12 +30,12 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列                    | 说明        |
-| -------------------   | ---------- |
+| 列                     | 说明     |
+|-----------------------|--------|
 | shadow_algorithm_name | 影子算法名称 |
-| type                  | 算法类型    |
-| props                 | 算法参数    |
-| is_default            | 是否默认    |
+| type                  | 算法类型   |
+| props                 | 算法参数   |
+| is_default            | 是否默认   |
 
 ### 示例
 

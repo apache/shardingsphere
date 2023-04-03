@@ -100,8 +100,9 @@ public abstract class AbstractPipelineJob implements PipelineJob {
             log.warn("shardingItem {} tasks runner exists, ignore", shardingItem);
             return false;
         }
-        PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
-        PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(getJobId()), shardingItem);
+        String jobId = tasksRunner.getJobItemContext().getJobId();
+        PipelineJobProgressPersistService.addJobProgressPersistContext(jobId, shardingItem);
+        PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId)).persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(jobId), shardingItem);
         return true;
     }
     
@@ -121,12 +122,13 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         for (PipelineTasksRunner each : tasksRunnerMap.values()) {
             each.stop();
         }
-        Optional<ElasticJobListener> pipelineJobListener = ElasticJobServiceLoader.getCachedTypedServiceInstance(ElasticJobListener.class, PipelineElasticJobListener.class.getName());
-        pipelineJobListener.ifPresent(jobListener -> awaitJobStopped((PipelineElasticJobListener) jobListener, jobId, TimeUnit.SECONDS.toMillis(2)));
-        if (null == jobBootstrap) {
-            return;
+        if (null != jobId) {
+            Optional<ElasticJobListener> pipelineJobListener = ElasticJobServiceLoader.getCachedTypedServiceInstance(ElasticJobListener.class, PipelineElasticJobListener.class.getName());
+            pipelineJobListener.ifPresent(jobListener -> awaitJobStopped((PipelineElasticJobListener) jobListener, jobId, TimeUnit.SECONDS.toMillis(2)));
         }
-        jobBootstrap.shutdown();
+        if (null != jobBootstrap) {
+            jobBootstrap.shutdown();
+        }
     }
     
     private void awaitJobStopped(final PipelineElasticJobListener jobListener, final String jobId, final long timeoutMillis) {

@@ -1,6 +1,6 @@
 +++
 title = "数据加密"
-weight = 5
+weight = 4
 +++
 
 ## 背景信息
@@ -15,11 +15,11 @@ weight = 5
 
 可配置属性：
 
-| *名称*                     | *数据类型*                                   | *说明*                                                 | *默认值* |
-| ------------------------- | ------------------------------------------- | ----------------------------------------------------- | ------- |
-| tables (+)                | Collection\<EncryptTableRuleConfiguration\> | 加密表规则配置                                           |        |
-| encryptors (+)            | Map\<String, AlgorithmConfiguration\>       | 加解密算法名称和配置                                      |        |
-| queryWithCipherColumn (?) | boolean                                     | 是否使用加密列进行查询。在有原文列的情况下，可以使用原文列进行查询 | true   |
+| *名称*                      | *数据类型*                                      | *说明*                              | *默认值* |
+|---------------------------|---------------------------------------------|-----------------------------------|-------|
+| tables (+)                | Collection\<EncryptTableRuleConfiguration\> | 加密表规则配置                           |       |
+| encryptors (+)            | Map\<String, AlgorithmConfiguration\>       | 加解密算法名称和配置                        |       |
+| queryWithCipherColumn (?) | boolean                                     | 是否使用加密列进行查询。在有原文列的情况下，可以使用原文列进行查询 | true  |
 
 ### 加密表规则配置
 
@@ -27,11 +27,11 @@ weight = 5
 
 可配置属性：
 
-| *名称*       | *数据类型*                                    | *说明*           |
-| ----------- | -------------------------------------------- | --------------- |
-| name        | String                                       | 表名称           |
-| columns (+) | Collection\<EncryptColumnRuleConfiguration\> | 加密列规则配置列表 |
-| queryWithCipherColumn (?) | boolean                                             | 该表是否使用加密列进行查询 |
+| *名称*                      | *数据类型*                                       | *说明*          |
+|---------------------------|----------------------------------------------|---------------|
+| name                      | String                                       | 表名称           |
+| columns (+)               | Collection\<EncryptColumnRuleConfiguration\> | 加密列规则配置列表     |
+| queryWithCipherColumn (?) | boolean                                      | 该表是否使用加密列进行查询 |
 
 ### 加密列规则配置
 
@@ -39,17 +39,17 @@ weight = 5
 
 可配置属性：
 
-| *名称*                    | *数据类型* | *说明*        |
-| ------------------------- | -------- | ------------- |
-| logicColumn               | String   | 逻辑列名称     |
-| cipherColumn              | String   | 密文列名称     |
-| assistedQueryColumn (?)   | String   | 查询辅助列名称 |
-| likeQueryColumn (?)      | String   | 模糊查询列名称 |
-| plainColumn (?)           | String   | 原文列名称     |
-| encryptorName             | String   | 密文列加密算法名称   |
-| assistedQueryEncryptorName| String   | 查询辅助列加密算法名称   |
-| likeQueryEncryptorName   | String   | 模糊查询列加密算法名称   |
-| queryWithCipherColumn (?) | boolean                                             | 该列是否使用加密列进行查询 |
+| *名称*                       | *数据类型*  | *说明*          |
+|----------------------------|---------|---------------|
+| logicColumn                | String  | 逻辑列名称         |
+| cipherColumn               | String  | 密文列名称         |
+| assistedQueryColumn (?)    | String  | 查询辅助列名称       |
+| likeQueryColumn (?)        | String  | 模糊查询列名称       |
+| plainColumn (?)            | String  | 原文列名称         |
+| encryptorName              | String  | 密文列加密算法名称     |
+| assistedQueryEncryptorName | String  | 查询辅助列加密算法名称   |
+| likeQueryEncryptorName     | String  | 模糊查询列加密算法名称   |
+| queryWithCipherColumn (?)  | boolean | 该列是否使用加密列进行查询 |
 
 ### 加解密算法配置
 
@@ -57,10 +57,10 @@ weight = 5
 
 可配置属性：
 
-| *名称*      |*数据类型*   | *说明*           |
-| ---------- | ---------- | ---------------- |
-| name       | String     | 加解密算法名称     |
-| type       | String     | 加解密算法类型     |
+| *名称*       | *数据类型*     | *说明*      |
+|------------|------------|-----------|
+| name       | String     | 加解密算法名称   |
+| type       | String     | 加解密算法类型   |
 | properties | Properties | 加解密算法属性配置 |
 
 算法类型的详情，请参见[内置加密算法列表](/cn/user-manual/common-config/builtin-algorithm/encrypt)。

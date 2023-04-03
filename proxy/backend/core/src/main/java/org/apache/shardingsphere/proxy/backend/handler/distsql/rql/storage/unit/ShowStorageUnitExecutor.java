@@ -75,13 +75,14 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         ShardingSphereResourceMetaData resourceMetaData = database.getResourceMetaData();
         Map<String, DataSourceProperties> dataSourcePropsMap = getDataSourcePropsMap(database, sqlStatement);
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        for (String each : dataSourcePropsMap.keySet()) {
-            DataSourceMetaData metaData = resourceMetaData.getDataSourceMetaData(each);
-            DataSourceProperties dataSourceProps = dataSourcePropsMap.get(each);
+        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
+            String key = entry.getKey();
+            DataSourceProperties dataSourceProps = entry.getValue();
+            DataSourceMetaData metaData = resourceMetaData.getDataSourceMetaData(key);
             Map<String, Object> standardProps = dataSourceProps.getPoolPropertySynonyms().getStandardProperties();
             Map<String, Object> otherProps = dataSourceProps.getCustomDataSourceProperties().getProperties();
-            result.add(new LocalDataQueryResultRow(each,
-                    resourceMetaData.getStorageType(each).getType(),
+            result.add(new LocalDataQueryResultRow(key,
+                    resourceMetaData.getStorageType(key).getType(),
                     metaData.getHostname(),
                     metaData.getPort(),
                     metaData.getCatalog(),

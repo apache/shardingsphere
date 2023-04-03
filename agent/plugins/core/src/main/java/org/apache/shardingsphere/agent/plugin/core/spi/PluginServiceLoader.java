@@ -27,6 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Plugin service loader.
+ * 
+ * @param <T> type of service
  */
 public final class PluginServiceLoader<T> {
     

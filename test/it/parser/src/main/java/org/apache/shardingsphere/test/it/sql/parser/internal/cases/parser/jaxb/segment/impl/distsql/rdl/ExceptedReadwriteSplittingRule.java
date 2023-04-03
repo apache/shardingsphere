@@ -27,7 +27,7 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.List;
 
 /**
- * Excepted readwrite splitting rule.
+ * Excepted readwrite-splitting rule.
  */
 @Getter
 @Setter

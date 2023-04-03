@@ -1,6 +1,6 @@
 +++
 title = "Data Masking"
-weight = 10
+weight = 5
 +++
 
 ## Background
@@ -15,10 +15,10 @@ Class name: org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration
 
 Attributes:
 
-| *Name*                    | *DataType*                                  | *Description*                                                                                  | *Default Value* |
-| ------------------------- | ------------------------------------------- |------------------------------------------------------------------------------------------------| --------------- |
-| tables (+)                | Collection\<MaskTableRuleConfiguration\> | Mask table rule configurations                                                                 |                 |
-| maskAlgorithms (+)            | Map\<String, AlgorithmConfiguration\>       | Mask algorithm name and configurations                                                         |                 |
+| *Name*             | *DataType*                               | *Description*                          | *Default Value* |
+|--------------------|------------------------------------------|----------------------------------------|-----------------|
+| tables (+)         | Collection\<MaskTableRuleConfiguration\> | Mask table rule configurations         |                 |
+| maskAlgorithms (+) | Map\<String, AlgorithmConfiguration\>    | Mask algorithm name and configurations |                 |
 
 ### Mask Table Rule Configuration
 
@@ -26,10 +26,10 @@ Class name: org.apache.shardingsphere.mask.api.config.rule.MaskTableRuleConfigur
 
 Attributes:
 
-| *Name*                    | *DataType*                                   | *Description*                   |
-| ------------------------- | -------------------------------------------- |---------------------------------|
-| name                      | String                                       | Table name                      |
-| columns (+)               | Collection\<MaskColumnRuleConfiguration\> | Mask column rule configurations |
+| *Name*      | *DataType*                                | *Description*                   |
+|-------------|-------------------------------------------|---------------------------------|
+| name        | String                                    | Table name                      |
+| columns (+) | Collection\<MaskColumnRuleConfiguration\> | Mask column rule configurations |
 
 ### Mask Column Rule Configuration
 
@@ -37,10 +37,10 @@ Class name: org.apache.shardingsphere.mask.api.config.rule.MaskColumnRuleConfigu
 
 Attributes:
 
-| *Name*                     | *DataType* | *Description*       |
-|----------------------------| ---------- |---------------------|
-| logicColumn                | String     | Logic column name   |
-| maskAlgorithm              | String     | Mask algorithm name |
+| *Name*        | *DataType* | *Description*       |
+|---------------|------------|---------------------|
+| logicColumn   | String     | Logic column name   |
+| maskAlgorithm | String     | Mask algorithm name |
 
 ### Mask Algorithm Configuration
 
@@ -48,10 +48,10 @@ Class name: org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfigurat
 
 Attributes:
 
-| *Name*     | *DataType* | *Description*                |
-| ---------- | ---------- |------------------------------|
-| name       | String     | Mask algorithm name          |
-| type       | String     | Mask algorithm type          |
+| *Name*     | *DataType* | *Description*             |
+|------------|------------|---------------------------|
+| name       | String     | Mask algorithm name       |
+| type       | String     | Mask algorithm type       |
 | properties | Properties | Mask algorithm properties |
 
 Please refer to [Built-in Data Masking Algorithm List](/en/user-manual/common-config/builtin-algorithm/mask) for more details about type of algorithm.

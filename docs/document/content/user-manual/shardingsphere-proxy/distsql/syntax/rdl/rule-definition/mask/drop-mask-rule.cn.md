@@ -1,6 +1,6 @@
 +++
 title = "DROP MASK RULE"
-weight = 4
+weight = 3
 +++
 
 ## 说明

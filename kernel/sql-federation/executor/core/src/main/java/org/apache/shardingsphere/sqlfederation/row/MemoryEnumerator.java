@@ -25,6 +25,8 @@ import java.util.Iterator;
 
 /**
  * Memory enumerator.
+ * 
+ * @param <T> type of row
  */
 public final class MemoryEnumerator<T> implements Enumerator<T> {
     

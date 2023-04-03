@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHARDING TABLE REFERENCE RULE"
-weight = 14
+weight = 13
 +++
 
 ### Description
@@ -33,10 +33,10 @@ databaseName ::=
 
 ### Return value description
 
-| Columns                 | Descriptions                       |
-| ------------------------|------------------------------------|
-| name                    | Sharding table reference rule name |
-| sharding_table_reference| sharding table reference           |
+| Columns                  | Descriptions                       |
+|--------------------------|------------------------------------|
+| name                     | Sharding table reference rule name |
+| sharding_table_reference | sharding table reference           |
 
 ### Example
 

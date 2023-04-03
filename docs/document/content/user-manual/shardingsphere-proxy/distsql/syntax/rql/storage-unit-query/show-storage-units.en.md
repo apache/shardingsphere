@@ -1,6 +1,6 @@
 +++
 title = "SHOW STORAGE UNITS"
-weight = 2
+weight = 1
 +++
 
 ### Description
@@ -33,14 +33,14 @@ databaseName ::=
 
 ### Return Value Description
 
-| Column    | Description           |
-| --------- | --------------------- |
-| name      | Storage unit name     |
-| type      | Storage unit type     |
-| host      | Storage unit host     |
-| port      | Storage unit port     |
-| db        | Database name         |
-| attribute | Storage unit attribute|
+| Column    | Description            |
+|-----------|------------------------|
+| name      | Storage unit name      |
+| type      | Storage unit type      |
+| host      | Storage unit host      |
+| port      | Storage unit port      |
+| db        | Database name          |
+| attribute | Storage unit attribute |
 
  ### Example
 

@@ -53,7 +53,7 @@ public final class ShardingSphereAgent {
         Map<String, PluginConfiguration> pluginConfigs = PluginConfigurationLoader.load(rootPath);
         Collection<JarFile> pluginJars = PluginJarLoader.load(rootPath);
         boolean isEnhancedForProxy = isEnhancedForProxy();
-        Map<String, AdvisorConfiguration> advisorConfigs = AdvisorConfigurationLoader.load(pluginJars, pluginConfigs.keySet(), isEnhancedForProxy);
+        Map<String, AdvisorConfiguration> advisorConfigs = AdvisorConfigurationLoader.load(pluginJars, pluginConfigs.keySet());
         AgentBuilderFactory.create(pluginConfigs, pluginJars, advisorConfigs, isEnhancedForProxy).installOn(instrumentation);
     }
     

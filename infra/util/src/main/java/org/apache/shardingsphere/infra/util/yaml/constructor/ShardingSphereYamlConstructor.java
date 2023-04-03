@@ -39,17 +39,18 @@ public class ShardingSphereYamlConstructor extends Constructor {
     private final Class<?> rootClass;
     
     public ShardingSphereYamlConstructor(final Class<?> rootClass) {
-        super(rootClass, new LoaderOptions() {
-            
-            {
-                setCodePointLimit(Integer.MAX_VALUE);
-            }
-        });
+        super(rootClass, createLoaderOptions());
         ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlConstruct.class).forEach(each -> typeConstructs.put(each.getType(), each));
         Map<String, Class<?>> yamlShortcuts = new HashMap<>();
         ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlShortcuts.class).stream().map(ShardingSphereYamlShortcuts::getYamlShortcuts).forEach(yamlShortcuts::putAll);
         yamlShortcuts.forEach((key, value) -> addTypeDescription(new TypeDescription(value, key)));
         this.rootClass = rootClass;
+    }
+    
+    private static LoaderOptions createLoaderOptions() {
+        LoaderOptions result = new LoaderOptions();
+        result.setCodePointLimit(Integer.MAX_VALUE);
+        return result;
     }
     
     @Override

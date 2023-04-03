@@ -62,6 +62,11 @@ public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfi
     
     private int retryTimes = 3;
     
+    @Override
+    public String getDatabaseName() {
+        return targetDatabaseName;
+    }
+    
     /**
      * Set sources.
      *

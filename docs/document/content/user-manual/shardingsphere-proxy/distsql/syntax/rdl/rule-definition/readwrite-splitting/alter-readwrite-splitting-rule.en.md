@@ -1,11 +1,11 @@
 +++
 title = "ALTER READWRITE_SPLITTING RULE"
-weight = 3
+weight = 2
 +++
 
 ## Description
 
-The `ALTER READWRITE_SPLITTING RULE` syntax is used to alter a readwrite splitting rule.
+The `ALTER READWRITE_SPLITTING RULE` syntax is used to alter a readwrite-splitting rule.
 
 ### Syntax
 
@@ -64,7 +64,7 @@ value ::=
 
 ### Example
 
-#### Alter a statics readwrite splitting rule
+#### Alter a statics readwrite-splitting rule
 
 ```sql
 ALTER READWRITE_SPLITTING RULE ms_group_0 (
@@ -74,7 +74,7 @@ ALTER READWRITE_SPLITTING RULE ms_group_0 (
 );
 ```
 
-#### Alter a dynamic readwrite splitting rule
+#### Alter a dynamic readwrite-splitting rule
 
 ```sql
 ALTER READWRITE_SPLITTING RULE ms_group_1 (

@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.11. </b>"
+pre = "<b>3.8. </b>"
 title = "数据脱敏"
-weight = 11
+weight = 8
 chapter = true
 +++
 

@@ -1,6 +1,6 @@
 +++
 title = "SHOW DEFAULT SHARDING STRATEGY"
-weight = 5
+weight = 4
 +++
 
 ### Description
@@ -31,7 +31,7 @@ databaseName ::=
 ### Return value description
 
 | Column                   | Description                   |
-| ------------------------ | ----------------------------- |
+|--------------------------|-------------------------------|
 | name                     | Sharding strategy scope       |
 | type                     | Sharding strategy type        |
 | sharding_column          | Sharding column               |

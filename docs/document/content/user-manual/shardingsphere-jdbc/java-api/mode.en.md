@@ -15,7 +15,7 @@ Class name: org.apache.shardingsphere.infra.config.mode.ModeConfiguration
 Attributes:
 
 | *Name*     | *DataType*                     | *Description*                                                                                                                                                    | *Default Value* |
-| ---------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+|------------|--------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
 | type       | String                         | Type of mode configuration<br />Values could be: Standalone or Cluster                                                                                           | Standalone      |
 | repository | PersistRepositoryConfiguration | Persist repository configuration<br />Standalone type uses StandalonePersistRepositoryConfiguration<br />Cluster type uses ClusterPersistRepositoryConfiguration |                 |
 
@@ -26,7 +26,7 @@ Class name: org.apache.shardingsphere.mode.repository.standalone.StandalonePersi
 Attributes:
 
 | *Name* | *DataType* | *Description*                    |
-| ------ | ---------- | -------------------------------- |
+|--------|------------|----------------------------------|
 | type   | String     | Type of persist repository       |
 | props  | Properties | Properties of persist repository |
 
@@ -37,7 +37,7 @@ Class name: org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepo
 Attributes:
 
 | *Name*       | *Data Type* | *Description*                    |
-| ------------ | ----------- | -------------------------------- |
+|--------------|-------------|----------------------------------|
 | type         | String      | Type of persist repository       |
 | namespace    | String      | Namespace of registry center     |
 | server-lists | String      | Server lists of registry center  |

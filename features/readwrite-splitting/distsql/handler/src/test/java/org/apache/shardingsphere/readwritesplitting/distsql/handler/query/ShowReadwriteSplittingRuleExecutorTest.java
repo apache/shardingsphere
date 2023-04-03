@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
@@ -74,11 +73,10 @@ class ShowReadwriteSplittingRuleExecutorTest {
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("readwrite_ds"));
-        assertThat(row.getCell(2), is(""));
-        assertThat(row.getCell(3), is("ds_primary"));
-        assertThat(row.getCell(4), is("ds_slave_0,ds_slave_1"));
-        assertThat(row.getCell(5), is("random"));
-        assertThat(row.getCell(6), is("read_weight=2:1"));
+        assertThat(row.getCell(2), is("ds_primary"));
+        assertThat(row.getCell(3), is("ds_slave_0,ds_slave_1"));
+        assertThat(row.getCell(4), is("random"));
+        assertThat(row.getCell(5), is("read_weight=2:1"));
     }
     
     @Test
@@ -94,11 +92,10 @@ class ShowReadwriteSplittingRuleExecutorTest {
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("readwrite_ds"));
-        assertThat(row.getCell(2), is(""));
-        assertThat(row.getCell(3), is("ds_primary"));
-        assertThat(row.getCell(4), is("ds_slave_0,ds_slave_1"));
-        assertThat(row.getCell(5), is("random"));
-        assertThat(row.getCell(6), is("read_weight=2:1"));
+        assertThat(row.getCell(2), is("ds_primary"));
+        assertThat(row.getCell(3), is("ds_slave_0,ds_slave_1"));
+        assertThat(row.getCell(4), is("random"));
+        assertThat(row.getCell(5), is("read_weight=2:1"));
     }
     
     private Map<String, Object> createExportedData() {
@@ -129,11 +126,10 @@ class ShowReadwriteSplittingRuleExecutorTest {
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
         assertThat(row.getCell(1), is("readwrite_ds"));
-        assertThat(row.getCell(2), is(""));
-        assertThat(row.getCell(3), is("write_ds"));
-        assertThat(row.getCell(4), is("read_ds_0,read_ds_1"));
+        assertThat(row.getCell(2), is("write_ds"));
+        assertThat(row.getCell(3), is("read_ds_0,read_ds_1"));
+        assertThat(row.getCell(4), is(""));
         assertThat(row.getCell(5), is(""));
-        assertThat(row.getCell(6), is(""));
     }
     
     private RuleConfiguration createRuleConfigurationWithoutLoadBalancer() {
@@ -144,33 +140,12 @@ class ShowReadwriteSplittingRuleExecutorTest {
     }
     
     @Test
-    void assertGetRowDataWithAutoAwareDataSource() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ReadwriteSplittingRule rule = mock(ReadwriteSplittingRule.class);
-        when(rule.getConfiguration()).thenReturn(createRuleConfigurationWithAutoAwareDataSource());
-        when(rule.getExportData()).thenReturn(getExportData());
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(rule)));
-        RQLExecutor<ShowReadwriteSplittingRulesStatement> executor = new ShowReadwriteSplittingRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowReadwriteSplittingRulesStatement.class));
-        assertThat(actual.size(), is(1));
-        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
-        LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("readwrite_ds"));
-        assertThat(row.getCell(2), is("rd_rs"));
-        assertThat(row.getCell(3), is("write_ds"));
-        assertThat(row.getCell(4), is("read_ds_0,read_ds_1"));
-        assertThat(row.getCell(5), is(""));
-        assertThat(row.getCell(6), is(""));
-    }
-    
-    @Test
     void assertGetColumnNames() {
         RQLExecutor<ShowReadwriteSplittingRulesStatement> executor = new ShowReadwriteSplittingRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(6));
+        assertThat(columns.size(), is(5));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("name"));
-        assertThat(iterator.next(), is("auto_aware_data_source_name"));
         assertThat(iterator.next(), is("write_storage_unit_name"));
         assertThat(iterator.next(), is("read_storage_unit_names"));
         assertThat(iterator.next(), is("load_balancer_type"));
@@ -179,20 +154,7 @@ class ShowReadwriteSplittingRuleExecutorTest {
     
     private Map<String, Object> getExportData() {
         Map<String, Object> result = new HashMap<>(2, 1);
-        result.put(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, exportDynamicDataSources());
         result.put(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, exportStaticDataSources());
-        return result;
-    }
-    
-    private Map<String, Map<String, String>> exportDynamicDataSources() {
-        return Collections.singletonMap("readwrite_ds", getAutoAwareDataSources());
-    }
-    
-    private Map<String, String> getAutoAwareDataSources() {
-        Map<String, String> result = new HashMap<>(3, 1);
-        result.put(ExportableItemConstants.AUTO_AWARE_DATA_SOURCE_NAME, "ha_group");
-        result.put(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME, "write_ds");
-        result.put(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, "read_ds_0,read_ds_1");
         return result;
     }
     
@@ -203,11 +165,5 @@ class ShowReadwriteSplittingRuleExecutorTest {
         staticRule.put(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, "ds_1");
         result.put("static_rule_1", staticRule);
         return result;
-    }
-    
-    private RuleConfiguration createRuleConfigurationWithAutoAwareDataSource() {
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", null,
-                new DynamicReadwriteSplittingStrategyConfiguration("rd_rs"), "");
-        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), null);
     }
 }

@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-sql-parser</artifactId>
-        <version>5.3.2-SNAPSHOT</version>
+        <version>5.3.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sql-parser-dialect</artifactId>
     <packaging>pom</packaging>
@@ -49,7 +49,7 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-it-parser</artifactId>
+            <artifactId>shardingsphere-it-parser</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

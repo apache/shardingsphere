@@ -43,7 +43,7 @@ To facilitate the installation of Operator, our community provides an online ins
 
 ## Online Installation
 
-```less
+```bash
 kubectl create ns shardingsphere-operator
 	helm repo add shardingsphere https://apache.github.io/shardingsphere-on-cloud
 	helm repo update
@@ -173,7 +173,7 @@ You can find further details of the encryption features [here](https://shardings
 
 # Good news! Our new ShardingSphere-on-Cloud is now live!
 
-With the migration of the ShardingSphere-on-Cloud sub-project to https://github.com/apache/shardingsphere-on-cloud, we designed and launched a new website.
+With the migration of the ShardingSphere-on-Cloud sub-project to [ShardingSphere-on-Cloud Github](https://github.com/apache/shardingsphere-on-cloud), we designed and launched a new website.
 
 As the project grows, this will facilitate interested users or contributors better understand the project and participate in the community, including documentation for each version, an introduction to the community, information about the Apache Foundation, community updates, information about the Apache Foundation, and etc.
 

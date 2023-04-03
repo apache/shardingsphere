@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
+import java.util.Arrays;
 
 /**
  * Classpath driver URL provider.
@@ -47,9 +47,9 @@ public final class ClasspathDriverURLProvider implements ShardingSphereDriverURL
         String configuredFile = url.substring("jdbc:shardingsphere:".length(), url.contains("?") ? url.indexOf("?") : url.length());
         String file = configuredFile.substring(CLASSPATH_TYPE.length());
         Preconditions.checkArgument(!file.isEmpty(), "Configuration file is required in ShardingSphere driver URL.");
-        try (InputStream stream = getResourceAsStream(file)) {
-            Objects.requireNonNull(stream, String.format("Can not find configuration file `%s`.", file));
-            BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+        try (
+                InputStream stream = getResourceAsStream(file);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8))) {
             StringBuilder builder = new StringBuilder();
             String line;
             while (null != (line = reader.readLine())) {
@@ -62,10 +62,7 @@ public final class ClasspathDriverURLProvider implements ShardingSphereDriverURL
     }
     
     private InputStream getResourceAsStream(final String resource) {
-        ClassLoader[] classLoaders = new ClassLoader[]{
-                Thread.currentThread().getContextClassLoader(), getClass().getClassLoader(), ClassLoader.getSystemClassLoader(),
-        };
-        for (ClassLoader each : classLoaders) {
+        for (ClassLoader each : Arrays.asList(Thread.currentThread().getContextClassLoader(), getClass().getClassLoader(), ClassLoader.getSystemClassLoader())) {
             if (null != each) {
                 InputStream result = each.getResourceAsStream(resource);
                 if (null == result) {
@@ -76,6 +73,6 @@ public final class ClasspathDriverURLProvider implements ShardingSphereDriverURL
                 }
             }
         }
-        return null;
+        throw new NullPointerException(String.format("Can not find configuration file `%s`.", resource));
     }
 }

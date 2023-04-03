@@ -1,6 +1,6 @@
 +++
 title = "SHOW ENCRYPT RULES"
-weight = 2
+weight = 1
 +++
 
 ### 描述
@@ -33,21 +33,21 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列                        | 说明                |
-|--------------------------| ------------------ |
-| table                    | 逻辑表名             |
-| logic_column             | 逻辑列名             |
-| cipher_column            | 密文列名             |
-| plain_column             | 明文列名             |
-| assisted_query_column    | 辅助查询列名          |
-| like_query_column        | 模糊查询列名          |
-| encryptor_type           | 加密算法类型          |
-| encryptor_props          | 加密算法参数          |
-| assisted_query_type      | 辅助查询算法类型       |
-| assisted_query_props     | 辅助查询算法参数       |
-| like_query_type          | 模糊查询算法类型       |
-| like_query_props         | 模糊查询算法参数       |
-| query_with_cipher_column | 是否使用加密列进行查询  |
+| 列                        | 说明          |
+|--------------------------|-------------|
+| table                    | 逻辑表名        |
+| logic_column             | 逻辑列名        |
+| cipher_column            | 密文列名        |
+| plain_column             | 明文列名        |
+| assisted_query_column    | 辅助查询列名      |
+| like_query_column        | 模糊查询列名      |
+| encryptor_type           | 加密算法类型      |
+| encryptor_props          | 加密算法参数      |
+| assisted_query_type      | 辅助查询算法类型    |
+| assisted_query_props     | 辅助查询算法参数    |
+| like_query_type          | 模糊查询算法类型    |
+| like_query_props         | 模糊查询算法参数    |
+| query_with_cipher_column | 是否使用加密列进行查询 |
 
 ### 示例
 

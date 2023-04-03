@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.registry;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
@@ -34,16 +33,15 @@ import java.util.Properties;
 public final class CoordinatorRegistryCenterInitializer {
     
     /**
-     * Create registry center instance.
+     * Create ZooKeeper registry center instance.
      *
      * @param modeConfig mode configuration
      * @param namespaceRelativePath namespace relative path
      * @return registry center instance
      */
-    public CoordinatorRegistryCenter createRegistryCenter(final ModeConfiguration modeConfig, final String namespaceRelativePath) {
+    public CoordinatorRegistryCenter createZookeeperRegistryCenter(final ModeConfiguration modeConfig, final String namespaceRelativePath) {
         ClusterPersistRepositoryConfiguration repositoryConfig = (ClusterPersistRepositoryConfiguration) modeConfig.getRepository();
-        String clusterType = modeConfig.getRepository().getType();
-        Preconditions.checkArgument("ZooKeeper".equals(clusterType), "Unsupported cluster type `%s`", clusterType);
+        // TODO Add registry center cache. Refer to RegistryCenterFactory.createCoordinatorRegistryCenter
         CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(getZookeeperConfig(repositoryConfig, namespaceRelativePath));
         result.init();
         return result;

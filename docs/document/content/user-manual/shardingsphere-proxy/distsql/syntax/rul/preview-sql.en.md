@@ -23,10 +23,10 @@ PreviewSql ::=
 
 ### Return Value Description
 
-| Column                   | Description                 |
-|--------------------------|-----------------------------|
-| data_source_name         | storage unit name           |
-| actual_sql               | actual excute SQL statement |
+| Column           | Description                 |
+|------------------|-----------------------------|
+| data_source_name | storage unit name           |
+| actual_sql       | actual excute SQL statement |
 
 ### Example
 

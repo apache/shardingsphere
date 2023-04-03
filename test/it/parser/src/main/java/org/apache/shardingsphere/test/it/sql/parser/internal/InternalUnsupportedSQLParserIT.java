@@ -44,7 +44,7 @@ public abstract class InternalUnsupportedSQLParserIT {
     
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public final void assertUnsupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
+    void assertUnsupportedSQL(final String sqlCaseId, final SQLCaseType sqlCaseType, final String databaseType) {
         String sql = SQL_CASES.getSQL(sqlCaseId, sqlCaseType, Collections.emptyList());
         CacheOption cacheOption = new CacheOption(128, 1024L);
         assertThrows(SQLParsingException.class, () -> new SQLParserEngine("H2".equals(databaseType) ? "MySQL" : databaseType, cacheOption).parse(sql, false));

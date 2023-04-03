@@ -1,6 +1,6 @@
 +++
 title = "DROP SHARDING ALGORITHM"
-weight = 12
+weight = 11
 +++
 
 ## Description

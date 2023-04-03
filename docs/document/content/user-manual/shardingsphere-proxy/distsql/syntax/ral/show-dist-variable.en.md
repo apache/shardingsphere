@@ -1,6 +1,6 @@
 +++
 title = "SHOW DIST VARIABLE"
-weight = 5
+weight = 4
 +++
 
 ### Description
@@ -26,10 +26,10 @@ variableName ::=
 
 ### Return Value Description
 
-| Columns       | Description            |
-|---------------|------------------------|
-| variable_name | system variable name   |
-| variable_value| systen variable value  |
+| Columns        | Description           |
+|----------------|-----------------------|
+| variable_name  | system variable name  |
+| variable_value | systen variable value |
 
 ### Supplement
 
