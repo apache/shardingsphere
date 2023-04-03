@@ -52,12 +52,14 @@
     </modules>
     
     <properties>
+        <!-- Environments -->
         <java.version>1.8</java.version>
         <maven.version.range>[3.0.4,)</maven.version.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.deploy.skip>false</maven.deploy.skip>
         <shade.package>org.apache.shardingsphere.shade</shade.package>
         
+        <!-- 3rd party library versions -->
         <guava.version>30.0-jre</guava.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-collections4.version>4.4</commons-collections4.version>
@@ -112,9 +114,15 @@
         <protobuf-java.version>3.21.12</protobuf-java.version>
         <awaitility.version>4.2.0</awaitility.version>
         
-        <!-- Plugin versions -->
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <!-- 3rd party library plugin versions -->
+        <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
+        <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
+        <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
+        <os-maven-plugin.version>1.6.2</os-maven-plugin.version>
+        
+        <!-- Compile & Release plugin versions -->
         <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
         <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
@@ -123,30 +131,29 @@
         <maven-release-plugin.version>3.0.0</maven-release-plugin.version>
         <maven-assembly-plugin.version>3.5.0</maven-assembly-plugin.version>
         <maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
-        <maven-dependency-plugin.version>3.5.0</maven-dependency-plugin.version>
-        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
-        <maven-site-plugin.version>4.0.0-M6</maven-site-plugin.version>
-        <maven-project-info-reports-plugin.version>3.4.2</maven-project-info-reports-plugin.version>
-        <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
-        
-        <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
         <jandex-maven-plugin.version>3.0.5</jandex-maven-plugin.version>
-        <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
-        <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
-        <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
+        <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
+        
+        <!-- Check plugin versions -->
+        <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
+        <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
+        <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
         <spotbugs-maven-plugin.version>4.7.2.1</spotbugs-maven-plugin.version>
         <fb-contrib.version>7.6.0</fb-contrib.version>
         <findsecbugs.version>1.12.0</findsecbugs.version>
-        <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
+        <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
+        <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
+        
+        <!-- Report plugin versions -->
+        <maven-site-plugin.version>4.0.0-M6</maven-site-plugin.version>
+        <maven-project-info-reports-plugin.version>3.4.2</maven-project-info-reports-plugin.version>
+        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+        <maven-dependency-plugin.version>3.5.0</maven-dependency-plugin.version>
+        <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
-        <os-maven-plugin.version>1.6.2</os-maven-plugin.version>
-        <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
-        <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
-        <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
-        <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
-        <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
     </properties>
     
     <dependencyManagement>
@@ -669,16 +676,33 @@
     <build>
         <pluginManagement>
             <plugins>
+                <!-- 3rd party library plugins -->
                 <plugin>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven-compiler-plugin.version}</version>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>antlr4-maven-plugin</artifactId>
+                    <version>${antlr4.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.xolstice.maven.plugins</groupId>
+                    <artifactId>protobuf-maven-plugin</artifactId>
+                    <version>${protobuf-maven-plugin.version}</version>
                     <configuration>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
-                        <testSource>${java.version}</testSource>
-                        <testTarget>${java.version}</testTarget>
+                        <protocArtifact>com.google.protobuf:protoc:${protobuf-java.version}:exe:${os.detected.classifier}</protocArtifact>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>com.spotify</groupId>
+                    <artifactId>dockerfile-maven-plugin</artifactId>
+                    <version>${dockerfile-maven.version}</version>
+                </plugin>
+                <!-- TODO nianjun should remove after test container is used in agent e2e -->
+                <plugin>
+                    <groupId>com.dkanejs.maven.plugins</groupId>
+                    <artifactId>docker-compose-maven-plugin</artifactId>
+                    <version>${docker-compose-maven-plugin.version}</version>
+                </plugin>
+                
+                <!-- Compile & Release plugins -->
                 <plugin>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <version>${maven-enforcer-plugin.version}</version>
@@ -701,6 +725,16 @@
                             </configuration>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <testSource>${java.version}</testSource>
+                        <testTarget>${java.version}</testTarget>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
@@ -773,20 +807,12 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>${maven-dependency-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven-javadoc-plugin.version}</version>
-                    <configuration>
-                        <source>${java.version}</source>
-                        <charset>${project.build.sourceEncoding}</charset>
-                        <encoding>${project.build.sourceEncoding}</encoding>
-                        <docencoding>${project.build.sourceEncoding}</docencoding>
-                    </configuration>
+                    <groupId>io.smallrye</groupId>
+                    <artifactId>jandex-maven-plugin</artifactId>
+                    <version>${jandex-maven-plugin.version}</version>
                 </plugin>
                 
+                <!-- Check plugins -->
                 <plugin>
                     <groupId>org.apache.rat</groupId>
                     <artifactId>apache-rat-plugin</artifactId>
@@ -843,6 +869,15 @@
                     </configuration>
                 </plugin>
                 <plugin>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>${maven-pmd-plugin.version}</version>
+                    <configuration>
+                        <aggregate>true</aggregate>
+                        <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+                        <targetJdk>${java.version}</targetJdk>
+                    </configuration>
+                </plugin>
+                <plugin>
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
                     <version>${spotbugs-maven-plugin.version}</version>
@@ -863,38 +898,80 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <artifactId>maven-pmd-plugin</artifactId>
-                    <version>${maven-pmd-plugin.version}</version>
+                    <groupId>org.eluder.coveralls</groupId>
+                    <artifactId>coveralls-maven-plugin</artifactId>
+                    <version>${coveralls-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>cobertura-maven-plugin</artifactId>
+                    <version>${cobertura-maven-plugin.version}</version>
                     <configuration>
+                        <check>
+                            <branchRate>70</branchRate>
+                            <lineRate>70</lineRate>
+                            <haltOnFailure>true</haltOnFailure>
+                            <totalBranchRate>70</totalBranchRate>
+                            <totalLineRate>70</totalLineRate>
+                            <packageLineRate>70</packageLineRate>
+                            <packageBranchRate>70</packageBranchRate>
+                        </check>
                         <aggregate>true</aggregate>
-                        <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-                        <targetJdk>${java.version}</targetJdk>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <quiet>true</quiet>
+                        <format>xml</format>
+                        <instrumentation>
+                            <ignoreTrivial>true</ignoreTrivial>
+                            <ignoreMethodAnnotations>
+                                <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
+                            </ignoreMethodAnnotations>
+                            <excludes>
+                                <exclude>org/apache/shardingsphere/**/autogen/*.class</exclude>
+                                <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
+                                <exclude>org/apache/shardingsphere/test/**/*.class</exclude>
+                                <exclude>org/apache/shardingsphere/proxy/Bootstrap.class</exclude>
+                            </excludes>
+                        </instrumentation>
                     </configuration>
                 </plugin>
-                
                 <plugin>
-                    <groupId>org.antlr</groupId>
-                    <artifactId>antlr4-maven-plugin</artifactId>
-                    <version>${antlr4.version}</version>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco-maven-plugin.version}</version>
+                    <configuration>
+                        <excludes>**/*.jar</excludes>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                            <phase>test</phase>
+                        </execution>
+                    </executions>
                 </plugin>
                 
+                <!-- Report plugins -->
                 <plugin>
-                    <groupId>com.spotify</groupId>
-                    <artifactId>dockerfile-maven-plugin</artifactId>
-                    <version>${dockerfile-maven.version}</version>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven-javadoc-plugin.version}</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <charset>${project.build.sourceEncoding}</charset>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <docencoding>${project.build.sourceEncoding}</docencoding>
+                    </configuration>
                 </plugin>
-                <!-- TODO nianjun should remove after test container is used in agent e2e -->
                 <plugin>
-                    <groupId>com.dkanejs.maven.plugins</groupId>
-                    <artifactId>docker-compose-maven-plugin</artifactId>
-                    <version>${docker-compose-maven-plugin.version}</version>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven-dependency-plugin.version}</version>
                 </plugin>
-                <plugin>
-                    <groupId>io.smallrye</groupId>
-                    <artifactId>jandex-maven-plugin</artifactId>
-                    <version>${jandex-maven-plugin.version}</version>
-                </plugin>
-                
                 <plugin>
                     <artifactId>maven-jxr-plugin</artifactId>
                     <version>${maven-jxr-plugin.version}</version>
@@ -916,6 +993,7 @@
         </pluginManagement>
         
         <plugins>
+            <!-- Compile & Release plugins -->
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
             </plugin>
@@ -930,7 +1008,20 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>io.smallrye</groupId>
+                <artifactId>jandex-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>make-index</id>
+                        <goals>
+                            <goal>jandex</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             
+            <!-- Check plugins -->
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
@@ -956,79 +1047,11 @@
                 </executions>
             </plugin>
             <plugin>
+                <artifactId>maven-pmd-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.eluder.coveralls</groupId>
-                <artifactId>coveralls-maven-plugin</artifactId>
-                <version>${coveralls-maven-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>${cobertura-maven-plugin.version}</version>
-                <configuration>
-                    <check>
-                        <branchRate>70</branchRate>
-                        <lineRate>70</lineRate>
-                        <haltOnFailure>true</haltOnFailure>
-                        <totalBranchRate>70</totalBranchRate>
-                        <totalLineRate>70</totalLineRate>
-                        <packageLineRate>70</packageLineRate>
-                        <packageBranchRate>70</packageBranchRate>
-                    </check>
-                    <aggregate>true</aggregate>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <quiet>true</quiet>
-                    <format>xml</format>
-                    <instrumentation>
-                        <ignoreTrivial>true</ignoreTrivial>
-                        <ignoreMethodAnnotations>
-                            <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
-                        </ignoreMethodAnnotations>
-                        <excludes>
-                            <exclude>org/apache/shardingsphere/**/autogen/*.class</exclude>
-                            <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
-                            <exclude>org/apache/shardingsphere/test/**/*.class</exclude>
-                            <exclude>org/apache/shardingsphere/proxy/Bootstrap.class</exclude>
-                        </excludes>
-                    </instrumentation>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco-maven-plugin.version}</version>
-                <configuration>
-                    <excludes>**/*.jar</excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <phase>test</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>io.smallrye</groupId>
-                <artifactId>jandex-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>make-index</id>
-                        <goals>
-                            <goal>jandex</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
         
@@ -1085,11 +1108,11 @@
                 <artifactId>maven-checkstyle-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
+                <artifactId>maven-pmd-plugin</artifactId>
             </plugin>
             <plugin>
-                <artifactId>maven-pmd-plugin</artifactId>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
