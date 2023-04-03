@@ -31,9 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class QPSJobRateLimitAlgorithmTest {
-    
-    private static final String QPS = "qps";
-    
+
     private QPSJobRateLimitAlgorithm qpsJobRateLimitAlgorithm;
     
     @BeforeEach
@@ -43,13 +41,13 @@ public class QPSJobRateLimitAlgorithmTest {
     
     @Test
     void assertInit() {
-        Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property(QPS, "1"));
+        Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property("qps", "1"));
         assertAll(() -> TypedSPILoader.getService(JobRateLimitAlgorithm.class, "QPS", props));
     }
     
     @Test
     void assertJobRateLimitWithWrongArgumentForQPS() {
-        Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property(QPS, "0"));
+        Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property("qps", "0"));
         assertThrows(JobRateLimitAlgorithmInitializationException.class, () -> TypedSPILoader.getService(JobRateLimitAlgorithm.class, "QPS", props));
     }
     
