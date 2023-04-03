@@ -59,6 +59,14 @@
                     <groupId>com.alibaba</groupId>
                     <artifactId>dubbo</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.sun</groupId>
+                    <artifactId>tools</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun</groupId>
+                    <artifactId>jconsole</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         
