@@ -97,20 +97,18 @@
         <Class name="org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtils" />
         <Bug code="OBL" />
     </Match>
-    <!-- TODO hongsheng fix the ignored bug -->
     <Match>
         <Class name="org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.DataMatchDataConsistencyCalculateAlgorithm" />
         <Bug code="OBL" />
     </Match>
-    <!-- TODO hongsheng fix the ignored bug -->
-    <Match>
-        <Class name="org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.ManualBitSet" />
-        <Bug code="IS" />
-    </Match>
-    <!-- TODO hongsheng fix the ignored bug -->
     <Match>
         <Class name="org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient" />
         <Bug code="IS" />
+    </Match>
+    <!-- TODO chuxin fix the ignored bug -->
+    <Match>
+        <Class name="org.apache.shardingsphere.data.pipeline.core.execute.ShardingSphereDataJobWorker" />
+        <Bug code="JLM" />
     </Match>
     <!-- TODO zhengqiang fix the ignored bug -->
     <Match>
