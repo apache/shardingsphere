@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPr
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -85,6 +86,9 @@ public final class DataSourcePropertiesValidator {
     }
     
     private void checkFailFast(final DataSource dataSource) throws SQLException {
-        dataSource.getConnection();
+        // CHECKSTYLE:OFF
+        try (Connection ignored = dataSource.getConnection()) {
+            // CHECKSTYLE:ON
+        }
     }
 }
