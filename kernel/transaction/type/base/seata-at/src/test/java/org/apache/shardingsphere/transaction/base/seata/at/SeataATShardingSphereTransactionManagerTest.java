@@ -162,7 +162,7 @@ class SeataATShardingSphereTransactionManagerTest {
         assertThrows(IllegalStateException.class, seataTransactionManager::rollback);
     }
     
-    private void assertResult(Class<?> requestClass, Class<?> responseClass) {
+    private void assertResult(final Class<?> requestClass, final Class<?> responseClass) {
         if (3 == requestQueue.size()) {
             assertThat(requestQueue.poll(), instanceOf(RegisterTMRequest.class));
             assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
@@ -175,7 +175,6 @@ class SeataATShardingSphereTransactionManagerTest {
             assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
             assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
             assertThat(requestQueue.poll(), instanceOf(requestClass));
-            
             assertThat(responseQueue.poll(), instanceOf(RegisterTMResponse.class));
             assertThat(responseQueue.poll(), instanceOf(RegisterRMResponse.class));
             assertThat(responseQueue.poll(), instanceOf(RegisterRMResponse.class));
