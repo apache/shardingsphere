@@ -1089,9 +1089,6 @@
             <plugin>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>${maven-project-info-reports-plugin.version}</version>
-                <configuration>
-                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -1107,7 +1104,6 @@
                 <artifactId>maven-jxr-plugin</artifactId>
                 <reportSets>
                     <reportSet>
-                        <id>aggregate</id>
                         <reports>
                             <report>aggregate</report>
                         </reports>
