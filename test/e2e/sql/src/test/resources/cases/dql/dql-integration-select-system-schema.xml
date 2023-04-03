@@ -17,6 +17,14 @@
   -->
 
 <integration-test-cases>
+    <test-case sql="select * from shardingsphere.cluster_information;" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion expected-data-file="select_cluster_information.xml" />
+    </test-case>
+    
+    <test-case sql="select * from shardingsphere.sharding_table_statistics order by id;" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db">
+        <assertion expected-data-file="select_sharding_table_statistics.xml" />
+    </test-case>
+    
     <test-case sql="select * from information_schema.innodb_buffer_page;" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_buffer_page.xml" />
     </test-case>
@@ -164,5 +172,4 @@
     <test-case sql="select * from information_schema.innodb_trx;" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_trx.xml" />
     </test-case>
-    
 </integration-test-cases>

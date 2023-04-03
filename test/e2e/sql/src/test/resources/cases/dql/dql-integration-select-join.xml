@@ -276,4 +276,16 @@
     <test-case sql="SELECT * FROM t_order o NATURAL RIGHT JOIN t_merchant m WHERE m.country_id = 1 ORDER BY o.order_id, m.merchant_id, 7" db-types="PostgreSQL,openGauss" scenario-types="db">
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
+    
+    <!-- TODO unsupported -->
+    <test-case sql="SELECT u.user_id, CONCAT(user_name, ' ', password), COUNT(order_id) FROM t_user u LEFT JOIN t_order o ON o.user_id = u.user_id WHERE u.user_name like 'zh%' GROUP BY user_id ORDER BY null" db-types="mysql" scenario-types="db">
+    </test-case>
+    
+    <!-- TODO unsupported -->
+    <test-case sql="SELECT u.user_id, CONCAT(user_name, ' ', password), COUNT(order_id) FROM t_user u LEFT JOIN t_order o ON o.user_id = u.user_id WHERE u.user_name like 'zh%' GROUP BY user_id ORDER BY user_name, password" db-types="mysql" scenario-types="db">
+    </test-case>
+    
+    <!-- TODO unsupported -->
+    <test-case sql="SELECT max(item_id) FROM t_order AS o LEFT JOIN t_order_item i ON o.order_id = i.order_id AND o.status = 'init' LEFT JOIN t_product p ON i.product_id = p.product_id AND i.quantity = 1 WHERE o.order_id = 1000 AND (i.item_id IS NOT NULL OR p.product_id IS NOT NULL)"  db-types="mysql" scenario-types="db">
+    </test-case>
 </integration-test-cases>
