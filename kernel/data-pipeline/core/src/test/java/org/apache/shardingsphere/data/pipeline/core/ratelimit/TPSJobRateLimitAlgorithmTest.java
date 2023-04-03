@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TPSJobRateLimitAlgorithmTest {
     
-    private String tps = "tps";
+    private static final String TPS = "tps";
     
     private TPSJobRateLimitAlgorithm tpsJobRateLimitAlgorithm;
     
@@ -43,13 +43,13 @@ public class TPSJobRateLimitAlgorithmTest {
     
     @Test
     void assertInit() {
-        Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property(tps, "1"));
+        Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property(TPS, "1"));
         assertAll(() -> TypedSPILoader.getService(JobRateLimitAlgorithm.class, "TPS", props));
     }
     
     @Test
     void assertJobRateLimitWithWrongArgumentForTPS() {
-        Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property(tps, "0"));
+        Properties props = PropertiesBuilder.build(new PropertiesBuilder.Property(TPS, "0"));
         assertThrows(JobRateLimitAlgorithmInitializationException.class, () -> TypedSPILoader.getService(JobRateLimitAlgorithm.class, "TPS", props));
     }
     

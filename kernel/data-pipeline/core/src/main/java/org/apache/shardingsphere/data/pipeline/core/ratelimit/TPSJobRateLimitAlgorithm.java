@@ -41,9 +41,8 @@ public final class TPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     public void init(final Properties props) {
         String tpsValue = props.getProperty(TPS_KEY);
         if (!Strings.isNullOrEmpty(tpsValue)) {
-            int value = Integer.parseInt(tpsValue);
-            ShardingSpherePreconditions.checkState(value > 0, () -> new JobRateLimitAlgorithmInitializationException(getType(), "TPS must be a positive number"));
-            tps = value;
+            tps = Integer.parseInt(tpsValue);
+            ShardingSpherePreconditions.checkState(tps > 0, () -> new JobRateLimitAlgorithmInitializationException(getType(), "TPS must be a positive number"));
         }
         rateLimiter = RateLimiter.create(tps);
     }

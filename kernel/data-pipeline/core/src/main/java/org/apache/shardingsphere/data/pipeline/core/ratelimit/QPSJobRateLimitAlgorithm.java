@@ -41,9 +41,8 @@ public final class QPSJobRateLimitAlgorithm implements JobRateLimitAlgorithm {
     public void init(final Properties props) {
         String qpsValue = props.getProperty(QPS_KEY);
         if (!Strings.isNullOrEmpty(qpsValue)) {
-            int value = Integer.parseInt(qpsValue);
-            ShardingSpherePreconditions.checkState(value > 0, () -> new JobRateLimitAlgorithmInitializationException(getType(), "QPS must be a positive number"));
-            qps = value;
+            qps = Integer.parseInt(qpsValue);
+            ShardingSpherePreconditions.checkState(qps > 0, () -> new JobRateLimitAlgorithmInitializationException(getType(), "QPS must be a positive number"));
         }
         rateLimiter = RateLimiter.create(qps);
     }
