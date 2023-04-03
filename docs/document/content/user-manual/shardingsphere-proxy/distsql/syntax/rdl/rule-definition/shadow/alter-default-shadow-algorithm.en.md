@@ -1,6 +1,6 @@
 +++
 title = "ALTER DEFAULT SHADOW ALGORITHM"
-weight = 6
+weight = 5
 +++
 
 ## Description

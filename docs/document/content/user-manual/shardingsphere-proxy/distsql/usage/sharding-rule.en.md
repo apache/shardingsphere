@@ -1,6 +1,6 @@
 +++
 title = "Sharding"
-weight = 2
+weight = 1
 +++
 
 ## Storage unit Operation

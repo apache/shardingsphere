@@ -18,19 +18,16 @@
 package org.apache.shardingsphere.readwritesplitting.route;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.context.ConnectionContext;
-import org.apache.shardingsphere.infra.hint.HintManager;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.readwritesplitting.route.filter.ReadDataSourcesFilter;
+import org.apache.shardingsphere.readwritesplitting.route.qualified.QualifiedReadwriteSplittingDataSourceRouter;
+import org.apache.shardingsphere.readwritesplitting.route.qualified.type.QualifiedReadwriteSplittingPrimaryDataSourceRouter;
+import org.apache.shardingsphere.readwritesplitting.route.standard.StandardReadwriteSplittingDataSourceRouter;
+import org.apache.shardingsphere.readwritesplitting.route.qualified.type.QualifiedReadwriteSplittingTransactionalDataSourceRouter;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Data source router for readwrite-splitting.
@@ -49,60 +46,15 @@ public final class ReadwriteSplittingDataSourceRouter {
      * @return data source name
      */
     public String route(final SQLStatementContext<?> sqlStatementContext) {
-        if (isPrimaryRoute(sqlStatementContext)) {
-            return rule.getWriteDataSource();
+        for (QualifiedReadwriteSplittingDataSourceRouter each : getQualifiedRouters(connectionContext)) {
+            if (each.isQualified(sqlStatementContext, rule)) {
+                return each.route(rule);
+            }
         }
-        if (connectionContext.getTransactionContext().isInTransaction()) {
-            return routeInTransaction();
-        }
-        return routeWithLoadBalancer();
+        return new StandardReadwriteSplittingDataSourceRouter().route(rule);
     }
     
-    private boolean isPrimaryRoute(final SQLStatementContext<?> sqlStatementContext) {
-        return isWriteRouteStatement(sqlStatementContext) || isHintWriteRouteOnly(sqlStatementContext);
-    }
-    
-    private boolean isWriteRouteStatement(final SQLStatementContext<?> sqlStatementContext) {
-        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
-        return containsLockSegment(sqlStatement) || containsLastInsertIdProjection(sqlStatementContext) || !(sqlStatement instanceof SelectStatement);
-    }
-    
-    private boolean containsLockSegment(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof SelectStatement && SelectStatementHandler.getLockSegment((SelectStatement) sqlStatement).isPresent();
-    }
-    
-    private boolean containsLastInsertIdProjection(final SQLStatementContext<?> sqlStatementContext) {
-        return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).getProjectionsContext().isContainsLastInsertIdProjection();
-    }
-    
-    private boolean isHintWriteRouteOnly(final SQLStatementContext<?> sqlStatementContext) {
-        return HintManager.isWriteRouteOnly() || sqlStatementContext instanceof CommonSQLStatementContext && ((CommonSQLStatementContext<?>) sqlStatementContext).isHintWriteRouteOnly();
-    }
-    
-    private String routeInTransaction() {
-        switch (rule.getTransactionalReadQueryStrategy()) {
-            case FIXED:
-                if (null == connectionContext.getTransactionContext().getReadWriteSplitReplicaRoute()) {
-                    connectionContext.getTransactionContext().setReadWriteSplitReplicaRoute(routeWithLoadBalancer());
-                }
-                return connectionContext.getTransactionContext().getReadWriteSplitReplicaRoute();
-            case DYNAMIC:
-                return routeWithLoadBalancer();
-            case PRIMARY:
-            default:
-                return rule.getWriteDataSource();
-        }
-    }
-    
-    private String routeWithLoadBalancer() {
-        return rule.getLoadBalancer().getDataSource(rule.getName(), rule.getWriteDataSource(), getFilteredReadDataSources());
-    }
-    
-    private List<String> getFilteredReadDataSources() {
-        List<String> result = rule.getReadwriteSplittingStrategy().getReadDataSources();
-        for (ReadDataSourcesFilter each : ShardingSphereServiceLoader.getServiceInstances(ReadDataSourcesFilter.class)) {
-            result = each.filter(rule, result);
-        }
-        return result;
+    private Collection<QualifiedReadwriteSplittingDataSourceRouter> getQualifiedRouters(final ConnectionContext connectionContext) {
+        return Arrays.asList(new QualifiedReadwriteSplittingPrimaryDataSourceRouter(), new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext));
     }
 }

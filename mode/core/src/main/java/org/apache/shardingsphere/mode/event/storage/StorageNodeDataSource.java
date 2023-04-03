@@ -31,10 +31,4 @@ public final class StorageNodeDataSource {
     private final StorageNodeRole role;
     
     private final DataSourceState status;
-    
-    private final long replicationDelayMilliseconds;
-    
-    public StorageNodeDataSource(final StorageNodeRole role, final DataSourceState status) {
-        this(role, status, 0L);
-    }
 }

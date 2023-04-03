@@ -1,6 +1,6 @@
 +++
 title = "SHOW MASK RULES"
-weight = 2
+weight = 1
 +++
 
 ### Description
@@ -33,12 +33,12 @@ databaseName ::=
 
 ### Return value description
 
-| Column                    | Description                   |
-| ------------------------- |-------------------------------|
-| table                     | Table name                    |
-| column                    | Column name                   |
-| algorithm_type            | Mask algorithm type           |
-| algorithm_props           | Mask algorithm properties     |
+| Column          | Description               |
+|-----------------|---------------------------|
+| table           | Table name                |
+| column          | Column name               |
+| algorithm_type  | Mask algorithm type       |
+| algorithm_props | Mask algorithm properties |
 
 
 

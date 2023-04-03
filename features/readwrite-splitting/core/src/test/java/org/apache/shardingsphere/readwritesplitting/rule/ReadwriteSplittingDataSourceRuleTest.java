@@ -24,7 +24,6 @@ import org.apache.shardingsphere.readwritesplitting.api.transaction.Transactiona
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,8 +34,8 @@ class ReadwriteSplittingDataSourceRuleTest {
     void assertGetWriteDataSource() {
         ReadwriteSplittingDataSourceRule readwriteSplittingDataSourceRule = new ReadwriteSplittingDataSourceRule(
                 new ReadwriteSplittingDataSourceRuleConfiguration("test_pr",
-                        new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, null),
-                TransactionalReadQueryStrategy.DYNAMIC, new RandomReadQueryLoadBalanceAlgorithm(), Collections.emptyList());
+                        new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), TransactionalReadQueryStrategy.DYNAMIC, null),
+                TransactionalReadQueryStrategy.DYNAMIC, new RandomReadQueryLoadBalanceAlgorithm());
         String writeDataSourceName = readwriteSplittingDataSourceRule.getWriteDataSource();
         assertThat(writeDataSourceName, is("write_ds"));
     }

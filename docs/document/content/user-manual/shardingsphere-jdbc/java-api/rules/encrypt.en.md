@@ -1,6 +1,6 @@
 +++
 title = "Encryption"
-weight = 5
+weight = 4
 +++
 
 ## Background
@@ -16,7 +16,7 @@ Class name: org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguratio
 Attributes:
 
 | *Name*                    | *DataType*                                  | *Description*                                                                                  | *Default Value* |
-| ------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------- |
+|---------------------------|---------------------------------------------|------------------------------------------------------------------------------------------------|-----------------|
 | tables (+)                | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rule configurations                                                              |                 |
 | encryptors (+)            | Map\<String, AlgorithmConfiguration\>       | Encrypt algorithm name and configurations                                                      |                 |
 | queryWithCipherColumn (?) | boolean                                     | Whether query with cipher column for data encrypt. User you can use plaintext to query if have | true            |
@@ -27,10 +27,10 @@ Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleCo
 
 Attributes:
 
-| *Name*                    | *DataType*                                   | *Description*                      |
-| ------------------------- | -------------------------------------------- | ---------------------------------- |
-| name                      | String                                       | Table name                         |
-| columns (+)               | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rule configurations |
+| *Name*                    | *DataType*                                   | *Description*                                                       |
+|---------------------------|----------------------------------------------|---------------------------------------------------------------------|
+| name                      | String                                       | Table name                                                          |
+| columns (+)               | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rule configurations                                  |
 | queryWithCipherColumn (?) | boolean                                      | The current table whether query with cipher column for data encrypt |
 
 ### Encrypt Column Rule Configuration
@@ -40,7 +40,7 @@ Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleC
 Attributes:
 
 | *Name*                     | *DataType* | *Description*                                                        |
-|----------------------------| ---------- |----------------------------------------------------------------------|
+|----------------------------|------------|----------------------------------------------------------------------|
 | logicColumn                | String     | Logic column name                                                    |
 | cipherColumn               | String     | Cipher column name                                                   |
 | assistedQueryColumn (?)    | String     | Assisted query column name                                           |
@@ -58,7 +58,7 @@ Class name: org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfigurat
 Attributes:
 
 | *Name*     | *DataType* | *Description*                |
-| ---------- | ---------- | ---------------------------- |
+|------------|------------|------------------------------|
 | name       | String     | Encrypt algorithm name       |
 | type       | String     | Encrypt algorithm type       |
 | properties | Properties | Encrypt algorithm properties |

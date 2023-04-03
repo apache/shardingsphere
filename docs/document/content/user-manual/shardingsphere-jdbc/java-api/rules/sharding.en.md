@@ -16,7 +16,7 @@ Class name: org.apache.shardingsphere.sharding.api.config.ShardingRuleConfigurat
 Attributes:
 
 | *Name*                              | *DataType*                                       | *Description*                                    | *Default Value*         |
-| ----------------------------------- | ------------------------------------------------ | ------------------------------------------------ | ----------------------- |
+|-------------------------------------|--------------------------------------------------|--------------------------------------------------|-------------------------|
 | tables (+)                          | Collection\<ShardingTableRuleConfiguration\>     | Sharding table rules                             | -                       |
 | autoTables (+)                      | Collection\<ShardingAutoTableRuleConfiguration\> | Sharding auto table rules                        | -                       |
 | bindingTableGroups (*)              | Collection\<String\>                             | Binding table rules                              | Empty                   |
@@ -37,7 +37,7 @@ Class name: org.apache.shardingsphere.sharding.api.config.ShardingTableRuleConfi
 Attributes:
 
 | *Name*                       | *DataType*                         | *Description*                                                                                                                         | *Default Value*                            |
-| ---------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+|------------------------------|------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|
 | logicTable                   | String                             | Name of sharding logic table                                                                                                          | -                                          |
 | actualDataNodes (?)          | String                             | Describe data source names and actual tables, delimiter as point.<br /> Multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only |
 | databaseShardingStrategy (?) | ShardingStrategyConfiguration      | Databases sharding strategy                                                                                                           | Use default databases sharding strategy    |
@@ -52,7 +52,7 @@ Class name: org.apache.shardingsphere.sharding.api.config.ShardingAutoTableRuleC
 Attributes:
 
 | *Name*                  | *DataType*                    | *Description*                                               | *Default Value*                 |
-| ----------------------- | ----------------------------- | ----------------------------------------------------------- | ------------------------------- |
+|-------------------------|-------------------------------|-------------------------------------------------------------|---------------------------------|
 | logicTable              | String                        | Name of sharding logic table                                | -                               |
 | actualDataSources (?)   | String                        | Data source names.<br /> Multiple data nodes split by comma | Use all configured data sources |
 | shardingStrategy (?)    | ShardingStrategyConfiguration | Sharding strategy                                           | Use default sharding strategy   |
@@ -67,7 +67,7 @@ Class name: org.apache.shardingsphere.sharding.api.config.strategy.sharding.Stan
 Attributes:
 
 | *Name*                | *DataType* | *Description*           |
-| --------------------- | ---------- | ----------------------- |
+|-----------------------|------------|-------------------------|
 | shardingColumn        | String     | Sharding column name    |
 | shardingAlgorithmName | String     | Sharding algorithm name |
 
@@ -78,7 +78,7 @@ Class name: org.apache.shardingsphere.sharding.api.config.strategy.sharding.Comp
 Attributes:
 
 | *Name*                | *DataType* | *Description*                             |
-| --------------------- | ---------- | ----------------------------------------- |
+|-----------------------|------------|-------------------------------------------|
 | shardingColumns       | String     | Sharding column name, separated by commas |
 | shardingAlgorithmName | String     | Sharding algorithm name                   |
 
@@ -89,7 +89,7 @@ Class name: org.apache.shardingsphere.sharding.api.config.strategy.sharding.Hint
 Attributes:
 
 | *Name*                | *DataType* | *Description*           |
-| --------------------- | ---------- | ----------------------- |
+|-----------------------|------------|-------------------------|
 | shardingAlgorithmName | String     | Sharding algorithm name |
 
 #### None Sharding Strategy Configuration
@@ -107,7 +107,7 @@ Class name: org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGen
 Attributes:
 
 | *Name*           | *DataType* | *Description*               |
-| ---------------- | ---------- | --------------------------- |
+|------------------|------------|-----------------------------|
 | column           | String     | Column name of key generate |
 | keyGeneratorName | String     | key generate algorithm name |
 
@@ -119,10 +119,10 @@ Class name：org.apache.shardingsphere.sharding.api.config.strategy.audit.Shardi
 
 Attributes：
 
-| *Name*           | *DataType*            | *Description*                         |
-| ---------------- | --------------------- | ------------------------------------- |
-| auditorNames     | Collection\<String\>  | Sharding audit algorithm name         |
-| allowHintDisable | Boolean               | Enable or disable sharding audit hint |
+| *Name*           | *DataType*           | *Description*                         |
+|------------------|----------------------|---------------------------------------|
+| auditorNames     | Collection\<String\> | Sharding audit algorithm name         |
+| allowHintDisable | Boolean              | Enable or disable sharding audit hint |
 
 Please refer to [Built-in Sharding Audit Algorithm List](/en/user-manual/common-config/builtin-algorithm/audit) for more details about type of algorithm.
 

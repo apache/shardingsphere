@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHADOW RULE"
-weight = 2
+weight = 1
 +++
 
 ### 描述
@@ -33,12 +33,12 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列           | 说明           |
-| ------------ | ------------- |
-| rule_name    | 规则名称       |
-| source_name  | 数据源名称     | 
-| shadow_name  | 影子数据源名称  |
-| shadow_table | 影子表         |
+| 列            | 说明      |
+|--------------|---------|
+| rule_name    | 规则名称    |
+| source_name  | 数据源名称   | 
+| shadow_name  | 影子数据源名称 |
+| shadow_table | 影子表     |
 
 ### 示例
 

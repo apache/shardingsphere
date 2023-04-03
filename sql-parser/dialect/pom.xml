@@ -49,7 +49,7 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-it-parser</artifactId>
+            <artifactId>shardingsphere-it-parser</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

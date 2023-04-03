@@ -1,6 +1,6 @@
 +++
 title = "SHOW STATUS FROM READWRITE_SPLITTING RULE"
-weight = 3
+weight = 2
 +++
 
 ### Description

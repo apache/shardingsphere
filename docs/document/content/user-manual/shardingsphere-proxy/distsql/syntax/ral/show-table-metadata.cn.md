@@ -1,6 +1,6 @@
 +++
 title = "SHOW TABLE METADATA"
-weight = 8
+weight = 7
 +++
 
 ### 描述
@@ -29,10 +29,10 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列          | 说明       |
-|-------------|-----------|
+| 列           | 说明    |
+|-------------|-------|
 | schema_name | 逻辑库名称 |
-| table_name  | 表名称    |
+| table_name  | 表名称   |
 | type        | 元数据类型 |
 | name        | 元数据名称 |
 

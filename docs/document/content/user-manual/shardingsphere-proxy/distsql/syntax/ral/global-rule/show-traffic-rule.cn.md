@@ -1,6 +1,6 @@
 +++
 title = "SHOW TRAFFIC RULE"
-weight = 9
+weight = 6
 +++
 
 ### 描述
@@ -29,10 +29,10 @@ ruleName ::=
 
 ### 返回值说明
 
-| 列                   | 说明         |
-|---------------------|--------------|
+| 列                   | 说明      |
+|---------------------|---------|
 | name                | 双路由规则名称 |
-| labels              | 计算节点标签   |
+| labels              | 计算节点标签  |
 | algorithm_type      | 双路由算法类型 |
 | algorithm_props     | 双路由算法参数 |
 | load_balancer_type  | 负载均衡器类型 |

@@ -1,6 +1,6 @@
 +++
 title = "SHOW READWRITE_SPLITTING RULE"
-weight = 2
+weight = 1
 +++
 
 ### Description

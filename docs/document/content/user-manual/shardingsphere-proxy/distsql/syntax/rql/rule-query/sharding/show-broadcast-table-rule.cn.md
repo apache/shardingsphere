@@ -1,6 +1,6 @@
 +++
 title = "SHOW BROADCAST TABLE RULE"
-weight = 15
+weight = 14
 +++
 
 ## 描述
@@ -30,9 +30,9 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列                | 说明      |
-|------------------|-----------|
-|  broadcast_table | 广播表名称 |
+| 列               | 说明    |
+|-----------------|-------|
+| broadcast_table | 广播表名称 |
 
 ### 示例
 

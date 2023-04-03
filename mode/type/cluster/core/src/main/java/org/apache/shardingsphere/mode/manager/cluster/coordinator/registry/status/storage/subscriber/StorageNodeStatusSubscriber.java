@@ -18,16 +18,12 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.yaml.YamlStorageNodeDataSourceSwapper;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.event.storage.DataSourceDisabledEvent;
-import org.apache.shardingsphere.mode.event.storage.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceDeletedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -53,17 +49,6 @@ public final class StorageNodeStatusSubscriber {
     public void update(final DataSourceDisabledEvent event) {
         repository.persist(StorageNode.getStorageNodeDataSourcePath(new QualifiedDatabase(event.getDatabaseName(), event.getGroupName(), event.getDataSourceName())),
                 YamlEngine.marshal(new YamlStorageNodeDataSourceSwapper().swapToYamlConfiguration(event.getStorageNodeDataSource())));
-    }
-    
-    /**
-     * Update primary data source state.
-     *
-     * @param event primary data source event
-     */
-    @Subscribe
-    public void update(final PrimaryDataSourceChangedEvent event) {
-        repository.persist(StorageNode.getStorageNodeDataSourcePath(event.getQualifiedDatabase()),
-                YamlEngine.marshal(new YamlStorageNodeDataSourceSwapper().swapToYamlConfiguration(new StorageNodeDataSource(StorageNodeRole.PRIMARY, DataSourceState.ENABLED))));
     }
     
     /**

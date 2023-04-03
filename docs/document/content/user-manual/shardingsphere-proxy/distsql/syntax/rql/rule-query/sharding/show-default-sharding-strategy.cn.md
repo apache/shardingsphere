@@ -1,6 +1,6 @@
 +++
 title = "SHOW DEFAULT SHARDING STRATEGY"
-weight = 5
+weight = 4
 +++
 
 ### 描述
@@ -30,14 +30,14 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列                       | 说明          |
-| ------------------------| --------------|
-| name                    | 分片策略范围 |
-| type                    | 分片策略类型    |
-| sharding_column         | 分片键         |
-| sharding_algorithm_name | 分片算法名称    |
-| sharding_algorithm_type | 分片算法类型    |
-| sharding_algorithm_props| 分片算法参数    |
+| 列                        | 说明     |
+|--------------------------|--------|
+| name                     | 分片策略范围 |
+| type                     | 分片策略类型 |
+| sharding_column          | 分片键    |
+| sharding_algorithm_name  | 分片算法名称 |
+| sharding_algorithm_type  | 分片算法类型 |
+| sharding_algorithm_props | 分片算法参数 |
 
 ### 示例
 

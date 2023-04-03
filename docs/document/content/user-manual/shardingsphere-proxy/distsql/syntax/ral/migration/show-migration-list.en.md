@@ -1,6 +1,6 @@
 +++
 title = "SHOW MIGRATION LIST"
-weight = 8
+weight = 7
 +++
 
 ### Description

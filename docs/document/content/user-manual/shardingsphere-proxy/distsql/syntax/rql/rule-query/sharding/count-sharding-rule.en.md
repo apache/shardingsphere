@@ -1,6 +1,6 @@
 +++
 title = "COUNT SHARDING RULE"
-weight = 16
+weight = 15
 +++
 
 ### Description
@@ -30,11 +30,11 @@ databaseName ::=
 
 ### Return value description
 
-| Column    | Description                             |
-| ----------| ----------------------------------------|
-| rule_name | rule type                               |
-| database  | the database to which the rule belongs  |
-| count     | the number of the rule                  |
+| Column    | Description                            |
+|-----------|----------------------------------------|
+| rule_name | rule type                              |
+| database  | the database to which the rule belongs |
+| count     | the number of the rule                 |
 
 
 ### Example

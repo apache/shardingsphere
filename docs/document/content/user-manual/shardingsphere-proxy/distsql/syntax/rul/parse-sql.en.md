@@ -23,10 +23,10 @@ ParseSql ::=
 
 ### Return Value Description
 
-| Column                   | Description                     |
-|--------------------------|---------------------------------|
-| parsed_statement         | parsed SQL statement type       |
-| parsed_statement_detail  | detail of the parsed statement  |
+| Column                  | Description                    |
+|-------------------------|--------------------------------|
+| parsed_statement        | parsed SQL statement type      |
+| parsed_statement_detail | detail of the parsed statement |
 
 ### Example
 
