@@ -27,7 +27,7 @@ on:
         type: string
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Dspotbugs.skip=true -Dspotless.apply.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Dspotless.apply.skip=true
   REPOSITORY: apache/shardingsphere
   REPOSITORY_NAME: shardingsphere
   HUB: ghcr.io/apache/shardingsphere
@@ -125,4 +125,4 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push docker image
-        run: ./mvnw -am -pl distribution/proxy-native -Pnative,docker.buildx.push.native -B -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dspotless.apply.skip=true -Dproxy.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.image.tag=${{ github.sha }} clean package
+        run: ./mvnw -am -pl distribution/proxy-native -Pnative,docker.buildx.push.native -B -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dproxy.image.repository=${{ env.PROXY_NATIVE }} -Dproxy.image.tag=${{ github.sha }} clean package
