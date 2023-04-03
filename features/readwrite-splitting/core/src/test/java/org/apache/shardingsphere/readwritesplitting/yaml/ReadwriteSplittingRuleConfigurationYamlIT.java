@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.yaml;
 
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.strategy.YamlStaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
@@ -25,14 +26,18 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class ReadwriteSplittingRuleConfigurationYamlIT extends YamlRuleConfigurationIT<YamlReadwriteSplittingRuleConfiguration> {
+class ReadwriteSplittingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
     ReadwriteSplittingRuleConfigurationYamlIT() {
         super("yaml/readwrite-splitting-rule.yaml");
     }
     
     @Override
-    protected void assertYamlRuleConfiguration(final YamlReadwriteSplittingRuleConfiguration actual) {
+    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
+        assertReadwriteSplittingRule((YamlReadwriteSplittingRuleConfiguration) actual.getRules().iterator().next());
+    }
+    
+    private void assertReadwriteSplittingRule(final YamlReadwriteSplittingRuleConfiguration actual) {
         assertThat(actual.getDataSources().size(), is(2));
         assertReadwriteSplittingRuleForDs0(actual);
         assertReadwriteSplittingRuleForDs1(actual);
