@@ -400,6 +400,12 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>com.ctrip.framework.apollo</groupId>
+                <artifactId>apollo-client</artifactId>
+                <version>${apollo-client.version}</version>
+                <scope>provided</scope>
+            </dependency>
             
             <dependency>
                 <groupId>org.apache.shardingsphere.elasticjob</groupId>
@@ -605,13 +611,6 @@
                 <groupId>org.graalvm.truffle</groupId>
                 <artifactId>truffle-api</artifactId>
                 <version>${truffle-api.version}</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>com.ctrip.framework.apollo</groupId>
-                <artifactId>apollo-client</artifactId>
-                <version>${apollo-client.version}</version>
-                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
