@@ -110,7 +110,11 @@
         <projections start-index="7" stop-index="35">
             <expression-projection text="SUBSTRING('foobarbar' from 4)" start-index="7" stop-index="35">
                 <expr>
-                    <function function-name="SUBSTRING" start-index="7" stop-index="35" text="SUBSTRING('foobarbar' from 4)" />
+                    <function function-name="SUBSTRING" start-index="7" stop-index="35" text="SUBSTRING('foobarbar' from 4)" >
+                        <parameter>
+                            <literal-expression value="foobarbar" start-index="17" stop-index="27" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
