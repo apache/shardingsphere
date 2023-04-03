@@ -29,7 +29,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>it-yaml</module>
+        <module>yaml</module>
         <module>parser</module>
         <module>optimizer</module>
         <module>rewriter</module>
