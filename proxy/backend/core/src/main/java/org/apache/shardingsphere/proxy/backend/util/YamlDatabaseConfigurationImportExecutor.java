@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.util;
 
 import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
@@ -80,7 +79,6 @@ import java.util.stream.Collectors;
 /**
  * Yaml database configuration import executor.
  */
-@Slf4j
 public final class YamlDatabaseConfigurationImportExecutor {
     
     private final ShardingRuleConfigurationImportChecker shardingRuleConfigImportChecker = new ShardingRuleConfigurationImportChecker();
@@ -186,11 +184,11 @@ public final class YamlDatabaseConfigurationImportExecutor {
             }
         }
         ruleConfigsMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())
-                .forEach(each -> addRulesAndCheck(allRuleConfigs, ruleConfigsMap.get(each), database));
+                .forEach(each -> addRules(allRuleConfigs, ruleConfigsMap.get(each), database));
         metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), allRuleConfigs);
     }
     
-    private void addRulesAndCheck(final Collection<RuleConfiguration> allRuleConfigs, final Collection<RuleConfiguration> ruleConfigs, final ShardingSphereDatabase database) {
+    private void addRules(final Collection<RuleConfiguration> allRuleConfigs, final Collection<RuleConfiguration> ruleConfigs, final ShardingSphereDatabase database) {
         RuleConfiguration ruleConfig = ruleConfigs.stream().findFirst().orElse(null);
         if (null == ruleConfig) {
             return;
