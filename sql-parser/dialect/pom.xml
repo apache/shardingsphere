@@ -36,10 +36,6 @@
         <module>opengauss</module>
     </modules>
     
-    <properties>
-        <antlr.output.directory>${basedir}/target/generated-sources/antlr4</antlr.output.directory>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
