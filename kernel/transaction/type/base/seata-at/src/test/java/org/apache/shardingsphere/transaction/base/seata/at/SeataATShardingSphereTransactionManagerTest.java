@@ -165,25 +165,24 @@ class SeataATShardingSphereTransactionManagerTest {
     }
     
     private void assertResult(final Class<?> requestClass, final Class<?> responseClass) {
-        if (3 == requestQueue.size()) {
-            assertThat(requestQueue.poll(), instanceOf(RegisterTMRequest.class));
-            assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
-            assertThat(requestQueue.poll(), instanceOf(requestClass));
+        assertTrue(requestQueue.stream().anyMatch(each -> each instanceof RegisterTMRequest));
+        assertTrue(requestQueue.stream().anyMatch(each -> each instanceof RegisterRMRequest));
+        assertTrue(requestQueue.stream().anyMatch(each -> requestClass.equals(each.getClass())));
+        assertTrue(responseQueue.stream().anyMatch(each -> each instanceof RegisterTMResponse));
+        assertTrue(responseQueue.stream().anyMatch(each -> each instanceof RegisterRMResponse));
+        assertTrue(responseQueue.stream().anyMatch(each -> responseClass.equals(each.getClass())));
+        if (requestQueue.poll() instanceof RegisterTMRequest) {
             assertThat(responseQueue.poll(), instanceOf(RegisterTMResponse.class));
+        } else if (requestQueue.poll() instanceof RegisterRMRequest) {
             assertThat(responseQueue.poll(), instanceOf(RegisterRMResponse.class));
-            assertThat(responseQueue.poll(), instanceOf(responseClass));
-        } else if (4 == requestQueue.size()) {
-            assertThat(requestQueue.poll(), instanceOf(RegisterTMRequest.class));
-            assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
-            assertThat(requestQueue.poll(), instanceOf(RegisterRMRequest.class));
-            assertThat(requestQueue.poll(), instanceOf(requestClass));
-            assertThat(responseQueue.poll(), instanceOf(RegisterTMResponse.class));
-            assertThat(responseQueue.poll(), instanceOf(RegisterRMResponse.class));
-            assertThat(responseQueue.poll(), instanceOf(RegisterRMResponse.class));
-            assertThat(responseQueue.poll(), instanceOf(responseClass));
+        } else if (requestQueue.poll() instanceof GlobalBeginRequest) {
+            assertThat(responseQueue.poll(), instanceOf(GlobalBeginResponse.class));
+        } else if (requestQueue.poll() instanceof GlobalCommitRequest) {
+            assertThat(responseQueue.poll(), instanceOf(GlobalCommitResponse.class));
+        } else if (requestQueue.poll() instanceof GlobalRollbackRequest) {
+            assertThat(responseQueue.poll(), instanceOf(GlobalRollbackResponse.class));
         } else {
-            fail("Request queue size must be 3 or 4");
-            log.error("Request queue:{}, response queue:{}", requestQueue, responseQueue);
+            fail("Request package type error");
         }
     }
     

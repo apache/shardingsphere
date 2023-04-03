@@ -38,5 +38,41 @@
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
+        
+        <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
     </properties>
+    
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>net.nicoulaj.maven.plugins</groupId>
+                    <artifactId>checksum-maven-plugin</artifactId>
+                    <version>${checksum-maven-plugin.version}</version>
+                    <configuration>
+                        <appendFilename>true</appendFilename>
+                        <algorithms>
+                            <algorithm>SHA-512</algorithm>
+                        </algorithms>
+                        <fileSets>
+                            <fileSet>
+                                <includes>
+                                    <include>*.tar.gz</include>
+                                    <include>*.zip</include>
+                                </includes>
+                            </fileSet>
+                        </fileSets>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>artifacts</goal>
+                            </goals>
+                            <phase>package</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
