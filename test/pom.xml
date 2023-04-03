@@ -34,6 +34,7 @@
         
         <module>it</module>
         <module>e2e</module>
+        <module>it/shardingsphere-it-yaml</module>
     </modules>
     
     <properties>
