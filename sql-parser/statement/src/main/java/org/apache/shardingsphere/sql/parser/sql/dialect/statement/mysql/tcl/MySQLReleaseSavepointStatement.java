@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL release savepoint statement.
  */
-public final class MySQLReleaseSavepointStatement extends ReleaseSavepointStatement implements OpenGaussStatement {
+public final class MySQLReleaseSavepointStatement extends ReleaseSavepointStatement implements MySQLStatement {
 }
