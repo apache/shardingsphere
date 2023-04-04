@@ -24,7 +24,6 @@ import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTes
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
-import org.junit.Assert;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -32,6 +31,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Transaction type holder test case.
@@ -52,7 +52,7 @@ public final class TransactionTypeHolderTestCase extends BaseTransactionTestCase
             connection.rollback();
         } finally {
             TransactionTypeHolder.clear();
-            Assert.assertNull(TransactionTypeHolder.get());
+            assertNull(TransactionTypeHolder.get());
         }
     }
 }
