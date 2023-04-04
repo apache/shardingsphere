@@ -121,19 +121,22 @@
         <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
         <os-maven-plugin.version>1.6.2</os-maven-plugin.version>
         
-        <!-- Compile & Release plugin versions -->
+        <!-- Compile plugin versions -->
         <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
         <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
+        <jandex-maven-plugin.version>3.0.5</jandex-maven-plugin.version>
+        <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
+        <maven-dependency-plugin.version>3.5.0</maven-dependency-plugin.version>
+        
+        <!-- Release plugin versions -->
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
         <maven-release-plugin.version>3.0.0</maven-release-plugin.version>
         <maven-assembly-plugin.version>3.5.0</maven-assembly-plugin.version>
         <maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
-        <jandex-maven-plugin.version>3.0.5</jandex-maven-plugin.version>
-        <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
         
         <!-- Check plugin versions -->
         <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
@@ -151,7 +154,6 @@
         <maven-site-plugin.version>4.0.0-M6</maven-site-plugin.version>
         <maven-project-info-reports-plugin.version>3.4.2</maven-project-info-reports-plugin.version>
         <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
-        <maven-dependency-plugin.version>3.5.0</maven-dependency-plugin.version>
         <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
         <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
         <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
@@ -699,7 +701,7 @@
                     <version>${docker-compose-maven-plugin.version}</version>
                 </plugin>
                 
-                <!-- Compile & Release plugins -->
+                <!-- Compile plugins -->
                 <plugin>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <version>${maven-enforcer-plugin.version}</version>
@@ -748,6 +750,36 @@
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${maven-jar-plugin.version}</version>
                 </plugin>
+                <plugin>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven-dependency-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>io.smallrye</groupId>
+                    <artifactId>jandex-maven-plugin</artifactId>
+                    <version>${jandex-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${build-helper-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>add-source</id>
+                            <goals>
+                                <goal>add-source</goal>
+                            </goals>
+                            <phase>generate-sources</phase>
+                            <configuration>
+                                <sources>
+                                    <source>${antlr.output.directory}</source>
+                                </sources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                
+                <!-- Release plugins -->
                 <plugin>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>${maven-source-plugin.version}</version>
@@ -802,30 +834,6 @@
                             <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                         </transformers>
                     </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>io.smallrye</groupId>
-                    <artifactId>jandex-maven-plugin</artifactId>
-                    <version>${jandex-maven-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>${build-helper-maven-plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>add-source</id>
-                            <goals>
-                                <goal>add-source</goal>
-                            </goals>
-                            <phase>generate-sources</phase>
-                            <configuration>
-                                <sources>
-                                    <source>${antlr.output.directory}</source>
-                                </sources>
-                            </configuration>
-                        </execution>
-                    </executions>
                 </plugin>
                 
                 <!-- Check plugins -->
@@ -985,14 +993,6 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>${maven-dependency-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-jxr-plugin</artifactId>
-                    <version>${maven-jxr-plugin.version}</version>
-                </plugin>
-                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>jdepend-maven-plugin</artifactId>
                     <version>${jdepend-maven-plugin.version}</version>
@@ -1009,7 +1009,21 @@
         </pluginManagement>
         
         <plugins>
-            <!-- Compile & Release plugins -->
+            <!-- Compile plugins -->
+            <plugin>
+                <groupId>io.smallrye</groupId>
+                <artifactId>jandex-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>make-index</id>
+                        <goals>
+                            <goal>jandex</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <!-- Release plugins -->
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
             </plugin>
@@ -1020,18 +1034,6 @@
                         <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>io.smallrye</groupId>
-                <artifactId>jandex-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>make-index</id>
-                        <goals>
-                            <goal>jandex</goal>
                         </goals>
                     </execution>
                 </executions>
