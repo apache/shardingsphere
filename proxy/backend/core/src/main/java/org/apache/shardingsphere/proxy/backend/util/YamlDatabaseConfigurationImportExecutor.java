@@ -68,10 +68,13 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 /**
  * Yaml database configuration import executor.
@@ -145,43 +148,96 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void addRules(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
-        if (yamlRuleConfigs == null || yamlRuleConfigs.isEmpty()) {
+        if (null == yamlRuleConfigs || yamlRuleConfigs.isEmpty()) {
             return;
         }
-        Collection<RuleConfiguration> ruleConfigs = new LinkedList<>();
+        Collection<RuleConfiguration> allRuleConfigs = new LinkedList<>();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-        Collection<ShardingSphereRule> rules = database.getRuleMetaData().getRules();
+        Map<Integer, Collection<RuleConfiguration>> ruleConfigsMap = new HashMap<>();
         for (YamlRuleConfiguration each : yamlRuleConfigs) {
             if (each instanceof YamlShardingRuleConfiguration) {
-                ShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject((YamlShardingRuleConfiguration) each);
-                shardingRuleConfigImportChecker.check(database, shardingRuleConfig);
-                ruleConfigs.add(shardingRuleConfig);
-                rules.add(new ShardingRule(shardingRuleConfig, database.getResourceMetaData().getDataSources().keySet(), instanceContext));
+                YamlShardingRuleConfigurationSwapper swapper = new YamlShardingRuleConfigurationSwapper();
+                ShardingRuleConfiguration shardingRuleConfig = swapper.swapToObject((YamlShardingRuleConfiguration) each);
+                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
+                ruleConfigsMap.get(swapper.getOrder()).add(shardingRuleConfig);
             } else if (each instanceof YamlReadwriteSplittingRuleConfiguration) {
-                ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = new YamlReadwriteSplittingRuleConfigurationSwapper().swapToObject((YamlReadwriteSplittingRuleConfiguration) each);
-                readwriteSplittingRuleConfigImportChecker.check(database, readwriteSplittingRuleConfig);
-                ruleConfigs.add(readwriteSplittingRuleConfig);
-                rules.add(new ReadwriteSplittingRule(databaseName, readwriteSplittingRuleConfig, rules, instanceContext));
+                YamlReadwriteSplittingRuleConfigurationSwapper swapper = new YamlReadwriteSplittingRuleConfigurationSwapper();
+                ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = swapper.swapToObject((YamlReadwriteSplittingRuleConfiguration) each);
+                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
+                ruleConfigsMap.get(swapper.getOrder()).add(readwriteSplittingRuleConfig);
             } else if (each instanceof YamlEncryptRuleConfiguration) {
-                EncryptRuleConfiguration encryptRuleConfig = new YamlEncryptRuleConfigurationSwapper().swapToObject((YamlEncryptRuleConfiguration) each);
-                encryptRuleConfigImportChecker.check(database, encryptRuleConfig);
-                ruleConfigs.add(encryptRuleConfig);
-                rules.add(new EncryptRule(encryptRuleConfig));
+                YamlEncryptRuleConfigurationSwapper swapper = new YamlEncryptRuleConfigurationSwapper();
+                EncryptRuleConfiguration encryptRuleConfig = swapper.swapToObject((YamlEncryptRuleConfiguration) each);
+                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
+                ruleConfigsMap.get(swapper.getOrder()).add(encryptRuleConfig);
             } else if (each instanceof YamlShadowRuleConfiguration) {
-                ShadowRuleConfiguration shadowRuleConfig = new YamlShadowRuleConfigurationSwapper().swapToObject((YamlShadowRuleConfiguration) each);
-                shadowRuleConfigImportChecker.check(database, shadowRuleConfig);
-                ruleConfigs.add(shadowRuleConfig);
-                rules.add(new ShadowRule(shadowRuleConfig));
+                YamlShadowRuleConfigurationSwapper swapper = new YamlShadowRuleConfigurationSwapper();
+                ShadowRuleConfiguration shadowRuleConfig = swapper.swapToObject((YamlShadowRuleConfiguration) each);
+                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
+                ruleConfigsMap.get(swapper.getOrder()).add(shadowRuleConfig);
             } else if (each instanceof YamlMaskRuleConfiguration) {
-                MaskRuleConfiguration maskRuleConfig = new YamlMaskRuleConfigurationSwapper().swapToObject((YamlMaskRuleConfiguration) each);
-                maskRuleConfigImportChecker.check(database, maskRuleConfig);
-                ruleConfigs.add(maskRuleConfig);
-                rules.add(new MaskRule(maskRuleConfig));
+                YamlMaskRuleConfigurationSwapper swapper = new YamlMaskRuleConfigurationSwapper();
+                MaskRuleConfiguration maskRuleConfig = swapper.swapToObject((YamlMaskRuleConfiguration) each);
+                ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
+                ruleConfigsMap.get(swapper.getOrder()).add(maskRuleConfig);
             }
         }
-        metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), ruleConfigs);
+        ruleConfigsMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())
+                .forEach(each -> addRules(allRuleConfigs, ruleConfigsMap.get(each), database));
+        metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), allRuleConfigs);
+    }
+    
+    private void addRules(final Collection<RuleConfiguration> allRuleConfigs, final Collection<RuleConfiguration> ruleConfigs, final ShardingSphereDatabase database) {
+        RuleConfiguration ruleConfig = ruleConfigs.stream().findFirst().orElse(null);
+        if (null == ruleConfig) {
+            return;
+        }
+        if (ruleConfig instanceof ShardingRuleConfiguration) {
+            ruleConfigs.forEach(each -> addShardingRuleConfiguration((ShardingRuleConfiguration) each, allRuleConfigs, database));
+        } else if (ruleConfig instanceof ReadwriteSplittingRuleConfiguration) {
+            ruleConfigs.forEach(each -> addReadwriteSplittingRuleConfiguration((ReadwriteSplittingRuleConfiguration) each, allRuleConfigs, database));
+        } else if (ruleConfig instanceof EncryptRuleConfiguration) {
+            ruleConfigs.forEach(each -> addEncryptRuleConfiguration((EncryptRuleConfiguration) each, allRuleConfigs, database));
+        } else if (ruleConfig instanceof ShadowRuleConfiguration) {
+            ruleConfigs.forEach(each -> addShadowRuleConfiguration((ShadowRuleConfiguration) each, allRuleConfigs, database));
+        } else if (ruleConfig instanceof MaskRuleConfiguration) {
+            ruleConfigs.forEach(each -> addMaskRuleConfiguration((MaskRuleConfiguration) each, allRuleConfigs, database));
+        }
+    }
+    
+    private void addShardingRuleConfiguration(final ShardingRuleConfiguration shardingRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
+        InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
+        shardingRuleConfigImportChecker.check(database, shardingRuleConfig);
+        allRuleConfigs.add(shardingRuleConfig);
+        database.getRuleMetaData().getRules().add(new ShardingRule(shardingRuleConfig, database.getResourceMetaData().getDataSources().keySet(), instanceContext));
+    }
+    
+    private void addReadwriteSplittingRuleConfiguration(final ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig,
+                                                        final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
+        InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
+        Collection<ShardingSphereRule> rules = database.getRuleMetaData().getRules();
+        readwriteSplittingRuleConfigImportChecker.check(database, readwriteSplittingRuleConfig);
+        allRuleConfigs.add(readwriteSplittingRuleConfig);
+        rules.add(new ReadwriteSplittingRule(database.getName(), readwriteSplittingRuleConfig, rules, instanceContext));
+    }
+    
+    private void addEncryptRuleConfiguration(final EncryptRuleConfiguration encryptRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
+        encryptRuleConfigImportChecker.check(database, encryptRuleConfig);
+        allRuleConfigs.add(encryptRuleConfig);
+        database.getRuleMetaData().getRules().add(new EncryptRule(encryptRuleConfig));
+    }
+    
+    private void addShadowRuleConfiguration(final ShadowRuleConfiguration shadowRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
+        shadowRuleConfigImportChecker.check(database, shadowRuleConfig);
+        allRuleConfigs.add(shadowRuleConfig);
+        database.getRuleMetaData().getRules().add(new ShadowRule(shadowRuleConfig));
+    }
+    
+    private void addMaskRuleConfiguration(final MaskRuleConfiguration maskRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {
+        maskRuleConfigImportChecker.check(database, maskRuleConfig);
+        allRuleConfigs.add(maskRuleConfig);
+        database.getRuleMetaData().getRules().add(new MaskRule(maskRuleConfig));
     }
     
     private void dropDatabase(final String databaseName) {
