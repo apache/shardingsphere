@@ -49,7 +49,8 @@ public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     }
 
     private void setKey(final byte[] key) {
-        ShardingSpherePreconditions.checkState(key.length >= KEY_MIN_LENGTH && key.length < SBOX_LENGTH, () -> new EncryptAlgorithmInitializationException(getType(), "Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1)));
+        ShardingSpherePreconditions.checkState(key.length >= KEY_MIN_LENGTH && key.length < SBOX_LENGTH,
+                () -> new EncryptAlgorithmInitializationException(getType(), "Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1)));
         this.key = key;
     }
     
