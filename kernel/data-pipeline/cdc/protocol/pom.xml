@@ -47,6 +47,7 @@
                     <additionalProtoPathElements>
                         <additionalProtoPathElement>${project.basedir}/src/main/resources</additionalProtoPathElement>
                     </additionalProtoPathElements>
+                    <protocArtifact>com.google.protobuf:protoc:${protobuf-java.version}:exe:${os.detected.classifier}</protocArtifact>
                 </configuration>
                 <executions>
                     <execution>
@@ -58,12 +59,5 @@
                 </executions>
             </plugin>
         </plugins>
-        <extensions>
-            <extension>
-                <groupId>kr.motd.maven</groupId>
-                <artifactId>os-maven-plugin</artifactId>
-                <version>${os-maven-plugin.version}</version>
-            </extension>
-        </extensions>
     </build>
 </project>
