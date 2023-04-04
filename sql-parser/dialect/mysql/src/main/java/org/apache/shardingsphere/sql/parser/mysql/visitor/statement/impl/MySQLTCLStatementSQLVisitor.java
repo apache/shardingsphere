@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LockContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ReleaseSavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAutoCommitContext;
@@ -42,6 +43,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLLockStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLRollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetAutoCommitStatement;
@@ -135,6 +137,13 @@ public final class MySQLTCLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitSavepoint(final SavepointContext ctx) {
         MySQLSavepointStatement result = new MySQLSavepointStatement();
+        result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitReleaseSavepoint(final ReleaseSavepointContext ctx) {
+        MySQLReleaseSavepointStatement result = new MySQLReleaseSavepointStatement();
         result.setSavepointName(((IdentifierValue) visit(ctx.identifier())).getValue());
         return result;
     }
