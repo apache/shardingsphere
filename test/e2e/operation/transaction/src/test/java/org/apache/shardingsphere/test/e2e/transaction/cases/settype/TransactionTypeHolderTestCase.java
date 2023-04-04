@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTes
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
+import org.junit.Assert;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -44,14 +45,14 @@ public final class TransactionTypeHolderTestCase extends BaseTransactionTestCase
     
     @Override
     protected void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
+        TransactionTypeHolder.set(TransactionType.LOCAL);
         try (Connection connection = getDataSource().getConnection()) {
-            TransactionTypeHolder.set(TransactionType.LOCAL);
             assertThat(TransactionTypeHolder.get(), is(TransactionType.LOCAL));
             connection.setAutoCommit(false);
             connection.rollback();
         } finally {
-            TransactionTypeHolder.set(TransactionType.XA);
-            assertThat(TransactionTypeHolder.get(), is(TransactionType.XA));
+            TransactionTypeHolder.clear();
+            Assert.assertNull(TransactionTypeHolder.get());
         }
     }
 }
