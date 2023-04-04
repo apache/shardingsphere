@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.yaml.swapper;
+package org.apache.shardingsphere.test.it.yaml;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
@@ -28,22 +29,26 @@ import java.io.IOException;
 import java.net.URL;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class YamlRootRuleConfigurationsForYamlShadowRuleConfigurationTest {
+@RequiredArgsConstructor
+public abstract class YamlRuleConfigurationIT {
+    
+    private final String yamlFile;
     
     @Test
     void assertUnmarshalWithYamlFile() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/shadow-rule.yaml");
+        URL url = getClass().getClassLoader().getResource(yamlFile);
         assertNotNull(url);
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
-        assertThat(rootConfig.getRules().size(), is(1));
+        YamlRootConfiguration actual = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
+        assertThat(actual.getRules().size(), is(1));
+        assertYamlRootConfiguration(actual);
     }
     
     @Test
     void assertUnmarshalWithYamlBytes() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/shadow-rule.yaml");
+        URL url = getClass().getClassLoader().getResource(yamlFile);
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
         try (
@@ -54,7 +59,10 @@ class YamlRootRuleConfigurationsForYamlShadowRuleConfigurationTest {
                 yamlContent.append(line).append(System.lineSeparator());
             }
         }
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootConfiguration.class);
-        assertThat(rootConfig.getRules().size(), is(1));
+        YamlRootConfiguration actual = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootConfiguration.class);
+        assertThat(actual.getRules().size(), is(1));
+        assertYamlRootConfiguration(actual);
     }
+    
+    protected abstract void assertYamlRootConfiguration(YamlRootConfiguration actual);
 }

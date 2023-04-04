@@ -43,7 +43,6 @@
             <plugin>
                 <groupId>org.xolstice.maven.plugins</groupId>
                 <artifactId>protobuf-maven-plugin</artifactId>
-                <version>${protobuf-maven-plugin.version}</version>
                 <configuration>
                     <additionalProtoPathElements>
                         <additionalProtoPathElement>${project.basedir}/src/main/resources</additionalProtoPathElement>
