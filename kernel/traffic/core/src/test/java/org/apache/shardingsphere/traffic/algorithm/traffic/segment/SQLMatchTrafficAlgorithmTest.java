@@ -59,17 +59,4 @@ class SQLMatchTrafficAlgorithmTest {
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order` SET `order_id` = ?;")));
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order_item` SET `order_id` = ? WHERE user_id = ?;")));
     }
-
-    // I am not sure how to deal with the Exception
-    @Test
-    void assertThrowExceptionWhenWithIllegalInit() {
-        SQLStatement sqlStatement = mock(SelectStatement.class);
-        try {
-            sqlMatchAlgorithm = (SQLMatchTrafficAlgorithm) TypedSPILoader.getService(TrafficAlgorithm.class, "SQL_MATCH",
-                    PropertiesBuilder.build(new Property("sql", "")));
-            assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "SELECT * FROM t_order")));
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
-    }
 }

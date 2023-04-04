@@ -20,13 +20,11 @@ package org.apache.shardingsphere.traffic.algorithm.traffic.segment;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
-import org.apache.groovy.parser.antlr4.util.StringUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficAlgorithm;
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
 
 import java.util.Collection;
-import java.util.Locale;
 import java.util.Properties;
 import java.util.TreeSet;
 
@@ -44,14 +42,7 @@ public final class SQLMatchTrafficAlgorithm implements SegmentTrafficAlgorithm {
     @Override
     public void init(final Properties props) {
         Preconditions.checkArgument(props.containsKey(SQL_PROPS_KEY), "%s cannot be null.", SQL_PROPS_KEY);
-        String sqlValue = props.getProperty(SQL_PROPS_KEY);
-        Preconditions.checkArgument(!(StringUtils.isEmpty(sqlValue) || sqlValue.length() == 0), "%s cannot be empty.", SQL_PROPS_KEY);
-        sql = getExactlySQL(sqlValue);
-        // Is it necessary to check sql values?
-        for (String s : sql) {
-            s = s.toLowerCase();
-            Preconditions.checkArgument((s.contains("select") || s.contains("truncate") || s.contains("update")), "%s cantains illegal sql.", SQL_PROPS_KEY);
-        }
+        sql = getExactlySQL(props.getProperty(SQL_PROPS_KEY));
     }
     
     private Collection<String> getExactlySQL(final String value) {
