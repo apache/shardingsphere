@@ -110,14 +110,12 @@ public final class ManualBitSet {
      *
      * @param bitIndex retain bit index
      */
-    public void clear(final long bitIndex) {
+    public synchronized void clear(final long bitIndex) {
         if ((bitIndex - startIndex) > BIT_SET_SIZE) {
-            synchronized (this) {
-                int count = Math.min(bitSets.size(), (int) ((bitIndex - startIndex) / BIT_SET_SIZE));
-                if (count > 0) {
-                    bitSets.subList(0, count).clear();
-                    startIndex += (long) count * BIT_SET_SIZE;
-                }
+            int count = Math.min(bitSets.size(), (int) ((bitIndex - startIndex) / BIT_SET_SIZE));
+            if (count > 0) {
+                bitSets.subList(0, count).clear();
+                startIndex += (long) count * BIT_SET_SIZE;
             }
         }
     }

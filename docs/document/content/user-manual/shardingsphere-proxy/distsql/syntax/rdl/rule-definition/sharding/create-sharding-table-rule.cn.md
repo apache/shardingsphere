@@ -1,6 +1,6 @@
 +++
 title = "CREATE SHARDING TABLE RULE"
-weight = 2
+weight = 1
 +++
 
 ## 描述

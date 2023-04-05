@@ -1,6 +1,6 @@
 +++
 title = "CREATE DEFAULT SHARDING STRATEGY"
-weight = 5
+weight = 4
 +++
 
 ## 描述

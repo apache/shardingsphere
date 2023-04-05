@@ -24,15 +24,15 @@ To use the SQL Hint, you need to set `sqlCommentParseEnabled` in ShardingSphere 
 
 The following attributes can be defined in ShardingSphere SQL Hint. In order to be compatible with the lower version SQL Hint syntax, the attributes defined in the alias can also be used:
 
-| *Name*                      | *Alias*               | *Data Type*  | *Description*                                                             | *Default Value* |
-|-----------------------------|-----------------------|------------|---------------------------------------------------------------------------|-------|
-| SHARDING_DATABASE_VALUE (?) | shardingDatabaseValue | Comparable | Database sharding value, used when config Hint sharding strategy          | -     |
-| SHARDING_TABLE_VALUE (?)    | shardingTableValue    | Comparable | Table sharding value, used when config Hint sharding strategy             | -     |
-| WRITE_ROUTE_ONLY (?)        | writeRouteOnly        | boolean    | Route to the write datasource when use readwrite-splitting                | false |
-| DATA_SOURCE_NAME (?)        | dataSourceName        | String     | Data source pass through, route SQL directly to the specified data source | -     |
-| SKIP_SQL_REWRITE (?)        | skipSQLRewrite        | boolean    | Skip the SQL rewrite phase                                                | false |
-| DISABLE_AUDIT_NAMES (?)     | disableAuditNames     | String     | Disable the specified SQL audit algorithm                                 | -     |
-| SHADOW (?)                  | shadow                | boolean    | Route to the shadow datasource when use shadow                            | false |
+| *Name*                      | *Alias*               | *Data Type* | *Description*                                                             | *Default Value* |
+|-----------------------------|-----------------------|-------------|---------------------------------------------------------------------------|-----------------|
+| SHARDING_DATABASE_VALUE (?) | shardingDatabaseValue | Comparable  | Database sharding value, used when config Hint sharding strategy          | -               |
+| SHARDING_TABLE_VALUE (?)    | shardingTableValue    | Comparable  | Table sharding value, used when config Hint sharding strategy             | -               |
+| WRITE_ROUTE_ONLY (?)        | writeRouteOnly        | boolean     | Route to the write datasource when use readwrite-splitting                | false           |
+| DATA_SOURCE_NAME (?)        | dataSourceName        | String      | Data source pass through, route SQL directly to the specified data source | -               |
+| SKIP_SQL_REWRITE (?)        | skipSQLRewrite        | boolean     | Skip the SQL rewrite phase                                                | false           |
+| DISABLE_AUDIT_NAMES (?)     | disableAuditNames     | String      | Disable the specified SQL audit algorithm                                 | -               |
+| SHADOW (?)                  | shadow                | boolean     | Route to the shadow datasource when use shadow                            | false           |
 
 
 ## SQL Hint

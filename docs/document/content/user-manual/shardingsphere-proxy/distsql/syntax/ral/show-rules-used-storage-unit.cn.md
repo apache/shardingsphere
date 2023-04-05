@@ -1,6 +1,6 @@
 +++
 title = "SHOW RULES USED STORAGE UNIT"
-weight = 11
+weight = 10
 +++
 
 ### 描述
@@ -29,10 +29,10 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列          | 说明       |
-|-------------|-----------|
-| type        | 规则类型   |
-| name        | 规则名称   |
+| 列    | 说明   |
+|------|------|
+| type | 规则类型 |
+| name | 规则名称 |
 
 ### 补充说明
 

@@ -12,7 +12,7 @@ weight = 7
 ```shell
 git clone --depth 1 https://github.com/apache/shardingsphere.git
 cd shardingsphere
-mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
+mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
 ```
 agent 包输出目录为 distribution/agent/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz
 
@@ -80,11 +80,11 @@ plugins:
 
 * 参数说明
 
-| 名称                               | 说明                 |
-|-----------------------------------|----------------------|
-| host                              | 主机                 |
-| port                              | 端口                 |
-| jvm-information-collector-enabled | 是否采集 JVM 指标信息  |
+| 名称                                | 说明            |
+|-----------------------------------|---------------|
+| host                              | 主机            |
+| port                              | 端口            |
+| jvm-information-collector-enabled | 是否采集 JVM 指标信息 |
 
 #### OpenTelemetry
 
@@ -92,12 +92,12 @@ OpenTelemetry 可以导出 tracing 数据到 Jaeger，Zipkin。
 
 * 参数说明
 
-| 名称                                 | 说明                |
-|------------------------------------|----------------------|
-| otel.service.name                  | 服务名称              |
-| otel.traces.exporter               | traces exporter      |
-| otel.exporter.otlp.traces.endpoint | traces endpoint      |
-| otel.traces.sampler                | traces sampler       |
+| 名称                                 | 说明              |
+|------------------------------------|-----------------|
+| otel.service.name                  | 服务名称            |
+| otel.traces.exporter               | traces exporter |
+| otel.exporter.otlp.traces.endpoint | traces endpoint |
+| otel.traces.sampler                | traces sampler  |
 
 参数参考 [OpenTelemetry SDK Autoconfigure](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure)
 
@@ -113,15 +113,15 @@ java -javaagent:/agent/shardingsphere-agent-${latest.release.version}.jar -jar t
 
 ## Metrics
 
-| 指标名称                                  | 指标类型              | 指标描述                                                                                        |
-| :--------------------------------------- | :------------------ |:-----------------------------------------------------------------------------------------------|
-| build_info                               | GAUGE               | 构建信息                                                                                        |
-| parsed_sql_total                         | COUNTER             | 按类型（INSERT、UPDATE、DELETE、SELECT、DDL、DCL、DAL、TCL、RQL、RDL、RAL、RUL）分类的解析总数         |
-| routed_sql_total                         | COUNTER             | 按类型（INSERT、UPDATE、DELETE、SELECT）分类的路由总数                                              |
-| routed_result_total                      | COUNTER             | 路由结果总数(数据源路由结果、表路由结果)                                                             |
-| jdbc_state                               | GAUGE               | ShardingSphere-JDBC 状态信息。0 表示正常状态；1 表示熔断状态；2 锁定状态                              |
-| jdbc_meta_data_info                      | GAUGE               | ShardingSphere-JDBC 元数据信息                                                                   |
-| jdbc_statement_execute_total             | COUNTER             | 语句执行总数                                                                                     |
-| jdbc_statement_execute_errors_total      | COUNTER             | 语句执行错误总数                                                                                  |
-| jdbc_statement_execute_latency_millis    | HISTOGRAM           | 语句执行耗时                                                                                     |
-| jdbc_transactions_total                  | COUNTER             | 事务总数，按 commit，rollback 分类                                                                |
+| 指标名称                                  | 指标类型      | 指标描述                                                                    |
+|:--------------------------------------|:----------|:------------------------------------------------------------------------|
+| build_info                            | GAUGE     | 构建信息                                                                    |
+| parsed_sql_total                      | COUNTER   | 按类型（INSERT、UPDATE、DELETE、SELECT、DDL、DCL、DAL、TCL、RQL、RDL、RAL、RUL）分类的解析总数 |
+| routed_sql_total                      | COUNTER   | 按类型（INSERT、UPDATE、DELETE、SELECT）分类的路由总数                                 |
+| routed_result_total                   | COUNTER   | 路由结果总数(数据源路由结果、表路由结果)                                                   |
+| jdbc_state                            | GAUGE     | ShardingSphere-JDBC 状态信息。0 表示正常状态；1 表示熔断状态；2 锁定状态                       |
+| jdbc_meta_data_info                   | GAUGE     | ShardingSphere-JDBC 元数据信息                                               |
+| jdbc_statement_execute_total          | COUNTER   | 语句执行总数                                                                  |
+| jdbc_statement_execute_errors_total   | COUNTER   | 语句执行错误总数                                                                |
+| jdbc_statement_execute_latency_millis | HISTOGRAM | 语句执行耗时                                                                  |
+| jdbc_transactions_total               | COUNTER   | 事务总数，按 commit，rollback 分类                                               |

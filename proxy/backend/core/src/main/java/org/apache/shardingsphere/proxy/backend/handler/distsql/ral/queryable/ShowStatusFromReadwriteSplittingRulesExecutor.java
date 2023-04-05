@@ -129,9 +129,8 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Conn
         if (null == storageNodeDataSource) {
             return new LocalDataQueryResultRow(resource, DataSourceState.ENABLED.name(), "0");
         }
-        long replicationDelayMilliseconds = storageNodeDataSource.getReplicationDelayMilliseconds();
         String status = storageNodeDataSource.getStatus().name();
-        return new LocalDataQueryResultRow(resource, status, Long.toString(replicationDelayMilliseconds));
+        return new LocalDataQueryResultRow(resource, status);
     }
     
     @Override

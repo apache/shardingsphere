@@ -1,6 +1,6 @@
 +++
 title = "熔断"
-weight = 1
+weight = 2
 chapter = true
 
 +++

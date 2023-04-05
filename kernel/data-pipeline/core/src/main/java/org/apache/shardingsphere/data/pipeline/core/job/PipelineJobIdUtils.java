@@ -18,11 +18,20 @@
 package org.apache.shardingsphere.data.pipeline.core.job;
 
 import com.google.common.base.Preconditions;
+import com.google.common.primitives.Shorts;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.job.util.InstanceTypeUtil;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobTypeFactory;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * Pipeline job id utility class.
@@ -37,7 +46,12 @@ public final class PipelineJobIdUtils {
      * @return job id common prefix
      */
     public static String marshalJobIdCommonPrefix(final PipelineJobId pipelineJobId) {
-        return 'j' + pipelineJobId.getJobTypeCode() + pipelineJobId.getFormatVersion();
+        InstanceType instanceType = pipelineJobId.getContextKey().getInstanceType();
+        String databaseName = instanceType == InstanceType.PROXY ? "" : pipelineJobId.getContextKey().getDatabaseName();
+        String databaseNameHex = Hex.encodeHexString(databaseName.getBytes(StandardCharsets.UTF_8), true);
+        String databaseNameLengthHex = Hex.encodeHexString(Shorts.toByteArray((short) databaseNameHex.length()), true);
+        char encodedInstanceType = InstanceTypeUtil.encode(instanceType);
+        return 'j' + pipelineJobId.getJobType().getTypeCode() + pipelineJobId.getFormatVersion() + encodedInstanceType + databaseNameLengthHex + databaseNameHex;
     }
     
     /**
@@ -47,9 +61,30 @@ public final class PipelineJobIdUtils {
      * @return job type
      */
     public static JobType parseJobType(final String jobId) {
-        Preconditions.checkArgument(jobId.length() > 3, "Invalid jobId length, jobId=%s", jobId);
-        Preconditions.checkArgument('j' == jobId.charAt(0), "Invalid jobId, first char=%s", jobId.charAt(0));
+        verifyJobId(jobId);
         String typeCode = jobId.substring(1, 3);
         return JobTypeFactory.getInstance(typeCode);
+    }
+    
+    private static void verifyJobId(final String jobId) {
+        Preconditions.checkArgument(jobId.length() > 10, "Invalid job id length, job id: `%s`", jobId);
+        Preconditions.checkArgument('j' == jobId.charAt(0), "Invalid job id, first char: `%s`", jobId.charAt(0));
+    }
+    
+    /**
+     * Parse context key.
+     *
+     * @param jobId job id
+     * @return pipeline context key
+     */
+    @SneakyThrows(DecoderException.class)
+    public static PipelineContextKey parseContextKey(final String jobId) {
+        verifyJobId(jobId);
+        String formatVersion = jobId.substring(3, 5);
+        Preconditions.checkArgument(AbstractPipelineJobId.CURRENT_VERSION.equals(formatVersion), "Format version doesn't match, format version: " + formatVersion);
+        char instanceType = jobId.charAt(5);
+        short databaseNameLength = Shorts.fromByteArray(Hex.decodeHex(jobId.substring(6, 10)));
+        String databaseName = new String(Hex.decodeHex(jobId.substring(10, 10 + databaseNameLength)), StandardCharsets.UTF_8);
+        return PipelineContextKey.build(InstanceTypeUtil.decode(instanceType), databaseName);
     }
 }

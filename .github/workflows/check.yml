@@ -51,7 +51,7 @@ env:
 
 jobs:
   check-checkstyle:
-    name: Check - checkstyle
+    name: Check - CheckStyle
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -62,11 +62,11 @@ jobs:
           key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Run checkstyle
+      - name: Run CheckStyle
         run: ./mvnw checkstyle:check -T1C
-
+  
   check-license:
-    name: Check - license
+    name: Check - License
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:

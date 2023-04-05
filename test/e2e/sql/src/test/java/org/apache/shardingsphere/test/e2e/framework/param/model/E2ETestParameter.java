@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.framework.param.model;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.cases.IntegrationTestCaseContext;
+import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 
 /**
  * E2E test parameter.
@@ -61,11 +62,18 @@ public interface E2ETestParameter {
     String getMode();
     
     /**
+     * Get sql command type.
+     * 
+     * @return sql command type
+     */
+    SQLCommandType getSqlCommandType();
+    
+    /**
      * Get key.
      * 
      * @return key of test parameter
      */
     default String getKey() {
-        return String.join("-", getScenario(), getAdapter(), getDatabaseType().getType());
+        return String.join("-", getSqlCommandType().toString(), getScenario(), getAdapter(), getDatabaseType().getType());
     }
 }

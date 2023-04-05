@@ -1,6 +1,6 @@
 +++
 title = "LABEL|RELABEL COMPUTE NODE"
-weight = 6
+weight = 5
 +++
 
 ### 描述

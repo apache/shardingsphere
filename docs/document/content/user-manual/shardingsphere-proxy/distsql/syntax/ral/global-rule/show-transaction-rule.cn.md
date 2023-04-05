@@ -1,6 +1,6 @@
 +++
 title = "SHOW TRANSACTION RULE"
-weight = 3
+weight = 2
 +++
 
 ### 描述
@@ -22,11 +22,11 @@ ShowTransactionRule ::=
 
 ### 返回值说明
 
-| 列             | 说明          |
-|----------------|--------------|
-| default_type   | 默认事务类型   |
-| provider_type  | 事务提供者类型  |
-| props          | 事务参数       |
+| 列             | 说明      |
+|---------------|---------|
+| default_type  | 默认事务类型  |
+| provider_type | 事务提供者类型 |
+| props         | 事务参数    |
 
 ### 示例
 

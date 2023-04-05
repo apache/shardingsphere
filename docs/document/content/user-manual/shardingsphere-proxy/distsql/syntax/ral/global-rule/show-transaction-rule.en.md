@@ -1,6 +1,6 @@
 +++
 title = "SHOW TRANSACTION RULE"
-weight = 3
+weight = 2
 +++
 
 ### Description
@@ -23,11 +23,11 @@ ShowTransactionRule ::=
 
 ### Return Value Description
 
-| Colume      | Description             |
-|-------------|-------------------------|
-| users       | users                   |
-| provider    | privilege provider type |
-| props       | privilege properties    |
+| Column   | Description             |
+|----------|-------------------------|
+| users    | users                   |
+| provider | privilege provider type |
+| props    | privilege properties    |
 
 ### Example
 

@@ -38,6 +38,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -54,8 +55,8 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
         Map<String, String> sessionVariables = extractSessionVariables();
         Map<String, MySQLSessionVariableHandler> handlers = sessionVariables.keySet().stream()
                 .collect(Collectors.toMap(Function.identity(), value -> TypedSPILoader.getService(MySQLSessionVariableHandler.class, value)));
-        for (String each : handlers.keySet()) {
-            handlers.get(each).handle(connectionSession, each, sessionVariables.get(each));
+        for (Entry<String, MySQLSessionVariableHandler> entry : handlers.entrySet()) {
+            entry.getValue().handle(connectionSession, entry.getKey(), sessionVariables.get(entry.getKey()));
         }
         executeSetGlobalVariablesIfPresent(connectionSession);
     }

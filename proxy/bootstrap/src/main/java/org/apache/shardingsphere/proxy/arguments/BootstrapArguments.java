@@ -125,7 +125,7 @@ public final class BootstrapArguments {
     private boolean isValidPath(final String path) {
         try {
             Paths.get(path);
-        } catch (InvalidPathException | NullPointerException ex) {
+        } catch (InvalidPathException ex) {
             throw new IllegalArgumentException(String.format("Invalid path `%s`.", path));
         }
         return true;

@@ -197,25 +197,6 @@
             <load-balancer algorithm-name="random" />
         </rule>
     </alter-readwrite-splitting-rule>
-
-    <alter-database-discovery-rule sql-case-id="alter-database-discovery-rule">
-        <rule name="ha_group_0" type="mgr">
-            <data-source>ds_0</data-source>
-            <data-source>ds_1</data-source>
-            <discovery-type algorithm-name="mgr">
-                <property key="groupName" value="92504d5b-6dec" />
-            </discovery-type>
-            <property key="keepAliveCron" value="0/5 * * * * ?" />
-        </rule>
-        <rule name="ha_group_1" type="mgr2">
-            <data-source>ds_2</data-source>
-            <data-source>ds_3</data-source>
-            <discovery-type algorithm-name="mgr2">
-                <property key="groupName" value="92504d5b-6dec-2" />
-            </discovery-type>
-            <property key="keepAliveCron" value="0/6 * * * * ?" />
-        </rule>
-    </alter-database-discovery-rule>
     
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule">
         <rule name="t_encrypt">

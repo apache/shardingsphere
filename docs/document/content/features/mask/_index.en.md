@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.11. </b>"
+pre = "<b>3.8. </b>"
 title = "Data Masking"
-weight = 11
+weight = 8
 chapter = true
 +++
 

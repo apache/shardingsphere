@@ -50,18 +50,6 @@
         <database name="readwrite_splitting_db" start-index="36" stop-index="57" />
     </show-readwrite-splitting-rules>
     
-    <show-db-discovery-rules sql-case-id="show-db-discovery-rules">
-        <database name="db_discovery_db" start-index="29" stop-index="43" />
-    </show-db-discovery-rules>
-    
-    <show-db-discovery-rules sql-case-id="show-db-discovery-types">
-        <database name="db_discovery_db" start-index="29" stop-index="43" />
-    </show-db-discovery-rules>
-    
-    <show-db-discovery-rules sql-case-id="show-db-discovery-heartbeats">
-        <database name="db_discovery_db" start-index="34" stop-index="48" />
-    </show-db-discovery-rules>
-    
     <show-encrypt-rules sql-case-id="show-encrypt-rules">
         <database name="encrypt_db" start-index="24" stop-index="33" />
     </show-encrypt-rules>
@@ -150,10 +138,6 @@
     <count-readwrite-splitting-rule sql-case-id="count-readwrite-splitting-rule">
         <database name="db1" start-index="36" stop-index="38" />
     </count-readwrite-splitting-rule>
-    
-    <count-db-discovery-rule sql-case-id="count-db-discovery-rule">
-        <database name="db1" start-index="29" stop-index="31" />
-    </count-db-discovery-rule>
     
     <count-encrypt-rule sql-case-id="count-encrypt-rule">
         <database name="db1" start-index="24" stop-index="26" />

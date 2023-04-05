@@ -17,17 +17,20 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job;
 
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
+
 /**
  * Pipeline job id.
  */
 public interface PipelineJobId {
     
     /**
-     * Get job type code.
+     * Get job type.
      *
      * @return type
      */
-    String getJobTypeCode();
+    JobType getJobType();
     
     /**
      * Get format version.
@@ -35,4 +38,11 @@ public interface PipelineJobId {
      * @return format version
      */
     String getFormatVersion();
+    
+    /**
+     * Get pipeline context key.
+     *
+     * @return context key
+     */
+    PipelineContextKey getContextKey();
 }

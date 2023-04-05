@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHADOW TABLE RULE"
-weight = 3
+weight = 2
 +++
 
 ### Description
@@ -31,7 +31,7 @@ databaseName ::=
 ### Return value description
 
 | Column                | Description           |
-| --------------------- | --------------------- |
+|-----------------------|-----------------------|
 | shadow_table          | Shadow table          |
 | shadow_algorithm_name | Shadow algorithm name |
 

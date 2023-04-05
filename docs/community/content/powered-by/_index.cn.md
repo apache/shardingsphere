@@ -25,9 +25,9 @@ chapter = true
 
 ### 银行
 <ul>
-    <li><a href="https://www.abchina.com/" rel="nofollow">中国农业银行</a></li>
+    <li><a href="https://www.abchina.com/" rel="nofollow">中国农业银行</a>：<a href="https://mp.weixin.qq.com/s/08F3qaDs-f8lhTJAUlO5ug" rel="nofollow">用户案例</a></li>
     <li><a href="https://www.ccbft.com/" rel="nofollow">建信金融科技</a></li>
-    <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a></li>
+    <li><a href="http://www.cmbc.com.cn/" rel="nofollow">中国民生银行股份有限公司</a>：<a href="https://mp.weixin.qq.com/s/-XfGY9hgCrP90T8TOKCRdw" rel="nofollow">用户案例</a></li>
     <li><a href="https://bank.pingan.com/" rel="nofollow">平安银行</a></li>
     <li><a href="https://www.psbc.com/cn/" rel="nofollow">中国邮政储蓄银行</a></li>
     <li><a href="https://www.cmbchina.com/" rel="nofollow">招商银行</a></li>

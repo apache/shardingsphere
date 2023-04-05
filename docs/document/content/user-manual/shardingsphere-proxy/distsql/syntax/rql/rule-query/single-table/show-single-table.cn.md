@@ -1,6 +1,6 @@
 +++
 title = "SHOW SINGLE TABLE"
-weight = 3
+weight = 1
 +++
 
 ### 描述
@@ -33,10 +33,10 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列            | 说明                  |
-| ------------- | -------------------- |
-| table_name    | 单表名称              |
-| resource_name | 单表所在的数据源名称    |
+| 列             | 说明         |
+|---------------|------------|
+| table_name    | 单表名称       |
+| resource_name | 单表所在的数据源名称 |
 
 
 ### 示例

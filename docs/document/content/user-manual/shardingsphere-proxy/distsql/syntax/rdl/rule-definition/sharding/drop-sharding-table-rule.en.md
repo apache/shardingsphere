@@ -1,6 +1,6 @@
 +++
 title = "DROP SHARDING TABLE RULE"
-weight = 4
+weight = 3
 +++
 
 ## Description

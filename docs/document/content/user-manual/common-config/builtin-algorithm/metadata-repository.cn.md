@@ -33,13 +33,13 @@ Apache ShardingSphere 为不同的运行模式提供了不同的元数据持久�
 
 可配置属性：
 
-| *名称*                        | *数据类型* | *说明*              | *默认值*       |
-| ---------------------------- | --------- | ------------------ | ------------- |
-| retryIntervalMilliseconds    | int       | 重试间隔毫秒数        | 500           |
-| maxRetries                   | int       | 客户端连接最大重试次数  | 3             |
-| timeToLiveSeconds            | int       | 临时数据失效的秒数     | 60            |
-| operationTimeoutMilliseconds | int       | 客户端操作超时的毫秒数  | 500           |
-| digest                       | String    | 登录认证密码          |               |
+| *名称*                         | *数据类型* | *说明*        | *默认值* |
+|------------------------------|--------|-------------|-------|
+| retryIntervalMilliseconds    | int    | 重试间隔毫秒数     | 500   |
+| maxRetries                   | int    | 客户端连接最大重试次数 | 3     |
+| timeToLiveSeconds            | int    | 临时数据失效的秒数   | 60    |
+| operationTimeoutMilliseconds | int    | 客户端操作超时的毫秒数 | 500   |
+| digest                       | String | 登录认证密码      |       |
 
 ### Etcd 持久化
 
@@ -49,10 +49,10 @@ Apache ShardingSphere 为不同的运行模式提供了不同的元数据持久�
 
 可配置属性：
 
-| *名称*                        | *数据类型* | *说明*               | *默认值*         |
-| ---------------------------- | --------- | ------------------- | --------------- |
-| timeToLiveSeconds            | long      | 临时数据失效的秒数     | 30              |
-| connectionTimeout            | long      | 连接超时秒数          | 30              |
+| *名称*              | *数据类型* | *说明*      | *默认值* |
+|-------------------|--------|-----------|-------|
+| timeToLiveSeconds | long   | 临时数据失效的秒数 | 30    |
+| connectionTimeout | long   | 连接超时秒数    | 30    |
 
 ### Nacos 持久化
 
@@ -62,12 +62,12 @@ Apache ShardingSphere 为不同的运行模式提供了不同的元数据持久�
 
 可配置属性：
 
-| *名称*                        | *数据类型* | *说明*                         | *默认值*         |
-| ---------------------------- | --------- | ----------------------------- | --------------- |
-| clusterIp                    | String    | 集群中的唯一标识                 | 真实主机IP       |
-| retryIntervalMilliseconds    | long      | 重试间隔毫秒数                   | 500             |
-| maxRetries                   | int       | 客户端检查数据可用性的最大重试次数  | 3               |
-| timeToLiveSeconds            | int       | 临时实例失效的秒数               | 30              |
+| *名称*                      | *数据类型* | *说明*              | *默认值*  |
+|---------------------------|--------|-------------------|--------|
+| clusterIp                 | String | 集群中的唯一标识          | 真实主机IP |
+| retryIntervalMilliseconds | long   | 重试间隔毫秒数           | 500    |
+| maxRetries                | int    | 客户端检查数据可用性的最大重试次数 | 3      |
+| timeToLiveSeconds         | int    | 临时实例失效的秒数         | 30     |
 
 ### Consul 持久化
 
@@ -77,10 +77,10 @@ Apache ShardingSphere 为不同的运行模式提供了不同的元数据持久�
 
 可配置属性：
 
-| *名称*                        | *数据类型* | *说明*                         | *默认值*         |
-| ---------------------------- | --------- | ----------------------------- | --------------- |
-| timeToLiveSeconds            | String    | 临时实例失效的秒数               | 30s             |
-| blockQueryTimeToSeconds      | long      | 查询请求超时秒数                 | 60              |
+| *名称*                    | *数据类型* | *说明*      | *默认值* |
+|-------------------------|--------|-----------|-------|
+| timeToLiveSeconds       | String | 临时实例失效的秒数 | 30s   |
+| blockQueryTimeToSeconds | long   | 查询请求超时秒数  | 60    |
 
 ## 操作步骤
 

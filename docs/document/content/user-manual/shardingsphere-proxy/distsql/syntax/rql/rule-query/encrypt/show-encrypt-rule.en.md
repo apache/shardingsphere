@@ -1,6 +1,6 @@
 +++
 title = "SHOW ENCRYPT RULES"
-weight = 2
+weight = 1
 +++
 
 ### Description
@@ -33,21 +33,21 @@ databaseName ::=
 
 ### Return value description
 
-| Column                    | Description                               |
-| ------------------------- |-------------------------------------------|
-| table                     | Logical table name                        |
-| logic_column              | Logical column name                       |
-| cipher_column             | Ciphertext column name                    |
-| plain_column              | Plaintext column name                     |
-| assisted_query_column     | Assisted query column name                |
-| like_query_column         | Like query column name                    |
-| encryptor_type            | Encryption algorithm type                 |
-| encryptor_props           | Encryption algorithm parameter            |
-| assisted_query_type       | Assisted query algorithm type             |
-| assisted_query_props      | Assisted query algorithm parameter        |
-| like_query_type           | Like query algorithm type                 |
-| like_query_props          | Like query algorithm parameter            |
-| query_with_cipher_column  | Whether to use encrypted column for query |
+| Column                   | Description                               |
+|--------------------------|-------------------------------------------|
+| table                    | Logical table name                        |
+| logic_column             | Logical column name                       |
+| cipher_column            | Ciphertext column name                    |
+| plain_column             | Plaintext column name                     |
+| assisted_query_column    | Assisted query column name                |
+| like_query_column        | Like query column name                    |
+| encryptor_type           | Encryption algorithm type                 |
+| encryptor_props          | Encryption algorithm parameter            |
+| assisted_query_type      | Assisted query algorithm type             |
+| assisted_query_props     | Assisted query algorithm parameter        |
+| like_query_type          | Like query algorithm type                 |
+| like_query_props         | Like query algorithm parameter            |
+| query_with_cipher_column | Whether to use encrypted column for query |
 
 
 

@@ -1,6 +1,6 @@
 +++
 title = "SHOW STATUS FROM READWRITE_SPLITTING RULE"
-weight = 3
+weight = 2
 +++
 
 ### 描述
@@ -33,11 +33,11 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列             | 说明           |
-|----------------|---------------|
-| resource       | 存储单元名称    |
-| status         | 存储单元状态    |
-| delay_time(ms) | 延迟时间        |
+| 列              | 说明     |
+|----------------|--------|
+| resource       | 存储单元名称 |
+| status         | 存储单元状态 |
+| delay_time(ms) | 延迟时间   |
 
 ### 示例
 

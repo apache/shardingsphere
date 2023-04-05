@@ -12,7 +12,7 @@ weight = 5
 ```shell
 git clone --depth 1 https://github.com/apache/shardingsphere.git
 cd shardingsphere
-mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
+mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
 ```
 agent 包输出目录为 distribution/agent/target/apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin.tar.gz
 
@@ -80,11 +80,11 @@ plugins:
 
 * 参数说明
 
-| 名称                               | 说明                 |
-|-----------------------------------|----------------------|
-| host                              | 主机                 |
-| port                              | 端口                 |
-| jvm-information-collector-enabled | 是否采集 JVM 指标信息  |
+| 名称                                | 说明            |
+|-----------------------------------|---------------|
+| host                              | 主机            |
+| port                              | 端口            |
+| jvm-information-collector-enabled | 是否采集 JVM 指标信息 |
 
 #### OpenTelemetry
 
@@ -92,12 +92,12 @@ OpenTelemetry 可以导出 tracing 数据到 Jaeger，Zipkin。
 
 * 参数说明
 
-| 名称                                 | 说明                |
-|------------------------------------|----------------------|
-| otel.service.name                  | 服务名称              |
-| otel.traces.exporter               | traces exporter      |
-| otel.exporter.otlp.traces.endpoint | traces endpoint      |
-| otel.traces.sampler                | traces sampler       |
+| 名称                                 | 说明              |
+|------------------------------------|-----------------|
+| otel.service.name                  | 服务名称            |
+| otel.traces.exporter               | traces exporter |
+| otel.exporter.otlp.traces.endpoint | traces endpoint |
+| otel.traces.sampler                | traces sampler  |
 
 参数参考 [OpenTelemetry SDK Autoconfigure](https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure)
 
@@ -150,16 +150,16 @@ services:
 
 ## Metrics
 
-| 指标名称                            | 指标类型             | 指标描述                                                                      |
-| :-------------------------------- | :------------------ |:--------------------------------------------------------------------------|
-| build_info                        | GAUGE               | 构建信息                                                                      |
-| parsed_sql_total                  | COUNTER             | 按类型（INSERT、UPDATE、DELETE、SELECT、DDL、DCL、DAL、TCL、RQL、RDL、RAL、RUL）分类的解析总数   |
-| routed_sql_total                  | COUNTER             | 按类型（INSERT、UPDATE、DELETE、SELECT）分类的路由总数                                   |
-| routed_result_total               | COUNTER             | 路由结果总数(数据源路由结果、表路由结果)                                                     |
-| proxy_state                       | GAUGE               | ShardingSphere-Proxy 状态信息。0 表示正常状态；1 表示熔断状态；2 锁定状态                        |
-| proxy_meta_data_info              | GAUGE               | ShardingSphere-Proxy 元数据信息，database_count：逻辑库数量，storage_unit_count：存储节点数量 |
-| proxy_current_connections         | GAUGE               | ShardingSphere-Proxy 的当前连接数                                               |
-| proxy_requests_total              | COUNTER             | ShardingSphere-Proxy 的接受请求总数                                              |
-| proxy_transactions_total          | COUNTER             | ShardingSphere-Proxy 的事务总数，按 commit，rollback 分类                      |
-| proxy_execute_latency_millis      | HISTOGRAM           | ShardingSphere-Proxy 的执行耗时毫秒直方图                                           |
-| proxy_execute_errors_total        | COUNTER             | ShardingSphere-Proxy 的执行异常总数                                              |
+| 指标名称                         | 指标类型      | 指标描述                                                                      |
+|:-----------------------------|:----------|:--------------------------------------------------------------------------|
+| build_info                   | GAUGE     | 构建信息                                                                      |
+| parsed_sql_total             | COUNTER   | 按类型（INSERT、UPDATE、DELETE、SELECT、DDL、DCL、DAL、TCL、RQL、RDL、RAL、RUL）分类的解析总数   |
+| routed_sql_total             | COUNTER   | 按类型（INSERT、UPDATE、DELETE、SELECT）分类的路由总数                                   |
+| routed_result_total          | COUNTER   | 路由结果总数(数据源路由结果、表路由结果)                                                     |
+| proxy_state                  | GAUGE     | ShardingSphere-Proxy 状态信息。0 表示正常状态；1 表示熔断状态；2 锁定状态                        |
+| proxy_meta_data_info         | GAUGE     | ShardingSphere-Proxy 元数据信息，database_count：逻辑库数量，storage_unit_count：存储节点数量 |
+| proxy_current_connections    | GAUGE     | ShardingSphere-Proxy 的当前连接数                                               |
+| proxy_requests_total         | COUNTER   | ShardingSphere-Proxy 的接受请求总数                                              |
+| proxy_transactions_total     | COUNTER   | ShardingSphere-Proxy 的事务总数，按 commit，rollback 分类                           |
+| proxy_execute_latency_millis | HISTOGRAM | ShardingSphere-Proxy 的执行耗时毫秒直方图                                           |
+| proxy_execute_errors_total   | COUNTER   | ShardingSphere-Proxy 的执行异常总数                                              |

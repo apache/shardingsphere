@@ -44,7 +44,7 @@ public final class EspressoInlineExpressionParser {
         URL resource = Thread.currentThread().getContextClassLoader().getResource("espresso-need-libs");
         assert null != resource;
         String dir = resource.getPath();
-        String javaClasspath = String.join(":", dir + "/groovy.jar", dir + "/guava.jar", dir + "/shardingsphere-infra-util.jar");
+        String javaClasspath = String.join(":", dir + "/groovy.jar", dir + "/guava.jar", dir + "/shardingsphere-infra-util-groovy.jar");
         POLYGLOT = Context.newBuilder().allowAllAccess(true)
                 .option("java.Properties.org.graalvm.home", javaHome)
                 .option("java.MultiThreaded", "true")

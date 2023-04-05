@@ -1,6 +1,6 @@
 +++
 title = "COUNT SHARDING RULE"
-weight = 16
+weight = 15
 +++
 
 ### 描述
@@ -30,11 +30,11 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列        | 说明            |
-| --------- | ---------------|
-| rule_name | 规则类型        |
-| database  | 规则所属逻辑库   |
-| count     | 规则数量        |
+| 列         | 说明      |
+|-----------|---------|
+| rule_name | 规则类型    |
+| database  | 规则所属逻辑库 |
+| count     | 规则数量    |
 
 
 ### 示例

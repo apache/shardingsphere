@@ -1,6 +1,6 @@
 +++
 title = "DROP SHADOW RULE"
-weight = 4
+weight = 3
 +++
 
 ## 描述

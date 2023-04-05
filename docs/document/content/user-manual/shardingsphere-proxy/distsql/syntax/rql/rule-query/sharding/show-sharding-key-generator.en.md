@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHARDING KEY GENERATORS"
-weight = 6
+weight = 5
 +++
 
 ### Description
@@ -30,11 +30,11 @@ databaseName ::=
 
 ### Return value description
 
-| column                 | Description                          |
-| -----------------------| -------------------------------------|
-| name                   | Sharding key generator name          |
-| type                   | Sharding key generator type          |
-| props                  | Sharding key generator properties    |
+| column | Description                       |
+|--------|-----------------------------------|
+| name   | Sharding key generator name       |
+| type   | Sharding key generator type       |
+| props  | Sharding key generator properties |
 
 ### Example
 
