@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.shadow.exception.algorithm.ShadowAlgorithmInitializationException;
 import org.apache.shardingsphere.shadow.exception.data.UnsupportedShadowColumnTypeException;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -49,4 +50,23 @@ class ColumnValueMatchShadowAlgorithmTest {
         assertThrows(UnsupportedShadowColumnTypeException.class,
                 () -> PreciseColumnShadowValueFixtureBuilder.createExceptionCase(SHADOW_TABLE, SHADOW_COLUMN).forEach(each -> assertFalse(shadowAlgorithm.isShadow(each))));
     }
+
+    @Test
+    void assertColumnValueMatchShadowAlgorithmWithoutColumn(){
+        assertThrows(ShadowAlgorithmInitializationException.class,()->TypedSPILoader.getService(ShadowAlgorithm.class, "VALUE_MATCH", PropertiesBuilder.build(new Property("option", "insert"), new Property("value", "1"))));
+    }
+
+    @Test
+    void assertColumnValueMatchShadowAlgorithmWithoutOperationType(){
+        assertThrows(ShadowAlgorithmInitializationException.class,()->TypedSPILoader.getService(ShadowAlgorithm.class,"VALUE_MATCH",PropertiesBuilder.build(new Property("column",SHADOW_COLUMN),new Property("option","drop"),new Property("value","1"))));
+    }
+
+    @Test
+    void assertColumnValueMatchShadowAlgorithmWithoutValue(){
+        assertThrows(ShadowAlgorithmInitializationException.class,()->TypedSPILoader.getService(ShadowAlgorithm.class,"VALUE_MATCH",PropertiesBuilder.build(new Property("column",SHADOW_COLUMN),new Property("option","insert"))));
+        assertThrows(ShadowAlgorithmInitializationException.class,()->TypedSPILoader.getService(ShadowAlgorithm.class,"VALUE_MATCH",PropertiesBuilder.build(new Property("column",SHADOW_COLUMN),new Property("option","select"))));
+        assertThrows(ShadowAlgorithmInitializationException.class,()->TypedSPILoader.getService(ShadowAlgorithm.class,"VALUE_MATCH",PropertiesBuilder.build(new Property("column",SHADOW_COLUMN),new Property("option","update"))));
+        assertThrows(ShadowAlgorithmInitializationException.class,()->TypedSPILoader.getService(ShadowAlgorithm.class,"VALUE_MATCH",PropertiesBuilder.build(new Property("column",SHADOW_COLUMN),new Property("option","delete"))));
+    }
+
 }
