@@ -69,6 +69,6 @@ class ProtobufAnyValueConverterTest {
                 .putFields("list", Value.newBuilder().setListValue(ListValue.newBuilder().addValues(Value.newBuilder().setNumberValue(1)).build()).build()).build();
         Builder expected = Struct.newBuilder();
         JsonFormat.parser().merge((String) ProtobufAnyValueConverter.convertToObject(Any.pack((Struct) actual)), expected);
-        assertThat(actual.toString(),is(expected.toString()));
+        assertThat(actual.toString(), is(expected.toString()));
     }
 }
