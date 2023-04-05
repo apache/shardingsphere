@@ -54,6 +54,7 @@ on:
       - '!*.md'
   workflow_dispatch:
 
+
 concurrency:
   group: e2e-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
