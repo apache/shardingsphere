@@ -56,7 +56,9 @@ public final class OpenTelemetryJDBCExecutorCallbackAdvice extends TracingJDBCEx
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
-        ((Span) target.getAttachment()).end();
+        Span span = (Span) target.getAttachment();
+        span.setStatus(StatusCode.OK);
+        span.end();
     }
     
     @Override

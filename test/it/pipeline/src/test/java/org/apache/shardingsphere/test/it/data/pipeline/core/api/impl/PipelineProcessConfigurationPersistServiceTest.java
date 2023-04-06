@@ -58,8 +58,8 @@ class PipelineProcessConfigurationPersistServiceTest {
         PipelineProcessConfiguration processConfig = new YamlPipelineProcessConfigurationSwapper().swapToObject(yamlProcessConfig);
         PipelineProcessConfigurationPersistService persistService = new PipelineProcessConfigurationPersistService();
         JobType jobType = new MigrationJobType();
-        persistService.persist(jobType, processConfig);
-        String actualYamlText = YamlEngine.marshal(new YamlPipelineProcessConfigurationSwapper().swapToYamlConfiguration(persistService.load(jobType)));
+        persistService.persist(PipelineContextUtils.getContextKey(), jobType, processConfig);
+        String actualYamlText = YamlEngine.marshal(new YamlPipelineProcessConfigurationSwapper().swapToYamlConfiguration(persistService.load(PipelineContextUtils.getContextKey(), jobType)));
         assertThat(actualYamlText, is(expectedYamlText));
     }
 }

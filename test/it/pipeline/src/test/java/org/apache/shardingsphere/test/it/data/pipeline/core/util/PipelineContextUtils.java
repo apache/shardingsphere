@@ -26,6 +26,8 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
@@ -62,6 +64,8 @@ import java.util.Map;
  */
 public final class PipelineContextUtils {
     
+    private static final PipelineContextKey CONTEXT_KEY = PipelineContextKey.buildForProxy();
+    
     private static final ExecuteEngine EXECUTE_ENGINE = ExecuteEngine.newCachedThreadInstance(PipelineContextUtils.class.getSimpleName());
     
     private static final PipelineChannelCreator PIPELINE_CHANNEL_CREATOR = TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY");
@@ -72,19 +76,20 @@ public final class PipelineContextUtils {
     @SneakyThrows
     public static void mockModeConfigAndContextManager() {
         EmbedTestingServer.start();
-        if (null != PipelineContext.getContextManager()) {
+        PipelineContextKey contextKey = getContextKey();
+        if (null != PipelineContextManager.getContext(contextKey)) {
             return;
         }
         ShardingSpherePipelineDataSourceConfiguration pipelineDataSourceConfig = new ShardingSpherePipelineDataSourceConfiguration(
                 ConfigurationFileUtils.readFileAndIgnoreComments("config_sharding_sphere_jdbc_source.yaml"));
         YamlRootConfiguration rootConfig = (YamlRootConfiguration) pipelineDataSourceConfig.getDataSourceConfiguration();
         ModeConfiguration modeConfig = new YamlModeConfigurationSwapper().swapToObject(rootConfig.getMode());
-        PipelineContext.initModeConfig(modeConfig);
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) PipelineDataSourceFactory.newInstance(pipelineDataSourceConfig).getDataSource();
         ContextManager contextManager = getContextManager(dataSource);
         MetaDataPersistService persistService = new MetaDataPersistService(getClusterPersistRepository((ClusterPersistRepositoryConfiguration) modeConfig.getRepository()));
         MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), persistService);
-        PipelineContext.initContextManager(new ContextManager(metaDataContexts, contextManager.getInstanceContext()));
+        PipelineContext pipelineContext = new PipelineContext(modeConfig, new ContextManager(metaDataContexts, contextManager.getInstanceContext()));
+        PipelineContextManager.putContext(contextKey, pipelineContext);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -100,10 +105,27 @@ public final class PipelineContextUtils {
     
     private static MetaDataContexts renewMetaDataContexts(final MetaDataContexts old, final MetaDataPersistService persistService) {
         Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1);
-        tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false),
-                new ShardingSphereColumn("user_id", Types.VARCHAR, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(
+                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));
+        tables.put("t_order_item", new ShardingSphereTable("t_order_item", Arrays.asList(
+                new ShardingSphereColumn("item_id", Types.INTEGER, true, false, false, true, false),
+                new ShardingSphereColumn("order_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
+                new ShardingSphereColumn("status", Types.VARCHAR, false, false, false, true, false)),
+                Collections.emptyList(), Collections.emptyList()));
         old.getMetaData().getDatabase("logic_db").getSchema("logic_db").putAll(tables);
         return new MetaDataContexts(persistService, old.getMetaData());
+    }
+    
+    /**
+     * Get create order table schema.
+     *
+     * @return order table schema
+     */
+    public static String getCreateOrderTableSchema() {
+        return "CREATE TABLE IF NOT EXISTS t_order (order_id INT PRIMARY KEY, user_id INT, status VARCHAR(32))";
     }
     
     /**
@@ -113,6 +135,15 @@ public final class PipelineContextUtils {
      */
     public static PipelineColumnMetaData mockOrderIdColumnMetaData() {
         return new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "int", false, true, true);
+    }
+    
+    /**
+     * Get context key.
+     *
+     * @return context key
+     */
+    public static PipelineContextKey getContextKey() {
+        return CONTEXT_KEY;
     }
     
     /**

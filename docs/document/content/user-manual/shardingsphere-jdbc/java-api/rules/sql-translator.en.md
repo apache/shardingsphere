@@ -10,6 +10,6 @@ Class: org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfi
 Attributes:
 
 | *name*                                  | *DataType* | *Description*                                    |
-| --------------------------------------- | ---------- | ------------------------------------------------ |
+|-----------------------------------------|------------|--------------------------------------------------|
 | type                                    | String     | SQL translator type                              |
 | useOriginalSQLWhenTranslatingFailed (?) | boolean    | Whether use original SQL when translating failed |

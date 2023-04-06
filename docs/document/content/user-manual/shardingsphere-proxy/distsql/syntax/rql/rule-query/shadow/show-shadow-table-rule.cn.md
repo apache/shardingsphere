@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHADOW TABLE RULE"
-weight = 3
+weight = 2
 +++
 
 ### 描述
@@ -30,9 +30,9 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列                     | 说明       |
-| --------------------- | ---------- |
-| shadow_table          | 影子表      |
+| 列                     | 说明     |
+|-----------------------|--------|
+| shadow_table          | 影子表    |
 | shadow_algorithm_name | 影子算法名称 |
 
 ### 示例

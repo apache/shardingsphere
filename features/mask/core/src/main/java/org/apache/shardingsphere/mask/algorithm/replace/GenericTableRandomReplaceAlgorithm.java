@@ -21,6 +21,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -46,6 +47,8 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
     private static final String DEFAULT_DIGITAL_CODES = "0,1,2,3,4,5,6,7,8,9";
     
     private static final String DEFAULT_SPECIAL_CODES = "~,!,@,#,$,%,^,&,*,:,<,>,|";
+    
+    private final Random random = new SecureRandom();
     
     private List<Character> uppercaseLetterCodes;
     
@@ -73,7 +76,6 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
         if (Strings.isNullOrEmpty(result)) {
             return result;
         }
-        Random random = new Random();
         char[] chars = result.toCharArray();
         for (int i = 0; i < chars.length; i++) {
             char c = chars[i];

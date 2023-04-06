@@ -1,6 +1,6 @@
 +++
 title = "SHOW SINGLE TABLE"
-weight = 3
+weight = 1
 +++
 
 ### Description
@@ -33,10 +33,10 @@ databaseName ::=
 
 ### Return value description
 
-| Column        | Description                                           |
-| ------------- | ------------------------------------------------------|
-| table_name    | Single table name                                     |
-| resource_name | The resource name where the single table is located   |
+| Column        | Description                                         |
+|---------------|-----------------------------------------------------|
+| table_name    | Single table name                                   |
+| resource_name | The resource name where the single table is located |
 
 
 ### Example

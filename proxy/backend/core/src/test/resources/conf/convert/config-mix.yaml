@@ -107,37 +107,18 @@ rules:
         type: SNOWFLAKE
   - !READWRITE_SPLITTING
     dataSources:
-      replica_ds_0:
-        dynamicStrategy:
-          autoAwareDataSourceName: readwrite_ds_0
-      replica_ds_1:
-        dynamicStrategy:
-          autoAwareDataSourceName: readwrite_ds_1
-  - !DB_DISCOVERY
-    dataSources:
       readwrite_ds_0:
-        dataSourceNames:
-          - ds_0
-          - ds_1
-          - ds_2
-        discoveryHeartbeatName: mgr-heartbeat
-        discoveryTypeName: mgr
+        staticStrategy:
+          writeDataSourceName: ds_0
+          readDataSourceNames:
+            - ds_1
+            - ds_2
       readwrite_ds_1:
-        dataSourceNames:
-          - ds_3
-          - ds_4
-          - ds_5
-        discoveryHeartbeatName: mgr-heartbeat
-        discoveryTypeName: mgr
-    discoveryHeartbeats:
-      mgr-heartbeat:
-        props:
-          keep-alive-cron: '0/5 * * * * ?'
-    discoveryTypes:
-      mgr:
-        type: MySQL.MGR
-        props:
-          group-name: 558edd3c-02ec-11ea-9bb3-080027e39bd2
+        staticStrategy:
+          writeDataSourceName: ds_3
+          readDataSourceNames:
+            - ds_4
+            - ds_5
   - !ENCRYPT
     encryptors:
       aes_encryptor:

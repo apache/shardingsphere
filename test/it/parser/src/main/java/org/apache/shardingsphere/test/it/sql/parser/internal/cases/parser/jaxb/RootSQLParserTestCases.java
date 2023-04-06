@@ -337,11 +337,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.resource.AlterStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.resource.RegisterStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.resource.UnregisterStorageUnitStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.AlterDatabaseDiscoveryRuleStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.CreateDatabaseDiscoveryRuleStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.DropDatabaseDiscoveryHeartbeatStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.DropDatabaseDiscoveryRuleStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.DropDatabaseDiscoveryTypeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.encrypt.AlterEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.encrypt.CreateEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.encrypt.DropEncryptRuleStatementTestCase;
@@ -377,8 +372,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding.DropShardingTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.single.SetDefaultSingleTableStorageUnitStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.resource.ShowRulesUsedStorageUnitStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.dbdiscovery.CountDatabaseDiscoveryRuleStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.dbdiscovery.ShowDatabaseDiscoveryRulesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.encrypt.CountEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.encrypt.ShowEncryptRulesStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.mask.CountMaskRuleStatementTestCase;
@@ -880,9 +873,6 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "alter-storage-unit")
     private final List<AlterStorageUnitStatementTestCase> alterStorageUnitTestCases = new LinkedList<>();
     
-    @XmlElement(name = "alter-database-discovery-rule")
-    private final List<AlterDatabaseDiscoveryRuleStatementTestCase> alterDatabaseDiscoveryRuleTestCases = new LinkedList<>();
-    
     @XmlElement(name = "alter-encrypt-rule")
     private final List<AlterEncryptRuleStatementTestCase> alterEncryptRuleTestCases = new LinkedList<>();
     
@@ -897,9 +887,6 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "alter-sharding-table-rule")
     private final List<AlterShardingTableRuleStatementTestCase> alterShardingTableRuleTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "create-database-discovery-rule")
-    private final List<CreateDatabaseDiscoveryRuleStatementTestCase> createDatabaseDiscoveryRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-encrypt-rule")
     private final List<CreateEncryptRuleStatementTestCase> createEncryptRuleTestCases = new LinkedList<>();
@@ -928,15 +915,6 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "create-sharding-table-rule")
     private final List<CreateShardingTableRuleStatementTestCase> createShardingTableRuleTestCases = new LinkedList<>();
     
-    @XmlElement(name = "drop-database-discovery-rule")
-    private final List<DropDatabaseDiscoveryRuleStatementTestCase> dropDataBaseDiscoveryRuleTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "drop-database-discovery-type")
-    private final List<DropDatabaseDiscoveryTypeStatementTestCase> dropDataBaseDiscoveryTypeTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "drop-database-discovery-heartbeat")
-    private final List<DropDatabaseDiscoveryHeartbeatStatementTestCase> dropDataBaseDiscoveryHeartbeatTestCases = new LinkedList<>();
-    
     @XmlElement(name = "drop-encrypt-rule")
     private final List<DropEncryptRuleStatementTestCase> dropEncryptRuleTestCases = new LinkedList<>();
     
@@ -954,9 +932,6 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "drop-sharding-table-rule")
     private final List<DropShardingTableRuleStatementTestCase> dropShardingTableRuleTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "show-db-discovery-rules")
-    private final List<ShowDatabaseDiscoveryRulesStatementTestCase> showDataBaseDiscoveryRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-encrypt-rules")
     private final List<ShowEncryptRulesStatementTestCase> showEncryptRulesTestCases = new LinkedList<>();
@@ -1575,9 +1550,6 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "count-readwrite-splitting-rule")
     private final List<CountReadwriteSplittingRuleStatementTestCase> countReadwriteSplittingRuleStatementTestCases = new LinkedList<>();
-    
-    @XmlElement(name = "count-db-discovery-rule")
-    private final List<CountDatabaseDiscoveryRuleStatementTestCase> countDatabaseDiscoveryRuleStatementTestCases = new LinkedList<>();
     
     @XmlElement(name = "count-encrypt-rule")
     private final List<CountEncryptRuleStatementTestCase> countEncryptRuleStatementTestCases = new LinkedList<>();

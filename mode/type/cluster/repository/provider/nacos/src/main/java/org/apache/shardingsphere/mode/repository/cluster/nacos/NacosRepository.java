@@ -41,6 +41,7 @@ import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosProper
 import org.apache.shardingsphere.mode.repository.cluster.nacos.props.NacosPropertyKey;
 import org.apache.shardingsphere.mode.repository.cluster.nacos.util.NacosMetaDataUtils;
 
+import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -60,6 +61,8 @@ import java.util.stream.Stream;
  * Registry repository of Nacos.
  */
 public final class NacosRepository implements ClusterPersistRepository {
+    
+    private final Random random = new SecureRandom();
     
     private NamingService client;
     
@@ -341,7 +344,7 @@ public final class NacosRepository implements ClusterPersistRepository {
     }
     
     private long getSleepTimeMs(final int retryCount, final long baseSleepTimeMs) {
-        return baseSleepTimeMs * Math.max(1, new Random().nextInt(1 << (retryCount + 1)));
+        return baseSleepTimeMs * Math.max(1, random.nextInt(1 << (retryCount + 1)));
     }
     
     @Override

@@ -67,10 +67,6 @@ READ_STORAGE_UNITS
     : R E A D UL_ S T O R A G E UL_ U N I T S
     ;
 
-AUTO_AWARE_RESOURCE
-    : A U T O UL_ A W A R E UL_ R E S O U R C E
-    ;
-
 TYPE
     : T Y P E
     ;

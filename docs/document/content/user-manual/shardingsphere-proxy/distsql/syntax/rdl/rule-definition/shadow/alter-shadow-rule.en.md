@@ -1,6 +1,6 @@
 +++
 title = "ALTER SHADOW RULE"
-weight = 3
+weight = 2
 +++
 
 ## Description

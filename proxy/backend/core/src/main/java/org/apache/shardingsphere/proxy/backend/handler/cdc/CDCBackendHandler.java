@@ -42,11 +42,13 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataR
 import org.apache.shardingsphere.data.pipeline.cdc.util.CDCSchemaTableUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.util.CDCTableRuleUtils;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
+import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -83,7 +85,7 @@ public final class CDCBackendHandler {
      * @return CDC response
      */
     public CDCResponse streamData(final String requestId, final StreamDataRequestBody requestBody, final CDCConnectionContext connectionContext, final Channel channel) {
-        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(requestBody.getDatabase());
+        ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(requestBody.getDatabase());
         ShardingSpherePreconditions.checkNotNull(database, () -> new CDCExceptionWrapper(requestId, new CDCServerException(String.format("%s database is not exists", requestBody.getDatabase()))));
         Map<String, Set<String>> schemaTableNameMap;
         Collection<String> tableNames;
@@ -136,17 +138,18 @@ public final class CDCBackendHandler {
         if (PipelineJobCenter.isJobExisting(jobId)) {
             PipelineJobCenter.stop(jobId);
         }
-        JobConfigurationPOJO jobConfigPOJO = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
+        JobConfigurationAPI jobConfigAPI = PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobId));
+        JobConfigurationPOJO jobConfigPOJO = jobConfigAPI.getJobConfiguration(jobId);
         // TODO, ensure that there is only one consumer at a time, job config disable may not be updated when the program is forced to close
         jobConfigPOJO.setDisabled(false);
-        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfigPOJO);
-        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(cdcJobConfig.getDatabaseName());
+        jobConfigAPI.updateJobConfiguration(jobConfigPOJO);
+        ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(cdcJobConfig.getDatabaseName());
         Comparator<DataRecord> dataRecordComparator = cdcJobConfig.isDecodeWithTX()
                 ? DataRecordComparatorGenerator.generatorIncrementalComparator(database.getProtocolType())
                 : null;
         CDCJob job = new CDCJob(new SocketSinkImporterConnector(channel, database, cdcJobConfig.getJobShardingCount(), cdcJobConfig.getSchemaTableNames(), dataRecordComparator));
         PipelineJobCenter.addJob(jobId, job);
-        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
+        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfigPOJO.toJobConfiguration());
         job.setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
         connectionContext.setJobId(jobId);
@@ -163,9 +166,10 @@ public final class CDCBackendHandler {
             return;
         }
         PipelineJobCenter.stop(jobId);
-        JobConfigurationPOJO jobConfig = PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
+        JobConfigurationAPI jobConfigAPI = PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobId));
+        JobConfigurationPOJO jobConfig = jobConfigAPI.getJobConfiguration(jobId);
         jobConfig.setDisabled(true);
-        PipelineAPIFactory.getJobConfigurationAPI().updateJobConfiguration(jobConfig);
+        jobConfigAPI.updateJobConfiguration(jobConfig);
     }
     
     /**

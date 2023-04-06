@@ -1,6 +1,6 @@
 +++
 title = "DROP SHARDING KEY GENERATOR"
-weight = 11
+weight = 10
 +++
 
 ## Description

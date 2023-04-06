@@ -1,11 +1,11 @@
 +++
 title = "ALTER READWRITE_SPLITTING RULE ENABLE/DISABLE"
-weight = 2
+weight = 1
 +++
 
 ## Description
 
-The `ALTER READWRITE_SPLITTING RULE ENABLE/DISABLE` syntax is used enable/disable a specified read source for specified readwrite splitting rule.
+The `ALTER READWRITE_SPLITTING RULE ENABLE/DISABLE` syntax is used enable/disable a specified read source for specified readwrite-splitting rule.
 
 ### Syntax
 
@@ -36,25 +36,25 @@ databaseName ::=
 
 ### Example
 
-- Disable a specified read source for specified readwrite splitting rule in specified database
+- Disable a specified read source for specified readwrite-splitting rule in specified database
 
 ```sql
 ALTER READWRITE_SPLITTING RULE ms_group_0 DISABLE read_ds_0 FROM sharding_db;
 ```
 
-- Enable a specified read source for specified readwrite splitting rule in specified database
+- Enable a specified read source for specified readwrite-splitting rule in specified database
 
 ```sql
 ALTER READWRITE_SPLITTING RULE ms_group_0 ENABLE read_ds_0 FROM sharding_db;
 ```
 
-- Disable a specified read source for specified readwrite splitting rule in current database
+- Disable a specified read source for specified readwrite-splitting rule in current database
 
 ```sql
 ALTER READWRITE_SPLITTING RULE ms_group_0 DISABLE read_ds_0;
 ```
 
-- Enable a specified read source for specified readwrite splitting rule in current database
+- Enable a specified read source for specified readwrite-splitting rule in current database
 
 ```sql
 ALTER READWRITE_SPLITTING RULE ms_group_1 ENABLE read_ds_0;

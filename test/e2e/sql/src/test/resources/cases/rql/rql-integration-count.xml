@@ -29,10 +29,6 @@
         <assertion expected-data-file="count_readwrite_splitting_rule.xml" />
     </test-case>
     
-    <test-case sql="COUNT DB_DISCOVERY RULE;" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,readwrite_splitting">
-        <assertion expected-data-file="count_database_discovery_rule.xml" />
-    </test-case>
-    
     <test-case sql="COUNT ENCRYPT RULE;" scenario-types="db,tbl,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting,readwrite_splitting">
         <assertion expected-data-file="count_encrypt_rule.xml" />
     </test-case>

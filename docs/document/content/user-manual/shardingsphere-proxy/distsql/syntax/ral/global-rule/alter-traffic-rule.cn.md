@@ -1,6 +1,6 @@
 +++
 title = "ALTER TRAFFIC RULE"
-weight = 8
+weight = 7
 +++
 
 ## 描述

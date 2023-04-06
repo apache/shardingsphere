@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-agent-plugin-tracing</artifactId>
-        <version>5.3.2-SNAPSHOT</version>
+        <version>5.3.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-agent-tracing-type</artifactId>
     <packaging>pom</packaging>
@@ -54,13 +54,6 @@
                     <artifactId>h2</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-agent-tracing-test</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

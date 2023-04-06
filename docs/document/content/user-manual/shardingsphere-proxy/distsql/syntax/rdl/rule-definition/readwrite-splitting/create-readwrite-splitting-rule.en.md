@@ -1,11 +1,11 @@
 +++
 title = "CREATE READWRITE_SPLITTING RULE"
-weight = 2
+weight = 1
 +++
 
 ## Description
 
-The `CREATE READWRITE_SPLITTING RULE` syntax is used to create a readwrite splitting rule.
+The `CREATE READWRITE_SPLITTING RULE` syntax is used to create a readwrite-splitting rule.
 
 ### Syntax
 
@@ -70,7 +70,7 @@ value ::=
 
 ### Example
 
-#### Create a statics readwrite splitting rule
+#### Create a statics readwrite-splitting rule
 
 ```sql
 CREATE READWRITE_SPLITTING RULE ms_group_0 (
@@ -80,7 +80,7 @@ CREATE READWRITE_SPLITTING RULE ms_group_0 (
 );
 ```
 
-#### Create a dynamic readwrite splitting rule
+#### Create a dynamic readwrite-splitting rule
 
 ```sql
 CREATE READWRITE_SPLITTING RULE ms_group_1 (
@@ -89,9 +89,9 @@ CREATE READWRITE_SPLITTING RULE ms_group_1 (
 );
 ```
 
-#### Create readwrite splitting rule with `ifNotExists` clause
+#### Create readwrite-splitting rule with `ifNotExists` clause
 
-- Statics readwrite splitting rule
+- Statics readwrite-splitting rule
 
 ```sql
 CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_0 (
@@ -101,7 +101,7 @@ CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_0 (
 );
 ```
 
-- Dynamic readwrite splitting rule
+- Dynamic readwrite-splitting rule
 
 ```sql
 CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_1 (

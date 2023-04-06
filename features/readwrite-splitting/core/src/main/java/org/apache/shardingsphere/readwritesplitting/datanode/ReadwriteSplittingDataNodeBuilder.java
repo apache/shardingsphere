@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Readwrite splitting data node builder.
+ * Readwrite-splitting data node builder.
  */
 public final class ReadwriteSplittingDataNodeBuilder implements DataNodeBuilder<ReadwriteSplittingRule> {
     

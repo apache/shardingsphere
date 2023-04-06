@@ -17,66 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.core.context;
 
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Pipeline context.
  */
+@RequiredArgsConstructor
+@Getter
 public final class PipelineContext {
     
-    private static volatile ModeConfiguration modeConfig;
+    private final ModeConfiguration modeConfig;
     
-    private static volatile ContextManager contextManager;
-    
-    private static final ExecutorService EVENT_LISTENER_EXECUTOR = Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setNameFormat("Pipeline-EventListener-%d").build());
-    
-    /**
-     * Get mode configuration.
-     *
-     * @return mode configuration
-     */
-    public static ModeConfiguration getModeConfig() {
-        return modeConfig;
-    }
-    
-    /**
-     * Initialize mode configuration.
-     *
-     * @param modeConfig configuration
-     */
-    public static void initModeConfig(final ModeConfiguration modeConfig) {
-        PipelineContext.modeConfig = modeConfig;
-    }
-    
-    /**
-     * Get context manager.
-     *
-     * @return context manager
-     */
-    public static ContextManager getContextManager() {
-        return contextManager;
-    }
-    
-    /**
-     * Initialize context manager.
-     *
-     * @param contextManager context manager
-     */
-    public static void initContextManager(final ContextManager contextManager) {
-        PipelineContext.contextManager = contextManager;
-    }
-    
-    /**
-     * Get pipeline executor.
-     *
-     * @return pipeline executor
-     */
-    public static ExecutorService getEventListenerExecutor() {
-        return EVENT_LISTENER_EXECUTOR;
-    }
+    private final ContextManager contextManager;
 }

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Alter readwrite splitting storage unit status statement test case.
+ * Alter readwrite-splitting storage unit status statement test case.
  */
 @Getter
 @Setter

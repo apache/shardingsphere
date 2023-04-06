@@ -1,6 +1,6 @@
 +++
 title = "Encrypt"
-weight = 5
+weight = 3
 +++
 
 ## Storage unit Operation

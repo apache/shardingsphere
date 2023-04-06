@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHARDING TABLE NODES"
-weight = 10
+weight = 9
 +++
 
 ### 描述
@@ -33,10 +33,10 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列     | 说明          |
-| ------| --------------|
-| name  | 分片规则名称    |
-| nodes | 分片节点       |
+| 列     | 说明     |
+|-------|--------|
+| name  | 分片规则名称 |
+| nodes | 分片节点   |
 
 ### 示例
 

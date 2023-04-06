@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Readwrite splitting strategy.
+ * Readwrite-splitting strategy.
  */
 public interface ReadwriteSplittingStrategy {
     

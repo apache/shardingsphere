@@ -1,6 +1,6 @@
 +++
 title = "DROP READWRITE_SPLITTING RULE"
-weight = 4
+weight = 3
 +++
 
 ## 描述
@@ -33,7 +33,7 @@ databaseName ::=
 ### 补充说明
 
 - 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`；
-- `ifExists` 子句用于避免 `Readwrite splitting rule not exists` 错误。
+- `ifExists` 子句用于避免 `Readwrite-splitting rule not exists` 错误。
 
 ### 示例
 

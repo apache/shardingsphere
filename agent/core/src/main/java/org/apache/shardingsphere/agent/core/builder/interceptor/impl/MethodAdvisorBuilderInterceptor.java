@@ -24,7 +24,7 @@ import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutor;
 import org.apache.shardingsphere.agent.core.advisor.executor.AdviceExecutorFactory;
 import org.apache.shardingsphere.agent.core.builder.interceptor.AgentBuilderInterceptor;
-import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
+import org.apache.shardingsphere.agent.core.plugin.classloader.ClassLoaderContext;
 import org.apache.shardingsphere.agent.core.log.AgentLogger;
 import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
 

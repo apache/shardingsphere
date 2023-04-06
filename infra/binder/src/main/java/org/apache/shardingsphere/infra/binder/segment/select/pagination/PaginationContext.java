@@ -98,7 +98,7 @@ public final class PaginationContext {
         if (null == rowCountSegment) {
             return Optional.empty();
         }
-        return Optional.of(rowCountSegment.isBoundOpened() ? actualRowCount + 1 : actualRowCount);
+        return Optional.of(rowCountSegment.isBoundOpened() ? actualRowCount + 1L : actualRowCount);
     }
     
     /**

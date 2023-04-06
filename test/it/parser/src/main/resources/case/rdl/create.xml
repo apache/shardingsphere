@@ -362,63 +362,6 @@
         </rule>
     </create-readwrite-splitting-rule>
     
-    <create-database-discovery-rule sql-case-id="create-database-discovery-rule">
-        <rule name="ha_group_0" type="mgr">
-            <data-source>ds_0</data-source>
-            <data-source>ds_1</data-source>
-            <discovery-type algorithm-name="mgr">
-                <property key="groupName" value="92504d5b-6dec" />
-            </discovery-type>
-            <property key="keepAliveCron" value="0/5 * * * * ?" />
-        </rule>
-        <rule name="ha_group_1" type="mgr2">
-            <data-source>ds_2</data-source>
-            <data-source>ds_3</data-source>
-            <discovery-type algorithm-name="mgr2">
-                <property key="groupName" value="92504d5b-6dec-2" />
-            </discovery-type>
-            <property key="keepAliveCron" value="0/6 * * * * ?" />
-        </rule>
-    </create-database-discovery-rule>
-    
-    <create-database-discovery-rule sql-case-id="create-database-discovery-rule-if-not-exists" if-not-exists="true">
-        <rule name="ha_group_0" type="mgr">
-            <data-source>ds_0</data-source>
-            <data-source>ds_1</data-source>
-            <discovery-type algorithm-name="mgr">
-                <property key="groupName" value="92504d5b-6dec" />
-            </discovery-type>
-            <property key="keepAliveCron" value="0/5 * * * * ?" />
-        </rule>
-        <rule name="ha_group_1" type="mgr2">
-            <data-source>ds_2</data-source>
-            <data-source>ds_3</data-source>
-            <discovery-type algorithm-name="mgr2">
-                <property key="groupName" value="92504d5b-6dec-2" />
-            </discovery-type>
-            <property key="keepAliveCron" value="0/6 * * * * ?" />
-        </rule>
-    </create-database-discovery-rule>
-
-    <create-database-discovery-rule sql-case-id="create-database-discovery-rule-with-quota">
-        <rule name="ha_group_0" type="mgr">
-            <data-source>ds_0</data-source>
-            <data-source>ds_1</data-source>
-            <discovery-type algorithm-name="mgr">
-                <property key="groupName" value="92504d5b-6dec" />
-            </discovery-type>
-            <property key="keepAliveCron" value="0/5 * * * * ?" />
-        </rule>
-        <rule name="ha_group_1" type="mgr2">
-            <data-source>ds_2</data-source>
-            <data-source>ds_3</data-source>
-            <discovery-type algorithm-name="mgr2">
-                <property key="groupName" value="92504d5b-6dec-2" />
-            </discovery-type>
-            <property key="keepAliveCron" value="0/6 * * * * ?" />
-        </rule>
-    </create-database-discovery-rule>
-    
     <create-encrypt-rule sql-case-id="create-encrypt-rule">
         <rule name="t_encrypt">
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
@@ -704,17 +647,6 @@
             <read-data-source>read_ds_1</read-data-source>
         </rule>
     </create-readwrite-splitting-rule>
-
-    <create-database-discovery-rule sql-case-id="create-db-discovery-rule-without-quote-on-build-in-db-discovery-type-name">
-        <rule name="db_discovery_group_0" type="MYSQL.MGR">
-            <data-source>ds_0</data-source>
-            <data-source>ds_1</data-source>
-            <discovery-type algorithm-name="MYSQL.MGR">
-                <property key="group-name" value="92504d5b-6dec" />
-            </discovery-type>
-            <property key="keep-alive-cron" value="0/5 * * * * ?" />
-        </rule>
-    </create-database-discovery-rule>
 
     <create-shadow-rule sql-case-id="create-shadow-rule-without-quote-on-build-in-shadow-algorithm-name">
         <rule name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">

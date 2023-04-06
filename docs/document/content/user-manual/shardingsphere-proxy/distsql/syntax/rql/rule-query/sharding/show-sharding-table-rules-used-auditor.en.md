@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHARDING TABLE RULES USED AUDITOR"
-weight = 13
+weight = 12
 
 +++
 
@@ -34,10 +34,10 @@ databaseName ::=
 
 ### Return value description
 
-| Columns     | Descriptions       |
-| ------------| -------------------|
-| type        | Sharding rule type |
-| name        | Sharding rule name |
+| Columns | Descriptions       |
+|---------|--------------------|
+| type    | Sharding rule type |
+| name    | Sharding rule name |
 
 ### Example
 
