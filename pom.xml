@@ -906,6 +906,7 @@
                     <artifactId>spotbugs-maven-plugin</artifactId>
                     <version>${spotbugs-maven-plugin.version}</version>
                     <configuration>
+                        <fork>false</fork>
                         <excludeFilterFile>src/resources/spotbugs.xml</excludeFilterFile>
                         <plugins>
                             <plugin>
@@ -1084,14 +1085,7 @@
     
     <reporting>
         <plugins>
-            <plugin>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>${maven-site-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>${maven-project-info-reports-plugin.version}</version>
-            </plugin>
+
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>
