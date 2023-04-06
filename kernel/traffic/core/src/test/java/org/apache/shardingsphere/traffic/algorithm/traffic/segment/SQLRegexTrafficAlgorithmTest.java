@@ -60,11 +60,10 @@ class SQLRegexTrafficAlgorithmTest {
         assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "TRUNCATE TABLE `t_order` ")));
         assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order` SET `order_id` = ?;")));
     }
-    
-    // I am not sure how to deal with the Exception
+
     @Test
     void assertThrowExceptionWhenWithIllegalInit() {
-        assertThrows(IllegalArgumentException.class, () -> sqlRegexAlgorithm = (SQLRegexTrafficAlgorithm) TypedSPILoader.getService(
-                TrafficAlgorithm.class, "SQL_REGEX", PropertiesBuilder.build(new Property("regex", ""))));
+        assertThrows(IllegalArgumentException.class, () -> sqlRegexAlgorithm = (SQLRegexTrafficAlgorithm) TypedSPILoader.getService(TrafficAlgorithm.class, "SQL_REGEX",
+                PropertiesBuilder.build(new Property("regex", ""))));
     }
 }

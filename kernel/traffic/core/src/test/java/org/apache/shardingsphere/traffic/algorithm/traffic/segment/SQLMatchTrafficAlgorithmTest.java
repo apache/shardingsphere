@@ -60,8 +60,7 @@ class SQLMatchTrafficAlgorithmTest {
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order` SET `order_id` = ?;")));
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order_item` SET `order_id` = ? WHERE user_id = ?;")));
     }
-    
-    // I am not sure how to deal with the Exception
+
     @Test
     void assertThrowExceptionWhenWithIllegalInit() {
         assertThrows(IllegalArgumentException.class, () -> sqlMatchAlgorithm = (SQLMatchTrafficAlgorithm) TypedSPILoader.getService(TrafficAlgorithm.class, "SQL_MATCH",
