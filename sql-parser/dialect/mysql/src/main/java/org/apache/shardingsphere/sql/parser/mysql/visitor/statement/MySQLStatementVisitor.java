@@ -958,7 +958,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.CHAR().getText(), getOriginalText(ctx));
         for (ExprContext each : ctx.expr()) {
             ASTNode expr = visit(each);
-            result.getParameters().add((LiteralExpressionSegment) expr);
+            result.getParameters().add((ExpressionSegment) expr);
         }
         return result;
     }
@@ -988,7 +988,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public final ASTNode visitWeightStringFunction(final WeightStringFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.WEIGHT_STRING().getText(), getOriginalText(ctx));
-        result.getParameters().add((LiteralExpressionSegment) visit(ctx.expr()));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
         return result;
     }
     
