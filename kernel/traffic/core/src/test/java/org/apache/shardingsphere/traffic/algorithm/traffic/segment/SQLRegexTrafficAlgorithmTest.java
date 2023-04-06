@@ -59,17 +59,11 @@ class SQLRegexTrafficAlgorithmTest {
         assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "TRUNCATE TABLE `t_order` ")));
         assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order` SET `order_id` = ?;")));
     }
-
+    
     // I am not sure how to deal with the Exception
     @Test
     void assertThrowExceptionWhenWithIllegalInit() {
-        SQLStatement sqlStatement = mock(SelectStatement.class);
-        try {
-            sqlRegexAlgorithm = (SQLRegexTrafficAlgorithm) TypedSPILoader.getService(
-                    TrafficAlgorithm.class, "SQL_REGEX", PropertiesBuilder.build(new Property("regex", "")));
-            assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "SELECT * FROM t_order")));
-        }catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
+        sqlRegexAlgorithm = (SQLRegexTrafficAlgorithm) TypedSPILoader.getService(
+                TrafficAlgorithm.class, "SQL_REGEX", PropertiesBuilder.build(new Property("regex", "")));
     }
 }

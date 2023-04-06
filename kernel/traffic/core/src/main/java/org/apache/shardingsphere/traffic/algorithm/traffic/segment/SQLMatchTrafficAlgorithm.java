@@ -26,7 +26,6 @@ import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficAlgor
 import org.apache.shardingsphere.traffic.api.traffic.segment.SegmentTrafficValue;
 
 import java.util.Collection;
-import java.util.Locale;
 import java.util.Properties;
 import java.util.TreeSet;
 
@@ -47,11 +46,6 @@ public final class SQLMatchTrafficAlgorithm implements SegmentTrafficAlgorithm {
         String sqlValue = props.getProperty(SQL_PROPS_KEY);
         Preconditions.checkArgument(!(StringUtils.isEmpty(sqlValue) || sqlValue.length() == 0), "%s cannot be empty.", SQL_PROPS_KEY);
         sql = getExactlySQL(sqlValue);
-        // Is it necessary to check sql values?
-        for (String s : sql) {
-            s = s.toLowerCase();
-            Preconditions.checkArgument((s.contains("select") || s.contains("truncate") || s.contains("update")), "%s cantains illegal sql.", SQL_PROPS_KEY);
-        }
     }
     
     private Collection<String> getExactlySQL(final String value) {
