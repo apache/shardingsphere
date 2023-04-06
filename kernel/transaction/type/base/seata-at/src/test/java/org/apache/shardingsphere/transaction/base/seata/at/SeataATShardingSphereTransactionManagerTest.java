@@ -166,7 +166,7 @@ class SeataATShardingSphereTransactionManagerTest {
     }
     
     private void assertResult(final Class<?> requestClass, final Class<?> responseClass) {
-        log.warn("requestClass:{}\n,responseClass:{}\n,requestQueue:{}\n,responseQueue:{}\n", requestClass.getSimpleName(), responseClass.getSimpleName(),
+        log.warn("requestClass:{}\n, responseClass:{}\n,requestQueue:{}\n,responseQueue:{}\n", requestClass.getSimpleName(), responseClass.getSimpleName(),
                 requestQueue.stream().map(each -> each.getClass().getSimpleName()).collect(Collectors.toList()),
                 responseQueue.stream().map(each -> each.getClass().getSimpleName()).collect(Collectors.toList()));
         assertTrue(requestQueue.stream().anyMatch(each -> each instanceof RegisterTMRequest));
