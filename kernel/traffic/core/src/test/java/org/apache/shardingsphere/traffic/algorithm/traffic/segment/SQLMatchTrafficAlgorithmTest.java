@@ -27,8 +27,7 @@ import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class SQLMatchTrafficAlgorithmTest {
@@ -63,7 +62,7 @@ class SQLMatchTrafficAlgorithmTest {
     // I am not sure how to deal with the Exception
     @Test
     void assertThrowExceptionWhenWithIllegalInit() {
-        sqlMatchAlgorithm = (SQLMatchTrafficAlgorithm) TypedSPILoader.getService(TrafficAlgorithm.class, "SQL_MATCH",
-                PropertiesBuilder.build(new Property("sql", "")));
+        assertThrows(IllegalArgumentException.class, () -> sqlMatchAlgorithm = (SQLMatchTrafficAlgorithm) TypedSPILoader.getService(TrafficAlgorithm.class, "SQL_MATCH",
+                PropertiesBuilder.build(new Property("sql", ""))));
     }
 }

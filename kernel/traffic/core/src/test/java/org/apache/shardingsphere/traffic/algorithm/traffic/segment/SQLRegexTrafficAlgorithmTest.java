@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 class SQLRegexTrafficAlgorithmTest {
@@ -63,7 +64,7 @@ class SQLRegexTrafficAlgorithmTest {
     // I am not sure how to deal with the Exception
     @Test
     void assertThrowExceptionWhenWithIllegalInit() {
-        sqlRegexAlgorithm = (SQLRegexTrafficAlgorithm) TypedSPILoader.getService(
-                TrafficAlgorithm.class, "SQL_REGEX", PropertiesBuilder.build(new Property("regex", "")));
+        assertThrows(IllegalArgumentException.class, () -> sqlRegexAlgorithm = (SQLRegexTrafficAlgorithm) TypedSPILoader.getService(
+                TrafficAlgorithm.class, "SQL_REGEX", PropertiesBuilder.build(new Property("regex", ""))));
     }
 }
