@@ -161,7 +161,8 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     public String getTableName(final int column) throws SQLException {
         String actualTableName = resultSetMetaData.getTableName(column);
         Optional<DataNodeContainedRule> rule = database.getRuleMetaData().findSingleRule(DataNodeContainedRule.class);
-        return rule.isPresent() ? rule.get().findLogicTableByActualTable(actualTableName).orElse(actualTableName) : actualTableName;
+        // TODO findLogicTableByActualTable according to actual table name and data source name to avoid getting wrong logic table in #24982
+        return rule.isPresent() ? rule.get().findLogicTableByActualTable(null, actualTableName).orElse(actualTableName) : actualTableName;
     }
     
     @Override

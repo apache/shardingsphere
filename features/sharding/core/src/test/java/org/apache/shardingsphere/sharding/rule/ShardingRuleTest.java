@@ -127,22 +127,22 @@ class ShardingRuleTest {
     
     @Test
     void assertFindTableRuleByActualTable() {
-        assertTrue(createMaximumShardingRule().findTableRuleByActualTable("table_0").isPresent());
+        assertTrue(createMaximumShardingRule().findTableRuleByDataSourceAndActualTable("table_0", "dataSourceName").isPresent());
     }
     
     @Test
     void assertNotFindTableRuleByActualTable() {
-        assertFalse(createMaximumShardingRule().findTableRuleByActualTable("table_3").isPresent());
+        assertFalse(createMaximumShardingRule().findTableRuleByDataSourceAndActualTable("table_3", "dataSourceName").isPresent());
     }
     
     @Test
     void assertFindLogicTableByActualTable() {
-        assertTrue(createMaximumShardingRule().findLogicTableByActualTable("table_0").isPresent());
+        assertTrue(createMaximumShardingRule().findLogicTableByActualTable("ds_0", "table_0").isPresent());
     }
     
     @Test
     void assertNotFindLogicTableByActualTable() {
-        assertFalse(createMaximumShardingRule().findLogicTableByActualTable("table_3").isPresent());
+        assertFalse(createMaximumShardingRule().findLogicTableByActualTable("ds_0", "table_3").isPresent());
     }
     
     @Test

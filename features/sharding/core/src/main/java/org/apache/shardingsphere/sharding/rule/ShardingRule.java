@@ -334,15 +334,25 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         return Optional.of(tableRules.get(logicTableName.toLowerCase()));
     }
     
+    private Optional<TableRule> findTableRuleByActualTable(final String actualTableName) {
+        for (TableRule each : tableRules.values()) {
+            if (each.isExisted(actualTableName)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
+    }
+    
     /**
-     * Find table rule via actual table name.
+     * Find table rule via data source name and actual table name.
      *
+     * @param dataSourceName data source name
      * @param actualTableName actual table name
      * @return table rule
      */
-    public Optional<TableRule> findTableRuleByActualTable(final String actualTableName) {
+    public Optional<TableRule> findTableRuleByDataSourceAndActualTable(final String dataSourceName, final String actualTableName) {
         for (TableRule each : tableRules.values()) {
-            if (each.isExisted(actualTableName)) {
+            if (each.getActualDataSourceNames().contains(dataSourceName) && each.isExisted(actualTableName)) {
                 return Optional.of(each);
             }
         }
@@ -684,8 +694,9 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     }
     
     @Override
-    public Optional<String> findLogicTableByActualTable(final String actualTable) {
-        return findTableRuleByActualTable(actualTable).map(TableRule::getLogicTable);
+    public Optional<String> findLogicTableByActualTable(final String dataSourceName, final String actualTable) {
+        return Strings.isNullOrEmpty(dataSourceName) ? findTableRuleByActualTable(actualTable).map(TableRule::getLogicTable)
+                : findTableRuleByDataSourceAndActualTable(actualTable, dataSourceName).map(TableRule::getLogicTable);
     }
     
     @Override

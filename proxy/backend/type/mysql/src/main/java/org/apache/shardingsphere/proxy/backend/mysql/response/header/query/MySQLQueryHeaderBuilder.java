@@ -61,7 +61,8 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
     
     private String getLogicTableName(final ShardingSphereDatabase database, final String actualTableName) {
         for (DataNodeContainedRule each : database.getRuleMetaData().findRules(DataNodeContainedRule.class)) {
-            Optional<String> logicTable = each.findLogicTableByActualTable(actualTableName);
+            // TODO findLogicTableByActualTable according to actual table name and data source name to avoid getting wrong logic table in #24982
+            Optional<String> logicTable = each.findLogicTableByActualTable(null, actualTableName);
             if (logicTable.isPresent()) {
                 return logicTable.get();
             }

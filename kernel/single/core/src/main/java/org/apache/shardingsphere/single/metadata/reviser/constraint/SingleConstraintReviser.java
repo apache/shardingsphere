@@ -30,7 +30,7 @@ import java.util.Optional;
 public final class SingleConstraintReviser implements ConstraintReviser<SingleRule> {
     
     @Override
-    public Optional<ConstraintMetaData> revise(final String tableName, final ConstraintMetaData originalMetaData, final SingleRule rule) {
+    public Optional<ConstraintMetaData> revise(final String tableName, final ConstraintMetaData originalMetaData, final String dataSourceName, final SingleRule rule) {
         return Optional.of(new ConstraintMetaData(IndexMetaDataUtils.getLogicIndexName(originalMetaData.getName(), tableName), originalMetaData.getReferencedTableName()));
     }
 }

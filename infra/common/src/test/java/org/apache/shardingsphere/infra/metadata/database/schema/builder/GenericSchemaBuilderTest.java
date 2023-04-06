@@ -88,7 +88,7 @@ class GenericSchemaBuilderTest {
     private Map<String, SchemaMetaData> createSchemaMetaDataMap(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) {
         if (!tableNames.isEmpty() && (tableNames.contains("data_node_routed_table1") || tableNames.contains("data_node_routed_table2"))) {
             Collection<TableMetaData> tableMetaDataList = tableNames.stream()
-                    .map(each -> new TableMetaData(each, Collections.emptyList(), Collections.emptyList(), Collections.emptyList())).collect(Collectors.toList());
+                    .map(each -> new TableMetaData(each, "ds_0", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())).collect(Collectors.toList());
             return Collections.singletonMap(material.getDefaultSchemaName(), new SchemaMetaData(material.getDefaultSchemaName(), tableMetaDataList));
         }
         return Collections.emptyMap();
