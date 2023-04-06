@@ -6,6 +6,8 @@ chapter = true
 
 ## 准备工作
 
+准备工作在 **代码冻结前 7 天** 进行，以便于贡献者根据发布计划控制研发进度。
+
 ### 1. 检查并更新 LICENSE 和 NOTICE
 
 检查并更新 LICENSE 文件中的依赖版本号。
@@ -21,7 +23,13 @@ Release Note 需提供中文/英文两种版本，确认中英文描述是否明
 1. 功能增强
 1. 漏洞修复
 
-### 3. 确认 Issue 列表
+### 3. 新建下一版本 Milestone
+
+1. 新建 [Github Milestone](https://github.com/apache/shardingsphere/milestones)；
+1. 指定下一版本号；
+1. **设置截至日期为下一版本代码冻结日期** 。
+
+### 4. 确认 Issue 列表
 
 打开 [Github Issues](https://github.com/apache/shardingsphere/issues)，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Issue:
 
@@ -29,7 +37,7 @@ Release Note 需提供中文/英文两种版本，确认中英文描述是否明
 1. 未完成的 Issue 与负责人进行沟通，如果不影响本次发版，修改 Milestone 为下一个版本；
 1. 确认发布版本的 Milestone 下没有打开状态的 Issue。
 
-### 4. 确认 Pull Request 列表
+### 5. 确认 Pull Request 列表
 
 打开 [Github Pull requests](https://github.com/apache/shardingsphere/pulls)，过滤 Milestone 为 `${RELEASE.VERSION}` 且状态为打开的 Pull Request:
 
@@ -37,18 +45,11 @@ Release Note 需提供中文/英文两种版本，确认中英文描述是否明
 1. 无法 Merge 且不影响本次发版的 Pull Request，修改 Milestone 为下一个版本；
 1. 确认发布版本的 Milestone 下没有打开状态的 Pull Request。
 
-### 5. 发送讨论邮件
+### 6. 发起发布讨论
 
-1. 创建 [GitHub Discussion](https://github.com/apache/shardingsphere/discussions) 并在讨论内容中列出 Release Note；
-1. 发送邮件至 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)，在邮件正文中链接 GitHub Discussion；
-1. 关注邮件列表，确认社区开发者对 Release Note 没有任何疑问。
-
-### 6. 关闭 Milestone
-
-打开 [Github Milestone](https://github.com/apache/shardingsphere/milestones) 
-
-1. 确认 `${RELEASE.VERSION}` 的 Milestone 完成状态为 100%；
-1. 点击 `Close` 关闭 Milestone。
+1. 创建 [GitHub Discussion](https://github.com/apache/shardingsphere/discussions) 并在讨论内容中列出 Release Note，并 **明确具体代码冻结日期** ；
+1. 发送邮件至 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)，在邮件正文中链接 GitHub Discussion，并 **明确具体代码冻结日期** ；
+1. 关注 Discussion 与邮件列表，确认社区开发者对 Release Note 没有任何疑问。
 
 ## GPG 设置
 
@@ -149,12 +150,20 @@ gpg --keyserver hkp://keyserver.ubuntu.com --send-key 700E6065
 
 ## 准备发布分支
 
-### 1. 创建发布分支
+### 1. 关闭发布版本 Milestone
+
+打开 [Github Milestone](https://github.com/apache/shardingsphere/milestones)
+
+1. 确认 `${RELEASE.VERSION}` 的 Milestone 完成状态为 100%；
+1. 点击 `Close` 关闭 Milestone。
+
+### 2. 确认发布 commit 并创建发布分支
 
 假设从 GitHub 下载的 ShardingSphere 源代码在 `~/open_source/shardingsphere/`，从本地重新克隆一份到 `~/shardingsphere/` 目录。
 
 假设即将发布的版本为 `${RELEASE.VERSION}`，创建 `${RELEASE.VERSION}-release` 分支，接下来的操作都在该分支进行。
 
+参考命令：
 ```shell
 cd ~
 git clone ~/open_source/shardingsphere
@@ -167,7 +176,7 @@ git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
 
-### 2. 更新版本说明和示例版本
+### 3. 更新版本说明和示例版本
 
 在发布分支上更新如下文件，并提交 PR 到发布分支：
 
@@ -177,7 +186,7 @@ https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE
 
 更新 `examples` 模块的 pom，将版本由 `${DEVELOPMENT.VERSION}` 替换为 `${RELEASE.VERSION}`，并提交 PR 到发布分支。
 
-### 3. 更新下载页面
+### 4. 更新下载页面
 
 更新如下页面：
 * <https://shardingsphere.apache.org/document/current/en/downloads/>
@@ -185,7 +194,7 @@ https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE
 
 GPG 签名文件和哈希校验文件的下载连接应该使用这个前缀：`https://downloads.apache.org/shardingsphere/`。
 
-### 4. 修改 README 文件
+### 5. 修改 README 文件
 
 更新 `README.md` 和 `README_ZH.md` 里的 `${RELEASE.VERSION}` 和 `${NEXT.RELEASE.VERSION}`。
 
