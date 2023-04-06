@@ -41,7 +41,7 @@ public final class ShardingConstraintReviser implements ConstraintReviser<Shardi
             Optional<String> logicIndexName = getLogicIndex(originalMetaData.getName(), each.getTableName());
             if (logicIndexName.isPresent()) {
                 return Optional.of(new ConstraintMetaData(logicIndexName.get(),
-                        rule.findTableRuleByDataSourceAndActualTable(referencedTableName, dataSourceName).map(TableRule::getLogicTable).orElse(referencedTableName)));
+                        rule.findTableRuleByDataSourceAndActualTable(dataSourceName, referencedTableName).map(TableRule::getLogicTable).orElse(referencedTableName)));
             }
         }
         return Optional.empty();

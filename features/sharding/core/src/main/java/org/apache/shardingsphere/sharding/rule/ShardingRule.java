@@ -696,7 +696,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     @Override
     public Optional<String> findLogicTableByActualTable(final String dataSourceName, final String actualTable) {
         return Strings.isNullOrEmpty(dataSourceName) ? findTableRuleByActualTable(actualTable).map(TableRule::getLogicTable)
-                : findTableRuleByDataSourceAndActualTable(actualTable, dataSourceName).map(TableRule::getLogicTable);
+                : findTableRuleByDataSourceAndActualTable(dataSourceName, actualTable).map(TableRule::getLogicTable);
     }
     
     @Override
