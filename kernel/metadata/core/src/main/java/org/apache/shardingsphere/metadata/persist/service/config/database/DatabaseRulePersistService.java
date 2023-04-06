@@ -20,14 +20,17 @@ package org.apache.shardingsphere.metadata.persist.service.config.database;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Database rule persist service.
@@ -40,26 +43,23 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     private final PersistRepository repository;
     
     @Override
-    public void conditionalPersist(final String databaseName, final Collection<RuleConfiguration> configs) {
-        if (!configs.isEmpty() && !isExisted(databaseName)) {
-            persist(databaseName, configs);
-        }
-    }
-    
-    @Override
-    public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
+    public void persist(final String databaseName, final Map<String, DataSource> dataSources,
+                        final Collection<ShardingSphereRule> rules, final Collection<RuleConfiguration> configs) {
         if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
             repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
         }
-        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName)), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
+        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName)),
+                YamlEngine.marshal(createYamlRuleConfigurations(dataSources, rules, configs)));
     }
     
     @Override
-    public void persist(final String databaseName, final String version, final Collection<RuleConfiguration> configs) {
-        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, version), YamlEngine.marshal(createYamlRuleConfigurations(configs)));
+    public void persist(final String databaseName, final String version, final Map<String, DataSource> dataSources,
+                        final Collection<ShardingSphereRule> rules, final Collection<RuleConfiguration> configs) {
+        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, version), YamlEngine.marshal(createYamlRuleConfigurations(dataSources, rules, configs)));
     }
     
-    private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
+    private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules,
+                                                                           final Collection<RuleConfiguration> ruleConfigs) {
         return new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(ruleConfigs);
     }
     
