@@ -115,9 +115,4 @@
         <Class name="org.apache.shardingsphere.sqlfederation.original.OriginalSQLFederationExecutor" />
         <Bug code="OBL" />
     </Match>
-    <!-- TODO weijie fix the ignored bug -->
-    <Match>
-        <Class name="org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.OpenGaussSystemCatalogAdminQueryExecutor" />
-        <Bug code="ODR" />
-    </Match>
 </FindBugsFilter>
