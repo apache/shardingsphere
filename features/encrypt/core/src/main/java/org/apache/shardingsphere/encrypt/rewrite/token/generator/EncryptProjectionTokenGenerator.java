@@ -184,11 +184,11 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     
     private Collection<ColumnProjection> generateTableSubqueryProjections(final String tableName, final ColumnProjection column, final boolean shorthand) {
         Collection<ColumnProjection> result = new LinkedList<>();
-        result.add(distinctOwner(new ColumnProjection(column.getOwner(), encryptRule.getCipherColumn(tableName, column.getName()), null), shorthand));
+        result.add(distinctOwner(new ColumnProjection(column.getOwner(), encryptRule.getCipherColumn(tableName, column.getName()), column.getAlias().orElse(null)), shorthand));
         Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, column.getName());
-        assistedQueryColumn.ifPresent(optional -> result.add(new ColumnProjection(column.getOwner(), optional, null)));
+        assistedQueryColumn.ifPresent(optional -> result.add(new ColumnProjection(column.getOwner(), optional, column.getAlias().orElse(null))));
         Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, column.getName());
-        plainColumn.ifPresent(optional -> result.add(new ColumnProjection(column.getOwner(), optional, null)));
+        plainColumn.ifPresent(optional -> result.add(new ColumnProjection(column.getOwner(), optional, column.getAlias().orElse(null))));
         return result;
     }
     
