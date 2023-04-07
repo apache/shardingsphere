@@ -19,8 +19,8 @@ package org.apache.shardingsphere.sharding.metadata.reviser.constraint;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint.ConstraintReviser;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.reviser.constraint.ConstraintReviser;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -35,12 +35,13 @@ public final class ShardingConstraintReviser implements ConstraintReviser<Shardi
     private final TableRule tableRule;
     
     @Override
-    public Optional<ConstraintMetaData> revise(final String tableName, final ConstraintMetaData originalMetaData, final ShardingRule rule) {
+    public Optional<ConstraintMetaData> revise(final String dataSourceName, final String tableName, final ConstraintMetaData originalMetaData, final ShardingRule rule) {
         for (DataNode each : tableRule.getActualDataNodes()) {
             String referencedTableName = originalMetaData.getReferencedTableName();
             Optional<String> logicIndexName = getLogicIndex(originalMetaData.getName(), each.getTableName());
             if (logicIndexName.isPresent()) {
-                return Optional.of(new ConstraintMetaData(logicIndexName.get(), rule.findLogicTableByActualTable(referencedTableName).orElse(referencedTableName)));
+                return Optional.of(new ConstraintMetaData(logicIndexName.get(),
+                        rule.findTableRuleByDataSourceAndActualTable(dataSourceName, referencedTableName).map(TableRule::getLogicTable).orElse(referencedTableName)));
             }
         }
         return Optional.empty();

@@ -15,31 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.model;
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-
-import java.util.Collection;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.table;
 
 /**
- * Table meta data.
+ * Show logical table statement test case.
  */
-@RequiredArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
-public final class TableMetaData {
-    
-    private final String name;
-    
-    private final String dataSourceName;
-    
-    private final Collection<ColumnMetaData> columns;
-    
-    private final Collection<IndexMetaData> indexes;
-    
-    private final Collection<ConstraintMetaData> constrains;
+public final class ShowLogicalTableStatementTestCase extends ShowTableStatementTestCase {
 }

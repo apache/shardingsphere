@@ -15,21 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.single;
+package org.apache.shardingsphere.globalclock.type.tso.provider;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
-
-import javax.xml.bind.annotation.XmlAttribute;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 
 /**
- * Show single table statement test case.
+ * Property key of redis timestamp oracle provider.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class ShowSingleTableStatementTestCase extends DatabaseContainedTestCase {
+public enum RedisTSOPropertyKey implements TypedPropertyKey {
     
-    @XmlAttribute
-    private String name;
+    HOST("host", "127.0.0.1", String.class),
+    
+    PORT("port", "6379", int.class),
+    
+    PASSWORD("password", "", String.class),
+    
+    TIMEOUT_INTERVAL("timeoutInterval", "40000", int.class),
+    
+    MAX_IDLE("maxIdle", "8", int.class),
+    
+    MAX_TOTAL("maxTotal", "18", int.class);
+    
+    private final String key;
+    
+    private final String defaultValue;
+    
+    private final Class<?> type;
 }

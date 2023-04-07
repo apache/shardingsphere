@@ -33,6 +33,8 @@ public final class SchemaMetaDataLoaderMaterial {
     
     private final Collection<String> actualTableNames;
     
+    private final String dataSourceName;
+    
     private final DataSource dataSource;
     
     private final DatabaseType storageType;

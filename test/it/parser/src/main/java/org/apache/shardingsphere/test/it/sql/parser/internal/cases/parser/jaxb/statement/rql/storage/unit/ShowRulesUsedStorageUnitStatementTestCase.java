@@ -15,31 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.model;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.storage.unit;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
 
-import java.util.Collection;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Table meta data.
+ * Show rules used storage unit statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-@EqualsAndHashCode
-@ToString
-public final class TableMetaData {
+@Setter
+public final class ShowRulesUsedStorageUnitStatementTestCase extends DatabaseContainedTestCase {
     
-    private final String name;
-    
-    private final String dataSourceName;
-    
-    private final Collection<ColumnMetaData> columns;
-    
-    private final Collection<IndexMetaData> indexes;
-    
-    private final Collection<ConstraintMetaData> constrains;
+    @XmlAttribute(name = "storage-unit-name")
+    private String storageUnitName;
 }
