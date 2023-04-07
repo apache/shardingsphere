@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.resource;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.table;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,12 +24,12 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Show rules used storage unit statement test case.
+ * Show table statement test case.
  */
 @Getter
 @Setter
-public final class ShowRulesUsedStorageUnitStatementTestCase extends DatabaseContainedTestCase {
+public abstract class ShowTableStatementTestCase extends DatabaseContainedTestCase {
     
-    @XmlAttribute(name = "storage-unit-name")
-    private String storageUnitName;
+    @XmlAttribute(name = "like-pattern")
+    private String likePattern;
 }
