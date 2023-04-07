@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
@@ -29,6 +30,7 @@ import java.util.Collection;
  * Row description packet for PostgreSQL.
  */
 @RequiredArgsConstructor
+@Getter
 public final class PostgreSQLRowDescriptionPacket implements PostgreSQLIdentifierPacket {
     
     private final Collection<PostgreSQLColumnDescription> columnDescriptions;
