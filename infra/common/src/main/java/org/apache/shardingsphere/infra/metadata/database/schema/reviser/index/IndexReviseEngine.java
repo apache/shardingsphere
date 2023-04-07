@@ -48,7 +48,7 @@ public final class IndexReviseEngine<T extends ShardingSphereRule> {
      * @return revised index meta data
      */
     public Collection<IndexMetaData> revise(final String tableName, final Collection<IndexMetaData> originalMetaDataList, final String dataSourceName) {
-        Optional<? extends IndexReviser<T>> reviser = reviseEntry.getIndexReviser(rule, tableName, dataSourceName);
+        Optional<? extends IndexReviser<T>> reviser = reviseEntry.getIndexReviser(rule, dataSourceName, tableName);
         return reviser.isPresent()
                 ? originalMetaDataList.stream()
                         .map(each -> reviser.get().revise(tableName, each, rule)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toCollection(LinkedHashSet::new))
