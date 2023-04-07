@@ -148,7 +148,7 @@ class ShardingSphereDataSourceTest {
     }
     
     @Test
-    void assertCloseWithDataSourceNames() throws Exception {
+    void assertCloseWithDataSourceNames() throws SQLException {
         try (HikariDataSource dataSource = createHikariDataSource()) {
             ShardingSphereDataSource actual = createShardingSphereDataSource(dataSource);
             actual.close(Collections.singleton("ds"));
