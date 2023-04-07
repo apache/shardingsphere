@@ -71,7 +71,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     private static final String LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL = LOAD_ALL_ROLE_TABLE_GRANTS_SQL + " WHERE table_name IN (%s)";
     
     @Override
-    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final String dataSourceName, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             Collection<String> schemaNames = SchemaMetaDataLoader.loadSchemaNames(connection, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
             Map<String, Multimap<String, IndexMetaData>> schemaIndexMetaDataMap = loadIndexMetaDataMap(connection, schemaNames);
@@ -82,7 +82,7 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
                 Multimap<String, IndexMetaData> tableIndexMetaDataMap = schemaIndexMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
                 Multimap<String, ColumnMetaData> tableColumnMetaDataMap = schemaColumnMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
                 Multimap<String, ConstraintMetaData> tableConstraintMetaDataMap = schemaConstraintMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
-                result.add(new SchemaMetaData(each, createTableMetaDataList(tableIndexMetaDataMap, tableColumnMetaDataMap, tableConstraintMetaDataMap)));
+                result.add(new SchemaMetaData(each, createTableMetaDataList(tableIndexMetaDataMap, tableColumnMetaDataMap, tableConstraintMetaDataMap, dataSourceName)));
             }
             return result;
         }
@@ -197,13 +197,13 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
     }
     
     private Collection<TableMetaData> createTableMetaDataList(final Multimap<String, IndexMetaData> tableIndexMetaDataMap, final Multimap<String, ColumnMetaData> tableColumnMetaDataMap,
-                                                              final Multimap<String, ConstraintMetaData> tableConstraintMetaDataMap) {
+                                                              final Multimap<String, ConstraintMetaData> tableConstraintMetaDataMap, final String dataSourceName) {
         Collection<TableMetaData> result = new LinkedList<>();
         for (String each : tableColumnMetaDataMap.keySet()) {
             Collection<ColumnMetaData> columnMetaDataList = tableColumnMetaDataMap.get(each);
             Collection<IndexMetaData> indexMetaDataList = tableIndexMetaDataMap.get(each);
             Collection<ConstraintMetaData> constraintMetaDataList = tableConstraintMetaDataMap.get(each);
-            result.add(new TableMetaData(each, columnMetaDataList, indexMetaDataList, constraintMetaDataList));
+            result.add(new TableMetaData(each, dataSourceName, columnMetaDataList, indexMetaDataList, constraintMetaDataList));
         }
         return result;
     }

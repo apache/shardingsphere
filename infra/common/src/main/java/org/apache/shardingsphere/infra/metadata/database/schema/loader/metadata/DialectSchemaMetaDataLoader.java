@@ -35,10 +35,11 @@ public interface DialectSchemaMetaDataLoader extends TypedSPI {
      * Load schema meta data.
      *
      * @param dataSource data source
+     * @param dataSourceName data source name
      * @param tables tables
      * @param defaultSchemaName default schema name
      * @return schema meta data collection
      * @throws SQLException SQL exception
      */
-    Collection<SchemaMetaData> load(DataSource dataSource, Collection<String> tables, String defaultSchemaName) throws SQLException;
+    Collection<SchemaMetaData> load(DataSource dataSource, String dataSourceName, Collection<String> tables, String defaultSchemaName) throws SQLException;
 }

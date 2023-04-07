@@ -22,18 +22,17 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-final class PipelineContextKeyTest {
+class PipelineContextKeyTest {
     
     @Test
     void assertHashCodeEqualsForProxyMode() {
         PipelineContextKey contextKey1 = PipelineContextKey.build(InstanceType.PROXY, null);
         PipelineContextKey contextKey2 = PipelineContextKey.build(InstanceType.PROXY, "sharding_db");
         assertThat(contextKey1.hashCode(), is(contextKey2.hashCode()));
-        assertEquals(contextKey1, contextKey2);
+        assertThat(contextKey1, is(contextKey2));
     }
     
     @Test

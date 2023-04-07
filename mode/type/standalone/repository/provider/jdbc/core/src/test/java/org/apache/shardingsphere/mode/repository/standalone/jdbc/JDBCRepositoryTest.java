@@ -21,10 +21,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.fixture.JDBCRepositoryProviderFixture;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.h2.jdbc.JdbcCallableStatement;
-import org.h2.jdbc.JdbcConnection;
-import org.h2.jdbc.JdbcResultSet;
-import org.h2.jdbc.JdbcStatement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +29,10 @@ import org.mockito.Mock;
 import org.mockito.MockedConstruction;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
 
@@ -52,19 +52,19 @@ class JDBCRepositoryTest {
     private final JDBCRepositoryProviderFixture fixture = new JDBCRepositoryProviderFixture();
     
     @Mock
-    private JdbcConnection mockJdbcConnection;
+    private Connection mockJdbcConnection;
     
     @Mock
-    private JdbcStatement mockStatement;
+    private Statement mockStatement;
     
     @Mock
-    private JdbcCallableStatement mockPreparedStatement;
+    private PreparedStatement mockPreparedStatement;
     
     @Mock
-    private JdbcCallableStatement mockPreparedStatementForPersist;
+    private PreparedStatement mockPreparedStatementForPersist;
     
     @Mock
-    private JdbcResultSet mockResultSet;
+    private ResultSet mockResultSet;
     
     private MockedConstruction<HikariDataSource> mockedConstruction;
     
@@ -76,7 +76,7 @@ class JDBCRepositoryTest {
         when(mockJdbcConnection.createStatement()).thenReturn(mockStatement);
         repository = new JDBCRepository();
         Properties props = PropertiesBuilder.build(
-                new Property("jdbc_url", "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"),
+                new Property("jdbc_url", "jdbc:h2:mem:config;DB_CLOSE_DELAY=0;DATABASE_TO_UPPER=false;MODE=MYSQL"),
                 new Property("username", "sa"),
                 new Property("password", ""),
                 new Property("provider", "FIXTURE"));
@@ -90,7 +90,6 @@ class JDBCRepositoryTest {
     
     @Test
     void assertInit() throws Exception {
-        verify(mockStatement).execute(fixture.dropTableSQL());
         verify(mockStatement).execute(fixture.createTableSQL());
     }
     

@@ -73,7 +73,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     private static final int MAX_EXPRESSION_SIZE = 1000;
     
     @Override
-    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final String dataSourceName, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 1);
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = new HashMap<>(tables.size(), 1);
         try (Connection connection = new MetaDataLoaderConnectionAdapter(TypedSPILoader.getService(DatabaseType.class, "Oracle"), dataSource.getConnection())) {
@@ -84,7 +84,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         }
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
-            tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList()));
+            tableMetaDataList.add(new TableMetaData(entry.getKey(), dataSourceName, entry.getValue(), indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList()), Collections.emptyList()));
         }
         // TODO Load views from Oracle database.
         return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataList));

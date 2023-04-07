@@ -63,14 +63,14 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
     private static final int HIDDEN_COLUMN_START_MAJOR_VERSION = 15;
     
     @Override
-    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final String dataSourceName, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, tables);
         if (!columnMetaDataMap.isEmpty()) {
             Map<String, Collection<IndexMetaData>> indexMetaDataMap = loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
             for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
                 Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
-                tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
+                tableMetaDataList.add(new TableMetaData(entry.getKey(), dataSourceName, entry.getValue(), indexMetaDataList, Collections.emptyList()));
             }
         }
         return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataList));
