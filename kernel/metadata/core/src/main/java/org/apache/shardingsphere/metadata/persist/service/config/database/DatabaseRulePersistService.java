@@ -52,10 +52,6 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
                 YamlEngine.marshal(createYamlRuleConfigurations(dataSources, rules, configs)));
     }
     
-    private String getDatabaseActiveVersion(final String databaseName) {
-        return repository.getDirectly(DatabaseMetaDataNode.getActiveVersionPath(databaseName));
-    }
-    
     @Override
     public void persist(final String databaseName, final String version, final Map<String, DataSource> dataSources,
                         final Collection<ShardingSphereRule> rules, final Collection<RuleConfiguration> configs) {
@@ -89,5 +85,9 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     public boolean isExisted(final String databaseName) {
         return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))
                 && !Strings.isNullOrEmpty(repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName))));
+    }
+    
+    private String getDatabaseActiveVersion(final String databaseName) {
+        return repository.getDirectly(DatabaseMetaDataNode.getActiveVersionPath(databaseName));
     }
 }
