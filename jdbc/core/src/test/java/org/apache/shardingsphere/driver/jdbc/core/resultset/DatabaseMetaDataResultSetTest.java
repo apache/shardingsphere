@@ -134,7 +134,7 @@ class DatabaseMetaDataResultSetTest {
     
     private ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
-        when(result.findLogicTableByActualTable(null, ACTUAL_TABLE_NAME)).thenReturn(Optional.of(LOGIC_TABLE_NAME));
+        when(result.findLogicTableByActualTable(ACTUAL_TABLE_NAME)).thenReturn(Optional.of(LOGIC_TABLE_NAME));
         return result;
     }
     

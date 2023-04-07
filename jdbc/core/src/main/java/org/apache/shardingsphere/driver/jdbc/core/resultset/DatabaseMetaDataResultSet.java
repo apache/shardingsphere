@@ -111,8 +111,7 @@ public final class DatabaseMetaDataResultSet extends AbstractUnsupportedDatabase
         for (int i = 1; i <= columnLabelIndexMap.size(); i++) {
             if (tableNameColumnIndex == i) {
                 String tableName = resultSet.getString(i);
-                // TODO findLogicTableByActualTable according to actual table name and data source name to avoid getting wrong logic table in #24982
-                Optional<String> logicTableName = dataNodeContainedRule.isPresent() ? dataNodeContainedRule.get().findLogicTableByActualTable(null, tableName) : Optional.empty();
+                Optional<String> logicTableName = dataNodeContainedRule.isPresent() ? dataNodeContainedRule.get().findLogicTableByActualTable(tableName) : Optional.empty();
                 result.addObject(logicTableName.orElse(tableName));
             } else if (indexNameColumnIndex == i) {
                 String tableName = resultSet.getString(tableNameColumnIndex);

@@ -137,12 +137,12 @@ class ShardingRuleTest {
     
     @Test
     void assertFindLogicTableByActualTable() {
-        assertTrue(createMaximumShardingRule().findLogicTableByActualTable("ds_0", "table_0").isPresent());
+        assertTrue(createMaximumShardingRule().findLogicTableByActualTable("table_0").isPresent());
     }
     
     @Test
     void assertNotFindLogicTableByActualTable() {
-        assertFalse(createMaximumShardingRule().findLogicTableByActualTable("ds_0", "table_3").isPresent());
+        assertFalse(createMaximumShardingRule().findLogicTableByActualTable("table_3").isPresent());
     }
     
     @Test

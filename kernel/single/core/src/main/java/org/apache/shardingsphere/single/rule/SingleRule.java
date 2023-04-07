@@ -257,7 +257,7 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     }
     
     @Override
-    public Optional<String> findLogicTableByActualTable(final String dataSourceName, final String actualTable) {
+    public Optional<String> findLogicTableByActualTable(final String actualTable) {
         return Optional.empty();
     }
     

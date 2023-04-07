@@ -57,7 +57,7 @@ class ShardingMetaDataReviseEngineTest {
     
     private ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
-        when(result.findLogicTableByActualTable("ds_0", "t_order")).thenReturn(Optional.of("t_order"));
+        when(result.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_order"));
         return result;
     }
     

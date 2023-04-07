@@ -68,8 +68,7 @@ public final class PgClassTableCollector implements ShardingSphereDataCollector 
         Collection<ShardingSphereRowData> result = new LinkedList<>();
         for (ShardingSphereRowData each : rows) {
             String tableName = (String) each.getRows().get(tableNameIndex);
-            // TODO findLogicTableByActualTable according to actual table name and data source name to avoid getting wrong logic table in #24982
-            Optional<String> logicTableName = dataNodeContainedRule.get().findLogicTableByActualTable(null, tableName);
+            Optional<String> logicTableName = dataNodeContainedRule.get().findLogicTableByActualTable(tableName);
             if (logicTableName.isPresent()) {
                 List<Object> decoratedRow = new ArrayList<>(each.getRows());
                 decoratedRow.set(tableNameIndex, logicTableName.get());

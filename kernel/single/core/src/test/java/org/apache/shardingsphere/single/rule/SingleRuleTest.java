@@ -249,7 +249,7 @@ class SingleRuleTest {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule));
         String actualTable = "student";
-        assertFalse(singleRule.findLogicTableByActualTable("ds_0", actualTable).isPresent());
+        assertFalse(singleRule.findLogicTableByActualTable(actualTable).isPresent());
     }
     
     @Test
