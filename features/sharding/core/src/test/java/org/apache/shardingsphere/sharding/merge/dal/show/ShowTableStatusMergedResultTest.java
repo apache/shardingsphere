@@ -72,7 +72,9 @@ class ShowTableStatusMergedResultTest {
     
     @Test
     void assertNextForTableRuleIsPresent() throws SQLException {
-        MergedResult mergedResult = new ShowTableStatusMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult()));
+        SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("table"));
+        MergedResult mergedResult = new ShowTableStatusMergedResult(shardingRule, sqlStatementContext, schema, Collections.singletonList(mockQueryResult()));
         assertTrue(mergedResult.next());
         assertFalse(mergedResult.next());
     }
