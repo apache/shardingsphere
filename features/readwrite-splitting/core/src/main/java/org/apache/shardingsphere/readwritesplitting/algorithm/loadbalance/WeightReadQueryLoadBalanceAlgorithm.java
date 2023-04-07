@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.InvalidReadDatabaseWeightException;
+import org.apache.shardingsphere.readwritesplitting.exception.algorithm.ReadQueryLoadBalanceAlgorithmInitializationExcpetion;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.MissingRequiredReadDatabaseWeightException;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
@@ -50,6 +51,17 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     public void init(final Properties props) {
         this.props = props;
         dataSourceNames = props.stringPropertyNames();
+        ShardingSpherePreconditions.checkState(!dataSourceNames.isEmpty(), () -> new ReadQueryLoadBalanceAlgorithmInitializationExcpetion(getType(), "data source shouldn't be empty!"));
+        for (String dataSourceName : dataSourceNames) {
+            Object weightObject = props.get(dataSourceName);
+            ShardingSpherePreconditions.checkNotNull(weightObject,
+                    () -> new MissingRequiredReadDatabaseWeightException(getType(), String.format("Read database `%s` access weight is not configured.", dataSourceName)));
+            try {
+                Double.parseDouble(weightObject.toString());
+            } catch (final NumberFormatException ex) {
+                throw new InvalidReadDatabaseWeightException(weightObject);
+            }
+        }
     }
     
     @Override
