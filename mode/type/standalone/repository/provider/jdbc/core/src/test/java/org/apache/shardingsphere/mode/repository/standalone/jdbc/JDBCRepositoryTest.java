@@ -90,7 +90,6 @@ class JDBCRepositoryTest {
     
     @Test
     void assertInit() throws Exception {
-        verify(mockStatement).execute(fixture.dropTableSQL());
         verify(mockStatement).execute(fixture.createTableSQL());
     }
     
