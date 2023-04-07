@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.netty;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
+import io.netty.handler.flow.FlowControlHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
@@ -40,11 +41,12 @@ public final class ServerHandlerInitializer extends ChannelInitializer<Channel> 
     @Override
     protected void initChannel(final Channel socketChannel) {
         DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine = TypedSPILoader.getService(DatabaseProtocolFrontendEngine.class, databaseType.getType());
-        databaseProtocolFrontendEngine.initChannel(socketChannel);
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast(new ChannelAttrInitializer());
         pipeline.addLast(new PacketCodec(databaseProtocolFrontendEngine.getCodecEngine()));
         pipeline.addLast(new FrontendChannelLimitationInboundHandler(databaseProtocolFrontendEngine));
-        pipeline.addLast(new FrontendChannelInboundHandler(databaseProtocolFrontendEngine, socketChannel));
+        pipeline.addLast(FlowControlHandler.class.getSimpleName(), new FlowControlHandler());
+        pipeline.addLast(FrontendChannelInboundHandler.class.getSimpleName(), new FrontendChannelInboundHandler(databaseProtocolFrontendEngine, socketChannel));
+        databaseProtocolFrontendEngine.initChannel(socketChannel);
     }
 }

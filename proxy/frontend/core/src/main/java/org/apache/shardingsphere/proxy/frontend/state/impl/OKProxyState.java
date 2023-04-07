@@ -40,6 +40,7 @@ public final class OKProxyState implements ProxyState {
     public void execute(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final ConnectionSession connectionSession) {
         CommandExecutorTask commandExecutorTask = new CommandExecutorTask(databaseProtocolFrontendEngine, connectionSession, context, message);
         ExecutorService executorService = determineSuitableExecutorService(context, message, databaseProtocolFrontendEngine, connectionSession);
+        context.channel().config().setAutoRead(false);
         executorService.execute(commandExecutorTask);
     }
     
