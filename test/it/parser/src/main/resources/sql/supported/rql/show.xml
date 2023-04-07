@@ -32,6 +32,8 @@
     <sql-case id="show-shadow-algorithms" value="SHOW SHADOW ALGORITHMS FROM shadow_db" db-types="ShardingSphere" />
     <sql-case id="show-default-shadow-algorithm" value="SHOW DEFAULT SHADOW ALGORITHM FROM shadow_db" db-types="ShardingSphere" />
     <sql-case id="show-single-table" value="SHOW SINGLE TABLE t_order FROM single_table_db" db-types="ShardingSphere" />
+    <sql-case id="show-single-tables" value="SHOW SINGLE TABLES FROM single_table_db" db-types="ShardingSphere" />
+    <sql-case id="show-single-tables-like" value="SHOW SINGLE TABLES LIKE 't_%' FROM single_table_db" db-types="ShardingSphere" />
     <sql-case id="show-default-single-table-storage-unit" value="SHOW DEFAULT SINGLE TABLE STORAGE UNIT FROM single_table_db" db-types="ShardingSphere" />
     <sql-case id="show-sharding-table-nodes" value="SHOW SHARDING TABLE NODES t_order FROM sharding_db" db-types="ShardingSphere" />
     <sql-case id="show-sharding-key-generators" value="SHOW SHARDING KEY GENERATORS FROM sharding_db" db-types="ShardingSphere" />
@@ -50,4 +52,10 @@
     <sql-case id="count-encrypt-rule" value="COUNT ENCRYPT RULE FROM db1" db-types="ShardingSphere" />
     <sql-case id="count-shadow-rule" value="COUNT SHADOW RULE FROM db1" db-types="ShardingSphere" />
     <sql-case id="count-mask-rule" value="COUNT MASK RULE FROM db1" db-types="ShardingSphere" />
+    <sql-case id="show-storage-units" value="SHOW STORAGE UNITS" db-types="ShardingSphere" />
+    <sql-case id="show-storage-units-from" value="SHOW STORAGE UNITS FROM sharding_db" db-types="ShardingSphere" />
+    <sql-case id="show-storage-units-where-usage-count" value="SHOW STORAGE UNITS FROM sharding_db WHERE USAGE_COUNT = 0" db-types="ShardingSphere" />
+    <sql-case id="show-logical-tables" value="SHOW LOGICAL TABLES" db-types="ShardingSphere" />
+    <sql-case id="show-logical-tables-from" value="SHOW LOGICAL TABLES FROM sharding_db" db-types="ShardingSphere" />
+    <sql-case id="show-logical-tables-like" value="SHOW LOGICAL TABLES LIKE 't_%' FROM sharding_db" db-types="ShardingSphere" />
 </sql-cases>
