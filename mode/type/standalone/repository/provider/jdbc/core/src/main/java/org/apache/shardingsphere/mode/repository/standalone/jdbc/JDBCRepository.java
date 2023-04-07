@@ -64,6 +64,11 @@ public final class JDBCRepository implements StandalonePersistRepository {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
+            // TODO remove it later, add for reset standalone test env
+            if (jdbcRepositoryProps.<String>getValue(JDBCRepositoryPropertyKey.JDBC_URL).contains("h2:mem:")) {
+                statement.execute("DROP TABLE IF EXISTS `repository`");
+            }
+            // Finish TODO
             statement.execute(provider.createTableSQL());
         }
     }
