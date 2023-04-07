@@ -35,7 +35,7 @@ public final class ShardingConstraintReviser implements ConstraintReviser<Shardi
     private final TableRule tableRule;
     
     @Override
-    public Optional<ConstraintMetaData> revise(final String tableName, final ConstraintMetaData originalMetaData, final String dataSourceName, final ShardingRule rule) {
+    public Optional<ConstraintMetaData> revise(final String dataSourceName, final String tableName, final ConstraintMetaData originalMetaData, final ShardingRule rule) {
         for (DataNode each : tableRule.getActualDataNodes()) {
             String referencedTableName = originalMetaData.getReferencedTableName();
             Optional<String> logicIndexName = getLogicIndex(originalMetaData.getName(), each.getTableName());
