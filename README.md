@@ -40,7 +40,9 @@ The concepts at the core of the project are `Connect`, `Enhance` and `Pluggable`
 Virtually all databases are [supported](https://shardingsphere.apache.org/document/current/en/dev-manual/data-source/) including [MySQL](https://www.mysql.com), [PostgreSQL](https://www.postgresql.org), [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads), [Oracle Database](https://www.oracle.com/database/), [MariaDB](https://mariadb.org) or any other SQL-92 database.
 
 ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
- 
+
+So far, ShardingSphere has been used by over [13,000 projects on GitHub](https://github.com/search?l=Maven+POM&q=shardingsphere&type=Code).
+
 ### DOCUMENTATION📜
 
 <hr>

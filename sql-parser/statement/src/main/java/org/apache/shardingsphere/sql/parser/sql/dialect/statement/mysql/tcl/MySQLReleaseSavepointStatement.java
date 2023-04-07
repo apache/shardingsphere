@@ -15,21 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.single;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
-
-import javax.xml.bind.annotation.XmlAttribute;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
- * Show single table statement test case.
+ * MySQL release savepoint statement.
  */
-@Getter
-@Setter
-public final class ShowSingleTableStatementTestCase extends DatabaseContainedTestCase {
-    
-    @XmlAttribute
-    private String name;
+public final class MySQLReleaseSavepointStatement extends ReleaseSavepointStatement implements MySQLStatement {
 }

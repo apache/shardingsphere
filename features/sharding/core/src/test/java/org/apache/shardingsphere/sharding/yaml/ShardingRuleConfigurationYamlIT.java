@@ -15,59 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.it;
+package org.apache.shardingsphere.sharding.yaml;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class YamlShardingRuleConfigurationIT {
+class ShardingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    @Test
-    void assertUnmarshalWithYamlFile() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/sharding-rule.yaml");
-        assertNotNull(url);
-        assertYamlShardingConfiguration(YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class));
+    ShardingRuleConfigurationYamlIT() {
+        super("yaml/sharding-rule.yaml");
     }
     
-    @Test
-    void assertUnmarshalWithYamlBytes() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/sharding-rule.yaml");
-        assertNotNull(url);
-        StringBuilder yamlContent = new StringBuilder();
-        try (
-                FileReader fileReader = new FileReader(url.getFile());
-                BufferedReader reader = new BufferedReader(fileReader)) {
-            String line;
-            while (null != (line = reader.readLine())) {
-                yamlContent.append(line).append(System.lineSeparator());
-            }
-        }
-        assertYamlShardingConfiguration(YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootConfiguration.class));
-    }
-    
-    private void assertDataSourceMap(final YamlRootConfiguration actual) {
-        assertThat(actual.getDataSources().size(), is(3));
-        assertTrue(actual.getDataSources().containsKey("ds_0"));
-        assertTrue(actual.getDataSources().containsKey("ds_1"));
-        assertTrue(actual.getDataSources().containsKey("default_ds"));
-    }
-    
-    private void assertYamlShardingConfiguration(final YamlRootConfiguration actual) {
+    @Override
+    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
         assertDataSourceMap(actual);
         Optional<YamlShardingRuleConfiguration> shardingRuleConfig = actual.getRules().stream()
                 .filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(optional -> (YamlShardingRuleConfiguration) optional);
@@ -81,6 +49,13 @@ class YamlShardingRuleConfigurationIT {
         assertBroadcastTable(shardingRuleConfig.get());
         assertProps(actual);
         assertThat(shardingRuleConfig.get().getDefaultShardingColumn(), is("order_id"));
+    }
+    
+    private void assertDataSourceMap(final YamlRootConfiguration actual) {
+        assertThat(actual.getDataSources().size(), is(3));
+        assertTrue(actual.getDataSources().containsKey("ds_0"));
+        assertTrue(actual.getDataSources().containsKey("ds_1"));
+        assertTrue(actual.getDataSources().containsKey("default_ds"));
     }
     
     private void assertTUser(final YamlShardingRuleConfiguration actual) {

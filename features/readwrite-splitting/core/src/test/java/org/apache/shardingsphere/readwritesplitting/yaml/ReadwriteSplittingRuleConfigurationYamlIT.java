@@ -15,51 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.yaml.swapper;
+package org.apache.shardingsphere.readwritesplitting.yaml;
 
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.strategy.YamlStaticReadwriteSplittingStrategyConfiguration;
-import org.junit.jupiter.api.Test;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
+import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class ReadwriteSplittingRuleConfigurationYamlIT {
+class ReadwriteSplittingRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
-    @Test
-    void assertUnmarshalWithYamlFile() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/readwrite-splitting-rule.yaml");
-        assertNotNull(url);
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
-        assertThat(rootConfig.getRules().size(), is(1));
-        assertReadwriteSplittingRule((YamlReadwriteSplittingRuleConfiguration) rootConfig.getRules().iterator().next());
+    ReadwriteSplittingRuleConfigurationYamlIT() {
+        super("yaml/readwrite-splitting-rule.yaml");
     }
     
-    @Test
-    void assertUnmarshalWithYamlBytes() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/readwrite-splitting-rule.yaml");
-        assertNotNull(url);
-        StringBuilder yamlContent = new StringBuilder();
-        try (
-                FileReader fileReader = new FileReader(url.getFile());
-                BufferedReader reader = new BufferedReader(fileReader)) {
-            String line;
-            while (null != (line = reader.readLine())) {
-                yamlContent.append(line).append(System.lineSeparator());
-            }
-        }
-        YamlRootConfiguration rootConfig = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRootConfiguration.class);
-        assertThat(rootConfig.getRules().size(), is(1));
-        assertReadwriteSplittingRule((YamlReadwriteSplittingRuleConfiguration) rootConfig.getRules().iterator().next());
+    @Override
+    protected void assertYamlRootConfiguration(final YamlRootConfiguration actual) {
+        assertReadwriteSplittingRule((YamlReadwriteSplittingRuleConfiguration) actual.getRules().iterator().next());
     }
     
     private void assertReadwriteSplittingRule(final YamlReadwriteSplittingRuleConfiguration actual) {

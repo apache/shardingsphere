@@ -40,7 +40,6 @@ import java.time.OffsetDateTime;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProtobufAnyValueConverterTest {
@@ -70,6 +69,6 @@ class ProtobufAnyValueConverterTest {
                 .putFields("list", Value.newBuilder().setListValue(ListValue.newBuilder().addValues(Value.newBuilder().setNumberValue(1)).build()).build()).build();
         Builder expected = Struct.newBuilder();
         JsonFormat.parser().merge((String) ProtobufAnyValueConverter.convertToObject(Any.pack((Struct) actual)), expected);
-        assertEquals(actual.toString(), expected.toString());
+        assertThat(actual.toString(), is(expected.toString()));
     }
 }
