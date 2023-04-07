@@ -940,7 +940,13 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     @Override
     public final ASTNode visitSubstringFunction(final SubstringFunctionContext ctx) {
         calculateParameterCount(Collections.singleton(ctx.expr()));
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null == ctx.SUBSTR() ? ctx.SUBSTRING().getText() : ctx.SUBSTR().getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(
+                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null == ctx.SUBSTR() ? ctx.SUBSTRING().getText() : ctx.SUBSTR().getText(), getOriginalText(ctx));
+        result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
+        for (TerminalNode node: ctx.NUMBER_()) {
+            result.getParameters().add(new LiteralExpressionSegment(node.getSymbol().getStartIndex(), node.getSymbol().getStopIndex(), new NumberLiteralValue(node.getText()).getValue()));
+        }
+        return result;
     }
     
     @Override
