@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.rule.single;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rql.table;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
@@ -28,8 +27,8 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 @Getter
 @Setter
-public final class ShowSingleTableStatementTestCase extends DatabaseContainedTestCase {
+public final class ShowSingleTableStatementTestCase extends ShowTableStatementTestCase {
     
     @XmlAttribute
-    private String name;
+    private String table;
 }
