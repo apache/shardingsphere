@@ -29,7 +29,7 @@ public final class OpenGaussGlobalClockTransactionExecutor implements GlobalCloc
     
     @Override
     public void sendSnapshotTimestamp(final Collection<Connection> connections, final long globalTimestamp) throws SQLException {
-        String setSnapshotTimestampSQL = String.format("SELECT %d AS SETSNAPSHOTCSN;", globalTimestamp);
+        String setSnapshotTimestampSQL = String.format("SELECT %d AS SETSNAPSHOTCSN", globalTimestamp);
         for (Connection each : connections) {
             try (Statement statement = each.createStatement()) {
                 statement.execute(setSnapshotTimestampSQL);
@@ -39,7 +39,7 @@ public final class OpenGaussGlobalClockTransactionExecutor implements GlobalCloc
     
     @Override
     public void sendCommitTimestamp(final Collection<Connection> connections, final long globalTimestamp) throws SQLException {
-        String setCommitTimestampSQL = String.format("SELECT %d AS SETCOMMITCSN;", globalTimestamp);
+        String setCommitTimestampSQL = String.format("SELECT %d AS SETCOMMITCSN", globalTimestamp);
         for (Connection each : connections) {
             try (Statement statement = each.createStatement()) {
                 statement.execute(setCommitTimestampSQL);
