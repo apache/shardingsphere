@@ -1,6 +1,6 @@
 +++
 title = "SHOW TRAFFIC RULE"
-weight = 9
+weight = 6
 +++
 
 ### Description

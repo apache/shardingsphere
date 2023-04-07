@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.dialect;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -55,8 +55,7 @@ class H2SchemaMetaDataLoaderTest {
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
                 "SELECT TABLE_CATALOG, TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND UPPER(TABLE_NAME) IN ('TBL')")
-                .executeQuery())
-                        .thenReturn(indexResultSet);
+                .executeQuery()).thenReturn(indexResultSet);
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
                 "SELECT TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND INDEX_TYPE_NAME = 'PRIMARY KEY'").executeQuery()).thenReturn(primaryKeys);
@@ -65,7 +64,7 @@ class H2SchemaMetaDataLoaderTest {
                 "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(I.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C RIGHT JOIN"
                         + " INFORMATION_SCHEMA.INDEXES I ON C.TABLE_NAME=I.TABLE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=?")
                 .executeQuery()).thenReturn(generatedInfo);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db"));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, "ds_0", Collections.emptyList(), "sharding_db"));
     }
     
     @Test
@@ -83,15 +82,13 @@ class H2SchemaMetaDataLoaderTest {
         ResultSet primaryKeys = mockPrimaryKeysMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
                 "SELECT TABLE_NAME, INDEX_NAME FROM INFORMATION_SCHEMA.INDEXES WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? AND INDEX_TYPE_NAME = 'PRIMARY KEY' AND UPPER(TABLE_NAME) IN ('TBL')")
-                .executeQuery())
-                        .thenReturn(primaryKeys);
+                .executeQuery()).thenReturn(primaryKeys);
         ResultSet generatedInfo = mockGeneratedInfoResultSet();
         when(dataSource.getConnection().prepareStatement(
                 "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(I.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C"
                         + " RIGHT JOIN INFORMATION_SCHEMA.INDEXES I ON C.TABLE_NAME=I.TABLE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=? AND C.TABLE_NAME IN ('tbl')")
-                .executeQuery())
-                        .thenReturn(generatedInfo);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db"));
+                .executeQuery()).thenReturn(generatedInfo);
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, "ds_0", Collections.singletonList("tbl"), "sharding_db"));
     }
     
     private DataSource mockDataSource() throws SQLException {
@@ -163,5 +160,6 @@ class H2SchemaMetaDataLoaderTest {
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
         assertThat(indexesIterator.next(), is(new IndexMetaData("id")));
+        assertThat(actualTableMetaData.getDataSourceName(), is("ds_0"));
     }
 }

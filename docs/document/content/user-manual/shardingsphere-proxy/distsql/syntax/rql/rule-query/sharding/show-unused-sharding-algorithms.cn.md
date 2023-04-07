@@ -1,6 +1,6 @@
 +++
 title = "SHOW UNUSED SHARDING ALGORITHMS"
-weight = 4
+weight = 3
 +++
 
 ### 描述
@@ -30,11 +30,11 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列     | 说明          |
-| ------| --------------|
-| name  | 分片算法名称    |
-| type  | 分片算法类型    |
-| props | 分片算法参数    |
+| 列     | 说明     |
+|-------|--------|
+| name  | 分片算法名称 |
+| type  | 分片算法类型 |
+| props | 分片算法参数 |
 
 ### 示例
 

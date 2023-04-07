@@ -128,7 +128,23 @@
         <projections start-index="7" stop-index="29">
             <expression-projection text="CHAR(77,121,83,81,'76')" start-index="7" stop-index="29">
                 <expr>
-                    <function function-name="CHAR" start-index="7" stop-index="29" text="CHAR(77,121,83,81,'76')" />
+                    <function function-name="CHAR" start-index="7" stop-index="29" text="CHAR(77,121,83,81,'76')" >
+                        <parameter>
+                            <literal-expression value="77" start-index="12" stop-index="13" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="121" start-index="15" stop-index="17" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="83" start-index="19" stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="81" start-index="22" stop-index="23" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="76" start-index="25" stop-index="28" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -170,7 +186,11 @@
         <projections start-index="7" stop-index="26">
             <expression-projection text="WEIGHT_STRING('bar')" start-index="7" stop-index="26">
                 <expr>
-                    <function function-name="WEIGHT_STRING" start-index="7" stop-index="26" text="WEIGHT_STRING('bar')" />
+                    <function function-name="WEIGHT_STRING" start-index="7" stop-index="26" text="WEIGHT_STRING('bar')" >
+                        <parameter>
+                            <literal-expression value="bar" start-index="21" stop-index="25" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>

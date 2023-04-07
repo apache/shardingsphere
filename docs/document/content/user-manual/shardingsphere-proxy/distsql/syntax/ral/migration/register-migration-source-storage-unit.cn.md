@@ -1,6 +1,6 @@
 +++
 title = "REGISTER MIGRATION SOURCE STORAGE UNIT"
-weight = 4
+weight = 3
 +++
 
 ### 描述

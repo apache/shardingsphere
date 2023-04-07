@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-databaseName: logic_db
+databaseName: logic_db_cipher
 
 rules:
 - !ENCRYPT

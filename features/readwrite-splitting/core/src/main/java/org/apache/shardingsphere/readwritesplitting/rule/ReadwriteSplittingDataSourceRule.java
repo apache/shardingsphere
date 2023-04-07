@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
-import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategyFactory;
+import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -45,11 +45,15 @@ public final class ReadwriteSplittingDataSourceRule {
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
     public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final TransactionalReadQueryStrategy transactionalReadQueryStrategy,
-                                            final ReadQueryLoadBalanceAlgorithm loadBalancer, final Collection<ShardingSphereRule> builtRules) {
+                                            final ReadQueryLoadBalanceAlgorithm loadBalancer) {
         name = config.getName();
         this.transactionalReadQueryStrategy = transactionalReadQueryStrategy;
         this.loadBalancer = loadBalancer;
-        readwriteSplittingStrategy = ReadwriteSplittingStrategyFactory.newInstance(config, builtRules);
+        readwriteSplittingStrategy = createStaticReadwriteSplittingStrategy(config.getStaticStrategy());
+    }
+    
+    private StaticReadwriteSplittingStrategy createStaticReadwriteSplittingStrategy(final StaticReadwriteSplittingStrategyConfiguration staticConfig) {
+        return new StaticReadwriteSplittingStrategy(staticConfig.getWriteDataSourceName(), staticConfig.getReadDataSourceNames());
     }
     
     /**

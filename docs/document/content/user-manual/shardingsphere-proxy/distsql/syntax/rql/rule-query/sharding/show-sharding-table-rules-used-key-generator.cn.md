@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHARDING TABLE RULES USED KEY GENERATOR"
-weight = 12
+weight = 11
 +++
 
 ### 描述
@@ -33,10 +33,10 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列     | 说明          |
-| ------| --------------|
-| type  | 分片规则类型    |
-| name  | 分片规则名称    |
+| 列    | 说明     |
+|------|--------|
+| type | 分片规则类型 |
+| name | 分片规则名称 |
 
 ### 示例
 

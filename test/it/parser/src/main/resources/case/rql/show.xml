@@ -50,18 +50,6 @@
         <database name="readwrite_splitting_db" start-index="36" stop-index="57" />
     </show-readwrite-splitting-rules>
     
-    <show-db-discovery-rules sql-case-id="show-db-discovery-rules">
-        <database name="db_discovery_db" start-index="29" stop-index="43" />
-    </show-db-discovery-rules>
-    
-    <show-db-discovery-rules sql-case-id="show-db-discovery-types">
-        <database name="db_discovery_db" start-index="29" stop-index="43" />
-    </show-db-discovery-rules>
-    
-    <show-db-discovery-rules sql-case-id="show-db-discovery-heartbeats">
-        <database name="db_discovery_db" start-index="34" stop-index="48" />
-    </show-db-discovery-rules>
-    
     <show-encrypt-rules sql-case-id="show-encrypt-rules">
         <database name="encrypt_db" start-index="24" stop-index="33" />
     </show-encrypt-rules>
@@ -86,9 +74,16 @@
         <database name="shadow_db" start-index="35" stop-index="43" />
     </show-default-shadow-algorithm>
     
-    <show-single-table sql-case-id="show-single-table">
-        <name name="t_order" start-index="19" stop-index="25" />
+    <show-single-table sql-case-id="show-single-table" table="t_order">
         <database name="single_table_db" start-index="31" stop-index="45" />
+    </show-single-table>
+    
+    <show-single-table sql-case-id="show-single-tables">
+        <database name="single_table_db" start-index="24" stop-index="38" />
+    </show-single-table>
+    
+    <show-single-table sql-case-id="show-single-tables-like" like-pattern="t_%">
+        <database name="single_table_db" start-index="35" stop-index="49" />
     </show-single-table>
     
     <show-default-single-table-storage-unit sql-case-id="show-default-single-table-storage-unit">
@@ -151,10 +146,6 @@
         <database name="db1" start-index="36" stop-index="38" />
     </count-readwrite-splitting-rule>
     
-    <count-db-discovery-rule sql-case-id="count-db-discovery-rule">
-        <database name="db1" start-index="29" stop-index="31" />
-    </count-db-discovery-rule>
-    
     <count-encrypt-rule sql-case-id="count-encrypt-rule">
         <database name="db1" start-index="24" stop-index="26" />
     </count-encrypt-rule>
@@ -166,4 +157,24 @@
     <count-mask-rule sql-case-id="count-mask-rule">
         <database name="db1" start-index="21" stop-index="23" />
     </count-mask-rule>
+    
+    <show-storage-units sql-case-id="show-storage-units" />
+    
+    <show-storage-units sql-case-id="show-storage-units-from">
+        <database name="sharding_db" start-index="24" stop-index="34" />
+    </show-storage-units>
+    
+    <show-storage-units sql-case-id="show-storage-units-where-usage-count" usage-count="0">
+        <database name="sharding_db" start-index="24" stop-index="34" />
+    </show-storage-units>
+    
+    <show-logical-tables sql-case-id="show-logical-tables" />
+    
+    <show-logical-tables sql-case-id="show-logical-tables-from">
+        <database name="sharding_db" start-index="25" stop-index="35" />
+    </show-logical-tables>
+    
+    <show-logical-tables sql-case-id="show-logical-tables-like" like-pattern="t_%">
+        <database name="sharding_db" start-index="36" stop-index="46" />
+    </show-logical-tables>
 </sql-parser-test-cases>

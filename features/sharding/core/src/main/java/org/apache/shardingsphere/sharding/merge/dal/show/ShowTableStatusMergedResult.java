@@ -50,8 +50,7 @@ public final class ShowTableStatusMergedResult extends MemoryMergedResult<Shardi
         for (QueryResult each : queryResults) {
             while (each.next()) {
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
-                String actualTableName = memoryResultSetRow.getCell(1).toString();
-                Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
+                Optional<TableRule> tableRule = findTableRule(shardingRule, sqlStatementContext);
                 tableRule.ifPresent(optional -> memoryResultSetRow.setCell(1, optional.getLogicTable()));
                 String tableName = memoryResultSetRow.getCell(1).toString();
                 if (memoryQueryResultRows.containsKey(tableName)) {
@@ -62,6 +61,13 @@ public final class ShowTableStatusMergedResult extends MemoryMergedResult<Shardi
             }
         }
         return new LinkedList<>(memoryQueryResultRows.values());
+    }
+    
+    private Optional<TableRule> findTableRule(final ShardingRule shardingRule, final SQLStatementContext<?> sqlStatementContext) {
+        if (sqlStatementContext.getTablesContext().getTableNames().isEmpty()) {
+            return Optional.empty();
+        }
+        return shardingRule.findTableRule(sqlStatementContext.getTablesContext().getTableNames().iterator().next());
     }
     
     private void merge(final MemoryQueryResultRow row, final MemoryQueryResultRow newRow) {

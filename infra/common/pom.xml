@@ -27,6 +27,11 @@
     <artifactId>shardingsphere-infra-common</artifactId>
     <name>${project.artifactId}</name>
     
+    <properties>
+        <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
+        <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -73,6 +78,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>templating-maven-plugin</artifactId>
+                <version>${templating-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>filtering-proxy-version</id>
@@ -88,6 +94,31 @@
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
+                <version>${git-commit-id-plugin.version}</version>
+                <configuration>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/current-git-commit.properties</generateGitPropertiesFilename>
+                    <failOnNoGitDirectory>false</failOnNoGitDirectory>
+                    <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
+                    <offline>true</offline>
+                    <injectIntoSysProperties>false</injectIntoSysProperties>
+                    <includeOnlyProperties>
+                        <includeOnlyProperty>^git\.branch$</includeOnlyProperty>
+                        <includeOnlyProperty>^git\.build\.(time|version)$</includeOnlyProperty>
+                        <includeOnlyProperty>^git\.commit\.id(\.abbrev)?$</includeOnlyProperty>
+                        <includeOnlyProperty>^git\.commit\.message\.short$</includeOnlyProperty>
+                        <includeOnlyProperty>^git\.(dirty|tags)$</includeOnlyProperty>
+                    </includeOnlyProperties>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

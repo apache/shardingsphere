@@ -1,6 +1,6 @@
 +++
 title = "START MIGRATION CHECK"
-weight = 14
+weight = 12
 +++
 
 ### Description

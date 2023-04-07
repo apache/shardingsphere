@@ -1,11 +1,11 @@
 +++
 title = "SHOW READWRITE_SPLITTING RULE"
-weight = 2
+weight = 1
 +++
 
 ### Description
 
-The `SHOW READWRITE_SPLITTING RULE` syntax is used to query specified readwrite splitting rules for specified database.
+The `SHOW READWRITE_SPLITTING RULE` syntax is used to query specified readwrite-splitting rules for specified database.
 
 ### Syntax
 
@@ -33,19 +33,19 @@ databaseName ::=
 
 ### Return value description
 
-| Column                          | Description                                                                                                |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| name                            | Readwrite splitting rule name                                                                              |
-| auto_aware_data_source_name     | Auto-Aware discovery data source name (Display configuration dynamic readwrite splitting rules)            |
-| write_data_source_name          | Write data source name                                                                                     |
-| read_data_source_names          | Read data source name list                                                                                 |
-| load_balancer_type              | Load balance algorithm type                                                                                |
-| load_balancer_props             | Load balance algorithm parameter                                                                           |
+| Column                      | Description                                                                                     |
+|-----------------------------|-------------------------------------------------------------------------------------------------|
+| name                        | Readwrite-splitting rule name                                                                   |
+| auto_aware_data_source_name | Auto-Aware discovery data source name (Display configuration dynamic readwrite-splitting rules) |
+| write_data_source_name      | Write data source name                                                                          |
+| read_data_source_names      | Read data source name list                                                                      |
+| load_balancer_type          | Load balance algorithm type                                                                     |
+| load_balancer_props         | Load balance algorithm parameter                                                                |
 
 
 ### Example
 
-- Query readwrite splitting rules for specified database.
+- Query readwrite-splitting rules for specified database.
 
 ```sql
 SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db;
@@ -61,7 +61,7 @@ mysql> SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db;
 1 row in set (0.01 sec)
 ```
 
-- Query readwrite splitting rules for current database.
+- Query readwrite-splitting rules for current database.
 
 ```sql
 SHOW READWRITE_SPLITTING RULES;
@@ -77,7 +77,7 @@ mysql> SHOW READWRITE_SPLITTING RULES;
 1 row in set (0.01 sec)
 ```
 
-- Query specified readwrite splitting rule for specified database.
+- Query specified readwrite-splitting rule for specified database.
 
 ```sql
 SHOW READWRITE_SPLITTING RULE ms_group_0 FROM readwrite_splitting_db;
@@ -93,7 +93,7 @@ mysql> SHOW READWRITE_SPLITTING RULE ms_group_0 FROM readwrite_splitting_db;
 1 row in set (0.01 sec)
 ```
 
-- Query specified readwrite splitting rule for current database.
+- Query specified readwrite-splitting rule for current database.
 
 ```sql
 SHOW READWRITE_SPLITTING RULE ms_group_0;

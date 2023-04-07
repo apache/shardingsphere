@@ -1,6 +1,6 @@
 +++
 title = "SHOW BROADCAST TABLE RULE"
-weight = 15
+weight = 14
 +++
 
 ## Description
@@ -30,9 +30,9 @@ databaseName ::=
 
 ### Return value description
 
-| Column                | Description           |
-| --------------------- | --------------------- |
-| broadcast_table       | Broadcast table name  |
+| Column          | Description          |
+|-----------------|----------------------|
+| broadcast_table | Broadcast table name |
 
 ### Example
 

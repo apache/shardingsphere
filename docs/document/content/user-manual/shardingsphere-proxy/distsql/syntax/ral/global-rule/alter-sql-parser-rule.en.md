@@ -1,6 +1,6 @@
 +++
 title = "ALTER SQL_PARSER RULE"
-weight = 6
+weight = 5
 +++
 
 ### Description

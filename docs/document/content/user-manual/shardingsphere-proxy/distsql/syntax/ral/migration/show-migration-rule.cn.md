@@ -1,6 +1,6 @@
 +++
 title = "SHOW MIGRATION RULE"
-weight = 2
+weight = 1
 
 +++
 
@@ -23,11 +23,11 @@ ShowMigrationRule ::=
 
 ### 返回值说明
 
-| 列             | 说明      |
-|---------------|-----------|
-|read           |数据读取配置 |
-|write          |数据写入配置 |
-|stream_channel |数据通道    |
+| 列              | 说明     |
+|----------------|--------|
+| read           | 数据读取配置 |
+| write          | 数据写入配置 |
+| stream_channel | 数据通道   |
 ### 示例
 
 - 查询数据迁移规则

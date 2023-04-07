@@ -12,31 +12,31 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 元数据
 
-| SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
-| 42000     | 10000       | There is no storage unit in database \`%s\`. |
-| 08000     | 10001       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\`. |
+| SQL State | Vendor Code | 错误信息                                                                           |
+|-----------|-------------|--------------------------------------------------------------------------------|
+| 42000     | 10000       | There is no storage unit in database \`%s\`.                                   |
+| 08000     | 10001       | The URL \`%s\` is not recognized, please refer to the pattern \`%s\`.          |
 | 42000     | 10002       | Can not support 3-tier structure for actual data node \`%s\` with JDBC \`%s\`. |
-| HY004     | 10003       | Invalid format for actual data node \`%s\`. |
-| 42000     | 10004       | Unsupported SQL node conversion for SQL statement \`%s\`. |
-| 42000     | 10010       | Rule does not exist. |
-| 42S02     | 10020       | Schema \`%s\` does not exist. |
-| 42S02     | 10021       | Single table \`%s\` does not exist. |
-| HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`. |
-| 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables. |
+| HY004     | 10003       | Invalid format for actual data node \`%s\`.                                    |
+| 42000     | 10004       | Unsupported SQL node conversion for SQL statement \`%s\`.                      |
+| 42000     | 10010       | Rule does not exist.                                                           |
+| 42S02     | 10020       | Schema \`%s\` does not exist.                                                  |
+| 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
+| HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
+| 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables.                         |
 
 ### 数据
 
-| SQL State | Vendor Code | 错误信息 |
-| --------- |-------------| ------ |
-| HY004     | 11000       | Invalid value \`%s\`. |
+| SQL State | Vendor Code | 错误信息                                                      |
+|-----------|-------------|-----------------------------------------------------------|
+| HY004     | 11000       | Invalid value \`%s\`.                                     |
 | HY004     | 11001       | Unsupported conversion data type \`%s\` for value \`%s\`. |
-| HY004     | 11010       | Unsupported conversion stream charset \`%s\`. |
+| HY004     | 11010       | Unsupported conversion stream charset \`%s\`.             |
 
 ### 语法
 
 | SQL State | Vendor Code | 错误信息                                         |
-| --------- | ----------- |----------------------------------------------|
+|-----------|-------------|----------------------------------------------|
 | 42000     | 12000       | You have an error in your SQL syntax: %s     |
 | 42000     | 12001       | Can not accept SQL type \`%s\`.              |
 | 42000     | 12002       | SQL String can not be NULL or empty.         |
@@ -48,7 +48,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 连接
 
-| SQL State | Vendor Code | 错误信息                                                                                                                                                                                                                     |
+| SQL State | Vendor Code | 错误信息                                                                                                                                                                                                                        |
 |-----------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 08000     | 13000       | Can not register driver, reason is: %s                                                                                                                                                                                      |
 | 01000     | 13010       | Circuit break open, the request has been ignored.                                                                                                                                                                           |
@@ -62,107 +62,107 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 ### 事务
 
 | SQL State | Vendor Code | 错误信息                                                                               |
-| --------- |-------------|------------------------------------------------------------------------------------|
+|-----------|-------------|------------------------------------------------------------------------------------|
 | 25000     | 14000       | Switch transaction type failed, please terminate the current transaction.          |
-| 25000     | 14001       | Can not find transaction manager of \`%s\`.                                         |
-| 25000     | 14002       | Transaction timeout should more than 0s.                                         |
+| 25000     | 14001       | Can not find transaction manager of \`%s\`.                                        |
+| 25000     | 14002       | Transaction timeout should more than 0s.                                           |
 | 25000     | 14100       | JDBC does not support operations across multiple logical databases in transaction. |
 | 25000     | 14200       | Can not start new XA transaction in a active transaction.                          |
 | 25000     | 14201       | Failed to create \`%s\` XA data source.                                            |
 | 25000     | 14202       | Max length of xa unique resource name \`%s\` exceeded: should be less than 45.     |
-| 25000     | 14301       | ShardingSphere Seata-AT transaction has been disabled.     |
-| 25000     | 14302       | Please config application id within seata.conf file.     |
+| 25000     | 14301       | ShardingSphere Seata-AT transaction has been disabled.                             |
+| 25000     | 14302       | Please config application id within seata.conf file.                               |
 
 ### 锁
 
-| SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
-| HY000     | 15000       | The table \`%s\` of schema \`%s\` is locked. |
+| SQL State | Vendor Code | 错误信息                                                                                 |
+|-----------|-------------|--------------------------------------------------------------------------------------|
+| HY000     | 15000       | The table \`%s\` of schema \`%s\` is locked.                                         |
 | HY000     | 15001       | The table \`%s\` of schema \`%s\` lock wait timeout of \`%s\` milliseconds exceeded. |
 
 ### 审计
 
-| SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
+| SQL State | Vendor Code | 错误信息                                 |
+|-----------|-------------|--------------------------------------|
 | 44000     | 16000       | SQL audit failed, error message: %s. |
-| 44000     | 16001       | Hint data source: %s is not exist. |
+| 44000     | 16001       | Hint data source: %s is not exist.   |
 
 ### 权限
 
-| SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
+| SQL State | Vendor Code | 错误信息                              |
+|-----------|-------------|-----------------------------------|
 | 44000     | 16500       | Access denied for operation `%s`. |
 
 ### 集群
 
-| SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
+| SQL State | Vendor Code | 错误信息                                                |
+|-----------|-------------|-----------------------------------------------------|
 | HY000     | 17000       | Work ID assigned failed, which can not exceed 1024. |
-| HY000     | 17002       | File access failed, reason is: %s |
-| HY000     | 17010       | Cluster persist repository error, reason is: %s |
+| HY000     | 17002       | File access failed, reason is: %s                   |
+| HY000     | 17010       | Cluster persist repository error, reason is: %s     |
 
 ### 迁移
 
-| SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
-| 42S02     | 18002       | There is no rule in database \`%s\`. |
-| 44000     | 18003       | Mode configuration does not exist. |
+| SQL State | Vendor Code | 错误信息                                                                               |
+|-----------|-------------|------------------------------------------------------------------------------------|
+| 42S02     | 18002       | There is no rule in database \`%s\`.                                               |
+| 44000     | 18003       | Mode configuration does not exist.                                                 |
 | 44000     | 18004       | Target database name is null. You could define it in DistSQL or select a database. |
-| 22023     | 18005       | There is invalid parameter value: `%s`. |
-| HY000     | 18020       | Failed to get DDL for table \`%s\`. |
-| 42S01     | 18030       | Duplicate storage unit names \`%s\`. |
-| 42S02     | 18031       | Storage units names \`%s\` do not exist. |
-| HY000     | 18050       | Before data record is \`%s\`, after data record is \`%s\`. |
-| 08000     | 18051       | Data check table \`%s\` failed. |
-| 0A000     | 18052       | Unsupported pipeline database type \`%s\`. |
-| 0A000     | 18053       | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\`. |
-| 0A000     | 18054       | Unsupported mode type \`%s\`. |
-| HY000     | 18080       | Can not find pipeline job \`%s\`. |
-| HY000     | 18081       | Job has already started. |
-| HY000     | 18082       | Sharding count of job \`%s\` is 0. |
-| HY000     | 18083       | Can not split by range for table \`%s\`, reason is: %s |
-| HY000     | 18084       | Can not split by unique key \`%s\` for table \`%s\`, reason is: %s |
-| HY000     | 18085       | Target table \`%s\` is not empty. |
-| 01007     | 18086       | Source data source lacks %s privilege(s). |
-| HY000     | 18087       | Source data source required \`%s = %s\`, now is \`%s\`. |
-| HY000     | 18088       | User \`%s\` does exist. |
-| 08000     | 18089       | Check privileges failed on source data source, reason is: %s |
-| 08000     | 18090       | Data sources can not connect, reason is: %s |
-| HY000     | 18091       | Importer job write data failed. |
-| 08000     | 18092       | Get binlog position failed by job \`%s\`, reason is: %s |
-| HY000     | 18093       | Can not poll event because of binlog sync channel already closed. |
-| HY000     | 18095       | Can not find consistency check job of \`%s\`. |
-| HY000     | 18096       | Uncompleted consistency check job \`%s\` exists. |
-| HY000     | 18200       | Not find stream data source table. |
-| HY000     | 18201       | CDC server exception, reason is: %s. |
-| HY000     | 18202       | CDC login failed, reason is: %s |
+| 22023     | 18005       | There is invalid parameter value: `%s`.                                            |
+| HY000     | 18020       | Failed to get DDL for table \`%s\`.                                                |
+| 42S01     | 18030       | Duplicate storage unit names \`%s\`.                                               |
+| 42S02     | 18031       | Storage units names \`%s\` do not exist.                                           |
+| HY000     | 18050       | Before data record is \`%s\`, after data record is \`%s\`.                         |
+| 08000     | 18051       | Data check table \`%s\` failed.                                                    |
+| 0A000     | 18052       | Unsupported pipeline database type \`%s\`.                                         |
+| 0A000     | 18053       | Unsupported CRC32 data consistency calculate algorithm with database type \`%s\`.  |
+| 0A000     | 18054       | Unsupported mode type \`%s\`.                                                      |
+| HY000     | 18080       | Can not find pipeline job \`%s\`.                                                  |
+| HY000     | 18081       | Job has already started.                                                           |
+| HY000     | 18082       | Sharding count of job \`%s\` is 0.                                                 |
+| HY000     | 18083       | Can not split by range for table \`%s\`, reason is: %s                             |
+| HY000     | 18084       | Can not split by unique key \`%s\` for table \`%s\`, reason is: %s                 |
+| HY000     | 18085       | Target table \`%s\` is not empty.                                                  |
+| 01007     | 18086       | Source data source lacks %s privilege(s).                                          |
+| HY000     | 18087       | Source data source required \`%s = %s\`, now is \`%s\`.                            |
+| HY000     | 18088       | User \`%s\` does exist.                                                            |
+| 08000     | 18089       | Check privileges failed on source data source, reason is: %s                       |
+| 08000     | 18090       | Data sources can not connect, reason is: %s                                        |
+| HY000     | 18091       | Importer job write data failed.                                                    |
+| 08000     | 18092       | Get binlog position failed by job \`%s\`, reason is: %s                            |
+| HY000     | 18093       | Can not poll event because of binlog sync channel already closed.                  |
+| HY000     | 18095       | Can not find consistency check job of \`%s\`.                                      |
+| HY000     | 18096       | Uncompleted consistency check job \`%s\` exists.                                   |
+| HY000     | 18200       | Not find stream data source table.                                                 |
+| HY000     | 18201       | CDC server exception, reason is: %s.                                               |
+| HY000     | 18202       | CDC login failed, reason is: %s                                                    |
 
 ### DistSQL
 
-| SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
+| SQL State | Vendor Code | 错误信息                                                        |
+|-----------|-------------|-------------------------------------------------------------|
 | 44000     | 19000       | Can not process invalid storage units, error message is: %s |
-| 44000     | 19001       | Storage units \`%s\` do not exist in database \`%s\`. |
-| 44000     | 19002       | There is no storage unit in the database \`%s\`. |
-| 44000     | 19003       | Storage units \`%s\` is still used by \`%s\`. |
-| 44000     | 19004       | Duplicate storage unit names \`%s\`. |
-| 44000     | 19100       | Invalid \`%s\` rule \`%s\`, error message is: %s |
-| 44000     | 19101       | %s rules \`%s\` do not exist in database \`%s\`. |
-| 44000     | 19102       | %s rules \`%s\` in database \`%s\` are still in used. |
-| 44000     | 19103       | %s rule \`%s\` has been enabled in database \`%s\`. |
-| 44000     | 19104       | %s rule \`%s\` has been disabled in database \`%s\`. |
-| 44000     | 19105       | Duplicate %s rule names \`%s\` in database \`%s\`. |
-| 44000     | 19150       | Invalid %s algorithm(s) \`%s\`. |
-| 44000     | 19151       | %s algorithm(s) \`%s\` do not exist in database \`%s\`. |
-| 44000     | 19152       | %s algorithms \`%s\` in database \`%s\` are still in used. |
-| 44000     | 19153       | Duplicate %s algorithms \`%s\` in database \`%s\`. |
+| 44000     | 19001       | Storage units \`%s\` do not exist in database \`%s\`.       |
+| 44000     | 19002       | There is no storage unit in the database \`%s\`.            |
+| 44000     | 19003       | Storage units \`%s\` is still used by \`%s\`.               |
+| 44000     | 19004       | Duplicate storage unit names \`%s\`.                        |
+| 44000     | 19100       | Invalid \`%s\` rule \`%s\`, error message is: %s            |
+| 44000     | 19101       | %s rules \`%s\` do not exist in database \`%s\`.            |
+| 44000     | 19102       | %s rules \`%s\` in database \`%s\` are still in used.       |
+| 44000     | 19103       | %s rule \`%s\` has been enabled in database \`%s\`.         |
+| 44000     | 19104       | %s rule \`%s\` has been disabled in database \`%s\`.        |
+| 44000     | 19105       | Duplicate %s rule names \`%s\` in database \`%s\`.          |
+| 44000     | 19150       | Invalid %s algorithm(s) \`%s\`.                             |
+| 44000     | 19151       | %s algorithm(s) \`%s\` do not exist in database \`%s\`.     |
+| 44000     | 19152       | %s algorithms \`%s\` in database \`%s\` are still in used.  |
+| 44000     | 19153       | Duplicate %s algorithms \`%s\` in database \`%s\`.          |
 
 ## 功能异常
 
 ### 数据分片
 
 | SQL State | Vendor Code | 错误信息                                                                                                                             |
-| --------- |-------------|----------------------------------------------------------------------------------------------------------------------------------|
+|-----------|-------------|----------------------------------------------------------------------------------------------------------------------------------|
 | 44000     | 20000       | Can not find table rule with logic tables \`%s\`.                                                                                |
 | 44000     | 20001       | Can not get uniformed table structure for logic table \`%s\`, it has different meta data of actual tables are as follows: %s     |
 | 42S02     | 20002       | Can not find data source in sharding rule, invalid actual data node \`%s\`.                                                      |
@@ -212,53 +212,53 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 读写分离
 
-| SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
-| 44000     | 20270       | Inline expression %s names size error. |
-| HY004     | 20280       | Invalid read database weight \`%s\`. |
-| 44000     | 20281       | Load balancer algorithm \`%s\` initialization failed, reason is: \`%s\.` |
-| 44000     | 20290       | Data source name is required in database \`%s\.` |
-| 44000     | 20291       | Write data source name is required in database `\`%s\.` |
-| 44000     | 20292       | Read data source names is required in database `\`%s\.` |
-| 44000     | 20293       | Can not config duplicate %s data source \`%s\` in database \`%s\.` |
-| 42S02     | 20294       | %s data source name \`%s\` not in database \`%s\.` |
-| 44000     | 20295       | Auto aware data source name is required in database \`%s\.` |
-| 42S02     | 20296       | Not found load balance type in database \`%s\.` |
+| SQL State | Vendor Code | 错误信息                                                                                        |
+|-----------|-------------|---------------------------------------------------------------------------------------------|
+| 44000     | 20270       | Inline expression %s names size error.                                                      |
+| HY004     | 20280       | Invalid read database weight \`%s\`.                                                        |
+| 44000     | 20281       | Load balancer algorithm \`%s\` initialization failed, reason is: \`%s\.`                    |
+| 44000     | 20290       | Data source name is required in database \`%s\.`                                            |
+| 44000     | 20291       | Write data source name is required in database `\`%s\.`                                     |
+| 44000     | 20292       | Read data source names is required in database `\`%s\.`                                     |
+| 44000     | 20293       | Can not config duplicate %s data source \`%s\` in database \`%s\.`                          |
+| 42S02     | 20294       | %s data source name \`%s\` not in database \`%s\.`                                          |
+| 44000     | 20295       | Auto aware data source name is required in database \`%s\.`                                 |
+| 42S02     | 20296       | Not found load balance type in database \`%s\.`                                             |
 | 44000     | 20297       | Weight load balancer datasource name config does not match data sources in database \`%s\.` |
 
 
 ### 数据库高可用
 
-| SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
-| 44000     | 20300       | No available database discovery rule configuration in database \`%s\`. |
-| 44000     | 20301       | Group name is required. |
-| 44000     | 20302       | Data source names are required. |
-| 44000     | 20303       | Can not found database discovery data source rule in database \`%s\`. |
-| HY000     | 20380       | MGR plugin is not active in database \`%s\`. |
-| 44000     | 20381       | MGR is not in single primary mode in database \`%s\`. |
-| 44000     | 20382       | \`%s\` is not in MGR replication group member in database \`%s\`. |
+| SQL State | Vendor Code | 错误信息                                                                         |
+|-----------|-------------|------------------------------------------------------------------------------|
+| 44000     | 20300       | No available database discovery rule configuration in database \`%s\`.       |
+| 44000     | 20301       | Group name is required.                                                      |
+| 44000     | 20302       | Data source names are required.                                              |
+| 44000     | 20303       | Can not found database discovery data source rule in database \`%s\`.        |
+| HY000     | 20380       | MGR plugin is not active in database \`%s\`.                                 |
+| 44000     | 20381       | MGR is not in single primary mode in database \`%s\`.                        |
+| 44000     | 20382       | \`%s\` is not in MGR replication group member in database \`%s\`.            |
 | 44000     | 20383       | Group name in MGR is not same with configured one \`%s\` in database \`%s\`. |
-| 42S01     | 20390       | MySQL Duplicate primary data source in database \`%s\`. |
-| 42S02     | 20391       | Primary data source not found in database \`%s\`. |
+| 42S01     | 20390       | MySQL Duplicate primary data source in database \`%s\`.                      |
+| 42S02     | 20391       | Primary data source not found in database \`%s\`.                            |
 
 ### SQL 方言转换
 
-| SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
+| SQL State | Vendor Code | 错误信息                                                |
+|-----------|-------------|-----------------------------------------------------|
 | 42000     | 20440       | Can not support database \`%s\` in SQL translation. |
-| 42000     | 20441       | Translation error, SQL is: %s |
+| 42000     | 20441       | Translation error, SQL is: %s                       |
 
 ### 流量治理
 
-| SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
+| SQL State | Vendor Code | 错误信息                                |
+|-----------|-------------|-------------------------------------|
 | 42S02     | 20500       | Can not get traffic execution unit. |
 
 ### 数据加密
 
 | SQL State | Vendor Code | 错误信息                                                                                               |
-| --------- | ----------- |----------------------------------------------------------------------------------------------------|
+|-----------|-------------|----------------------------------------------------------------------------------------------------|
 | 44000     | 20700       | Can not find logic encrypt column by \`%s\`.                                                       |
 | 44000     | 20701       | Fail to find encrypt column \`%s\` from table \`%s\`.                                              |
 | 44000     | 20702       | Altered column \`%s\` must use same encrypt algorithm with previous column \`%s\` in table \`%s\`. |
@@ -275,28 +275,28 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 
 ### 影子库
 
-| SQL State | Vendor Code | 错误信息                                                                                             |
-| --------- |-------------|-----------------------------------------------------------------------------------------------------|
-| 44000     | 20800       | \`%s\` algorithm does not exist in database \`%s\`.                                                 |
-| 44000     | 20801       | \`%s\` configuration does not exist in database \`%s\`.                                             |
-| 44000     | 20802       | No available shadow data sources mappings in shadow table \`%s\`.                                   |
-| 44000     | 20803       | Column shadow algorithm \`%s\` operation only supports one column mapping in shadow table \`%s\`.   |
-| HY004     | 20820       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type.                                  |
-| 42000     | 20840       | Insert value of index \`%s\` can not support for shadow.                                            |
-| HY000     | 20880       | Shadow algorithm \`%s\` initialization failed, reason is: %s.                                       |
-| 44000     | 20881       | Default shadow algorithm class should be implement HintShadowAlgorithm.                             |
+| SQL State | Vendor Code | 错误信息                                                                                              |
+|-----------|-------------|---------------------------------------------------------------------------------------------------|
+| 44000     | 20800       | \`%s\` algorithm does not exist in database \`%s\`.                                               |
+| 44000     | 20801       | \`%s\` configuration does not exist in database \`%s\`.                                           |
+| 44000     | 20802       | No available shadow data sources mappings in shadow table \`%s\`.                                 |
+| 44000     | 20803       | Column shadow algorithm \`%s\` operation only supports one column mapping in shadow table \`%s\`. |
+| HY004     | 20820       | Shadow column \`%s\` of table \`%s\` does not support \`%s\` type.                                |
+| 42000     | 20840       | Insert value of index \`%s\` can not support for shadow.                                          |
+| HY000     | 20880       | Shadow algorithm \`%s\` initialization failed, reason is: %s.                                     |
+| 44000     | 20881       | Default shadow algorithm class should be implement HintShadowAlgorithm.                           |
 
 ### 数据脱敏
 
 | SQL State | Vendor Code | 错误信息                                                        |
-| --------- |-------------|-------------------------------------------------------------|
+|-----------|-------------|-------------------------------------------------------------|
 | HY000     | 20980       | Mask algorithm \`%s\` initialization failed, reason is: %s. |
 
 ## 其他异常
 
-| SQL State | Vendor Code | 错误信息 |
-| --------- | ----------- | ------ |
-| HY004     | 30000       | Unknown exception: %s |
-| 0A000     | 30001       | Unsupported SQL operation: %s |
+| SQL State | Vendor Code | 错误信息                            |
+|-----------|-------------|---------------------------------|
+| HY004     | 30000       | Unknown exception: %s           |
+| 0A000     | 30001       | Unsupported SQL operation: %s   |
 | 0A000     | 30002       | Database protocol exception: %s |
-| 0A000     | 30003       | Unsupported command: %s |
+| 0A000     | 30003       | Unsupported command: %s         |

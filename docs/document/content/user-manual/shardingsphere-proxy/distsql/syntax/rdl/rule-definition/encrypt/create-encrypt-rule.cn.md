@@ -1,6 +1,6 @@
 +++
 title = "CREATE ENCRYPT RULE"
-weight = 2
+weight = 1
 +++
 
 ## 描述

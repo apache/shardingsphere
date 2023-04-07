@@ -31,11 +31,11 @@ import org.apache.shardingsphere.agent.core.advisor.config.MethodAdvisorConfigur
 import org.apache.shardingsphere.agent.core.builder.interceptor.AgentBuilderInterceptChainEngine;
 import org.apache.shardingsphere.agent.core.builder.interceptor.impl.MethodAdvisorBuilderInterceptor;
 import org.apache.shardingsphere.agent.core.builder.interceptor.impl.TargetAdviceObjectBuilderInterceptor;
-import org.apache.shardingsphere.agent.core.classloader.AgentExtraClassLoader;
-import org.apache.shardingsphere.agent.core.classloader.ClassLoaderContext;
 import org.apache.shardingsphere.agent.core.log.AgentLogger;
 import org.apache.shardingsphere.agent.core.log.AgentLoggerFactory;
 import org.apache.shardingsphere.agent.core.plugin.PluginLifecycleServiceManager;
+import org.apache.shardingsphere.agent.core.plugin.classloader.AgentPluginClassLoader;
+import org.apache.shardingsphere.agent.core.plugin.classloader.ClassLoaderContext;
 
 import java.util.Collection;
 import java.util.Map;
@@ -50,7 +50,7 @@ public final class AgentTransformer implements Transformer {
     
     private static final AgentLogger LOGGER = AgentLoggerFactory.getAgentLogger(AdvisorConfigurationLoader.class);
     
-    private static final Map<AgentExtraClassLoader, TypePool> TYPE_POOL_MAP = new ConcurrentHashMap<>();
+    private static final Map<AgentPluginClassLoader, TypePool> TYPE_POOL_MAP = new ConcurrentHashMap<>();
     
     private final Map<String, PluginConfiguration> pluginConfigs;
     
@@ -84,7 +84,7 @@ public final class AgentTransformer implements Transformer {
         return result;
     }
     
-    private boolean isExist(final String adviceClassName, final AgentExtraClassLoader pluginClassLoader) {
+    private boolean isExist(final String adviceClassName, final AgentPluginClassLoader pluginClassLoader) {
         TypePool typePool = TYPE_POOL_MAP.get(pluginClassLoader);
         return null == typePool ? TYPE_POOL_MAP.computeIfAbsent(pluginClassLoader, Default::of).describe(adviceClassName).isResolved() : typePool.describe(adviceClassName).isResolved();
     }

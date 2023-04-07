@@ -38,11 +38,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Show readwrite splitting rule executor.
+ * Show readwrite-splitting rule executor.
  */
 public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<ShowReadwriteSplittingRulesStatement> {
-    
-    private Map<String, Map<String, String>> exportableAutoAwareDataSource = Collections.emptyMap();
     
     private Map<String, Map<String, String>> exportableDataSourceMap = Collections.emptyMap();
     
@@ -60,7 +58,6 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
     @SuppressWarnings("unchecked")
     private void buildExportableMap(final ReadwriteSplittingRule rule) {
         Map<String, Object> exportedData = rule.getExportData();
-        exportableAutoAwareDataSource = (Map<String, Map<String, String>>) exportedData.get(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE);
         exportableDataSourceMap = (Map<String, Map<String, String>>) exportedData.get(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE);
     }
     
@@ -77,10 +74,9 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
     
     private LocalDataQueryResultRow buildDataItem(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, AlgorithmConfiguration> loadBalancers) {
         String name = dataSourceRuleConfig.getName();
-        Map<String, String> exportDataSources = null == dataSourceRuleConfig.getDynamicStrategy() ? exportableDataSourceMap.get(name) : exportableAutoAwareDataSource.get(name);
+        Map<String, String> exportDataSources = exportableDataSourceMap.get(name);
         Optional<AlgorithmConfiguration> loadBalancer = Optional.ofNullable(loadBalancers.get(dataSourceRuleConfig.getLoadBalancerName()));
         return new LocalDataQueryResultRow(name,
-                getAutoAwareDataSourceName(dataSourceRuleConfig),
                 getWriteDataSourceName(dataSourceRuleConfig, exportDataSources),
                 getReadDataSourceNames(dataSourceRuleConfig, exportDataSources),
                 loadBalancer.map(AlgorithmConfiguration::getType).orElse(""),
@@ -90,10 +86,6 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
     private Map<String, AlgorithmConfiguration> getLoadBalancers(final ReadwriteSplittingRuleConfiguration ruleConfig) {
         Map<String, AlgorithmConfiguration> loadBalancers = ruleConfig.getLoadBalancers();
         return null == loadBalancers ? Collections.emptyMap() : loadBalancers;
-    }
-    
-    private String getAutoAwareDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
-        return null == dataSourceRuleConfig.getDynamicStrategy() ? "" : dataSourceRuleConfig.getDynamicStrategy().getAutoAwareDataSourceName();
     }
     
     private String getWriteDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, String> exportDataSources) {
@@ -108,7 +100,7 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "auto_aware_data_source_name", "write_storage_unit_name", "read_storage_unit_names", "load_balancer_type", "load_balancer_props");
+        return Arrays.asList("name", "write_storage_unit_name", "read_storage_unit_names", "load_balancer_type", "load_balancer_props");
     }
     
     @Override

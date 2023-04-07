@@ -34,7 +34,6 @@
         <module>authority</module>
         <module>transaction</module>
         <module>time-service</module>
-        <module>schedule</module>
         <module>data-pipeline</module>
         <module>sql-federation</module>
         <module>sql-translator</module>
