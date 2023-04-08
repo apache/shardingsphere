@@ -51,7 +51,9 @@ class ShowIndexMergedResultTest {
     
     @Test
     void assertNextForTableRuleIsPresent() throws SQLException {
-        assertTrue(new ShowIndexMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult())).next());
+        SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
+        assertTrue(new ShowIndexMergedResult(shardingRule, sqlStatementContext, schema, Collections.singletonList(mockQueryResult())).next());
     }
     
     private QueryResult mockQueryResult() throws SQLException {

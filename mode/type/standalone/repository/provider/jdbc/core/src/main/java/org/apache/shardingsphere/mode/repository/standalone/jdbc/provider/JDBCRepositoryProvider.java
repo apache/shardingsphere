@@ -27,13 +27,6 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 public interface JDBCRepositoryProvider extends TypedSPI {
     
     /**
-     * Drop table SQL.
-     *
-     * @return SQL to drop table
-     */
-    String dropTableSQL();
-    
-    /**
      * Create table SQL.
      *
      * @return SQL to create table

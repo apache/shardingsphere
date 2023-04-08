@@ -308,6 +308,7 @@ public final class MySQLClient {
         
         @Override
         public void channelInactive(final ChannelHandlerContext ctx) {
+            log.warn("MySQL binlog channel inactive");
             if (!running) {
                 return;
             }
@@ -319,10 +320,6 @@ public final class MySQLClient {
             String fileName = null == lastBinlogEvent ? null : lastBinlogEvent.getFileName();
             Long position = null == lastBinlogEvent ? null : lastBinlogEvent.getPosition();
             log.error("MySQLBinlogEventHandler protocol resolution error, file name:{}, position:{}", fileName, position, cause);
-            if (!running) {
-                return;
-            }
-            reconnect();
         }
         
         private void reconnect() {
