@@ -82,15 +82,7 @@ public final class PluginLifecycleServiceManager {
     }
     
     private static void close(final Collection<JarFile> pluginJars) {
-        AgentServiceLoader.getServiceLoader(PluginLifecycleService.class).getServices().forEach(each -> {
-            try {
-                each.close();
-                // CHECKSTYLE:OFF
-            } catch (final Throwable ex) {
-                // CHECKSTYLE:ON
-                LOGGER.error("Failed to close service.", ex);
-            }
-        });
+        AgentServiceLoader.getServiceLoader(PluginLifecycleService.class).getServices().forEach(PluginLifecycleService::close);
         pluginJars.forEach(each -> {
             try {
                 each.close();

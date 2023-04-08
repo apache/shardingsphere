@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.converter;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
@@ -32,6 +34,7 @@ import java.util.Map;
 /**
  * Encrypt rule statement converter.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptRuleStatementConverter {
     
     /**

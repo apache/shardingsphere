@@ -22,11 +22,6 @@ import org.apache.shardingsphere.mode.repository.standalone.jdbc.provider.JDBCRe
 public final class JDBCRepositoryProviderFixture implements JDBCRepositoryProvider {
     
     @Override
-    public String dropTableSQL() {
-        return "DROP TABLE IF EXISTS `repository`";
-    }
-    
-    @Override
     public String createTableSQL() {
         return "CREATE TABLE IF NOT EXISTS `repository`(id varchar(36) PRIMARY KEY, `key` TEXT, `value` TEXT, parent TEXT)";
     }
