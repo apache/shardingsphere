@@ -53,16 +53,18 @@ public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRul
     
     private Collection<LocalDataQueryResultRow> buildData(final EncryptRuleConfiguration ruleConfig, final ShowEncryptRulesStatement sqlStatement) {
         return ruleConfig.getTables().stream().filter(each -> Objects.isNull(sqlStatement.getTableName()) || each.getName().equals(sqlStatement.getTableName()))
-                .map(each -> buildColumnData(each, ruleConfig.getEncryptors(), ruleConfig.isQueryWithCipherColumn())).flatMap(Collection::stream).collect(Collectors.toList());
+                .map(each -> buildColumnData(each, ruleConfig.getEncryptors(),
+                        ruleConfig.getLikeEncryptors(), ruleConfig.isQueryWithCipherColumn()))
+                .flatMap(Collection::stream).collect(Collectors.toList());
     }
     
-    private Collection<LocalDataQueryResultRow> buildColumnData(final EncryptTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> algorithmMap,
-                                                                final boolean queryWithCipherColumn) {
+    private Collection<LocalDataQueryResultRow> buildColumnData(final EncryptTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> encryptors,
+                                                                final Map<String, AlgorithmConfiguration> likeEncryptors, final boolean queryWithCipherColumn) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (EncryptColumnRuleConfiguration each : tableRuleConfig.getColumns()) {
-            AlgorithmConfiguration encryptorAlgorithmConfig = algorithmMap.get(each.getEncryptorName());
-            AlgorithmConfiguration assistedQueryEncryptorAlgorithmConfig = algorithmMap.get(each.getAssistedQueryEncryptorName());
-            AlgorithmConfiguration likeQueryEncryptorAlgorithmConfig = algorithmMap.get(each.getLikeQueryEncryptorName());
+            AlgorithmConfiguration encryptorAlgorithmConfig = encryptors.get(each.getEncryptorName());
+            AlgorithmConfiguration assistedQueryEncryptorAlgorithmConfig = encryptors.get(each.getAssistedQueryEncryptorName());
+            AlgorithmConfiguration likeQueryEncryptorAlgorithmConfig = likeEncryptors.get(each.getLikeQueryEncryptorName());
             result.add(new LocalDataQueryResultRow(Arrays.asList(
                     tableRuleConfig.getName(),
                     each.getLogicColumn(),

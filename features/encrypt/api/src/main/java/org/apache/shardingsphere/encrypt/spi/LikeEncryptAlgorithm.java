@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.spi.context;
+package org.apache.shardingsphere.encrypt.spi;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
 
 /**
- * Encrypt context.
+ * Like encrypt algorithm.
+ * 
+ * @param <I> type of plain value
+ * @param <O> type of cipher value
  */
-@RequiredArgsConstructor
-@Getter
-public final class EncryptContext {
+public interface LikeEncryptAlgorithm<I, O> extends ShardingSphereAlgorithm {
     
-    private final String databaseName;
-    
-    private final String schemaName;
-    
-    private final String tableName;
-    
-    private final String columnName;
+    /**
+     * Encrypt.
+     *
+     * @param plainValue plain value
+     * @param encryptContext encrypt context
+     * @return cipher value
+     */
+    O encrypt(I plainValue, EncryptContext encryptContext);
 }
