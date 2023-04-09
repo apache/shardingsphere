@@ -130,13 +130,13 @@ weight = 1
 ## 操作步骤
 
 1. 创建真实数据源映射关系，key 为数据源逻辑名称，value 为 DataSource 对象；
-1. 创建分片规则对象 ShardingRuleConfiguration，并初始化对象中的分片表对象 ShardingTableRuleConfiguration、绑定表集合、广播表集合，以及数据分片所依赖的分库策略和分表策略等参数；
-1. 调用 ShardingSphereDataSourceFactory 对象的 createDataSource 方法，创建 ShardingSphereDataSource。
+2. 创建分片规则对象 ShardingRuleConfiguration，并初始化对象中的分片表对象 ShardingTableRuleConfiguration、绑定表集合、广播表集合，以及数据分片所依赖的分库策略和分表策略等参数；
+3. 调用 ShardingSphereDataSourceFactory 对象的 createDataSource 方法，创建 ShardingSphereDataSource。
 
 ## 配置示例
 
 ```java
-public final class ShardingDatabasesAndTablesConfigurationPrecise implements ExampleConfiguration {
+public final class ShardingDatabasesAndTablesConfigurationPrecise {
     
     @Override
     public DataSource getDataSource() throws SQLException {

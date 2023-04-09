@@ -43,15 +43,16 @@ public final class EncryptRuleConfigurationChecker implements RuleConfigurationC
     
     @Override
     public void check(final String databaseName, final EncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
-        checkTableConfiguration(databaseName, config.getTables(), config.getEncryptors().keySet());
+        checkTableConfiguration(databaseName, config.getTables(), config.getEncryptors().keySet(), config.getLikeEncryptors().keySet());
     }
     
-    private void checkTableConfiguration(final String databaseName, final Collection<EncryptTableRuleConfiguration> tables, final Collection<String> encryptors) {
+    private void checkTableConfiguration(final String databaseName,
+                                         final Collection<EncryptTableRuleConfiguration> tables, final Collection<String> encryptors, final Collection<String> likeEncryptors) {
         for (EncryptTableRuleConfiguration each : tables) {
             for (EncryptColumnRuleConfiguration column : each.getColumns()) {
                 checkCipherColumnConfiguration(databaseName, encryptors, column);
                 checkAssistColumnConfiguration(databaseName, encryptors, column);
-                checkLikeColumnConfiguration(databaseName, encryptors, column);
+                checkLikeColumnConfiguration(databaseName, likeEncryptors, column);
             }
         }
     }

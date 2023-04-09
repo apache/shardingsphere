@@ -1085,6 +1085,7 @@
     
     <reporting>
         <plugins>
+
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>

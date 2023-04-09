@@ -50,19 +50,12 @@ public final class ShowIndexMergedResult extends MemoryMergedResult<ShardingRule
                 MemoryQueryResultRow memoryResultSetRow = new MemoryQueryResultRow(each);
                 String actualTableName = memoryResultSetRow.getCell(1).toString();
                 String actualIndexName = memoryResultSetRow.getCell(3).toString();
-                Optional<TableRule> tableRule = findTableRule(shardingRule, sqlStatementContext);
+                Optional<TableRule> tableRule = shardingRule.findTableRuleByActualTable(actualTableName);
                 tableRule.ifPresent(optional -> memoryResultSetRow.setCell(1, optional.getLogicTable()));
                 memoryResultSetRow.setCell(3, IndexMetaDataUtils.getLogicIndexName(actualIndexName, actualTableName));
                 result.add(memoryResultSetRow);
             }
         }
         return result;
-    }
-    
-    private Optional<TableRule> findTableRule(final ShardingRule shardingRule, final SQLStatementContext<?> sqlStatementContext) {
-        if (sqlStatementContext.getTablesContext().getTableNames().isEmpty()) {
-            return Optional.empty();
-        }
-        return shardingRule.findTableRule(sqlStatementContext.getTablesContext().getTableNames().iterator().next());
     }
 }

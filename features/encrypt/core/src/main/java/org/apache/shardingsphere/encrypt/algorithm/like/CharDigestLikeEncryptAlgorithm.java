@@ -22,9 +22,9 @@ import com.google.common.base.Strings;
 import com.google.common.io.CharStreams;
 import com.google.common.io.LineProcessor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

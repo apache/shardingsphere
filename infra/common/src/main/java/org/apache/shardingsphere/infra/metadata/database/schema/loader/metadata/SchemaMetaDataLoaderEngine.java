@@ -78,7 +78,7 @@ public final class SchemaMetaDataLoaderEngine {
         Optional<DialectSchemaMetaDataLoader> dialectSchemaMetaDataLoader = TypedSPILoader.findService(DialectSchemaMetaDataLoader.class, material.getStorageType().getType());
         if (dialectSchemaMetaDataLoader.isPresent()) {
             try {
-                return dialectSchemaMetaDataLoader.get().load(material.getDataSource(), material.getDataSourceName(), material.getActualTableNames(), material.getDefaultSchemaName());
+                return dialectSchemaMetaDataLoader.get().load(material.getDataSource(), material.getActualTableNames(), material.getDefaultSchemaName());
                 // TODO replace Exception to SQLException when all dialect loader can handle meta data load normally
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
@@ -92,7 +92,7 @@ public final class SchemaMetaDataLoaderEngine {
     private static Collection<SchemaMetaData> loadByDefault(final SchemaMetaDataLoaderMaterial material) throws SQLException {
         Collection<TableMetaData> tableMetaData = new LinkedList<>();
         for (String each : material.getActualTableNames()) {
-            TableMetaDataLoader.load(material.getDataSource(), material.getDataSourceName(), each, material.getStorageType()).ifPresent(tableMetaData::add);
+            TableMetaDataLoader.load(material.getDataSource(), each, material.getStorageType()).ifPresent(tableMetaData::add);
         }
         return Collections.singletonList(new SchemaMetaData(material.getDefaultSchemaName(), tableMetaData));
     }

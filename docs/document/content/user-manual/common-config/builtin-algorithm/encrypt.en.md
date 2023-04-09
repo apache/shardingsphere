@@ -64,9 +64,9 @@ Attributes:
 | sm4-iv      | String     | SM4 IV (should be specified on CBC, 16 bytes long)                       |
 | sm4-padding | String     | SM4 PADDING (should be PKCS5Padding or PKCS7Padding, NoPadding excepted) |
 
-### Like Encrypt Algorithm
+### Like Assist Query Algorithm
 
-#### CharDigestLike Encrypt Algorithm
+#### CharDigestLike Like Assist Query Algorithm
 
 Type：CHAR_DIGEST_LIKE
 
@@ -80,6 +80,7 @@ Attributes：
 | dict   | String     | Common words                                    |
 
 ## Operating Procedure
+
 1. Configure encryptors in an encryption rule.
 2. Use relevant algorithm types in encryptors.
 
@@ -97,12 +98,13 @@ rules:
           likeQueryColumn: name_like
           likeQueryEncryptorName: like_encryptor
   encryptors:
-    like_encryptor:
-      type: CHAR_DIGEST_LIKE
     name_encryptor:
       type: AES
       props:
         aes-key-value: 123456abc
+  likeEncryptors:
+    like_encryptor:
+      type: CHAR_DIGEST_LIKE
 ```
 
 ## Related References
