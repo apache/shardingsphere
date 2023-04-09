@@ -35,8 +35,6 @@ public final class TableMetaData {
     
     private final String name;
     
-    private final String dataSourceName;
-    
     private final Collection<ColumnMetaData> columns;
     
     private final Collection<IndexMetaData> indexes;

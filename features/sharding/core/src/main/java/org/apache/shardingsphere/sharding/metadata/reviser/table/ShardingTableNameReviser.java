@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.rule.TableRule;
 public final class ShardingTableNameReviser implements TableNameReviser<ShardingRule> {
     
     @Override
-    public String revise(final String originalName, final String dataSourceName, final ShardingRule rule) {
-        return rule.findTableRuleByDataSourceAndActualTable(dataSourceName, originalName).map(TableRule::getLogicTable).orElse(originalName);
+    public String revise(final String originalName, final ShardingRule rule) {
+        return rule.findTableRuleByActualTable(originalName).map(TableRule::getLogicTable).orElse(originalName);
     }
 }

@@ -40,17 +40,16 @@ public final class TableMetaDataLoader {
      * Load table meta data.
      *
      * @param dataSource data source
-     * @param dataSourceName data source name
      * @param tableNamePattern table name pattern
      * @param databaseType database type
      * @return table meta data
      * @throws SQLException SQL exception
      */
-    public static Optional<TableMetaData> load(final DataSource dataSource, final String dataSourceName, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
+    public static Optional<TableMetaData> load(final DataSource dataSource, final String tableNamePattern, final DatabaseType databaseType) throws SQLException {
         try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
             String formattedTableNamePattern = databaseType.formatTableNamePattern(tableNamePattern);
             return isTableExist(connectionAdapter, formattedTableNamePattern)
-                    ? Optional.of(new TableMetaData(tableNamePattern, dataSourceName, ColumnMetaDataLoader.load(
+                    ? Optional.of(new TableMetaData(tableNamePattern, ColumnMetaDataLoader.load(
                             connectionAdapter, formattedTableNamePattern, databaseType), IndexMetaDataLoader.load(connectionAdapter, formattedTableNamePattern), Collections.emptyList()))
                     : Optional.empty();
         }

@@ -36,8 +36,7 @@ class TableMetaDataTest {
     
     @BeforeEach
     void setUp() {
-        tableMetaData =
-                new TableMetaData(null, "ds_0", Collections.singletonList(new ColumnMetaData("test", Types.INTEGER, true, false, true, true, false)), Collections.emptyList(), Collections.emptyList());
+        tableMetaData = new TableMetaData(null, Collections.singletonList(new ColumnMetaData("test", Types.INTEGER, true, false, true, true, false)), Collections.emptyList(), Collections.emptyList());
     }
     
     @Test
