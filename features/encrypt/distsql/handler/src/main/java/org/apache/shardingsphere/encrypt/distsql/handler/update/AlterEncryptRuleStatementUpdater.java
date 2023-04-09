@@ -31,6 +31,7 @@ import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSeg
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -54,6 +55,7 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
         checkToBeAlteredEncryptors(sqlStatement);
+        checkToBeAlteredLikeEncryptors(sqlStatement);
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final EncryptRuleConfiguration currentRuleConfig) throws MissingRequiredRuleException {
@@ -88,9 +90,14 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
         sqlStatement.getRules().forEach(each -> each.getColumns().forEach(column -> {
             encryptors.add(column.getEncryptor());
             encryptors.add(column.getAssistedQueryEncryptor());
-            encryptors.add(column.getLikeQueryEncryptor());
         }));
         encryptors.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(EncryptAlgorithm.class, each.getName(), each.getProps()));
+    }
+    
+    private void checkToBeAlteredLikeEncryptors(final AlterEncryptRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
+        Collection<AlgorithmSegment> likeEncryptors = new LinkedHashSet<>();
+        sqlStatement.getRules().forEach(each -> each.getColumns().forEach(column -> likeEncryptors.add(column.getLikeQueryEncryptor())));
+        likeEncryptors.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(LikeEncryptAlgorithm.class, each.getName(), each.getProps()));
     }
     
     @Override
