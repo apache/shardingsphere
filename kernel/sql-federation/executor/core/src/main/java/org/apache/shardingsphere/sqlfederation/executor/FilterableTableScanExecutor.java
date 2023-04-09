@@ -252,26 +252,14 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     
     private AbstractEnumerable<Object[]> createEnumerable(final MergedResult mergedResult, final QueryResultMetaData metaData, final Collection<Statement> statements) throws SQLException {
         // TODO remove getRows when mergedResult support JDBC first method
-        Collection<Object[]> rows = getRows(mergedResult, metaData);
+        int size = metaData.getColumnCount();
         return new AbstractEnumerable<Object[]>() {
             
             @Override
             public Enumerator<Object[]> enumerator() {
-                return new SQLFederationRowEnumerator<>(rows, statements);
+                return new SQLFederationRowEnumerator<>(mergedResult, size, statements);
             }
         };
-    }
-    
-    private Collection<Object[]> getRows(final MergedResult mergedResult, final QueryResultMetaData metaData) throws SQLException {
-        Collection<Object[]> result = new LinkedList<>();
-        while (mergedResult.next()) {
-            Object[] currentRow = new Object[metaData.getColumnCount()];
-            for (int i = 0; i < metaData.getColumnCount(); i++) {
-                currentRow[i] = mergedResult.getValue(i + 1, Object.class);
-            }
-            result.add(currentRow);
-        }
-        return result;
     }
     
     private QueryContext createQueryContext(final ShardingSphereMetaData metaData, final SqlString sqlString, final DatabaseType databaseType) {

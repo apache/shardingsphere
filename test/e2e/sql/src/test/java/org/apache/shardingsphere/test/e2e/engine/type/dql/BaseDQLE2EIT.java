@@ -138,6 +138,9 @@ public abstract class BaseDQLE2EIT {
             assertRow(actualResultSet, actualMetaData, expectedResultSet, expectedMetaData);
         }
         assertFalse(expectedResultSet.next(), "Size of actual result set is different with size of expected result set.");
+//        if (expectedResultSet.next()) {
+//            System.out.println("");
+//        }
     }
     
     private void assertRows(final ResultSet actual, final Collection<String> notAssertionColumns, final List<DataSetRow> expected) throws SQLException {

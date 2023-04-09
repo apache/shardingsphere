@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sqlfederation.row;
 
 import org.apache.calcite.linq4j.Enumerator;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * SQL federation row enumerator.
@@ -32,18 +32,18 @@ import java.util.Iterator;
  */
 public final class SQLFederationRowEnumerator<T> implements Enumerator<T> {
     
-    private final Collection<T> rows;
+    private final MergedResult mergedResult;
     
     private final Collection<Statement> statements;
     
-    private Iterator<T> iterator;
-    
     private T currentRow;
     
-    public SQLFederationRowEnumerator(final Collection<T> rows, final Collection<Statement> statements) {
-        this.rows = rows;
+    private int size;
+    
+    public SQLFederationRowEnumerator(final MergedResult mergedResult, final int size, final Collection<Statement> statements) {
+        this.mergedResult = mergedResult;
+        this.size = size;
         this.statements = statements;
-        iterator = rows.iterator();
     }
     
     @Override
@@ -53,13 +53,25 @@ public final class SQLFederationRowEnumerator<T> implements Enumerator<T> {
     
     @Override
     public boolean moveNext() {
-        if (iterator.hasNext()) {
-            currentRow = iterator.next();
-            return true;
+        try {
+            if (mergedResult.next()) {
+                currentRow = getRows();
+                return true;
+            }
+        } catch (SQLException ex) {
+            throw new SQLWrapperException(ex);
+        } finally {
+            currentRow = null;
+            return false;
         }
-        currentRow = null;
-        iterator = rows.iterator();
-        return false;
+    }
+    
+    private T getRows() throws SQLException {
+        Object[] result = new Object[size];
+        for (int i = 0; i < size; i++) {
+            result[i] = mergedResult.getValue(i + 1, Object.class);
+        }
+        return (T) result;
     }
     
     @Override
@@ -73,7 +85,6 @@ public final class SQLFederationRowEnumerator<T> implements Enumerator<T> {
                 each.close();
             }
             currentRow = null;
-            iterator = rows.iterator();
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         }
