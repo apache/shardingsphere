@@ -63,9 +63,7 @@ class ShowTablesMergedResultTest {
     
     @Test
     void assertNextForActualTableNameInTableRule() throws SQLException {
-        SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("table"));
-        assertTrue(new LogicTablesMergedResult(shardingRule, sqlStatementContext, schema, Collections.singletonList(mockQueryResult("table_0"))).next());
+        assertTrue(new LogicTablesMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult("table_0"))).next());
     }
     
     private QueryResult mockQueryResult(final String value) throws SQLException {

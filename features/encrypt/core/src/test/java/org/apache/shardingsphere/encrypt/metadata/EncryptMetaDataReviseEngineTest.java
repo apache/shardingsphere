@@ -74,6 +74,6 @@ class EncryptMetaDataReviseEngineTest {
                 new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false),
                 new ColumnMetaData("pwd_plain", Types.VARCHAR, false, false, true, true, false),
                 new ColumnMetaData("pwd_like", Types.VARCHAR, false, false, true, true, false));
-        return new TableMetaData(TABLE_NAME, "ds_0", columns, Collections.emptyList(), Collections.emptyList());
+        return new TableMetaData(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList());
     }
 }

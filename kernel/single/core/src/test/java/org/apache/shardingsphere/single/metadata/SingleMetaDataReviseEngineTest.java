@@ -61,6 +61,6 @@ class SingleMetaDataReviseEngineTest {
                 new ColumnMetaData("name", Types.VARCHAR, false, false, false, true, false),
                 new ColumnMetaData("doc", Types.LONGVARCHAR, false, false, false, true, false));
         Collection<IndexMetaData> indexMetaDataList = Arrays.asList(new IndexMetaData("id_" + TABLE_NAME), new IndexMetaData("idx_name_" + TABLE_NAME));
-        return new TableMetaData(TABLE_NAME, "ds_0", columns, indexMetaDataList, Collections.emptyList());
+        return new TableMetaData(TABLE_NAME, columns, indexMetaDataList, Collections.emptyList());
     }
 }
