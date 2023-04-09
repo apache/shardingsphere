@@ -81,7 +81,7 @@ class PostgreSQLSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(BASIC_CONSTRAINT_META_DATA_SQL).executeQuery()).thenReturn(constraintResultSet);
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, "ds_0", Collections.emptyList(), "sharding_db"));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.emptyList(), "sharding_db"));
     }
     
     private ResultSet mockSchemaMetaDataResultSet() throws SQLException {
@@ -106,7 +106,7 @@ class PostgreSQLSchemaMetaDataLoaderTest {
         when(dataSource.getConnection().prepareStatement(BASIC_CONSTRAINT_META_DATA_SQL).executeQuery()).thenReturn(constraintResultSet);
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
         when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, "ds_0", Collections.singletonList("tbl"), "sharding_db"));
+        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(dataSource, Collections.singletonList("tbl"), "sharding_db"));
     }
     
     private ResultSet mockRoleTableGrantsResultSet() throws SQLException {
@@ -182,7 +182,6 @@ class PostgreSQLSchemaMetaDataLoaderTest {
     private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList) {
         assertThat(schemaMetaDataList.size(), is(1));
         TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().iterator().next();
-        assertThat(actualTableMetaData.getDataSourceName(), is("ds_0"));
         assertThat(actualTableMetaData.getColumns().size(), is(2));
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
         assertThat(columnsIterator.next(), is(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false)));

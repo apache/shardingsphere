@@ -129,13 +129,13 @@ Please refer to [Built-in Sharding Audit Algorithm List](/en/user-manual/common-
 ## Procedure
 
 1. Create an authentic data source mapping relationship, with key as the logical name of the data source and value as the DataSource object.
-1. Create the sharding rule object ShardingRuleConfiguration, and initialize the sharding table objects—ShardingTableRuleConfiguration, the set of bound tables, the set of broadcast tables, and parameters like library sharding strategy and the database sharding strategy, on which the data sharding depends.
-1. Using the ShardingSphereDataSource method of calling the ShardingSphereDataSourceFactory subject to create the ShardingSphereDataSource.
+2. Create the sharding rule object ShardingRuleConfiguration, and initialize the sharding table objects—ShardingTableRuleConfiguration, the set of bound tables, the set of broadcast tables, and parameters like library sharding strategy and the database sharding strategy, on which the data sharding depends.
+3. Using the ShardingSphereDataSource method of calling the ShardingSphereDataSourceFactory subject to create the ShardingSphereDataSource.
 
 ## Sample
 
 ```java
-public final class ShardingDatabasesAndTablesConfigurationPrecise implements ExampleConfiguration {
+public final class ShardingDatabasesAndTablesConfigurationPrecise {
     
     @Override
     public DataSource getDataSource() throws SQLException {

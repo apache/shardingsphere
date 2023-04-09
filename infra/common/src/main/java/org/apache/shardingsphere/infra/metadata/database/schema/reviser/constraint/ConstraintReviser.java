@@ -31,12 +31,11 @@ public interface ConstraintReviser<T extends ShardingSphereRule> {
     
     /**
      * Revise constraint meta data.
-     *
-     * @param dataSourceName data source name
+     * 
      * @param tableName table name
      * @param originalMetaData original constraint meta data
      * @param rule rule
      * @return revised constraint meta data
      */
-    Optional<ConstraintMetaData> revise(String dataSourceName, String tableName, ConstraintMetaData originalMetaData, T rule);
+    Optional<ConstraintMetaData> revise(String tableName, ConstraintMetaData originalMetaData, T rule);
 }

@@ -102,6 +102,7 @@ rules:
       type: REWRITE.NORMAL.FIXTURE
     rewrite_assisted_query_fixture:
       type: REWRITE.ASSISTED_QUERY.FIXTURE
+  likeEncryptors:
     rewrite_like_query_fixture:
       type: REWRITE.LIKE_QUERY.FIXTURE
   queryWithCipherColumn: false
