@@ -38,7 +38,8 @@ public final class SQLRegexTrafficAlgorithm implements SegmentTrafficAlgorithm {
     
     @Override
     public void init(final Properties props) {
-        Preconditions.checkArgument(props.containsKey(REGEX_PROPS_KEY), "%s can not be null.", REGEX_PROPS_KEY);
+        ShardingSpherePreconditions.checkState(props.containsKey(REGEX_PROPS_KEY),
+                () -> new SegmentTrafficAlgorithmInitializationException(SQLRegexTrafficAlgorithm.class.getName(), String.format("%s cannot be null", REGEX_PROPS_KEY)));
         regex = Pattern.compile(props.getProperty(REGEX_PROPS_KEY));
         ShardingSpherePreconditions.checkState(Strings.isNullOrEmpty(String.valueOf(regex)),
                 () -> new SegmentTrafficAlgorithmInitializationException(SQLRegexTrafficAlgorithm.class.getName(), "regex must be not null or empty"));
