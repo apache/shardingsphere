@@ -17,7 +17,7 @@ Supports for prometheus.
 ### Tracing
 
 The tracing plugin uses to obtain the link trace information of SQL parsing and SQL execution.
-Supports for Jaeger, OpenTelemetry, OpenTracing and Zipkin.
+Supports for OpenTelemetry.
 
 ## How To Build
 
