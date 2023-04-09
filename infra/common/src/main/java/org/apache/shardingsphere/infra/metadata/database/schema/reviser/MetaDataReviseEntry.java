@@ -97,10 +97,9 @@ public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends Order
      *
      * @param rule rule
      * @param tableName table name
-     * @param dataSourceName data source name
      * @return column generated reviser
      */
-    default Optional<? extends ColumnGeneratedReviser> getColumnGeneratedReviser(final T rule, final String dataSourceName, final String tableName) {
+    default Optional<? extends ColumnGeneratedReviser> getColumnGeneratedReviser(final T rule, final String tableName) {
         return Optional.empty();
     }
     
@@ -109,10 +108,9 @@ public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends Order
      *
      * @param rule rule
      * @param tableName table name
-     * @param dataSourceName data source name
      * @return index reviser
      */
-    default Optional<? extends IndexReviser<T>> getIndexReviser(final T rule, final String dataSourceName, final String tableName) {
+    default Optional<? extends IndexReviser<T>> getIndexReviser(final T rule, final String tableName) {
         return Optional.empty();
     }
     
@@ -121,10 +119,9 @@ public interface MetaDataReviseEntry<T extends ShardingSphereRule> extends Order
      *
      * @param rule rule
      * @param tableName table name
-     * @param dataSourceName data source name
      * @return constraint reviser
      */
-    default Optional<? extends ConstraintReviser<T>> getConstraintReviser(final T rule, final String dataSourceName, final String tableName) {
+    default Optional<? extends ConstraintReviser<T>> getConstraintReviser(final T rule, final String tableName) {
         return Optional.empty();
     }
 }
