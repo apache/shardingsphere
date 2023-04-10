@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -113,8 +114,13 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String loadDefaultDict() {
-        List<String> lines = Files.readAllLines(Paths.get(ClassLoader.getSystemResource("algorithm/like/common_chinese_character.dict").toURI()), StandardCharsets.UTF_8);
-        return lines.stream().filter(each -> !each.isEmpty() && !each.startsWith("#")).collect(Collectors.joining());
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(Objects.requireNonNull(CharDigestLikeEncryptAlgorithm.class.getClassLoader().getResource("algorithm/like/common_chinese_character.dict")).toURI()),
+                    StandardCharsets.UTF_8);
+            return lines.stream().filter(each -> !each.isEmpty() && !each.startsWith("#")).collect(Collectors.joining());
+        } catch (final NullPointerException ex) {
+            throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_LIKE", "default dict not found");
+        }
     }
     
     @Override
