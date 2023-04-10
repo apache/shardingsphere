@@ -1,0 +1,83 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: PROCESSLIST
+columns:
+  id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: ID
+    primaryKey: false
+    unsigned: true
+    visible: true
+  user:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: USER
+    primaryKey: false
+    unsigned: false
+    visible: true
+  host:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: HOST
+    primaryKey: false
+    unsigned: false
+    visible: true
+  db:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DB
+    primaryKey: false
+    unsigned: false
+    visible: true
+  command:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COMMAND
+    primaryKey: false
+    unsigned: false
+    visible: true
+  time:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: TIME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  state:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: STATE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  info:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: INFO
+    primaryKey: false
+    unsigned: false
+    visible: true

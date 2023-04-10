@@ -1,0 +1,195 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: TRIGGERS
+columns:
+  trigger_catalog:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TRIGGER_CATALOG
+    primaryKey: false
+    unsigned: false
+    visible: true
+  trigger_schema:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TRIGGER_SCHEMA
+    primaryKey: false
+    unsigned: false
+    visible: true
+  trigger_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TRIGGER_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_manipulation:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EVENT_MANIPULATION
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_object_catalog:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EVENT_OBJECT_CATALOG
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_object_schema:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EVENT_OBJECT_SCHEMA
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_object_table:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EVENT_OBJECT_TABLE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_order:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: ACTION_ORDER
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_condition:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: ACTION_CONDITION
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_statement:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: ACTION_STATEMENT
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_orientation:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ACTION_ORIENTATION
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_timing:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ACTION_TIMING
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_reference_old_table:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ACTION_REFERENCE_OLD_TABLE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_reference_new_table:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ACTION_REFERENCE_NEW_TABLE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_reference_old_row:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ACTION_REFERENCE_OLD_ROW
+    primaryKey: false
+    unsigned: false
+    visible: true
+  action_reference_new_row:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ACTION_REFERENCE_NEW_ROW
+    primaryKey: false
+    unsigned: false
+    visible: true
+  created:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: CREATED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sql_mode:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SQL_MODE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  definer:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DEFINER
+    primaryKey: false
+    unsigned: false
+    visible: true
+  character_set_client:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: CHARACTER_SET_CLIENT
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collation_connection:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COLLATION_CONNECTION
+    primaryKey: false
+    unsigned: false
+    visible: true
+  database_collation:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DATABASE_COLLATION
+    primaryKey: false
+    unsigned: false
+    visible: true
