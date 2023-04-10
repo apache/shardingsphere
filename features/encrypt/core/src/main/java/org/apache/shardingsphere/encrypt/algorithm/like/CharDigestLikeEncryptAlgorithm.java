@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.like;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
@@ -26,13 +24,14 @@ import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Char digest like encrypt algorithm.
@@ -108,17 +107,13 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     }
     
     private Map<Character, Integer> createCharIndexes(final Properties props) {
-        String dictContent = props.containsKey(DICT) && !Strings.isNullOrEmpty(props.getProperty(DICT)) ? props.getProperty(DICT) : initDefaultDict();
-        Map<Character, Integer> result = new HashMap<>(dictContent.length(), 1);
-        for (int index = 0; index < dictContent.length(); index++) {
-            result.put(dictContent.charAt(index), index);
-        }
-        return result;
+        String dictContent = props.getProperty(DICT, loadDefaultDict());
+        return IntStream.range(0, dictContent.length()).boxed().collect(Collectors.toMap(dictContent::charAt, index -> index, (a, b) -> b));
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
-    private String initDefaultDict() {
-        List<String> lines = Files.readAllLines(Paths.get(ClassLoader.getSystemResource("algorithm/like/common_chinese_character.dict").toURI()), Charsets.UTF_8);
+    private String loadDefaultDict() {
+        List<String> lines = Files.readAllLines(Paths.get(ClassLoader.getSystemResource("algorithm/like/common_chinese_character.dict").toURI()), StandardCharsets.UTF_8);
         return lines.stream().filter(each -> !each.isEmpty() && !each.startsWith("#")).collect(Collectors.joining());
     }
     
