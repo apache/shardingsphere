@@ -63,7 +63,7 @@ class SQLRegexTrafficAlgorithmTest {
 
     @Test
     void assertInitWithIllegalProps() {
-        assertThrows(IllegalArgumentException.class, () -> sqlRegexAlgorithm = TypedSPILoader.getService(SQLRegexTrafficAlgorithm.class, "SQL_REGEX",
+        assertThrows(IllegalArgumentException.class, () -> TypedSPILoader.getService(SQLRegexTrafficAlgorithm.class, "SQL_REGEX",
                 PropertiesBuilder.build(new Property("regex", ""))));
     }
 }

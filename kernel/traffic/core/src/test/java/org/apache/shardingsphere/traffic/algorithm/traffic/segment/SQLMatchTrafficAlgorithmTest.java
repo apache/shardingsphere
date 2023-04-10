@@ -63,7 +63,7 @@ class SQLMatchTrafficAlgorithmTest {
 
     @Test
     void assertInitWithIllegalProps() {
-        assertThrows(IllegalArgumentException.class, () -> sqlMatchAlgorithm = TypedSPILoader.getService(SQLMatchTrafficAlgorithm.class, "SQL_MATCH",
+        assertThrows(IllegalArgumentException.class, () -> TypedSPILoader.getService(SQLMatchTrafficAlgorithm.class, "SQL_MATCH",
                 PropertiesBuilder.build(new Property("sql", ""))));
     }
 }
