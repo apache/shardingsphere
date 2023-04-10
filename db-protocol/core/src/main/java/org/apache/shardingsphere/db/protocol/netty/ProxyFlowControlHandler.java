@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.netty;
+package org.apache.shardingsphere.db.protocol.netty;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
+import io.netty.handler.flow.FlowControlHandler;
+import org.apache.shardingsphere.db.protocol.event.WriteCompleteEvent;
 
 /**
- * Handle MySQL sequence ID before sending to downstream.
+ * Flow control handler for ShardingSphere-Proxy.
  */
-public final class MySQLSequenceIDInboundHandler extends ChannelInboundHandlerAdapter {
+public final class ProxyFlowControlHandler extends FlowControlHandler {
     
     @Override
-    public void channelRead(final ChannelHandlerContext context, final Object msg) {
-        short sequenceId = ((ByteBuf) msg).readUnsignedByte();
-        context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get().set(sequenceId + 1);
-        context.fireChannelRead(msg);
+    public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
+        if (WriteCompleteEvent.getInstance() == evt) {
+            ctx.channel().config().setAutoRead(true);
+        }
+        ctx.fireUserEventTriggered(evt);
     }
 }
