@@ -60,7 +60,7 @@ class SQLMatchTrafficAlgorithmTest {
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order` SET `order_id` = ?;")));
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order_item` SET `order_id` = ? WHERE user_id = ?;")));
     }
-
+    
     @Test
     void assertInitWithIllegalProps() {
         assertThrows(IllegalArgumentException.class, () -> TypedSPILoader.getService(SQLMatchTrafficAlgorithm.class, "SQL_MATCH",
