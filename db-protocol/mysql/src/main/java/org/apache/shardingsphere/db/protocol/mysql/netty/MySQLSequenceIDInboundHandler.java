@@ -29,8 +29,9 @@ public final class MySQLSequenceIDInboundHandler extends ChannelInboundHandlerAd
     
     @Override
     public void channelRead(final ChannelHandlerContext context, final Object msg) {
-        short sequenceId = ((ByteBuf) msg).readUnsignedByte();
+        ByteBuf byteBuf = (ByteBuf) msg;
+        short sequenceId = byteBuf.readUnsignedByte();
         context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get().set(sequenceId + 1);
-        context.fireChannelRead(msg);
+        context.fireChannelRead(byteBuf.readSlice(byteBuf.readableBytes()));
     }
 }
