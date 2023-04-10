@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.shadow.exception.algorithm.ShadowAlgorithmInitializationException;
 import org.apache.shardingsphere.shadow.exception.data.UnsupportedShadowColumnTypeException;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
@@ -41,12 +42,25 @@ class ColumnRegexMatchShadowAlgorithmTest {
         PreciseColumnShadowValueFixtureBuilder.createFalseCase(SHADOW_TABLE, SHADOW_COLUMN).forEach(each -> assertFalse(shadowAlgorithm.isShadow(each)));
         PreciseColumnShadowValueFixtureBuilder.createTrueCase(SHADOW_TABLE, SHADOW_COLUMN).forEach(each -> assertTrue(shadowAlgorithm.isShadow(each)));
     }
-    
+
     @Test
     void assertExceptionCase() {
         ColumnRegexMatchedShadowAlgorithm shadowAlgorithm = (ColumnRegexMatchedShadowAlgorithm) TypedSPILoader.getService(ShadowAlgorithm.class, "REGEX_MATCH",
                 PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "insert"), new Property("regex", "[1]")));
         assertThrows(UnsupportedShadowColumnTypeException.class,
                 () -> PreciseColumnShadowValueFixtureBuilder.createExceptionCase(SHADOW_TABLE, SHADOW_COLUMN).forEach(each -> assertFalse(shadowAlgorithm.isShadow(each))));
+    }
+
+    @Test
+    void assertPropertiesWithoutColumn() {
+        assertThrows(ShadowAlgorithmInitializationException.class, () ->
+                TypedSPILoader.getService(ShadowAlgorithm.class, "REGEX_MATCH", PropertiesBuilder.build(new Property("operation", "insert"), new Property("value", "[1]"))));
+    }
+
+    @Test
+    void assertPropertiesWithWrongOperation() {
+        assertThrows(ShadowAlgorithmInitializationException.class, () ->
+                TypedSPILoader.getService(ShadowAlgorithm.class, "REGEX_MATCH",
+                                          PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "inser"), new Property("value", "[1]"))));
     }
 }
