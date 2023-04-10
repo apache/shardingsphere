@@ -41,7 +41,7 @@ class SQLRegexTrafficAlgorithmTest {
         sqlRegexAlgorithm = (SQLRegexTrafficAlgorithm) TypedSPILoader.getService(
                 TrafficAlgorithm.class, "SQL_REGEX", PropertiesBuilder.build(new Property("regex", "(?i)^(UPDATE|SELECT).*WHERE user_id.*")));
     }
-
+    
     @Test
     void assertMatchWhenExistSQLRegexMatch() {
         SQLStatement sqlStatement = mock(SelectStatement.class);
@@ -50,7 +50,7 @@ class SQLRegexTrafficAlgorithmTest {
         assertTrue(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "select *  from `t_order` where user_id = ?;")));
         assertTrue(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order_item` SET `order_id` = ? WHERE user_id = ?;")));
     }
-
+    
     @Test
     void assertMatchWhenNotExistSQLRegexMatch() {
         SQLStatement sqlStatement = mock(SelectStatement.class);
