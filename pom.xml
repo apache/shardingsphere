@@ -52,12 +52,15 @@
     </modules>
     
     <properties>
+        <!-- Environments -->
         <java.version>1.8</java.version>
         <maven.version.range>[3.0.4,)</maven.version.range>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.deploy.skip>false</maven.deploy.skip>
         <shade.package>org.apache.shardingsphere.shade</shade.package>
+        <antlr.output.directory>${basedir}/target/generated-sources/antlr4</antlr.output.directory>
         
+        <!-- 3rd party library versions -->
         <guava.version>30.0-jre</guava.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <commons-collections4.version>4.4</commons-collections4.version>
@@ -67,7 +70,7 @@
         <antlr4.version>4.10.1</antlr4.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <gson.version>2.9.1</gson.version>
-        <jackson.version>2.13.4</jackson.version>
+        <jackson.version>2.14.0</jackson.version>
         <groovy.version>4.0.10</groovy.version>
         <freemarker.version>2.3.31</freemarker.version>
         <caffeine.version>2.9.3</caffeine.version>
@@ -78,13 +81,14 @@
         <truffle-api.version>21.2.0</truffle-api.version>
         
         <calcite.version>1.32.0</calcite.version>
-        <netty.version>4.1.87.Final</netty.version>
+        <netty.version>4.1.90.Final</netty.version>
         
         <javax.transaction.version>1.1</javax.transaction.version>
         
         <zookeeper.version>3.8.1</zookeeper.version>
         <curator.version>5.4.0</curator.version>
         <jetcd.version>0.7.5</jetcd.version>
+        <apollo-client.version>1.9.0</apollo-client.version>
         
         <elasticjob.version>3.0.2</elasticjob.version>
         
@@ -111,45 +115,48 @@
         <protobuf-java.version>3.21.12</protobuf-java.version>
         <awaitility.version>4.2.0</awaitility.version>
         
-        <!-- Plugin versions -->
-        <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
-        <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
-        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-        <maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
-        <maven-resources-plugin.version>3.3.0</maven-resources-plugin.version>
-        <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
-        <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
-        <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-        <maven-release-plugin.version>3.0.0-M6</maven-release-plugin.version>
-        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-        <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
-        <maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
-        <maven-site-plugin.version>3.4</maven-site-plugin.version>
-        <maven-project-info-reports-plugin.version>2.8</maven-project-info-reports-plugin.version>
-        <maven-plugin-plugin.version>3.4</maven-plugin-plugin.version>
-        <maven-jxr-plugin.version>2.5</maven-jxr-plugin.version>
-        <maven-dependency-plugin.version>3.5.0</maven-dependency-plugin.version>
-        <jandex-maven-plugin.version>3.0.5</jandex-maven-plugin.version>
-        
-        <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
-        <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
-        <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
-        <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
-        <findbugs-maven-plugin.version>3.0.2</findbugs-maven-plugin.version>
-        <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
-        <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
-        <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
-        <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
-        <os-maven-plugin.version>1.6.2</os-maven-plugin.version>
+        <!-- 3rd party library plugin versions -->
         <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
-        <checksum-maven-plugin.version>1.10</checksum-maven-plugin.version>
-        <templating-maven-plugin.version>1.0.0</templating-maven-plugin.version>
-        <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
-        <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
+        <os-maven-plugin.version>1.6.2</os-maven-plugin.version>
+        
+        <!-- Compile plugin versions -->
+        <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
+        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
+        <jandex-maven-plugin.version>3.0.5</jandex-maven-plugin.version>
         <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
-        <apollo-client.version>1.9.0</apollo-client.version>
+        <maven-dependency-plugin.version>3.5.0</maven-dependency-plugin.version>
+        
+        <!-- Release plugin versions -->
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
+        <maven-release-plugin.version>3.0.0</maven-release-plugin.version>
+        <maven-assembly-plugin.version>3.5.0</maven-assembly-plugin.version>
+        <maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
+        
+        <!-- Check plugin versions -->
+        <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
+        <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
+        <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
+        <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
+        <spotbugs-maven-plugin.version>4.7.2.1</spotbugs-maven-plugin.version>
+        <fb-contrib.version>7.6.0</fb-contrib.version>
+        <findsecbugs.version>1.12.0</findsecbugs.version>
+        <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
+        <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
+        
+        <!-- Report plugin versions -->
+        <maven-site-plugin.version>4.0.0-M6</maven-site-plugin.version>
+        <maven-project-info-reports-plugin.version>3.4.2</maven-project-info-reports-plugin.version>
+        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+        <maven-jxr-plugin.version>3.3.0</maven-jxr-plugin.version>
+        <jdepend-maven-plugin.version>2.0</jdepend-maven-plugin.version>
+        <taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
     </properties>
     
     <dependencyManagement>
@@ -210,7 +217,7 @@
                 <version>${gson.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-yaml</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
@@ -394,6 +401,12 @@
                         <artifactId>netty-transport-native-unix-common</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.ctrip.framework.apollo</groupId>
+                <artifactId>apollo-client</artifactId>
+                <version>${apollo-client.version}</version>
+                <scope>provided</scope>
             </dependency>
             
             <dependency>
@@ -601,13 +614,6 @@
                 <artifactId>truffle-api</artifactId>
                 <version>${truffle-api.version}</version>
             </dependency>
-            
-            <dependency>
-                <groupId>com.ctrip.framework.apollo</groupId>
-                <artifactId>apollo-client</artifactId>
-                <version>${apollo-client.version}</version>
-                <scope>provided</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
     
@@ -672,6 +678,53 @@
     <build>
         <pluginManagement>
             <plugins>
+                <!-- 3rd party library plugins -->
+                <plugin>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>antlr4-maven-plugin</artifactId>
+                    <version>${antlr4.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.xolstice.maven.plugins</groupId>
+                    <artifactId>protobuf-maven-plugin</artifactId>
+                    <version>${protobuf-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.spotify</groupId>
+                    <artifactId>dockerfile-maven-plugin</artifactId>
+                    <version>${dockerfile-maven.version}</version>
+                </plugin>
+                <!-- TODO nianjun should remove after test container is used in agent e2e -->
+                <plugin>
+                    <groupId>com.dkanejs.maven.plugins</groupId>
+                    <artifactId>docker-compose-maven-plugin</artifactId>
+                    <version>${docker-compose-maven-plugin.version}</version>
+                </plugin>
+                
+                <!-- Compile plugins -->
+                <plugin>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${maven-enforcer-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-banned-dependencies</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <requireMavenVersion>
+                                        <version>${maven.version.range}</version>
+                                    </requireMavenVersion>
+                                    <requireJavaVersion>
+                                        <version>${java.version}</version>
+                                    </requireJavaVersion>
+                                </rules>
+                                <fail>true</fail>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
@@ -683,18 +736,14 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>${maven-source-plugin.version}</version>
-                </plugin>
-                <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>${maven-resources-plugin.version}</version>
                 </plugin>
                 <plugin>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven-javadoc-plugin.version}</version>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
                     <configuration>
-                        <source>${java.version}</source>
+                        <trimStackTrace>false</trimStackTrace>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -702,14 +751,47 @@
                     <version>${maven-jar-plugin.version}</version>
                 </plugin>
                 <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven-surefire-plugin.version}</version>
-                    <configuration>
-                        <trimStackTrace>false</trimStackTrace>
-                        <excludes>
-                            <exclude />
-                        </excludes>
-                    </configuration>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${maven-dependency-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>io.smallrye</groupId>
+                    <artifactId>jandex-maven-plugin</artifactId>
+                    <version>${jandex-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>${build-helper-maven-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>add-source</id>
+                            <goals>
+                                <goal>add-source</goal>
+                            </goals>
+                            <phase>generate-sources</phase>
+                            <configuration>
+                                <sources>
+                                    <source>${antlr.output.directory}</source>
+                                </sources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                
+                <!-- Release plugins -->
+                <plugin>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${maven-source-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                            <phase>verify</phase>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <artifactId>maven-deploy-plugin</artifactId>
@@ -753,228 +835,201 @@
                         </transformers>
                     </configuration>
                 </plugin>
-                <plugin>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>${maven-site-plugin.version}</version>
-                    <configuration>
-                        <locales>${project.build.locale}</locales>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>${lifecycle-mapping.version}</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <artifactId>maven-enforcer-plugin</artifactId>
-                                        <versionRange>[1.0.0,)</versionRange>
-                                        <goals>
-                                            <goal>enforce</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore />
-                                    </action>
-                                </pluginExecution>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <artifactId>maven-plugin-plugin</artifactId>
-                                        <versionRange>[1.0.0,)</versionRange>
-                                        <goals>
-                                            <goal>descriptor</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore />
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-plugin-plugin</artifactId>
-                    <version>${maven-plugin-plugin.version}</version>
-                    <configuration>
-                        <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>default-descriptor</id>
-                            <phase>process-classes</phase>
-                        </execution>
-                    </executions>
-                </plugin>
                 
+                <!-- Check plugins -->
                 <plugin>
-                    <groupId>org.antlr</groupId>
-                    <artifactId>antlr4-maven-plugin</artifactId>
-                    <version>${antlr4.version}</version>
-                </plugin>
-                
-                <plugin>
-                    <groupId>com.spotify</groupId>
-                    <artifactId>dockerfile-maven-plugin</artifactId>
-                    <version>${dockerfile-maven.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>com.dkanejs.maven.plugins</groupId>
-                    <artifactId>docker-compose-maven-plugin</artifactId>
-                    <version>${docker-compose-maven-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>net.nicoulaj.maven.plugins</groupId>
-                    <artifactId>checksum-maven-plugin</artifactId>
-                    <version>${checksum-maven-plugin.version}</version>
+                    <groupId>org.apache.rat</groupId>
+                    <artifactId>apache-rat-plugin</artifactId>
+                    <version>${apache-rat-plugin.version}</version>
                     <configuration>
-                        <appendFilename>true</appendFilename>
-                        <algorithms>
-                            <algorithm>SHA-512</algorithm>
-                        </algorithms>
-                        <fileSets>
-                            <fileSet>
-                                <includes>
-                                    <include>*.tar.gz</include>
-                                    <include>*.zip</include>
-                                </includes>
-                            </fileSet>
-                        </fileSets>
+                        <excludesFile>src/resources/rat.txt</excludesFile>
                     </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>artifacts</goal>
-                            </goals>
-                            <phase>package</phase>
-                        </execution>
-                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>${spotless-maven-plugin.version}</version>
+                    <configuration>
+                        <java>
+                            <eclipse>
+                                <file>src/resources/spotless/java.xml</file>
+                            </eclipse>
+                            <licenseHeader>
+                                <file>src/resources/spotless/copyright.txt</file>
+                            </licenseHeader>
+                        </java>
+                        <pom>
+                            <sortPom>
+                                <encoding>UTF-8</encoding>
+                                <nrOfIndentSpace>4</nrOfIndentSpace>
+                                <keepBlankLines>true</keepBlankLines>
+                                <indentBlankLines>true</indentBlankLines>
+                                <indentSchemaLocation>true</indentSchemaLocation>
+                                <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
+                                <sortModules>false</sortModules>
+                                <sortExecutions>false</sortExecutions>
+                                <predefinedSortOrder>custom_1</predefinedSortOrder>
+                                <expandEmptyElements>false</expandEmptyElements>
+                                <sortProperties>false</sortProperties>
+                            </sortPom>
+                            <replace>
+                                <name>Leading blank line</name>
+                                <search>--&gt;
+&lt;project</search>
+                                <replacement>--&gt;
+
+&lt;project</replacement>
+                            </replace>
+                        </pom>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${maven-checkstyle-plugin.version}</version>
+                    <configuration>
+                        <configLocation>src/resources/checkstyle.xml</configLocation>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                        <excludes>**/autogen/**/*</excludes>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-pmd-plugin</artifactId>
+                    <version>${maven-pmd-plugin.version}</version>
+                    <configuration>
+                        <aggregate>true</aggregate>
+                        <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+                        <targetJdk>${java.version}</targetJdk>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>${spotbugs-maven-plugin.version}</version>
+                    <configuration>
+                        <fork>false</fork>
+                        <excludeFilterFile>src/resources/spotbugs.xml</excludeFilterFile>
+                        <plugins>
+                            <plugin>
+                                <groupId>com.mebigfatguy.fb-contrib</groupId>
+                                <artifactId>fb-contrib</artifactId>
+                                <version>${fb-contrib.version}</version>
+                            </plugin>
+                            <plugin>
+                                <groupId>com.h3xstream.findsecbugs</groupId>
+                                <artifactId>findsecbugs-plugin</artifactId>
+                                <version>${findsecbugs.version}</version>
+                            </plugin>
+                        </plugins>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.eluder.coveralls</groupId>
+                    <artifactId>coveralls-maven-plugin</artifactId>
+                    <version>${coveralls-maven-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>templating-maven-plugin</artifactId>
-                    <version>${templating-maven-plugin.version}</version>
+                    <artifactId>cobertura-maven-plugin</artifactId>
+                    <version>${cobertura-maven-plugin.version}</version>
+                    <configuration>
+                        <check>
+                            <branchRate>70</branchRate>
+                            <lineRate>70</lineRate>
+                            <haltOnFailure>true</haltOnFailure>
+                            <totalBranchRate>70</totalBranchRate>
+                            <totalLineRate>70</totalLineRate>
+                            <packageLineRate>70</packageLineRate>
+                            <packageBranchRate>70</packageBranchRate>
+                        </check>
+                        <aggregate>true</aggregate>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <quiet>true</quiet>
+                        <format>xml</format>
+                        <instrumentation>
+                            <ignoreTrivial>true</ignoreTrivial>
+                            <ignoreMethodAnnotations>
+                                <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
+                            </ignoreMethodAnnotations>
+                            <excludes>
+                                <exclude>org/apache/shardingsphere/**/autogen/*.class</exclude>
+                                <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
+                                <exclude>org/apache/shardingsphere/test/**/*.class</exclude>
+                                <exclude>org/apache/shardingsphere/proxy/Bootstrap.class</exclude>
+                            </excludes>
+                        </instrumentation>
+                    </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>pl.project13.maven</groupId>
-                    <artifactId>git-commit-id-plugin</artifactId>
-                    <version>${git-commit-id-plugin.version}</version>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco-maven-plugin.version}</version>
                     <configuration>
-                        <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                        <generateGitPropertiesFilename>${project.build.outputDirectory}/current-git-commit.properties</generateGitPropertiesFilename>
-                        <failOnNoGitDirectory>false</failOnNoGitDirectory>
-                        <failOnUnableToExtractRepoInfo>false</failOnUnableToExtractRepoInfo>
-                        <offline>true</offline>
-                        <injectIntoSysProperties>false</injectIntoSysProperties>
-                        <includeOnlyProperties>
-                            <includeOnlyProperty>^git\.branch$</includeOnlyProperty>
-                            <includeOnlyProperty>^git\.build\.(time|version)$</includeOnlyProperty>
-                            <includeOnlyProperty>^git\.commit\.id(\.abbrev)?$</includeOnlyProperty>
-                            <includeOnlyProperty>^git\.commit\.message\.short$</includeOnlyProperty>
-                            <includeOnlyProperty>^git\.(dirty|tags)$</includeOnlyProperty>
-                        </includeOnlyProperties>
+                        <excludes>**/*.jar</excludes>
                     </configuration>
                     <executions>
                         <execution>
-                            <id>get-the-git-infos</id>
                             <goals>
-                                <goal>revision</goal>
+                                <goal>prepare-agent</goal>
                             </goals>
-                            <phase>initialize</phase>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                            <phase>test</phase>
                         </execution>
                     </executions>
                 </plugin>
+                
+                <!-- Report plugins -->
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>${maven-dependency-plugin.version}</version>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${maven-javadoc-plugin.version}</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <charset>${project.build.sourceEncoding}</charset>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <docencoding>${project.build.sourceEncoding}</docencoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>jdepend-maven-plugin</artifactId>
+                    <version>${jdepend-maven-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>taglist-maven-plugin</artifactId>
+                    <version>${taglist-maven-plugin.version}</version>
+                    <configuration>
+                        <aggregate>true</aggregate>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
+        
         <plugins>
+            <!-- Compile plugins -->
             <plugin>
-                <groupId>org.apache.rat</groupId>
-                <artifactId>apache-rat-plugin</artifactId>
-                <version>${apache-rat-plugin.version}</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/gen/**</exclude>
-                        <exclude>**/target/**</exclude>
-                        <exclude>**/logs/**</exclude>
-                        <exclude>**/*.log</exclude>
-                        <exclude>**/*.tokens</exclude>
-                        <!-- IDE files -->
-                        <exclude>**/*.iml</exclude>
-                        <exclude>**/.idea/**</exclude>
-                        <exclude>**/*.classpath</exclude>
-                        <exclude>**/.project</exclude>
-                        <exclude>**/.settings/**</exclude>
-                        <exclude>**/dependency-reduced-pom.xml</exclude>
-                        <!-- git files -->
-                        <exclude>**/.gitignore</exclude>
-                        <exclude>**/.gitmodules</exclude>
-                        <exclude>**/.git/**</exclude>
-                        <!-- CI files -->
-                        <exclude>**/.travis.yml</exclude>
-                        <exclude>**/.codecov.yml</exclude>
-                        <exclude>**/.mvn/jvm.config</exclude>
-                        <exclude>**/.mvn/wrapper/maven-wrapper.properties</exclude>
-                        <!-- GitHub files -->
-                        <exclude>**/.github/**</exclude>
-                        <!-- document files -->
-                        <exclude>**/*.md</exclude>
-                        <excldue>**/*.MD</excldue>
-                        <exclude>**/*.txt</exclude>
-                        <exclude>**/docs/**</exclude>
-                        <!-- UI files -->
-                        <exclude>**/.babelrc</exclude>
-                        <exclude>**/.editorconfig</exclude>
-                        <exclude>**/.eslintignore</exclude>
-                        <exclude>**/package.json</exclude>
-                        <exclude>**/assets/**</exclude>
-                        <exclude>**/dist/**</exclude>
-                        <exclude>**/etc/**</exclude>
-                        <exclude>**/node/**</exclude>
-                        <exclude>**/node_modules/**</exclude>
-                        <exclude>**/test/coverage/**</exclude>
-                        <exclude>**/package-lock.json</exclude>
-                        <!-- example files -->
-                        <exclude>/examples/**</exclude>
-                        <!-- Helm files -->
-                        <exclude>**/.helmignore</exclude>
-                        <exclude>**/_helpers.tpl</exclude>
-                    </excludes>
-                </configuration>
+                <groupId>io.smallrye</groupId>
+                <artifactId>jandex-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>make-index</id>
                         <goals>
-                            <goal>check</goal>
+                            <goal>jandex</goal>
                         </goals>
-                        <phase>verify</phase>
                     </execution>
                 </executions>
             </plugin>
+            
+            <!-- Release plugins -->
             <plugin>
                 <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                        <phase>verify</phase>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <charset>${project.build.sourceEncoding}</charset>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <docencoding>${project.build.sourceEncoding}</docencoding>
-                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -984,66 +1039,11 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>${maven-enforcer-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>enforce-banned-dependencies</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireMavenVersion>
-                                    <version>${maven.version.range}</version>
-                                </requireMavenVersion>
-                                <requireJavaVersion>
-                                    <version>${java.version}</version>
-                                </requireJavaVersion>
-                            </rules>
-                            <fail>true</fail>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            
+            <!-- Check plugins -->
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>${spotless-maven-plugin.version}</version>
-                <configuration>
-                    <java>
-                        <eclipse>
-                            <file>${maven.multiModuleProjectDirectory}/src/resources/spotless_shardingsphere_formatter.xml</file>
-                        </eclipse>
-                        <licenseHeader>
-                            <file>${maven.multiModuleProjectDirectory}/src/resources/license-header</file>
-                        </licenseHeader>
-                    </java>
-                    <pom>
-                        <sortPom>
-                            <encoding>UTF-8</encoding>
-                            <nrOfIndentSpace>4</nrOfIndentSpace>
-                            <keepBlankLines>true</keepBlankLines>
-                            <indentBlankLines>true</indentBlankLines>
-                            <indentSchemaLocation>true</indentSchemaLocation>
-                            <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
-                            <sortModules>false</sortModules>
-                            <sortExecutions>false</sortExecutions>
-                            <predefinedSortOrder>custom_1</predefinedSortOrder>
-                            <expandEmptyElements>false</expandEmptyElements>
-                            <sortProperties>false</sortProperties>
-                        </sortPom>
-                        <replace>
-                            <name>Leading blank line</name>
-                            <search>--&gt;
-&lt;project</search>
-                            <replacement>--&gt;
-
-&lt;project</replacement>
-                        </replace>
-                    </pom>
-                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -1055,12 +1055,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${maven-checkstyle-plugin.version}</version>
-                <configuration>
-                    <configLocation>src/resources/checkstyle.xml</configLocation>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <excludes>**/autogen/**/*</excludes>
-                </configuration>
                 <executions>
                     <execution>
                         <id>validate</id>
@@ -1072,78 +1066,14 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.eluder.coveralls</groupId>
-                <artifactId>coveralls-maven-plugin</artifactId>
-                <version>${coveralls-maven-plugin.version}</version>
+                <artifactId>maven-pmd-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>${cobertura-maven-plugin.version}</version>
-                <configuration>
-                    <check>
-                        <branchRate>70</branchRate>
-                        <lineRate>70</lineRate>
-                        <haltOnFailure>true</haltOnFailure>
-                        <totalBranchRate>70</totalBranchRate>
-                        <totalLineRate>70</totalLineRate>
-                        <packageLineRate>70</packageLineRate>
-                        <packageBranchRate>70</packageBranchRate>
-                    </check>
-                    <aggregate>true</aggregate>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <quiet>true</quiet>
-                    <format>xml</format>
-                    <instrumentation>
-                        <ignoreTrivial>true</ignoreTrivial>
-                        <ignoreMethodAnnotations>
-                            <ignoreMethodAnnotation>lombok.Generated</ignoreMethodAnnotation>
-                        </ignoreMethodAnnotations>
-                        <excludes>
-                            <exclude>org/apache/shardingsphere/**/autogen/*.class</exclude>
-                            <exclude>org/apache/shardingsphere/**/*Test.class</exclude>
-                            <exclude>org/apache/shardingsphere/test/**/*.class</exclude>
-                            <exclude>org/apache/shardingsphere/proxy/Bootstrap.class</exclude>
-                        </excludes>
-                    </instrumentation>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco-maven-plugin.version}</version>
-                <configuration>
-                    <excludes>**/*.jar</excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <phase>test</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>io.smallrye</groupId>
-                <artifactId>jandex-maven-plugin</artifactId>
-                <version>${jandex-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>make-index</id>
-                        <goals>
-                            <goal>jandex</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        
         <extensions>
             <extension>
                 <groupId>kr.motd.maven</groupId>
@@ -1155,28 +1085,23 @@
     
     <reporting>
         <plugins>
-            <plugin>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>${maven-project-info-reports-plugin.version}</version>
-                <configuration>
-                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                </configuration>
-            </plugin>
+
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>
-                <configuration>
-                    <charset>${project.build.sourceEncoding}</charset>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <docencoding>${project.build.sourceEncoding}</docencoding>
-                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>javadoc</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
             </plugin>
             <plugin>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>${maven-jxr-plugin.version}</version>
                 <reportSets>
                     <reportSet>
-                        <id>aggregate</id>
                         <reports>
                             <report>aggregate</report>
                         </reports>
@@ -1184,45 +1109,28 @@
                     </reportSet>
                 </reportSets>
             </plugin>
+            
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>${findbugs-maven-plugin.version}</version>
-                <configuration>
-                    <xmlOutput>true</xmlOutput>
-                    <effort>Max</effort>
-                </configuration>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
             </plugin>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${maven-checkstyle-plugin.version}</version>
-                <configuration>
-                    <configLocation>src/resources/checkstyle.xml</configLocation>
-                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                    <excludes>**/autogen/**/*</excludes>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>${maven-pmd-plugin.version}</version>
-                <configuration>
-                    <aggregate>true</aggregate>
-                    <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-                    <targetJdk>${java.version}</targetJdk>
-                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jdepend-maven-plugin</artifactId>
-                <version>${jdepend-maven-plugin.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>taglist-maven-plugin</artifactId>
-                <version>${taglist-maven-plugin.version}</version>
-                <configuration>
-                    <aggregate>true</aggregate>
-                </configuration>
             </plugin>
         </plugins>
     </reporting>
@@ -1268,9 +1176,6 @@
                             <artifactId>maven-surefire-plugin</artifactId>
                             <configuration>
                                 <trimStackTrace>false</trimStackTrace>
-                                <excludes>
-                                    <exclude />
-                                </excludes>
                                 <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED</argLine>
                             </configuration>
                         </plugin>

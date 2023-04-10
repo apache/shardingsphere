@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderReco
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.junit.jupiter.api.Test;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -43,6 +44,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MultiplexMemoryPipelineChannelTest {
     
     private static final int CHANNEL_NUMBER = 2;
+    
+    private final Random random = new SecureRandom();
     
     @Test
     void assertAckCallbackResultSortable() {
@@ -95,7 +98,6 @@ class MultiplexMemoryPipelineChannelTest {
     
     private Record[] mockRecords() {
         Record[] result = new Record[100];
-        Random random = new Random();
         for (int i = 1; i <= result.length; i++) {
             result[i - 1] = random.nextBoolean() ? new DataRecord(new IntPosition(i), 0) : new PlaceholderRecord(new IntPosition(i));
         }

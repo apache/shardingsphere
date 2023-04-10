@@ -36,10 +36,6 @@
         <module>opengauss</module>
     </modules>
     
-    <properties>
-        <antlr.output.directory>${basedir}/target/generated-sources/antlr4</antlr.output.directory>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -49,7 +45,7 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-it-parser</artifactId>
+            <artifactId>shardingsphere-it-parser</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
@@ -83,21 +79,6 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>${build-helper-maven-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>add-source</id>
-                                <goals>
-                                    <goal>add-source</goal>
-                                </goals>
-                                <phase>generate-sources</phase>
-                                <configuration>
-                                    <sources>
-                                        <source>${antlr.output.directory}</source>
-                                    </sources>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>

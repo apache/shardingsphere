@@ -1,6 +1,6 @@
 +++
 title = "SHOW MIGRATION RULE"
-weight = 2
+weight = 1
 +++
 
 ### Description
@@ -23,11 +23,11 @@ ShowMigrationRule ::=
 
 ### Return Value Description
 
-| Colume        | Description                |
-|---------------|----------------------------|
-|read           |Data reading configuration  |
-|write          |Data writting configuration |
-|stream_channel |Data channel                |
+| Colume         | Description                |
+|----------------|----------------------------|
+| read           | Data reading configuration |
+| write          | Data writing configuration |
+| stream_channel | Data channel               |
 
 ### Example
 

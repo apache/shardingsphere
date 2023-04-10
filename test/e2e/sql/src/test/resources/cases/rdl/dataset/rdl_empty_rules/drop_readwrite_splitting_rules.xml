@@ -18,7 +18,6 @@
 <dataset>
     <metadata>
         <column name="name" />
-        <column name="auto_aware_data_source_name" />
         <column name="write_storage_unit_name" />
         <column name="read_storage_unit_names" />
         <column name="load_balancer_type" />

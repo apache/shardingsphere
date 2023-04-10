@@ -24,10 +24,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.sql.Savepoint;
+import java.sql.Statement;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,8 +67,23 @@ class ConnectionSavepointManagerTest {
     @Test
     void assertSaveReleaseSavingPoint() throws SQLException {
         ConnectionSavepointManager.getInstance().setSavepoint(connection, SAVE_POINT);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:postgresql://127.0.0.1:5432/foo_ds");
         ConnectionSavepointManager.getInstance().releaseSavepoint(connection, SAVE_POINT);
         verify(connection).releaseSavepoint(savepoint);
+    }
+    
+    @Test
+    void assertSaveReleaseSavingPointOfMySQL() throws SQLException {
+        ConnectionSavepointManager.getInstance().setSavepoint(connection, SAVE_POINT);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
+        Statement statement = mock(Statement.class);
+        when(connection.createStatement()).thenReturn(statement);
+        ConnectionSavepointManager.getInstance().releaseSavepoint(connection, SAVE_POINT);
+        verify(statement).execute(String.format("RELEASE SAVEPOINT %s", SAVE_POINT));
     }
     
     @Test

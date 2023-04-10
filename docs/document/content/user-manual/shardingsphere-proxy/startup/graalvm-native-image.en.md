@@ -82,7 +82,7 @@ services:
   Image.
 
 ```bash
-./mvnw -am -pl distribution/proxy-native -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
+./mvnw -am -pl distribution/proxy-native -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
 ```
 
 - Scenario 2: It is necessary to use a JAR that has an SPI implementation or a third-party dependent JAR of a LICENSE
@@ -110,7 +110,7 @@ services:
 - Build GraalVM Native Image via command line.
 
 ```bash
-./mvnw -am -pl distribution/proxy-native -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
+./mvnw -am -pl distribution/proxy-native -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
 ```
 
 3. To start Native Image through the command line, you need to bring 4 parameters.
@@ -128,7 +128,7 @@ services:
    exist for SPI implementation or third-party dependencies.
 
 ```shell
-./mvnw -am -pl distribution/proxy-native -B -Pnative,docker.native -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat .skip=true clean package
+./mvnw -am -pl distribution/proxy-native -B -Pnative,docker.native -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dspotless.apply.skip=true -Drat .skip=true clean package
 ```
 
 - Assuming that there is a `conf` folder containing `server.yaml` as `./custom/conf`, you can start the Docker Image
@@ -195,5 +195,5 @@ services:
 3. Build the GraalVM Native Image from the command line.
 
 ```bash
-./mvnw -am -pl distribution/proxy-native -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Drat.skip =true clean package
+./mvnw -am -pl distribution/proxy-native -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dspotless.apply.skip=true -Drat.skip =true clean package
 ```

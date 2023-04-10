@@ -1,6 +1,6 @@
 +++
 title = "SHOW MIGRATION STATUS"
-weight = 9
+weight = 8
 +++
 
 ### 描述
@@ -30,15 +30,15 @@ migrationJobId ::=
 
 ### 返回值说明
 
-| 列                             | 说明               |
-|--------------------------------|-------------------|
-| item                           | 数据迁移作业分片编号 |
-| data source                    | 数据迁移源          |
-| status                         | 数据迁移作业状态     |
-| processed_records_count        | 处理数据行数        |
-| inventory_finished_percentage  | 数据迁移作业完成度   |
-| incremental_idle_seconds       | 增量闲置时间        |
-| error_message                  | 错误信息提示        |
+| 列                             | 说明         |
+|-------------------------------|------------|
+| item                          | 数据迁移作业分片编号 |
+| data source                   | 数据迁移源      |
+| status                        | 数据迁移作业状态   |
+| processed_records_count       | 处理数据行数     |
+| inventory_finished_percentage | 数据迁移作业完成度  |
+| incremental_idle_seconds      | 增量闲置时间     |
+| error_message                 | 错误信息提示     |
 
 ### 示例
 

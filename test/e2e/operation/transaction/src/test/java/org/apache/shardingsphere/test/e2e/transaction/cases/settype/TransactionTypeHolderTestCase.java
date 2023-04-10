@@ -31,6 +31,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Transaction type holder test case.
@@ -44,14 +45,14 @@ public final class TransactionTypeHolderTestCase extends BaseTransactionTestCase
     
     @Override
     protected void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
+        TransactionTypeHolder.set(TransactionType.LOCAL);
         try (Connection connection = getDataSource().getConnection()) {
-            TransactionTypeHolder.set(TransactionType.LOCAL);
             assertThat(TransactionTypeHolder.get(), is(TransactionType.LOCAL));
             connection.setAutoCommit(false);
             connection.rollback();
         } finally {
-            TransactionTypeHolder.set(TransactionType.XA);
-            assertThat(TransactionTypeHolder.get(), is(TransactionType.XA));
+            TransactionTypeHolder.clear();
+            assertNull(TransactionTypeHolder.get());
         }
     }
 }

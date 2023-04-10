@@ -1,6 +1,6 @@
 +++
 title = "CREATE SHARDING TABLE REFERENCE RULE"
-weight = 13
+weight = 12
 +++
 
 ## Description

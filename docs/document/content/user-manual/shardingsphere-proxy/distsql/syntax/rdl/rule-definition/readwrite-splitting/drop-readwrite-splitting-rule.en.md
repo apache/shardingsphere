@@ -1,11 +1,11 @@
 +++
 title = "DROP READWRITE_SPLITTING RULE"
-weight = 4
+weight = 3
 +++
 
 ## Description
 
-The `DROP READWRITE_SPLITTING RULE` syntax is used to drop readwrite splitting rule for specified database
+The `DROP READWRITE_SPLITTING RULE` syntax is used to drop readwrite-splitting rule for specified database
 
 ### Syntax
 
@@ -33,23 +33,23 @@ databaseName ::=
 ### Supplement
 
 - When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted;
-- `ifExists` clause is used for avoid `Readwrite splitting rule not exists` error.
+- `ifExists` clause is used for avoid `Readwrite-splitting rule not exists` error.
 
 ### Example
 
-- Drop readwrite splitting rule for specified database
+- Drop readwrite-splitting rule for specified database
 
 ```sql
 DROP READWRITE_SPLITTING RULE ms_group_1 FROM readwrite_splitting_db;
 ```
 
-- Drop readwrite splitting rule for current database
+- Drop readwrite-splitting rule for current database
 
 ```sql
 DROP READWRITE_SPLITTING RULE ms_group_1;
 ```
 
-- Drop readwrite splitting rule with `ifExists` clause
+- Drop readwrite-splitting rule with `ifExists` clause
 
 ```sql
 DROP READWRITE_SPLITTING RULE IF EXISTS ms_group_1;

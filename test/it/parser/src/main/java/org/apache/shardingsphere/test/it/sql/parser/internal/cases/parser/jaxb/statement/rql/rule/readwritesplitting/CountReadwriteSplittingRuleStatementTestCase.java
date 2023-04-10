@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.DatabaseContainedTestCase;
 
 /**
- * Count readwrite splitting rule statement test case.
+ * Count readwrite-splitting rule statement test case.
  */
 public final class CountReadwriteSplittingRuleStatementTestCase extends DatabaseContainedTestCase {
 }

@@ -4,15 +4,17 @@ weight = 1
 chapter = true
 +++
 
-## Prepare before release
+## Prepare Before Release
 
-### 1. Check and update LICENSE and NOTICE
+The preparation work is carried out **7 days before cutting release**, so that contributors can control the development progress according to the release plan.
+
+### 1. Check and Update LICENSE and NOTICE
 
 Check and update dependency version in LICENSE.
 
 Check and update year in NOTICE.
 
-### 2. Confirm release notes
+### 2. Confirm Release Notes
 
 The release note should be provided in English / Chinese, confirm whether English and Chinese description are clear, 
 and shall be classified according to the following labels:
@@ -22,7 +24,13 @@ and shall be classified according to the following labels:
 1. Enhancement
 1. Bug Fix
 
-### 3. Confirm issue list
+### 3. Create Milestone for Next Development
+
+1. Create a [Github Milestone](https://github.com/apache/shardingsphere/milestones);
+1. Set milestone title to next development version;
+1. **Set the `due date` as the next version release cutting date** 。
+
+### 4. Confirm Issue List
 
 Open [GitHub issues](https://github.com/apache/shardingsphere/issues), filter the issue whose milestone is `${RELEASE.VERSION}` and status is open:
 
@@ -30,7 +38,7 @@ Open [GitHub issues](https://github.com/apache/shardingsphere/issues), filter th
 1. For outstanding issues, communicate with the developer in charge. If this release is not affected, modify milestone to the next version;
 1. Confirm that there is no issue in open status under milestone of release version.
 
-### 4. Confirm pull request list
+### 5. Confirm Pull Request List
 
 Open [GitHub pull requests](https://github.com/apache/shardingsphere/pulls), filter pull requests whose milestone is `${RELEASE.VERSION}` and status is open:
 
@@ -38,18 +46,11 @@ Open [GitHub pull requests](https://github.com/apache/shardingsphere/pulls), fil
 1. For pull requests that cannot merge and do not affect this release, modify milestone to the next version;
 1. Confirm that there is no open pull request under milestone of release version.
 
-### 5. Call for a discussion
+### 6. Call for a Discussion
 
-1. Create a [GitHub Discussion](https://github.com/apache/shardingsphere/discussions) contains all the release notes;
-1. Send email to [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org) with the GitHub Discussion in the message body;
+1. Create a [GitHub Discussion](https://github.com/apache/shardingsphere/discussions) contains all the release notes and **release cutting date** ;
+1. Send email to [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org) with the GitHub Discussion and **release cutting date** in the message body;
 1. Follow the mailing list and confirm that the community developers have no questions about the release note.
-
-### 6. Close milestone
-
-Open [GitHub milestone](https://github.com/apache/shardingsphere/milestones)
-
-1. Confirm that the milestone completion status of `${RELEASE.VERSION}` is 100%;
-1. Click `close` to close milestone.
 
 ## GPG Settings
 
@@ -151,12 +152,20 @@ Each server will automatically synchronize with one another, so it would be okay
 
 ## Prepare Branch for Release
 
-### 1. Create Release Branch
+### 1. Close milestone
+
+Open [GitHub milestone](https://github.com/apache/shardingsphere/milestones)
+
+1. Confirm that the milestone completion status of `${RELEASE.VERSION}` is 100%;
+1. Click `close` to close milestone.
+
+### 2. Confirm the Release Commit and Create Release Branch
 
 Suppose ShardingSphere source codes downloaded from GitHub is under `~/open_source/shardingsphere/`, clone a new one into `~/shardingsphere/` directory from local.
 
 Suppose the version to be released is `${RELEASE.VERSION}`, create `${RELEASE.VERSION}-release` branch, where all the following operations will be performed.
 
+Reference command:
 ```shell
 cd ~
 git clone ~/open_source/shardingsphere
@@ -169,7 +178,7 @@ git checkout -b ${RELEASE.VERSION}-release
 git push origin ${RELEASE.VERSION}-release
 ```
 
-### 2. Update Release Notes And Example Version
+### 3. Update Release Notes And Example Version
 
 Update the following file in release branch, and submit a PR to release branch:
 
@@ -179,7 +188,7 @@ https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE
 
 Update the POM of the module `examples`, changing the version from ${DEVELOPMENT.VERSION} to ${RELEASE.VERSION}, and submit a PR to release branch.
 
-### 3. Update the download page
+### 4. Update the download page
 
 Update the following pages:
 * <https://shardingsphere.apache.org/document/current/en/downloads/>
@@ -187,7 +196,7 @@ Update the following pages:
 
 GPG signatures and hashes (SHA* etc) should be prefixed with `https://downloads.apache.org/shardingsphere/`
 
-### 4. Update README files
+### 5. Update README files
 
 Update `${RELEASE.VERSION}` and `${NEXT.RELEASE.VERSION}` in README.md and README_ZH.md.
 

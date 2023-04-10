@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHARDING TABLE RULES USED AUDITOR"
-weight = 13
+weight = 12
 +++
 
 ### 描述
@@ -33,10 +33,10 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列     | 说明          |
-| ------| --------------|
-| type  | 分片规则类型    |
-| name  | 分片规则名称    |
+| 列    | 说明     |
+|------|--------|
+| type | 分片规则类型 |
+| name | 分片规则名称 |
 
 ### 示例
 

@@ -1,6 +1,6 @@
 +++
 title = "ALTER TRANSACTION RULE"
-weight = 5
+weight = 3
 +++
 
 ### Description

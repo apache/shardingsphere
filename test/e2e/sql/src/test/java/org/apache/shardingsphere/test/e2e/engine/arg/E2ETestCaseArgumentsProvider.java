@@ -45,12 +45,12 @@ public final class E2ETestCaseArgumentsProvider implements ArgumentsProvider {
     private Stream<Arguments> getBatchTestCaseArguments(final SQLCommandType type) {
         Collection<E2ETestParameter> result = E2ETestParameterFactory.getCaseTestParameters(type);
         // TODO make sure test case can not be null
-        return result.isEmpty() ? Stream.of(Arguments.of(new CaseTestParameter(null, null, null, null, null))) : result.stream().map(Arguments::of);
+        return result.isEmpty() ? Stream.of(Arguments.of(new CaseTestParameter(null, null, null, null, null, null))) : result.stream().map(Arguments::of);
     }
     
     private Stream<Arguments> getSingleTestCaseArguments(final SQLCommandType type) {
         Collection<AssertionTestParameter> result = E2ETestParameterFactory.getAssertionTestParameters(type);
         // TODO make sure test case can not be null
-        return result.isEmpty() ? Stream.of(Arguments.of(new AssertionTestParameter(null, null, null, null, null, null, null))) : result.stream().map(Arguments::of);
+        return result.isEmpty() ? Stream.of(Arguments.of(new AssertionTestParameter(null, null, null, null, null, null, null, null))) : result.stream().map(Arguments::of);
     }
 }

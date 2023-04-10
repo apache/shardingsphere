@@ -1,11 +1,11 @@
 +++
 title = "COUNT READWRITE_SPLITTING RULE"
-weight = 3
+weight = 2
 +++
 
 ### Description
 
-The `COUNT READWRITE_SPLITTING RULE` syntax is used to query the number of readwrite splitting rules for specified database.
+The `COUNT READWRITE_SPLITTING RULE` syntax is used to query the number of readwrite-splitting rules for specified database.
 
 ### Syntax
 
@@ -30,16 +30,16 @@ databaseName ::=
 
 ### Return value description
 
-| Column    | Description                             |
-| ----------| ----------------------------------------|
-| rule_name | rule type                               |
-| database  | the database to which the rule belongs  |
-| count     | the number of the rule                  |
+| Column    | Description                            |
+|-----------|----------------------------------------|
+| rule_name | rule type                              |
+| database  | the database to which the rule belongs |
+| count     | the number of the rule                 |
 
 
 ### Example
 
-- Query the number of readwrite splitting rules for specified database.
+- Query the number of readwrite-splitting rules for specified database.
 
 ```sql
 COUNT READWRITE_SPLITTING RULE FROM readwrite_splitting_db;
@@ -55,7 +55,7 @@ mysql> COUNT READWRITE_SPLITTING RULE FROM readwrite_splitting_db;
 1 row in set (0.02 sec)
 ```
 
-- Query the number of readwrite splitting rules for current database.
+- Query the number of readwrite-splitting rules for current database.
 
 ```sql
 COUNT READWRITE_SPLITTING RULE;

@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHARDING AUDITORS"
-weight = 8
+weight = 7
 
 +++
 
@@ -31,11 +31,11 @@ databaseName ::=
 
 ### Return value description
 
-| column                 | Description                           |
-| -----------------------|---------------------------------------|
-| name                   | Sharding auditor name                 |
-| type                   | Sharding auditor algorithm type       |
-| props                  | Sharding auditor algorithm properties |
+| column | Description                           |
+|--------|---------------------------------------|
+| name   | Sharding auditor name                 |
+| type   | Sharding auditor algorithm type       |
+| props  | Sharding auditor algorithm properties |
 
 ### Example
 

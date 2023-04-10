@@ -1,6 +1,6 @@
 +++
 title = "SHOW AUTHORITY RULE"
-weight = 2
+weight = 1
 +++
 
 ### Description

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.core.api;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
@@ -76,7 +75,7 @@ public final class PipelineAPIFactory {
      * @return job statistics API
      */
     public static JobStatisticsAPI getJobStatisticsAPI(final PipelineContextKey contextKey) {
-        return ElasticJobAPIHolder.getInstance(contextKey).getJobStatisticsAPI();
+        return ElasticJobAPIHolder.getInstance(contextKey).jobStatisticsAPI;
     }
     
     /**
@@ -86,7 +85,7 @@ public final class PipelineAPIFactory {
      * @return job configuration API
      */
     public static JobConfigurationAPI getJobConfigurationAPI(final PipelineContextKey contextKey) {
-        return ElasticJobAPIHolder.getInstance(contextKey).getJobConfigurationAPI();
+        return ElasticJobAPIHolder.getInstance(contextKey).jobConfigurationAPI;
     }
     
     /**
@@ -96,7 +95,7 @@ public final class PipelineAPIFactory {
      * @return job operate API
      */
     public static JobOperateAPI getJobOperateAPI(final PipelineContextKey contextKey) {
-        return ElasticJobAPIHolder.getInstance(contextKey).getJobOperateAPI();
+        return ElasticJobAPIHolder.getInstance(contextKey).jobOperateAPI;
     }
     
     /**
@@ -106,10 +105,9 @@ public final class PipelineAPIFactory {
      * @return Coordinator registry center
      */
     public static CoordinatorRegistryCenter getRegistryCenter(final PipelineContextKey contextKey) {
-        return RegistryCenterHolder.getInstance(contextKey);
+        return RegistryCenterHolder.getInstance(contextKey).registryCenter;
     }
     
-    @Getter
     private static final class ElasticJobAPIHolder {
         
         private static final Map<PipelineContextKey, ElasticJobAPIHolder> INSTANCE_MAP = new ConcurrentHashMap<>();
@@ -128,42 +126,21 @@ public final class PipelineAPIFactory {
         }
         
         public static ElasticJobAPIHolder getInstance(final PipelineContextKey contextKey) {
-            ElasticJobAPIHolder result = INSTANCE_MAP.get(contextKey);
-            if (null != result) {
-                return result;
-            }
-            synchronized (INSTANCE_MAP) {
-                result = INSTANCE_MAP.get(contextKey);
-                if (null == result) {
-                    result = new ElasticJobAPIHolder(contextKey);
-                    INSTANCE_MAP.put(contextKey, result);
-                }
-            }
-            return result;
+            return INSTANCE_MAP.computeIfAbsent(contextKey, key -> new ElasticJobAPIHolder(contextKey));
         }
     }
     
     private static final class RegistryCenterHolder {
         
-        private static final Map<PipelineContextKey, CoordinatorRegistryCenter> INSTANCE_MAP = new ConcurrentHashMap<>();
+        private static final Map<PipelineContextKey, RegistryCenterHolder> INSTANCE_MAP = new ConcurrentHashMap<>();
         
-        public static CoordinatorRegistryCenter getInstance(final PipelineContextKey contextKey) {
-            // TODO Extract common method; Reduce lock time
-            CoordinatorRegistryCenter result = INSTANCE_MAP.get(contextKey);
-            if (null != result) {
-                return result;
-            }
-            synchronized (INSTANCE_MAP) {
-                result = INSTANCE_MAP.get(contextKey);
-                if (null == result) {
-                    result = createRegistryCenter(contextKey);
-                    INSTANCE_MAP.put(contextKey, result);
-                }
-            }
-            return result;
+        private final CoordinatorRegistryCenter registryCenter;
+        
+        private RegistryCenterHolder(final PipelineContextKey contextKey) {
+            registryCenter = createRegistryCenter(contextKey);
         }
         
-        private static CoordinatorRegistryCenter createRegistryCenter(final PipelineContextKey contextKey) {
+        private CoordinatorRegistryCenter createRegistryCenter(final PipelineContextKey contextKey) {
             CoordinatorRegistryCenterInitializer registryCenterInitializer = new CoordinatorRegistryCenterInitializer();
             PipelineContext pipelineContext = PipelineContextManager.getContext(contextKey);
             ModeConfiguration modeConfig = pipelineContext.getModeConfig();
@@ -174,6 +151,10 @@ public final class PipelineAPIFactory {
             } else {
                 throw new IllegalArgumentException("Unsupported cluster type: " + clusterType);
             }
+        }
+        
+        public static RegistryCenterHolder getInstance(final PipelineContextKey contextKey) {
+            return INSTANCE_MAP.computeIfAbsent(contextKey, key -> new RegistryCenterHolder(contextKey));
         }
     }
 }

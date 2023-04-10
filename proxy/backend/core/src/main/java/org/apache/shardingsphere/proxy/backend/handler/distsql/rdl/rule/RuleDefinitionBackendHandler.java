@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule;
 
-import org.apache.shardingsphere.dbdiscovery.distsql.handler.update.DropDatabaseDiscoveryRuleStatementUpdater;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
@@ -26,7 +24,6 @@ import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -123,10 +120,6 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         }
         if (updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig)) {
             configs.remove(currentRuleConfig);
-        }
-        if (updater instanceof DropDatabaseDiscoveryRuleStatementUpdater) {
-            database.getRuleMetaData().findSingleRule(DynamicDataSourceContainedRule.class)
-                    .ifPresent(optional -> ((DropDatabaseDiscoveryRuleStatement) sqlStatement).getNames().forEach(optional::closeSingleHeartBeatJob));
         }
         if (updater instanceof DropReadwriteSplittingRuleStatementUpdater) {
             database.getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class)

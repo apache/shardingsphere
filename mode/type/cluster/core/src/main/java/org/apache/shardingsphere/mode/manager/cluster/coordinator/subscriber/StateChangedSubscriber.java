@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
@@ -34,9 +33,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
-import org.apache.shardingsphere.mode.event.storage.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
 
 import java.util.Optional;
@@ -68,34 +65,11 @@ public final class StateChangedSubscriber {
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getQualifiedDatabase().getDatabaseName())) {
             return;
         }
-        Optional<DynamicDataSourceContainedRule> dynamicDataSourceRule = contextManager.getMetaDataContexts()
-                .getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData().findSingleRule(DynamicDataSourceContainedRule.class);
-        if (dynamicDataSourceRule.isPresent()) {
-            dynamicDataSourceRule.get().updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource()));
-            return;
-        }
         Optional<StaticDataSourceContainedRule> staticDataSourceRule = contextManager.getMetaDataContexts()
                 .getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class);
         staticDataSourceRule.ifPresent(optional -> optional.updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource())));
         DataSourceStateManager.getInstance().updateState(
                 qualifiedDatabase.getDatabaseName(), qualifiedDatabase.getDataSourceName(), DataSourceState.valueOf(event.getDataSource().getStatus().name()));
-    }
-    
-    /**
-     * Renew primary data source names.
-     * 
-     * @param event primary state changed event
-     */
-    @Subscribe
-    public synchronized void renew(final PrimaryStateChangedEvent event) {
-        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getQualifiedDatabase().getDatabaseName())) {
-            return;
-        }
-        QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
-        for (DynamicDataSourceContainedRule each : contextManager.getMetaDataContexts()
-                .getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData().findRules(DynamicDataSourceContainedRule.class)) {
-            each.restartHeartBeatJob(new PrimaryDataSourceChangedEvent(qualifiedDatabase));
-        }
     }
     
     /**

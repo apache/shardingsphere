@@ -1,6 +1,6 @@
 +++
 title = "SHOW MIGRATION CHECK STATUS"
-weight = 12
+weight = 11
 +++
 
 ### Description
@@ -30,15 +30,15 @@ migrationJobId ::=
 
 ### Return Value Description
 
-| Columns               | Description               |
-|-----------------------|---------------------------|
-| tables                | migration check table     |
-| result                | check result              |
-| finished_percentage   | check finished percentag  |
-| remaining_seconds     | check remaining time      |
-| check_begin_time      | check begin time          |
-| check_end_time        | check end time            |
-| error_message         | error message             |
+| Columns             | Description                        |
+|---------------------|------------------------------------|
+| tables              | migration check table              |
+| result              | check result                       |
+| finished_percentage | check finished finished_percentage |
+| remaining_seconds   | check remaining time               |
+| check_begin_time    | check begin time                   |
+| check_end_time      | check end time                     |
+| error_message       | error message                      |
 
 ### Example
 

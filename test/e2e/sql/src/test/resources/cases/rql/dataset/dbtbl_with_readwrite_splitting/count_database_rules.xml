@@ -25,7 +25,6 @@
     <row values="sharding_binding_table| 1" />
     <row values="sharding_broadcast_table| 2" />
     <row values="readwrite_splitting| 10" />
-    <row values="db_discovery| 0" />
     <row values="encrypt| 0" />
     <row values="shadow| 0" />
 </dataset>

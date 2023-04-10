@@ -1,6 +1,6 @@
 +++
 title = "数据脱敏"
-weight = 10
+weight = 5
 +++
 
 ## 背景信息
@@ -15,10 +15,10 @@ weight = 10
 
 可配置属性：
 
-| *名称*                       | *数据类型*                                  | *说明*                              | *默认值* |
-|-----------------------------|--------------------------------------------|-----------------------------------| ------- |
-| tables (+)                  | Collection\<MaskTableRuleConfiguration\>   | 脱敏表规则配置                           |        |
-| maskAlgorithms (+)          | Map\<String, AlgorithmConfiguration\>      | 脱敏算法名称和配置                         |        |
+| *名称*               | *数据类型*                                   | *说明*      | *默认值* |
+|--------------------|------------------------------------------|-----------|-------|
+| tables (+)         | Collection\<MaskTableRuleConfiguration\> | 脱敏表规则配置   |       |
+| maskAlgorithms (+) | Map\<String, AlgorithmConfiguration\>    | 脱敏算法名称和配置 |       |
 
 ### 脱敏表规则配置
 
@@ -26,10 +26,10 @@ weight = 10
 
 可配置属性：
 
-| *名称*       | *数据类型*                                   | *说明*          |
-| ----------- |---------------------------------------------|---------------|
-| name        | String                                      | 表名称           |
-| columns (+) | Collection\<MaskColumnRuleConfiguration\>   | 脱敏列规则配置列表     |
+| *名称*        | *数据类型*                                    | *说明*      |
+|-------------|-------------------------------------------|-----------|
+| name        | String                                    | 表名称       |
+| columns (+) | Collection\<MaskColumnRuleConfiguration\> | 脱敏列规则配置列表 |
 
 ### 脱敏列规则配置
 
@@ -37,10 +37,10 @@ weight = 10
 
 可配置属性：
 
-| *名称*                    | *数据类型* | *说明*   |
-| ------------------------- | -------- |--------|
-| logicColumn               | String   | 逻辑列名称  |
-| maskAlgorithm              | String   | 脱敏算法名称 |
+| *名称*          | *数据类型* | *说明*   |
+|---------------|--------|--------|
+| logicColumn   | String | 逻辑列名称  |
+| maskAlgorithm | String | 脱敏算法名称 |
 
 ### 加解密算法配置
 
@@ -48,9 +48,9 @@ weight = 10
 
 可配置属性：
 
-| *名称*      |*数据类型*   | *说明*      |
-| ---------- | ---------- |-----------|
-| name       | String     | 脱敏算法名称    |
+| *名称*       | *数据类型*     | *说明*     |
+|------------|------------|----------|
+| name       | String     | 脱敏算法名称   |
 | type       | String     | 脱敏算法类型   |
 | properties | Properties | 脱敏算法属性配置 |
 
@@ -59,20 +59,21 @@ weight = 10
 ## 操作步骤
 
 1. 创建真实数据源映射关系，key 为数据源逻辑名称，value 为 DataSource 对象；
-1. 创建脱敏规则对象 MaskRuleConfiguration，并初始化对象中的脱敏表对象 MaskTableRuleConfiguration、脱敏算法等参数；
-1. 调用 ShardingSphereDataSourceFactory 对象的 createDataSource 方法，创建 ShardingSphereDataSource。
+2. 创建脱敏规则对象 MaskRuleConfiguration，并初始化对象中的脱敏表对象 MaskTableRuleConfiguration、脱敏算法等参数；
+3. 调用 ShardingSphereDataSourceFactory 对象的 createDataSource 方法，创建 ShardingSphereDataSource。
 
 ## 配置示例
 
 ```java
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 
-public final class MaskDatabasesConfiguration implements ExampleConfiguration {
+public final class MaskDatabasesConfiguration {
     
     @Override
-    public DataSource getDataSource() {
+    public DataSource getDataSource() throws SQLException {
         MaskColumnRuleConfiguration passwordColumn = new MaskColumnRuleConfiguration("password", "md5_mask");
         MaskColumnRuleConfiguration emailColumn = new MaskColumnRuleConfiguration("email", "mask_before_special_chars_mask");
         MaskColumnRuleConfiguration telephoneColumn = new MaskColumnRuleConfiguration("telephone", "keep_first_n_last_m_mask");
@@ -89,12 +90,7 @@ public final class MaskDatabasesConfiguration implements ExampleConfiguration {
         keepFirstNLastMProps.put("replace-char", "*");
         maskAlgorithmConfigs.put("keep_first_n_last_m_mask", new AlgorithmConfiguration("KEEP_FIRST_N_LAST_M", keepFirstNLastMProps));
         MaskRuleConfiguration maskRuleConfig = new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), maskAlgorithmConfigs);
-        try {
-            return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(maskRuleConfig), new Properties());
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(maskRuleConfig), new Properties());
     }
 }
 ```

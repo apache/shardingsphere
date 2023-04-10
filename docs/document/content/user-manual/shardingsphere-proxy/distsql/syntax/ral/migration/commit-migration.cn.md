@@ -1,6 +1,6 @@
 +++
 title = "COMMIT MIGRATION"
-weight = 18
+weight = 16
 +++
 
 ### 描述

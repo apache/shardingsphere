@@ -42,17 +42,16 @@ public final class JobDataNodeLineConvertUtils {
      */
     public static List<JobDataNodeLine> convertDataNodesToLines(final Map<String, List<DataNode>> actualDataNodes) {
         List<Pair<String, JobDataNodeLine>> result = new LinkedList<>();
-        Map<String, Map<String, List<DataNode>>> groupedDataSourceDataNodesMap = groupDataSourceDataNodesMapByDataSourceName(actualDataNodes);
-        for (String each : groupedDataSourceDataNodesMap.keySet()) {
-            List<JobDataNodeEntry> dataNodeEntries = new LinkedList<>();
-            for (Entry<String, List<DataNode>> entry : groupedDataSourceDataNodesMap.get(each).entrySet()) {
-                dataNodeEntries.add(new JobDataNodeEntry(entry.getKey(), entry.getValue()));
-            }
-            result.add(Pair.of(each, new JobDataNodeLine(dataNodeEntries)));
+        for (Entry<String, Map<String, List<DataNode>>> entry : groupDataSourceDataNodesMapByDataSourceName(actualDataNodes).entrySet()) {
+            result.add(Pair.of(entry.getKey(), new JobDataNodeLine(getJobDataNodeEntries(entry.getValue()))));
         }
         // Sort by dataSourceName, make sure data node lines have the same ordering
         result.sort(Entry.comparingByKey());
         return result.stream().map(Pair::getValue).collect(Collectors.toList());
+    }
+    
+    private static List<JobDataNodeEntry> getJobDataNodeEntries(final Map<String, List<DataNode>> dataNodeMap) {
+        return dataNodeMap.entrySet().stream().map(entry -> new JobDataNodeEntry(entry.getKey(), entry.getValue())).collect(Collectors.toList());
     }
     
     private static Map<String, Map<String, List<DataNode>>> groupDataSourceDataNodesMapByDataSourceName(final Map<String, List<DataNode>> actualDataNodes) {

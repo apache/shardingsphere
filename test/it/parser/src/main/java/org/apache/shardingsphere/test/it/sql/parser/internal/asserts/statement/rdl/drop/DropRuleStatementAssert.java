@@ -19,9 +19,6 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryHeartbeatStatement;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryRuleStatement;
-import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.mask.distsql.parser.statement.DropMaskRuleStatement;
@@ -37,9 +34,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingT
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingTableRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.drop.impl.DropBroadcastTableRuleStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.drop.impl.DropDatabaseDiscoveryHeartbeatStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.drop.impl.DropDatabaseDiscoveryRuleStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.drop.impl.DropDatabaseDiscoveryTypeStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.drop.impl.DropDefaultShardingStrategyStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.drop.impl.DropEncryptRuleStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.drop.impl.DropMaskRuleStatementAssert;
@@ -55,9 +49,6 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.S
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.mask.DropMaskRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.shadow.DropShadowAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding.DropBroadcastTableRuleStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.DropDatabaseDiscoveryHeartbeatStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.DropDatabaseDiscoveryRuleStatementTestCase;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.dbdiscovery.DropDatabaseDiscoveryTypeStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.sharding.DropDefaultShardingStrategyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.encrypt.DropEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.readwritesplitting.DropReadwriteSplittingRuleStatementTestCase;
@@ -82,14 +73,8 @@ public final class DropRuleStatementAssert {
      * @param expected expected drop RDL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropRuleStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof DropDatabaseDiscoveryRuleStatement) {
-            DropDatabaseDiscoveryRuleStatementAssert.assertIs(assertContext, (DropDatabaseDiscoveryRuleStatement) actual, (DropDatabaseDiscoveryRuleStatementTestCase) expected);
-        } else if (actual instanceof DropDatabaseDiscoveryTypeStatement) {
-            DropDatabaseDiscoveryTypeStatementAssert.assertIs(assertContext, (DropDatabaseDiscoveryTypeStatement) actual, (DropDatabaseDiscoveryTypeStatementTestCase) expected);
-        } else if (actual instanceof DropDefaultShardingStrategyStatement) {
+        if (actual instanceof DropDefaultShardingStrategyStatement) {
             DropDefaultShardingStrategyStatementAssert.assertIs(assertContext, (DropDefaultShardingStrategyStatement) actual, (DropDefaultShardingStrategyStatementTestCase) expected);
-        } else if (actual instanceof DropDatabaseDiscoveryHeartbeatStatement) {
-            DropDatabaseDiscoveryHeartbeatStatementAssert.assertIs(assertContext, (DropDatabaseDiscoveryHeartbeatStatement) actual, (DropDatabaseDiscoveryHeartbeatStatementTestCase) expected);
         } else if (actual instanceof DropEncryptRuleStatement) {
             DropEncryptRuleStatementAssert.assertIs(assertContext, (DropEncryptRuleStatement) actual, (DropEncryptRuleStatementTestCase) expected);
         } else if (actual instanceof DropReadwriteSplittingRuleStatement) {
