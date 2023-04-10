@@ -28,7 +28,7 @@
     <artifactId>shardingsphere</artifactId>
     <version>5.3.3-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
+    <name>Apache ShardingSphere</name>
     <description>Build criterion and ecosystem above multi-model databases</description>
     
     <modules>
@@ -887,6 +887,9 @@
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <version>${maven-checkstyle-plugin.version}</version>
                     <configuration>
+                        <failOnViolation>true</failOnViolation>
+                        <failsOnError>true</failsOnError>
+                        <violationSeverity>error</violationSeverity>
                         <configLocation>src/resources/checkstyle.xml</configLocation>
                         <includeTestSourceDirectory>true</includeTestSourceDirectory>
                         <excludes>**/autogen/**/*</excludes>
@@ -907,6 +910,7 @@
                     <version>${spotbugs-maven-plugin.version}</version>
                     <configuration>
                         <fork>false</fork>
+                        <failOnError>false</failOnError>
                         <excludeFilterFile>src/resources/spotbugs.xml</excludeFilterFile>
                         <plugins>
                             <plugin>
@@ -1085,7 +1089,6 @@
     
     <reporting>
         <plugins>
-
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>
@@ -1116,6 +1119,15 @@
             </plugin>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <failOnViolation>false</failOnViolation>
+                    <failsOnError>false</failsOnError>
+                    <violationSeverity>warning</violationSeverity>
+                    <configLocation>src/resources/checkstyle.xml</configLocation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <excludes>**/autogen/**/*</excludes>
+                    <goal>checkstyle-aggregate</goal>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-pmd-plugin</artifactId>
@@ -1123,6 +1135,10 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
+                <configuration>
+                    <xmlOutput>true</xmlOutput>
+                    <xmlOutputDirectory>target/site</xmlOutputDirectory>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -1159,6 +1175,13 @@
         <url>https://github.com/apache/shardingsphere.git</url>
         <tag>HEAD</tag>
     </scm>
+    
+    <distributionManagement>
+        <site>
+            <id>Apache ShardingSphere</id>
+            <url>https://shardingsphere.apache.org/statistics</url>
+        </site>
+    </distributionManagement>
     
     <profiles>
         <profile>
