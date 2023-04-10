@@ -23,14 +23,12 @@ import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -117,13 +115,9 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
         StringBuilder builder = new StringBuilder();
         try (
                 InputStream inputStream = Objects.requireNonNull(CharDigestLikeEncryptAlgorithm.class.getClassLoader().getResourceAsStream("algorithm/like/common_chinese_character.dict"));
-                InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-                BufferedReader bufferedReader = new BufferedReader(reader)) {
-            while (true) {
-                String line = bufferedReader.readLine();
-                if (null == line) {
-                    break;
-                }
+                Scanner scanner = new Scanner(inputStream)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
                 if (!line.isEmpty() && !line.startsWith("#")) {
                     builder.append(line);
                 }
