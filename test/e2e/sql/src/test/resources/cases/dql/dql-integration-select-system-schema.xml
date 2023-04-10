@@ -204,4 +204,44 @@
     <test-case sql="SELECT * FROM information_schema.schema_privileges" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_schema_privileges.xml" />
     </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.schemata" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_schemata.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.session_status" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_session_status.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.session_variables" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_session_variables.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.statistics" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_statistics.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.table_constraints" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_table_constraints.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.table_privileges" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_table_privileges.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.tables" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_tables.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.tablespaces" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_tablespaces.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.triggers" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_triggers.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.user_privileges" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_user_privileges.xml" />
+    </test-case>
 </integration-test-cases>
