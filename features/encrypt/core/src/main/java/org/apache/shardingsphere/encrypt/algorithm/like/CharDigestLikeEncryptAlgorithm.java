@@ -23,12 +23,11 @@ import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -113,10 +112,24 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
         return IntStream.range(0, dictContent.length()).boxed().collect(Collectors.toMap(dictContent::charAt, index -> index, (a, b) -> b));
     }
     
-    @SneakyThrows({IOException.class, URISyntaxException.class})
+    @SneakyThrows(IOException.class)
     private String initDefaultDict() {
-        Path path = Paths.get(Objects.requireNonNull(CharDigestLikeEncryptAlgorithm.class.getClassLoader().getResource("algorithm/like/common_chinese_character.dict")).toURI());
-        return Files.readAllLines(path, StandardCharsets.UTF_8).stream().filter(each -> !each.isEmpty() && !each.startsWith("#")).collect(Collectors.joining());
+        StringBuilder builder = new StringBuilder();
+        try (
+                InputStream inputStream = Objects.requireNonNull(CharDigestLikeEncryptAlgorithm.class.getClassLoader().getResourceAsStream("algorithm/like/common_chinese_character.dict"));
+                InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                BufferedReader bufferedReader = new BufferedReader(reader)) {
+            while (true) {
+                String line = bufferedReader.readLine();
+                if (null == line) {
+                    break;
+                }
+                if (!line.isEmpty() && !line.startsWith("#")) {
+                    builder.append(line);
+                }
+            }
+        }
+        return builder.toString();
     }
     
     @Override
