@@ -17,25 +17,25 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.like;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
-import com.google.common.io.CharStreams;
-import com.google.common.io.LineProcessor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
+import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.HashMap;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Char digest like encrypt algorithm.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorithm<Object, String> {
     
     private static final String DELTA = "delta";
@@ -107,37 +107,14 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     }
     
     private Map<Character, Integer> createCharIndexes(final Properties props) {
-        String dictContent = props.containsKey(DICT) && !Strings.isNullOrEmpty(props.getProperty(DICT)) ? props.getProperty(DICT) : initDefaultDict();
-        Map<Character, Integer> result = new HashMap<>(dictContent.length(), 1);
-        for (int index = 0; index < dictContent.length(); index++) {
-            result.put(dictContent.charAt(index), index);
-        }
-        return result;
+        String dictContent = props.getProperty(DICT, loadDefaultDict());
+        return IntStream.range(0, dictContent.length()).boxed().collect(Collectors.toMap(dictContent::charAt, index -> index, (a, b) -> b));
     }
     
-    @SneakyThrows
-    private String initDefaultDict() {
-        InputStream inputStream = CharDigestLikeEncryptAlgorithm.class.getClassLoader().getResourceAsStream("algorithm/like/common_chinese_character.dict");
-        LineProcessor<String> lineProcessor = new LineProcessor<String>() {
-            
-            private final StringBuilder builder = new StringBuilder();
-            
-            @Override
-            public boolean processLine(final String line) {
-                if (line.startsWith("#") || 0 == line.length()) {
-                    return true;
-                } else {
-                    builder.append(line);
-                    return false;
-                }
-            }
-            
-            @Override
-            public String getResult() {
-                return builder.toString();
-            }
-        };
-        return CharStreams.readLines(new InputStreamReader(inputStream, Charsets.UTF_8), lineProcessor);
+    @SneakyThrows({IOException.class, URISyntaxException.class})
+    private String loadDefaultDict() {
+        List<String> lines = Files.readAllLines(Paths.get(ClassLoader.getSystemResource("algorithm/like/common_chinese_character.dict").toURI()), StandardCharsets.UTF_8);
+        return lines.stream().filter(each -> !each.isEmpty() && !each.startsWith("#")).collect(Collectors.joining());
     }
     
     @Override
