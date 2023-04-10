@@ -244,4 +244,44 @@
     <test-case sql="SELECT * FROM information_schema.user_privileges" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_user_privileges.xml" />
     </test-case>
+
+    <test-case sql="SELECT * FROM mysql.columns_priv" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_columns_priv.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.db" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_db.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.engine_cost" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_engine_cost.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.event" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_event.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.func" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_func.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.general_log" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_general_log.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.gtid_executed" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_gtid_executed.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.help_category" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_help_category.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.help_keyword" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_help_keyword.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.help_relation" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_help_relation.xml" />
+    </test-case>
 </integration-test-cases>

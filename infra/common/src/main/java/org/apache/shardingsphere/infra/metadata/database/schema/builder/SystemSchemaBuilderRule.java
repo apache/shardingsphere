@@ -46,7 +46,8 @@ public enum SystemSchemaBuilderRule {
             "processlist", "profiling", "referential_constraints", "routines", "schema_privileges", "schemata", "session_status", "session_variables", "statistics",
             "table_constraints", "table_privileges", "tables", "tablespaces", "triggers", "user_privileges", "views"))),
     
-    MYSQL_MYSQL("MySQL", "mysql", new HashSet<>(Collections.singleton("db"))),
+    MYSQL_MYSQL("MySQL", "mysql", new HashSet<>(Arrays.asList("columns_priv", "db", "engine_cost", "event", "func", "general_log", "gtid_executed",
+            "help_category", "help_keyword", "help_relation"))),
     
     MYSQL_PERFORMANCE_SCHEMA("MySQL", "performance_schema", new HashSet<>(Collections.singleton("accounts"))),
     
