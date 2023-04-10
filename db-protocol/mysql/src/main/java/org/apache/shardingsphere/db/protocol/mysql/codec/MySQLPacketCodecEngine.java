@@ -73,7 +73,6 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
     
     private void aggregateMessages(final ChannelHandlerContext context, final ByteBuf lastMessage, final List<Object> out) {
         CompositeByteBuf result = context.alloc().compositeBuffer(SEQUENCE_LENGTH + pendingMessages.size() + 1);
-        // TODO retained
         result.addComponent(true, lastMessage.readSlice(SEQUENCE_LENGTH));
         Iterator<ByteBuf> pendingMessagesIterator = pendingMessages.iterator();
         result.addComponent(true, pendingMessagesIterator.next());
