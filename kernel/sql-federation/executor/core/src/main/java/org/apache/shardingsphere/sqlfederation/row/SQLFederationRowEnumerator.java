@@ -60,10 +60,9 @@ public final class SQLFederationRowEnumerator<T> implements Enumerator<T> {
             }
         } catch (SQLException ex) {
             throw new SQLWrapperException(ex);
-        } finally {
-            currentRow = null;
-            return false;
         }
+        currentRow = null;
+        return false;
     }
     
     private T getRows() throws SQLException {
