@@ -115,8 +115,8 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     @SneakyThrows({IOException.class, URISyntaxException.class})
     private String loadDefaultDict() {
         try {
-            List<String> lines = Files.readAllLines(Paths.get(Objects.requireNonNull(CharDigestLikeEncryptAlgorithm.class.getClassLoader().getResource("algorithm/like/common_chinese_character.dict")).toURI()),
-                    StandardCharsets.UTF_8);
+            List<String> lines = Files.readAllLines(Paths.get(Objects.requireNonNull(CharDigestLikeEncryptAlgorithm.class.getClassLoader()
+                    .getResource("algorithm/like/common_chinese_character.dict")).toURI()), StandardCharsets.UTF_8);
             return lines.stream().filter(each -> !each.isEmpty() && !each.startsWith("#")).collect(Collectors.joining());
         } catch (final NullPointerException ex) {
             throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_LIKE", "default dict not found");
