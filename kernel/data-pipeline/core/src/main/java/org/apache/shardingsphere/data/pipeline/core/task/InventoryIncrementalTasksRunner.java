@@ -49,7 +49,6 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     
     private final Collection<IncrementalTask> incrementalTasks;
     
-    @Getter
     private final PipelineJobAPI jobAPI;
     
     public InventoryIncrementalTasksRunner(final PipelineJobItemContext jobItemContext, final Collection<InventoryTask> inventoryTasks, final Collection<IncrementalTask> incrementalTasks) {
