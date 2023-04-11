@@ -71,7 +71,8 @@ class MySQLFrontendEngineTest {
     
     @Test
     void assertSetDatabaseVersion() {
-        String databaseName = "db", databaseVersion = "version";
+        String databaseName = "db";
+        String databaseVersion = "version";
         try (MockedStatic<MySQLServerInfo> mockedStatic = mockStatic(MySQLServerInfo.class)) {
             engine.setDatabaseVersion(databaseName, databaseVersion);
             mockedStatic.verify(() -> MySQLServerInfo.setServerVersion(databaseName, databaseVersion));
