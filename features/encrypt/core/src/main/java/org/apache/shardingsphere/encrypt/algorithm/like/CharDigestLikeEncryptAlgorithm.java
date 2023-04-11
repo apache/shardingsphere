@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.like;
 
+import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
+import java.io.InputStream;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -107,14 +106,24 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     }
     
     private Map<Character, Integer> createCharIndexes(final Properties props) {
-        String dictContent = props.getProperty(DICT, loadDefaultDict());
+        String dictContent = props.containsKey(DICT) && !Strings.isNullOrEmpty(props.getProperty(DICT)) ? props.getProperty(DICT) : initDefaultDict();
         return IntStream.range(0, dictContent.length()).boxed().collect(Collectors.toMap(dictContent::charAt, index -> index, (a, b) -> b));
     }
     
-    @SneakyThrows({IOException.class, URISyntaxException.class})
-    private String loadDefaultDict() {
-        List<String> lines = Files.readAllLines(Paths.get(ClassLoader.getSystemResource("algorithm/like/common_chinese_character.dict").toURI()), StandardCharsets.UTF_8);
-        return lines.stream().filter(each -> !each.isEmpty() && !each.startsWith("#")).collect(Collectors.joining());
+    @SneakyThrows(IOException.class)
+    private String initDefaultDict() {
+        StringBuilder builder = new StringBuilder();
+        try (
+                InputStream inputStream = Objects.requireNonNull(CharDigestLikeEncryptAlgorithm.class.getClassLoader().getResourceAsStream("algorithm/like/common_chinese_character.dict"));
+                Scanner scanner = new Scanner(inputStream)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (!line.isEmpty() && !line.startsWith("#")) {
+                    builder.append(line);
+                }
+            }
+        }
+        return builder.toString();
     }
     
     @Override

@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 class SQLMatchTrafficAlgorithmTest {
@@ -58,5 +59,11 @@ class SQLMatchTrafficAlgorithmTest {
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "TRUNCATE TABLE `t_order` ")));
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order` SET `order_id` = ?;")));
         assertFalse(sqlMatchAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order_item` SET `order_id` = ? WHERE user_id = ?;")));
+    }
+    
+    @Test
+    void assertInitWithIllegalProps() {
+        assertThrows(IllegalArgumentException.class, () -> TypedSPILoader.getService(SQLMatchTrafficAlgorithm.class, "SQL_MATCH",
+                PropertiesBuilder.build(new Property("sql", ""))));
     }
 }
