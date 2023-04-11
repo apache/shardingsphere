@@ -1,0 +1,76 @@
+package org.apache.shardingsphere.mode.repository.standalone.jdbc.provider;
+
+import lombok.SneakyThrows;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Enumeration;
+import java.util.Objects;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
+public class JDBCRepositoryProviderLoader {
+    
+    private static final String ROOT_DIRECTORY = "JAXB/JDBCRepositoryProvider/";
+    
+    private static final String FILE_EXTENSION = ".xml";
+    
+    @SneakyThrows({JAXBException.class, IOException.class, URISyntaxException.class})
+    public static JDBCRepositoryProvider load(final String type) {
+        File file = new File(JDBCRepositoryProviderLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        return file.isFile() ? loadFromJar(file, type) : loadFromDirectory(type);
+    }
+    
+    private static JDBCRepositoryProvider loadFromDirectory(final String type) throws URISyntaxException, IOException {
+        URL url = JDBCRepositoryProviderLoader.class.getClassLoader().getResource(ROOT_DIRECTORY);
+        if (null == url) {
+            return null;
+        }
+        final JDBCRepositoryProvider[] result = new JDBCRepositoryProvider[1];
+        Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
+        
+            @SneakyThrows(JAXBException.class)
+            @Override
+            public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes) throws IOException {
+                if (file.toString().endsWith(FILE_EXTENSION)) {
+                    JDBCRepositoryProvider provider = (JDBCRepositoryProvider) JAXBContext.newInstance(JDBCRepositoryProvider.class).createUnmarshaller().unmarshal(Files.newInputStream(file.toFile().toPath()));
+                    if (Objects.equals(provider.getType(), type)) {
+                        result[0] = provider;
+                        return FileVisitResult.TERMINATE;
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+        return result[0];
+    }
+    
+    private static JDBCRepositoryProvider loadFromJar(final File file, final String type) throws JAXBException, IOException {
+        try (JarFile jar = new JarFile(file)) {
+            Enumeration<JarEntry> entries = jar.entries();
+            while (entries.hasMoreElements()) {
+                String name = entries.nextElement().getName();
+                if (!name.startsWith(ROOT_DIRECTORY) || !name.endsWith(FILE_EXTENSION)) {
+                    continue;
+                }
+                final InputStream inputStream = JDBCRepositoryProviderLoader.class.getClassLoader().getResourceAsStream(name);
+                JDBCRepositoryProvider provider = (JDBCRepositoryProvider) JAXBContext.newInstance(JDBCRepositoryProvider.class).createUnmarshaller().unmarshal(inputStream);
+                if (Objects.equals(provider.getType(), type)) {
+                    return provider;
+                }
+            }
+        }
+        return null;
+    }
+}
