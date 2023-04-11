@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar ParseRexNode;
+grammar SQLOptimizerRexNode;
 
 import Symbol, Keyword, Literals;
 
