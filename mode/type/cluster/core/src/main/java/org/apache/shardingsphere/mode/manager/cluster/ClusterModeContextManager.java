@@ -99,8 +99,6 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
     @Override
     public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) {
         contextManager.getMetaDataContexts().getPersistService().getDataSourceService().persist(databaseName,
-                contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources(),
-                contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
                 getToBeReversedDataSourcePropsMap(contextManager.getMetaDataContexts().getPersistService().getDataSourceService().load(databaseName), toBeDroppedStorageUnitNames));
     }
     

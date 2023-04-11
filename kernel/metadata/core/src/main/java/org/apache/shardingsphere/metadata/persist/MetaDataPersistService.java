@@ -99,7 +99,7 @@ public final class MetaDataPersistService {
         if (dataSourcePropertiesMap.isEmpty() && databaseConfigs.getRuleConfigurations().isEmpty()) {
             databaseMetaDataService.addDatabase(databaseName);
         } else {
-            dataSourceService.persist(databaseName, dataSources, rules, getDataSourcePropertiesMap(databaseConfigs.getDataSources()));
+            dataSourceService.persist(databaseName, getDataSourcePropertiesMap(databaseConfigs.getDataSources()));
             databaseRulePersistService.persist(databaseName, dataSources, rules, databaseConfigs.getRuleConfigurations());
         }
     }
