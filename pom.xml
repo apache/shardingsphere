@@ -903,6 +903,11 @@
                         <aggregate>true</aggregate>
                         <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                         <targetJdk>${java.version}</targetJdk>
+                        <configuration>
+                            <rulesets>
+                                <ruleset>src/resources/pmd.xml</ruleset>
+                            </rulesets>
+                        </configuration>
                     </configuration>
                 </plugin>
                 <plugin>
