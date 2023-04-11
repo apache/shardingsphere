@@ -96,6 +96,9 @@ public final class SchemaMetaDataUtils {
     private static void addOneActualTableDataNode(final GenericSchemaBuilderMaterial material,
                                                   final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
         Optional<DataNode> dataNode = dataNodes.getDataNodes(table).stream().filter(each -> isSameDataSourceNameSchemaName(material, each)).findFirst();
+        if (!dataNode.isPresent() && !material.getDataSourceMap().keySet().iterator().hasNext()) {
+            return;
+        }
         String dataSourceName = dataNode.map(DataNode::getDataSourceName).orElseGet(() -> material.getDataSourceMap().keySet().iterator().next());
         String tableName = dataNode.map(DataNode::getTableName).orElse(table);
         addDataSourceTableGroups(dataSourceName, tableName, dataSourceTableGroups);
