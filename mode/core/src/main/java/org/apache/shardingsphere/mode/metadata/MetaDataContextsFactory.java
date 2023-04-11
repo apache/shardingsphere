@@ -33,8 +33,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
-import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
+import org.apache.shardingsphere.metadata.MetaDataFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
@@ -87,7 +86,7 @@ public final class MetaDataContextsFactory {
         checkDataSourceStates(effectiveDatabaseConfigs, storageNodes, param.isForce());
         Collection<RuleConfiguration> globalRuleConfigs = getGlobalRuleConfigs(databaseMetaDataExisted, persistService, param.getGlobalRuleConfigs());
         ConfigurationProperties props = getConfigurationProperties(databaseMetaDataExisted, persistService, param.getProps());
-        Map<String, ShardingSphereDatabase> databases = getDatabases(databaseMetaDataExisted, effectiveDatabaseConfigs, props, instanceContext);
+        Map<String, ShardingSphereDatabase> databases = getDatabases(databaseMetaDataExisted, persistService, effectiveDatabaseConfigs, props, instanceContext);
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props));
         MetaDataContexts result = new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalMetaData, props));
         persistDatabaseConfigurations(databaseMetaDataExisted, param, result);
@@ -151,10 +150,10 @@ public final class MetaDataContextsFactory {
         return databaseMetaDataExisted ? persistService.getGlobalRuleService().load() : globalRuleConfigs;
     }
     
-    private static Map<String, ShardingSphereDatabase> getDatabases(final boolean databaseMetaDataExisted, final Map<String, DatabaseConfiguration> databaseConfigMap,
-                                                                    final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
-        return databaseMetaDataExisted ? InternalMetaDataFactory.create(databaseConfigMap, props, instanceContext)
-                : ExternalMetaDataFactory.create(databaseConfigMap, props, instanceContext);
+    private static Map<String, ShardingSphereDatabase> getDatabases(final boolean databaseMetaDataExisted, final MetaDataPersistService persistService,
+                                                                    final Map<String, DatabaseConfiguration> databaseConfigMap, final ConfigurationProperties props,
+                                                                    final InstanceContext instanceContext) throws SQLException {
+        return MetaDataFactory.create(databaseMetaDataExisted, persistService, databaseConfigMap, props, instanceContext);
     }
     
     private static void persistDatabaseConfigurations(final boolean databaseMetaDataExisted, final ContextManagerBuilderParameter param, final MetaDataContexts metadataContexts) {
