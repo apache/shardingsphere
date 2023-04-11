@@ -112,13 +112,13 @@ class MySQLPacketCodecEngineTest {
     @Test
     void assertDecodePacketMoreThan16MB() {
         MySQLPacketCodecEngine engine = new MySQLPacketCodecEngine();
-        when(context.alloc().compositeBuffer(2)).thenReturn(new CompositeByteBuf(UnpooledByteBufAllocator.DEFAULT, false, 2));
+        when(context.alloc().compositeBuffer(3)).thenReturn(new CompositeByteBuf(UnpooledByteBufAllocator.DEFAULT, false, 3));
         List<Object> actual = new ArrayList<>(1);
         for (ByteBuf each : preparePacketMoreThan16MB()) {
             engine.decode(context, each, actual);
         }
         assertThat(actual.size(), is(1));
-        assertThat(((ByteBuf) actual.get(0)).readableBytes(), is((1 << 24) - 1));
+        assertThat(((ByteBuf) actual.get(0)).readableBytes(), is(1 << 24));
     }
     
     private List<ByteBuf> preparePacketMoreThan16MB() {

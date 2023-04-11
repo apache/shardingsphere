@@ -22,7 +22,6 @@ import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
-import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
@@ -46,13 +45,6 @@ public interface DatabaseProtocolFrontendEngine extends TypedSPI {
      */
     default void setDatabaseVersion(String databaseName, String databaseVersion) {
     }
-    
-    /**
-     * Get frontend context.
-     *
-     * @return frontend context
-     */
-    FrontendContext getFrontendContext();
     
     /**
      * Get database packet codec engine.

@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.context;
+package org.apache.shardingsphere.db.protocol.netty;
+
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.flow.FlowControlHandler;
+import org.apache.shardingsphere.db.protocol.event.WriteCompleteEvent;
 
 /**
- * Frontend context.
+ * Flow control handler for ShardingSphere-Proxy.
  */
-public interface FrontendContext {
+public final class ProxyFlowControlHandler extends FlowControlHandler {
     
-    /**
-     * Whether Proxy should use same thread to execute tasks.
-     *
-     * @param message message
-     * @return is same thread required
-     */
-    boolean isRequiredSameThreadForConnection(Object message);
+    @Override
+    public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
+        if (WriteCompleteEvent.getInstance() == evt) {
+            ctx.channel().config().setAutoRead(true);
+        }
+        ctx.fireUserEventTriggered(evt);
+    }
 }

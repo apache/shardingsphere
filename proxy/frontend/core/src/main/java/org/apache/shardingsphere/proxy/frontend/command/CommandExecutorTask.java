@@ -22,6 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.db.protocol.event.WriteCompleteEvent;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
@@ -95,6 +96,7 @@ public final class CommandExecutorTask implements Runnable {
                 context.flush();
             }
             processClosedExceptions(exceptions);
+            context.pipeline().fireUserEventTriggered(WriteCompleteEvent.getInstance());
             if (sqlShowEnabled) {
                 clearLogMDC();
             }

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.MetaDataVersionPersistService;
@@ -74,25 +75,32 @@ public final class MetaDataPersistService {
     }
     
     /**
-     * Persist configurations.
+     * Persist global rule configurations.
      *
-     * @param databaseConfigs database configurations
      * @param globalRuleConfigs global rule configurations
      * @param props properties
      */
-    public void persistConfigurations(final Map<String, ? extends DatabaseConfiguration> databaseConfigs,
-                                      final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
-        globalRuleService.conditionalPersist(globalRuleConfigs);
-        propsService.conditionalPersist(props);
-        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
-            String databaseName = entry.getKey();
-            Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(entry.getValue().getDataSources());
-            if (dataSourcePropertiesMap.isEmpty() && entry.getValue().getRuleConfigurations().isEmpty()) {
-                databaseMetaDataService.addDatabase(databaseName);
-            } else {
-                dataSourceService.conditionalPersist(databaseName, getDataSourcePropertiesMap(entry.getValue().getDataSources()));
-                databaseRulePersistService.conditionalPersist(databaseName, entry.getValue().getRuleConfigurations());
-            }
+    public void persistGlobalRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
+        globalRuleService.persist(globalRuleConfigs);
+        propsService.persist(props);
+    }
+    
+    /**
+     * Persist configurations.
+     *
+     * @param databaseName database name
+     * @param databaseConfigs database configurations
+     * @param dataSources data sources
+     * @param rules rules
+     */
+    public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfigs,
+                                      final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
+        Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(databaseConfigs.getDataSources());
+        if (dataSourcePropertiesMap.isEmpty() && databaseConfigs.getRuleConfigurations().isEmpty()) {
+            databaseMetaDataService.addDatabase(databaseName);
+        } else {
+            dataSourceService.persist(databaseName, dataSources, rules, getDataSourcePropertiesMap(databaseConfigs.getDataSources()));
+            databaseRulePersistService.persist(databaseName, dataSources, rules, databaseConfigs.getRuleConfigurations());
         }
     }
     

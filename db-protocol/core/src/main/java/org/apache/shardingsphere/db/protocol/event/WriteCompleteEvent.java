@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql;
-
-import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
+package org.apache.shardingsphere.db.protocol.event;
 
 /**
- * {@link FrontendContext} implementations for PostgreSQL.
+ * Write complete event.
  */
-public final class PostgreSQLFrontendContext implements FrontendContext {
+public final class WriteCompleteEvent {
     
-    @Override
-    public boolean isRequiredSameThreadForConnection(final Object message) {
-        return true;
+    private static final WriteCompleteEvent INSTANCE = new WriteCompleteEvent();
+    
+    /**
+     * Get instance of {@link WriteCompleteEvent}.
+     *
+     * @return instance of {@link WriteCompleteEvent}
+     */
+    public static WriteCompleteEvent getInstance() {
+        return INSTANCE;
     }
 }
