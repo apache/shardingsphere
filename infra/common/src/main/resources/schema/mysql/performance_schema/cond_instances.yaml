@@ -15,37 +15,21 @@
 # limitations under the License.
 #
 
-name: accounts
+name: cond_instances
 columns:
-  user:
-    caseSensitive: true
-    dataType: 1
+  name:
+    caseSensitive: false
+    dataType: 12
     generated: false
-    name: USER
+    name: NAME
     primaryKey: false
     unsigned: false
     visible: true
-  host:
-    caseSensitive: true
-    dataType: 1
-    generated: false
-    name: HOST
-    primaryKey: false
-    unsigned: false
-    visible: true
-  current_connections:
+  object_instance_begin:
     caseSensitive: false
     dataType: 4
     generated: false
-    name: CURRENT_CONNECTIONS
+    name: OBJECT_INSTANCE_BEGIN
     primaryKey: false
-    unsigned: false
-    visible: true
-  total_connections:
-    caseSensitive: false
-    dataType: 4
-    generated: false
-    name: TOTAL_CONNECTIONS
-    primaryKey: false
-    unsigned: false
+    unsigned: true
     visible: true

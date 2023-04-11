@@ -15,37 +15,61 @@
 # limitations under the License.
 #
 
-name: accounts
+name: events_stages_summary_by_thread_by_event_name
 columns:
-  user:
-    caseSensitive: true
-    dataType: 1
-    generated: false
-    name: USER
-    primaryKey: false
-    unsigned: false
-    visible: true
-  host:
-    caseSensitive: true
-    dataType: 1
-    generated: false
-    name: HOST
-    primaryKey: false
-    unsigned: false
-    visible: true
-  current_connections:
+  thread_id:
     caseSensitive: false
     dataType: 4
     generated: false
-    name: CURRENT_CONNECTIONS
+    name: THREAD_ID
+    primaryKey: false
+    unsigned: true
+    visible: true
+  event_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EVENT_NAME
     primaryKey: false
     unsigned: false
     visible: true
-  total_connections:
+  count_star:
     caseSensitive: false
     dataType: 4
     generated: false
-    name: TOTAL_CONNECTIONS
+    name: COUNT_STAR
     primaryKey: false
-    unsigned: false
+    unsigned: true
+    visible: true
+  sum_timer_wait:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_TIMER_WAIT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_wait:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MIN_TIMER_WAIT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_wait:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_TIMER_WAIT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_wait:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_TIMER_WAIT
+    primaryKey: false
+    unsigned: true
     visible: true
