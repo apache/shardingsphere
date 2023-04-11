@@ -49,13 +49,7 @@ public final class OKProxyState implements ProxyState {
         if (requireOccupyThreadForConnection(connectionSession)) {
             return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
         }
-        if (isPreferNettyEventLoop()) {
-            return context.executor();
-        }
-        if (databaseProtocolFrontendEngine.getFrontendContext().isRequiredSameThreadForConnection(message)) {
-            return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
-        }
-        return UserExecutorGroup.getInstance().getExecutorService();
+        return isPreferNettyEventLoop() ? context.executor() : UserExecutorGroup.getInstance().getExecutorService();
     }
     
     private boolean requireOccupyThreadForConnection(final ConnectionSession connectionSession) {

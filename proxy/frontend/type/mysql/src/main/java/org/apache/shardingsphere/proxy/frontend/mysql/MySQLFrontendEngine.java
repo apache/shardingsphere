@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
-import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.MySQLAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.MySQLCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
@@ -44,8 +43,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Getter
 public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine {
-    
-    private final FrontendContext frontendContext = new MySQLFrontendContext();
     
     private final AuthenticationEngine authenticationEngine = new MySQLAuthenticationEngine();
     

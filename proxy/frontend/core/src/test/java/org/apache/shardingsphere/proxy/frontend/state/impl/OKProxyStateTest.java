@@ -104,23 +104,6 @@ class OKProxyStateTest {
         verify(eventExecutor).execute(any(CommandExecutorTask.class));
     }
     
-    @Test
-    void assertExecuteWithProxyBackendExecutorSuitableForOLAPAndRequiredSameThreadForConnection() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(
-                ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn(BackendExecutorType.OLAP);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
-        when(connectionSession.getConnectionId()).thenReturn(1);
-        DatabaseProtocolFrontendEngine frontendEngine = mock(DatabaseProtocolFrontendEngine.class, RETURNS_DEEP_STUBS);
-        when(frontendEngine.getFrontendContext().isRequiredSameThreadForConnection(null)).thenReturn(true);
-        ExecutorService executorService = registerMockExecutorService(1);
-        new OKProxyState().execute(context, null, frontendEngine, connectionSession);
-        verify(executorService).execute(any(CommandExecutorTask.class));
-        ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(1);
-    }
-    
     @SuppressWarnings({"unchecked", "SameParameterValue"})
     @SneakyThrows(ReflectiveOperationException.class)
     private ExecutorService registerMockExecutorService(final int connectionId) {
