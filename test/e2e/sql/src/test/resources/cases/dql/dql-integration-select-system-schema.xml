@@ -324,4 +324,48 @@
     <test-case sql="SELECT * FROM mysql.servers" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_mysql_servers.xml" />
     </test-case>
+
+    <test-case sql="SELECT * FROM mysql.slave_master_info" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_slave_master_info.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.slave_relay_log_info" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_slave_relay_log_info.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.slave_worker_info" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_slave_worker_info.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.slow_log" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_slow_log.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.tables_priv" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_tables_priv.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.time_zone" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_time_zone.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.time_zone_leap_second" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_time_zone_leap_second.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.time_zone_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_time_zone_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.time_zone_transition" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_time_zone_transition.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.time_zone_transition_type" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_time_zone_transition_type.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.user" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_user.xml" />
+    </test-case>
 </integration-test-cases>
