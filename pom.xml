@@ -887,6 +887,7 @@
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <version>${maven-checkstyle-plugin.version}</version>
                     <configuration>
+                        <consoleOutput>true</consoleOutput>
                         <failOnViolation>true</failOnViolation>
                         <failsOnError>true</failsOnError>
                         <violationSeverity>error</violationSeverity>
