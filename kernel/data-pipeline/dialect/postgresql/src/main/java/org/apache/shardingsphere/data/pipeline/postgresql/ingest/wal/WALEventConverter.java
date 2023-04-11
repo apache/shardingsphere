@@ -124,7 +124,7 @@ public final class WALEventConverter {
     
     private DataRecord createDataRecord(final AbstractRowEvent rowsEvent, final int columnCount) {
         DataRecord result = new DataRecord(new WALPosition(rowsEvent.getLogSequenceNumber()), columnCount);
-        result.setTableName(dumperConfig.getLogicTableName(rowsEvent.getTableName()).getLowercase());
+        result.setTableName(dumperConfig.getLogicTableName(rowsEvent.getTableName()).getOriginal());
         result.setCsn(rowsEvent.getCsn());
         return result;
     }
