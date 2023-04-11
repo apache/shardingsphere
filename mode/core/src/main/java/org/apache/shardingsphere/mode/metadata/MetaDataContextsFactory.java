@@ -87,7 +87,7 @@ public final class MetaDataContextsFactory {
         checkDataSourceStates(effectiveDatabaseConfigs, storageNodes, param.isForce());
         Collection<RuleConfiguration> globalRuleConfigs = getGlobalRuleConfigs(databaseMetaDataExisted, persistService, param.getGlobalRuleConfigs());
         ConfigurationProperties props = getConfigurationProperties(databaseMetaDataExisted, persistService, param.getProps());
-        Map<String, ShardingSphereDatabase> databases = getDatabases(databaseMetaDataExisted, effectiveDatabaseConfigs, props, instanceContext);
+        Map<String, ShardingSphereDatabase> databases = getDatabases(databaseMetaDataExisted, persistService, effectiveDatabaseConfigs, props, instanceContext);
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, props));
         MetaDataContexts result = new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalMetaData, props));
         persistDatabaseConfigurations(databaseMetaDataExisted, param, result);
@@ -151,9 +151,10 @@ public final class MetaDataContextsFactory {
         return databaseMetaDataExisted ? persistService.getGlobalRuleService().load() : globalRuleConfigs;
     }
     
-    private static Map<String, ShardingSphereDatabase> getDatabases(final boolean databaseMetaDataExisted, final Map<String, DatabaseConfiguration> databaseConfigMap,
-                                                                    final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
-        return databaseMetaDataExisted ? InternalMetaDataFactory.create(databaseConfigMap, props, instanceContext)
+    private static Map<String, ShardingSphereDatabase> getDatabases(final boolean databaseMetaDataExisted, final MetaDataPersistService persistService,
+                                                                    final Map<String, DatabaseConfiguration> databaseConfigMap, final ConfigurationProperties props,
+                                                                    final InstanceContext instanceContext) throws SQLException {
+        return databaseMetaDataExisted ? InternalMetaDataFactory.create(persistService, databaseConfigMap, props, instanceContext)
                 : ExternalMetaDataFactory.create(databaseConfigMap, props, instanceContext);
     }
     
