@@ -237,6 +237,8 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         contextManager.renewMetaDataContexts(reloadMetaDataContexts);
         Map<String, DataSourceProperties> toBeReversedDataSourcePropsMap = getToBeReversedDataSourcePropsMap(dataSourcePropsMap, toBeDroppedStorageUnitNames);
         contextManager.getMetaDataContexts().getPersistService().getDataSourceService().persist(contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName),
+                contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources(),
+                contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
                 toBeReversedDataSourcePropsMap);
         switchingResource.closeStaleDataSources();
         clearServiceCache();
@@ -254,7 +256,10 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     public void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
         contextManager.alterRuleConfiguration(databaseName, ruleConfigs);
         contextManager.getMetaDataContexts().getPersistService()
-                .getDatabaseRulePersistService().persist(contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName), ruleConfigs);
+                .getDatabaseRulePersistService().persist(contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName),
+                        contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources(),
+                        contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(),
+                        ruleConfigs);
         clearServiceCache();
     }
     

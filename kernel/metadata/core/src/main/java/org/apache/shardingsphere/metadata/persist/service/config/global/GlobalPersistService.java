@@ -25,13 +25,6 @@ package org.apache.shardingsphere.metadata.persist.service.config.global;
 public interface GlobalPersistService<T> {
     
     /**
-     * Conditional persist configurations.
-     *
-     * @param globalRuleConfigs configurations
-     */
-    void conditionalPersist(T globalRuleConfigs);
-    
-    /**
      * Persist configurations.
      *
      * @param globalRuleConfigs configurations

@@ -20,11 +20,14 @@ package org.apache.shardingsphere.metadata.persist.service.config.database;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
+import javax.sql.DataSource;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -41,23 +44,22 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
     private final PersistRepository repository;
     
     @Override
-    public void conditionalPersist(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        if (!dataSourcePropsMap.isEmpty() && !isExisted(databaseName)) {
-            persist(databaseName, dataSourcePropsMap);
-        }
+    public void persist(final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules,
+                        final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        persist(databaseName, dataSourcePropsMap);
     }
     
-    @Override
-    public void persist(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+    private void persist(final String databaseName, final Map<String, DataSourceProperties> dataSourceConfigs) {
         if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
             repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
         }
         repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, getDatabaseActiveVersion(databaseName)),
-                YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
+                YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourceConfigs)));
     }
     
     @Override
-    public void persist(final String databaseName, final String version, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+    public void persist(final String databaseName, final String version, final Map<String, DataSource> dataSources,
+                        final Collection<ShardingSphereRule> rules, final Map<String, DataSourceProperties> dataSourcePropsMap) {
         repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, version), YamlEngine.marshal(swapYamlDataSourceConfiguration(dataSourcePropsMap)));
     }
     
