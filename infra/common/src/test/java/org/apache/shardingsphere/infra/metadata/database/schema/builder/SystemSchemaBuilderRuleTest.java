@@ -35,7 +35,7 @@ class SystemSchemaBuilderRuleTest {
         assertThat(actualInformationSchema.getTables().size(), is(61));
         SystemSchemaBuilderRule actualMySQLSchema = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "mysql");
         assertThat(actualMySQLSchema, is(SystemSchemaBuilderRule.MYSQL_MYSQL));
-        assertThat(actualMySQLSchema.getTables().size(), is(10));
+        assertThat(actualMySQLSchema.getTables().size(), is(20));
     }
     
     @Test
