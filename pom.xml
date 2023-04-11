@@ -901,13 +901,10 @@
                     <version>${maven-pmd-plugin.version}</version>
                     <configuration>
                         <aggregate>true</aggregate>
-                        <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                         <targetJdk>${java.version}</targetJdk>
-                        <configuration>
-                            <rulesets>
-                                <ruleset>src/resources/pmd.xml</ruleset>
-                            </rulesets>
-                        </configuration>
+                        <rulesets>
+                            <ruleset>src/resources/pmd.xml</ruleset>
+                        </rulesets>
                     </configuration>
                 </plugin>
                 <plugin>
