@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.VendorError;
 
 import java.sql.SQLException;
+import java.text.MessageFormat;
 
 @Getter
 public class PostgreSQLException extends SQLException {
@@ -32,8 +33,9 @@ public class PostgreSQLException extends SQLException {
         this.serverErrorMessage = null;
     }
     
-    public PostgreSQLException(final String severity, final VendorError vendorError, final Object... reasonArgs) {
-        this.serverErrorMessage = new ServerErrorMessage(severity, vendorError.getSqlState().getValue(), String.format(vendorError.getReason(), reasonArgs));
+    public PostgreSQLException(final ServerErrorMessage serverErrorMessage) {
+        super(serverErrorMessage.toString(), serverErrorMessage.getSqlState());
+        this.serverErrorMessage = serverErrorMessage;
     }
     
     @Getter
@@ -45,10 +47,30 @@ public class PostgreSQLException extends SQLException {
     
         private final String message;
         
+        public ServerErrorMessage(final String severity, final VendorError vendorError, final Object... reasonArgs) {
+            this(severity, vendorError.getSqlState().getValue(), String.format(vendorError.getReason(), reasonArgs));
+        }
+
         public ServerErrorMessage(final String severity, final String sqlState, final String message) {
             this.severity = severity;
             this.sqlState = sqlState;
             this.message = message;
+        }
+        
+        @Override
+        public String toString() {
+            StringBuilder totalMessage = new StringBuilder();
+            if (severity != null) {
+                totalMessage.append(severity).append(": ");
+            }
+            if (message != null) {
+                totalMessage.append(message);
+            }
+            if (sqlState != null) {
+                totalMessage.append("\n  ").append(MessageFormat.format("Server SQLState: {0}", sqlState));
+            }
+        
+            return totalMessage.toString();
         }
     }
     
