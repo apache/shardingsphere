@@ -38,14 +38,12 @@ public final class OKProxyState implements ProxyState {
     
     @Override
     public void execute(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final ConnectionSession connectionSession) {
-        CommandExecutorTask commandExecutorTask = new CommandExecutorTask(databaseProtocolFrontendEngine, connectionSession, context, message);
-        ExecutorService executorService = determineSuitableExecutorService(context, message, databaseProtocolFrontendEngine, connectionSession);
+        ExecutorService executorService = determineSuitableExecutorService(context, connectionSession);
         context.channel().config().setAutoRead(false);
-        executorService.execute(commandExecutorTask);
+        executorService.execute(new CommandExecutorTask(databaseProtocolFrontendEngine, connectionSession, context, message));
     }
     
-    private ExecutorService determineSuitableExecutorService(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine,
-                                                             final ConnectionSession connectionSession) {
+    private ExecutorService determineSuitableExecutorService(final ChannelHandlerContext context, final ConnectionSession connectionSession) {
         if (requireOccupyThreadForConnection(connectionSession)) {
             return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
         }
