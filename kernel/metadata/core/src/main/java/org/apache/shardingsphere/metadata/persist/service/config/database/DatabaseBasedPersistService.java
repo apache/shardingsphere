@@ -17,6 +17,12 @@
 
 package org.apache.shardingsphere.metadata.persist.service.config.database;
 
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+
+import javax.sql.DataSource;
+import java.util.Map;
+import java.util.Collection;
+
 /**
  * Schema based persist service.
  * 
@@ -25,29 +31,25 @@ package org.apache.shardingsphere.metadata.persist.service.config.database;
 public interface DatabaseBasedPersistService<T> {
     
     /**
-     * Conditional persist configurations.
-     *
-     * @param databaseName database name
-     * @param configs configurations
-     */
-    void conditionalPersist(String databaseName, T configs);
-    
-    /**
      * Persist configurations.
      *
      * @param databaseName database name
+     * @param dataSources data sources
+     * @param rules rules
      * @param configs configurations
      */
-    void persist(String databaseName, T configs);
+    void persist(String databaseName, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> rules, T configs);
     
     /**
      * Persist version configurations.
      * 
      * @param databaseName database name
      * @param version version
+     * @param dataSources data sources
+     * @param rules rules
      * @param configs configurations
      */
-    void persist(String databaseName, String version, T configs);
+    void persist(String databaseName, String version, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> rules, T configs);
     
     /**
      * Load configurations.

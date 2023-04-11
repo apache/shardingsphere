@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.globalclock.type.tso.provider;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -24,6 +25,7 @@ import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Redis timestamp oracle provider.
@@ -37,47 +39,48 @@ public final class RedisTSOProvider implements TSOProvider {
     
     private static final long INIT_CSN = Integer.MAX_VALUE;
     
-    private Properties redisTSOProperties;
+    private final AtomicBoolean initialized = new AtomicBoolean(false);
     
     private JedisPool jedisPool;
     
+    private Properties props;
+    
     @Override
     public void init(final Properties props) {
-        if (jedisPool != null) {
-            return;
+        this.props = props;
+        if (initialized.compareAndSet(false, true)) {
+            createJedisPool();
+            checkJedisPool();
+            initCSN();
         }
-        if (props == null) {
-            redisTSOProperties = new Properties();
-            RedisTSOProperties.HOST.set(redisTSOProperties, RedisTSOProperties.HOST.getDefaultValue());
-            RedisTSOProperties.PORT.set(redisTSOProperties, RedisTSOProperties.PORT.getDefaultValue());
-            RedisTSOProperties.PASSWORD.set(redisTSOProperties, RedisTSOProperties.PASSWORD.getDefaultValue());
-            RedisTSOProperties.TIMEOUT_INTERVAL.set(redisTSOProperties, RedisTSOProperties.TIMEOUT_INTERVAL.getDefaultValue());
-            RedisTSOProperties.MAX_IDLE.set(redisTSOProperties, RedisTSOProperties.MAX_IDLE.getDefaultValue());
-            RedisTSOProperties.MAX_TOTAL.set(redisTSOProperties, RedisTSOProperties.MAX_TOTAL.getDefaultValue());
-        } else {
-            redisTSOProperties = new Properties(props);
-            RedisTSOProperties.HOST.set(redisTSOProperties, RedisTSOProperties.HOST.get(props));
-            RedisTSOProperties.PORT.set(redisTSOProperties, RedisTSOProperties.PORT.get(props));
-            RedisTSOProperties.PASSWORD.set(redisTSOProperties, RedisTSOProperties.PASSWORD.get(props));
-            RedisTSOProperties.TIMEOUT_INTERVAL.set(redisTSOProperties, RedisTSOProperties.TIMEOUT_INTERVAL.get(props));
-            RedisTSOProperties.MAX_IDLE.set(redisTSOProperties, RedisTSOProperties.MAX_IDLE.get(props));
-            RedisTSOProperties.MAX_TOTAL.set(redisTSOProperties, RedisTSOProperties.MAX_TOTAL.get(props));
-        }
+    }
+    
+    private void createJedisPool() {
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxIdle(Integer.parseInt(RedisTSOProperties.MAX_IDLE.get(redisTSOProperties)));
-        config.setMaxTotal(Integer.parseInt(RedisTSOProperties.MAX_TOTAL.get(redisTSOProperties)));
-        if ("".equals(RedisTSOProperties.PASSWORD.get(redisTSOProperties))) {
-            jedisPool = new JedisPool(config, RedisTSOProperties.HOST.get(redisTSOProperties),
-                    Integer.parseInt(RedisTSOProperties.PORT.get(redisTSOProperties)),
-                    Integer.parseInt(RedisTSOProperties.TIMEOUT_INTERVAL.get(redisTSOProperties)));
-        } else {
-            jedisPool = new JedisPool(config, RedisTSOProperties.HOST.get(redisTSOProperties),
-                    Integer.parseInt(RedisTSOProperties.PORT.get(redisTSOProperties)),
-                    Integer.parseInt(RedisTSOProperties.TIMEOUT_INTERVAL.get(redisTSOProperties)),
-                    RedisTSOProperties.PASSWORD.get(redisTSOProperties));
+        config.setMaxIdle(Integer.parseInt(getValue(props, RedisTSOPropertyKey.MAX_IDLE)));
+        config.setMaxTotal(Integer.parseInt(getValue(props, RedisTSOPropertyKey.MAX_TOTAL)));
+        jedisPool = new JedisPool(config, getValue(props, RedisTSOPropertyKey.HOST),
+                Integer.parseInt(getValue(props, RedisTSOPropertyKey.PORT)), Integer.parseInt(getValue(props, RedisTSOPropertyKey.TIMEOUT_INTERVAL)),
+                getValue(props, RedisTSOPropertyKey.PASSWORD));
+    }
+    
+    private void checkJedisPool() throws JedisConnectionException {
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.ping();
         }
-        checkJedisPool();
-        initCSN();
+    }
+    
+    private void initCSN() {
+        try (Jedis jedis = jedisPool.getResource()) {
+            String originalCSN = jedis.get(CSN_KEY);
+            if (Strings.isNullOrEmpty(originalCSN) || String.valueOf(ERROR_CSN).equals(originalCSN)) {
+                jedis.set(CSN_KEY, String.valueOf(INIT_CSN));
+            }
+        }
+    }
+    
+    private String getValue(final Properties props, final RedisTSOPropertyKey propertyKey) {
+        return props.containsKey(propertyKey.getKey()) ? props.getProperty(propertyKey.getKey()) : propertyKey.getDefaultValue();
     }
     
     @Override
@@ -96,44 +99,6 @@ public final class RedisTSOProvider implements TSOProvider {
             result = jedis.incr(CSN_KEY);
         }
         return result;
-    }
-    
-    /**
-     * Set csn to INIT_CSN.
-     *
-     * @return csn
-     */
-    public synchronized long initCSN() {
-        String result = "";
-        String oldCsn;
-        Jedis jedis = jedisPool.getResource();
-        try {
-            oldCsn = jedis.get(CSN_KEY);
-            if (oldCsn == null || oldCsn.equals(String.valueOf(ERROR_CSN))) {
-                result = jedis.set(CSN_KEY, String.valueOf(INIT_CSN));
-            }
-        } finally {
-            jedis.close();
-        }
-        if ("OK".equals(result)) {
-            return INIT_CSN;
-        } else {
-            return ERROR_CSN;
-        }
-    }
-    
-    private void checkJedisPool() throws JedisConnectionException {
-        Jedis resource = jedisPool.getResource();
-        resource.ping();
-    }
-    
-    /**
-     * Get properties of redisTSOProvider.
-     *
-     * @return properties
-     */
-    public Properties getRedisTSOProperties() {
-        return redisTSOProperties;
     }
     
     @Override

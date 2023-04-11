@@ -36,15 +36,21 @@ import java.util.Map;
 public enum SystemSchemaBuilderRule {
     
     MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", new HashSet<>(Arrays.asList("character_sets", "collation_character_set_applicability", "collations", "column_privileges", "columns",
-            "engines", "events", "files", "global_status", "global_variables", "parameters", "routines", "schemata", "tables", "views",
+            "engines", "events", "files", "global_status", "global_variables",
             "innodb_buffer_page", "innodb_buffer_page_lru", "innodb_buffer_pool_stats", "innodb_cmp", "innodb_cmp_per_index", "innodb_cmp_per_index_reset", "innodb_cmp_reset",
             "innodb_cmpmem", "innodb_cmpmem_reset", "innodb_ft_being_deleted",
             "innodb_ft_config", "innodb_ft_default_stopword", "innodb_ft_deleted", "innodb_ft_index_cache", "innodb_ft_index_table", "innodb_lock_waits", "innodb_locks",
             "innodb_metrics", "innodb_sys_columns", "innodb_sys_datafiles",
             "innodb_sys_fields", "innodb_sys_foreign", "innodb_sys_foreign_cols", "innodb_sys_indexes", "innodb_sys_tables", "innodb_sys_tablespaces",
-            "innodb_sys_tablestats", "innodb_sys_virtual", "innodb_temp_table_info", "innodb_trx"))),
+            "innodb_sys_tablestats", "innodb_sys_virtual", "innodb_temp_table_info", "innodb_trx", "key_column_usage", "optimizer_trace", "parameters", "partitions", "plugins",
+            "processlist", "profiling", "referential_constraints", "routines", "schema_privileges", "schemata", "session_status", "session_variables", "statistics",
+            "table_constraints", "table_privileges", "tables", "tablespaces", "triggers", "user_privileges", "views"))),
     
-    MYSQL_MYSQL("MySQL", "mysql", new HashSet<>(Collections.singleton("db"))),
+    MYSQL_MYSQL("MySQL", "mysql", new HashSet<>(Arrays.asList("columns_priv", "db", "engine_cost", "event", "func", "general_log", "gtid_executed",
+            "help_category", "help_keyword", "help_relation",
+            "help_topic", "innodb_index_stats", "innodb_table_stats", "ndb_binlog_index", "plugin", "proc", "procs_priv", "proxies_priv", "server_cost", "servers",
+            "slave_master_info", "slave_relay_log_info", "slave_worker_info", "slow_log", "tables_priv", "time_zone", "time_zone_leap_second",
+            "time_zone_name", "time_zone_transition", "time_zone_transition_type", "user"))),
     
     MYSQL_PERFORMANCE_SCHEMA("MySQL", "performance_schema", new HashSet<>(Collections.singleton("accounts"))),
     

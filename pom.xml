@@ -28,7 +28,7 @@
     <artifactId>shardingsphere</artifactId>
     <version>5.3.3-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
+    <name>Apache ShardingSphere</name>
     <description>Build criterion and ecosystem above multi-model databases</description>
     
     <modules>
@@ -59,6 +59,10 @@
         <maven.deploy.skip>false</maven.deploy.skip>
         <shade.package>org.apache.shardingsphere.shade</shade.package>
         <antlr.output.directory>${basedir}/target/generated-sources/antlr4</antlr.output.directory>
+        
+        <sonar.organization>apache</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.exclusions>**/autogen/**/*</sonar.exclusions>
         
         <!-- 3rd party library versions -->
         <guava.version>30.0-jre</guava.version>
@@ -142,13 +146,14 @@
         <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
         <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
-        <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
+        <maven-pmd-plugin.version>3.20.0</maven-pmd-plugin.version>
         <spotbugs-maven-plugin.version>4.7.2.1</spotbugs-maven-plugin.version>
         <fb-contrib.version>7.6.0</fb-contrib.version>
         <findsecbugs.version>1.12.0</findsecbugs.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
+        <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
         
         <!-- Report plugin versions -->
         <maven-site-plugin.version>4.0.0-M6</maven-site-plugin.version>
@@ -887,6 +892,10 @@
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <version>${maven-checkstyle-plugin.version}</version>
                     <configuration>
+                        <consoleOutput>true</consoleOutput>
+                        <failOnViolation>true</failOnViolation>
+                        <failsOnError>true</failsOnError>
+                        <violationSeverity>error</violationSeverity>
                         <configLocation>src/resources/checkstyle.xml</configLocation>
                         <includeTestSourceDirectory>true</includeTestSourceDirectory>
                         <excludes>**/autogen/**/*</excludes>
@@ -897,8 +906,10 @@
                     <version>${maven-pmd-plugin.version}</version>
                     <configuration>
                         <aggregate>true</aggregate>
-                        <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                         <targetJdk>${java.version}</targetJdk>
+                        <rulesets>
+                            <ruleset>src/resources/pmd.xml</ruleset>
+                        </rulesets>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -907,6 +918,7 @@
                     <version>${spotbugs-maven-plugin.version}</version>
                     <configuration>
                         <fork>false</fork>
+                        <failOnError>false</failOnError>
                         <excludeFilterFile>src/resources/spotbugs.xml</excludeFilterFile>
                         <plugins>
                             <plugin>
@@ -980,6 +992,11 @@
                             <phase>test</phase>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${sonar-maven-plugin.version}</version>
                 </plugin>
                 
                 <!-- Report plugins -->
@@ -1085,7 +1102,6 @@
     
     <reporting>
         <plugins>
-
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>
@@ -1116,6 +1132,15 @@
             </plugin>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <failOnViolation>false</failOnViolation>
+                    <failsOnError>false</failsOnError>
+                    <violationSeverity>warning</violationSeverity>
+                    <configLocation>src/resources/checkstyle.xml</configLocation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <excludes>**/autogen/**/*</excludes>
+                    <goal>checkstyle-aggregate</goal>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-pmd-plugin</artifactId>
@@ -1123,6 +1148,10 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
+                <configuration>
+                    <xmlOutput>true</xmlOutput>
+                    <xmlOutputDirectory>target/site</xmlOutputDirectory>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -1159,6 +1188,13 @@
         <url>https://github.com/apache/shardingsphere.git</url>
         <tag>HEAD</tag>
     </scm>
+    
+    <distributionManagement>
+        <site>
+            <id>Apache ShardingSphere</id>
+            <url>https://shardingsphere.apache.org/statistics</url>
+        </site>
+    </distributionManagement>
     
     <profiles>
         <profile>

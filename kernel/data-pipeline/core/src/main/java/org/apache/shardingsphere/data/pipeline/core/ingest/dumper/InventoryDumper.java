@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.dumper;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
@@ -38,6 +38,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineTableMetaData;
+import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtils;
@@ -49,7 +50,6 @@ import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -60,6 +60,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Inventory dumper.
@@ -83,8 +84,6 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     private volatile Statement dumpStatement;
     
     public InventoryDumper(final InventoryDumperConfiguration dumperConfig, final PipelineChannel channel, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
-        ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
-                () -> new UnsupportedSQLOperationException("AbstractInventoryDumper only support StandardPipelineDataSourceConfiguration"));
         this.dumperConfig = dumperConfig;
         this.channel = channel;
         this.dataSource = dataSource;
@@ -143,6 +142,9 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     }
     
     private String buildInventoryDumpSQL() {
+        if (!Strings.isNullOrEmpty(dumperConfig.getQuerySQL())) {
+            return dumperConfig.getQuerySQL();
+        }
         LogicTableName logicTableName = new LogicTableName(dumperConfig.getLogicTableName());
         String schemaName = dumperConfig.getSchemaName(logicTableName);
         if (!dumperConfig.hasUniqueKey()) {
@@ -188,9 +190,14 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         DataRecord result = new DataRecord(newPosition(resultSet), columnCount);
         result.setType(IngestDataChangeType.INSERT);
         result.setTableName(dumperConfig.getLogicTableName());
+        List<String> insertColumnNames = Optional.ofNullable(dumperConfig.getInsertColumnNames()).orElse(Collections.emptyList());
+        ShardingSpherePreconditions.checkState(insertColumnNames.isEmpty() || insertColumnNames.size() == resultSetMetaData.getColumnCount(),
+                () -> new PipelineInvalidParameterException("Insert colum names count not equals ResultSet column count"));
         for (int i = 1; i <= columnCount; i++) {
-            String columnName = resultSetMetaData.getColumnName(i);
-            result.addColumn(new Column(columnName, columnValueReader.readValue(resultSet, resultSetMetaData, i), true, tableMetaData.getColumnMetaData(columnName).isUniqueKey()));
+            String columnName = insertColumnNames.isEmpty() ? resultSetMetaData.getColumnName(i) : insertColumnNames.get(i - 1);
+            ShardingSpherePreconditions.checkNotNull(tableMetaData.getColumnMetaData(columnName), () -> new PipelineInvalidParameterException(String.format("Column name is %s", columnName)));
+            boolean isUniqueKey = tableMetaData.getColumnMetaData(columnName).isUniqueKey();
+            result.addColumn(new Column(columnName, columnValueReader.readValue(resultSet, resultSetMetaData, i), true, isUniqueKey));
         }
         return result;
     }

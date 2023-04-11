@@ -40,6 +40,10 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
     
     private List<PipelineColumnMetaData> uniqueKeyColumns;
     
+    private List<String> insertColumnNames;
+    
+    private String querySQL;
+    
     private Integer shardingItem;
     
     private int batchSize = 1000;

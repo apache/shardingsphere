@@ -41,10 +41,6 @@ public final class OpenTelemetryTracingPluginLifecycleService implements PluginL
     }
     
     @Override
-    public void close() {
-    }
-    
-    @Override
     public String getType() {
         return "OpenTelemetry";
     }

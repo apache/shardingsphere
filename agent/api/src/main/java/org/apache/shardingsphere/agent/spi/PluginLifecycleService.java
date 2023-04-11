@@ -38,4 +38,8 @@ public interface PluginLifecycleService extends AutoCloseable {
      * @return plugin type
      */
     String getType();
+    
+    @Override
+    default void close() {
+    }
 }

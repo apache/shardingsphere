@@ -17,152 +17,355 @@
   -->
 
 <integration-test-cases>
-    <test-case sql="select * from information_schema.innodb_buffer_page;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_buffer_page.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_buffer_page_lru;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page_lru" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_buffer_page_lru.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_buffer_pool_stats;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_buffer_pool_stats" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_buffer_pool_stats.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_cmp;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_cmp.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_cmp_per_index;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp_per_index" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_cmp_per_index.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_cmp_per_index_reset;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp_per_index_reset" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_cmp_per_index_reset.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_cmp_reset;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp_reset" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_cmp_reset.xml" />
     </test-case>
-
-    <test-case sql="select * from information_schema.innodb_buffer_page;" db-types="MySQL" scenario-types="db">
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_buffer_page.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_buffer_page_lru;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_buffer_page_lru" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_buffer_page_lru.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_buffer_pool_stats;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_buffer_pool_stats" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_buffer_pool_stats.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_cmp;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_cmp.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_cmp_per_index;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp_per_index" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_cmp_per_index.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_cmp_per_index_reset;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp_per_index_reset" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_cmp_per_index_reset.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_cmp_reset;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_cmp_reset" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_cmp_reset.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_cmpmem;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_cmpmem" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_cmpmem.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_cmpmem_reset;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_cmpmem_reset" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_cmpmem_reset.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_ft_being_deleted;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_ft_being_deleted" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_ft_being_deleted.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_ft_config;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_ft_config" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_ft_config.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_ft_default_stopword;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_ft_default_stopword" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_ft_default_stopword.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_ft_deleted;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_ft_deleted" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_ft_deleted.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_ft_index_cache;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_ft_index_cache" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_ft_index_cache.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_ft_index_table;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_ft_index_table" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_ft_index_table.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_lock_waits;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_lock_waits" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_lock_waits.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_locks;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_locks" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_locks.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_metrics;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_metrics" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_metrics.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_sys_columns;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_columns" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_sys_columns.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_sys_datafiles;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_datafiles" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_sys_datafiles.xml" />
     </test-case>
-
-    <test-case sql="select * from information_schema.innodb_sys_fields;" db-types="MySQL" scenario-types="db">
+    
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_fields" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_sys_fields.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_sys_foreign;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_foreign" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_sys_foreign.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_sys_foreign_cols;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_foreign_cols" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_sys_foreign_cols.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_sys_indexes;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_indexes" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_sys_indexes.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_sys_tables;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_tables" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_sys_tables.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_sys_tablespaces;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_tablespaces" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_sys_tablespaces.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_sys_tablestats;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_tablestats" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_sys_tablestats.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_sys_virtual;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_sys_virtual" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_sys_virtual.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_temp_table_info;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_temp_table_info" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_temp_table_info.xml" />
     </test-case>
     
-    <test-case sql="select * from information_schema.innodb_trx;" db-types="MySQL" scenario-types="db">
+    <test-case sql="SELECT * FROM information_schema.innodb_trx" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_innodb_trx.xml" />
     </test-case>
     
+    <test-case sql="SELECT * FROM information_schema.key_column_usage" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_key_column_usage.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.optimizer_trace" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_optimizer_trace.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.parameters" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_parameters.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.partitions" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_partitions.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.plugins" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_plugins.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.processlist" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_processlist.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.profiling" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_profiling.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.referential_constraints" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_referential_constraints.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.routines" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_routines.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.schema_privileges" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_schema_privileges.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM information_schema.schemata" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_schemata.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.session_status" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_session_status.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.session_variables" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_session_variables.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.statistics" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_statistics.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.table_constraints" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_table_constraints.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.table_privileges" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_table_privileges.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.tables" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_tables.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.tablespaces" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_tablespaces.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.triggers" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_triggers.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM information_schema.user_privileges" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_information_schema_user_privileges.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM mysql.columns_priv" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_columns_priv.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.db" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_db.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.engine_cost" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_engine_cost.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.event" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_event.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.func" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_func.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.general_log" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_general_log.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.gtid_executed" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_gtid_executed.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.help_category" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_help_category.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.help_keyword" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_help_keyword.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.help_relation" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_help_relation.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM mysql.help_topic" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_help_topic.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.innodb_index_stats" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_innodb_index_stats.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.innodb_table_stats" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_innodb_table_stats.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.ndb_binlog_index" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_ndb_binlog_index.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.plugin" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_plugin.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.proc" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_proc.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.procs_priv" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_procs_priv.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.proxies_priv" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_proxies_priv.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.server_cost" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_server_cost.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.servers" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_servers.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM mysql.slave_master_info" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_slave_master_info.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.slave_relay_log_info" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_slave_relay_log_info.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.slave_worker_info" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_slave_worker_info.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.slow_log" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_slow_log.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.tables_priv" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_tables_priv.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.time_zone" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_time_zone.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.time_zone_leap_second" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_time_zone_leap_second.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.time_zone_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_time_zone_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.time_zone_transition" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_time_zone_transition.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.time_zone_transition_type" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_time_zone_transition_type.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.user" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_user.xml" />
+    </test-case>
 </integration-test-cases>
