@@ -284,4 +284,44 @@
     <test-case sql="SELECT * FROM mysql.help_relation" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_mysql_help_relation.xml" />
     </test-case>
+
+    <test-case sql="SELECT * FROM mysql.help_topic" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_help_topic.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.innodb_index_stats" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_innodb_index_stats.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.innodb_table_stats" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_innodb_table_stats.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.ndb_binlog_index" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_ndb_binlog_index.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.plugin" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_plugin.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.proc" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_proc.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.procs_priv" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_procs_priv.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.proxies_priv" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_proxies_priv.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.server_cost" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_server_cost.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.servers" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_servers.xml" />
+    </test-case>
 </integration-test-cases>

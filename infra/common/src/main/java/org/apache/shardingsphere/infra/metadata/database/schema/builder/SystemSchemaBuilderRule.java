@@ -47,7 +47,8 @@ public enum SystemSchemaBuilderRule {
             "table_constraints", "table_privileges", "tables", "tablespaces", "triggers", "user_privileges", "views"))),
     
     MYSQL_MYSQL("MySQL", "mysql", new HashSet<>(Arrays.asList("columns_priv", "db", "engine_cost", "event", "func", "general_log", "gtid_executed",
-            "help_category", "help_keyword", "help_relation"))),
+            "help_category", "help_keyword", "help_relation",
+            "help_topic", "innodb_index_stats", "innodb_table_stats", "ndb_binlog_index", "plugin", "proc", "procs_priv", "proxies_priv", "server_cost", "servers"))),
     
     MYSQL_PERFORMANCE_SCHEMA("MySQL", "performance_schema", new HashSet<>(Collections.singleton("accounts"))),
     

@@ -1,0 +1,182 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: proc
+columns:
+  db:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: db
+    primaryKey: true
+    unsigned: false
+    visible: true
+  name:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: name
+    primaryKey: true
+    unsigned: false
+    visible: true
+  type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: type
+    primaryKey: true
+    unsigned: false
+    visible: true
+  specific_name:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: specific_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  language:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: language
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sql_data_access:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: sql_data_access
+    primaryKey: false
+    unsigned: false
+    visible: true
+  is_deterministic:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: is_deterministic
+    primaryKey: false
+    unsigned: false
+    visible: true
+  security_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: security_type
+    primaryKey: false
+    unsigned: false
+    visible: true
+  param_list:
+    caseSensitive: false
+    dataType: -4
+    generated: false
+    name: param_list
+    primaryKey: false
+    unsigned: false
+    visible: true
+  returns:
+    caseSensitive: false
+    dataType: -4
+    generated: false
+    name: returns
+    primaryKey: false
+    unsigned: false
+    visible: true
+  body:
+    caseSensitive: false
+    dataType: -4
+    generated: false
+    name: body
+    primaryKey: false
+    unsigned: false
+    visible: true
+  definer:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: definer
+    primaryKey: false
+    unsigned: false
+    visible: true
+  created:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: created
+    primaryKey: false
+    unsigned: false
+    visible: true
+  modified:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: modified
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sql_mode:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: sql_mode
+    primaryKey: false
+    unsigned: true
+    visible: true
+  comment:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: comment
+    primaryKey: false
+    unsigned: false
+    visible: true
+  character_set_client:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: character_set_client
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collation_connection:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: collation_connection
+    primaryKey: false
+    unsigned: false
+    visible: true
+  db_collation:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: db_collation
+    primaryKey: false
+    unsigned: false
+    visible: true
+  body_utf8:
+    caseSensitive: false
+    dataType: -4
+    generated: false
+    name: body_utf8
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  primary:
+    name: PRIMARY
