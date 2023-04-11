@@ -740,6 +740,7 @@
                         <testTarget>${java.version}</testTarget>
                     </configuration>
                 </plugin>
+                <!-- TODO nianjun should remove after test container is used in agent e2e -->
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>${maven-resources-plugin.version}</version>
