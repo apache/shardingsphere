@@ -15,32 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.dialect.postgresql.sqlstate;
+package org.apache.shardingsphere.dialect.postgresql.exception;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
+import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.VendorError;
 
-/**
- * PostgreSQL SQL state.
- */
-@RequiredArgsConstructor
+import java.sql.SQLException;
+
 @Getter
-public enum PostgreSQLState implements SQLState {
+public class PostgreSQLException extends SQLException {
     
-    PROTOCOL_VIOLATION("08P01"),
+    private String severity;
+    private String SQLState;
+    private String reason;
     
-    SYNTAX_ERROR("42601"),
+    public PostgreSQLException(String msg, String state) {
+        super(msg, state);
+    }
     
-    DUPLICATE_DATABASE("42P04"),
+    public PostgreSQLException(final String severity, final VendorError vendorError, final Object... reasonArgs) {
+        this.severity = severity;
+        this.SQLState = vendorError.getSqlState().getValue();
+        this.reason = String.format(vendorError.getReason(), reasonArgs);
+    }
     
-    INVALID_PASSWORD("28P01"),
-    
-    UNDEFINED_COLUMN("42703"),
-    
-    SYSTEM_ERROR("58000"),
-    
-    UNEXPECTED_ERROR("99999");
-    
-    private final String value;
 }
