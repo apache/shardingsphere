@@ -48,7 +48,9 @@ public enum SystemSchemaBuilderRule {
     
     MYSQL_MYSQL("MySQL", "mysql", new HashSet<>(Arrays.asList("columns_priv", "db", "engine_cost", "event", "func", "general_log", "gtid_executed",
             "help_category", "help_keyword", "help_relation",
-            "help_topic", "innodb_index_stats", "innodb_table_stats", "ndb_binlog_index", "plugin", "proc", "procs_priv", "proxies_priv", "server_cost", "servers"))),
+            "help_topic", "innodb_index_stats", "innodb_table_stats", "ndb_binlog_index", "plugin", "proc", "procs_priv", "proxies_priv", "server_cost", "servers",
+            "slave_master_info", "slave_relay_log_info", "slave_worker_info", "slow_log", "tables_priv", "time_zone", "time_zone_leap_second",
+            "time_zone_name", "time_zone_transition", "time_zone_transition_type", "user"))),
     
     MYSQL_PERFORMANCE_SCHEMA("MySQL", "performance_schema", new HashSet<>(Collections.singleton("accounts"))),
     
