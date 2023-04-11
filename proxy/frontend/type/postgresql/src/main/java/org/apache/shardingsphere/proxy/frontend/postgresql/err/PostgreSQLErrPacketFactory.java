@@ -56,8 +56,8 @@ public final class PostgreSQLErrPacketFactory {
         return createErrorResponsePacketForUnknownException(cause);
     }
     
-    private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final PostgreSQLException postgreSQLException) {
-        return PostgreSQLErrorResponsePacket.newBuilder(postgreSQLException.getSeverity(), postgreSQLException.getSQLState(), postgreSQLException.getMessage())
+    private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final PostgreSQLException.ServerErrorMessage serverErrorMessage) {
+        return PostgreSQLErrorResponsePacket.newBuilder(serverErrorMessage.getSeverity(), serverErrorMessage.getSqlState(), serverErrorMessage.getMessage())
                 .build();
     }
     
@@ -71,8 +71,8 @@ public final class PostgreSQLErrPacketFactory {
     
     @SuppressWarnings("ConstantConditions")
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
-        if (cause instanceof PostgreSQLException) {
-            return createErrorResponsePacket((PostgreSQLException) cause);
+        if (cause instanceof PostgreSQLException && null != ((PostgreSQLException) cause).getServerErrorMessage()) {
+            return createErrorResponsePacket(((PostgreSQLException) cause).getServerErrorMessage());
         }
         if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {
             return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());

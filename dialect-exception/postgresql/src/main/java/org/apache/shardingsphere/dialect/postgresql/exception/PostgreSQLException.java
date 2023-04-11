@@ -25,18 +25,31 @@ import java.sql.SQLException;
 @Getter
 public class PostgreSQLException extends SQLException {
     
-    private String severity;
-    private String SQLState;
-    private String reason;
+    private final ServerErrorMessage serverErrorMessage;
     
-    public PostgreSQLException(String msg, String state) {
+    public PostgreSQLException(final String msg, final String state) {
         super(msg, state);
+        this.serverErrorMessage = null;
     }
     
     public PostgreSQLException(final String severity, final VendorError vendorError, final Object... reasonArgs) {
-        this.severity = severity;
-        this.SQLState = vendorError.getSqlState().getValue();
-        this.reason = String.format(vendorError.getReason(), reasonArgs);
+        this.serverErrorMessage = new ServerErrorMessage(severity, vendorError.getSqlState().getValue(), String.format(vendorError.getReason(), reasonArgs));
+    }
+    
+    @Getter
+    public static class ServerErrorMessage {
+    
+        private final String severity;
+    
+        private final String sqlState;
+    
+        private final String message;
+        
+        public ServerErrorMessage(final String severity, final String sqlState, final String message) {
+            this.severity = severity;
+            this.sqlState = sqlState;
+            this.message = message;
+        }
     }
     
 }
