@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable;
+package org.apache.shardingsphere.sqlfederation.optimizer.rexnode;
 
 import com.google.common.collect.BoundType;
 import com.google.common.collect.ImmutableRangeSet;
@@ -34,21 +34,21 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.util.DateString;
 import org.apache.calcite.util.Sarg;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeBaseVisitor;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.ArgListContext;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.ArgRangeContext;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.ArgRangeListContext;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.CastContext;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.ConstantContext;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.ExpressionContext;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.InputContext;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.InputRefContext;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.OpContext;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.ParamWithTypeContext;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.ParameterContext;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.SearchArgsContext;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser.TypeContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.exception.OptimizationSQLRexNodeException;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeBaseVisitor;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser.ArgListContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser.ArgRangeContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser.ArgRangeListContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser.CastContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser.ConstantContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser.ExpressionContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser.InputContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser.InputRefContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser.OpContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser.ParamWithTypeContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser.ParameterContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser.SearchArgsContext;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser.TypeContext;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -57,8 +57,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * SQL optimizer rex node visitor.
+ */
 @AllArgsConstructor
-public final class ParseRexNodeVisitorImpl extends ParseRexNodeBaseVisitor<RexNode> {
+public final class SQLOptimizerRexNodeVisitor extends SQLOptimizerRexNodeBaseVisitor<RexNode> {
     
     private RexBuilder rexBuilder;
     

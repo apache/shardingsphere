@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable;
+package org.apache.shardingsphere.sqlfederation.optimizer.rexnode;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -25,8 +25,8 @@ import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.rex.RexBuilder;
 import org.apache.calcite.rex.RexNode;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeLexer;
-import org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode.ParseRexNodeParser;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeLexer;
+import org.apache.shardingsphere.rexnode.autogen.SQLOptimizerRexNodeParser;
 
 import java.util.Map;
 
@@ -37,6 +37,7 @@ public final class StringToRexNodeUtils {
     
     /**
      * Parse string and generate rex node.
+     * 
      * @param filterValue filter condition
      * @param rexBuilder used to build rex node
      * @param parameters parameters for SQL placeholder
@@ -45,11 +46,11 @@ public final class StringToRexNodeUtils {
      */
     public static RexNode buildRexNode(final String filterValue, final RexBuilder rexBuilder, final Map<String, Object> parameters, final Map<Integer, Integer> columnMap) {
         CharStream input = CharStreams.fromString(filterValue);
-        ParseRexNodeLexer lexer = new ParseRexNodeLexer(input);
+        SQLOptimizerRexNodeLexer lexer = new SQLOptimizerRexNodeLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        ParseRexNodeParser parser = new ParseRexNodeParser(tokens);
+        SQLOptimizerRexNodeParser parser = new SQLOptimizerRexNodeParser(tokens);
         ParseTree tree = parser.expression();
-        ParseRexNodeVisitorImpl visitor = new ParseRexNodeVisitorImpl(rexBuilder, new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT), parameters, columnMap);
+        SQLOptimizerRexNodeVisitor visitor = new SQLOptimizerRexNodeVisitor(rexBuilder, new JavaTypeFactoryImpl(RelDataTypeSystem.DEFAULT), parameters, columnMap);
         return visitor.visit(tree);
     }
 }

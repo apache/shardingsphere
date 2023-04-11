@@ -80,7 +80,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.executor.ScanNodeExecut
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TranslatableScanNodeExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.filter.FilterableSchema;
-import org.apache.shardingsphere.sqlfederation.optimizer.metadata.translatable.StringToRexNodeUtils;
+import org.apache.shardingsphere.sqlfederation.optimizer.rexnode.StringToRexNodeUtils;
 import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationPlannerUtils;
 import org.apache.shardingsphere.sqlfederation.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.sqlfederation.row.MemoryEnumerator;
