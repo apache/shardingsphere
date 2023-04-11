@@ -26,6 +26,7 @@ import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Meta data factory.
@@ -36,8 +37,9 @@ public final class MetaDataFactory {
      * Create database meta data for governance center.
      *
      * @param databaseName database name
-     * @param databaseConfig database configuration
      * @param internalLoadMetaData internal load meta data
+     * @param persistService meta data persist service
+     * @param databaseConfig database configuration
      * @param props configuration properties
      * @param instanceContext instance context
      * @return database meta data
@@ -47,5 +49,23 @@ public final class MetaDataFactory {
                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         return internalLoadMetaData ? InternalMetaDataFactory.create(databaseName, persistService, databaseConfig, props, instanceContext)
                 : ExternalMetaDataFactory.create(databaseName, databaseConfig, props, instanceContext);
+    }
+    
+    /**
+     * Create database meta data for governance center.
+     *
+     * @param internalLoadMetaData internal load meta data
+     * @param persistService meta data persist service
+     * @param databaseConfigMap database configuration
+     * @param props configuration properties
+     * @param instanceContext instance context
+     * @return database meta data
+     * @throws SQLException sql exception
+     */
+    public static Map<String, ShardingSphereDatabase> create(final boolean internalLoadMetaData, final MetaDataPersistService persistService,
+                                                             final Map<String, DatabaseConfiguration> databaseConfigMap, final ConfigurationProperties props,
+                                                             final InstanceContext instanceContext) throws SQLException {
+        return internalLoadMetaData ? InternalMetaDataFactory.create(persistService, databaseConfigMap, props, instanceContext)
+                : ExternalMetaDataFactory.create(databaseConfigMap, props, instanceContext);
     }
 }

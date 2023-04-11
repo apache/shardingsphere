@@ -279,11 +279,6 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         clearServiceCache();
     }
     
-    @Override
-    public Map<String, ShardingSphereSchema> getSchemas(final String databaseName) {
-        return contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService().loadSchemas(databaseName);
-    }
-    
     private void clearServiceCache() {
         OrderedServicesCache.clearCache();
     }

@@ -33,8 +33,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
-import org.apache.shardingsphere.metadata.factory.ExternalMetaDataFactory;
-import org.apache.shardingsphere.metadata.factory.InternalMetaDataFactory;
+import org.apache.shardingsphere.metadata.MetaDataFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
@@ -154,8 +153,7 @@ public final class MetaDataContextsFactory {
     private static Map<String, ShardingSphereDatabase> getDatabases(final boolean databaseMetaDataExisted, final MetaDataPersistService persistService,
                                                                     final Map<String, DatabaseConfiguration> databaseConfigMap, final ConfigurationProperties props,
                                                                     final InstanceContext instanceContext) throws SQLException {
-        return databaseMetaDataExisted ? InternalMetaDataFactory.create(persistService, databaseConfigMap, props, instanceContext)
-                : ExternalMetaDataFactory.create(databaseConfigMap, props, instanceContext);
+        return MetaDataFactory.create(databaseMetaDataExisted, persistService, databaseConfigMap, props, instanceContext);
     }
     
     private static void persistDatabaseConfigurations(final boolean databaseMetaDataExisted, final ContextManagerBuilderParameter param, final MetaDataContexts metadataContexts) {

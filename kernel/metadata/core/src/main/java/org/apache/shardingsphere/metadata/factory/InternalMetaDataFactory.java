@@ -60,7 +60,7 @@ public final class InternalMetaDataFactory {
      * @param instanceContext instance context
      * @return databases
      */
-    public static Map<String, ShardingSphereDatabase> create(final MetaDataPersistService persistService, Map<String, DatabaseConfiguration> databaseConfigMap,
+    public static Map<String, ShardingSphereDatabase> create(final MetaDataPersistService persistService, final Map<String, DatabaseConfiguration> databaseConfigMap,
                                                              final ConfigurationProperties props, final InstanceContext instanceContext) {
         return createDatabases(persistService, databaseConfigMap, DatabaseTypeEngine.getProtocolType(databaseConfigMap, props), props, instanceContext);
     }
