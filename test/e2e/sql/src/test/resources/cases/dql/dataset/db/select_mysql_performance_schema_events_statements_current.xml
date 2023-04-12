@@ -1,0 +1,62 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="thread_id" />
+        <column name="event_id" />
+        <column name="end_event_id" />
+        <column name="event_name" />
+        <column name="source" />
+        <column name="timer_start" />
+        <column name="timer_end" />
+        <column name="timer_wait" />
+        <column name="lock_time" />
+        <column name="sql_text" />
+        <column name="digest" />
+        <column name="digest_text" />
+        <column name="current_schema" />
+        <column name="object_type" />
+        <column name="object_schema" />
+        <column name="object_name" />
+        <column name="object_instance_begin" />
+        <column name="mysql_errno" />
+        <column name="returned_sqlstate" />
+        <column name="message_text" />
+        <column name="errors" />
+        <column name="warnings" />
+        <column name="rows_affected" />
+        <column name="rows_sent" />
+        <column name="rows_examined" />
+        <column name="created_tmp_disk_tables" />
+        <column name="created_tmp_tables" />
+        <column name="select_full_join" />
+        <column name="select_full_range_join" />
+        <column name="select_range" />
+        <column name="select_range_check" />
+        <column name="select_scan" />
+        <column name="sort_merge_passes" />
+        <column name="sort_range" />
+        <column name="sort_rows" />
+        <column name="sort_scan" />
+        <column name="no_index_used" />
+        <column name="no_good_index_used" />
+        <column name="nesting_event_id" />
+        <column name="nesting_event_type" />
+        <column name="nesting_event_level" />
+    </metadata>
+</dataset>
