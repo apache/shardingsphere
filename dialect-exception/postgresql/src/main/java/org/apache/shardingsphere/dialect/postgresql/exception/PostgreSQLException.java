@@ -48,15 +48,11 @@ public class PostgreSQLException extends SQLException {
         private final String message;
         
         public ServerErrorMessage(final String severity, final VendorError vendorError, final Object... reasonArgs) {
-            this(severity, vendorError.getSqlState().getValue(), String.format(vendorError.getReason(), reasonArgs));
-        }
-
-        public ServerErrorMessage(final String severity, final String sqlState, final String message) {
             this.severity = severity;
-            this.sqlState = sqlState;
-            this.message = message;
+            this.sqlState = vendorError.getSqlState().getValue();
+            this.message = String.format(vendorError.getReason(), reasonArgs);
         }
-        
+    
         @Override
         public String toString() {
             StringBuilder totalMessage = new StringBuilder();
