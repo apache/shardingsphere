@@ -22,8 +22,6 @@
     <rule ref="rulesets/java/basic.xml" />
     <rule ref="rulesets/ecmascript/basic.xml" />
     <rule ref="rulesets/jsp/basic.xml" />
-    <rule ref="rulesets/vm/basic.xml" />
-    <rule ref="rulesets/xml/basic.xml" />
     <rule ref="rulesets/java/braces.xml" />
     <rule ref="rulesets/ecmascript/braces.xml" />
     <rule ref="rulesets/java/clone.xml" />
@@ -101,7 +99,6 @@
         <exclude name="UnusedPrivateField" />
         <exclude name="UnusedPrivateMethod" />
     </rule>
-    <rule ref="rulesets/xsl/xpath.xml" />
     
     <rule ref="rulesets/java/comments.xml/CommentSize">
         <properties>
