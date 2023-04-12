@@ -44,12 +44,7 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
     private final PersistRepository repository;
     
     @Override
-    public void persist(final String databaseName, final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules,
-                        final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        persist(databaseName, dataSourcePropsMap);
-    }
-    
-    private void persist(final String databaseName, final Map<String, DataSourceProperties> dataSourceConfigs) {
+    public void persist(final String databaseName, final Map<String, DataSourceProperties> dataSourceConfigs) {
         if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
             repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
         }

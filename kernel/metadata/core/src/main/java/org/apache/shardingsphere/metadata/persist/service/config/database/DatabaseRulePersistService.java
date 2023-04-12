@@ -36,7 +36,7 @@ import java.util.Map;
  * Database rule persist service.
  */
 @RequiredArgsConstructor
-public final class DatabaseRulePersistService implements DatabaseBasedPersistService<Collection<RuleConfiguration>> {
+public final class DatabaseRulePersistService implements DatabaseRuleBasedPersistService<Collection<RuleConfiguration>> {
     
     private static final String DEFAULT_VERSION = "0";
     
@@ -53,11 +53,25 @@ public final class DatabaseRulePersistService implements DatabaseBasedPersistSer
     }
     
     @Override
+    public void persist(final String databaseName, final Collection<RuleConfiguration> configs) {
+        if (Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))) {
+            repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), DEFAULT_VERSION);
+        }
+        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName)),
+                YamlEngine.marshal(createYamlRuleConfigurations(configs)));
+    }
+    
+    @Override
     public void persist(final String databaseName, final String version, final Map<String, DataSource> dataSources,
                         final Collection<ShardingSphereRule> rules, final Collection<RuleConfiguration> configs) {
         repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, version), YamlEngine.marshal(createYamlRuleConfigurations(dataSources, rules, configs)));
     }
     
+    private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs) {
+        return new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(ruleConfigs);
+    }
+    
+    // TODO Load single table refer to #22887
     private Collection<YamlRuleConfiguration> createYamlRuleConfigurations(final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules,
                                                                            final Collection<RuleConfiguration> ruleConfigs) {
         return new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(ruleConfigs);
