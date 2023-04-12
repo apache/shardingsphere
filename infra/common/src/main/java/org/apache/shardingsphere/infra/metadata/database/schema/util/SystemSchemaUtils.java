@@ -48,6 +48,6 @@ public final class SystemSchemaUtils {
                 return true;
             }
         }
-        return databaseType.getSystemSchemas().contains(database.getName());
+        return databaseType instanceof SchemaSupportedDatabaseType ? false : databaseType.getSystemSchemas().contains(database.getName());
     }
 }
