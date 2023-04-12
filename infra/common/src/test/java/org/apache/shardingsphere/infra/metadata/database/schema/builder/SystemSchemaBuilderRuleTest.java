@@ -36,6 +36,9 @@ class SystemSchemaBuilderRuleTest {
         SystemSchemaBuilderRule actualMySQLSchema = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "mysql");
         assertThat(actualMySQLSchema, is(SystemSchemaBuilderRule.MYSQL_MYSQL));
         assertThat(actualMySQLSchema.getTables().size(), is(31));
+        SystemSchemaBuilderRule actualPerformanceSchema = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "performance_schema");
+        assertThat(actualPerformanceSchema, is(SystemSchemaBuilderRule.MYSQL_PERFORMANCE_SCHEMA));
+        assertThat(actualPerformanceSchema.getTables().size(), is(9));
     }
     
     @Test
