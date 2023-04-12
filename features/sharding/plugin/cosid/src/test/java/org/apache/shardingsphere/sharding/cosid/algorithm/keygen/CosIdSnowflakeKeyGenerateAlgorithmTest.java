@@ -145,7 +145,7 @@ class CosIdSnowflakeKeyGenerateAlgorithmTest {
         assertThrows(IllegalArgumentException.class, () -> algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(-1),
                 new ModeConfiguration("Standalone", null), mock(ModeContextManager.class), mock(LockContext.class), eventBusContext)));
     }
-
+    
     @Test
     void assertGenerateKeyWhenGreaterThen1023() {
         CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) TypedSPILoader.getService(KeyGenerateAlgorithm.class, "COSID_SNOWFLAKE");
