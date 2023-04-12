@@ -32,12 +32,4 @@ public final class ShadowAlgorithmSegment implements ASTNode {
     private final String algorithmName;
     
     private final AlgorithmSegment algorithmSegment;
-    
-    /**
-     * Check for completeness.
-     * @return complete or not
-     */
-    public boolean isComplete() {
-        return !getAlgorithmName().isEmpty() && !getAlgorithmSegment().getName().isEmpty() && !getAlgorithmSegment().getProps().isEmpty();
-    }
 }

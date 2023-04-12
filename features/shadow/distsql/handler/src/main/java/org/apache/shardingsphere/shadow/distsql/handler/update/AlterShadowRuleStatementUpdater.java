@@ -90,8 +90,6 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
     }
     
     private void checkAlgorithms(final String databaseName, final Collection<ShadowRuleSegment> segments) {
-        Collection<ShadowAlgorithmSegment> shadowAlgorithmSegments = ShadowRuleStatementSupporter.getShadowAlgorithmSegment(segments);
-        ShadowRuleStatementChecker.checkAlgorithmCompleteness(shadowAlgorithmSegments);
         Collection<String> requiredAlgorithms = ShadowRuleStatementSupporter.getAlgorithmNames(segments);
         ShadowRuleStatementChecker.checkDuplicated(requiredAlgorithms, duplicated -> new AlgorithmInUsedException("Shadow", databaseName, duplicated));
     }
