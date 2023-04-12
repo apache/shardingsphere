@@ -135,9 +135,6 @@
         <module name="UnnecessarySemicolonInTryWithResources" />
         <module name="UnusedLocalVariable" />
         <module name="VariableDeclarationUsageDistance" />
-        <module name="MagicNumber" >
-            <property name="severity" value="info" />
-        </module>
         
         <!-- Imports -->
         <module name="AvoidStarImport" />
