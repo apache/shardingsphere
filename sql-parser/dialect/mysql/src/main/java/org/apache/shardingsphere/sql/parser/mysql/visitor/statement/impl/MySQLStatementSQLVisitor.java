@@ -721,9 +721,16 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         if (null != ctx.selectSpecification()) {
             result.getProjections().setDistinctRow(isDistinct(ctx));
         }
-        if (null != ctx.fromClause() && null != ctx.fromClause().tableReferences()) {
-            TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
-            result.setFrom(tableSource);
+        if (null != ctx.fromClause()) {
+            if (null != ctx.fromClause().tableReferences()) {
+                TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
+                result.setFrom(tableSource);
+            }
+            if (null != ctx.fromClause().DUAL()) {
+                TableSegment tableSource = new SimpleTableSegment(new TableNameSegment(ctx.fromClause().DUAL().getSymbol().getStartIndex(),
+                        ctx.fromClause().DUAL().getSymbol().getStopIndex(), new IdentifierValue(ctx.fromClause().DUAL().getText())));
+                result.setFrom(tableSource);
+            }
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -941,7 +948,6 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitSubstringFunction(final SubstringFunctionContext ctx) {
-        calculateParameterCount(Collections.singleton(ctx.expr()));
         FunctionSegment result = new FunctionSegment(
                 ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null == ctx.SUBSTR() ? ctx.SUBSTRING().getText() : ctx.SUBSTR().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));

@@ -194,6 +194,8 @@ class SQLNodeConverterEngineIT {
             result.add("select_char");
             result.add("select_weight_string");
             result.add("select_substring");
+            result.add("select_from_dual");
+            result.add("select_with_spatial_function");
             return result;
         }
         // CHECKSTYLE:ON
