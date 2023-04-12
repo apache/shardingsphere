@@ -19,13 +19,7 @@ ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
 
 readwriteSplittingDefinition ::=
-  ruleName '(' (staticReadwriteSplittingDefinition | dynamicReadwriteSplittingDefinition) (',' loadBalancerDefinition)? ')'
-
-staticReadwriteSplittingDefinition ::=
-    'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')'
-
-dynamicReadwriteSplittingDefinition ::=
-    'AUTO_AWARE_RESOURCE' '=' resourceName
+  ruleName '(' 'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')' (',' loadBalancerDefinition)? ')'
 
 loadBalancerDefinition ::=
     'TYPE' '(' 'NAME' '=' loadBalancerType (',' propertiesDefinition)? ')'
