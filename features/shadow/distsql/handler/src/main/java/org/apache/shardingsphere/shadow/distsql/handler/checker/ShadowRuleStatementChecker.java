@@ -18,13 +18,17 @@
 package org.apache.shardingsphere.shadow.distsql.handler.checker;
 
 import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
+import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -101,5 +105,25 @@ public class ShadowRuleStatementChecker {
     
     private static Collection<String> getNotExisted(final Collection<String> required, final Collection<String> current) {
         return required.stream().filter(each -> !current.contains(each)).collect(Collectors.toSet());
+    }
+    
+    /**
+     * Check if there are duplicated names with logical data sources.
+     * 
+     * @param toBeCreatedRuleNames rule names
+     * @param database ShardingSphere database
+     */
+    public static void checkDuplicatedWithLogicDataSource(final Collection<String> toBeCreatedRuleNames, final ShardingSphereDatabase database) {
+        Collection<String> logicDataSources = getLogicDataSources(database);
+        if (!logicDataSources.isEmpty()) {
+            Collection<String> duplicatedNames = toBeCreatedRuleNames.stream().filter(logicDataSources::contains).collect(Collectors.toList());
+            ShardingSpherePreconditions.checkState(duplicatedNames.isEmpty(), () -> new InvalidRuleConfigurationException("shadow", duplicatedNames,
+                    Collections.singleton(String.format("%s already exists in storage unit", duplicatedNames))));
+        }
+    }
+    
+    private static Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {
+        return database.getRuleMetaData().findRules(DataSourceContainedRule.class).stream()
+                .map(each -> each.getDataSourceMapper().keySet()).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

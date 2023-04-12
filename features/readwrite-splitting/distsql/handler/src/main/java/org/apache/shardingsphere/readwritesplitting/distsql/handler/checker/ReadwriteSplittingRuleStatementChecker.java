@@ -122,10 +122,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
         if (null != resourceMetaData && null != resourceMetaData.getDataSources()) {
             currentRuleNames.addAll(resourceMetaData.getDataSources().keySet());
         }
-        Collection<String> logicDataSources = getLogicDataSources(database);
-        if (null != logicDataSources && !logicDataSources.isEmpty()) {
-            currentRuleNames.addAll(getLogicDataSources(database));
-        }
+        currentRuleNames.addAll(getLogicDataSources(database));
         Collection<String> toBeCreatedRuleNames = segments.stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(toBeCreatedRuleNames.isEmpty(), () -> new InvalidRuleConfigurationException("Readwrite-splitting", toBeCreatedRuleNames,
                 Collections.singleton(String.format("%s already exists in storage unit", toBeCreatedRuleNames))));

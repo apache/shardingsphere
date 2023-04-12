@@ -72,6 +72,7 @@ class CreateReadwriteSplittingRuleStatementUpdaterTest {
     @BeforeEach
     void before() {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
+        when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.emptyList());
     }
     
     @Test
