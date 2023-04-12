@@ -408,4 +408,44 @@
     <test-case sql="SELECT * FROM performance_schema.events_stages_summary_global_by_event_name" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_performance_schema_events_stages_summary_global_by_event_name.xml" />
     </test-case>
+
+    <test-case sql="SELECT * FROM performance_schema.events_statements_current" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_current.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_history" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_history.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_history_long" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_history_long.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_account_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_account_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_digest" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_digest.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_host_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_host_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_program" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_program.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_thread_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_thread_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_user_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_user_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_global_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_global_by_event_name.xml" />
+    </test-case>
 </integration-test-cases>
