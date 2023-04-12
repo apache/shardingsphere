@@ -17,25 +17,88 @@
 
 package org.apache.shardingsphere.globalclock.type.tso.provider;
 
+import com.google.common.base.Strings;
+import lombok.extern.slf4j.Slf4j;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.exceptions.JedisConnectionException;
+
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Redis timestamp oracle provider.
  */
+@Slf4j
 public final class RedisTSOProvider implements TSOProvider {
+    
+    private static final String CSN_KEY = "csn";
+    
+    private static final long ERROR_CSN = 0;
+    
+    private static final long INIT_CSN = Integer.MAX_VALUE;
+    
+    private final AtomicBoolean initialized = new AtomicBoolean(false);
+    
+    private JedisPool jedisPool;
+    
+    private Properties props;
     
     @Override
     public void init(final Properties props) {
+        this.props = props;
+        if (initialized.compareAndSet(false, true)) {
+            createJedisPool();
+            checkJedisPool();
+            initCSN();
+        }
+    }
+    
+    private void createJedisPool() {
+        JedisPoolConfig config = new JedisPoolConfig();
+        config.setMaxIdle(Integer.parseInt(getValue(props, RedisTSOPropertyKey.MAX_IDLE)));
+        config.setMaxTotal(Integer.parseInt(getValue(props, RedisTSOPropertyKey.MAX_TOTAL)));
+        jedisPool = new JedisPool(config, getValue(props, RedisTSOPropertyKey.HOST),
+                Integer.parseInt(getValue(props, RedisTSOPropertyKey.PORT)), Integer.parseInt(getValue(props, RedisTSOPropertyKey.TIMEOUT_INTERVAL)),
+                getValue(props, RedisTSOPropertyKey.PASSWORD));
+    }
+    
+    private void checkJedisPool() throws JedisConnectionException {
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.ping();
+        }
+    }
+    
+    private void initCSN() {
+        try (Jedis jedis = jedisPool.getResource()) {
+            String originalCSN = jedis.get(CSN_KEY);
+            if (Strings.isNullOrEmpty(originalCSN) || String.valueOf(ERROR_CSN).equals(originalCSN)) {
+                jedis.set(CSN_KEY, String.valueOf(INIT_CSN));
+            }
+        }
+    }
+    
+    private String getValue(final Properties props, final RedisTSOPropertyKey propertyKey) {
+        return props.containsKey(propertyKey.getKey()) ? props.getProperty(propertyKey.getKey()) : propertyKey.getDefaultValue();
     }
     
     @Override
-    public long getCurrentTimestamp() {
-        return 0;
+    public long getCurrentTimestamp() throws JedisConnectionException {
+        long result;
+        try (Jedis jedis = jedisPool.getResource()) {
+            result = Long.parseLong(jedis.get(CSN_KEY));
+        }
+        return result;
     }
     
     @Override
-    public long getNextTimestamp() {
-        return 0;
+    public long getNextTimestamp() throws JedisConnectionException {
+        long result;
+        try (Jedis jedis = jedisPool.getResource()) {
+            result = jedis.incr(CSN_KEY);
+        }
+        return result;
     }
     
     @Override

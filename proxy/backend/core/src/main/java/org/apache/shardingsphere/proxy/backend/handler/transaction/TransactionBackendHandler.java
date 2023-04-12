@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.handler.transaction;
 
 import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.connector.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
@@ -99,7 +98,7 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
         if (connectionSession.getTransactionStatus().isInTransaction()) {
             if (connectionSession.getProtocolType() instanceof MySQLDatabaseType) {
                 backendTransactionManager.commit();
-            } else if (connectionSession.getProtocolType() instanceof PostgreSQLDatabaseType || connectionSession.getProtocolType() instanceof OpenGaussDatabaseType) {
+            } else if (isSchemaSupportedDatabaseType()) {
                 throw new InTransactionException();
             }
         }
@@ -107,25 +106,25 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
     }
     
     private void handleSavepoint() throws SQLException {
-        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isPostgreSQLOrOpenGauss(),
+        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isSchemaSupportedDatabaseType(),
                 () -> new SQLFeatureNotSupportedException("SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.setSavepoint(((SavepointStatement) tclStatement).getSavepointName());
     }
     
     private void handleRollbackToSavepoint() throws SQLException {
-        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isPostgreSQLOrOpenGauss(),
+        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isSchemaSupportedDatabaseType(),
                 () -> new SQLFeatureNotSupportedException("ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.rollbackTo(((RollbackStatement) tclStatement).getSavepointName().get());
     }
     
     private void handleReleaseSavepoint() throws SQLException {
-        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isPostgreSQLOrOpenGauss(),
+        ShardingSpherePreconditions.checkState(connectionSession.getTransactionStatus().isInTransaction() || !isSchemaSupportedDatabaseType(),
                 () -> new SQLFeatureNotSupportedException("RELEASE SAVEPOINT can only be used in transaction blocks"));
         backendTransactionManager.releaseSavepoint(((ReleaseSavepointStatement) tclStatement).getSavepointName());
     }
     
-    private boolean isPostgreSQLOrOpenGauss() {
-        return connectionSession.getProtocolType() instanceof PostgreSQLDatabaseType || connectionSession.getProtocolType() instanceof OpenGaussDatabaseType;
+    private boolean isSchemaSupportedDatabaseType() {
+        return connectionSession.getProtocolType() instanceof SchemaSupportedDatabaseType;
     }
     
     private SQLStatement getSQLStatementByCommit() {

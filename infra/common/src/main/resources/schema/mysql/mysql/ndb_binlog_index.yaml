@@ -1,0 +1,118 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: ndb_binlog_index
+columns:
+  position:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: Position
+    primaryKey: false
+    unsigned: true
+    visible: true
+  file:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: File
+    primaryKey: false
+    unsigned: false
+    visible: true
+  epoch:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: epoch
+    primaryKey: true
+    unsigned: true
+    visible: true
+  inserts:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: inserts
+    primaryKey: false
+    unsigned: true
+    visible: true
+  updates:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: updates
+    primaryKey: false
+    unsigned: true
+    visible: true
+  deletes:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: deletes
+    primaryKey: false
+    unsigned: true
+    visible: true
+  schemaops:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: schemaops
+    primaryKey: false
+    unsigned: true
+    visible: true
+  orig_server_id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: orig_server_id
+    primaryKey: true
+    unsigned: true
+    visible: true
+  orig_epoch:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: orig_epoch
+    primaryKey: true
+    unsigned: true
+    visible: true
+  gci:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: gci
+    primaryKey: false
+    unsigned: true
+    visible: true
+  next_position:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: next_position
+    primaryKey: false
+    unsigned: true
+    visible: true
+  next_file:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: next_file
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  primary:
+    name: PRIMARY

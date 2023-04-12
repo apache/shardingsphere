@@ -61,7 +61,7 @@ public final class ConnectionThreadExecutorGroup {
     }
     
     private ExecutorService newSingleThreadExecutorService(final int connectionId) {
-        return new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), runnable -> new Thread(runnable, String.format("Connection-%d-ThreadExecutor", connectionId)));
+        return new ThreadPoolExecutor(0, 1, 1L, TimeUnit.HOURS, new LinkedBlockingQueue<>(), runnable -> new Thread(runnable, String.format("Connection-%d-ThreadExecutor", connectionId)));
     }
     
     /**

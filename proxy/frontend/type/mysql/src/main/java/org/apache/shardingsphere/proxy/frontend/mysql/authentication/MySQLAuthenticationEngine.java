@@ -30,16 +30,18 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConnectionPhase;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
-import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthenticationPluginData;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthSwitchRequestPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthSwitchResponsePacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthenticationPluginData;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakeResponse41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
-import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
+import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.dialect.mysql.exception.AccessDeniedException;
+import org.apache.shardingsphere.dialect.mysql.exception.DatabaseAccessDeniedException;
+import org.apache.shardingsphere.dialect.mysql.exception.HandshakeException;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -92,14 +94,10 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         }
         Grantee grantee = new Grantee(currentAuthResult.getUsername(), getHostAddress(context));
         if (!login(rule, grantee, authResponse)) {
-            writeErrorPacket(context,
-                    new MySQLErrPacket(MySQLVendorError.ER_ACCESS_DENIED_ERROR, currentAuthResult.getUsername(), grantee.getHostname(), 0 == authResponse.length ? "NO" : "YES"));
-            return AuthenticationResultBuilder.continued();
+            throw new AccessDeniedException(currentAuthResult.getUsername(), grantee.getHostname(), 0 != authResponse.length);
         }
         if (!authorizeDatabase(rule, grantee, currentAuthResult.getDatabase())) {
-            writeErrorPacket(context,
-                    new MySQLErrPacket(MySQLVendorError.ER_DBACCESS_DENIED_ERROR, currentAuthResult.getUsername(), grantee.getHostname(), currentAuthResult.getDatabase()));
-            return AuthenticationResultBuilder.continued();
+            throw new DatabaseAccessDeniedException(currentAuthResult.getUsername(), grantee.getHostname(), currentAuthResult.getDatabase());
         }
         writeOKPacket(context);
         return AuthenticationResultBuilder.finished(grantee.getUsername(), grantee.getHostname(), currentAuthResult.getDatabase());
@@ -110,18 +108,16 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         try {
             handshakeResponsePacket = new MySQLHandshakeResponse41Packet((MySQLPacketPayload) payload);
         } catch (IndexOutOfBoundsException ex) {
-            writeErrorPacket(context, new MySQLErrPacket(MySQLVendorError.ER_HANDSHAKE_ERROR));
             if (log.isWarnEnabled()) {
                 log.warn("Received bad handshake from client {}: \n{}", context.channel(), ByteBufUtil.prettyHexDump(payload.getByteBuf().resetReaderIndex()));
             }
-            return AuthenticationResultBuilder.continued();
+            throw new HandshakeException();
         }
         String database = handshakeResponsePacket.getDatabase();
         authResponse = handshakeResponsePacket.getAuthResponse();
         setCharacterSet(context, handshakeResponsePacket);
         if (!Strings.isNullOrEmpty(database) && !ProxyContext.getInstance().databaseExists(database)) {
-            writeErrorPacket(context, new MySQLErrPacket(MySQLVendorError.ER_BAD_DB_ERROR, database));
-            return AuthenticationResultBuilder.continued();
+            throw new UnknownDatabaseException(database);
         }
         String username = handshakeResponsePacket.getUsername();
         String hostname = getHostAddress(context);
@@ -165,11 +161,6 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
         }
         SocketAddress socketAddress = context.channel().remoteAddress();
         return socketAddress instanceof InetSocketAddress ? ((InetSocketAddress) socketAddress).getAddress().getHostAddress() : socketAddress.toString();
-    }
-    
-    private void writeErrorPacket(final ChannelHandlerContext context, final MySQLErrPacket errPacket) {
-        context.writeAndFlush(errPacket);
-        context.close();
     }
     
     private void writeOKPacket(final ChannelHandlerContext context) {

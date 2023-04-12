@@ -65,7 +65,7 @@ class CreateShadowRuleStatementUpdaterTest {
     @BeforeEach
     void before() {
         when(database.getResourceMetaData()).thenReturn(resourceMetaData);
-        when(database.getName()).thenReturn("aa");
+        when(database.getName()).thenReturn("shadow_db");
         when(currentConfig.getDataSources()).thenReturn(Collections.singleton(new ShadowDataSourceConfiguration("initRuleName", "initDs0", "initDs0Shadow")));
     }
     
@@ -113,6 +113,14 @@ class CreateShadowRuleStatementUpdaterTest {
         CreateShadowRuleStatement sqlStatement = new CreateShadowRuleStatement(false,
                 Collections.singleton(new ShadowRuleSegment("ruleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment)))));
         assertThrows(ServiceProviderNotFoundServerException.class, () -> updater.checkSQLStatement(database, sqlStatement, currentConfig));
+    }
+    
+    @Test
+    void assertExecuteWithoutProps() {
+        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", null));
+        CreateShadowRuleStatement sqlStatement = new CreateShadowRuleStatement(false,
+                Collections.singleton(new ShadowRuleSegment("initRuleNameWithoutProps", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment)))));
+        updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
     
     @Test

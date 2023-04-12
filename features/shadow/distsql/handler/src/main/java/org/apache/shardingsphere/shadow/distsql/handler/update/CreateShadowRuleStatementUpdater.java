@@ -86,7 +86,6 @@ public final class CreateShadowRuleStatementUpdater implements RuleDefinitionCre
     }
     
     private void checkAlgorithms(final String databaseName, final Collection<ShadowRuleSegment> segments) {
-        ShadowRuleStatementChecker.checkAlgorithmCompleteness(ShadowRuleStatementSupporter.getShadowAlgorithmSegment(segments));
         ShadowRuleStatementChecker.checkDuplicated(ShadowRuleStatementSupporter.getAlgorithmNames(segments), duplicated -> new DuplicateRuleException("shadow", databaseName, duplicated));
     }
     

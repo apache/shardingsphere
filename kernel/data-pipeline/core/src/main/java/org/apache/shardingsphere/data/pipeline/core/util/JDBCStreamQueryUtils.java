@@ -20,10 +20,9 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -49,7 +48,7 @@ public final class JDBCStreamQueryUtils {
         if (databaseType instanceof MySQLDatabaseType) {
             return generateForMySQL(connection, sql);
         }
-        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
+        if (databaseType instanceof SchemaSupportedDatabaseType) {
             return generateForPostgreSQL(connection, sql);
         }
         if (databaseType instanceof H2DatabaseType) {

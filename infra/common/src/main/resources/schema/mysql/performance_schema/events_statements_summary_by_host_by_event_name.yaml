@@ -1,0 +1,227 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: events_statements_summary_by_host_by_event_name
+columns:
+  host:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: HOST
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EVENT_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  count_star:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_STAR
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_timer_wait:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_TIMER_WAIT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_wait:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MIN_TIMER_WAIT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_wait:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_TIMER_WAIT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_wait:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_TIMER_WAIT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_lock_time:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_LOCK_TIME
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_errors:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_ERRORS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_warnings:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_WARNINGS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_rows_affected:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_ROWS_AFFECTED
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_rows_sent:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_ROWS_SENT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_rows_examined:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_ROWS_EXAMINED
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_created_tmp_disk_tables:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_CREATED_TMP_DISK_TABLES
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_created_tmp_tables:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_CREATED_TMP_TABLES
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_select_full_join:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_SELECT_FULL_JOIN
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_select_full_range_join:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_SELECT_FULL_RANGE_JOIN
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_select_range:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_SELECT_RANGE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_select_range_check:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_SELECT_RANGE_CHECK
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_select_scan:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_SELECT_SCAN
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_sort_merge_passes:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_SORT_MERGE_PASSES
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_sort_range:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_SORT_RANGE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_sort_rows:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_SORT_ROWS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_sort_scan:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_SORT_SCAN
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_no_index_used:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_NO_INDEX_USED
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_no_good_index_used:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_NO_GOOD_INDEX_USED
+    primaryKey: false
+    unsigned: true
+    visible: true

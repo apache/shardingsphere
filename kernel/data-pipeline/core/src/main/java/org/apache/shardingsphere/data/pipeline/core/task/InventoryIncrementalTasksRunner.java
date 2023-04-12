@@ -97,7 +97,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         ExecuteEngine.trigger(futures, new InventoryTaskExecuteCallback());
     }
     
-    private void updateLocalAndRemoteJobItemStatus(final JobStatus jobStatus) {
+    protected void updateLocalAndRemoteJobItemStatus(final JobStatus jobStatus) {
         jobItemContext.setStatus(jobStatus);
         jobAPI.updateJobItemStatus(jobItemContext.getJobId(), jobItemContext.getShardingItem(), jobStatus);
     }
