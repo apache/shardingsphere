@@ -116,6 +116,14 @@ class CreateShadowRuleStatementUpdaterTest {
     }
     
     @Test
+    void assertExecuteWithoutProps() {
+        ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", null));
+        CreateShadowRuleStatement sqlStatement = new CreateShadowRuleStatement(false,
+                Collections.singleton(new ShadowRuleSegment("initRuleName", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment)))));
+        updater.checkSQLStatement(database, sqlStatement, currentConfig);
+    }
+    
+    @Test
     void assertExecuteWithIfNotExists() {
         ShadowAlgorithmSegment segment = new ShadowAlgorithmSegment("algorithmName", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value"))));
         CreateShadowRuleStatement sqlStatement = new CreateShadowRuleStatement(true,
