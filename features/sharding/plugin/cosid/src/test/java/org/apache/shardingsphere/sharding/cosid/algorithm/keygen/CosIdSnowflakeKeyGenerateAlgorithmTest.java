@@ -155,6 +155,6 @@ class CosIdSnowflakeKeyGenerateAlgorithmTest {
     
     @Test
     void assertEpochWhenOutOfRange() {
-        assertThrows(ShardingPluginException.class, () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "COSID_SNOWFLAKE",PropertiesBuilder.build(new Property("epoch", "0"))).generateKey());
+        assertThrows(ShardingPluginException.class, () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "COSID_SNOWFLAKE", PropertiesBuilder.build(new Property("epoch", "0"))).generateKey());
     }
 }
