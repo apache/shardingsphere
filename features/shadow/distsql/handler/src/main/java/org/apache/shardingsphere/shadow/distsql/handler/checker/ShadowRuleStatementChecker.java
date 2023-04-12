@@ -108,14 +108,14 @@ public class ShadowRuleStatementChecker {
     }
     
     /**
-     * Check if there are duplicated with logical data sources.
+     * Check if there are duplicated names with logical data sources.
      * 
      * @param toBeCreatedRuleNames rule names
      * @param database ShardingSphere database
      */
     public static void checkDuplicatedWithLogicDataSource(final Collection<String> toBeCreatedRuleNames, final ShardingSphereDatabase database) {
         Collection<String> logicDataSources = getLogicDataSources(database);
-        if (null != logicDataSources && !logicDataSources.isEmpty()) {
+        if (!logicDataSources.isEmpty()) {
             Collection<String> duplicatedNames = toBeCreatedRuleNames.stream().filter(logicDataSources::contains).collect(Collectors.toList());
             ShardingSpherePreconditions.checkState(duplicatedNames.isEmpty(), () -> new InvalidRuleConfigurationException("shadow", duplicatedNames,
                     Collections.singleton(String.format("%s already exists in storage unit", duplicatedNames))));

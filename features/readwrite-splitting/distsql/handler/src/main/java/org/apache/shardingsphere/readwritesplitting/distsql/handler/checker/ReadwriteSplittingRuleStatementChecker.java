@@ -123,7 +123,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
             currentRuleNames.addAll(resourceMetaData.getDataSources().keySet());
         }
         Collection<String> logicDataSources = getLogicDataSources(database);
-        if (null != logicDataSources && !logicDataSources.isEmpty()) {
+        if (!logicDataSources.isEmpty()) {
             currentRuleNames.addAll(getLogicDataSources(database));
         }
         Collection<String> toBeCreatedRuleNames = segments.stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
