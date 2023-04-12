@@ -38,7 +38,9 @@ public enum PostgreSQLState implements SQLState {
     
     UNDEFINED_COLUMN("42703"),
     
-    SYSTEM_ERROR("58000");
+    SYSTEM_ERROR("58000"),
+    
+    UNEXPECTED_ERROR("99999");
     
     private final String value;
 }

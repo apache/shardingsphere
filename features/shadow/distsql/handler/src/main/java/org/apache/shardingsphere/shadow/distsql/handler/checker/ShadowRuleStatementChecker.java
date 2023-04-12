@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.shadow.distsql.handler.checker;
 
 import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
@@ -26,13 +25,11 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -60,16 +57,6 @@ public class ShadowRuleStatementChecker {
     public static void checkStorageUnitsExist(final Collection<String> requiredStorageUnits, final ShardingSphereDatabase database) {
         Collection<String> notExistedStorageUnits = database.getResourceMetaData().getNotExistedDataSources(requiredStorageUnits);
         ShardingSpherePreconditions.checkState(notExistedStorageUnits.isEmpty(), () -> new MissingRequiredStorageUnitsException(database.getName(), notExistedStorageUnits));
-    }
-    
-    /**
-     * Check the completeness of the algorithms.
-     *
-     * @param algorithmSegments to be checked segments
-     */
-    public static void checkAlgorithmCompleteness(final Collection<ShadowAlgorithmSegment> algorithmSegments) {
-        Set<ShadowAlgorithmSegment> incompleteAlgorithms = algorithmSegments.stream().filter(each -> !each.isComplete()).collect(Collectors.toSet());
-        ShardingSpherePreconditions.checkState(incompleteAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("shadow"));
     }
     
     /**
