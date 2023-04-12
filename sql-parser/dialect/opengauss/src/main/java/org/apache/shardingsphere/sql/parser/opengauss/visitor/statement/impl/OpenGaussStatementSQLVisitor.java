@@ -350,7 +350,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     }
     
     private BinaryOperationExpression createPatternMatchingOperationSegment(final AExprContext ctx) {
-        String operator = getOriginalText(ctx.patternMatchingOperator());
+        String operator = getOriginalText(ctx.patternMatchingOperator()).toUpperCase();
         ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
         ListExpression right = new ListExpression(ctx.aExpr(1).start.getStartIndex(), ctx.aExpr().get(ctx.aExpr().size() - 1).stop.getStopIndex());
         for (int i = 1; i < ctx.aExpr().size(); i++) {
