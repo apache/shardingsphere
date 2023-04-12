@@ -61,6 +61,6 @@ class ColumnRegexMatchShadowAlgorithmTest {
     void assertPropertiesWithWrongOperation() {
         assertThrows(ShadowAlgorithmInitializationException.class, () ->
                 TypedSPILoader.getService(ShadowAlgorithm.class, "REGEX_MATCH",
-                                          PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "inser"), new Property("value", "[1]"))));
+                                          PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "wrong"), new Property("value", "[1]"))));
     }
 }
