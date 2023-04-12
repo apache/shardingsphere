@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.metadata.data;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
@@ -61,7 +62,7 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
         ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_TABLE_STATISTICS);
         DatabaseType protocolType = shardingSphereDatabases.values().iterator().next().getProtocolType();
-        if (protocolType instanceof PostgreSQLDatabaseType || protocolType instanceof OpenGaussDatabaseType) {
+        if (protocolType instanceof SchemaSupportedDatabaseType) {
             collectFromDatabase(shardingSphereDatabases.get(databaseName), result);
         } else {
             for (ShardingSphereDatabase each : shardingSphereDatabases.values()) {
