@@ -23,8 +23,13 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.Vendor
 import java.sql.SQLException;
 import java.text.MessageFormat;
 
+/**
+ * Replacement for {@link org.postgresql.util.PSQLException}.
+ */
 @Getter
-public class PostgreSQLException extends SQLException {
+public final class PostgreSQLException extends SQLException {
+    
+    private static final long serialVersionUID = -593592349806424431L;
     
     private final ServerErrorMessage serverErrorMessage;
     
@@ -40,11 +45,11 @@ public class PostgreSQLException extends SQLException {
     
     @Getter
     public static class ServerErrorMessage {
-    
+        
         private final String severity;
-    
+        
         private final String sqlState;
-    
+        
         private final String message;
         
         public ServerErrorMessage(final String severity, final VendorError vendorError, final Object... reasonArgs) {
@@ -52,22 +57,20 @@ public class PostgreSQLException extends SQLException {
             this.sqlState = vendorError.getSqlState().getValue();
             this.message = String.format(vendorError.getReason(), reasonArgs);
         }
-    
+        
         @Override
         public String toString() {
             StringBuilder totalMessage = new StringBuilder();
-            if (severity != null) {
+            if (null != severity) {
                 totalMessage.append(severity).append(": ");
             }
-            if (message != null) {
+            if (null != message) {
                 totalMessage.append(message);
             }
-            if (sqlState != null) {
+            if (null != sqlState) {
                 totalMessage.append("\n  ").append(MessageFormat.format("Server SQLState: {0}", sqlState));
             }
-        
             return totalMessage.toString();
         }
     }
-    
 }
