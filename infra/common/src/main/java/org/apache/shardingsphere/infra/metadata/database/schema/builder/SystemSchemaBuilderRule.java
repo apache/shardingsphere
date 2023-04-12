@@ -56,7 +56,10 @@ public enum SystemSchemaBuilderRule {
             "events_stages_summary_by_account_by_event_name", "events_stages_summary_by_host_by_event_name", "events_stages_summary_by_thread_by_event_name",
             "events_stages_summary_by_user_by_event_name", "events_statements_current", "events_statements_history", "events_statements_history_long",
             "events_statements_summary_by_account_by_event_name", "events_statements_summary_by_digest", "events_statements_summary_by_host_by_event_name", "events_statements_summary_by_program",
-            "events_statements_summary_by_thread_by_event_name", "events_statements_summary_by_user_by_event_name", "events_statements_summary_global_by_event_name"))),
+            "events_statements_summary_by_thread_by_event_name", "events_statements_summary_by_user_by_event_name", "events_statements_summary_global_by_event_name",
+            "events_transactions_current", "events_transactions_history", "events_transactions_history_long", "events_transactions_summary_by_account_by_event_name",
+            "events_transactions_summary_by_host_by_event_name", "events_transactions_summary_by_thread_by_event_name", "events_transactions_summary_by_user_by_event_name",
+            "events_transactions_summary_global_by_event_name", "events_waits_current", "events_waits_history"))),
     
     MYSQL_SYS("MySQL", "sys", new HashSet<>(Collections.singleton("sys"))),
     
