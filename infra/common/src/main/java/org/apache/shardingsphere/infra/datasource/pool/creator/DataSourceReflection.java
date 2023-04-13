@@ -173,8 +173,6 @@ public final class DataSourceReflection {
             String defaultPropertyValue = entry.getValue().toString();
             if (!containsDefaultProperty(defaultPropertyKey, jdbcConnectionProps.get(), queryProps)) {
                 jdbcConnectionProps.get().setProperty(defaultPropertyKey, defaultPropertyValue);
-            } else if (queryProps.containsKey(defaultPropertyKey) && jdbcConnectionProps.get().containsKey(defaultPropertyKey)) {
-                jdbcConnectionProps.get().setProperty(defaultPropertyKey, queryProps.getProperty(defaultPropertyKey));
             }
         }
     }
