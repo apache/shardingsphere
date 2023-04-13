@@ -73,12 +73,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -154,12 +156,13 @@ class PortalTest {
 
         PostgreSQLPacket portalDescription = portal.describe();
         assertThat(portalDescription, instanceOf(PostgreSQLRowDescriptionPacket.class));
-        Collection<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = ((PostgreSQLRowDescriptionPacket) portalDescription).getColumnDescriptions();
-        Iterator<PostgreSQLColumnDescription> columnDescriptionIterator = postgreSQLColumnDescriptions.iterator();
+        Optional<Collection<PostgreSQLColumnDescription>> columnDescriptions = ReflectionUtils.getFieldValue(portalDescription, "columnDescriptions");
+        assertTrue(columnDescriptions.isPresent());
+        Iterator<PostgreSQLColumnDescription> columnDescriptionIterator = columnDescriptions.get().iterator();
         PostgreSQLColumnDescription textColumnDescription = columnDescriptionIterator.next();
         PostgreSQLColumnDescription intColumnDescription = columnDescriptionIterator.next();
-        assertEquals(ReflectionUtils.getFieldValue(textColumnDescription, "dataFormat").get(), PostgreSQLValueFormat.TEXT.getCode());
-        assertEquals(ReflectionUtils.getFieldValue(intColumnDescription, "dataFormat").get(), PostgreSQLValueFormat.BINARY.getCode());
+        assertEquals(textColumnDescription.getDataFormat(), PostgreSQLValueFormat.TEXT.getCode());
+        assertEquals(intColumnDescription.getDataFormat(), PostgreSQLValueFormat.BINARY.getCode());
 
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.size(), is(3));
