@@ -43,16 +43,23 @@ public final class QueryContext {
     
     private final HintValueContext hintValueContext;
     
+    private final boolean useCache;
+    
     public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params) {
         this(sqlStatementContext, sql, params, new HintValueContext());
     }
     
     public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext) {
+        this(sqlStatementContext, sql, params, hintValueContext, false);
+    }
+    
+    public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext, final boolean useCache) {
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         parameters = params;
         databaseName = sqlStatementContext instanceof TableAvailable ? ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().orElse(null) : null;
         this.hintValueContext = hintValueContext;
+        this.useCache = useCache;
     }
     
     /**
