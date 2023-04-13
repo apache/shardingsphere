@@ -78,7 +78,6 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -141,7 +140,6 @@ class PortalTest {
         QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.VARCHAR, "columnTypeName", 0, 0, false, false, false, false);
         QueryHeader intColumnQueryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
         when(responseHeader.getQueryHeaders()).thenReturn(Arrays.asList(queryHeader, intColumnQueryHeader));
-
         when(proxyBackendHandler.execute()).thenReturn(responseHeader);
         when(proxyBackendHandler.next()).thenReturn(true, true, false);
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
@@ -153,7 +151,6 @@ class PortalTest {
         List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, backendConnection);
         portal.bind();
-
         PostgreSQLPacket portalDescription = portal.describe();
         assertThat(portalDescription, instanceOf(PostgreSQLRowDescriptionPacket.class));
         Optional<Collection<PostgreSQLColumnDescription>> columnDescriptions = ReflectionUtils.getFieldValue(portalDescription, "columnDescriptions");
@@ -161,9 +158,8 @@ class PortalTest {
         Iterator<PostgreSQLColumnDescription> columnDescriptionIterator = columnDescriptions.get().iterator();
         PostgreSQLColumnDescription textColumnDescription = columnDescriptionIterator.next();
         PostgreSQLColumnDescription intColumnDescription = columnDescriptionIterator.next();
-        assertEquals(textColumnDescription.getDataFormat(), PostgreSQLValueFormat.TEXT.getCode());
-        assertEquals(intColumnDescription.getDataFormat(), PostgreSQLValueFormat.BINARY.getCode());
-
+        assertThat(textColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.TEXT.getCode()));
+        assertThat(intColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.BINARY.getCode()));
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.size(), is(3));
         Iterator<PostgreSQLPacket> actualPacketsIterator = actualPackets.iterator();
