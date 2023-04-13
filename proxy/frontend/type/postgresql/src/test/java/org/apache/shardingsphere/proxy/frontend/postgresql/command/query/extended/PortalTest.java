@@ -36,6 +36,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -155,8 +156,10 @@ class PortalTest {
         assertThat(portalDescription, instanceOf(PostgreSQLRowDescriptionPacket.class));
         Collection<PostgreSQLColumnDescription> postgreSQLColumnDescriptions = ((PostgreSQLRowDescriptionPacket) portalDescription).getColumnDescriptions();
         Iterator<PostgreSQLColumnDescription> columnDescriptionIterator = postgreSQLColumnDescriptions.iterator();
-        assertEquals(columnDescriptionIterator.next().getDataFormat(), PostgreSQLValueFormat.TEXT.getCode());
-        assertEquals(columnDescriptionIterator.next().getDataFormat(), PostgreSQLValueFormat.BINARY.getCode());
+        PostgreSQLColumnDescription textColumnDescription = columnDescriptionIterator.next();
+        PostgreSQLColumnDescription intColumnDescription = columnDescriptionIterator.next();
+        assertEquals(ReflectionUtils.getFieldValue(textColumnDescription, "dataFormat").get(), PostgreSQLValueFormat.TEXT.getCode());
+        assertEquals(ReflectionUtils.getFieldValue(intColumnDescription, "dataFormat").get(), PostgreSQLValueFormat.BINARY.getCode());
 
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.size(), is(3));

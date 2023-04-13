@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query;
 
-import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLArrayColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
@@ -27,7 +26,6 @@ import java.sql.Types;
 /**
  * Column description for PostgreSQL.
  */
-@Getter
 public final class PostgreSQLColumnDescription {
     
     private final String columnName;
