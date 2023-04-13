@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.update;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
+import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
@@ -152,6 +153,50 @@ class CreateShardingTableRuleStatementUpdaterTest {
                 + "KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME='snowflake')))";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
         assertThrows(DistSQLException.class, () -> updater.checkSQLStatement(database, distSQLStatement, null));
+    }
+    
+    @Test
+    void assertCheckCreateShardingStatementWithNoneDatabaseStrategy() {
+        String sql = "CREATE SHARDING TABLE RULE t_order("
+                + "DATANODES('ds_0.t_order_${0..1}'),"
+                + "DATABASE_STRATEGY(TYPE='NONE'),"
+                + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"
+                + ");";
+        CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
+        updater.checkSQLStatement(database, distSQLStatement, null);
+    }
+    
+    @Test
+    void assertCheckCreateShardingStatementWithNoneDatabaseStrategyThrows() {
+        String sql = "CREATE SHARDING TABLE RULE t_order("
+                + "DATANODES('ds_${0..1}.t_order_${0..1}'),"
+                + "DATABASE_STRATEGY(TYPE='NONE'),"
+                + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"
+                + ");";
+        CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
+        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> updater.checkSQLStatement(database, distSQLStatement, null));
+    }
+    
+    @Test
+    void assertCheckCreateShardingStatementWithNoneTableStrategy() {
+        String sql = "CREATE SHARDING TABLE RULE t_order("
+                + "DATANODES('ds_${0..1}.t_order_0'),"
+                + "DATABASE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='ds_${user_id % 2}')))),"
+                + "TABLE_STRATEGY(TYPE='NONE')"
+                + ");";
+        CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
+        updater.checkSQLStatement(database, distSQLStatement, null);
+    }
+    
+    @Test
+    void assertCheckCreateShardingStatementWithNoneTableStrategyThrows() {
+        String sql = "CREATE SHARDING TABLE RULE t_order("
+                + "DATANODES('ds_${0..1}.t_order_${0..1}'),"
+                + "DATABASE_STRATEGY(TYPE='standard',SHARDING_COLUMN=user_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='ds_${user_id % 2}')))),"
+                + "TABLE_STRATEGY(TYPE='NONE')"
+                + ");";
+        CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
+        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> updater.checkSQLStatement(database, distSQLStatement, null));
     }
     
     @Test
