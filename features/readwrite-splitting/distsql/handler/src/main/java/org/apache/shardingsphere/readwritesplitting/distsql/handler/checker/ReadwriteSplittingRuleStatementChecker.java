@@ -168,9 +168,9 @@ public final class ReadwriteSplittingRuleStatementChecker {
         if (null != currentRuleConfig) {
             Collection<String> toBeAlteredRuleNames = isCreating ? Collections.emptySet() : getToBeAlteredRuleNames(segments);
             currentRuleConfig.getDataSources().forEach(each -> {
-                if (null != each.getStaticStrategy() && !toBeAlteredRuleNames.contains(each.getName())) {
-                    existedWriteDataSourceNames.add(each.getStaticStrategy().getWriteDataSourceName());
-                    existedReadDataSourceNames.addAll(each.getStaticStrategy().getReadDataSourceNames());
+                if (!toBeAlteredRuleNames.contains(each.getName())) {
+                    existedWriteDataSourceNames.add(each.getWriteDataSourceName());
+                    existedReadDataSourceNames.addAll(each.getReadDataSourceNames());
                 }
             });
         }
