@@ -25,16 +25,16 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreat
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapper;
+import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLException;
+import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLException.ServerErrorMessage;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.EmptyUsernameException;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.InvalidPasswordException;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.PrivilegeNotGrantedException;
 import org.apache.shardingsphere.dialect.postgresql.exception.authority.UnknownUsernameException;
 import org.apache.shardingsphere.dialect.postgresql.exception.metadata.ColumnNotFoundException;
 import org.apache.shardingsphere.dialect.postgresql.exception.protocol.ProtocolViolationException;
-import org.apache.shardingsphere.dialect.postgresql.message.ServerErrorMessageBuilder;
+import org.apache.shardingsphere.dialect.postgresql.sqlstate.PostgreSQLState;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
-import org.postgresql.util.PSQLException;
-import org.postgresql.util.PSQLState;
 
 import java.sql.SQLException;
 
@@ -46,48 +46,48 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
     @Override
     public SQLException convert(final SQLDialectException sqlDialectException) {
         if (sqlDialectException instanceof UnknownDatabaseException) {
-            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.INVALID_CATALOG_NAME, ((UnknownDatabaseException) sqlDialectException).getDatabaseName()));
+            return new PostgreSQLException(new ServerErrorMessage("FATAL", PostgreSQLVendorError.INVALID_CATALOG_NAME, ((UnknownDatabaseException) sqlDialectException).getDatabaseName()));
         }
         if (sqlDialectException instanceof DatabaseCreateExistsException) {
-            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.DUPLICATE_DATABASE, ((DatabaseCreateExistsException) sqlDialectException).getDatabaseName()));
+            return new PostgreSQLException(new ServerErrorMessage("FATAL", PostgreSQLVendorError.DUPLICATE_DATABASE, ((DatabaseCreateExistsException) sqlDialectException).getDatabaseName()));
         }
         if (sqlDialectException instanceof InTransactionException) {
-            return new PSQLException(ServerErrorMessageBuilder.build("ERROR", PostgreSQLVendorError.TRANSACTION_STATE_INVALID));
+            return new PostgreSQLException(new ServerErrorMessage("ERROR", PostgreSQLVendorError.TRANSACTION_STATE_INVALID));
         }
         if (sqlDialectException instanceof InsertColumnsAndValuesMismatchedException) {
-            return new PSQLException(ServerErrorMessageBuilder.build("ERROR",
+            return new PostgreSQLException(new ServerErrorMessage("ERROR",
                     PostgreSQLVendorError.WRONG_VALUE_COUNT_ON_ROW, ((InsertColumnsAndValuesMismatchedException) sqlDialectException).getMismatchedRowNumber()));
         }
         if (sqlDialectException instanceof InvalidParameterValueException) {
             InvalidParameterValueException cause = (InvalidParameterValueException) sqlDialectException;
-            return new PSQLException(ServerErrorMessageBuilder.build("ERROR", PostgreSQLVendorError.INVALID_PARAMETER_VALUE, cause.getParameterName(), cause.getParameterValue()));
+            return new PostgreSQLException(new ServerErrorMessage("ERROR", PostgreSQLVendorError.INVALID_PARAMETER_VALUE, cause.getParameterName(), cause.getParameterValue()));
         }
         if (sqlDialectException instanceof TooManyConnectionsException) {
-            return new PSQLException(ServerErrorMessageBuilder.build("ERROR", PostgreSQLVendorError.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT));
+            return new PostgreSQLException(new ServerErrorMessage("ERROR", PostgreSQLVendorError.DATA_SOURCE_REJECTED_CONNECTION_ATTEMPT));
         }
         if (sqlDialectException instanceof UnknownUsernameException) {
-            return new PSQLException(ServerErrorMessageBuilder.build(
+            return new PostgreSQLException(new ServerErrorMessage(
                     "FATAL", PostgreSQLVendorError.INVALID_AUTHORIZATION_SPECIFICATION, ((UnknownUsernameException) sqlDialectException).getUsername()));
         }
         if (sqlDialectException instanceof InvalidPasswordException) {
-            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.INVALID_PASSWORD, ((InvalidPasswordException) sqlDialectException).getUsername()));
+            return new PostgreSQLException(new ServerErrorMessage("FATAL", PostgreSQLVendorError.INVALID_PASSWORD, ((InvalidPasswordException) sqlDialectException).getUsername()));
         }
         if (sqlDialectException instanceof PrivilegeNotGrantedException) {
             PrivilegeNotGrantedException cause = (PrivilegeNotGrantedException) sqlDialectException;
-            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.PRIVILEGE_NOT_GRANTED, cause.getUsername(), cause.getDatabaseName()));
+            return new PostgreSQLException(new ServerErrorMessage("FATAL", PostgreSQLVendorError.PRIVILEGE_NOT_GRANTED, cause.getUsername(), cause.getDatabaseName()));
         }
         if (sqlDialectException instanceof EmptyUsernameException) {
-            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.NO_USERNAME));
+            return new PostgreSQLException(new ServerErrorMessage("FATAL", PostgreSQLVendorError.NO_USERNAME));
         }
         if (sqlDialectException instanceof ProtocolViolationException) {
             ProtocolViolationException cause = (ProtocolViolationException) sqlDialectException;
-            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.PROTOCOL_VIOLATION, cause.getExpectedMessageType(), cause.getActualMessageType()));
+            return new PostgreSQLException(new ServerErrorMessage("FATAL", PostgreSQLVendorError.PROTOCOL_VIOLATION, cause.getExpectedMessageType(), cause.getActualMessageType()));
         }
         if (sqlDialectException instanceof ColumnNotFoundException) {
             ColumnNotFoundException cause = (ColumnNotFoundException) sqlDialectException;
-            return new PSQLException(ServerErrorMessageBuilder.build("FATAL", PostgreSQLVendorError.UNDEFINED_COLUMN, cause.getTableName(), cause.getColumnName()));
+            return new PostgreSQLException(new ServerErrorMessage("FATAL", PostgreSQLVendorError.UNDEFINED_COLUMN, cause.getTableName(), cause.getColumnName()));
         }
-        return new PSQLException(sqlDialectException.getMessage(), PSQLState.UNEXPECTED_ERROR);
+        return new PostgreSQLException(sqlDialectException.getMessage(), PostgreSQLState.UNEXPECTED_ERROR.getValue());
     }
     
     @Override

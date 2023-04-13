@@ -64,7 +64,6 @@
         
         <apache-rat-plugin.version>0.12</apache-rat-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
-        <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <freemarker.version>2.3.31</freemarker.version>
@@ -385,10 +384,6 @@
                     <testTarget>${java.version}</testTarget>
                 </configuration>
                 <version>${maven-compiler-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>${maven-resources-plugin.version}</version>
             </plugin>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>

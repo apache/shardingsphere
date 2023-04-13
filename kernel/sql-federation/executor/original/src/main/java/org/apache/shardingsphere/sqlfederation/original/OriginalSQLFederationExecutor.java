@@ -44,7 +44,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 /**
@@ -75,7 +74,7 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     
     private Connection connection;
     
-    private Statement statement;
+    private PreparedStatement statement;
     
     static {
         try {
@@ -100,10 +99,9 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) throws SQLException {
         connection = createConnection(prepareEngine, callback, federationContext);
-        PreparedStatement preparedStatement = connection.prepareStatement(SQLUtils.trimSemicolon(federationContext.getQueryContext().getSql()));
-        setParameters(preparedStatement, federationContext.getQueryContext().getParameters());
-        statement = preparedStatement;
-        return preparedStatement.executeQuery();
+        statement = connection.prepareStatement(SQLUtils.trimSemicolon(federationContext.getQueryContext().getSql()));
+        setParameters(statement, federationContext.getQueryContext().getParameters());
+        return statement.executeQuery();
     }
     
     private Connection createConnection(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,

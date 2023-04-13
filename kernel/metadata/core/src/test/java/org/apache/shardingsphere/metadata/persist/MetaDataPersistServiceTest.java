@@ -20,10 +20,7 @@ package org.apache.shardingsphere.metadata.persist;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourcePersistService;
@@ -32,8 +29,6 @@ import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRu
 import org.apache.shardingsphere.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.util.PropertiesBuilder;
-import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,16 +42,13 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Properties;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class MetaDataPersistServiceTest {
@@ -88,24 +80,6 @@ class MetaDataPersistServiceTest {
     
     private void setField(final String name, final Object value) throws ReflectiveOperationException {
         Plugins.getMemberAccessor().set(metaDataPersistService.getClass().getDeclaredField(name), metaDataPersistService, value);
-    }
-    
-    @Test
-    void assertConditionalPersistConfigurations() {
-        Map<String, DataSource> dataSourceMap = createDataSourceMap();
-        Collection<RuleConfiguration> ruleConfigs = Collections.emptyList();
-        Collection<RuleConfiguration> globalRuleConfigs = Collections.emptyList();
-        Properties props = PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), Boolean.FALSE.toString()));
-        metaDataPersistService.persistConfigurations(Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)), globalRuleConfigs, props);
-        verify(dataSourceService).conditionalPersist("foo_db", createDataSourcePropertiesMap(dataSourceMap));
-        verify(databaseRulePersistService).conditionalPersist("foo_db", ruleConfigs);
-        verify(globalRuleService).conditionalPersist(globalRuleConfigs);
-        verify(propsService).conditionalPersist(props);
-    }
-    
-    private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
-        return dataSourceMap.entrySet().stream().collect(
-                Collectors.toMap(Entry::getKey, entry -> DataSourcePropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
     @SuppressWarnings("unchecked")
