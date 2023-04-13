@@ -19,7 +19,6 @@ package org.apache.shardingsphere.readwritesplitting.rule;
 
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.junit.jupiter.api.Test;
 
@@ -33,8 +32,8 @@ class ReadwriteSplittingDataSourceRuleTest {
     @Test
     void assertGetWriteDataSource() {
         ReadwriteSplittingDataSourceRule readwriteSplittingDataSourceRule = new ReadwriteSplittingDataSourceRule(
-                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr",
-                        new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), TransactionalReadQueryStrategy.DYNAMIC, null),
+                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"),
+                        TransactionalReadQueryStrategy.DYNAMIC, null),
                 TransactionalReadQueryStrategy.DYNAMIC, new RandomReadQueryLoadBalanceAlgorithm());
         String writeDataSourceName = readwriteSplittingDataSourceRule.getWriteDataSource();
         assertThat(writeDataSourceName, is("write_ds"));

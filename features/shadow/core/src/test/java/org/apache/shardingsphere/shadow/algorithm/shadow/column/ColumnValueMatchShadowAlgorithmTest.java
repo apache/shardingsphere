@@ -50,17 +50,16 @@ class ColumnValueMatchShadowAlgorithmTest {
         assertThrows(UnsupportedShadowColumnTypeException.class,
                 () -> PreciseColumnShadowValueFixtureBuilder.createExceptionCase(SHADOW_TABLE, SHADOW_COLUMN).forEach(each -> assertFalse(shadowAlgorithm.isShadow(each))));
     }
-
+    
     @Test
     void assertPropertiesWithoutColumn() {
-        assertThrows(ShadowAlgorithmInitializationException.class, () ->
-                TypedSPILoader.getService(ShadowAlgorithm.class, "VALUE_MATCH", PropertiesBuilder.build(new Property("operation", "insert"), new Property("value", "1"))));
+        assertThrows(ShadowAlgorithmInitializationException.class,
+                () -> TypedSPILoader.getService(ShadowAlgorithm.class, "VALUE_MATCH", PropertiesBuilder.build(new Property("operation", "insert"), new Property("value", "1"))));
     }
-
+    
     @Test
     void assertPropertiesWithWrongOperation() {
-        assertThrows(ShadowAlgorithmInitializationException.class, () ->
-                TypedSPILoader.getService(ShadowAlgorithm.class, "VALUE_MATCH",
-                                          PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "wrong"), new Property("value", "1"))));
+        assertThrows(ShadowAlgorithmInitializationException.class, () -> TypedSPILoader.getService(ShadowAlgorithm.class, "VALUE_MATCH",
+                PropertiesBuilder.build(new Property("column", SHADOW_COLUMN), new Property("operation", "wrong"), new Property("value", "1"))));
     }
 }

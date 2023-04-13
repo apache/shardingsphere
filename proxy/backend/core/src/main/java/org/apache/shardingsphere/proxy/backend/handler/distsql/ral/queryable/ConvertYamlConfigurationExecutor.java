@@ -48,7 +48,6 @@ import org.apache.shardingsphere.proxy.backend.exception.FileIOException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.constant.DistSQLScriptConstants;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.YamlReadwriteSplittingRuleConfigurationSwapper;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
@@ -389,7 +388,7 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         Iterator<ReadwriteSplittingDataSourceRuleConfiguration> iterator = ruleConfig.getDataSources().iterator();
         while (iterator.hasNext()) {
             ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = iterator.next();
-            appendStaticReadWriteSplittingRule(dataSourceRuleConfig.getStaticStrategy(), ruleConfig.getLoadBalancers(), dataSourceRuleConfig, result);
+            appendStaticReadWriteSplittingRule(ruleConfig.getLoadBalancers(), dataSourceRuleConfig, result);
             if (iterator.hasNext()) {
                 result.append(DistSQLScriptConstants.COMMA);
             }
@@ -397,15 +396,12 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator()).append(System.lineSeparator());
     }
     
-    private void appendStaticReadWriteSplittingRule(final StaticReadwriteSplittingStrategyConfiguration staticConfig, final Map<String, AlgorithmConfiguration> loadBalancers,
+    private void appendStaticReadWriteSplittingRule(final Map<String, AlgorithmConfiguration> loadBalancers,
                                                     final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final StringBuilder result) {
-        if (null == staticConfig) {
-            return;
-        }
-        String readDataSourceNames = getReadDataSourceNames(staticConfig.getReadDataSourceNames());
+        String readDataSourceNames = getReadDataSourceNames(dataSourceRuleConfig.getReadDataSourceNames());
         String loadBalancerType = getLoadBalancerType(loadBalancers.get(dataSourceRuleConfig.getLoadBalancerName()));
         result.append(String.format(DistSQLScriptConstants.READWRITE_SPLITTING_FOR_STATIC,
-                dataSourceRuleConfig.getName(), staticConfig.getWriteDataSourceName(), readDataSourceNames, loadBalancerType));
+                dataSourceRuleConfig.getName(), dataSourceRuleConfig.getWriteDataSourceName(), readDataSourceNames, loadBalancerType));
     }
     
     private String getLoadBalancerType(final AlgorithmConfiguration algorithmConfig) {

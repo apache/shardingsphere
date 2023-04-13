@@ -51,11 +51,11 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
     private void checkDataSources(final String databaseName, final ShardingSphereDatabase database, final ReadwriteSplittingRuleConfiguration currentRuleConfig) {
         Collection<String> requiredDataSources = new LinkedHashSet<>();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : currentRuleConfig.getDataSources()) {
-            if (null != each.getStaticStrategy().getWriteDataSourceName()) {
-                requiredDataSources.add(each.getStaticStrategy().getWriteDataSourceName());
+            if (null != each.getWriteDataSourceName()) {
+                requiredDataSources.add(each.getWriteDataSourceName());
             }
-            if (!each.getStaticStrategy().getReadDataSourceNames().isEmpty()) {
-                requiredDataSources.addAll(each.getStaticStrategy().getReadDataSourceNames());
+            if (!each.getReadDataSourceNames().isEmpty()) {
+                requiredDataSources.addAll(each.getReadDataSourceNames());
             }
         }
         Collection<String> notExistedDataSources = database.getResourceMetaData().getNotExistedDataSources(requiredDataSources);

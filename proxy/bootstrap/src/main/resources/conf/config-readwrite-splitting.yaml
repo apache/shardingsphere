@@ -57,11 +57,10 @@
 #- !READWRITE_SPLITTING
 #  dataSources:
 #    readwrite_ds:
-#      staticStrategy:
-#        writeDataSourceName: primary_ds
-#        readDataSourceNames:
-#          - replica_ds_0
-#          - replica_ds_1
+#      writeDataSourceName: primary_ds
+#      readDataSourceNames:
+#        - replica_ds_0
+#        - replica_ds_1
 #      loadBalancerName: random
 #  loadBalancers:
 #    random:
@@ -108,11 +107,10 @@
 #- !READWRITE_SPLITTING
 #  dataSources:
 #    readwrite_ds:
-#      staticStrategy:
-#        writeDataSourceName: write_ds
-#        readDataSourceNames:
-#          - read_ds_0
-#          - read_ds_1
+#      writeDataSourceName: write_ds
+#      readDataSourceNames:
+#        - read_ds_0
+#        - read_ds_1
 #      loadBalancerName: random
 #  loadBalancers:
 #    random:
