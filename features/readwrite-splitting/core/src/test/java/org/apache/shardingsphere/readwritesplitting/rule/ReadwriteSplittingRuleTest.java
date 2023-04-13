@@ -65,8 +65,8 @@ class ReadwriteSplittingRuleTest {
     
     private void assertDataSourceRule(final ReadwriteSplittingDataSourceRule actual) {
         assertThat(actual.getName(), is("readwrite"));
-        assertThat(actual.getReadwriteSplittingStrategy().getWriteDataSource(), is("write_ds"));
-        assertThat(actual.getReadwriteSplittingStrategy().getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(actual.getReadwriteSplittingGroup().getWriteDataSource(), is("write_ds"));
+        assertThat(actual.getReadwriteSplittingGroup().getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(actual.getLoadBalancer().getType(), is("RANDOM"));
     }
     
