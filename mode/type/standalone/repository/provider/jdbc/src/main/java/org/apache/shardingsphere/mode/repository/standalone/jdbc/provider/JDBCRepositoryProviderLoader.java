@@ -26,6 +26,12 @@ public class JDBCRepositoryProviderLoader {
     
     private static final String FILE_EXTENSION = ".xml";
     
+    /**
+     * Load JDBCRepositoryProvider.
+     *
+     * @param type type of JDBCRepositoryProvider
+     * @return loaded JDBCRepositoryProvider
+     */
     @SneakyThrows({JAXBException.class, IOException.class, URISyntaxException.class})
     public static JDBCRepositoryProvider load(final String type) {
         File file = new File(JDBCRepositoryProviderLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
@@ -44,7 +50,8 @@ public class JDBCRepositoryProviderLoader {
             @Override
             public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes) throws IOException {
                 if (file.toString().endsWith(FILE_EXTENSION)) {
-                    JDBCRepositoryProvider provider = (JDBCRepositoryProvider) JAXBContext.newInstance(JDBCRepositoryProvider.class).createUnmarshaller().unmarshal(Files.newInputStream(file.toFile().toPath()));
+                    JDBCRepositoryProvider provider = (JDBCRepositoryProvider) JAXBContext.newInstance(JDBCRepositoryProvider.class).createUnmarshaller()
+                            .unmarshal(Files.newInputStream(file.toFile().toPath()));
                     if (Objects.equals(provider.getType(), type)) {
                         result[0] = provider;
                         return FileVisitResult.TERMINATE;
