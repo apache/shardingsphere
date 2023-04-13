@@ -39,7 +39,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 <#if feature?contains("readwrite-splitting")>
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 </#if>
 <#if feature?contains("encrypt")>
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
