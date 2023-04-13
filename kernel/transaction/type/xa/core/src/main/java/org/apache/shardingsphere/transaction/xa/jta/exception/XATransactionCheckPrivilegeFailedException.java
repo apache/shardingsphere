@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.xa.jta.datasource.checker;
+package org.apache.shardingsphere.transaction.xa.jta.exception;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.transaction.exception.TransactionSQLException;
 
-import javax.sql.DataSource;
+import java.sql.SQLException;
 
 /**
- * Data source privilege checker.
+ * XA transaction check privilege failed exception.
  */
-public interface DataSourcePrivilegeChecker extends TypedSPI {
+public final class XATransactionCheckPrivilegeFailedException extends TransactionSQLException {
     
-    /**
-     * Check privilege.
-     *
-     * @param dataSource data source
-     */
-    void checkPrivilege(DataSource dataSource);
+    private static final long serialVersionUID = 6073175429050058508L;
+    
+    public XATransactionCheckPrivilegeFailedException(final SQLException cause) {
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 203, String.format("Check privileges failed on data source, reason is: %s", cause.getMessage()), cause);
+    }
 }

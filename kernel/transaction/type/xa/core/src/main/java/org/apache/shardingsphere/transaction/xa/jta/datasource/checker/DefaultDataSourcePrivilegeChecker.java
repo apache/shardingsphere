@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.checker;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 
 /**
  * Default data source privilege checker.
@@ -26,7 +25,7 @@ import java.util.Collection;
 public final class DefaultDataSourcePrivilegeChecker implements DataSourcePrivilegeChecker {
     
     @Override
-    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
+    public void checkPrivilege(final DataSource dataSource) {
     }
     
     @Override

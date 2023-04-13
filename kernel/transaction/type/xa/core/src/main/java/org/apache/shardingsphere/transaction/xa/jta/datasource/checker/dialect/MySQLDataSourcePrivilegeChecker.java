@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.xa.jta.datasource.checker.dialect;
 
 import org.apache.shardingsphere.transaction.xa.jta.datasource.checker.DataSourcePrivilegeChecker;
+import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionCheckPrivilegeFailedException;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionPrivilegeException;
 
 import javax.sql.DataSource;
@@ -26,7 +27,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * MySQL data source privilege checker.
@@ -40,16 +40,15 @@ public final class MySQLDataSourcePrivilegeChecker implements DataSourcePrivileg
     /**
      * Check privilege.
      *
-     * @param dataSources data sources
+     * @param dataSource data source
      */
-    public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
-        for (DataSource each : dataSources) {
-            try (Connection connection = each.getConnection()) {
-                if (8 == connection.getMetaData().getDatabaseMajorVersion()) {
-                    checkPrivilege(connection);
-                }
-            } catch (final SQLException ignored) {
+    public void checkPrivilege(final DataSource dataSource) {
+        try (Connection connection = dataSource.getConnection()) {
+            if (8 == connection.getMetaData().getDatabaseMajorVersion()) {
+                checkPrivilege(connection);
             }
+        } catch (final SQLException ex) {
+            throw new XATransactionCheckPrivilegeFailedException(ex);
         }
     }
     
@@ -63,7 +62,8 @@ public final class MySQLDataSourcePrivilegeChecker implements DataSourcePrivileg
                     return;
                 }
             }
-        } catch (final SQLException ignored) {
+        } catch (final SQLException ex) {
+            throw new XATransactionCheckPrivilegeFailedException(ex);
         }
         throw new XATransactionPrivilegeException("XA_RECOVER_ADMIN");
     }
