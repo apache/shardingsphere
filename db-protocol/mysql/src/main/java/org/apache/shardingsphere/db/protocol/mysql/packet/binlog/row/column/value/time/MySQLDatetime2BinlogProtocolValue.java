@@ -48,6 +48,9 @@ public final class MySQLDatetime2BinlogProtocolValue implements MySQLBinlogProto
     
     private Serializable readDatetime(final MySQLBinlogColumnDef columnDef, final long datetime, final MySQLPacketPayload payload) {
         long datetimeWithoutSign = datetime & (0x8000000000L - 1);
+        if (0 == datetimeWithoutSign) {
+            return MySQLTimeValueUtils.DATETIME_OF_ZERO;
+        }
         long date = datetimeWithoutSign >> 17;
         long yearAndMonth = date >> 5;
         int year = (int) (yearAndMonth / 13);

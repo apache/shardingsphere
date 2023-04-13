@@ -110,7 +110,6 @@ public final class MySQLClient {
                     }
                 }).connect(connectInfo.getHost(), connectInfo.getPort()).channel();
         serverInfo = waitExpectedResponse(ServerInfo.class);
-        reconnectTimes.set(0);
         running = true;
     }
     
@@ -305,6 +304,7 @@ public final class MySQLClient {
             if (msg instanceof AbstractBinlogEvent) {
                 lastBinlogEvent = (AbstractBinlogEvent) msg;
                 blockingEventQueue.put(lastBinlogEvent);
+                reconnectTimes.set(0);
             }
         }
         
@@ -332,6 +332,7 @@ public final class MySQLClient {
             }
             reconnectTimes.incrementAndGet();
             connect();
+            log.info("reconnect times {}", reconnectTimes.get());
             subscribe(lastBinlogEvent.getFileName(), lastBinlogEvent.getPosition());
         }
     }
