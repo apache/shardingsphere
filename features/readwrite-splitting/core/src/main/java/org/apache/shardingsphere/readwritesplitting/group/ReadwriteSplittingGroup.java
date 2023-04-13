@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.strategy;
+package org.apache.shardingsphere.readwritesplitting.group;
 
 import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 
@@ -23,9 +23,9 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Readwrite-splitting strategy.
+ * Readwrite-splitting group.
  */
-public interface ReadwriteSplittingStrategy {
+public interface ReadwriteSplittingGroup {
     
     /**
      * Get write data source.

@@ -43,7 +43,7 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.exception.rule.InvalidInlineExpressionDataSourceNameException;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
+import org.apache.shardingsphere.readwritesplitting.group.type.StaticReadwriteSplittingGroup;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -153,7 +153,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     public Map<String, Collection<DataSourceRoleInfo>> getDataSourceMapper() {
         Map<String, Collection<DataSourceRoleInfo>> result = new LinkedHashMap<>();
         for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
-            result.put(entry.getValue().getName(), entry.getValue().getReadwriteSplittingStrategy().getAllDataSources());
+            result.put(entry.getValue().getName(), entry.getValue().getReadwriteSplittingGroup().getAllDataSources());
         }
         return result;
     }
@@ -174,7 +174,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     }
     
     private void deleteStorageNodeDataSources(final ReadwriteSplittingDataSourceRule rule) {
-        rule.getReadwriteSplittingStrategy().getReadDataSources()
+        rule.getReadwriteSplittingGroup().getReadDataSources()
                 .forEach(each -> instanceContext.getEventBusContext().post(new StorageNodeDataSourceDeletedEvent(new QualifiedDatabase(databaseName, rule.getName(), each))));
     }
     
@@ -195,10 +195,10 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     private Map<String, Map<String, String>> exportStaticDataSources() {
         Map<String, Map<String, String>> result = new LinkedHashMap<>(dataSourceRules.size(), 1);
         for (ReadwriteSplittingDataSourceRule each : dataSourceRules.values()) {
-            if (each.getReadwriteSplittingStrategy() instanceof StaticReadwriteSplittingStrategy) {
+            if (each.getReadwriteSplittingGroup() instanceof StaticReadwriteSplittingGroup) {
                 Map<String, String> exportedDataSources = new LinkedHashMap<>(2, 1);
                 exportedDataSources.put(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME, each.getWriteDataSource());
-                exportedDataSources.put(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", each.getReadwriteSplittingStrategy().getReadDataSources()));
+                exportedDataSources.put(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", each.getReadwriteSplittingGroup().getReadDataSources()));
                 result.put(each.getName(), exportedDataSources);
             }
         }
