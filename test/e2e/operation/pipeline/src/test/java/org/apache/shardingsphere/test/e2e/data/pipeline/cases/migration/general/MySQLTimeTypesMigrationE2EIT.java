@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.data.pipeline.cases.migration.general;
 
-
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.PipelineContainerComposer;
@@ -32,41 +31,46 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
- * E2E IT for time types of MySQL, includes:
- * 1) datetime.
- * 2) timestamp.
- * 3) date
+ * E2E IT for time types of MySQL, includes.
+ * 1) datetime,timestamp,date default null
  */
 @PipelineE2ESettings(fetchSingle = true, database = @PipelineE2ESettings.PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/common/none.xml"))
 public class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
-    
+
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
     void assertIllegalTimeTypesValueMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam, new MigrationJobType())) {
-            String sql = "CREATE TABLE `time_e2e` ( `id` int NOT NULL, `t_timestamp` timestamp NULL DEFAULT NULL, `t_datetime` datetime DEFAULT NULL, `t_date` date DEFAULT NULL, `t_year` year DEFAULT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;";
+            String sql = "CREATE TABLE `time_e2e` ( `id` int NOT NULL, `t_timestamp` timestamp NULL DEFAULT NULL, `t_datetime` datetime DEFAULT NULL, `t_date` date DEFAULT NULL, "
+                    + "`t_year` year DEFAULT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;";
             containerComposer.sourceExecuteWithLog(sql);
-            try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
-                PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `time_e2e`(id, t_timestamp, t_datetime, t_date, t_year) VALUES (?, ?, ?, ?, ?)");
-                preparedStatement.setObject(1, 1);
-                preparedStatement.setObject(2, "0000-00-00 00:00:00");
-                preparedStatement.setObject(3, "0000-00-00 00:00:00");
-                preparedStatement.setObject(4, "0000-00-00");
-                preparedStatement.setObject(5, "0000");
-                preparedStatement.execute();
-            }
+            insertOneRecordWithZeroValue(containerComposer, 1);
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);
             startMigration(containerComposer, "time_e2e", "time_e2e");
             String jobId = listJobId(containerComposer).get(0);
-            containerComposer.waitIncrementTaskFinished(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+            containerComposer.waitJobPrepareSuccess(String.format("SHOW MIGRATION STATUS '%s'", jobId));
+            insertOneRecordWithZeroValue(containerComposer, 2);
             assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
         }
     }
-    
+
+    private void insertOneRecordWithZeroValue(final PipelineContainerComposer containerComposer, final int id) throws SQLException {
+        try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `time_e2e`(id, t_timestamp, t_datetime, t_date, t_year) VALUES (?, ?, ?, ?, ?)");
+            preparedStatement.setObject(1, id);
+            preparedStatement.setObject(2, "0000-00-00 00:00:00");
+            preparedStatement.setObject(3, "0000-00-00 00:00:00");
+            preparedStatement.setObject(4, "0000-00-00");
+            preparedStatement.setObject(5, "0000");
+            preparedStatement.execute();
+        }
+    }
+
     private static boolean isEnabled() {
         return PipelineE2ECondition.isEnabled(new MySQLDatabaseType());
     }
