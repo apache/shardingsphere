@@ -66,7 +66,7 @@ class ShowDistVariablesExecutorTest {
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, mock(ShowDistVariablesStatement.class));
         assertThat(actual.size(), is(23));
         LocalDataQueryResultRow row = actual.iterator().next();
-        assertThat(row.getCell(1), is("system_log_level"));
-        assertThat(row.getCell(2), is("INFO"));
+        assertThat(row.getCell(1), is("agent_plugins_enabled"));
+        assertThat(row.getCell(2), is("true"));
     }
 }
