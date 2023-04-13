@@ -239,10 +239,6 @@ UNUSED
     : U N U S E D
     ;
 
-DISCARD
-    : D I S C A R D
-    ;
-
 INFO
     : I N F O
     ;
