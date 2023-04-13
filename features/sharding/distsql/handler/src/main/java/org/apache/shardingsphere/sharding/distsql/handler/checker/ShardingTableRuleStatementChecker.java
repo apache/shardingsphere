@@ -123,15 +123,6 @@ public final class ShardingTableRuleStatementChecker {
         return check(toBeCheckedRuleConfig, dataSourceNames);
     }
     
-    private static Collection<String> getRequiredDataSources(final ShardingRuleConfiguration config) {
-        Collection<String> result = new LinkedHashSet<>();
-        result.addAll(config.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getActualDataSources)
-                .map(each -> Splitter.on(",").trimResults().splitToList(each)).flatMap(Collection::stream).collect(Collectors.toSet()));
-        result.addAll(config.getTables().stream().map(each -> new InlineExpressionParser(each.getActualDataNodes()).splitAndEvaluate())
-                .flatMap(Collection::stream).distinct().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toSet()));
-        return result;
-    }
-    
     private static ShardingRuleConfiguration createToBeCheckedShardingRuleConfiguration(final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.setTables(new LinkedList<>(currentRuleConfig.getTables()));
@@ -326,6 +317,15 @@ public final class ShardingTableRuleStatementChecker {
         Collection<String> logicDataSources = getLogicDataSources(database);
         notExistedDataSources.removeIf(logicDataSources::contains);
         ShardingSpherePreconditions.checkState(notExistedDataSources.isEmpty(), () -> new MissingRequiredStorageUnitsException(databaseName, notExistedDataSources));
+    }
+    
+    private static Collection<String> getRequiredDataSources(final ShardingRuleConfiguration config) {
+        Collection<String> result = new LinkedHashSet<>();
+        result.addAll(config.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getActualDataSources)
+                .map(each -> Splitter.on(",").trimResults().splitToList(each)).flatMap(Collection::stream).collect(Collectors.toSet()));
+        result.addAll(config.getTables().stream().map(each -> new InlineExpressionParser(each.getActualDataNodes()).splitAndEvaluate())
+                .flatMap(Collection::stream).distinct().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toSet()));
+        return result;
     }
     
     private static <T extends AbstractTableRuleSegment> Collection<String> getRequiredDataSources(final Collection<T> rules) {
