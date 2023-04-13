@@ -41,6 +41,7 @@ public final class MySQLDataSourcePrivilegeChecker implements DataSourcePrivileg
      * Check privilege.
      *
      * @param dataSource data source
+     * @throws XATransactionCheckPrivilegeFailedException XA transaction check privilege failed exception
      */
     public void checkPrivilege(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
