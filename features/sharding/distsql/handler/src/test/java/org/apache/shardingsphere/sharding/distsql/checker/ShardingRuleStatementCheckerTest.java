@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.checker;
 
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidStrategyConfigurationException;
+import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
@@ -273,7 +273,7 @@ class ShardingRuleStatementCheckerTest {
     void assertCheckTableRuleWithNoneStrategyTypeThrows() {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(createWrongTableRuleWithNoneTypeStrategy());
-        assertThrows(InvalidStrategyConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
+        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
     }
     
     @Test

@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.handler.exception.algorithm;
+package org.apache.shardingsphere.sharding.exception.strategy;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Invalid strategy configuration exception.
+ * Invalid sharding strategy configuration exception.
  */
-public final class InvalidStrategyConfigurationException extends AlgorithmDefinitionViolationException {
+public final class InvalidShardingStrategyConfigurationException extends ShardingSQLException {
     
-    private static final long serialVersionUID = 7021545470824654784L;
+    private static final long serialVersionUID = -5874317771225005670L;
     
-    public InvalidStrategyConfigurationException(final String strategyType, final String strategy, final String message) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 154, String.format("Invalid %s strategy `%s`, %s.", strategyType, strategy, message));
+    public InvalidShardingStrategyConfigurationException(final String strategyLevel, final String strategyType, final String message) {
+        super(XOpenSQLState.GENERAL_ERROR, 99, String.format("Invalid %s strategy `%s`, %s.", strategyLevel, strategyType, message));
     }
 }

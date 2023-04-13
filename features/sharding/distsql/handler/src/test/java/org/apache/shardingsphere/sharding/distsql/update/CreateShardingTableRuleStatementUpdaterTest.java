@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.update;
 import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidStrategyConfigurationException;
+import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
@@ -174,7 +174,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
                 + "TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 2}'))))"
                 + ");";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        assertThrows(InvalidStrategyConfigurationException.class, () -> updater.checkSQLStatement(database, distSQLStatement, null));
+        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> updater.checkSQLStatement(database, distSQLStatement, null));
     }
     
     @Test
@@ -196,7 +196,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
                 + "TABLE_STRATEGY(TYPE='NONE')"
                 + ");";
         CreateShardingTableRuleStatement distSQLStatement = (CreateShardingTableRuleStatement) getDistSQLStatement(sql);
-        assertThrows(InvalidStrategyConfigurationException.class, () -> updater.checkSQLStatement(database, distSQLStatement, null));
+        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> updater.checkSQLStatement(database, distSQLStatement, null));
     }
     
     @Test

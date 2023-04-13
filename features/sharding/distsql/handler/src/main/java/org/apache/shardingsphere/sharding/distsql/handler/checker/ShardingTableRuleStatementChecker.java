@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.checker;
 
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidStrategyConfigurationException;
+import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
@@ -118,12 +118,12 @@ public final class ShardingTableRuleStatementChecker {
     public static boolean isValidBindingTableGroups(final Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups, final ShardingRuleConfiguration currentRuleConfig) {
         ShardingRuleConfiguration toBeCheckedRuleConfig = createToBeCheckedShardingRuleConfiguration(currentRuleConfig);
         toBeCheckedRuleConfig.setBindingTableGroups(bindingTableGroups);
-        Collection<String> dataSourceNames = getRequiredDataSource(toBeCheckedRuleConfig);
-        dataSourceNames.addAll(getRequiredDataSource(currentRuleConfig));
+        Collection<String> dataSourceNames = getRequiredDataSources(toBeCheckedRuleConfig);
+        dataSourceNames.addAll(getRequiredDataSources(currentRuleConfig));
         return check(toBeCheckedRuleConfig, dataSourceNames);
     }
     
-    private static Collection<String> getRequiredDataSource(final ShardingRuleConfiguration config) {
+    private static Collection<String> getRequiredDataSources(final ShardingRuleConfiguration config) {
         Collection<String> result = new LinkedHashSet<>();
         result.addAll(config.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getActualDataSources)
                 .map(each -> Splitter.on(",").trimResults().splitToList(each)).flatMap(Collection::stream).collect(Collectors.toSet()));
@@ -441,7 +441,7 @@ public final class ShardingTableRuleStatementChecker {
                 if (databaseStrategySegment.get().getType().equalsIgnoreCase("none")) {
                     Collection<String> requiredDataSources = getRequiredDataSources(rules);
                     ShardingSpherePreconditions.checkState(1 == requiredDataSources.size(),
-                            () -> new InvalidStrategyConfigurationException("database", databaseStrategySegment.get().getType(), "strategy does not match data nodes"));
+                            () -> new InvalidShardingStrategyConfigurationException("database", databaseStrategySegment.get().getType(), "strategy does not match data nodes"));
                 } else {
                     AlgorithmSegment databaseShardingAlgorithm = databaseStrategySegment.get().getShardingAlgorithm();
                     checkDatabaseShardingAlgorithm(databaseName, each, databaseShardingAlgorithm);
@@ -452,7 +452,7 @@ public final class ShardingTableRuleStatementChecker {
                 if (tableStrategySegment.get().getType().equalsIgnoreCase("none")) {
                     Collection<String> requiredTables = getRequiredTables(rules);
                     ShardingSpherePreconditions.checkState(1 == requiredTables.size(),
-                            () -> new InvalidStrategyConfigurationException("table", tableStrategySegment.get().getType(), "strategy does not match data nodes"));
+                            () -> new InvalidShardingStrategyConfigurationException("table", tableStrategySegment.get().getType(), "strategy does not match data nodes"));
                 } else {
                     AlgorithmSegment tableShardingAlgorithm = tableStrategySegment.get().getShardingAlgorithm();
                     checkTableShardingAlgorithm(databaseName, each, tableShardingAlgorithm);
@@ -517,8 +517,8 @@ public final class ShardingTableRuleStatementChecker {
         ShardingRuleConfiguration toBeCheckedRuleConfig = createToBeCheckedShardingRuleConfiguration(currentRuleConfig);
         removeRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
         addRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
-        Collection<String> dataSourceNames = getRequiredDataSource(toBeCheckedRuleConfig);
-        dataSourceNames.addAll(getRequiredDataSource(toBeAlteredRuleConfig));
+        Collection<String> dataSourceNames = getRequiredDataSources(toBeCheckedRuleConfig);
+        dataSourceNames.addAll(getRequiredDataSources(toBeAlteredRuleConfig));
         ShardingSpherePreconditions.checkState(check(toBeCheckedRuleConfig, dataSourceNames),
                 () -> new InvalidRuleConfigurationException("sharding table", toBeAlteredLogicTableNames, Collections.singleton("invalid binding table configuration.")));
     }
