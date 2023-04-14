@@ -8,36 +8,15 @@ Read/write splitting YAML configuration is highly readable. The YAML format enab
 
 ## Parameters
 
-### Static Readwrite-splitting
+### Readwrite-splitting
 
 ```yaml
 rules:
 - !READWRITE_SPLITTING
   dataSources:
     <data_source_name> (+): # Logic data source name of readwrite-splitting
-      static_strategy: # Readwrite-splitting type
-        write_data_source_name: # Write data source name
-        read_data_source_names: # Read data source names, multiple data source names separated with comma
-      transactionalReadQueryStrategy (?): # Routing strategy for read query within a transaction, values include: PRIMARY (to primary), FIXED (to fixed data source), DYNAMIC (to any data source), default value: DYNAMIC
-      loadBalancerName: # Load balance algorithm name
-  
-  # Load balance algorithm configuration
-  loadBalancers:
-    <load_balancer_name> (+): # Load balance algorithm name
-      type: # Load balance algorithm type
-      props: # Load balance algorithm properties
-        # ...
-```
-
-### Dynamic Readwrite-splitting
-
-```yaml
-rules:
-- !READWRITE_SPLITTING
-  dataSources:
-    <data_source_name> (+): # Logic data source name of readwrite-splitting
-      dynamic_strategy: # Readwrite-splitting type
-        auto_aware_data_source_name: # Database discovery logic data source name
+      write_data_source_name: # Write data source name
+      read_data_source_names: # Read data source names, multiple data source names separated with comma
       transactionalReadQueryStrategy (?): # Routing strategy for read query within a transaction, values include: PRIMARY (to primary), FIXED (to fixed data source), DYNAMIC (to any data source), default value: DYNAMIC
       loadBalancerName: # Load balance algorithm name
   
@@ -63,11 +42,10 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds:
-      staticStrategy:
-        writeDataSourceName: write_ds
-        readDataSourceNames:
-          - read_ds_0
-          - read_ds_1
+      writeDataSourceName: write_ds
+      readDataSourceNames:
+        - read_ds_0
+        - read_ds_1
       transactionalReadQueryStrategy: PRIMARY
       loadBalancerName: random
   loadBalancers:

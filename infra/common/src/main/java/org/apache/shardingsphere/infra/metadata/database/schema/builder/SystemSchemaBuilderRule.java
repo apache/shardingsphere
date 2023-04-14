@@ -46,9 +46,22 @@ public enum SystemSchemaBuilderRule {
             "processlist", "profiling", "referential_constraints", "routines", "schema_privileges", "schemata", "session_status", "session_variables", "statistics",
             "table_constraints", "table_privileges", "tables", "tablespaces", "triggers", "user_privileges", "views"))),
     
-    MYSQL_MYSQL("MySQL", "mysql", new HashSet<>(Collections.singleton("db"))),
+    MYSQL_MYSQL("MySQL", "mysql", new HashSet<>(Arrays.asList("columns_priv", "db", "engine_cost", "event", "func", "general_log", "gtid_executed",
+            "help_category", "help_keyword", "help_relation",
+            "help_topic", "innodb_index_stats", "innodb_table_stats", "ndb_binlog_index", "plugin", "proc", "procs_priv", "proxies_priv", "server_cost", "servers",
+            "slave_master_info", "slave_relay_log_info", "slave_worker_info", "slow_log", "tables_priv", "time_zone", "time_zone_leap_second",
+            "time_zone_name", "time_zone_transition", "time_zone_transition_type", "user"))),
     
-    MYSQL_PERFORMANCE_SCHEMA("MySQL", "performance_schema", new HashSet<>(Collections.singleton("accounts"))),
+    MYSQL_PERFORMANCE_SCHEMA("MySQL", "performance_schema", new HashSet<>(Arrays.asList("accounts", "cond_instances", "events_stages_current", "events_stages_history", "events_stages_history_long",
+            "events_stages_summary_by_account_by_event_name", "events_stages_summary_by_host_by_event_name", "events_stages_summary_by_thread_by_event_name",
+            "events_stages_summary_by_user_by_event_name", "events_statements_current", "events_statements_history", "events_statements_history_long",
+            "events_statements_summary_by_account_by_event_name", "events_statements_summary_by_digest", "events_statements_summary_by_host_by_event_name", "events_statements_summary_by_program",
+            "events_statements_summary_by_thread_by_event_name", "events_statements_summary_by_user_by_event_name", "events_statements_summary_global_by_event_name",
+            "events_transactions_current", "events_transactions_history", "events_transactions_history_long", "events_transactions_summary_by_account_by_event_name",
+            "events_transactions_summary_by_host_by_event_name", "events_transactions_summary_by_thread_by_event_name", "events_transactions_summary_by_user_by_event_name",
+            "events_transactions_summary_global_by_event_name", "events_waits_current", "events_waits_history", "events_waits_history_long", "events_waits_summary_by_account_by_event_name",
+            "events_waits_summary_by_host_by_event_name", "events_waits_summary_by_instance", "events_waits_summary_by_thread_by_event_name", "events_waits_summary_by_user_by_event_name",
+            "events_waits_summary_global_by_event_name", "file_instances", "file_summary_by_event_name", "file_summary_by_instance"))),
     
     MYSQL_SYS("MySQL", "sys", new HashSet<>(Collections.singleton("sys"))),
     

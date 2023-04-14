@@ -108,17 +108,15 @@ rules:
   - !READWRITE_SPLITTING
     dataSources:
       readwrite_ds_0:
-        staticStrategy:
-          writeDataSourceName: ds_0
-          readDataSourceNames:
-            - ds_1
-            - ds_2
+        writeDataSourceName: ds_0
+        readDataSourceNames:
+          - ds_1
+          - ds_2
       readwrite_ds_1:
-        staticStrategy:
-          writeDataSourceName: ds_3
-          readDataSourceNames:
-            - ds_4
-            - ds_5
+        writeDataSourceName: ds_3
+        readDataSourceNames:
+          - ds_4
+          - ds_5
   - !ENCRYPT
     encryptors:
       aes_encryptor:

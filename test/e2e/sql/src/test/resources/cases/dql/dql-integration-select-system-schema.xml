@@ -244,4 +244,288 @@
     <test-case sql="SELECT * FROM information_schema.user_privileges" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_information_schema_user_privileges.xml" />
     </test-case>
+
+    <test-case sql="SELECT * FROM mysql.columns_priv" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_columns_priv.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.db" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_db.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.engine_cost" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_engine_cost.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.event" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_event.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.func" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_func.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.general_log" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_general_log.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.gtid_executed" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_gtid_executed.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.help_category" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_help_category.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.help_keyword" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_help_keyword.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.help_relation" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_help_relation.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM mysql.help_topic" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_help_topic.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.innodb_index_stats" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_innodb_index_stats.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.innodb_table_stats" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_innodb_table_stats.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.ndb_binlog_index" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_ndb_binlog_index.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.plugin" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_plugin.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.proc" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_proc.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.procs_priv" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_procs_priv.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.proxies_priv" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_proxies_priv.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.server_cost" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_server_cost.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.servers" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_servers.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM mysql.slave_master_info" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_slave_master_info.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.slave_relay_log_info" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_slave_relay_log_info.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.slave_worker_info" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_slave_worker_info.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.slow_log" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_slow_log.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.tables_priv" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_tables_priv.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.time_zone" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_time_zone.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.time_zone_leap_second" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_time_zone_leap_second.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.time_zone_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_time_zone_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.time_zone_transition" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_time_zone_transition.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.time_zone_transition_type" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_time_zone_transition_type.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM mysql.user" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_mysql_user.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM performance_schema.accounts" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_accounts.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.cond_instances" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_cond_instances.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_stages_current" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_stages_current.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_stages_history" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_stages_history.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_stages_history_long" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_stages_history_long.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_stages_summary_by_account_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_stages_summary_by_account_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_stages_summary_by_host_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_stages_summary_by_host_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_stages_summary_by_thread_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_stages_summary_by_thread_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_stages_summary_by_user_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_stages_summary_by_user_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_stages_summary_global_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_stages_summary_global_by_event_name.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM performance_schema.events_statements_current" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_current.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_history" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_history.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_history_long" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_history_long.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_account_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_account_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_digest" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_digest.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_host_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_host_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_program" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_program.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_thread_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_thread_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_by_user_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_by_user_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_statements_summary_global_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_statements_summary_global_by_event_name.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_current" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_current.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_history" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_history.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_history_long" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_history_long.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_summary_by_account_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_summary_by_account_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_summary_by_host_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_summary_by_host_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_summary_by_thread_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_summary_by_thread_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_summary_by_user_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_summary_by_user_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_transactions_summary_global_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_transactions_summary_global_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_waits_current" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_waits_current.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_waits_history" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_waits_history.xml" />
+    </test-case>
+
+    <test-case sql="SELECT * FROM performance_schema.events_waits_history_long" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_waits_history_long.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_waits_summary_by_account_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_waits_summary_by_account_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_waits_summary_by_host_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_waits_summary_by_host_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_waits_summary_by_instance" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_waits_summary_by_instance.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_waits_summary_by_thread_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_waits_summary_by_thread_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_waits_summary_by_user_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_waits_summary_by_user_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.events_waits_summary_global_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_events_waits_summary_global_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.file_instances" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_file_instances.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.file_summary_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_file_summary_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.file_summary_by_instance" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_file_summary_by_instance.xml" />
+    </test-case>
 </integration-test-cases>

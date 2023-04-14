@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,37 +39,39 @@ public final class InternalMetaDataFactory {
      * Create database meta data for governance center.
      *
      * @param databaseName database name
+     * @param persistService meta data persist service
      * @param databaseConfig database configuration
      * @param props configuration properties
      * @param instanceContext instance context
      * @return database meta data
      */
-    public static ShardingSphereDatabase create(final String databaseName, final DatabaseConfiguration databaseConfig,
+    public static ShardingSphereDatabase create(final String databaseName, final MetaDataPersistService persistService, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final InstanceContext instanceContext) {
         return ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseName, databaseConfig, props), databaseConfig,
-                DatabaseRulesBuilder.build(databaseName, databaseConfig, instanceContext), instanceContext.getModeContextManager().getSchemas(databaseName));
+                DatabaseRulesBuilder.build(databaseName, databaseConfig, instanceContext), persistService.getDatabaseMetaDataService().loadSchemas(databaseName));
     }
     
     /**
      * Create databases meta data for governance center.
      *
+     * @param persistService meta data persist service
      * @param databaseConfigMap database configuration map
      * @param props properties
      * @param instanceContext instance context
      * @return databases
      */
-    public static Map<String, ShardingSphereDatabase> create(final Map<String, DatabaseConfiguration> databaseConfigMap,
+    public static Map<String, ShardingSphereDatabase> create(final MetaDataPersistService persistService, final Map<String, DatabaseConfiguration> databaseConfigMap,
                                                              final ConfigurationProperties props, final InstanceContext instanceContext) {
-        return createDatabases(databaseConfigMap, DatabaseTypeEngine.getProtocolType(databaseConfigMap, props), props, instanceContext);
+        return createDatabases(persistService, databaseConfigMap, DatabaseTypeEngine.getProtocolType(databaseConfigMap, props), props, instanceContext);
     }
     
-    private static Map<String, ShardingSphereDatabase> createDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType,
-                                                                       final ConfigurationProperties props, final InstanceContext instanceContext) {
+    private static Map<String, ShardingSphereDatabase> createDatabases(final MetaDataPersistService persistService, final Map<String, DatabaseConfiguration> databaseConfigMap,
+                                                                       final DatabaseType protocolType, final ConfigurationProperties props, final InstanceContext instanceContext) {
         Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databaseConfigMap.size(), 1);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
             if (!entry.getValue().getDataSources().isEmpty()) {
-                result.put(databaseName.toLowerCase(), create(databaseName, entry.getValue(), props, instanceContext));
+                result.put(databaseName.toLowerCase(), create(databaseName, persistService, entry.getValue(), props, instanceContext));
             } else {
                 result.put(databaseName.toLowerCase(), ShardingSphereDatabase.create(databaseName, protocolType));
             }

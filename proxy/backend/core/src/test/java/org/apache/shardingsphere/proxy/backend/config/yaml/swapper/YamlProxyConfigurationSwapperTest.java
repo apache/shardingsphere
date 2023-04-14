@@ -37,7 +37,6 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -80,9 +79,8 @@ class YamlProxyConfigurationSwapperTest {
         assertThat(actual.getDataSources().size(), is(1));
         ReadwriteSplittingDataSourceRuleConfiguration dataSource = actual.getDataSources().iterator().next();
         assertThat(dataSource.getName(), is("readwrite_ds"));
-        assertNotNull(dataSource.getStaticStrategy());
-        assertThat(dataSource.getStaticStrategy().getWriteDataSourceName(), is("foo_db"));
-        assertThat(dataSource.getStaticStrategy().getReadDataSourceNames(), is(Collections.singletonList("foo_db")));
+        assertThat(dataSource.getWriteDataSourceName(), is("foo_db"));
+        assertThat(dataSource.getReadDataSourceNames(), is(Collections.singletonList("foo_db")));
         assertThat(actual.getLoadBalancers().size(), is(1));
         AlgorithmConfiguration loadBalancer = actual.getLoadBalancers().get("round_robin");
         assertThat(loadBalancer.getProps().size(), is(1));

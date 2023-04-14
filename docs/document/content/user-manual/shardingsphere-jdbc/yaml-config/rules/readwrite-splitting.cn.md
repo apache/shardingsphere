@@ -9,16 +9,15 @@ weight = 2
 
 ## 参数解释
 
-### 静态读写分离
+### 读写分离
 
 ```yaml
 rules:
 - !READWRITE_SPLITTING
   dataSources:
     <data_source_name> (+): # 读写分离逻辑数据源名称
-       static_strategy: # 读写分离类型
-         write_data_source_name: # 写库数据源名称
-         read_data_source_names: # 读库数据源名称，多个从数据源用逗号分隔
+       write_data_source_name: # 写库数据源名称
+       read_data_source_names: # 读库数据源名称，多个从数据源用逗号分隔
        transactionalReadQueryStrategy (?): # 事务内读请求的路由策略，可选值：PRIMARY（路由至主库）、FIXED（同一事务内路由至固定数据源）、DYNAMIC（同一事务内路由至非固定数据源）。默认值：DYNAMIC
        loadBalancerName: # 负载均衡算法名称
   
@@ -30,25 +29,6 @@ rules:
         # ...
 ```
 
-### 动态读写分离
-
-```yaml
-rules:
-- !READWRITE_SPLITTING
-  dataSources:
-    <data_source_name> (+): # 读写分离逻辑数据源名称
-       dynamic_strategy: # 读写分离类型
-         auto_aware_data_source_name: # 数据库发现逻辑数据源名称
-       transactionalReadQueryStrategy (?): # 事务内读请求的路由策略，可选值：PRIMARY（路由至主库）、FIXED（同一事务内路由至固定数据源）、DYNAMIC（同一事务内路由至非固定数据源）。默认值：DYNAMIC
-       loadBalancerName: # 负载均衡算法名称
-  
-  # 负载均衡算法配置
-  loadBalancers:
-    <load_balancer_name> (+): # 负载均衡算法名称
-      type: # 负载均衡算法类型
-      props: # 负载均衡算法属性配置
-        # ...
-```
 算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/common-config/builtin-algorithm/load-balance)。
 查询一致性路由的详情，请参见[核心特性：读写分离](/cn/features/readwrite-splitting/)。
 
@@ -63,11 +43,10 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds:
-      staticStrategy:
-        writeDataSourceName: write_ds
-        readDataSourceNames:
-          - read_ds_0
-          - read_ds_1
+      writeDataSourceName: write_ds
+      readDataSourceNames:
+        - read_ds_0
+        - read_ds_1
       transactionalReadQueryStrategy: PRIMARY
       loadBalancerName: random
   loadBalancers:

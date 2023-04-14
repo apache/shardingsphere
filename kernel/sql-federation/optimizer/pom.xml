@@ -161,7 +161,7 @@
                                     <goal>antlr4</goal>
                                 </goals>
                                 <configuration>
-                                    <libDirectory>src/main/antlr4/org/apache/shardingsphere/sqlfederation/optimizer/parser/rexnode</libDirectory>
+                                    <libDirectory>src/main/antlr4/imports/rexnode/</libDirectory>
                                     <listener>false</listener>
                                     <visitor>true</visitor>
                                 </configuration>
