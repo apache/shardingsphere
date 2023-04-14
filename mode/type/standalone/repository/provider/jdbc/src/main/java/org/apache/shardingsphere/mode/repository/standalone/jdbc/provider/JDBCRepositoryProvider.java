@@ -34,54 +34,54 @@ public class JDBCRepositoryProvider {
      * JDBCRepositoryProvider type.
      */
     @XmlAttribute(name = "type", required = true)
-    private final String type = "";
+    private String type;
     
     /**
      * JDBCRepositoryProvider driverClassName.
      */
     @XmlAttribute(name = "driver-class-name", required = true)
-    private final String driverClassName = "";
+    private String driverClassName;
     
     /**
      * Whether it is the default provider.
      */
-    @XmlAttribute(name = "is-default", required = true)
-    private final Boolean isDefault = false;
+    @XmlAttribute(name = "is-default")
+    private Boolean isDefault = false;
     
     /**
      * Create table SQL.
      */
     @XmlElement(name = "create-table", required = true)
-    private final String createTableSQL = "";
+    private String createTableSQL;
     
     /**
      * Select by key SQL.
      */
     @XmlElement(name = "select-by-key", required = true)
-    private final String selectByKeySQL = "";
+    private String selectByKeySQL;
     
     /**
      * Select by parent key SQL.
      */
     @XmlElement(name = "select-by-parent", required = true)
-    private final String selectByParentKeySQL = "";
+    private String selectByParentKeySQL;
     
     /**
      * Insert SQL.
      */
     @XmlElement(name = "insert", required = true)
-    private final String insertSQL = "";
+    private String insertSQL;
     
     /**
      * Update SQL.
      */
     @XmlElement(name = "update", required = true)
-    private final String updateSQL = "";
+    private String updateSQL;
     
     /**
      * Delete SQL.
      */
     @XmlElement(name = "delete", required = true)
-    private final String deleteSQL = "";
+    private String deleteSQL;
     
 }
