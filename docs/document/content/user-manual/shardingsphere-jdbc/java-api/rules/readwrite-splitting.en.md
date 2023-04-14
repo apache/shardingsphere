@@ -29,19 +29,10 @@ Configurable Properties:
 | *Name*                             | *DataType*                     | *Description*                                                                                                                                          | *Default Value*                    |
 |------------------------------------|--------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------|
 | name                               | String                         | Readwrite-splitting data source name                                                                                                                   | -                                  |
-| staticStrategy                     | String                         | Static Readwrite-splitting configuration                                                                                                               | -                                  |
-| dynamicStrategy                    | Properties                     | Dynamic Readwrite-splitting configuration                                                                                                              | -                                  |
+| writeDataSourceName                 | String                        | Write data source name                                                                                                                                 | -                                  |
+| readDataSourceNames                 | List\<String\>                | Read data sources list                                                                                                                                 | -                                  |
 | transactionalReadQueryStrategy (?) | TransactionalReadQueryStrategy | Routing strategy for read query within a transaction, values include: PRIMARY (to primary), FIXED (to fixed data source), DYNAMIC (to any data source) | DYNAMIC                            |
 | loadBalancerName (?)               | String                         | Load balance algorithm name of replica sources                                                                                                         | Round robin load balance algorithm |
-
-Class name：org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration
-
-Configurable Properties:
-
-| *Name*              | *DataType*     | *Description*          |
-|---------------------|----------------|------------------------|
-| writeDataSourceName | String         | Write data source name |
-| readDataSourceNames | List\<String\> | Read data sources list |
 
 Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/common-config/builtin-algorithm/load-balance) for details on algorithm types.
 Please refer to [Read-write splitting-Core features](/en/features/readwrite-splitting/) for more details about query consistent routing.
@@ -57,8 +48,7 @@ Please refer to [Read-write splitting-Core features](/en/features/readwrite-spli
 ```java
 public DataSource getDataSource() throws SQLException {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "demo_read_query_ds", new StaticReadwriteSplittingStrategyConfiguration("demo_write_ds",
-                Arrays.asList("demo_read_ds_0", "demo_read_ds_1")), null,"demo_weight_lb");
+                "demo_read_query_ds", "demo_write_ds", Arrays.asList("demo_read_ds_0", "demo_read_ds_1"), "demo_weight_lb");
         Properties algorithmProps = new Properties();
         algorithmProps.setProperty("demo_read_ds_0", "2");
         algorithmProps.setProperty("demo_read_ds_1", "1");

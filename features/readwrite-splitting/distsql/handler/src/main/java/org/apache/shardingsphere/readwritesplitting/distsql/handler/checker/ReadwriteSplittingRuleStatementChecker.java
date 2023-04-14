@@ -122,10 +122,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
         if (null != resourceMetaData && null != resourceMetaData.getDataSources()) {
             currentRuleNames.addAll(resourceMetaData.getDataSources().keySet());
         }
-        Collection<String> logicDataSources = getLogicDataSources(database);
-        if (null != logicDataSources && !logicDataSources.isEmpty()) {
-            currentRuleNames.addAll(getLogicDataSources(database));
-        }
+        currentRuleNames.addAll(getLogicDataSources(database));
         Collection<String> toBeCreatedRuleNames = segments.stream().map(ReadwriteSplittingRuleSegment::getName).filter(currentRuleNames::contains).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(toBeCreatedRuleNames.isEmpty(), () -> new InvalidRuleConfigurationException("Readwrite-splitting", toBeCreatedRuleNames,
                 Collections.singleton(String.format("%s already exists in storage unit", toBeCreatedRuleNames))));
@@ -171,9 +168,9 @@ public final class ReadwriteSplittingRuleStatementChecker {
         if (null != currentRuleConfig) {
             Collection<String> toBeAlteredRuleNames = isCreating ? Collections.emptySet() : getToBeAlteredRuleNames(segments);
             currentRuleConfig.getDataSources().forEach(each -> {
-                if (null != each.getStaticStrategy() && !toBeAlteredRuleNames.contains(each.getName())) {
-                    existedWriteDataSourceNames.add(each.getStaticStrategy().getWriteDataSourceName());
-                    existedReadDataSourceNames.addAll(each.getStaticStrategy().getReadDataSourceNames());
+                if (!toBeAlteredRuleNames.contains(each.getName())) {
+                    existedWriteDataSourceNames.add(each.getWriteDataSourceName());
+                    existedReadDataSourceNames.addAll(each.getReadDataSourceNames());
                 }
             });
         }

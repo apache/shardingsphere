@@ -58,8 +58,12 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     private final DatabaseType databaseType;
     
     public ShardingSpherePipelineDataSourceConfiguration(final String param) {
-        parameter = param;
         rootConfig = YamlEngine.unmarshal(param, YamlRootConfiguration.class, true);
+        // Need remove dataSourceProperties, because if the parameter at dataSourceProperties will override parameter at jdbcUrl
+        for (Map<String, Object> each : rootConfig.getDataSources().values()) {
+            each.remove("dataSourceProperties");
+        }
+        parameter = YamlEngine.marshal(rootConfig);
         Map<String, Object> props = rootConfig.getDataSources().values().iterator().next();
         databaseType = DatabaseTypeEngine.getDatabaseType(getJdbcUrl(props));
         appendJdbcQueryProperties(databaseType.getType());

@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.api.strategy;
+package org.apache.shardingsphere.data.pipeline.core.job.util;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * Static Readwrite-splitting strategy configuration.
- */
-@RequiredArgsConstructor
-@Getter
-public final class StaticReadwriteSplittingStrategyConfiguration {
+class InstanceTypeUtilsTest {
     
-    private final String writeDataSourceName;
-    
-    private final List<String> readDataSourceNames;
+    @Test
+    void assertEncodeAndDecode() {
+        for (InstanceType each : InstanceType.values()) {
+            assertThat(InstanceTypeUtils.decode(InstanceTypeUtils.encode(each)), is(each));
+        }
+    }
 }

@@ -19,13 +19,7 @@ ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
 
 readwriteSplittingDefinition ::=
-  ruleName '(' (staticReadwriteSplittingDefinition | dynamicReadwriteSplittingDefinition) (',' loadBalancerDefinition)? ')'
-
-staticReadwriteSplittingDefinition ::=
-    'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')'
-
-dynamicReadwriteSplittingDefinition ::=
-    'AUTO_AWARE_RESOURCE' '=' resourceName
+  ruleName '(' 'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')' (',' loadBalancerDefinition)? ')'
 
 loadBalancerDefinition ::=
     'TYPE' '(' 'NAME' '=' loadBalancerType (',' propertiesDefinition)? ')'
@@ -62,15 +56,13 @@ value ::=
 
 ### 补充说明
 
-- 支持创建静态读写分离规则和动态读写分离规则；
-- 动态读写分离规则依赖于数据库发现规则；
 - `loadBalancerType` 指定负载均衡算法类型，请参考[负载均衡算法](/cn/user-manual/common-config/builtin-algorithm/load-balance/)；
 - 重复的 `ruleName` 将无法被创建；
 - `ifNotExists` 子句用于避免出现 `Duplicate readwrite_splitting rule` 错误。
 
 ### 示例
 
-#### 创建静态读写分离规则
+#### 创建读写分离规则
 
 ```sql
 CREATE READWRITE_SPLITTING RULE ms_group_0 (
@@ -80,18 +72,9 @@ CREATE READWRITE_SPLITTING RULE ms_group_0 (
 );
 ```
 
-#### 创建动态读写分离规则
-
-```sql
-CREATE READWRITE_SPLITTING RULE ms_group_1 (
-    AUTO_AWARE_RESOURCE=group_0
-    TYPE(NAME="random")
-);
-```
-
 #### 使用 `ifNotExists` 子句创建读写分离规则
 
-- 静态读写分离规则
+- 读写分离规则
 
 ```sql
 CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_0 (
@@ -101,18 +84,9 @@ CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_0 (
 );
 ```
 
-- 动态读写分离规则
-
-```sql
-CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_1 (
-    AUTO_AWARE_RESOURCE=group_0
-    TYPE(NAME="random")
-);
-```
-
 ### 保留字
 
-`CREATE`、`READWRITE_SPLITTING`、`RULE`、`WRITE_STORAGE_UNIT`、`READ_STORAGE_UNITS`、`AUTO_AWARE_RESOURCE`
+`CREATE`、`READWRITE_SPLITTING`、`RULE`、`WRITE_STORAGE_UNIT`、`READ_STORAGE_UNITS`
 、`TYPE`、`NAME`、`PROPERTIES`、`TRUE`、`FALSE`
 
 ### 相关链接

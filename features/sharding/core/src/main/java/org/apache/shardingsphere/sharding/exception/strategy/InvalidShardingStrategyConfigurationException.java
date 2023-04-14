@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.yaml.config.strategy;
+package org.apache.shardingsphere.sharding.exception.strategy;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-
-import java.util.List;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
 
 /**
- * Static Readwrite-splitting strategy configuration for YAML.
+ * Invalid sharding strategy configuration exception.
  */
-@Getter
-@Setter
-public final class YamlStaticReadwriteSplittingStrategyConfiguration implements YamlConfiguration {
+public final class InvalidShardingStrategyConfigurationException extends ShardingSQLException {
     
-    private String writeDataSourceName;
+    private static final long serialVersionUID = -5874317771225005670L;
     
-    private List<String> readDataSourceNames;
+    public InvalidShardingStrategyConfigurationException(final String strategyLevel, final String strategyType, final String message) {
+        super(XOpenSQLState.GENERAL_ERROR, 99, String.format("Invalid %s strategy `%s`, %s.", strategyLevel, strategyType, message));
+    }
 }

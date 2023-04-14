@@ -481,7 +481,7 @@
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
-                <scope>runtime</scope>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
@@ -1109,7 +1109,7 @@
                 <reportSets>
                     <reportSet>
                         <reports>
-                            <report>javadoc</report>
+                            <report>aggregate</report>
                         </reports>
                     </reportSet>
                 </reportSets>
@@ -1117,6 +1117,11 @@
             <plugin>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>${maven-jxr-plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/test/**/*.java</exclude>
+                    </excludes>
+                </configuration>
                 <reportSets>
                     <reportSet>
                         <reports>

@@ -19,13 +19,7 @@ ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
 
 readwriteSplittingDefinition ::=
-  ruleName '(' (staticReadwriteSplittingDefinition | dynamicReadwriteSplittingDefinition) (',' loadBalancerDefinition)? ')'
-
-staticReadwriteSplittingDefinition ::=
-    'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')'
-
-dynamicReadwriteSplittingDefinition ::=
-    'AUTO_AWARE_RESOURCE' '=' resourceName
+  ruleName '(' 'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')' (',' loadBalancerDefinition)? ')'
 
 loadBalancerDefinition ::=
     'TYPE' '(' 'NAME' '=' loadBalancerType (',' propertiesDefinition)? ')'
@@ -62,15 +56,13 @@ value ::=
 
 ### Supplement
 
-- Support the creation of static readwrite-splitting rules and dynamic readwrite-splitting rules;
-- Dynamic readwrite-splitting rules rely on database discovery rules;
 - `loadBalancerType` specifies the load balancing algorithm type, please refer to [Load Balance Algorithm](/en/user-manual/common-config/builtin-algorithm/load-balance/);
 - Duplicate `ruleName` will not be created;
 - `ifNotExists` clause used for avoid `Duplicate readwrite_splitting rule` error.
 
 ### Example
 
-#### Create a statics readwrite-splitting rule
+#### Create a readwrite-splitting rule
 
 ```sql
 CREATE READWRITE_SPLITTING RULE ms_group_0 (
@@ -80,18 +72,9 @@ CREATE READWRITE_SPLITTING RULE ms_group_0 (
 );
 ```
 
-#### Create a dynamic readwrite-splitting rule
-
-```sql
-CREATE READWRITE_SPLITTING RULE ms_group_1 (
-    AUTO_AWARE_RESOURCE=group_0
-    TYPE(NAME="random")
-);
-```
-
 #### Create readwrite-splitting rule with `ifNotExists` clause
 
-- Statics readwrite-splitting rule
+- readwrite-splitting rule
 
 ```sql
 CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_0 (
@@ -101,18 +84,9 @@ CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_0 (
 );
 ```
 
-- Dynamic readwrite-splitting rule
-
-```sql
-CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_1 (
-    AUTO_AWARE_RESOURCE=group_0
-    TYPE(NAME="random")
-);
-```
-
 ### Reserved word
 
-`CREATE`, `READWRITE_SPLITTING`, `RULE`, `WRITE_STORAGE_UNIT`, `READ_STORAGE_UNITS`, `AUTO_AWARE_RESOURCE`
+`CREATE`, `READWRITE_SPLITTING`, `RULE`, `WRITE_STORAGE_UNIT`, `READ_STORAGE_UNITS`
 , `TYPE`, `NAME`, `PROPERTIES`, `TRUE`, `FALSE`
 
 ### Related links

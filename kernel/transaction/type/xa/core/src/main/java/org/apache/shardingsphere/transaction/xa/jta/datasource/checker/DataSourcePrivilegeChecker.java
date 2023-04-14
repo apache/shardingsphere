@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.util;
+package org.apache.shardingsphere.transaction.xa.jta.datasource.checker;
 
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import javax.sql.DataSource;
 
-final class InstanceTypeUtilTest {
+/**
+ * Data source privilege checker.
+ */
+public interface DataSourcePrivilegeChecker extends TypedSPI {
     
-    @Test
-    void assertEncodeAndDecode() {
-        for (InstanceType each : InstanceType.values()) {
-            assertThat(InstanceTypeUtil.decode(InstanceTypeUtil.encode(each)), is(each));
-        }
-    }
+    /**
+     * Check privilege.
+     *
+     * @param dataSource data source
+     */
+    void checkPrivilege(DataSource dataSource);
 }

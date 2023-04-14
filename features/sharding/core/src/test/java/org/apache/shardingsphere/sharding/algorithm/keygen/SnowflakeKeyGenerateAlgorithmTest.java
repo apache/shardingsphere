@@ -232,4 +232,10 @@ class SnowflakeKeyGenerateAlgorithmTest {
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-tolerate-time-difference-milliseconds", "1")));
         assertThat(((Properties) Plugins.getMemberAccessor().get(algorithm.getClass().getDeclaredField("props"), algorithm)).getProperty("max-tolerate-time-difference-milliseconds"), is("1"));
     }
+    
+    @Test
+    void assertMaxTolerateTimeDifferenceMillisecondsWhenNegative() {
+        assertThrows(KeyGenerateAlgorithmInitializationException.class,
+                () -> TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-tolerate-time-difference-milliseconds", "-1"))).generateKey());
+    }
 }

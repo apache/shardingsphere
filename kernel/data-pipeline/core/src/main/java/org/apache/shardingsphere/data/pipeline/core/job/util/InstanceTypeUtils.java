@@ -22,10 +22,10 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 /**
- * Instance type util.
+ * Instance type utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InstanceTypeUtil {
+public final class InstanceTypeUtils {
     
     /**
      * Encode instance type.
