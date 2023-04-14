@@ -47,7 +47,7 @@ public final class PostgreSQLColumnDescription {
     public PostgreSQLColumnDescription(final String columnName, final int columnIndex, final int columnType, final int columnLength, final String columnTypeName) {
         this(columnName, columnIndex, columnType, columnLength, columnTypeName, PostgreSQLValueFormat.TEXT.getCode());
     }
-
+    
     public PostgreSQLColumnDescription(final String columnName, final int columnIndex, final int columnType, final int columnLength, final String columnTypeName, final int dataFormat) {
         this.columnName = columnName;
         this.columnIndex = columnIndex;

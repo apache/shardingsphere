@@ -39,7 +39,7 @@ import java.sql.SQLException;
  */
 @PipelineE2ESettings(fetchSingle = true, database = @PipelineE2ESettings.PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/common/none.xml"))
 public class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
-
+    
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(PipelineE2ETestCaseArgumentsProvider.class)
@@ -59,7 +59,7 @@ public class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
             assertCheckMigrationSuccess(containerComposer, jobId, "DATA_MATCH");
         }
     }
-
+    
     private void insertOneRecordWithZeroValue(final PipelineContainerComposer containerComposer, final int id) throws SQLException {
         try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `time_e2e`(id, t_timestamp, t_datetime, t_date, t_year) VALUES (?, ?, ?, ?, ?)");
@@ -71,7 +71,7 @@ public class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
             preparedStatement.execute();
         }
     }
-
+    
     private static boolean isEnabled() {
         return PipelineE2ECondition.isEnabled(new MySQLDatabaseType());
     }
