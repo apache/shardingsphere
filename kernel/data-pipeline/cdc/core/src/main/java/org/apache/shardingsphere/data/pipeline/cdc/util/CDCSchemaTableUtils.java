@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
@@ -37,6 +39,7 @@ import java.util.Set;
 /**
  * CDC schema table utility class.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CDCSchemaTableUtils {
     
     /**

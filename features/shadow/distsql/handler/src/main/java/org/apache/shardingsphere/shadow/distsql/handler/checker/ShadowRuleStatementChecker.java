@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.checker;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
@@ -36,6 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Shadow rule statement checker.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ShadowRuleStatementChecker {
     
     /**

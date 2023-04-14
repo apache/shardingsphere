@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.db.protocol.event;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Write complete event.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WriteCompleteEvent {
     
     private static final WriteCompleteEvent INSTANCE = new WriteCompleteEvent();

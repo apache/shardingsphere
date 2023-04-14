@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.proxy.frontend.authentication;
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 /**
  * Authentication result builder.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AuthenticationResultBuilder {
     
     /**

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.traffic.distsql.handler.convert;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -29,6 +31,7 @@ import java.util.Optional;
 /**
  * Traffic rule converter.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TrafficRuleConverter {
     
     /**

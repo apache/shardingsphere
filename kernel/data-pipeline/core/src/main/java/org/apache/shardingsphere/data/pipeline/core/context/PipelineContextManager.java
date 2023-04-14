@@ -17,12 +17,16 @@
 
 package org.apache.shardingsphere.data.pipeline.core.context;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Pipeline context manager.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineContextManager {
     
     private static final Map<PipelineContextKey, PipelineContext> CONTEXT_MAP = new ConcurrentHashMap<>();

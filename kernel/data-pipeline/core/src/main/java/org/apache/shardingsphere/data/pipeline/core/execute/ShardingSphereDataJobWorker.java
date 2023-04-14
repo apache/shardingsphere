@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.internal.InternalConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
@@ -25,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * ShardingSphere data job worker.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereDataJobWorker {
     
     private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
