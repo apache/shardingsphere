@@ -9,11 +9,12 @@ code {
   color: $code-color;
   font-size: 85%;
   padding: .25em .5em;
-  white-space: pre-wrap;
+  // white-space: pre-wrap;
 }
 
 pre {
   margin: 0 0 1rem;
+  padding: 1rem;
 }
 
 pre code {
