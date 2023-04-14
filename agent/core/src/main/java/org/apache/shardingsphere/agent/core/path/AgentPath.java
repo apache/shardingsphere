@@ -50,7 +50,7 @@ public final class AgentPath {
             Preconditions.checkState(result.exists(), "Can not locate agent jar file by URL `%s`.", url);
             return result;
         } catch (final MalformedURLException | URISyntaxException ex) {
-            throw new IllegalStateException(String.format("Can not locate agent jar file by URL `%s`.", url));
+            throw new IllegalStateException(String.format("Can not locate agent jar file by URL `%s`.", url), ex);
         }
     }
 }

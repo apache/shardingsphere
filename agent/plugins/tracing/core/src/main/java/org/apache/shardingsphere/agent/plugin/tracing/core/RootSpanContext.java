@@ -19,12 +19,12 @@ package org.apache.shardingsphere.agent.plugin.tracing.core;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 /**
  * Root span context.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RootSpanContext {
     
     private static final TransmittableThreadLocal<Object> VALUE = new TransmittableThreadLocal<>();

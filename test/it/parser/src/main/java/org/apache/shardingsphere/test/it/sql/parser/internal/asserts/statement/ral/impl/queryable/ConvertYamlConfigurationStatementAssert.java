@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
@@ -28,6 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Convert yaml configuration statement assert.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConvertYamlConfigurationStatementAssert {
     
     /**

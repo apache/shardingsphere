@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.generator;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
@@ -26,6 +28,7 @@ import java.util.Comparator;
 /**
  * Data record comparator generator.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataRecordComparatorGenerator {
     
     /**

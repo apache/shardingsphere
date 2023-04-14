@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 /**
  * Schema meta data manager.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SchemaManager {
     
     /**

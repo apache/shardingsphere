@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Worker id node.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkerIdNode {
     
     private static final String ROOT_NODE = "worker_id";

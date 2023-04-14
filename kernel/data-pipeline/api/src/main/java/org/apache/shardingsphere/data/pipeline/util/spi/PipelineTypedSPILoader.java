@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.util.spi;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.BranchDatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
@@ -28,6 +30,7 @@ import java.util.Optional;
 /**
  * Pipeline typed SPI loader.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineTypedSPILoader {
     
     /**
