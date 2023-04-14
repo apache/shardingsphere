@@ -37,6 +37,8 @@ public final class MySQLDataSourcePrivilegeChecker implements DataSourcePrivileg
     
     private static final String[][] REQUIRED_PRIVILEGES = {{"ALL PRIVILEGES", "ON *.*"}, {"XA_RECOVER_ADMIN", "ON *.*"}};
     
+    private static final int MYSQL_MAJOR_VERSION_8 = 8;
+    
     /**
      * Check privilege.
      *
@@ -45,7 +47,7 @@ public final class MySQLDataSourcePrivilegeChecker implements DataSourcePrivileg
      */
     public void checkPrivilege(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
-            if (8 == connection.getMetaData().getDatabaseMajorVersion()) {
+            if (MYSQL_MAJOR_VERSION_8 == connection.getMetaData().getDatabaseMajorVersion()) {
                 checkPrivilege(connection);
             }
         } catch (final SQLException ex) {
