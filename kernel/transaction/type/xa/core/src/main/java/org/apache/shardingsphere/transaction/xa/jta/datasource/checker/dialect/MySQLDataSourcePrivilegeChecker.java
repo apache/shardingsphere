@@ -72,4 +72,9 @@ public final class MySQLDataSourcePrivilegeChecker implements DataSourcePrivileg
     private boolean matchPrivileges(final String privilege) {
         return Arrays.stream(REQUIRED_PRIVILEGES).anyMatch(each -> Arrays.stream(each).allMatch(privilege::contains));
     }
+    
+    @Override
+    public String getType() {
+        return "MySQL";
+    }
 }

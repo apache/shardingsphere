@@ -28,6 +28,6 @@ public final class XATransactionPrivilegeException extends TransactionSQLExcepti
     private static final long serialVersionUID = -1565168229743080642L;
     
     public XATransactionPrivilegeException(final String errorMessage) {
-        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 204, "Failed to create XA data source, requires `%s` privileges", errorMessage);
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 204, "Failed to create XA transaction manager, requires `%s` privileges", errorMessage);
     }
 }
