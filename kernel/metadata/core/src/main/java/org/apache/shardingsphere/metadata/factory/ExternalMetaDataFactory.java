@@ -21,8 +21,11 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
+import org.apache.shardingsphere.infra.exception.UnsupportedStorageTypeException;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -76,10 +79,15 @@ public final class ExternalMetaDataFactory {
             String databaseName = entry.getKey();
             if (!entry.getValue().getDataSources().isEmpty() || !protocolType.getSystemSchemas().contains(databaseName)) {
                 Map<String, DatabaseType> storageTypes = DatabaseTypeEngine.getStorageTypes(entry.getKey(), entry.getValue());
+                checkSupportedStorageTypes(databaseName, storageTypes);
                 result.put(databaseName.toLowerCase(), ShardingSphereDatabase.create(databaseName, protocolType, storageTypes, entry.getValue(), props, instanceContext));
             }
         }
         return result;
+    }
+    
+    private static void checkSupportedStorageTypes(final String databaseName, final Map<String, DatabaseType> storageTypes) {
+        storageTypes.forEach((key, value) -> ShardingSpherePreconditions.checkState(!SQL92DatabaseType.class.equals(value.getClass()), () -> new UnsupportedStorageTypeException(databaseName, key)));
     }
     
     private static Map<String, ShardingSphereDatabase> createSystemDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType) {
