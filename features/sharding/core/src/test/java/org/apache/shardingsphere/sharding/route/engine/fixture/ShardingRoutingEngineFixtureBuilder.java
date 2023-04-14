@@ -225,7 +225,7 @@ public final class ShardingRoutingEngineFixtureBuilder {
     }
     
     private static ShardingTableRuleConfiguration createTableRuleConfig(final String tableName, final String actualDataNodes,
-                                                                 final ShardingStrategyConfiguration dsShardingStrategyConfig, final ShardingStrategyConfiguration tableShardingStrategyConfig) {
+                                                                        final ShardingStrategyConfiguration dsShardingStrategyConfig, final ShardingStrategyConfiguration tableShardingStrategyConfig) {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(tableName, actualDataNodes);
         result.setDatabaseShardingStrategy(dsShardingStrategyConfig);
         result.setTableShardingStrategy(tableShardingStrategyConfig);

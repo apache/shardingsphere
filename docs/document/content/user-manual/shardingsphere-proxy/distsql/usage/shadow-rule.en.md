@@ -1,6 +1,6 @@
 +++
 title = "Shadow"
-weight = 6
+weight = 5
 +++
 
 ## Storage unit Operation

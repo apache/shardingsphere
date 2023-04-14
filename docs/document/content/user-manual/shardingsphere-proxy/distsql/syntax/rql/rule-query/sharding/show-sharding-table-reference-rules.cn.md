@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHARDING TABLE REFERENCE RULE"
-weight = 14
+weight = 13
 
 +++
 
@@ -34,10 +34,10 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列                       | 说明             |
-| -------------------------| ----------------|
+| 列                        | 说明        |
+|--------------------------|-----------|
 | name                     | 分片表关联规则名称 |
-| sharding_table_reference | 分片表关联关系    |
+| sharding_table_reference | 分片表关联关系   |
 
 ### 示例
 

@@ -51,6 +51,8 @@ class SystemSchemaUtilsTest {
         assertFalse(SystemSchemaUtils.containsSystemSchema(new OpenGaussDatabaseType(), Collections.singletonList("sharding_db"), shardingSchemaDatabase));
         ShardingSphereDatabase customizedInformationSchemaDatabase = mockShardingSphereDatabase("information_schema", true);
         assertTrue(SystemSchemaUtils.containsSystemSchema(new OpenGaussDatabaseType(), Arrays.asList("information_schema", "pg_catalog"), customizedInformationSchemaDatabase));
+        ShardingSphereDatabase customizedGaussDBDatabase = mockShardingSphereDatabase("gaussdb", true);
+        assertFalse(SystemSchemaUtils.containsSystemSchema(new OpenGaussDatabaseType(), Collections.emptyList(), customizedGaussDBDatabase));
     }
     
     @Test

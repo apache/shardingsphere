@@ -27,17 +27,18 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.dr
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
-import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema.OpenGaussSystemCatalog;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema.OpenGaussDatabase;
+import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema.OpenGaussSystemCatalog;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -65,18 +66,23 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
     
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
-        try (CalciteConnection connection = DriverManager.getConnection("jdbc:calcite:caseSensitive=false").unwrap(CalciteConnection.class)) {
-            connection.getRootSchema().add(PG_CATALOG, new ReflectiveSchema(constructOgCatalog()));
-            connection.getRootSchema().add("version", ScalarFunctionImpl.create(getClass(), "version"));
-            connection.getRootSchema().add("gs_password_deadline", ScalarFunctionImpl.create(getClass(), "gsPasswordDeadline"));
-            connection.getRootSchema().add("intervaltonum", ScalarFunctionImpl.create(getClass(), "intervalToNum"));
-            connection.getRootSchema().add("gs_password_notifyTime", ScalarFunctionImpl.create(getClass(), "gsPasswordNotifyTime"));
+        try (Connection connection = DriverManager.getConnection("jdbc:calcite:caseSensitive=false")) {
+            prepareCalciteConnection(connection);
             connection.setSchema(PG_CATALOG);
-            try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
+            try (PreparedStatement statement = connection.prepareStatement(sql); ResultSet resultSet = statement.executeQuery()) {
                 queryResultMetaData = new JDBCQueryResultMetaData(resultSet.getMetaData());
                 mergedResult = new IteratorStreamMergedResult(Collections.singletonList(new JDBCMemoryQueryResult(resultSet, connectionSession.getProtocolType())));
             }
         }
+    }
+    
+    private void prepareCalciteConnection(final Connection connection) throws SQLException {
+        CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+        calciteConnection.getRootSchema().add(PG_CATALOG, new ReflectiveSchema(constructOgCatalog()));
+        calciteConnection.getRootSchema().add("version", ScalarFunctionImpl.create(getClass(), "version"));
+        calciteConnection.getRootSchema().add("gs_password_deadline", ScalarFunctionImpl.create(getClass(), "gsPasswordDeadline"));
+        calciteConnection.getRootSchema().add("intervaltonum", ScalarFunctionImpl.create(getClass(), "intervalToNum"));
+        calciteConnection.getRootSchema().add("gs_password_notifyTime", ScalarFunctionImpl.create(getClass(), "gsPasswordNotifyTime"));
     }
     
     private OpenGaussSystemCatalog constructOgCatalog() {

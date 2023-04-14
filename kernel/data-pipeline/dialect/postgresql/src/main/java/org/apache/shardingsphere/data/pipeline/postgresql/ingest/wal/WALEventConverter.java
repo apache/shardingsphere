@@ -55,8 +55,9 @@ public final class WALEventConverter {
     /**
      * Convert WAL event to {@code Record}.
      *
-     * @param event of wal
+     * @param event WAL event
      * @return record
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public Record convert(final AbstractWALEvent event) {
         if (filter(event)) {
@@ -123,7 +124,7 @@ public final class WALEventConverter {
     
     private DataRecord createDataRecord(final AbstractRowEvent rowsEvent, final int columnCount) {
         DataRecord result = new DataRecord(new WALPosition(rowsEvent.getLogSequenceNumber()), columnCount);
-        result.setTableName(dumperConfig.getLogicTableName(rowsEvent.getTableName()).getLowercase());
+        result.setTableName(dumperConfig.getLogicTableName(rowsEvent.getTableName()).getOriginal());
         result.setCsn(rowsEvent.getCsn());
         return result;
     }

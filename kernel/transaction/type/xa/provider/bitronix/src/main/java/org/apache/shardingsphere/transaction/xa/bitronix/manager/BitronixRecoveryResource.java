@@ -33,7 +33,7 @@ import javax.transaction.xa.XAResource;
 import java.sql.SQLException;
 
 /**
- * Bitronix recovery resource.
+ * Recovery resource of Bitronix.
  */
 @RequiredArgsConstructor
 public final class BitronixRecoveryResource extends ResourceBean implements XAResourceProducer {

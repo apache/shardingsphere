@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHARDING ALGORITHMS"
-weight = 3
+weight = 2
 +++
 
 ### Description
@@ -31,7 +31,7 @@ databaseName ::=
 ### Return value description
 
 | Column | Description                   |
-| ------ | ----------------------------- |
+|--------|-------------------------------|
 | name   | Sharding algorithm name       |
 | type   | Sharding algorithm type       |
 | props  | Sharding algorithm properties |

@@ -58,11 +58,6 @@ class ConvertYamlConfigurationExecutorTest {
     }
     
     @Test
-    void assertExecuteWithDatabaseDiscovery() {
-        assertExecute("/conf/convert/config-database-discovery.yaml", "/expected/convert-database-discovery.yaml");
-    }
-    
-    @Test
     void assertExecuteWithEncrypt() {
         assertExecute("/conf/convert/config-encrypt.yaml", "/expected/convert-encrypt.yaml");
     }

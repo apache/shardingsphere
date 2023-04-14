@@ -32,12 +32,11 @@ public final class YamlStorageNodeDataSourceSwapper implements YamlConfiguration
         YamlStorageNodeDataSource result = new YamlStorageNodeDataSource();
         result.setRole(data.getRole().name());
         result.setStatus(data.getStatus().name());
-        result.setReplicationDelayMilliseconds(data.getReplicationDelayMilliseconds());
         return result;
     }
     
     @Override
     public StorageNodeDataSource swapToObject(final YamlStorageNodeDataSource yamlConfig) {
-        return new StorageNodeDataSource(StorageNodeRole.valueOf(yamlConfig.getRole()), DataSourceState.valueOf(yamlConfig.getStatus()), yamlConfig.getReplicationDelayMilliseconds());
+        return new StorageNodeDataSource(StorageNodeRole.valueOf(yamlConfig.getRole()), DataSourceState.valueOf(yamlConfig.getStatus()));
     }
 }

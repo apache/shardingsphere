@@ -27,6 +27,10 @@ import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDataba
 import org.apache.shardingsphere.dialect.exception.syntax.table.NoSuchTableException;
 import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
+import org.apache.shardingsphere.dialect.mysql.exception.AccessDeniedException;
+import org.apache.shardingsphere.dialect.mysql.exception.DatabaseAccessDeniedException;
+import org.apache.shardingsphere.dialect.mysql.exception.HandshakeException;
+import org.apache.shardingsphere.dialect.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
@@ -68,7 +72,11 @@ class MySQLDialectExceptionMapperTest {
                     Arguments.of(TableModifyInTransactionException.class, MySQLVendorError.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE),
                     Arguments.of(TooManyConnectionsException.class, MySQLVendorError.ER_CON_COUNT_ERROR),
                     Arguments.of(UnsupportedPreparedStatementException.class, MySQLVendorError.ER_UNSUPPORTED_PS),
-                    Arguments.of(UnknownCollationException.class, MySQLVendorError.ER_UNKNOWN_COLLATION));
+                    Arguments.of(UnknownCharsetException.class, MySQLVendorError.ER_UNKNOWN_CHARACTER_SET),
+                    Arguments.of(UnknownCollationException.class, MySQLVendorError.ER_UNKNOWN_COLLATION),
+                    Arguments.of(HandshakeException.class, MySQLVendorError.ER_HANDSHAKE_ERROR),
+                    Arguments.of(AccessDeniedException.class, MySQLVendorError.ER_ACCESS_DENIED_ERROR),
+                    Arguments.of(DatabaseAccessDeniedException.class, MySQLVendorError.ER_DBACCESS_DENIED_ERROR));
         }
     }
 }

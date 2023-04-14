@@ -51,12 +51,14 @@ import org.apache.shardingsphere.data.pipeline.core.api.impl.AbstractInventoryIn
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
-import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.RegisterMigrationSourceStorageUnitException;
 import org.apache.shardingsphere.data.pipeline.core.exception.connection.UnregisterMigrationSourceStorageUnitException;
 import org.apache.shardingsphere.data.pipeline.core.exception.metadata.NoAnyRuleExistsException;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineSchemaUtils;
 import org.apache.shardingsphere.data.pipeline.core.sharding.ShardingColumnsExtractor;
 import org.apache.shardingsphere.data.pipeline.core.util.JobDataNodeLineConvertUtils;
@@ -127,19 +129,20 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     /**
      * Create job migration config and start.
      *
+     * @param contextKey context key
      * @param param create migration job parameter
      * @return job id
      */
-    public String createJobAndStart(final MigrateTableStatement param) {
-        MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(buildYamlJobConfiguration(param));
+    public String createJobAndStart(final PipelineContextKey contextKey, final MigrateTableStatement param) {
+        MigrationJobConfiguration jobConfig = new YamlMigrationJobConfigurationSwapper().swapToObject(buildYamlJobConfiguration(contextKey, param));
         start(jobConfig);
         return jobConfig.getJobId();
     }
     
-    private YamlMigrationJobConfiguration buildYamlJobConfiguration(final MigrateTableStatement param) {
+    private YamlMigrationJobConfiguration buildYamlJobConfiguration(final PipelineContextKey contextKey, final MigrateTableStatement param) {
         YamlMigrationJobConfiguration result = new YamlMigrationJobConfiguration();
         result.setTargetDatabaseName(param.getTargetDatabaseName());
-        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(new MigrationJobType());
+        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(contextKey, new MigrationJobType());
         Map<String, List<DataNode>> sourceDataNodes = new LinkedHashMap<>();
         Map<String, YamlPipelineDataSourceConfiguration> configSources = new LinkedHashMap<>();
         List<SourceTargetEntry> sourceTargetEntries = new ArrayList<>(new HashSet<>(param.getSourceTargetEntries())).stream().sorted(Comparator.comparing(SourceTargetEntry::getTargetTableName)
@@ -168,7 +171,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
             }
         }
         result.setSources(configSources);
-        PipelineDataSourceConfiguration targetPipelineDataSourceConfig = buildTargetPipelineDataSourceConfiguration(param.getTargetDatabaseName());
+        ShardingSphereDatabase targetDatabase = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(param.getTargetDatabaseName());
+        PipelineDataSourceConfiguration targetPipelineDataSourceConfig = buildTargetPipelineDataSourceConfiguration(targetDatabase);
         result.setTarget(buildYamlPipelineDataSourceConfiguration(targetPipelineDataSourceConfig.getType(), targetPipelineDataSourceConfig.getParameter()));
         result.setTargetDatabaseType(targetPipelineDataSourceConfig.getDatabaseType().getType());
         List<JobDataNodeEntry> tablesFirstDataNodes = sourceDataNodes.entrySet().stream()
@@ -177,7 +181,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         result.setTargetTableSchemaMap(buildTargetTableSchemaMap(sourceDataNodes));
         result.setTablesFirstDataNodes(new JobDataNodeLine(tablesFirstDataNodes).marshal());
         result.setJobShardingDataNodes(JobDataNodeLineConvertUtils.convertDataNodesToLines(sourceDataNodes).stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
-        extendYamlJobConfiguration(result);
+        extendYamlJobConfiguration(contextKey, result);
         return result;
     }
     
@@ -188,14 +192,13 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         return result;
     }
     
-    private PipelineDataSourceConfiguration buildTargetPipelineDataSourceConfiguration(final String targetDatabaseName) {
+    private PipelineDataSourceConfiguration buildTargetPipelineDataSourceConfiguration(final ShardingSphereDatabase targetDatabase) {
         Map<String, Map<String, Object>> targetDataSourceProps = new HashMap<>();
-        ShardingSphereDatabase targetDatabase = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(targetDatabaseName);
         for (Entry<String, DataSource> entry : targetDatabase.getResourceMetaData().getDataSources().entrySet()) {
             Map<String, Object> dataSourceProps = swapper.swapToMap(DataSourcePropertiesCreator.create(entry.getValue()));
             targetDataSourceProps.put(entry.getKey(), dataSourceProps);
         }
-        YamlRootConfiguration targetRootConfig = buildYamlRootConfiguration(targetDatabaseName, targetDataSourceProps, targetDatabase.getRuleMetaData().getConfigurations());
+        YamlRootConfiguration targetRootConfig = buildYamlRootConfiguration(targetDatabase.getName(), targetDataSourceProps, targetDatabase.getRuleMetaData().getConfigurations());
         return new ShardingSpherePipelineDataSourceConfiguration(targetRootConfig);
     }
     
@@ -234,15 +237,15 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     @Override
-    public void extendYamlJobConfiguration(final YamlPipelineJobConfiguration yamlJobConfig) {
+    public void extendYamlJobConfiguration(final PipelineContextKey contextKey, final YamlPipelineJobConfiguration yamlJobConfig) {
         YamlMigrationJobConfiguration config = (YamlMigrationJobConfiguration) yamlJobConfig;
         if (null == yamlJobConfig.getJobId()) {
-            config.setJobId(generateJobId(config));
+            config.setJobId(generateJobId(contextKey, config));
         }
     }
     
-    private String generateJobId(final YamlMigrationJobConfiguration config) {
-        MigrationJobId jobId = new MigrationJobId(config.getJobShardingDataNodes(), config.getTargetDatabaseName());
+    private String generateJobId(final PipelineContextKey contextKey, final YamlMigrationJobConfiguration config) {
+        MigrationJobId jobId = new MigrationJobId(contextKey, config.getJobShardingDataNodes());
         return marshalJobId(jobId);
     }
     
@@ -334,8 +337,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     @Override
     public MigrationProcessContext buildPipelineProcessContext(final PipelineJobConfiguration pipelineJobConfig) {
-        // TODO cache process config on local
-        PipelineProcessConfiguration processConfig = showProcessConfiguration();
+        PipelineProcessConfiguration processConfig = showProcessConfiguration(PipelineJobIdUtils.parseContextKey(pipelineJobConfig.getJobId()));
         return new MigrationProcessContext(pipelineJobConfig.getJobId(), processConfig);
     }
     
@@ -348,7 +350,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     @Override
     public void startDisabledJob(final String jobId) {
         super.startDisabledJob(jobId);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId).ifPresent(optional -> {
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
                 TypedSPILoader.getService(PipelineJobAPI.class, "CONSISTENCY_CHECK").startDisabledJob(optional);
                 // CHECKSTYLE:OFF
@@ -361,7 +363,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     @Override
     public void stop(final String jobId) {
-        PipelineAPIFactory.getGovernanceRepositoryAPI().getLatestCheckJobId(jobId).ifPresent(optional -> {
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getLatestCheckJobId(jobId).ifPresent(optional -> {
             try {
                 TypedSPILoader.getService(PipelineJobAPI.class, "CONSISTENCY_CHECK").stop(optional);
                 // CHECKSTYLE:OFF
@@ -384,7 +386,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     }
     
     private void dropCheckJobs(final String jobId) {
-        Collection<String> checkJobIds = PipelineAPIFactory.getGovernanceRepositoryAPI().listCheckJobIds(jobId);
+        Collection<String> checkJobIds = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).listCheckJobIds(jobId);
         if (checkJobIds.isEmpty()) {
             return;
         }
@@ -419,7 +421,6 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     @Override
     public void commit(final String jobId) {
-        checkModeConfig();
         log.info("Commit job {}", jobId);
         final long startTimeMillis = System.currentTimeMillis();
         dropCheckJobs(jobId);
@@ -431,10 +432,11 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     /**
      * Add migration source resources.
      *
+     * @param contextKey context key
      * @param dataSourcePropsMap data source properties map
      */
-    public void addMigrationSourceResources(final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(getJobType());
+    public void addMigrationSourceResources(final PipelineContextKey contextKey, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        Map<String, DataSourceProperties> existDataSources = dataSourcePersistService.load(contextKey, getJobType());
         Collection<String> duplicateDataSourceNames = new HashSet<>(dataSourcePropsMap.size(), 1);
         for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
             if (existDataSources.containsKey(entry.getKey())) {
@@ -444,31 +446,33 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
         ShardingSpherePreconditions.checkState(duplicateDataSourceNames.isEmpty(), () -> new RegisterMigrationSourceStorageUnitException(duplicateDataSourceNames));
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(existDataSources);
         result.putAll(dataSourcePropsMap);
-        dataSourcePersistService.persist(getJobType(), result);
+        dataSourcePersistService.persist(contextKey, getJobType(), result);
     }
     
     /**
      * Drop migration source resources.
      *
+     * @param contextKey context key
      * @param resourceNames resource names
      */
-    public void dropMigrationSourceResources(final Collection<String> resourceNames) {
-        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(getJobType());
+    public void dropMigrationSourceResources(final PipelineContextKey contextKey, final Collection<String> resourceNames) {
+        Map<String, DataSourceProperties> metaDataDataSource = dataSourcePersistService.load(contextKey, getJobType());
         List<String> noExistResources = resourceNames.stream().filter(each -> !metaDataDataSource.containsKey(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(noExistResources.isEmpty(), () -> new UnregisterMigrationSourceStorageUnitException(noExistResources));
         for (String each : resourceNames) {
             metaDataDataSource.remove(each);
         }
-        dataSourcePersistService.persist(getJobType(), metaDataDataSource);
+        dataSourcePersistService.persist(contextKey, getJobType(), metaDataDataSource);
     }
     
     /**
      * Query migration source resources list.
      *
+     * @param contextKey context key
      * @return migration source resources
      */
-    public Collection<Collection<Object>> listMigrationSourceResources() {
-        Map<String, DataSourceProperties> dataSourcePropertiesMap = dataSourcePersistService.load(getJobType());
+    public Collection<Collection<Object>> listMigrationSourceResources(final PipelineContextKey contextKey) {
+        Map<String, DataSourceProperties> dataSourcePropertiesMap = dataSourcePersistService.load(contextKey, getJobType());
         Collection<Collection<Object>> result = new ArrayList<>(dataSourcePropertiesMap.size());
         for (Entry<String, DataSourceProperties> entry : dataSourcePropertiesMap.entrySet()) {
             String dataSourceName = entry.getKey();

@@ -1,6 +1,6 @@
 +++
 title = "SHOW AUTHORITY RULE"
-weight = 2
+weight = 1
 +++
 
 ### 描述
@@ -22,11 +22,11 @@ ShowAuthorityRule ::=
 
 ### 返回值说明
 
-| 列          | 说明          |
-|-------------|--------------|
-| users       | 用户          |
-| provider    | 权限提供者类型 |
-| props       | 权限参数      |
+| 列        | 说明      |
+|----------|---------|
+| users    | 用户      |
+| provider | 权限提供者类型 |
+| props    | 权限参数    |
 
 ### 示例
 

@@ -85,6 +85,7 @@ public final class ManualBitSet {
      * @param fromIndex from index
      * @param size true bit size
      * @return index
+     * @throws IndexOutOfBoundsException index out of bounds exception
      */
     public synchronized long getEndIndex(final long fromIndex, final int size) {
         if (0 == size) {
@@ -109,14 +110,12 @@ public final class ManualBitSet {
      *
      * @param bitIndex retain bit index
      */
-    public void clear(final long bitIndex) {
+    public synchronized void clear(final long bitIndex) {
         if ((bitIndex - startIndex) > BIT_SET_SIZE) {
-            synchronized (this) {
-                int count = Math.min(bitSets.size(), (int) ((bitIndex - startIndex) / BIT_SET_SIZE));
-                if (count > 0) {
-                    bitSets.subList(0, count).clear();
-                    startIndex += (long) count * BIT_SET_SIZE;
-                }
+            int count = Math.min(bitSets.size(), (int) ((bitIndex - startIndex) / BIT_SET_SIZE));
+            if (count > 0) {
+                bitSets.subList(0, count).clear();
+                startIndex += (long) count * BIT_SET_SIZE;
             }
         }
     }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
 import com.arjuna.ats.arjuna.objectstore.StoreManager;
-import com.arjuna.ats.arjuna.recovery.RecoveryManager;
 import com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
@@ -55,7 +54,6 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
         transactionManager = jtaPropertyManager.getJTAEnvironmentBean().getTransactionManager();
         xaRecoveryModule = XARecoveryModule.getRegisteredXARecoveryModule();
         recoveryManagerService = new RecoveryManagerService();
-        RecoveryManager.delayRecoveryManagerThread();
         recoveryManagerService.create();
         recoveryManagerService.start();
     }

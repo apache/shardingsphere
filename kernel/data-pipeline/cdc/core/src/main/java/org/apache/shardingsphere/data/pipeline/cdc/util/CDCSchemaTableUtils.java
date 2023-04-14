@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType
 import org.apache.shardingsphere.infra.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -70,9 +71,7 @@ public final class CDCSchemaTableUtils {
             } else if ("*".equals(each.getTable())) {
                 String schemaName = each.getSchema().isEmpty() ? getDefaultSchema(database.getProtocolType()) : each.getSchema();
                 ShardingSphereSchema schema = database.getSchema(schemaName);
-                if (null == schema) {
-                    throw new SchemaNotFoundException(each.getSchema());
-                }
+                ShardingSpherePreconditions.checkNotNull(schema, () -> new SchemaNotFoundException(each.getSchema()));
                 schema.getAllTableNames().forEach(tableName -> result.computeIfAbsent(schemaName, ignored -> new HashSet<>()).add(tableName));
             } else {
                 result.computeIfAbsent(each.getSchema(), ignored -> new HashSet<>()).add(each.getTable());

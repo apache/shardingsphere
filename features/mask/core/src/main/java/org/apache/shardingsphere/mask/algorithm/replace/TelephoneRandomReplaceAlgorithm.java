@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -40,6 +41,8 @@ import java.util.stream.Collectors;
 public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Object, String> {
     
     private static final String NETWORK_NUMBERS = "network-numbers";
+    
+    private final Random random = new SecureRandom();
     
     private List<String> networkNumbers;
     
@@ -97,7 +100,6 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
     }
     
     private String createRandValue(final String plainValue, final String networkNumber) {
-        Random random = new Random();
         StringBuilder result = new StringBuilder();
         result.append(networkNumbers.get(random.nextInt(networkNumbers.size())));
         for (int i = networkNumber.length(); i < plainValue.length(); i++) {

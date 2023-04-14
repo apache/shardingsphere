@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.api.impl.MigrationJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -37,7 +38,7 @@ public final class ShowMigrationSourceStorageUnitsExecutor implements QueryableR
     
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowMigrationSourceStorageUnitsStatement sqlStatement) {
-        Iterator<Collection<Object>> data = jobAPI.listMigrationSourceResources().iterator();
+        Iterator<Collection<Object>> data = jobAPI.listMigrationSourceResources(PipelineContextKey.buildForProxy()).iterator();
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         while (data.hasNext()) {
             result.add(new LocalDataQueryResultRow((List<Object>) data.next()));

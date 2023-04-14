@@ -33,6 +33,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.impl.PipelineDataSourcePersistService;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
@@ -82,6 +83,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -103,12 +105,12 @@ class MigrationJobAPITest {
         props.put("jdbcUrl", jdbcUrl);
         props.put("username", "root");
         props.put("password", "root");
-        jobAPI.addMigrationSourceResources(Collections.singletonMap("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props)));
+        jobAPI.addMigrationSourceResources(PipelineContextUtils.getContextKey(), Collections.singletonMap("ds_0", new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props)));
     }
     
     @AfterAll
     static void afterClass() {
-        jobAPI.dropMigrationSourceResources(Collections.singletonList("ds_0"));
+        jobAPI.dropMigrationSourceResources(PipelineContextUtils.getContextKey(), Collections.singletonList("ds_0"));
     }
     
     @Test
@@ -121,7 +123,7 @@ class MigrationJobAPITest {
     }
     
     private JobConfigurationPOJO getJobConfigurationPOJO(final String jobId) {
-        return PipelineAPIFactory.getJobConfigurationAPI().getJobConfiguration(jobId);
+        return PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobConfiguration(jobId);
     }
     
     @Test
@@ -130,7 +132,7 @@ class MigrationJobAPITest {
         assertTrue(jobId.isPresent());
         assertFalse(getJobConfigurationPOJO(jobId.get()).isDisabled());
         PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
-        when(PipelineDistributedBarrier.getInstance()).thenReturn(mockBarrier);
+        when(PipelineDistributedBarrier.getInstance(any())).thenReturn(mockBarrier);
         jobAPI.stop(jobId.get());
         assertTrue(getJobConfigurationPOJO(jobId.get()).isDisabled());
         jobAPI.startDisabledJob(jobId.get());
@@ -144,7 +146,7 @@ class MigrationJobAPITest {
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
         initTableData(jobConfig);
         PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
-        when(PipelineDistributedBarrier.getInstance()).thenReturn(mockBarrier);
+        when(PipelineDistributedBarrier.getInstance(any())).thenReturn(mockBarrier);
         jobAPI.rollback(jobId.get());
         assertNull(getJobConfigurationPOJO(jobId.get()));
     }
@@ -156,7 +158,7 @@ class MigrationJobAPITest {
         MigrationJobConfiguration jobConfig = jobAPI.getJobConfiguration(jobId.get());
         initTableData(jobConfig);
         PipelineDistributedBarrier mockBarrier = mock(PipelineDistributedBarrier.class);
-        when(PipelineDistributedBarrier.getInstance()).thenReturn(mockBarrier);
+        when(PipelineDistributedBarrier.getInstance(any())).thenReturn(mockBarrier);
         jobAPI.commit(jobId.get());
         assertNull(getJobConfigurationPOJO(jobId.get()));
     }
@@ -271,7 +273,7 @@ class MigrationJobAPITest {
     @Test
     void assertAddMigrationSourceResources() {
         PipelineDataSourcePersistService persistService = new PipelineDataSourcePersistService();
-        Map<String, DataSourceProperties> actual = persistService.load(new MigrationJobType());
+        Map<String, DataSourceProperties> actual = persistService.load(PipelineContextUtils.getContextKey(), new MigrationJobType());
         assertTrue(actual.containsKey("ds_0"));
     }
     
@@ -279,20 +281,20 @@ class MigrationJobAPITest {
     void assertCreateJobConfigFailedOnMoreThanOneSourceTable() {
         List<SourceTargetEntry> sourceTargetEntries = Stream.of("t_order_0", "t_order_1")
                 .map(each -> new SourceTargetEntry("logic_db", new DataNode("ds_0", each), "t_order")).collect(Collectors.toList());
-        assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.createJobAndStart(new MigrateTableStatement(sourceTargetEntries, "logic_db")));
+        assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.createJobAndStart(PipelineContextUtils.getContextKey(), new MigrateTableStatement(sourceTargetEntries, "logic_db")));
     }
     
     @Test
     void assertCreateJobConfigFailedOnDataSourceNotExist() {
         List<SourceTargetEntry> sourceTargetEntries = Collections.singletonList(new SourceTargetEntry("logic_db", new DataNode("ds_not_exists", "t_order"), "t_order"));
-        assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.createJobAndStart(new MigrateTableStatement(sourceTargetEntries, "logic_db")));
+        assertThrows(PipelineInvalidParameterException.class, () -> jobAPI.createJobAndStart(PipelineContextUtils.getContextKey(), new MigrateTableStatement(sourceTargetEntries, "logic_db")));
     }
     
     @Test
     void assertCreateJobConfig() throws SQLException {
         initIntPrimaryEnvironment();
         SourceTargetEntry sourceTargetEntry = new SourceTargetEntry("logic_db", new DataNode("ds_0", "t_order"), "t_order");
-        String jobId = jobAPI.createJobAndStart(new MigrateTableStatement(Collections.singletonList(sourceTargetEntry), "logic_db"));
+        String jobId = jobAPI.createJobAndStart(PipelineContextUtils.getContextKey(), new MigrateTableStatement(Collections.singletonList(sourceTargetEntry), "logic_db"));
         MigrationJobConfiguration actual = jobAPI.getJobConfiguration(jobId);
         assertThat(actual.getTargetDatabaseName(), is("logic_db"));
         List<JobDataNodeLine> dataNodeLines = actual.getJobShardingDataNodes();
@@ -307,7 +309,7 @@ class MigrationJobAPITest {
     }
     
     private void initIntPrimaryEnvironment() throws SQLException {
-        Map<String, DataSourceProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(new MigrationJobType());
+        Map<String, DataSourceProperties> metaDataDataSource = new PipelineDataSourcePersistService().load(PipelineContextUtils.getContextKey(), new MigrationJobType());
         DataSourceProperties dataSourceProps = metaDataDataSource.get("ds_0");
         try (
                 PipelineDataSourceWrapper dataSource = new PipelineDataSourceWrapper(DataSourcePoolCreator.create(dataSourceProps), databaseType);
@@ -320,7 +322,7 @@ class MigrationJobAPITest {
     
     @Test
     void assertShowMigrationSourceResources() {
-        Collection<Collection<Object>> actual = jobAPI.listMigrationSourceResources();
+        Collection<Collection<Object>> actual = jobAPI.listMigrationSourceResources(PipelineContextUtils.getContextKey());
         assertThat(actual.size(), is(1));
         Collection<Object> objects = actual.iterator().next();
         assertThat(objects.toArray()[0], is("ds_0"));
@@ -333,7 +335,7 @@ class MigrationJobAPITest {
         String jobId = optional.get();
         YamlInventoryIncrementalJobItemProgress yamlJobItemProgress = new YamlInventoryIncrementalJobItemProgress();
         yamlJobItemProgress.setStatus(JobStatus.RUNNING.name());
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobId, 0, YamlEngine.marshal(yamlJobItemProgress));
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey()).persistJobItemProgress(jobId, 0, YamlEngine.marshal(yamlJobItemProgress));
         List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId);
         assertThat(jobItemInfos.size(), is(1));
         InventoryIncrementalJobItemInfo jobItemInfo = jobItemInfos.get(0);
@@ -350,7 +352,7 @@ class MigrationJobAPITest {
         yamlJobItemProgress.setProcessedRecordsCount(100);
         yamlJobItemProgress.setInventoryRecordsCount(50);
         String jobId = optional.get();
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobId, 0, YamlEngine.marshal(yamlJobItemProgress));
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey()).persistJobItemProgress(jobId, 0, YamlEngine.marshal(yamlJobItemProgress));
         List<InventoryIncrementalJobItemInfo> jobItemInfos = jobAPI.getJobItemInfos(jobId);
         InventoryIncrementalJobItemInfo jobItemInfo = jobItemInfos.get(0);
         assertThat(jobItemInfo.getJobItemProgress().getStatus(), is(JobStatus.EXECUTE_INCREMENTAL_TASK));

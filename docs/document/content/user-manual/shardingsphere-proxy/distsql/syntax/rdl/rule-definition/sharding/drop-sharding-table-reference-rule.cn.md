@@ -1,6 +1,6 @@
 +++
 title = "DROP SHARDING TABLE REFERENCE RULE"
-weight = 15
+weight = 14
 +++
 
 ## 描述

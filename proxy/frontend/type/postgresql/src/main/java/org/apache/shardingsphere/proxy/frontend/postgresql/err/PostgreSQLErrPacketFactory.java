@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessa
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
+import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLException;
 import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.postgresql.util.PSQLException;
@@ -55,6 +56,11 @@ public final class PostgreSQLErrPacketFactory {
         return createErrorResponsePacketForUnknownException(cause);
     }
     
+    private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final PostgreSQLException.ServerErrorMessage serverErrorMessage) {
+        return PostgreSQLErrorResponsePacket.newBuilder(serverErrorMessage.getSeverity(), serverErrorMessage.getSqlState(), serverErrorMessage.getMessage())
+                .build();
+    }
+    
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
         return PostgreSQLErrorResponsePacket.newBuilder(serverErrorMessage.getSeverity(), serverErrorMessage.getSQLState(), serverErrorMessage.getMessage())
                 .detail(serverErrorMessage.getDetail()).hint(serverErrorMessage.getHint()).position(serverErrorMessage.getPosition())
@@ -65,6 +71,9 @@ public final class PostgreSQLErrPacketFactory {
     
     @SuppressWarnings("ConstantConditions")
     private static PostgreSQLErrorResponsePacket createErrorResponsePacket(final SQLException cause) {
+        if (cause instanceof PostgreSQLException && null != ((PostgreSQLException) cause).getServerErrorMessage()) {
+            return createErrorResponsePacket(((PostgreSQLException) cause).getServerErrorMessage());
+        }
         if (cause instanceof PSQLException && null != ((PSQLException) cause).getServerErrorMessage()) {
             return createErrorResponsePacket(((PSQLException) cause).getServerErrorMessage());
         }

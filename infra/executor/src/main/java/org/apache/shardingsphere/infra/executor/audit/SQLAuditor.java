@@ -29,6 +29,8 @@ import java.util.List;
 
 /**
  * SQL auditor.
+ * 
+ * @param <T> type of rule
  */
 @SingletonSPI
 public interface SQLAuditor<T extends ShardingSphereRule> extends OrderedSPI<T> {

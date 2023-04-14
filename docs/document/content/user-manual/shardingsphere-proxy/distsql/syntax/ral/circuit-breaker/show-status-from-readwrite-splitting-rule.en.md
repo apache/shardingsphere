@@ -1,11 +1,11 @@
 +++
 title = "SHOW STATUS FROM READWRITE_SPLITTING RULE"
-weight = 3
+weight = 2
 +++
 
 ### Description
 
-The `SHOW STATUS FROM READWRITE_SPLITTING RULE` syntax is used to query readwrite splitting storage unit status for specified readwrite splitting rule in specified database.
+The `SHOW STATUS FROM READWRITE_SPLITTING RULE` syntax is used to query readwrite-splitting storage unit status for specified readwrite-splitting rule in specified database.
 
 ### Syntax
 
@@ -41,7 +41,7 @@ databaseName ::=
 
 ### Example
 
-- Query readwrite splitting storage unit status for specified readwrite splitting rule in specified database.
+- Query readwrite-splitting storage unit status for specified readwrite-splitting rule in specified database.
 
 ```sql
 SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
@@ -60,7 +60,7 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
 4 rows in set (0.01 sec)
 ```
 
-- Query all readwrite splitting storage unit from specified database
+- Query all readwrite-splitting storage unit from specified database
 
 ```sql
 SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
@@ -79,7 +79,7 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
 4 rows in set (0.00 sec)
 ```
 
-- Query readwrite splitting storage unit status for specified readwrite splitting rule in current database
+- Query readwrite-splitting storage unit status for specified readwrite-splitting rule in current database
 
 ```sql
 SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
@@ -98,7 +98,7 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
 4 rows in set (0.01 sec)
 ```
 
-- Query all readwrite splitting storage unit from current database
+- Query all readwrite-splitting storage unit from current database
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;

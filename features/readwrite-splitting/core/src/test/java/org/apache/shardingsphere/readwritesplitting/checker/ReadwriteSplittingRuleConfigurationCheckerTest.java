@@ -20,15 +20,13 @@ package org.apache.shardingsphere.readwritesplitting.checker;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.DataSourceNameExistedException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.DuplicateDataSourceException;
 import org.apache.shardingsphere.readwritesplitting.exception.checker.InvalidWeightLoadBalancerConfigurationException;
+import org.apache.shardingsphere.readwritesplitting.exception.checker.MissingRequiredWriteDataSourceNameException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
@@ -49,27 +47,10 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
-    void assertValidCheck() {
-        ReadwriteSplittingRuleConfiguration config = createValidConfiguration();
-        RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        checker.check("test", config, Collections.emptyMap(), Collections.singleton(mock(DynamicDataSourceContainedRule.class)));
-    }
-    
-    private ReadwriteSplittingRuleConfiguration createValidConfiguration() {
-        ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
-        when(dataSourceConfig.getName()).thenReturn("readwrite_ds");
-        when(dataSourceConfig.getDynamicStrategy()).thenReturn(new DynamicReadwriteSplittingStrategyConfiguration("ds0"));
-        when(result.getDataSources()).thenReturn(Collections.singletonList(dataSourceConfig));
-        return result;
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    @Test
     void assertInvalidCheck() {
         ReadwriteSplittingRuleConfiguration config = createInvalidConfiguration();
         RuleConfigurationChecker checker = OrderedSPILoader.getServicesByClass(RuleConfigurationChecker.class, Collections.singleton(config.getClass())).get(config.getClass());
-        assertThrows(IllegalStateException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
+        assertThrows(MissingRequiredWriteDataSourceNameException.class, () -> checker.check("test", config, Collections.emptyMap(), Collections.emptyList()));
     }
     
     private ReadwriteSplittingRuleConfiguration createInvalidConfiguration() {
@@ -128,18 +109,17 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
         when(dataSourceConfig.getName()).thenReturn("readwrite_ds");
-        when(dataSourceConfig.getStaticStrategy()).thenReturn(new StaticReadwriteSplittingStrategyConfiguration("otherDatasourceName", Arrays.asList("read_ds_0", "read_ds_1")));
+        when(dataSourceConfig.getWriteDataSourceName()).thenReturn("otherDatasourceName");
+        when(dataSourceConfig.getReadDataSourceNames()).thenReturn(Arrays.asList("read_ds_0", "read_ds_1"));
         when(result.getDataSources()).thenReturn(Collections.singletonList(dataSourceConfig));
         return result;
     }
     
     private ReadwriteSplittingDataSourceRuleConfiguration createDataSourceRuleConfig(final String writeDataSource, final List<String> readDataSources) {
         ReadwriteSplittingDataSourceRuleConfiguration result = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
-        StaticReadwriteSplittingStrategyConfiguration readwriteSplittingStrategy = mock(StaticReadwriteSplittingStrategyConfiguration.class);
-        when(readwriteSplittingStrategy.getWriteDataSourceName()).thenReturn(writeDataSource);
-        when(readwriteSplittingStrategy.getReadDataSourceNames()).thenReturn(readDataSources);
-        when(result.getStaticStrategy()).thenReturn(readwriteSplittingStrategy);
         when(result.getName()).thenReturn("readwrite_ds");
+        when(result.getWriteDataSourceName()).thenReturn(writeDataSource);
+        when(result.getReadDataSourceNames()).thenReturn(readDataSources);
         when(result.getLoadBalancerName()).thenReturn("weight_ds");
         return result;
     }

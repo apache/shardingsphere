@@ -130,4 +130,14 @@ class AlterShadowRuleStatementUpdaterTest {
                 new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment2)))));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }
+    
+    @Test
+    void assertExecuteSuccessWithoutProps() {
+        ShadowAlgorithmSegment segment1 = new ShadowAlgorithmSegment("algorithmName1", new AlgorithmSegment("SQL_HINT", null));
+        ShadowAlgorithmSegment segment2 = new ShadowAlgorithmSegment("algorithmName2", new AlgorithmSegment("SQL_HINT", null));
+        AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Arrays.asList(
+                new ShadowRuleSegment("initRuleName1", "ds", null, Collections.singletonMap("t_order", Collections.singleton(segment1))),
+                new ShadowRuleSegment("initRuleName2", "ds1", null, Collections.singletonMap("t_order_1", Collections.singletonList(segment2)))));
+        updater.checkSQLStatement(database, sqlStatement, currentConfig);
+    }
 }

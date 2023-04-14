@@ -108,7 +108,9 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
     
     @Override
     public void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
-        contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persist(databaseName, ruleConfigs);
+        contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persist(databaseName,
+                contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources(),
+                contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(), ruleConfigs);
     }
     
     @Override
@@ -119,11 +121,6 @@ public final class ClusterModeContextManager implements ModeContextManager, Cont
     @Override
     public void alterProperties(final Properties props) {
         contextManager.getMetaDataContexts().getPersistService().getPropsService().persist(props);
-    }
-    
-    @Override
-    public Map<String, ShardingSphereSchema> getSchemas(final String databaseName) {
-        return contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService().loadSchemas(databaseName);
     }
     
     @Override

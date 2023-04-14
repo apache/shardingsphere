@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 class SQLRegexTrafficAlgorithmTest {
@@ -58,5 +59,11 @@ class SQLRegexTrafficAlgorithmTest {
         assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "select *  from `t_order`;")));
         assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "TRUNCATE TABLE `t_order` ")));
         assertFalse(sqlRegexAlgorithm.match(new SegmentTrafficValue(sqlStatement, "UPDATE `t_order` SET `order_id` = ?;")));
+    }
+    
+    @Test
+    void assertInitWithIllegalProps() {
+        assertThrows(IllegalArgumentException.class, () -> TypedSPILoader.getService(SQLRegexTrafficAlgorithm.class, "SQL_REGEX",
+                PropertiesBuilder.build(new Property("regex", ""))));
     }
 }

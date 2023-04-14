@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * PostgreSQL savepoint transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.POSTGRESQL})
+@TransactionTestCase(dbTypes = TransactionTestConstants.POSTGRESQL)
 public final class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
     
     public PostgreSQLSavePointTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {

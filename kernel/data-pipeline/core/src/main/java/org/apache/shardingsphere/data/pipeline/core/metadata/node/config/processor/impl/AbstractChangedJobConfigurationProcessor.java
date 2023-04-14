@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.config.processor.ChangedJobConfigurationProcessor;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineDistributedBarrier;
@@ -28,6 +29,8 @@ import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.elasticjob.api.JobConfiguration;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+
+import java.util.Collection;
 
 /**
  * Abstract changed job configuration processor.
@@ -38,16 +41,17 @@ public abstract class AbstractChangedJobConfigurationProcessor implements Change
     @Override
     public void process(final Type eventType, final JobConfiguration jobConfig) {
         boolean disabled = jobConfig.isDisabled();
-        if (disabled) {
-            onDisabled(jobConfig);
-        }
         boolean deleted = Type.DELETED == eventType;
         if (deleted) {
             onDeleted(jobConfig);
         }
         String jobId = jobConfig.getJobName();
         if (disabled || deleted) {
+            Collection<Integer> jobItems = PipelineJobCenter.getShardingItems(jobId);
             PipelineJobCenter.stop(jobId);
+            if (disabled) {
+                onDisabled(jobConfig, jobItems);
+            }
             return;
         }
         switch (eventType) {
@@ -64,10 +68,11 @@ public abstract class AbstractChangedJobConfigurationProcessor implements Change
         }
     }
     
-    protected void onDisabled(final JobConfiguration jobConfig) {
+    protected void onDisabled(final JobConfiguration jobConfig, final Collection<Integer> jobItems) {
         String jobId = jobConfig.getJobName();
-        for (Integer each : PipelineJobCenter.getShardingItems(jobId)) {
-            PipelineDistributedBarrier.getInstance().persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
+        PipelineDistributedBarrier distributedBarrier = PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId));
+        for (Integer each : jobItems) {
+            distributedBarrier.persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierDisablePath(jobId), each);
         }
     }
     
@@ -75,8 +80,9 @@ public abstract class AbstractChangedJobConfigurationProcessor implements Change
     
     protected void executeJob(final JobConfiguration jobConfig) {
         AbstractPipelineJob job = buildPipelineJob();
-        PipelineJobCenter.addJob(jobConfig.getJobName(), job);
-        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfig);
+        String jobId = jobConfig.getJobName();
+        PipelineJobCenter.addJob(jobId, job);
+        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfig);
         job.setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
     }

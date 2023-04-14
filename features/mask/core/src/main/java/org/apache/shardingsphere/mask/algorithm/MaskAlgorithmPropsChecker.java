@@ -35,6 +35,7 @@ public final class MaskAlgorithmPropsChecker {
      * @param props props
      * @param singleCharConfigKey single char config key
      * @param maskType mask type
+     * @throws MaskAlgorithmInitializationException mask algorithm initialization exception
      */
     public static void checkSingleCharConfig(final Properties props, final String singleCharConfigKey, final String maskType) {
         if (!props.containsKey(singleCharConfigKey)) {
@@ -51,6 +52,7 @@ public final class MaskAlgorithmPropsChecker {
      * @param props props
      * @param atLeastOneCharConfigKey at least one char config key
      * @param maskType mask type
+     * @throws MaskAlgorithmInitializationException mask algorithm initialization exception
      */
     public static void checkAtLeastOneCharConfig(final Properties props, final String atLeastOneCharConfigKey, final String maskType) {
         if (!props.containsKey(atLeastOneCharConfigKey)) {
@@ -67,6 +69,7 @@ public final class MaskAlgorithmPropsChecker {
      * @param props props
      * @param integerTypeConfigKey integer type config key
      * @param maskType mask type
+     * @throws MaskAlgorithmInitializationException mask algorithm initialization exception
      */
     public static void checkIntegerTypeConfig(final Properties props, final String integerTypeConfigKey, final String maskType) {
         if (!props.containsKey(integerTypeConfigKey)) {

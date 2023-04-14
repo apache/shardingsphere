@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.util;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
@@ -64,9 +65,7 @@ public final class HBaseHeterogeneousUtils {
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
             found++;
-            if (found > replacements.length) {
-                throw new IllegalArgumentException(String.format("Missing replacement for '%s' at [%s].", target, found));
-            }
+            Preconditions.checkState(found <= replacements.length, String.format("Missing replacement for '%s' at [%s].", target, found));
             matcher.appendReplacement(sb, Matcher.quoteReplacement(replacements[found - 1].toString()));
         }
         matcher.appendTail(sb);

@@ -31,6 +31,7 @@ public final class ClusterStateContext {
      * Switch state.
      * 
      * @param state state
+     * @throws IllegalStateException illegal state exception
      */
     public void switchState(final ClusterState state) {
         if (currentState == state) {

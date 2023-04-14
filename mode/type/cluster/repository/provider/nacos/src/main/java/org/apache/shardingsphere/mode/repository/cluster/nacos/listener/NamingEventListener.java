@@ -68,24 +68,26 @@ public final class NamingEventListener implements EventListener {
                     watchDataList.add(watchData);
                 }
             }));
-            watchDataList.forEach(watchData -> {
-                String key = watchData.getKey();
-                Instance preInstance = watchData.getPreInstance();
-                Instance instance = watchData.getInstance();
-                DataChangedEventListener listener = watchData.getListener();
-                DataChangedEvent.Type changedType = getEventChangedType(preInstance, instance);
-                switch (changedType) {
-                    case ADDED:
-                    case UPDATED:
-                        listener.onChange(new DataChangedEvent(key, NacosMetaDataUtils.getValue(instance), changedType));
-                        break;
-                    case DELETED:
-                        listener.onChange(new DataChangedEvent(key, NacosMetaDataUtils.getValue(preInstance), changedType));
-                        break;
-                    default:
-                }
-            });
+            watchDataList.forEach(this::watch);
             setPreInstances(instances);
+        }
+    }
+    
+    private void watch(final WatchData watchData) {
+        String key = watchData.getKey();
+        Instance preInstance = watchData.getPreInstance();
+        Instance instance = watchData.getInstance();
+        DataChangedEventListener listener = watchData.getListener();
+        Type changedType = getEventChangedType(preInstance, instance);
+        switch (changedType) {
+            case ADDED:
+            case UPDATED:
+                listener.onChange(new DataChangedEvent(key, NacosMetaDataUtils.getValue(instance), changedType));
+                break;
+            case DELETED:
+                listener.onChange(new DataChangedEvent(key, NacosMetaDataUtils.getValue(preInstance), changedType));
+                break;
+            default:
         }
     }
     

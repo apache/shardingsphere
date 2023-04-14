@@ -354,6 +354,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      *
      * @param logicTableName logic table name
      * @return table rule
+     * @throws ShardingTableRuleNotFoundException sharding table rule not found exception
      */
     public TableRule getTableRule(final String logicTableName) {
         Optional<TableRule> tableRule = findTableRule(logicTableName);

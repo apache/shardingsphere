@@ -1,6 +1,6 @@
 +++
 title = "MASK"
-weight = 7
+weight = 4
 +++
 
 ## Storage unit Operation

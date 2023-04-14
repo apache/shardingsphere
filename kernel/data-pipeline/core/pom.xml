@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-data-pipeline</artifactId>
-        <version>5.3.2-SNAPSHOT</version>
+        <version>5.3.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-data-pipeline-core</artifactId>
     <name>${project.artifactId}</name>
@@ -31,11 +31,6 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-data-pipeline-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-schedule-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -68,6 +63,20 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-cluster-mode-repository-zookeeper</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere.elasticjob</groupId>
+            <artifactId>elasticjob-lite-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere.elasticjob</groupId>
+            <artifactId>elasticjob-lite-lifecycle</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <scope>compile</scope>
         </dependency>
         
         <dependency>

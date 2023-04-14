@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * OpenGauss savepoint transaction integration test.
  */
-@TransactionTestCase(dbTypes = {TransactionTestConstants.OPENGAUSS})
+@TransactionTestCase(dbTypes = TransactionTestConstants.OPENGAUSS)
 public final class OpenGaussSavePointTestCase extends BaseSavePointTestCase {
     
     public OpenGaussSavePointTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {

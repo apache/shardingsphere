@@ -61,7 +61,7 @@ public final class ImporterConfiguration {
      * @return logic table names
      */
     public Collection<String> getLogicTableNames() {
-        return Collections.unmodifiableList(shardingColumnsMap.keySet().stream().map(LogicTableName::getLowercase).collect(Collectors.toList()));
+        return Collections.unmodifiableList(shardingColumnsMap.keySet().stream().map(LogicTableName::getOriginal).collect(Collectors.toList()));
     }
     
     /**

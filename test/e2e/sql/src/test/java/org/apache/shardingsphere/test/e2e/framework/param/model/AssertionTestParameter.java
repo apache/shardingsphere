@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.e2e.cases.IntegrationTestCaseContext;
+import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAssertion;
 
@@ -44,6 +45,8 @@ public final class AssertionTestParameter implements E2ETestParameter {
     private final DatabaseType databaseType;
     
     private final SQLExecuteType sqlExecuteType;
+    
+    private final SQLCommandType sqlCommandType;
     
     @Override
     public String toString() {

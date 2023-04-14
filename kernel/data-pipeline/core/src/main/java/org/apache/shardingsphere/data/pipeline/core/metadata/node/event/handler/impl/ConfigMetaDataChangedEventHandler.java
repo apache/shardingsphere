@@ -42,7 +42,7 @@ public final class ConfigMetaDataChangedEventHandler implements PipelineMetaData
     }
     
     @Override
-    public void handle(final DataChangedEvent event) {
+    public void handle(final String jobId, final DataChangedEvent event) {
         JobConfiguration jobConfig;
         try {
             jobConfig = YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class, true).toJobConfiguration();

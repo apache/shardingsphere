@@ -72,8 +72,9 @@ public final class PipelineE2EEnvironment {
     /**
      * Get actual data source connection.
      *
-     * @param databaseType database type.
+     * @param databaseType database type
      * @return jdbc connection
+     * @throws UnsupportedOperationException unsupported operation exception
      */
     public int getActualDatabasePort(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
@@ -91,8 +92,9 @@ public final class PipelineE2EEnvironment {
     /**
      * Get actual data source default port.
      *
-     * @param databaseType database type.
+     * @param databaseType database type
      * @return default port
+     * @throws IllegalArgumentException illegal argument exception
      */
     public int getActualDataSourceDefaultPort(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
@@ -119,7 +121,7 @@ public final class PipelineE2EEnvironment {
     /**
      * Get actual data source username.
      *
-     * @param databaseType database type.
+     * @param databaseType database type
      * @return actual data source username
      */
     public String getActualDataSourceUsername(final DatabaseType databaseType) {
@@ -129,7 +131,7 @@ public final class PipelineE2EEnvironment {
     /**
      * Get actual data source password.
      *
-     * @param databaseType database type.
+     * @param databaseType database type
      * @return actual data source username
      */
     public String getActualDataSourcePassword(final DatabaseType databaseType) {
@@ -148,8 +150,9 @@ public final class PipelineE2EEnvironment {
     /**
      * List storage container images.
      *
-     * @param databaseType database type.
+     * @param databaseType database type
      * @return database storage container images
+     * @throws UnsupportedOperationException unsupported operation exception
      */
     public List<String> listStorageContainerImages(final DatabaseType databaseType) {
         // Native mode needn't use docker image, just return a list which contain one item

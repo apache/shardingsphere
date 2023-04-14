@@ -105,16 +105,9 @@ public final class SingleTableInventoryDataConsistencyChecker {
         Iterator<DataConsistencyCalculatedResult> targetCalculatedResults = waitFuture(executor.submit(() -> calculateAlgorithm.calculate(targetParam))).iterator();
         try {
             return check0(sourceCalculatedResults, targetCalculatedResults, executor);
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
-            // CHECKSTYLE:ON
-            if (null != sourceParam.getCalculationContext()) {
-                CloseUtils.closeQuietly(sourceParam.getCalculationContext());
-            }
-            if (null != targetParam.getCalculationContext()) {
-                CloseUtils.closeQuietly(targetParam.getCalculationContext());
-            }
-            throw ex;
+        } finally {
+            CloseUtils.closeQuietly(sourceParam.getCalculationContext());
+            CloseUtils.closeQuietly(targetParam.getCalculationContext());
         }
     }
     

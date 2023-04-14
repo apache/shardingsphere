@@ -26,10 +26,13 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -57,6 +60,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         this.databaseName = databaseName;
         contextManager = createContextManager(databaseName, modeConfig, new HashMap<>(), new LinkedList<>(), new Properties());
         jdbcContext = new JDBCContext(contextManager.getDataSourceMap(databaseName));
+        contextManagerInitializedCallback(modeConfig, contextManager, databaseName);
     }
     
     public ShardingSphereDataSource(final String databaseName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
@@ -64,6 +68,7 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         this.databaseName = databaseName;
         contextManager = createContextManager(databaseName, modeConfig, dataSourceMap, ruleConfigs, null == props ? new Properties() : props);
         jdbcContext = new JDBCContext(contextManager.getDataSourceMap(databaseName));
+        contextManagerInitializedCallback(modeConfig, contextManager, databaseName);
     }
     
     private ContextManager createContextManager(final String databaseName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
@@ -75,6 +80,17 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         ContextManagerBuilderParameter param = new ContextManagerBuilderParameter(modeConfig, Collections.singletonMap(databaseName,
                 new DataSourceProvidedDatabaseConfiguration(dataSourceMap, databaseRuleConfigs)), globalRuleConfigs, props, Collections.emptyList(), instanceMetaData, false);
         return TypedSPILoader.getService(ContextManagerBuilder.class, null == modeConfig ? null : modeConfig.getType()).build(param);
+    }
+    
+    private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager, final String databaseName) {
+        for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
+            try {
+                each.onInitialized(InstanceType.JDBC, databaseName, modeConfig, contextManager);
+                // CHECKSTYLE:OFF
+            } catch (final Exception ignored) {
+                // CHECKSTYLE:ON
+            }
+        }
     }
     
     @Override
@@ -91,9 +107,10 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
      * Close data sources.
      *
      * @param dataSourceNames data source names to be closed
-     * @throws Exception exception
+     * @throws SQLException SQL exception
      */
-    public void close(final Collection<String> dataSourceNames) throws Exception {
+    // TODO Replace public to private?
+    public void close(final Collection<String> dataSourceNames) throws SQLException {
         Map<String, DataSource> dataSourceMap = contextManager.getDataSourceMap(databaseName);
         for (String each : dataSourceNames) {
             close(dataSourceMap.get(each));
@@ -101,15 +118,33 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
         contextManager.close();
     }
     
-    private void close(final DataSource dataSource) throws Exception {
+    private void close(final DataSource dataSource) throws SQLException {
         if (dataSource instanceof AutoCloseable) {
-            ((AutoCloseable) dataSource).close();
+            try {
+                ((AutoCloseable) dataSource).close();
+                // CHECKSTYLE:OFF
+            } catch (final Exception ex) {
+                // CHECKSTYLE:ON
+                throw new SQLException(ex);
+            }
         }
     }
     
     @Override
-    public void close() throws Exception {
+    public void close() throws SQLException {
+        contextManagerDestroyedCallback(databaseName);
         close(contextManager.getDataSourceMap(databaseName).keySet());
+    }
+    
+    private void contextManagerDestroyedCallback(final String databaseName) {
+        for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
+            try {
+                each.onDestroyed(InstanceType.JDBC, databaseName);
+                // CHECKSTYLE:OFF
+            } catch (final Exception ignored) {
+                // CHECKSTYLE:ON
+            }
+        }
     }
     
     @Override

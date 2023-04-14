@@ -75,17 +75,25 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
         ShardingSphereResourceMetaData resourceMetaData = database.getResourceMetaData();
         Map<String, DataSourceProperties> dataSourcePropsMap = getDataSourcePropsMap(database, sqlStatement);
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        dataSourcePropsMap.forEach((key, value) -> {
+        for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
+            String key = entry.getKey();
+            DataSourceProperties dataSourceProps = entry.getValue();
             DataSourceMetaData metaData = resourceMetaData.getDataSourceMetaData(key);
-            DataSourceProperties dataSourceProps = dataSourcePropsMap.get(key);
             Map<String, Object> standardProps = dataSourceProps.getPoolPropertySynonyms().getStandardProperties();
             Map<String, Object> otherProps = dataSourceProps.getCustomDataSourceProperties().getProperties();
-            result.add(new LocalDataQueryResultRow(key, resourceMetaData.getStorageType(key).getType(), metaData.getHostname(), metaData.getPort(), metaData.getCatalog(),
-                    getStandardProperty(standardProps, CONNECTION_TIMEOUT_MILLISECONDS), getStandardProperty(standardProps, IDLE_TIMEOUT_MILLISECONDS),
-                    getStandardProperty(standardProps, MAX_LIFETIME_MILLISECONDS), getStandardProperty(standardProps, MAX_POOL_SIZE),
-                    getStandardProperty(standardProps, MIN_POOL_SIZE), getStandardProperty(standardProps, READ_ONLY),
+            result.add(new LocalDataQueryResultRow(key,
+                    resourceMetaData.getStorageType(key).getType(),
+                    metaData.getHostname(),
+                    metaData.getPort(),
+                    metaData.getCatalog(),
+                    getStandardProperty(standardProps, CONNECTION_TIMEOUT_MILLISECONDS),
+                    getStandardProperty(standardProps, IDLE_TIMEOUT_MILLISECONDS),
+                    getStandardProperty(standardProps, MAX_LIFETIME_MILLISECONDS),
+                    getStandardProperty(standardProps, MAX_POOL_SIZE),
+                    getStandardProperty(standardProps, MIN_POOL_SIZE),
+                    getStandardProperty(standardProps, READ_ONLY),
                     otherProps.isEmpty() ? "" : new Gson().toJson(otherProps)));
-        });
+        }
         return result;
     }
     

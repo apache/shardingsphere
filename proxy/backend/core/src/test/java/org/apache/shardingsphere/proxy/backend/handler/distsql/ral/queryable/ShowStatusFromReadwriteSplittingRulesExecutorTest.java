@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -27,6 +25,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
@@ -36,7 +35,6 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowStatusFromReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -70,7 +68,6 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest {
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("storage_unit"));
         assertThat(iterator.next(), is("status"));
-        assertThat(iterator.next(), is("delay_time(ms)"));
     }
     
     @Test
@@ -93,9 +90,7 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     
     private ShardingSphereMetaData mockMetaData() {
         ShardingSphereDatabase database = new ShardingSphereDatabase("readwrite_db", mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS),
-                new ShardingSphereRuleMetaData(Collections.singletonList(new DatabaseDiscoveryRule("ds", Collections.singletonMap("primary", new MockedDataSource()),
-                        mock(DatabaseDiscoveryRuleConfiguration.class), mock(InstanceContext.class, RETURNS_DEEP_STUBS)))),
-                Collections.emptyMap());
+                new ShardingSphereRuleMetaData(Collections.singletonList(mock(ShardingSphereRule.class))), Collections.emptyMap());
         Map<String, ShardingSphereDatabase> databaseMap = new LinkedHashMap<>();
         databaseMap.put("readwrite_db", database);
         return new ShardingSphereMetaData(databaseMap, new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));

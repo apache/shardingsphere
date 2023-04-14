@@ -27,7 +27,7 @@ weight = 5
 
 `SET`, `DEFAULT`, `SINGLE`, `STORAGE`, `UNIT`, `RANDOM`
 
-#### Readwrite Splitting
+#### Readwrite-Splitting
 
 `READWRITE_SPLITTING`, `WRITE_STORAGE_UNIT`, `READ_STORAGE_UNITS`
 , `AUTO_AWARE_RESOURCE`
@@ -69,7 +69,7 @@ weight = 5
 
 `SINGLE`, `STORAGE`, `UNIT`
 
-#### Readwrite Splitting
+#### Readwrite-Splitting
 
 `READWRITE_SPLITTING`
 

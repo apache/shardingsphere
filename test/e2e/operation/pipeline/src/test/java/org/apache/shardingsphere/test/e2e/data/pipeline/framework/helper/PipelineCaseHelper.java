@@ -22,9 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 
@@ -69,7 +68,8 @@ public final class PipelineCaseHelper {
      * @param databaseType database type
      * @param keyGenerateAlgorithm key generate algorithm
      * @param insertRows insert rows
-     * @return order insert data.
+     * @return order insert data
+     * @throws UnsupportedOperationException Unsupported operation exception
      */
     public static List<Object[]> generateOrderInsertData(final DatabaseType databaseType, final KeyGenerateAlgorithm keyGenerateAlgorithm, final int insertRows) {
         List<Object[]> result = new ArrayList<>(insertRows);
@@ -88,7 +88,7 @@ public final class PipelineCaseHelper {
             }
             return result;
         }
-        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
+        if (databaseType instanceof SchemaSupportedDatabaseType) {
             for (int i = 0; i < insertRows; i++) {
                 Object orderId = keyGenerateAlgorithm.generateKey();
                 result.add(new Object[]{orderId, generateInt(0, 100), generateString(6), generateInt(-128, 127),

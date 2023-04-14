@@ -1,6 +1,6 @@
 +++
 title = "SHOW DEFAULT SHADOW ALGORITHM"
-weight = 5
+weight = 4
 +++
 
 ### Description
@@ -31,7 +31,7 @@ databaseName ::=
 ### Return value description
 
 | Column                | Description                 |
-| --------------------- | --------------------------- |
+|-----------------------|-----------------------------|
 | shadow_algorithm_name | Shadow algorithm name       |
 | type                  | Shadow algorithm type       |
 | props                 | Shadow algorithm properties |

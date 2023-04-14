@@ -117,7 +117,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     }
     
     private Object readColumn(final ByteBuffer data) {
-        String columnName = readColumnName(data);
+        readColumnName(data);
         String columnType = readColumnType(data);
         data.get();
         return readColumnData(data, columnType);

@@ -46,6 +46,7 @@ public final class UnlockClusterUpdater implements RALUpdater<UnlockClusterState
         GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
         if (lockContext.tryLock(lockDefinition, 3000L)) {
             try {
+                checkState();
                 contextManager.getInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(ClusterState.OK));
                 // TODO unlock snapshot info if locked
             } finally {

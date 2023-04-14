@@ -43,6 +43,7 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.netty.MySQLNe
 import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
+import org.apache.shardingsphere.db.protocol.mysql.netty.MySQLSequenceIDInboundHandler;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
@@ -101,6 +102,7 @@ public final class MySQLClient {
                         socketChannel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).set(new AtomicInteger());
                         socketChannel.pipeline().addLast(new ChannelAttrInitializer());
                         socketChannel.pipeline().addLast(new PacketCodec(new MySQLPacketCodecEngine()));
+                        socketChannel.pipeline().addLast(new MySQLSequenceIDInboundHandler());
                         socketChannel.pipeline().addLast(new MySQLNegotiatePackageDecoder());
                         socketChannel.pipeline().addLast(new MySQLCommandPacketDecoder());
                         socketChannel.pipeline().addLast(new MySQLNegotiateHandler(connectInfo.getUsername(), connectInfo.getPassword(), responseCallback));
@@ -108,7 +110,6 @@ public final class MySQLClient {
                     }
                 }).connect(connectInfo.getHost(), connectInfo.getPort()).channel();
         serverInfo = waitExpectedResponse(ServerInfo.class);
-        reconnectTimes.set(0);
         running = true;
     }
     
@@ -189,8 +190,7 @@ public final class MySQLClient {
         }
         InternalResultSet resultSet = executeQuery("SELECT @@GLOBAL.BINLOG_CHECKSUM");
         String checksumType = resultSet.getFieldValues().get(0).getData().iterator().next().toString();
-        checksumType = null != checksumType ? checksumType.toUpperCase() : "";
-        switch (checksumType) {
+        switch (checksumType.toUpperCase()) {
             case "NONE":
                 return 0;
             case "CRC32":
@@ -304,11 +304,13 @@ public final class MySQLClient {
             if (msg instanceof AbstractBinlogEvent) {
                 lastBinlogEvent = (AbstractBinlogEvent) msg;
                 blockingEventQueue.put(lastBinlogEvent);
+                reconnectTimes.set(0);
             }
         }
         
         @Override
         public void channelInactive(final ChannelHandlerContext ctx) {
+            log.warn("MySQL binlog channel inactive");
             if (!running) {
                 return;
             }
@@ -320,10 +322,6 @@ public final class MySQLClient {
             String fileName = null == lastBinlogEvent ? null : lastBinlogEvent.getFileName();
             Long position = null == lastBinlogEvent ? null : lastBinlogEvent.getPosition();
             log.error("MySQLBinlogEventHandler protocol resolution error, file name:{}, position:{}", fileName, position, cause);
-            if (!running) {
-                return;
-            }
-            reconnect();
         }
         
         private void reconnect() {
@@ -334,6 +332,7 @@ public final class MySQLClient {
             }
             reconnectTimes.incrementAndGet();
             connect();
+            log.info("reconnect times {}", reconnectTimes.get());
             subscribe(lastBinlogEvent.getFileName(), lastBinlogEvent.getPosition());
         }
     }

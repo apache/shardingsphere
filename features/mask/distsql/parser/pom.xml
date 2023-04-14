@@ -22,14 +22,10 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-mask-distsql</artifactId>
-        <version>5.3.2-SNAPSHOT</version>
+        <version>5.3.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-mask-distsql-parser</artifactId>
     <name>${project.artifactId}</name>
-    
-    <properties>
-        <antlr.output.directory>${basedir}/target/generated-sources/antlr4</antlr.output.directory>
-    </properties>
     
     <dependencies>
         <dependency>
@@ -60,21 +56,6 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>${build-helper-maven-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>add-source</id>
-                                <goals>
-                                    <goal>add-source</goal>
-                                </goals>
-                                <phase>generate-sources</phase>
-                                <configuration>
-                                    <sources>
-                                        <source>${antlr.output.directory}</source>
-                                    </sources>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>

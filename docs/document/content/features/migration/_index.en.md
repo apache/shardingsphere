@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.7. </b>"
+pre = "<b>3.6. </b>"
 title = "Data Migration"
-weight = 7
+weight = 6
 chapter = true
 +++
 

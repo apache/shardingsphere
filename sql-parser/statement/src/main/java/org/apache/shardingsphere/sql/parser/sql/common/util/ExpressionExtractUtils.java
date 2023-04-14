@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.LogicalOperator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
@@ -114,6 +115,9 @@ public final class ExpressionExtractUtils {
             }
             if (each instanceof TypeCastExpression) {
                 extractParameterMarkerExpressions(result, Collections.singletonList(((TypeCastExpression) each).getExpression()));
+            }
+            if (each instanceof InExpression) {
+                extractParameterMarkerExpressions(result, ((InExpression) each).getExpressionList());
             }
         }
     }

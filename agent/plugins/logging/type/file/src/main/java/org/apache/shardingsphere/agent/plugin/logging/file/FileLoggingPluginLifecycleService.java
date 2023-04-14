@@ -30,10 +30,6 @@ public final class FileLoggingPluginLifecycleService implements PluginLifecycleS
     }
     
     @Override
-    public void close() {
-    }
-    
-    @Override
     public String getType() {
         return "File";
     }

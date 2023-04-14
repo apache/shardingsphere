@@ -1,6 +1,6 @@
 +++
 title = "SHOW SHARDING TABLE NODES"
-weight = 10
+weight = 9
 
 +++
 
@@ -34,10 +34,10 @@ databaseName ::=
 
 ### Return value description
 
-| Columns     | Descriptions       |
-| ------------| -------------------|
-| name        | Sharding rule name |
-| nodes       | Sharding nodes     |
+| Columns | Descriptions       |
+|---------|--------------------|
+| name    | Sharding rule name |
+| nodes   | Sharding nodes     |
 
 ### Example
 

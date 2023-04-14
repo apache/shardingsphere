@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<FindBugsFilter xmlns="https://github.com/spotbugs/filter/3.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
+    <Match>
+        <Bug code="EI, EI2, SS, NP, Dm, MS, DP, Bx, ST, REC, Eq, RV, ICAST" />
+    </Match>
+    <Match>
+        <Package name="~.*\.autogen(\.|\w)*" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource" />
+        <Bug code="OBL, ODR" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.infra.util.reflection.ReflectionUtils" />
+        <Bug code="REFLF" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate" />
+        <Bug code="SS" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.OrPredicateSegment" />
+        <Bug code="SS" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserIT" />
+        <Bug code="DCN" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.test.it.sql.parser.external.result.type.csv.CsvSQLParseResultReporter" />
+        <Bug code="OBL" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem" />
+        <Bug code="HE" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection" />
+        <Bug code="Eq" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfigurationLoader" />
+        <Bug code="DP" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.transaction.xa.bitronix.manager.BitronixRecoveryResource" />
+        <Bug code="Se" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl.OpenGaussStatementSQLVisitor" />
+        <Bug code="BC" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLStatementSQLVisitor" />
+        <Bug code="BC" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm" />
+        <Bug code="DCN" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm" />
+        <Bug code="VO" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.data.pipeline.mysql.ingest.MySQLIncrementalDumper" />
+        <Bug code="DMI" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement" />
+        <Bug code="OBL" />
+    </Match>
+    
+    <!-- TODO hongsheng fix the ignored bug -->
+    <Match>
+        <Class name="org.apache.shardingsphere.data.pipeline.core.util.JDBCStreamQueryUtils" />
+        <Bug code="OBL" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.DataMatchDataConsistencyCalculateAlgorithm" />
+        <Bug code="OBL" />
+    </Match>
+    <Match>
+        <Class name="org.apache.shardingsphere.data.pipeline.mysql.ingest.client.MySQLClient" />
+        <Bug code="IS" />
+    </Match>
+    <!-- TODO chuxin fix the ignored bug -->
+    <Match>
+        <Class name="org.apache.shardingsphere.data.pipeline.core.execute.ShardingSphereDataJobWorker" />
+        <Bug code="JLM" />
+    </Match>
+</FindBugsFilter>

@@ -1,6 +1,6 @@
 +++
 title = "SHOW MIGRATION LIST"
-weight = 8
+weight = 7
 
 +++
 
@@ -24,14 +24,14 @@ ShowMigrationList ::=
 
 ### 返回值说明
 
-| 列             | 说明                        |
-|----------------|----------------------------|
-| id             | 数据迁移作业ID               |
-| tables         | 迁移表                      |
-| job_item_count | 数据迁移作业分片数量          |
-| active         | 数据迁移作业状态              |
-| create_time    | 数据迁移作业创建时间          |
-| stop_time      | 数据迁移作业停止时间          |
+| 列              | 说明         |
+|----------------|------------|
+| id             | 数据迁移作业ID   |
+| tables         | 迁移表        |
+| job_item_count | 数据迁移作业分片数量 |
+| active         | 数据迁移作业状态   |
+| create_time    | 数据迁移作业创建时间 |
+| stop_time      | 数据迁移作业停止时间 |
 
 ### 示例
 

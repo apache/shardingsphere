@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
+import java.security.SecureRandom;
 import java.util.Properties;
 import java.util.Random;
 
@@ -29,6 +30,8 @@ import java.util.Random;
 public final class PersonalIdentityNumberRandomReplaceAlgorithm implements MaskAlgorithm<Object, String> {
     
     private static final String ALPHA_TWO_COUNTRY_AREA_CODE = "alpha-two-country-area-code";
+    
+    private final Random random = new SecureRandom();
     
     private String alphaTwoCountryAreaCode;
     
@@ -62,7 +65,6 @@ public final class PersonalIdentityNumberRandomReplaceAlgorithm implements MaskA
     
     private String randomReplaceNumber(final String result, final int from, final int to) {
         char[] chars = result.toCharArray();
-        Random random = new Random();
         for (int i = from; i < to; i++) {
             chars[i] = Character.forDigit(random.nextInt(10), 10);
         }
