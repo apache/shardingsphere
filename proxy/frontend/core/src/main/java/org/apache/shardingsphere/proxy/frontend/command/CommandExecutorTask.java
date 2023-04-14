@@ -96,7 +96,7 @@ public final class CommandExecutorTask implements Runnable {
                 context.flush();
             }
             processClosedExceptions(exceptions);
-            context.pipeline().fireUserEventTriggered(WriteCompleteEvent.getInstance());
+            context.pipeline().fireUserEventTriggered(new WriteCompleteEvent());
             if (sqlShowEnabled) {
                 clearLogMDC();
             }
