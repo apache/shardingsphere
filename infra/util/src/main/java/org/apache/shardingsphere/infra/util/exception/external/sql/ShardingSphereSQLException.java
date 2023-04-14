@@ -42,7 +42,7 @@ public abstract class ShardingSphereSQLException extends ShardingSphereExternalE
     }
     
     public ShardingSphereSQLException(final String sqlState, final int typeOffset, final int errorCode, final String reason, final Object... messageArgs) {
-        this(sqlState, typeOffset, errorCode, null == reason ? null : String.format(reason, messageArgs), (Exception) null);
+        this(sqlState, typeOffset, errorCode, null == reason ? null : messageArgs == null || messageArgs.length == 0 ? reason : String.format(reason, messageArgs), (Exception) null);
     }
     
     public ShardingSphereSQLException(final String sqlState, final int typeOffset, final int errorCode, final String reason, final Exception cause) {
@@ -55,7 +55,7 @@ public abstract class ShardingSphereSQLException extends ShardingSphereExternalE
     
     /**
      * To SQL exception.
-     * 
+     *
      * @return SQL exception
      */
     public final SQLException toSQLException() {
