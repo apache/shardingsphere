@@ -35,6 +35,8 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCrea
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.rule.MaskRule;
@@ -115,9 +117,10 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void checkDatabase(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Property `databaseName` in imported config is required");
+        ShardingSpherePreconditions.checkNotNull(databaseName, () -> new IllegalStateException("Property `databaseName` in imported config is required"));
         if (ProxyContext.getInstance().databaseExists(databaseName)) {
-            Preconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources().isEmpty(), "Database `%s` exists and is not empty", databaseName);
+            ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources().isEmpty(),
+                    () -> new UnsupportedSQLOperationException(String.format("Database `%s` exists and is not empty，overwrite is not supported", databaseName)));
         }
     }
     
