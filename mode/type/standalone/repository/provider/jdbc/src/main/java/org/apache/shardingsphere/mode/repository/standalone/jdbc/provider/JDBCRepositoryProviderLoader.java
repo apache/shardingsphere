@@ -52,6 +52,9 @@ public class JDBCRepositoryProviderLoader {
                 if (file.toString().endsWith(FILE_EXTENSION)) {
                     JDBCRepositoryProvider provider = (JDBCRepositoryProvider) JAXBContext.newInstance(JDBCRepositoryProvider.class).createUnmarshaller()
                             .unmarshal(Files.newInputStream(file.toFile().toPath()));
+                    if (Objects.equals(provider.getIsDefault(), true)) {
+                        result[0] = provider;
+                    }
                     if (Objects.equals(provider.getType(), type)) {
                         result[0] = provider;
                         return FileVisitResult.TERMINATE;
@@ -64,6 +67,7 @@ public class JDBCRepositoryProviderLoader {
     }
     
     private static JDBCRepositoryProvider loadFromJar(final File file, final String type) throws JAXBException, IOException {
+        JDBCRepositoryProvider defaultProvider = null;
         try (JarFile jar = new JarFile(file)) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
@@ -73,11 +77,14 @@ public class JDBCRepositoryProviderLoader {
                 }
                 final InputStream inputStream = JDBCRepositoryProviderLoader.class.getClassLoader().getResourceAsStream(name);
                 JDBCRepositoryProvider provider = (JDBCRepositoryProvider) JAXBContext.newInstance(JDBCRepositoryProvider.class).createUnmarshaller().unmarshal(inputStream);
+                if (Objects.equals(provider.getIsDefault(), true)) {
+                    defaultProvider = provider;
+                }
                 if (Objects.equals(provider.getType(), type)) {
                     return provider;
                 }
             }
         }
-        return null;
+        return defaultProvider;
     }
 }

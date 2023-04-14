@@ -43,6 +43,12 @@ public class JDBCRepositoryProvider {
     private final String driverClassName = "";
     
     /**
+     * Whether it is the default provider.
+     */
+    @XmlAttribute(name = "is-default", required = true)
+    private final Boolean isDefault = false;
+    
+    /**
      * Create table SQL.
      */
     @XmlElement(name = "create-table", required = true)

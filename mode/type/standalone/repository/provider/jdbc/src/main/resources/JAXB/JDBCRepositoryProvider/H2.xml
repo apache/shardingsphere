@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<sql type="MySQL" driver-class-name="" is-default="true">
+<sql type="MySQL" driver-class-name="org.h2.Driver" is-default="true">
     <create-table>CREATE TABLE IF NOT EXISTS `repository`(id varchar(36) PRIMARY KEY, `key` TEXT, `value` TEXT, parent TEXT)</create-table>
     <select-by-key>SELECT `value` FROM `repository` WHERE `key` = ?</select-by-key>
     <select-by-parent>SELECT `key` FROM `repository` WHERE parent = ?</select-by-parent>
