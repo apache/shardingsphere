@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.rexnode;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -33,6 +35,7 @@ import java.util.Map;
 /**
  * Parsing string and generate rex node utility class.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class StringToRexNodeUtils {
     
     /**

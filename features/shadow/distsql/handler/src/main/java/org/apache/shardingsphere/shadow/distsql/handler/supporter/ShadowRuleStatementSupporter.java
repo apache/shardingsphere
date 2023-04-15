@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.supporter;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
@@ -34,6 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Shadow rule statement supporter.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShadowRuleStatementSupporter {
     
     /**
@@ -95,16 +98,6 @@ public final class ShadowRuleStatementSupporter {
                 ? Collections.emptyList()
                 : segments.stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream)
                         .map(ShadowAlgorithmSegment::getAlgorithmName).collect(Collectors.toList());
-    }
-    
-    /**
-     * Get the algorithm segments from the rules.
-     *
-     * @param segments shadow rule segments
-     * @return algorithm segments
-     */
-    public static List<ShadowAlgorithmSegment> getShadowAlgorithmSegment(final Collection<ShadowRuleSegment> segments) {
-        return segments.stream().flatMap(each -> each.getShadowTableRules().values().stream()).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     /**

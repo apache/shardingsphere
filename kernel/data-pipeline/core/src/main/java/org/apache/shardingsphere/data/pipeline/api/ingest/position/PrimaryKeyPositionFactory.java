@@ -19,12 +19,15 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 /**
  * Primary key position factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PrimaryKeyPositionFactory {
     
     /**

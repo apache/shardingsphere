@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sharding.distsql.handler.checker;
 
 import com.google.common.base.Splitter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
@@ -80,6 +82,7 @@ import java.util.stream.Collectors;
 /**
  * Sharding table rule checker.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingTableRuleStatementChecker {
     
     private static final String DELIMITER = ".";

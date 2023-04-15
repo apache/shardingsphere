@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -51,6 +53,7 @@ import java.util.stream.Collectors;
 /**
  * Generic schema builder.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GenericSchemaBuilder {
     
     /**

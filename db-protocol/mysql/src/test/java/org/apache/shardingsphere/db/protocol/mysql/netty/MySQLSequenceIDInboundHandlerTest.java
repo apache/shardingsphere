@@ -62,7 +62,7 @@ class MySQLSequenceIDInboundHandlerTest {
             context.channel().config().setAutoRead(false);
             context.executor().execute(() -> {
                 context.writeAndFlush(Unpooled.EMPTY_BUFFER);
-                context.channel().pipeline().fireUserEventTriggered(WriteCompleteEvent.getInstance());
+                context.channel().pipeline().fireUserEventTriggered(new WriteCompleteEvent());
             });
         }
     }

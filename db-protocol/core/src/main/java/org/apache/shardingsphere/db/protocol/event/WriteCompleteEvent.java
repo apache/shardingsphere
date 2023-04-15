@@ -21,15 +21,4 @@ package org.apache.shardingsphere.db.protocol.event;
  * Write complete event.
  */
 public final class WriteCompleteEvent {
-    
-    private static final WriteCompleteEvent INSTANCE = new WriteCompleteEvent();
-    
-    /**
-     * Get instance of {@link WriteCompleteEvent}.
-     *
-     * @return instance of {@link WriteCompleteEvent}
-     */
-    public static WriteCompleteEvent getInstance() {
-        return INSTANCE;
-    }
 }

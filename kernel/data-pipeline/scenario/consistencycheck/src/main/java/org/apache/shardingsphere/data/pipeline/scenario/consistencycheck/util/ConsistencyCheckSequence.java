@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.util;
 
-import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.List;
@@ -26,7 +27,7 @@ import java.util.Optional;
 /**
  * Consistency check sequence.
  */
-@Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString(callSuper = true)
 public final class ConsistencyCheckSequence {
     

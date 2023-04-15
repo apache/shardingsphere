@@ -35,12 +35,12 @@ class ProxyFlowControlHandlerTest {
         EmbeddedChannel channel = new EmbeddedChannel(new ProxyFlowControlHandler(), new ChannelInboundHandlerAdapter() {
             
             @Override
-            public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
-                eventReceived.set(WriteCompleteEvent.getInstance() == evt);
+            public void userEventTriggered(final ChannelHandlerContext ctx, final Object event) {
+                eventReceived.set(event instanceof WriteCompleteEvent);
             }
         });
         channel.config().setAutoRead(false);
-        channel.pipeline().fireUserEventTriggered(WriteCompleteEvent.getInstance());
+        channel.pipeline().fireUserEventTriggered(new WriteCompleteEvent());
         assertTrue(channel.config().isAutoRead());
         assertTrue(eventReceived.get());
     }

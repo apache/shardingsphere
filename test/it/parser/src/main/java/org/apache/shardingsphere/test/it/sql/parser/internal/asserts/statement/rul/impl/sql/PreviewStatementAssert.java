@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rul.impl.sql;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
@@ -28,6 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Preview statement assert.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PreviewStatementAssert {
     
     /**
