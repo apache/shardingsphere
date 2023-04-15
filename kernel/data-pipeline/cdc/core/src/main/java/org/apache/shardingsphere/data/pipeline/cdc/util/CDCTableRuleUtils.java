@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
@@ -26,6 +28,7 @@ import java.util.List;
 /**
  * CDC table rule utility class.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CDCTableRuleUtils {
     
     /**

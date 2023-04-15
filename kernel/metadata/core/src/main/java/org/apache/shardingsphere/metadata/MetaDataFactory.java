@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.metadata;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -31,6 +33,7 @@ import java.util.Map;
 /**
  * Meta data factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetaDataFactory {
     
     /**

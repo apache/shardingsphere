@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.metadata.factory;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -33,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Internal meta data factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InternalMetaDataFactory {
     
     /**

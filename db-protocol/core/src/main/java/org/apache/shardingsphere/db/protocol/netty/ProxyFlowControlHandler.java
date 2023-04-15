@@ -27,10 +27,10 @@ import org.apache.shardingsphere.db.protocol.event.WriteCompleteEvent;
 public final class ProxyFlowControlHandler extends FlowControlHandler {
     
     @Override
-    public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
-        if (WriteCompleteEvent.getInstance() == evt) {
+    public void userEventTriggered(final ChannelHandlerContext ctx, final Object event) {
+        if (event instanceof WriteCompleteEvent) {
             ctx.channel().config().setAutoRead(true);
         }
-        ctx.fireUserEventTriggered(evt);
+        ctx.fireUserEventTriggered(event);
     }
 }
