@@ -46,7 +46,7 @@ public final class SQLParserRule implements GlobalRule {
         sqlCommentParseEnabled = ruleConfig.isSqlCommentParseEnabled();
         sqlStatementCache = ruleConfig.getSqlStatementCache();
         parseTreeCache = ruleConfig.getParseTreeCache();
-        engineType = "Standard";
+        engineType = ruleConfig.getEngineType();
     }
     
     /**
@@ -56,9 +56,9 @@ public final class SQLParserRule implements GlobalRule {
      * @return SQL parser engine
      */
     public SQLParserEngine getSQLParserEngine(final String databaseType) {
-        return "Standard".equals(engineType)
-                ? new ShardingSphereSQLParserEngine(databaseType, sqlStatementCache, parseTreeCache, sqlCommentParseEnabled)
-                : new SimpleSQLParserEngine();
+        return "Simple".equals(engineType)
+                ? new SimpleSQLParserEngine(databaseType, sqlStatementCache, parseTreeCache, sqlCommentParseEnabled)
+                : new ShardingSphereSQLParserEngine(databaseType, sqlStatementCache, parseTreeCache, sqlCommentParseEnabled);
     }
     
     @Override

@@ -64,7 +64,7 @@ class AdvancedSQLFederationExecutorTest {
     
     private ShardingSphereRuleMetaData createGlobalRuleMetaData() {
         CacheOption cacheOption = new CacheOption(128, 1024L);
-        return new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption))));
+        return new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption, "Standard"))));
     }
     
     private ShardingSphereResourceMetaData mockResourceMetaData() {

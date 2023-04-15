@@ -227,7 +227,7 @@ class MySQLComStmtPrepareExecutorTest {
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(mock(ShardingSphereRuleMetaData.class));
         CacheOption cacheOption = new CacheOption(1024, 1024);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
-                .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
+                .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption, "Standard")));
         when(result.getMetaDataContexts().getMetaData().getDatabase(connectionSession.getDatabaseName()).getProtocolType()).thenReturn(new MySQLDatabaseType());
         ShardingSphereTable table = new ShardingSphereTable();
         table.getColumns().put("id", new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true));

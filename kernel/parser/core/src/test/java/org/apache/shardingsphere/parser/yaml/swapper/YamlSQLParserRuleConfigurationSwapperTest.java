@@ -32,7 +32,7 @@ class YamlSQLParserRuleConfigurationSwapperTest {
     @Test
     void assertSwapToYamlConfiguration() {
         YamlSQLParserRuleConfiguration actual =
-                new YamlSQLParserRuleConfigurationSwapper().swapToYamlConfiguration(new SQLParserRuleConfiguration(true, new CacheOption(2, 5), new CacheOption(4, 7)));
+                new YamlSQLParserRuleConfigurationSwapper().swapToYamlConfiguration(new SQLParserRuleConfiguration(true, new CacheOption(2, 5), new CacheOption(4, 7), "Standard"));
         assertTrue(actual.isSqlCommentParseEnabled());
         assertThat(actual.getParseTreeCache().getInitialCapacity(), is(2));
         assertThat(actual.getParseTreeCache().getMaximumSize(), is(5L));

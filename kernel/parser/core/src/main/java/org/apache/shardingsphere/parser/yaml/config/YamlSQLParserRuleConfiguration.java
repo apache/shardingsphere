@@ -35,6 +35,8 @@ public final class YamlSQLParserRuleConfiguration implements YamlGlobalRuleConfi
     
     private YamlSQLParserCacheOptionRuleConfiguration parseTreeCache;
     
+    private String engineType;
+    
     @Override
     public Class<SQLParserRuleConfiguration> getRuleConfigurationType() {
         return SQLParserRuleConfiguration.class;

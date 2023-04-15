@@ -35,7 +35,8 @@ class SQLParserRuleBuilderTest {
     
     @Test
     void assertBuild() {
-        SQLParserRuleConfiguration ruleConfig = new SQLParserRuleConfiguration(true, new CacheOption(2, 5), new CacheOption(4, 7));
+        SQLParserRuleConfiguration ruleConfig = new SQLParserRuleConfiguration(true, new CacheOption(2, 5),
+                new CacheOption(4, 7), "Standard");
         SQLParserRule actualResult = new SQLParserRuleBuilder().build(ruleConfig, new HashMap<>(), new ConfigurationProperties(new Properties()));
         assertThat(actualResult.getConfiguration(), is(ruleConfig));
         assertTrue(actualResult.isSqlCommentParseEnabled());

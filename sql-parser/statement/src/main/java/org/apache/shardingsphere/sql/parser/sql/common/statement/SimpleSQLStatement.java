@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement;
 
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+
 /**
  * Simple SQL statement.
  */
-public final class SimpleSQLStatement implements SQLStatement {
+public final class SimpleSQLStatement implements MySQLStatement {
     
     @Override
     public int getParameterCount() {
