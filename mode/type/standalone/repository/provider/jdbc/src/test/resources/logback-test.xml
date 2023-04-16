@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -16,11 +16,18 @@
   ~ limitations under the License.
   -->
 
-<sql type="DEFAULT" driver-class-name="org.h2.Driver" is-default="true">
-    <create-table>CREATE TABLE IF NOT EXISTS `repository`(id varchar(36) PRIMARY KEY, `key` TEXT, `value` TEXT, parent TEXT)</create-table>
-    <select-by-key>SELECT `value` FROM `repository` WHERE `key` = ?</select-by-key>
-    <select-by-parent>SELECT `key` FROM `repository` WHERE parent = ?</select-by-parent>
-    <insert>INSERT INTO `repository` VALUES(?, ?, ?, ?)</insert>
-    <update>UPDATE `repository` SET `value` = ? WHERE `key` = ?</update>
-    <delete>DELETE FROM `repository` WHERE `key` = ?</delete>
-</sql>
+<configuration>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="org.apache.shardingsphere" level="warn" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+    
+    <root>
+        <level value="error" />
+        <appender-ref ref="console" />
+    </root>
+</configuration> 

@@ -33,6 +33,6 @@ class JDBCRepositoryProviderLoaderTest {
     @Test
     void assertLoadDefaultProvider() {
         final JDBCRepositoryProvider fixture = JDBCRepositoryProviderLoader.load("nonexistent");
-        assertThat(fixture.getType(), is("DEFAULT"));
+        assertThat(fixture.getType(), is("H2"));
     }
 }
