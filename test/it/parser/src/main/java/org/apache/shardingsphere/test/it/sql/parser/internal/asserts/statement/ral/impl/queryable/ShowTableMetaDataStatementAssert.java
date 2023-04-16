@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.queryable;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetaDataStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
@@ -29,6 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Show table meta data statement assert.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowTableMetaDataStatementAssert {
     
     /**

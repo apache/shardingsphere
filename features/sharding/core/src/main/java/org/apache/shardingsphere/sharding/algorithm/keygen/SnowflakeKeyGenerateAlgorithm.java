@@ -113,7 +113,9 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     }
     
     private int getMaxTolerateTimeDifferenceMilliseconds(final Properties props) {
-        return Integer.parseInt(props.getOrDefault(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS_KEY, MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS).toString());
+        int result = Integer.parseInt(props.getOrDefault(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS_KEY, MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS).toString());
+        ShardingSpherePreconditions.checkState(result >= 0, () -> new KeyGenerateAlgorithmInitializationException(getType(), "Illegal max tolerate time difference milliseconds."));
+        return result;
     }
     
     @Override

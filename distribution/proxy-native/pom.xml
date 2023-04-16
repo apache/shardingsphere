@@ -28,8 +28,6 @@
     <artifactId>shardingsphere-proxy-native-distribution</artifactId>
     
     <properties>
-        <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
-        <native.maven.plugin.version>0.9.19</native.maven.plugin.version>
         <imageName>apache-shardingsphere-proxy-native</imageName>
         <mainClass>org.apache.shardingsphere.proxy.Bootstrap</mainClass>
         <native.image.repository>apache/shardingsphere-proxy-native</native.image.repository>
@@ -69,11 +67,14 @@
     
     <profiles>
         <profile>
-            <id>native</id>
+            <id>release.native</id>
             <properties>
-                <hikari-cp.version>5.0.1</hikari-cp.version>
                 <truffle-api.version>22.3.1</truffle-api.version>
-                <caffeine.version>3.1.2</caffeine.version>
+                <jacoco.skip>true</jacoco.skip>
+                <maven.javadoc.skip>true</maven.javadoc.skip>
+                <checkstyle.skip>true</checkstyle.skip>
+                <rat.skip>true</rat.skip>
+                <spotless.apply.skip>true</spotless.apply.skip>
             </properties>
             <build>
                 <finalName>apache-shardingsphere-${project.version}</finalName>
@@ -91,7 +92,7 @@
                     <plugin>
                         <groupId>org.graalvm.buildtools</groupId>
                         <artifactId>native-maven-plugin</artifactId>
-                        <version>${native.maven.plugin.version}</version>
+                        <version>${native-maven-plugin.version}</version>
                         <extensions>true</extensions>
                         <configuration>
                             <fallback>false</fallback>
@@ -105,7 +106,6 @@
                             </jvmArgs>
                             <metadataRepository>
                                 <enabled>true</enabled>
-                                <version>0.2.6</version>
                             </metadataRepository>
                         </configuration>
                         <executions>

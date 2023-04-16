@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
 
 import java.util.Map;
@@ -25,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Global table map event mapping.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlobalTableMapEventMapping {
     
     // TODO Still save in memory, if proxy restart, the data will be lost.

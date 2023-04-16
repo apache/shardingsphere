@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
@@ -54,6 +56,7 @@ import java.util.Optional;
 /**
  * Pipeline job preparer utility class.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class PipelineJobPreparerUtils {
     

@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.strategy.type;
+package org.apache.shardingsphere.readwritesplitting.group.type;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
 import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
-import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
+import org.apache.shardingsphere.readwritesplitting.group.ReadwriteSplittingGroup;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Static readwrite-splitting strategy.
+ * Static readwrite-splitting group.
  */
 @RequiredArgsConstructor
-public final class StaticReadwriteSplittingStrategy implements ReadwriteSplittingStrategy {
+public final class StaticReadwriteSplittingGroup implements ReadwriteSplittingGroup {
     
     private final String writeDataSourceName;
     

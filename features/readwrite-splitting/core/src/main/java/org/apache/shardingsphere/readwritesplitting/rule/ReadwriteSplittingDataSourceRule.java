@@ -21,8 +21,8 @@ import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
-import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
+import org.apache.shardingsphere.readwritesplitting.group.ReadwriteSplittingGroup;
+import org.apache.shardingsphere.readwritesplitting.group.type.StaticReadwriteSplittingGroup;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -39,7 +39,7 @@ public final class ReadwriteSplittingDataSourceRule {
     
     private final ReadQueryLoadBalanceAlgorithm loadBalancer;
     
-    private final ReadwriteSplittingStrategy readwriteSplittingStrategy;
+    private final ReadwriteSplittingGroup readwriteSplittingGroup;
     
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
@@ -48,11 +48,11 @@ public final class ReadwriteSplittingDataSourceRule {
         name = config.getName();
         this.transactionalReadQueryStrategy = transactionalReadQueryStrategy;
         this.loadBalancer = loadBalancer;
-        readwriteSplittingStrategy = createStaticReadwriteSplittingStrategy(config);
+        readwriteSplittingGroup = createStaticReadwriteSplittingGroup(config);
     }
     
-    private StaticReadwriteSplittingStrategy createStaticReadwriteSplittingStrategy(final ReadwriteSplittingDataSourceRuleConfiguration config) {
-        return new StaticReadwriteSplittingStrategy(config.getWriteDataSourceName(), config.getReadDataSourceNames());
+    private StaticReadwriteSplittingGroup createStaticReadwriteSplittingGroup(final ReadwriteSplittingDataSourceRuleConfiguration config) {
+        return new StaticReadwriteSplittingGroup(config.getWriteDataSourceName(), config.getReadDataSourceNames());
     }
     
     /**
@@ -61,7 +61,7 @@ public final class ReadwriteSplittingDataSourceRule {
      * @return write data source name
      */
     public String getWriteDataSource() {
-        return readwriteSplittingStrategy.getWriteDataSource();
+        return readwriteSplittingGroup.getWriteDataSource();
     }
     
     /**

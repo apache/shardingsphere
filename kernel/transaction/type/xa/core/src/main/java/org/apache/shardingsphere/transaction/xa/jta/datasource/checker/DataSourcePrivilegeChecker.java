@@ -15,35 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.strategy;
+package org.apache.shardingsphere.transaction.xa.jta.datasource.checker;
 
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
-import java.util.Collection;
-import java.util.List;
+import javax.sql.DataSource;
 
 /**
- * Readwrite-splitting strategy.
+ * Data source privilege checker.
  */
-public interface ReadwriteSplittingStrategy {
+public interface DataSourcePrivilegeChecker extends TypedSPI {
     
     /**
-     * Get write data source.
+     * Check privilege.
      *
-     * @return write data source
+     * @param dataSource data source
      */
-    String getWriteDataSource();
-    
-    /**
-     * Get read data sources.
-     * @return read data sources
-     */
-    List<String> getReadDataSources();
-    
-    /**
-     * Get all data sources.
-     *
-     * @return all data sources
-     */
-    Collection<DataSourceRoleInfo> getAllDataSources();
+    void checkPrivilege(DataSource dataSource);
 }
