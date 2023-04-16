@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.util.expr;
 
 import groovy.lang.Closure;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.groovy.expr.HotspotInlineExpressionParser;
 
 import java.util.List;
@@ -26,7 +25,6 @@ import java.util.List;
 /**
  * Inline expression parser.
  */
-@RequiredArgsConstructor
 public final class InlineExpressionParser {
     
     private static final boolean IS_SUBSTRATE_VM;
@@ -40,12 +38,12 @@ public final class InlineExpressionParser {
         IS_SUBSTRATE_VM = System.getProperty("java.vm.name").equals("Substrate VM");
     }
     
-    public InlineExpressionParser(final String inlineExpression) {
+    public InlineExpressionParser() {
         if (IS_SUBSTRATE_VM) {
             this.hotspotInlineExpressionParser = null;
-            this.espressoInlineExpressionParser = new EspressoInlineExpressionParser(inlineExpression);
+            this.espressoInlineExpressionParser = new EspressoInlineExpressionParser();
         } else {
-            this.hotspotInlineExpressionParser = new HotspotInlineExpressionParser(inlineExpression);
+            this.hotspotInlineExpressionParser = new HotspotInlineExpressionParser();
             this.espressoInlineExpressionParser = null;
         }
     }
@@ -56,41 +54,43 @@ public final class InlineExpressionParser {
      * @param inlineExpression inline expression with {@code $->}
      * @return result inline expression with {@code $}
      */
-    public static String handlePlaceHolder(final String inlineExpression) {
+    public String handlePlaceHolder(final String inlineExpression) {
         if (IS_SUBSTRATE_VM) {
-            return EspressoInlineExpressionParser.handlePlaceHolder(inlineExpression);
+            return new EspressoInlineExpressionParser().handlePlaceHolder(inlineExpression);
         } else {
-            return HotspotInlineExpressionParser.handlePlaceHolder(inlineExpression);
+            return new HotspotInlineExpressionParser().handlePlaceHolder(inlineExpression);
         }
     }
     
     /**
      * Split and evaluate inline expression.
      *
+     * @param inlineExpression inline expression
      * @return result list
      */
-    public List<String> splitAndEvaluate() {
+    public List<String> splitAndEvaluate(final String inlineExpression) {
         if (IS_SUBSTRATE_VM) {
             assert null != espressoInlineExpressionParser;
-            return espressoInlineExpressionParser.splitAndEvaluate();
+            return espressoInlineExpressionParser.splitAndEvaluate(inlineExpression);
         } else {
             assert null != hotspotInlineExpressionParser;
-            return hotspotInlineExpressionParser.splitAndEvaluate();
+            return hotspotInlineExpressionParser.splitAndEvaluate(inlineExpression);
         }
     }
     
     /**
      * Evaluate closure.
      *
+     * @param inlineExpression inline expression
      * @return closure
      */
-    public Closure<?> evaluateClosure() {
+    public Closure<?> evaluateClosure(final String inlineExpression) {
         if (IS_SUBSTRATE_VM) {
             assert null != espressoInlineExpressionParser;
-            return espressoInlineExpressionParser.evaluateClosure();
+            return espressoInlineExpressionParser.evaluateClosure(inlineExpression);
         } else {
             assert null != hotspotInlineExpressionParser;
-            return hotspotInlineExpressionParser.evaluateClosure();
+            return hotspotInlineExpressionParser.evaluateClosure(inlineExpression);
         }
     }
 }

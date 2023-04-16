@@ -47,33 +47,33 @@ public final class HotspotInlineExpressionParser {
     
     private static final GroovyShell SHELL = new GroovyShell();
     
-    private final String inlineExpression;
-    
     /**
      * Replace all inline expression placeholders.
      * 
      * @param inlineExpression inline expression with {@code $->}
      * @return result inline expression with {@code $}
      */
-    public static String handlePlaceHolder(final String inlineExpression) {
+    public String handlePlaceHolder(final String inlineExpression) {
         return inlineExpression.contains("$->{") ? inlineExpression.replaceAll("\\$->\\{", "\\$\\{") : inlineExpression;
     }
     
     /**
      * Split and evaluate inline expression.
      *
+     * @param inlineExpression inline expression
      * @return result list
      */
-    public List<String> splitAndEvaluate() {
-        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split()));
+    public List<String> splitAndEvaluate(final String inlineExpression) {
+        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split(inlineExpression)));
     }
     
     /**
      * Evaluate closure.
      *
+     * @param inlineExpression inline expression
      * @return closure
      */
-    public Closure<?> evaluateClosure() {
+    public Closure<?> evaluateClosure(final String inlineExpression) {
         return (Closure<?>) evaluate("{it -> \"" + inlineExpression + "\"}");
     }
     
@@ -103,7 +103,7 @@ public final class HotspotInlineExpressionParser {
         return script.run();
     }
     
-    private List<String> split() {
+    private List<String> split(final String inlineExpression) {
         List<String> result = new ArrayList<>();
         StringBuilder segment = new StringBuilder();
         int bracketsDepth = 0;

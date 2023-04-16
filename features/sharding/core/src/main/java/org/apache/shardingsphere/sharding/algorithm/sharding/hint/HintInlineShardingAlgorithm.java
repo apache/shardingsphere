@@ -50,7 +50,7 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     private String getAlgorithmExpression(final Properties props) {
         String algorithmExpression = props.getProperty(ALGORITHM_EXPRESSION_KEY, DEFAULT_ALGORITHM_EXPRESSION);
         ShardingSpherePreconditions.checkNotNull(algorithmExpression, () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression can not be null."));
-        return InlineExpressionParser.handlePlaceHolder(algorithmExpression.trim());
+        return new InlineExpressionParser().handlePlaceHolder(algorithmExpression.trim());
     }
     
     @Override
@@ -65,7 +65,7 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     }
     
     private Closure<?> createClosure() {
-        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure().rehydrate(new Expando(), null, null);
+        Closure<?> result = new InlineExpressionParser().evaluateClosure(algorithmExpression).rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
     }

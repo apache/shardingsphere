@@ -106,10 +106,10 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     
     private Map<String, ReadwriteSplittingDataSourceRule> createStaticDataSourceRules(final ReadwriteSplittingDataSourceRuleConfiguration config,
                                                                                       final ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm) {
-        List<String> inlineReadwriteDataSourceNames = new InlineExpressionParser(config.getName()).splitAndEvaluate();
-        List<String> inlineWriteDatasourceNames = new InlineExpressionParser(config.getWriteDataSourceName()).splitAndEvaluate();
+        List<String> inlineReadwriteDataSourceNames = new InlineExpressionParser().splitAndEvaluate(config.getName());
+        List<String> inlineWriteDatasourceNames = new InlineExpressionParser().splitAndEvaluate(config.getWriteDataSourceName());
         List<List<String>> inlineReadDatasourceNames = config.getReadDataSourceNames().stream()
-                .map(each -> new InlineExpressionParser(each).splitAndEvaluate()).collect(Collectors.toList());
+                .map(each -> new InlineExpressionParser().splitAndEvaluate(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(inlineWriteDatasourceNames.size() == inlineReadwriteDataSourceNames.size(),
                 () -> new InvalidInlineExpressionDataSourceNameException("Inline expression write data source names size error."));
         inlineReadDatasourceNames.forEach(each -> ShardingSpherePreconditions.checkState(each.size() == inlineReadwriteDataSourceNames.size(),

@@ -33,8 +33,6 @@ public final class EspressoInlineExpressionParser {
     
     private static final Context POLYGLOT;
     
-    private final Value espressoInlineExpressionParser;
-    
     static {
         // https://github.com/oracle/graal/issues/4555 not yet closed
         String javaHome = System.getenv("JAVA_HOME");
@@ -52,19 +50,13 @@ public final class EspressoInlineExpressionParser {
                 .build();
     }
     
-    public EspressoInlineExpressionParser(final String inlineExpression) {
-        espressoInlineExpressionParser = POLYGLOT.getBindings("java")
-                .getMember("org.apache.shardingsphere.infra.util.expr.InlineExpressionParser")
-                .newInstance(inlineExpression);
-    }
-    
     /**
      * Replace all inline expression placeholders.
      *
      * @param inlineExpression inline expression with {@code $->}
      * @return result inline expression with {@code $}
      */
-    public static String handlePlaceHolder(final String inlineExpression) {
+    public String handlePlaceHolder(final String inlineExpression) {
         return POLYGLOT.getBindings("java")
                 .getMember("org.apache.shardingsphere.infra.util.expr.InlineExpressionParser")
                 .invokeMember("handlePlaceHolder", inlineExpression)
@@ -74,21 +66,27 @@ public final class EspressoInlineExpressionParser {
     /**
      * Split and evaluate inline expression.
      *
+     * @param inlineExpression inline expression
      * @return result list
      */
-    public List<String> splitAndEvaluate() {
-        List<String> splitAndEvaluate = espressoInlineExpressionParser.invokeMember("splitAndEvaluate").as(new TypeLiteral<List<String>>() {
+    public List<String> splitAndEvaluate(final String inlineExpression) {
+        List<String> splitAndEvaluate = getInlineExpressionParser().invokeMember("splitAndEvaluate", inlineExpression).as(new TypeLiteral<List<String>>() {
         });
         // GraalVM Truffle Espresso 22.3.1 has a different behavior for generic List than Hotspot.
-        return splitAndEvaluate.size() == 0 ? Collections.emptyList() : splitAndEvaluate;
+        return splitAndEvaluate.isEmpty() ? Collections.emptyList() : splitAndEvaluate;
     }
     
     /**
      * Evaluate closure.
      *
+     * @param inlineExpression inline expression
      * @return closure
      */
-    public Closure<?> evaluateClosure() {
-        return espressoInlineExpressionParser.invokeMember("evaluateClosure").as(Closure.class);
+    public Closure<?> evaluateClosure(final String inlineExpression) {
+        return getInlineExpressionParser().invokeMember("evaluateClosure", inlineExpression).as(Closure.class);
+    }
+    
+    private Value getInlineExpressionParser() {
+        return POLYGLOT.getBindings("java").getMember("org.apache.shardingsphere.infra.util.expr.InlineExpressionParser").newInstance();
     }
 }

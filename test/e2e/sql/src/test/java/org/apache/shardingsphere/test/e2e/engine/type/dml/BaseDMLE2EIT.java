@@ -85,7 +85,7 @@ public abstract class BaseDMLE2EIT {
         assertThat("Only support single table for DML.", containerComposer.getDataSet().getMetaDataList().size(), is(1));
         assertThat(actualUpdateCount, is(containerComposer.getDataSet().getUpdateCount()));
         DataSetMetaData expectedDataSetMetaData = containerComposer.getDataSet().getMetaDataList().get(0);
-        for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
+        for (String each : new InlineExpressionParser().splitAndEvaluate(expectedDataSetMetaData.getDataNodes())) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = containerComposer.getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (
