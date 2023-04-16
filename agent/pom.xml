@@ -35,7 +35,7 @@
     </modules>
     
     <properties>
-        <bytebuddy.version>1.12.12</bytebuddy.version>
+        <bytebuddy.version>1.14.4</bytebuddy.version>
     </properties>
     
     <dependencyManagement>
