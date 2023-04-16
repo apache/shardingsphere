@@ -189,12 +189,12 @@ public final class ShardingTableRuleStatementChecker {
         }
         Collection<String> result = new LinkedHashSet<>();
         tableRuleConfigs.forEach(each -> result.addAll(getDataSourceNames(each)));
-        autoTableRuleConfigs.forEach(each -> result.addAll(new InlineExpressionParser(each.getActualDataSources()).splitAndEvaluate()));
+        autoTableRuleConfigs.forEach(each -> result.addAll(new InlineExpressionParser().splitAndEvaluate(each.getActualDataSources())));
         return result;
     }
     
     private static Collection<String> getDataSourceNames(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
-        return new InlineExpressionParser(shardingTableRuleConfig.getActualDataNodes()).splitAndEvaluate().stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
+        return new InlineExpressionParser().splitAndEvaluate(shardingTableRuleConfig.getActualDataNodes()).stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
     }
     
     private static Collection<String> getDataSourceNames(final Collection<String> actualDataNodes) {
@@ -326,7 +326,7 @@ public final class ShardingTableRuleStatementChecker {
         Collection<String> result = new LinkedHashSet<>();
         result.addAll(config.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getActualDataSources)
                 .map(each -> Splitter.on(",").trimResults().splitToList(each)).flatMap(Collection::stream).collect(Collectors.toSet()));
-        result.addAll(config.getTables().stream().map(each -> new InlineExpressionParser(each.getActualDataNodes()).splitAndEvaluate())
+        result.addAll(config.getTables().stream().map(each -> new InlineExpressionParser().splitAndEvaluate(each.getActualDataNodes()))
                 .flatMap(Collection::stream).distinct().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toSet()));
         return result;
     }
@@ -337,7 +337,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static Collection<String> parseDateSource(final String dateSource) {
-        return new InlineExpressionParser(dateSource).splitAndEvaluate();
+        return new InlineExpressionParser().splitAndEvaluate(dateSource);
     }
     
     private static Collection<String> getLogicDataSources(final ShardingSphereDatabase database) {

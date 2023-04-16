@@ -56,7 +56,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
         ShardingSpherePreconditions.checkState(null != expression && !expression.isEmpty(),
                 () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression cannot be null or empty"));
-        return InlineExpressionParser.handlePlaceHolder(expression.trim());
+        return new InlineExpressionParser().handlePlaceHolder(expression.trim());
     }
     
     private boolean isAllowRangeQuery(final Properties props) {
@@ -79,7 +79,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     }
     
     private Closure<?> createClosure() {
-        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure().rehydrate(new Expando(), null, null);
+        Closure<?> result = new InlineExpressionParser().evaluateClosure(algorithmExpression).rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
     }
