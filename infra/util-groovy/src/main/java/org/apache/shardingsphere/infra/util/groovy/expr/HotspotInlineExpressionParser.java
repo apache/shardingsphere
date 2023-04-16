@@ -47,32 +47,17 @@ public final class HotspotInlineExpressionParser implements JVMInlineExpressionP
     
     private static final GroovyShell SHELL = new GroovyShell();
     
-    /**
-     * Replace all inline expression placeholders.
-     * 
-     * @param inlineExpression inline expression with {@code $->}
-     * @return result inline expression with {@code $}
-     */
+    @Override
     public String handlePlaceHolder(final String inlineExpression) {
         return inlineExpression.contains("$->{") ? inlineExpression.replaceAll("\\$->\\{", "\\$\\{") : inlineExpression;
     }
     
-    /**
-     * Split and evaluate inline expression.
-     *
-     * @param inlineExpression inline expression
-     * @return result list
-     */
+    @Override
     public List<String> splitAndEvaluate(final String inlineExpression) {
         return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split(inlineExpression)));
     }
     
-    /**
-     * Evaluate closure.
-     *
-     * @param inlineExpression inline expression
-     * @return closure
-     */
+    @Override
     public Closure<?> evaluateClosure(final String inlineExpression) {
         return (Closure<?>) evaluate("{it -> \"" + inlineExpression + "\"}");
     }
