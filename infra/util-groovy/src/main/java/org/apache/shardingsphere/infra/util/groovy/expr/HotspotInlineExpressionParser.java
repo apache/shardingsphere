@@ -36,10 +36,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Hotspot Inline expression parser.
+ * Hotspot inline expression parser.
  */
 @RequiredArgsConstructor
-public final class HotspotInlineExpressionParser {
+public final class HotspotInlineExpressionParser implements JVMInlineExpressionParser {
     
     private static final char SPLITTER = ',';
     

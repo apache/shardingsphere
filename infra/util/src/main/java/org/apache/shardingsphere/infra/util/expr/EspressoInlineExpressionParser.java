@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.util.expr;
 
 import groovy.lang.Closure;
+import org.apache.shardingsphere.infra.util.groovy.expr.JVMInlineExpressionParser;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.TypeLiteral;
 import org.graalvm.polyglot.Value;
@@ -27,9 +28,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Espresso Inline expression parser.
+ * Espresso inline expression parser.
  */
-public final class EspressoInlineExpressionParser {
+public final class EspressoInlineExpressionParser implements JVMInlineExpressionParser {
     
     private static final Context POLYGLOT;
     

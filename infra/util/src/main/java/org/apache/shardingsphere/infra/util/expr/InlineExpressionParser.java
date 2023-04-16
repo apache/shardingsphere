@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.util.expr;
 
 import groovy.lang.Closure;
 import org.apache.shardingsphere.infra.util.groovy.expr.HotspotInlineExpressionParser;
+import org.apache.shardingsphere.infra.util.groovy.expr.JVMInlineExpressionParser;
 
 import java.util.List;
 
@@ -29,9 +30,7 @@ public final class InlineExpressionParser {
     
     private static final boolean IS_SUBSTRATE_VM;
     
-    private final EspressoInlineExpressionParser espressoInlineExpressionParser;
-    
-    private final HotspotInlineExpressionParser hotspotInlineExpressionParser;
+    private final JVMInlineExpressionParser jvmInlineExpressionParser;
     
     static {
         // workaround for https://github.com/helidon-io/helidon-build-tools/issues/858
@@ -39,13 +38,7 @@ public final class InlineExpressionParser {
     }
     
     public InlineExpressionParser() {
-        if (IS_SUBSTRATE_VM) {
-            this.hotspotInlineExpressionParser = null;
-            this.espressoInlineExpressionParser = new EspressoInlineExpressionParser();
-        } else {
-            this.hotspotInlineExpressionParser = new HotspotInlineExpressionParser();
-            this.espressoInlineExpressionParser = null;
-        }
+        jvmInlineExpressionParser = IS_SUBSTRATE_VM ? new EspressoInlineExpressionParser() : new HotspotInlineExpressionParser();
     }
     
     /**
@@ -69,13 +62,7 @@ public final class InlineExpressionParser {
      * @return result list
      */
     public List<String> splitAndEvaluate(final String inlineExpression) {
-        if (IS_SUBSTRATE_VM) {
-            assert null != espressoInlineExpressionParser;
-            return espressoInlineExpressionParser.splitAndEvaluate(inlineExpression);
-        } else {
-            assert null != hotspotInlineExpressionParser;
-            return hotspotInlineExpressionParser.splitAndEvaluate(inlineExpression);
-        }
+        return jvmInlineExpressionParser.splitAndEvaluate(inlineExpression);
     }
     
     /**
@@ -85,12 +72,6 @@ public final class InlineExpressionParser {
      * @return closure
      */
     public Closure<?> evaluateClosure(final String inlineExpression) {
-        if (IS_SUBSTRATE_VM) {
-            assert null != espressoInlineExpressionParser;
-            return espressoInlineExpressionParser.evaluateClosure(inlineExpression);
-        } else {
-            assert null != hotspotInlineExpressionParser;
-            return hotspotInlineExpressionParser.evaluateClosure(inlineExpression);
-        }
+        return jvmInlineExpressionParser.evaluateClosure(inlineExpression);
     }
 }
