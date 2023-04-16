@@ -37,6 +37,7 @@ import org.apache.shardingsphere.agent.core.plugin.PluginLifecycleServiceManager
 import org.apache.shardingsphere.agent.core.plugin.classloader.AgentPluginClassLoader;
 import org.apache.shardingsphere.agent.core.plugin.classloader.ClassLoaderContext;
 
+import java.security.ProtectionDomain;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,7 +63,7 @@ public final class AgentTransformer implements Transformer {
     
     @SuppressWarnings("NullableProblems")
     @Override
-    public Builder<?> transform(final Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module) {
+    public Builder<?> transform(final Builder<?> builder, final TypeDescription typeDescription, final ClassLoader classLoader, final JavaModule module, final ProtectionDomain protectionDomain) {
         if (!advisorConfigs.containsKey(typeDescription.getTypeName())) {
             return builder;
         }
