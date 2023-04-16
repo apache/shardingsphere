@@ -37,7 +37,7 @@ public final class EspressoInlineExpressionParser implements JVMInlineExpression
     private static final Context POLYGLOT;
     
     static {
-        // https://github.com/oracle/graal/issues/4555 not yet closed
+        // TODO https://github.com/oracle/graal/issues/4555 not yet closed
         String javaHome = System.getenv("JAVA_HOME");
         ShardingSpherePreconditions.checkNotNull(javaHome, () -> new RuntimeException("Failed to determine the system's environment variable JAVA_HOME!"));
         URL resource = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("espresso-need-libs"));
@@ -53,9 +53,7 @@ public final class EspressoInlineExpressionParser implements JVMInlineExpression
     @Override
     public String handlePlaceHolder(final String inlineExpression) {
         return POLYGLOT.getBindings("java")
-                .getMember("org.apache.shardingsphere.infra.util.expr.InlineExpressionParser")
-                .invokeMember("handlePlaceHolder", inlineExpression)
-                .asString();
+                .getMember("org.apache.shardingsphere.infra.util.expr.InlineExpressionParser").invokeMember("handlePlaceHolder", inlineExpression).asString();
     }
     
     @Override
