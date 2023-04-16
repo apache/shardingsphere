@@ -24,7 +24,6 @@ import org.apache.calcite.sql.fun.SqlTrimFunction;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 /**
@@ -37,7 +36,7 @@ public final class LiteralExpressionConverter implements SQLSegmentConverter<Lit
         if (null == segment.getLiterals()) {
             return Optional.of(SqlLiteral.createNull(SqlParserPos.ZERO));
         }
-        if (segment.getLiterals() instanceof Integer || segment.getLiterals() instanceof BigDecimal) {
+        if (segment.getLiterals() instanceof Integer) {
             return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(segment.getLiterals()), SqlParserPos.ZERO));
         }
         if (segment.getLiterals().equals("BOTH") || segment.getLiterals().equals("LEADING") || segment.getLiterals().equals("TRAILING")) {
