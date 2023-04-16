@@ -45,7 +45,7 @@ public final class EspressoInlineExpressionParser implements JVMInlineExpression
         String javaClasspath = String.join(":", dir + "/groovy.jar", dir + "/guava.jar", dir + "/shardingsphere-infra-util-groovy.jar");
         POLYGLOT = Context.newBuilder().allowAllAccess(true)
                 .option("java.Properties.org.graalvm.home", javaHome)
-                .option("java.MultiThreaded", "true")
+                .option("java.MultiThreaded", Boolean.TRUE.toString())
                 .option("java.Classpath", javaClasspath)
                 .build();
     }
