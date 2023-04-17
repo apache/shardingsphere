@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.rdl.alter;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.mask.distsql.parser.statement.AlterMaskRuleStatement;
@@ -47,6 +49,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 /**
  * Alter rule statement assert.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterRuleStatementAssert {
     
     /**

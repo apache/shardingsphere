@@ -48,28 +48,27 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     private static final String SEPARATOR = "/";
     
-    private static final String H2_FILE_MODE_KEY = "file:";
-    
     private JDBCRepositoryProvider provider;
     
-    private HikariDataSource hikariDataSource;
+    private HikariDataSource dataSource;
     
     @SneakyThrows(SQLException.class)
     @Override
     public void init(final Properties props) {
         JDBCRepositoryProperties jdbcRepositoryProps = new JDBCRepositoryProperties(props);
-        hikariDataSource = new HikariDataSource();
-        String jdbcUrl = jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL);
-        hikariDataSource.setJdbcUrl(jdbcUrl);
-        hikariDataSource.setUsername(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.USERNAME));
-        hikariDataSource.setPassword(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD));
+        provider = TypedSPILoader.getService(JDBCRepositoryProvider.class, jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
+        dataSource = new HikariDataSource();
+        dataSource.setJdbcUrl(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL));
+        dataSource.setUsername(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.USERNAME));
+        dataSource.setPassword(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD));
         try (
-                Connection connection = hikariDataSource.getConnection();
+                Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            provider = TypedSPILoader.getService(JDBCRepositoryProvider.class, jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
-            if (!jdbcUrl.contains(H2_FILE_MODE_KEY)) {
-                statement.execute(provider.dropTableSQL());
+            // TODO remove it later. Add for reset standalone test e2e's env. Need to close DataSource to release H2's memory data
+            if (jdbcRepositoryProps.<String>getValue(JDBCRepositoryPropertyKey.JDBC_URL).contains("h2:mem:")) {
+                statement.execute("DROP TABLE IF EXISTS `repository`");
             }
+            // Finish TODO
             statement.execute(provider.createTableSQL());
         }
     }
@@ -77,7 +76,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     @Override
     public String getDirectly(final String key) {
         try (
-                Connection connection = hikariDataSource.getConnection();
+                Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(provider.selectByKeySQL())) {
             preparedStatement.setString(1, key);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -94,7 +93,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     @Override
     public List<String> getChildrenKeys(final String key) {
         try (
-                Connection connection = hikariDataSource.getConnection();
+                Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(provider.selectByParentKeySQL())) {
             preparedStatement.setString(1, key);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -151,7 +150,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     private void insert(final String key, final String value, final String parent) throws SQLException {
         try (
-                Connection connection = hikariDataSource.getConnection();
+                Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(provider.insertSQL())) {
             preparedStatement.setString(1, UUID.randomUUID().toString());
             preparedStatement.setString(2, key);
@@ -164,7 +163,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     @Override
     public void update(final String key, final String value) {
         try (
-                Connection connection = hikariDataSource.getConnection();
+                Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(provider.updateSQL())) {
             preparedStatement.setString(1, value);
             preparedStatement.setString(2, key);
@@ -177,7 +176,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     @Override
     public void delete(final String key) {
         try (
-                Connection connection = hikariDataSource.getConnection();
+                Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(provider.deleteSQL())) {
             preparedStatement.setString(1, key);
             preparedStatement.executeUpdate();
@@ -188,7 +187,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     @Override
     public void close() {
-        hikariDataSource.close();
+        dataSource.close();
     }
     
     @Override

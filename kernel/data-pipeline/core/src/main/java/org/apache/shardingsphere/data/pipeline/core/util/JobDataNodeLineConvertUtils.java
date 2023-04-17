@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Job data node line convert utility class.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JobDataNodeLineConvertUtils {
     
     /**

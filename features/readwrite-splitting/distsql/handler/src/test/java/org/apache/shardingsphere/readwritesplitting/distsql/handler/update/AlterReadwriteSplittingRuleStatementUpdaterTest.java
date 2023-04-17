@@ -21,14 +21,14 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfi
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
+import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
+import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.AlterReadwriteSplittingRuleStatement;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,9 +85,9 @@ class AlterReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test
     void assertCheckSQLStatementWithoutExistedAutoAwareResources() {
-        ExportableRule exportableRule = mock(ExportableRule.class);
-        when(exportableRule.getExportData()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, Collections.singletonMap("ms_group", "ds_0")));
-        when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(exportableRule));
+        DataSourceContainedRule dataSourceContainedRule = mock(DataSourceContainedRule.class);
+        when(dataSourceContainedRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("ms_group", Collections.singleton(new DataSourceRoleInfo("ds_0", DataSourceRole.PRIMARY))));
+        when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(dataSourceContainedRule));
         ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("readwrite_ds", "ha_group", new AlgorithmSegment("TEST", new Properties()));
         assertThrows(MissingRequiredStorageUnitsException.class,
                 () -> updater.checkSQLStatement(database, new AlterReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment)), createCurrentRuleConfiguration()));
@@ -164,18 +164,15 @@ class AlterReadwriteSplittingRuleStatementUpdaterTest {
     
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
-                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds",
-                        new StaticReadwriteSplittingStrategyConfiguration("ds_write", Arrays.asList("read_ds_0", "read_ds_1")), null, "TEST");
+                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "ds_write", Arrays.asList("read_ds_0", "read_ds_1"), "TEST");
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), Collections.emptyMap());
     }
     
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfigurationWithMultipleRules() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig0 =
-                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds_0",
-                        new StaticReadwriteSplittingStrategyConfiguration("ds_write_0", Arrays.asList("read_ds_0_0", "read_ds_0_1")), null, "TEST");
+                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds_0", "ds_write_0", Arrays.asList("read_ds_0_0", "read_ds_0_1"), "TEST");
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig1 =
-                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds_1",
-                        new StaticReadwriteSplittingStrategyConfiguration("ds_write_1", Arrays.asList("read_ds_1_0", "read_ds_1_1")), null, "TEST");
+                new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds_1", "ds_write_1", Arrays.asList("read_ds_1_0", "read_ds_1_1"), "TEST");
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Arrays.asList(dataSourceRuleConfig0, dataSourceRuleConfig1)), Collections.emptyMap());
     }
 }

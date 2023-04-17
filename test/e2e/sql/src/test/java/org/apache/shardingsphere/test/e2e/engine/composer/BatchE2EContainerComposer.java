@@ -84,7 +84,7 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer {
         DataSet expected = getDataSet(actualUpdateCounts);
         assertThat("Only support single table for DML.", expected.getMetaDataList().size(), is(1));
         DataSetMetaData expectedDataSetMetaData = expected.getMetaDataList().get(0);
-        for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
+        for (String each : new InlineExpressionParser().splitAndEvaluate(expectedDataSetMetaData.getDataNodes())) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (

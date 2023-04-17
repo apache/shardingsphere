@@ -33,7 +33,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ReadwriteSplittingRuleStatementConverterTest {
@@ -60,9 +59,8 @@ class ReadwriteSplittingRuleStatementConverterTest {
         assertThat(actualRuleConfig.getName(), is(expectedSingleReadwriteSplittingRuleSegment.getName()));
         String expectedLoadBalancerName = String.format("%s_%s", expectedSingleReadwriteSplittingRuleSegment.getName(), expectedSingleReadwriteSplittingRuleSegment.getLoadBalancer().getName());
         assertThat(actualRuleConfig.getLoadBalancerName(), is(expectedLoadBalancerName));
-        assertNotNull(actualRuleConfig.getStaticStrategy());
-        assertThat(actualRuleConfig.getStaticStrategy().getWriteDataSourceName(), is(expectedSingleReadwriteSplittingRuleSegment.getWriteDataSource()));
-        assertThat(actualRuleConfig.getStaticStrategy().getReadDataSourceNames(), is(expectedSingleReadwriteSplittingRuleSegment.getReadDataSources()));
+        assertThat(actualRuleConfig.getWriteDataSourceName(), is(expectedSingleReadwriteSplittingRuleSegment.getWriteDataSource()));
+        assertThat(actualRuleConfig.getReadDataSourceNames(), is(expectedSingleReadwriteSplittingRuleSegment.getReadDataSources()));
         String actualLoadBalancerName = actualSingleRuleSegmentConvertResultLoadBalancers.keySet().iterator().next();
         assertThat(actualLoadBalancerName, is(expectedLoadBalancerName));
         AlgorithmConfiguration actualSphereAlgorithmConfig = actualSingleRuleSegmentConvertResultLoadBalancers.get(actualLoadBalancerName);

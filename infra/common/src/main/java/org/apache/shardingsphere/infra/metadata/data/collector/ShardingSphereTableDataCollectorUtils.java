@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.data.collector;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereRowData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
@@ -36,6 +38,7 @@ import java.util.List;
 /**
  * Table data collector utility class.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereTableDataCollectorUtils {
     
     /**

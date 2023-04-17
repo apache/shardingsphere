@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.encrypt.algorithm.encrypt;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -30,24 +30,24 @@ import java.util.Properties;
 /**
  * RC4 encrypt algorithm.
  */
-public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
-
+public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, String> {
+    
     private static final String RC4_KEY = "rc4-key-value";
-
+    
     private static final int SBOX_LENGTH = 256;
-
+    
     private static final int KEY_MIN_LENGTH = 5;
-
+    
     private volatile byte[] key = new byte[SBOX_LENGTH - 1];
-
+    
     private volatile int[] sBox = new int[SBOX_LENGTH];
-
+    
     @Override
     public void init(final Properties props) {
         reset();
         setKey(props.getProperty(RC4_KEY, "").getBytes(StandardCharsets.UTF_8));
     }
-
+    
     private void setKey(final byte[] key) {
         ShardingSpherePreconditions.checkState(key.length >= KEY_MIN_LENGTH && key.length < SBOX_LENGTH,
                 () -> new EncryptAlgorithmInitializationException(getType(), "Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1)));

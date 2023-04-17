@@ -9,7 +9,6 @@
 [![snyk](https://snyk.io/test/github/apache/shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/shardingsphere?targetFile=pom.xml)
 [![Maintainability](https://cloud.quality-gate.com/dashboard/api/badge?projectName=apache_shardingsphere&branchName=master)](https://cloud.quality-gate.com/dashboard/branches/30#overview)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5394/badge)](https://bestpractices.coreinfrastructure.org/projects/5394)
-[![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)
 
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/ShardingSphere.svg?style=social&label=Follow%20%40ShardingSphere)](https://twitter.com/ShardingSphere)
@@ -35,7 +34,7 @@ Apache ShardingSphere 产品定位为 `Database Plus`，旨在构建异构数据
 
 ShardingSphere 已于 2020 年 4 月 16 日成为 [Apache 软件基金会](https://apache.org/index.html#projects-list)的顶级项目。
 
-迄今为止，已有超过 [12,000 个 GitHub 项目](https://github.com/search?l=Maven+POM&q=shardingsphere&type=Code)采用了 ShardingSphere。
+迄今为止，已有超过 [13,000 个 GitHub 项目](https://github.com/search?l=Maven+POM&q=shardingsphere&type=Code)采用了 ShardingSphere。
 
 ### 文档📜
 

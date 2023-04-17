@@ -1,0 +1,163 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: PROFILING
+columns:
+  query_id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: QUERY_ID
+    primaryKey: false
+    unsigned: false
+    visible: true
+  seq:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SEQ
+    primaryKey: false
+    unsigned: false
+    visible: true
+  state:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: STATE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  duration:
+    caseSensitive: false
+    dataType: 3
+    generated: false
+    name: DURATION
+    primaryKey: false
+    unsigned: false
+    visible: true
+  cpu_user:
+    caseSensitive: false
+    dataType: 3
+    generated: false
+    name: CPU_USER
+    primaryKey: false
+    unsigned: false
+    visible: true
+  cpu_system:
+    caseSensitive: false
+    dataType: 3
+    generated: false
+    name: CPU_SYSTEM
+    primaryKey: false
+    unsigned: false
+    visible: true
+  context_voluntary:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: CONTEXT_VOLUNTARY
+    primaryKey: false
+    unsigned: false
+    visible: true
+  context_involuntary:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: CONTEXT_INVOLUNTARY
+    primaryKey: false
+    unsigned: false
+    visible: true
+  block_ops_in:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: BLOCK_OPS_IN
+    primaryKey: false
+    unsigned: false
+    visible: true
+  block_ops_out:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: BLOCK_OPS_OUT
+    primaryKey: false
+    unsigned: false
+    visible: true
+  messages_sent:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MESSAGES_SENT
+    primaryKey: false
+    unsigned: false
+    visible: true
+  messages_received:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MESSAGES_RECEIVED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  page_faults_major:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PAGE_FAULTS_MAJOR
+    primaryKey: false
+    unsigned: false
+    visible: true
+  page_faults_minor:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PAGE_FAULTS_MINOR
+    primaryKey: false
+    unsigned: false
+    visible: true
+  swaps:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SWAPS
+    primaryKey: false
+    unsigned: false
+    visible: true
+  source_function:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SOURCE_FUNCTION
+    primaryKey: false
+    unsigned: false
+    visible: true
+  source_file:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SOURCE_FILE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  source_line:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SOURCE_LINE
+    primaryKey: false
+    unsigned: false
+    visible: true

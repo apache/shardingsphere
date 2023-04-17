@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.updatable;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.distsql.AlgorithmAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
@@ -36,6 +38,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Alter traffic rule statement assert.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterTrafficRuleStatementAssert {
     
     /**

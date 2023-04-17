@@ -1,0 +1,66 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="host" />
+        <column name="user" />
+        <column name="select_priv" />
+        <column name="insert_priv" />
+        <column name="update_priv" />
+        <column name="delete_priv" />
+        <column name="create_priv" />
+        <column name="drop_priv" />
+        <column name="reload_priv" />
+        <column name="shutdown_priv" />
+        <column name="process_priv" />
+        <column name="file_priv" />
+        <column name="grant_priv" />
+        <column name="references_priv" />
+        <column name="index_priv" />
+        <column name="alter_priv" />
+        <column name="show_db_priv" />
+        <column name="super_priv" />
+        <column name="create_tmp_table_priv" />
+        <column name="lock_tables_priv" />
+        <column name="execute_priv" />
+        <column name="repl_slave_priv" />
+        <column name="repl_client_priv" />
+        <column name="create_view_priv" />
+        <column name="show_view_priv" />
+        <column name="create_routine_priv" />
+        <column name="alter_routine_priv" />
+        <column name="create_user_priv" />
+        <column name="event_priv" />
+        <column name="trigger_priv" />
+        <column name="create_tablespace_priv" />
+        <column name="ssl_type" />
+        <column name="ssl_cipher" />
+        <column name="x509_issuer" />
+        <column name="x509_subject" />
+        <column name="max_questions" />
+        <column name="max_updates" />
+        <column name="max_connections" />
+        <column name="max_user_connections" />
+        <column name="plugin" />
+        <column name="authentication_string" />
+        <column name="password_expired" />
+        <column name="password_last_changed" />
+        <column name="password_lifetime" />
+        <column name="account_locked" />
+    </metadata>
+</dataset>

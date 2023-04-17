@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.checker;
 
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
@@ -269,7 +270,14 @@ class ShardingRuleStatementCheckerTest {
     }
     
     @Test
-    void assertCheckerTableRuleWithNoneStrategyTypeSuccess() {
+    void assertCheckTableRuleWithNoneStrategyTypeThrows() {
+        Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
+        rules.add(createWrongTableRuleWithNoneTypeStrategy());
+        assertThrows(InvalidShardingStrategyConfigurationException.class, () -> ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig));
+    }
+    
+    @Test
+    void assertCheckTableRuleWithNoneStrategyTypeSuccess() {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(createCompleteTableRuleWithNoneTypeStrategy());
         ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
@@ -314,12 +322,21 @@ class ShardingRuleStatementCheckerTest {
         return result;
     }
     
-    private TableRuleSegment createCompleteTableRuleWithNoneTypeStrategy() {
+    private TableRuleSegment createWrongTableRuleWithNoneTypeStrategy() {
         Properties props = new Properties();
         KeyGenerateStrategySegment keyGenerator = new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", props));
         TableRuleSegment result = new TableRuleSegment("t_product_1", Collections.singletonList("ds_${0..1}.t_order${0..1}"), keyGenerator, null);
-        result.setTableStrategySegment(new ShardingStrategySegment("none", null, null));
         result.setDatabaseStrategySegment(new ShardingStrategySegment("none", null, null));
+        result.setTableStrategySegment(new ShardingStrategySegment("none", null, null));
+        return result;
+    }
+    
+    private TableRuleSegment createCompleteTableRuleWithNoneTypeStrategy() {
+        Properties props = PropertiesBuilder.build(new Property("algorithm-expression", "t_order_${order_id % 2}"));
+        KeyGenerateStrategySegment keyGenerator = new KeyGenerateStrategySegment("product_id", new AlgorithmSegment("DISTSQL.FIXTURE", props));
+        TableRuleSegment result = new TableRuleSegment("t_product_1", Collections.singletonList("ds_0.t_order${0..1}"), keyGenerator, null);
+        result.setDatabaseStrategySegment(new ShardingStrategySegment("none", null, null));
+        result.setTableStrategySegment(new ShardingStrategySegment("standard", "order_id", new AlgorithmSegment("inline", props)));
         return result;
     }
 }

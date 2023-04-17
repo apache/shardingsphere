@@ -53,12 +53,6 @@ class OpenGaussFrontendEngineTest {
     }
     
     @Test
-    void assertGetFrontendContext() {
-        openGaussFrontendEngine.getFrontendContext();
-        verify(mockPostgreSQLFrontendEngine).getFrontendContext();
-    }
-    
-    @Test
     void assertGetCodecEngine() {
         assertThat(openGaussFrontendEngine.getCodecEngine(), instanceOf(OpenGaussPacketCodecEngine.class));
     }

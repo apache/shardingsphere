@@ -35,6 +35,7 @@ rules:
       type: AES
       props:
         aes-key-value: 123456abc
+  likeEncryptors:
     like_encryptor:
       type: CHAR_DIGEST_LIKE
       props:

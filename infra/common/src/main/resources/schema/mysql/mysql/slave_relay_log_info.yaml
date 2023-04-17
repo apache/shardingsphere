@@ -1,0 +1,94 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: slave_relay_log_info
+columns:
+  number_of_lines:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: Number_of_lines
+    primaryKey: false
+    unsigned: true
+    visible: true
+  relay_log_name:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Relay_log_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  relay_log_pos:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: Relay_log_pos
+    primaryKey: false
+    unsigned: true
+    visible: true
+  master_log_name:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Master_log_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  master_log_pos:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: Master_log_pos
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sql_delay:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: Sql_delay
+    primaryKey: false
+    unsigned: false
+    visible: true
+  number_of_workers:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: Number_of_workers
+    primaryKey: false
+    unsigned: true
+    visible: true
+  id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: Id
+    primaryKey: false
+    unsigned: true
+    visible: true
+  channel_name:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: Channel_name
+    primaryKey: true
+    unsigned: false
+    visible: true
+indexes:
+  primary:
+    name: PRIMARY

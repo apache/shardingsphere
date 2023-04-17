@@ -16,13 +16,7 @@ AlterReadwriteSplittingRule ::=
   'ALTER' 'READWRITE_SPLITTING' 'RULE' readwriteSplittingDefinition (',' readwriteSplittingDefinition)*
 
 readwriteSplittingDefinition ::=
-  ruleName '(' (staticReadwriteSplittingDefinition | dynamicReadwriteSplittingDefinition) (',' loadBalancerDefinition)? ')'
-
-staticReadwriteSplittingDefinition ::=
-    'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')'
-
-dynamicReadwriteSplittingDefinition ::=
-    'AUTO_AWARE_RESOURCE' '=' resourceName
+  ruleName '(' 'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')' (',' loadBalancerDefinition)? ')'
 
 loadBalancerDefinition ::=
     'TYPE' '(' 'NAME' '=' loadBalancerType (',' propertiesDefinition)? ')'
@@ -59,12 +53,11 @@ value ::=
 
 ### 补充说明
 
-- 动态读写分离规则依赖于数据库发现规则；
 - `loadBalancerType` 指定负载均衡算法类型，请参考[负载均衡算法]((/cn/user-manual/common-config/builtin-algorithm/load-balance/))；
 
 ### 示例
 
-#### 修改静态读写分离规则
+#### 修改读写分离规则
 
 ```sql
 ALTER READWRITE_SPLITTING RULE ms_group_0 (
@@ -74,18 +67,9 @@ ALTER READWRITE_SPLITTING RULE ms_group_0 (
 );
 ```
 
-#### 修改动态读写分离规则
-
-```sql
-ALTER READWRITE_SPLITTING RULE ms_group_1 (
-    AUTO_AWARE_RESOURCE=group_0
-    TYPE(NAME="random")
-);
-```
-
 ### 保留字
 
-`ALTER`、`READWRITE_SPLITTING`、`RULE`、`WRITE_STORAGE_UNIT`、`READ_STORAGE_UNITS`、`AUTO_AWARE_RESOURCE`
+`ALTER`、`READWRITE_SPLITTING`、`RULE`、`WRITE_STORAGE_UNIT`、`READ_STORAGE_UNITS`
 、`TYPE`、`NAME`、`PROPERTIES`、`TRUE`、`FALSE`
 
 ### 相关链接

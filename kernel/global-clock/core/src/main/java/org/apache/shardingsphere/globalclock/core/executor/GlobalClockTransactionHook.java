@@ -75,7 +75,7 @@ public final class GlobalClockTransactionHook extends TransactionHookAdapter {
         if (!enabled) {
             return;
         }
-        if (TransactionIsolationLevel.READ_COMMITTED.equals(isolationLevel)) {
+        if (null == isolationLevel || TransactionIsolationLevel.READ_COMMITTED.equals(isolationLevel)) {
             globalClockTransactionExecutor.sendSnapshotTimestamp(connections, globalClockProvider.getCurrentTimestamp());
         }
     }

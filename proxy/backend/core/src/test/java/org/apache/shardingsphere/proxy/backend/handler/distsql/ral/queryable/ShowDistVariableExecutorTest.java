@@ -32,6 +32,7 @@ import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtils;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -50,6 +51,11 @@ class ShowDistVariableExecutorTest {
     private final ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
     
     private final ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
+    
+    @AfterAll
+    static void tearDown() {
+        System.clearProperty("AGENT_PLUGINS_ENABLED");
+    }
     
     @Test
     void assertGetColumns() {

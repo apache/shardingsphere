@@ -25,9 +25,6 @@
         <Package name="~.*\.autogen(\.|\w)*" />
     </Match>
     <Match>
-        <Package name="org.apache.shardingsphere.sqlfederation.optimizer.parser.rexnode" />
-    </Match>
-    <Match>
         <Class name="org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource" />
         <Bug code="OBL, ODR" />
     </Match>
@@ -109,15 +106,5 @@
     <Match>
         <Class name="org.apache.shardingsphere.data.pipeline.core.execute.ShardingSphereDataJobWorker" />
         <Bug code="JLM" />
-    </Match>
-    <!-- TODO zhengqiang fix the ignored bug -->
-    <Match>
-        <Class name="org.apache.shardingsphere.sqlfederation.original.OriginalSQLFederationExecutor" />
-        <Bug code="OBL" />
-    </Match>
-    <!-- TODO weijie fix the ignored bug -->
-    <Match>
-        <Class name="org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.OpenGaussSystemCatalogAdminQueryExecutor" />
-        <Bug code="ODR" />
     </Match>
 </FindBugsFilter>

@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.version;
 
 import com.google.common.base.Strings;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
@@ -38,6 +40,7 @@ import java.util.Optional;
 /**
  * ShardingSphere-Proxy version.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class ShardingSphereProxyVersion {
     

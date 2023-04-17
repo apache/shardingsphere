@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.context.parser;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -34,8 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Optimizer parser context factory.
  */
-@RequiredArgsConstructor
-@Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OptimizerParserContextFactory {
     
     /**

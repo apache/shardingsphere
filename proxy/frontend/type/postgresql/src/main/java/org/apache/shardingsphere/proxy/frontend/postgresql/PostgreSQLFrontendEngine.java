@@ -26,7 +26,6 @@ import org.apache.shardingsphere.dialect.exception.transaction.InTransactionExce
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
-import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.PostgreSQLAuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLPortalContextRegistry;
@@ -37,8 +36,6 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
  */
 @Getter
 public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendEngine {
-    
-    private final FrontendContext frontendContext = new PostgreSQLFrontendContext();
     
     private final AuthenticationEngine authenticationEngine = new PostgreSQLAuthenticationEngine();
     

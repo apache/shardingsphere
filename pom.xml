@@ -28,7 +28,7 @@
     <artifactId>shardingsphere</artifactId>
     <version>5.3.3-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>${project.artifactId}</name>
+    <name>Apache ShardingSphere</name>
     <description>Build criterion and ecosystem above multi-model databases</description>
     
     <modules>
@@ -60,6 +60,10 @@
         <shade.package>org.apache.shardingsphere.shade</shade.package>
         <antlr.output.directory>${basedir}/target/generated-sources/antlr4</antlr.output.directory>
         
+        <sonar.organization>apache</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.exclusions>**/autogen/**/*</sonar.exclusions>
+        
         <!-- 3rd party library versions -->
         <guava.version>30.0-jre</guava.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
@@ -70,7 +74,7 @@
         <antlr4.version>4.10.1</antlr4.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <gson.version>2.9.1</gson.version>
-        <jackson.version>2.13.4</jackson.version>
+        <jackson.version>2.14.0</jackson.version>
         <groovy.version>4.0.10</groovy.version>
         <freemarker.version>2.3.31</freemarker.version>
         <caffeine.version>2.9.3</caffeine.version>
@@ -120,6 +124,7 @@
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
         <docker-compose-maven-plugin.version>4.0.0</docker-compose-maven-plugin.version>
         <os-maven-plugin.version>1.6.2</os-maven-plugin.version>
+        <native-maven-plugin.version>0.9.21</native-maven-plugin.version>
         
         <!-- Compile plugin versions -->
         <maven-enforcer-plugin.version>3.2.1</maven-enforcer-plugin.version>
@@ -130,6 +135,7 @@
         <jandex-maven-plugin.version>3.0.5</jandex-maven-plugin.version>
         <build-helper-maven-plugin.version>3.3.0</build-helper-maven-plugin.version>
         <maven-dependency-plugin.version>3.5.0</maven-dependency-plugin.version>
+        <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
         
         <!-- Release plugin versions -->
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
@@ -142,13 +148,14 @@
         <apache-rat-plugin.version>0.15</apache-rat-plugin.version>
         <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
         <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
-        <maven-pmd-plugin.version>3.5</maven-pmd-plugin.version>
+        <maven-pmd-plugin.version>3.20.0</maven-pmd-plugin.version>
         <spotbugs-maven-plugin.version>4.7.2.1</spotbugs-maven-plugin.version>
         <fb-contrib.version>7.6.0</fb-contrib.version>
         <findsecbugs.version>1.12.0</findsecbugs.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
         <cobertura-maven-plugin.version>2.7</cobertura-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
+        <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
         
         <!-- Report plugin versions -->
         <maven-site-plugin.version>4.0.0-M6</maven-site-plugin.version>
@@ -217,7 +224,7 @@
                 <version>${gson.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
+                <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-yaml</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
@@ -476,7 +483,7 @@
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
                 <version>${h2.version}</version>
-                <scope>runtime</scope>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
@@ -735,6 +742,7 @@
                         <testTarget>${java.version}</testTarget>
                     </configuration>
                 </plugin>
+                <!-- TODO nianjun should remove after test container is used in agent e2e -->
                 <plugin>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>${maven-resources-plugin.version}</version>
@@ -749,10 +757,6 @@
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>${maven-jar-plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>${maven-dependency-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>io.smallrye</groupId>
@@ -887,6 +891,10 @@
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <version>${maven-checkstyle-plugin.version}</version>
                     <configuration>
+                        <consoleOutput>true</consoleOutput>
+                        <failOnViolation>true</failOnViolation>
+                        <failsOnError>true</failsOnError>
+                        <violationSeverity>error</violationSeverity>
                         <configLocation>src/resources/checkstyle.xml</configLocation>
                         <includeTestSourceDirectory>true</includeTestSourceDirectory>
                         <excludes>**/autogen/**/*</excludes>
@@ -897,8 +905,10 @@
                     <version>${maven-pmd-plugin.version}</version>
                     <configuration>
                         <aggregate>true</aggregate>
-                        <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                         <targetJdk>${java.version}</targetJdk>
+                        <rulesets>
+                            <ruleset>src/resources/pmd.xml</ruleset>
+                        </rulesets>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -906,6 +916,8 @@
                     <artifactId>spotbugs-maven-plugin</artifactId>
                     <version>${spotbugs-maven-plugin.version}</version>
                     <configuration>
+                        <fork>false</fork>
+                        <failOnError>false</failOnError>
                         <excludeFilterFile>src/resources/spotbugs.xml</excludeFilterFile>
                         <plugins>
                             <plugin>
@@ -979,6 +991,11 @@
                             <phase>test</phase>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${sonar-maven-plugin.version}</version>
                 </plugin>
                 
                 <!-- Report plugins -->
@@ -1085,20 +1102,12 @@
     <reporting>
         <plugins>
             <plugin>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>${maven-site-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>${maven-project-info-reports-plugin.version}</version>
-            </plugin>
-            <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>
                 <reportSets>
                     <reportSet>
                         <reports>
-                            <report>javadoc</report>
+                            <report>aggregate</report>
                         </reports>
                     </reportSet>
                 </reportSets>
@@ -1106,6 +1115,11 @@
             <plugin>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>${maven-jxr-plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/test/**/*.java</exclude>
+                    </excludes>
+                </configuration>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -1122,6 +1136,15 @@
             </plugin>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <failOnViolation>false</failOnViolation>
+                    <failsOnError>false</failsOnError>
+                    <violationSeverity>warning</violationSeverity>
+                    <configLocation>src/resources/checkstyle.xml</configLocation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <excludes>**/autogen/**/*</excludes>
+                    <goal>checkstyle-aggregate</goal>
+                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-pmd-plugin</artifactId>
@@ -1129,6 +1152,10 @@
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
+                <configuration>
+                    <xmlOutput>true</xmlOutput>
+                    <xmlOutputDirectory>target/site</xmlOutputDirectory>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -1166,6 +1193,13 @@
         <tag>HEAD</tag>
     </scm>
     
+    <distributionManagement>
+        <site>
+            <id>Apache ShardingSphere</id>
+            <url>https://shardingsphere.apache.org/statistics</url>
+        </site>
+    </distributionManagement>
+    
     <profiles>
         <profile>
             <id>jdk11+</id>
@@ -1187,6 +1221,80 @@
                         </plugin>
                     </plugins>
                 </pluginManagement>
+            </build>
+        </profile>
+        <profile>
+            <id>generateStandardMetadata</id>
+            <properties>
+                <truffle-api.version>22.3.1</truffle-api.version>
+                <jacoco.skip>true</jacoco.skip>
+                <maven.javadoc.skip>true</maven.javadoc.skip>
+                <checkstyle.skip>true</checkstyle.skip>
+                <rat.skip>true</rat.skip>
+                <spotless.apply.skip>true</spotless.apply.skip>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>${maven-compiler-plugin.version}</version>
+                        <configuration>
+                            <source>17</source>
+                            <target>17</target>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${maven-surefire-plugin.version}</version>
+                        <configuration>
+                            <excludes>
+                                <exclude>org.apache.shardingsphere.agent.core.**</exclude>
+                            </excludes>
+                            <argLine>--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED</argLine>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <version>${native-maven-plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <agent>
+                                <enabled>true</enabled>
+                                <defaultMode>Direct</defaultMode>
+                                <modes>
+                                    <direct>config-output-dir=${project.basedir}/src/main/resources/META-INF/native-image/${project.groupId}/${project.artifactId}</direct>
+                                </modes>
+                                <options>
+                                    <callerFilterFiles>
+                                        <filterFile>${user.dir}/distribution/proxy-native/caller-filter.json</filterFile>
+                                    </callerFilterFiles>
+                                    <accessFilterFiles>
+                                        <filterFile>${user.dir}/distribution/proxy-native/access-filter.json</filterFile>
+                                    </accessFilterFiles>
+                                </options>
+                            </agent>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>test-native</id>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                                <phase>test</phase>
+                            </execution>
+                            <execution>
+                                <id>build-native</id>
+                                <goals>
+                                    <goal>compile-no-fork</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
     </profiles>

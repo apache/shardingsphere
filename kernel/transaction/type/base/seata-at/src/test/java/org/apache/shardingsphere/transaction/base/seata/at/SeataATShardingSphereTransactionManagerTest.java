@@ -171,18 +171,22 @@ class SeataATShardingSphereTransactionManagerTest {
         assertTrue(responseQueue.stream().anyMatch(each -> each instanceof RegisterTMResponse));
         assertTrue(responseQueue.stream().anyMatch(each -> each instanceof RegisterRMResponse));
         assertTrue(responseQueue.stream().anyMatch(each -> responseClass.equals(each.getClass())));
-        if (requestQueue.poll() instanceof RegisterTMRequest) {
-            assertThat(responseQueue.poll(), instanceOf(RegisterTMResponse.class));
-        } else if (requestQueue.poll() instanceof RegisterRMRequest) {
-            assertThat(responseQueue.poll(), instanceOf(RegisterRMResponse.class));
-        } else if (requestQueue.poll() instanceof GlobalBeginRequest) {
-            assertThat(responseQueue.poll(), instanceOf(GlobalBeginResponse.class));
-        } else if (requestQueue.poll() instanceof GlobalCommitRequest) {
-            assertThat(responseQueue.poll(), instanceOf(GlobalCommitResponse.class));
-        } else if (requestQueue.poll() instanceof GlobalRollbackRequest) {
-            assertThat(responseQueue.poll(), instanceOf(GlobalRollbackResponse.class));
-        } else {
-            fail("Request package type error");
+        while (!requestQueue.isEmpty()) {
+            Object requestPackage = requestQueue.poll();
+            Object responsePackage = responseQueue.poll();
+            if (requestPackage instanceof RegisterTMRequest) {
+                assertThat(responsePackage, instanceOf(RegisterTMResponse.class));
+            } else if (requestPackage instanceof RegisterRMRequest) {
+                assertThat(responsePackage, instanceOf(RegisterRMResponse.class));
+            } else if (requestPackage instanceof GlobalBeginRequest) {
+                assertThat(responsePackage, instanceOf(GlobalBeginResponse.class));
+            } else if (requestPackage instanceof GlobalCommitRequest) {
+                assertThat(responsePackage, instanceOf(GlobalCommitResponse.class));
+            } else if (requestPackage instanceof GlobalRollbackRequest) {
+                assertThat(responsePackage, instanceOf(GlobalRollbackResponse.class));
+            } else {
+                fail("Request package type error");
+            }
         }
     }
     

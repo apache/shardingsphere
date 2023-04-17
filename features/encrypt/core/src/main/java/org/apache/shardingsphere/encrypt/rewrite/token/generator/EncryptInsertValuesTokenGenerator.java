@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.expression.DerivedLiteralExpressionSegment;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.expression.DerivedParameterMarkerExpressionSegment;
@@ -131,7 +131,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         while (descendingColumnNames.hasNext()) {
             String columnName = descendingColumnNames.next();
-            Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, columnName);
+            Optional<EncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
                 int columnIndex = useDefaultInsertColumnsToken.map(optional -> ((UseDefaultInsertColumnsToken) optional).getColumns().indexOf(columnName))
                         .orElseGet(() -> insertStatementContext.getColumnNames().indexOf(columnName));
@@ -166,7 +166,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         }
     }
     
-    private void addAssistedQueryColumn(final InsertValue insertValueToken, final StandardEncryptAlgorithm encryptAlgorithm, final int columnIndex,
+    private void addAssistedQueryColumn(final InsertValue insertValueToken, final EncryptAlgorithm encryptAlgorithm, final int columnIndex,
                                         final EncryptContext encryptContext, final InsertValueContext insertValueContext,
                                         final Object originalValue, final int indexDelta) {
         if (encryptRule.findAssistedQueryColumn(encryptContext.getTableName(), encryptContext.getColumnName()).isPresent()) {
@@ -203,7 +203,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
         return result;
     }
     
-    private void setCipherColumn(final InsertValue insertValueToken, final StandardEncryptAlgorithm encryptAlgorithm, final int columnIndex,
+    private void setCipherColumn(final InsertValue insertValueToken, final EncryptAlgorithm encryptAlgorithm, final int columnIndex,
                                  final EncryptContext encryptContext, final ExpressionSegment valueExpression, final Object originalValue) {
         if (valueExpression instanceof LiteralExpressionSegment) {
             insertValueToken.getValues().set(columnIndex, new LiteralExpressionSegment(

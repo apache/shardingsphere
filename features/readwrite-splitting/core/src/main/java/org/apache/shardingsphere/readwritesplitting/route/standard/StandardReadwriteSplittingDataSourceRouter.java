@@ -39,7 +39,7 @@ public final class StandardReadwriteSplittingDataSourceRouter {
     }
     
     private List<String> getFilteredReadDataSources(final ReadwriteSplittingDataSourceRule rule) {
-        List<String> result = rule.getReadwriteSplittingStrategy().getReadDataSources();
+        List<String> result = rule.getReadwriteSplittingGroup().getReadDataSources();
         for (ReadDataSourcesFilter each : ShardingSphereServiceLoader.getServiceInstances(ReadDataSourcesFilter.class)) {
             result = each.filter(rule, result);
         }

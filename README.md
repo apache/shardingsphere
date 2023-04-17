@@ -9,7 +9,6 @@
 [![snyk](https://snyk.io/test/github/apache/shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/shardingsphere?targetFile=pom.xml)
 [![Maintainability](https://cloud.quality-gate.com/dashboard/api/badge?projectName=apache_shardingsphere&branchName=master)](https://cloud.quality-gate.com/dashboard/branches/30#overview)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5394/badge)](https://bestpractices.coreinfrastructure.org/projects/5394)
-[![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)
 
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/ShardingSphere.svg?style=social&label=Follow%20%40ShardingSphere)](https://twitter.com/ShardingSphere)
@@ -41,7 +40,7 @@ Virtually all databases are [supported](https://shardingsphere.apache.org/docume
 
 ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
 
-So far, ShardingSphere has been used by over [12,000 projects on GitHub](https://github.com/search?l=Maven+POM&q=shardingsphere&type=Code).
+So far, ShardingSphere has been used by over [13,000 projects on GitHub](https://github.com/search?l=Maven+POM&q=shardingsphere&type=Code).
 
 ### DOCUMENTATION📜
 

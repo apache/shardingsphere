@@ -26,6 +26,7 @@ import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.exception.TransactionTimeoutException;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.checker.DataSourcePrivilegeChecker;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import javax.sql.DataSource;
@@ -54,6 +55,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     
     @Override
     public void init(final Map<String, DatabaseType> databaseTypes, final Map<String, DataSource> dataSources, final String providerType) {
+        dataSources.forEach((key, value) -> TypedSPILoader.getService(DataSourcePrivilegeChecker.class, databaseTypes.get(key).getType()).checkPrivilege(value));
         xaTransactionManagerProvider = TypedSPILoader.getService(XATransactionManagerProvider.class, providerType);
         xaTransactionManagerProvider.init();
         Map<String, ResourceDataSource> resourceDataSources = getResourceDataSources(dataSources);

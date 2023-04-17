@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.metadata.persist.node;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 import java.util.regex.Matcher;
@@ -25,6 +27,7 @@ import java.util.regex.Pattern;
 /**
  * Compute node.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ComputeNode {
     
     private static final String ROOT_NODE = "nodes";
