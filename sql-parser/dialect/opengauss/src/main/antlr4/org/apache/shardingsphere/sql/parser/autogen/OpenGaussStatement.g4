@@ -60,6 +60,7 @@ execute
     | alterDatabase
     | alterDomain
     | alterDefaultPrivileges
+    | createForeignTable
     | alterForeignTable
     | alterGroup
     | alterMaterializedView
