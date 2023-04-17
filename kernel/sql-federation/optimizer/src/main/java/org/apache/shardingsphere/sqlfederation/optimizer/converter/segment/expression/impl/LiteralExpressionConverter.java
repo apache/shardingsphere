@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expr
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.calcite.sql.fun.SqlTrimFunction;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 
@@ -37,6 +38,23 @@ public final class LiteralExpressionConverter implements SQLSegmentConverter<Lit
         }
         if (segment.getLiterals() instanceof Integer) {
             return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(segment.getLiterals()), SqlParserPos.ZERO));
+        }
+        if (segment.getLiterals().equals("BOTH") || segment.getLiterals().equals("LEADING") || segment.getLiterals().equals("TRAILING")) {
+            SqlTrimFunction.Flag flag;
+            switch (segment.getLiterals().toString()) {
+                case "BOTH":
+                    flag = SqlTrimFunction.Flag.BOTH;
+                    break;
+                case "LEADING":
+                    flag = SqlTrimFunction.Flag.LEADING;
+                    break;
+                case "TRAILING":
+                    flag = SqlTrimFunction.Flag.TRAILING;
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid literal for flag: " + segment.getLiterals());
+            }
+            return Optional.of(SqlLiteral.createSymbol(flag, SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof String) {
             return Optional.of(SqlLiteral.createCharString(String.valueOf(segment.getLiterals()), SqlParserPos.ZERO));

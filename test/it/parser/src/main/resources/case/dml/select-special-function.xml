@@ -150,36 +150,66 @@
         </projections>
     </select>
     <select sql-case-id="select_trim">
-        <projections start-index="7" stop-index="22">
-            <expression-projection text="TRIM('  bar   ')" start-index="7" stop-index="22">
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="TRIM(BOTH ' ' from ' bar ')" start-index="7" stop-index="33">
                 <expr>
-                    <function function-name="TRIM" start-index="7" stop-index="22" text="TRIM('  bar   ')" />
+                    <function function-name="TRIM" start-index="7" stop-index="33" text="TRIM(BOTH ' ' from ' bar ')" >
+                        <parameter>
+                            <literal-expression value="BOTH" start-index="12" stop-index="15" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value=" " start-index="17" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value=" bar " start-index="26" stop-index="32" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
     </select>
     <select sql-case-id="select_with_trim_expr">
-        <projections start-index="7" stop-index="27">
-            <expression-projection text="trim('#' from `name`)" start-index="7" stop-index="27">
+        <projections start-index="7" stop-index="32">
+            <expression-projection text="TRIM(BOTH '#' FROM `name`)" start-index="7" stop-index="32">
                 <expr>
-                    <function function-name="trim" start-index="7" stop-index="27" text="trim('#' from `name`)" />
+                    <function function-name="TRIM" start-index="7" stop-index="32" text="TRIM(BOTH '#' FROM `name`)" >
+                        <parameter>
+                            <literal-expression value="BOTH" start-index="12" stop-index="15" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="#" start-index="17" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <column name="name" start-delimiter="`" end-delimiter="`" start-index="26" stop-index="31" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
         <from>
-            <simple-table name="t_order" start-index="34" stop-index="40" />
+            <simple-table name="t_order" start-delimiter="`" end-delimiter="`" start-index="39" stop-index="47" />
         </from>
     </select>
     <select sql-case-id="select_with_trim_expr_from_expr">
-        <projections start-index="7" stop-index="33">
-            <expression-projection text="trim(remove_name from name)" start-index="7" stop-index="33">
+        <projections start-index="7" stop-index="42">
+            <expression-projection text="TRIM(BOTH `remove_name` FROM `name`)" start-index="7" stop-index="42">
                 <expr>
-                    <function function-name="trim" start-index="7" stop-index="33" text="trim(remove_name from name)" />
+                    <function function-name="TRIM" start-index="7" stop-index="42" text="TRIM(BOTH `remove_name` FROM `name`)" >
+                        <parameter>
+                            <literal-expression value="BOTH" start-index="12" stop-index="15" />
+                        </parameter>
+                        <parameter>
+                            <column name="remove_name" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29" />
+                        </parameter>
+                        <parameter>
+                            <column name="name" start-delimiter="`" end-delimiter="`" start-index="36" stop-index="41" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
         <from>
-            <simple-table name="t_order" start-index="40" stop-index="46" />
+            <simple-table name="t_order" start-delimiter="`" end-delimiter="`" start-index="49" stop-index="57" />
         </from>
     </select>
     <select sql-case-id="select_weight_string">

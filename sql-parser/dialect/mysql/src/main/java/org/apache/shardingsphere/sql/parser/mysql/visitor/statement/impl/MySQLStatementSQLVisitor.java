@@ -961,11 +961,28 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         return result;
     }
-    
+
     @Override
     public final ASTNode visitTrimFunction(final TrimFunctionContext ctx) {
         calculateParameterCount(ctx.expr());
-        return new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
+        if (null != ctx.BOTH()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.BOTH().getSymbol().getStartIndex(), ctx.BOTH().getSymbol().getStopIndex(),
+                    new OtherLiteralValue(ctx.BOTH().getSymbol().getText()).getValue()));
+        }
+        if (null != ctx.TRAILING()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.TRAILING().getSymbol().getStartIndex(), ctx.TRAILING().getSymbol().getStopIndex(),
+                    new OtherLiteralValue(ctx.TRAILING().getSymbol().getText()).getValue()));
+        }
+        if (null != ctx.LEADING()) {
+            result.getParameters().add(new LiteralExpressionSegment(ctx.LEADING().getSymbol().getStartIndex(), ctx.LEADING().getSymbol().getStopIndex(),
+                    new OtherLiteralValue(ctx.LEADING().getSymbol().getText()).getValue()));
+        }
+        for (ExprContext each : ctx.expr()) {
+            ASTNode expr = visit(each);
+            result.getParameters().add((ExpressionSegment) expr);
+        }
+        return result;
     }
     
     @Override

@@ -193,6 +193,9 @@ class SQLNodeConverterEngineIT {
             result.add("select_order_by_for_nulls_last");
             result.add("select_char");
             result.add("select_weight_string");
+            result.add("select_trim");
+            result.add("select_with_trim_expr");
+            result.add("select_with_trim_expr_from_expr");
             return result;
         }
         // CHECKSTYLE:ON
