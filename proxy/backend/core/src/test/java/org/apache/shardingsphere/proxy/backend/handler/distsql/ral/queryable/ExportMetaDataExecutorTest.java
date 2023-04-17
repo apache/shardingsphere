@@ -21,8 +21,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportMetaDataStatement;
-import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
-import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -53,7 +51,6 @@ import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -118,27 +115,26 @@ class ExportMetaDataExecutorTest {
         when(database.getResourceMetaData().getDataSources()).thenReturn(dataSourceMap);
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         ContextManager contextManager = mockContextManager();
-        ProxyContext.init(contextManager);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("normal_db"));
         when(ProxyContext.getInstance().getDatabase("normal_db")).thenReturn(database);
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), new ExportMetaDataStatement(null));
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
-        String expectedRow = loadExpectedRow();
-        String actualRow = row.getCell(3).toString();
-        assertThat(actualRow.substring(0, expectedRow.indexOf("\"create_time\"")), is(expectedRow.substring(0, expectedRow.indexOf("\"create_time\""))));
+        assertThat(row.getCell(3).toString(), is(loadExpectedRow()));
     }
     
     private ContextManager mockContextManager() {
-        GlobalClockRuleConfiguration globalClockRuleConfiguration = new GlobalClockRuleConfiguration("TSO", "local", true, new Properties());
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(Collections.singletonMap(database.getName(), database),
-                new ShardingSphereRuleMetaData(Arrays.asList(new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build(), Collections.emptyMap()),
-                        new GlobalClockRule(globalClockRuleConfiguration, Collections.singletonMap("ds", database)))),
+                new ShardingSphereRuleMetaData(Collections.singletonList(new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build(), Collections.emptyMap()))),
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true")))));
         InstanceContext instanceContext = new InstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null),
                 mock(ModeContextManager.class), mock(LockContext.class), new EventBusContext());
-        return new ContextManager(metaDataContexts, instanceContext);
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
+        when(result.getInstanceContext()).thenReturn(instanceContext);
+        return result;
     }
     
     private Map<String, DataSource> createDataSourceMap() {
