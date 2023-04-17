@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.encrypt;
 
+import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -51,7 +52,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private byte[] createSecretKey(final Properties props) {
         String aesKey = props.getProperty(AES_KEY);
-        ShardingSpherePreconditions.checkState(null != aesKey && !aesKey.isEmpty(),
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(aesKey),
                 () -> new EncryptAlgorithmInitializationException(getType(), String.format("%s can not be null or empty", AES_KEY)));
         return Arrays.copyOf(DigestUtils.sha1(aesKey), 16);
     }

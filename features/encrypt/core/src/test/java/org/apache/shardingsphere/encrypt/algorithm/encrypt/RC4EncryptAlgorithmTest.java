@@ -60,7 +60,7 @@ class RC4EncryptAlgorithmTest {
         assertThrows(EncryptAlgorithmInitializationException.class,
                 () -> encryptAlgorithm.init(PropertiesBuilder.build(new Property("rc4-key-value", IntStream.range(0, 100).mapToObj(each -> "test").collect(Collectors.joining())))));
     }
-
+    
     @Test
     void assertKeyIsTooShort() {
         assertThrows(EncryptAlgorithmInitializationException.class,
