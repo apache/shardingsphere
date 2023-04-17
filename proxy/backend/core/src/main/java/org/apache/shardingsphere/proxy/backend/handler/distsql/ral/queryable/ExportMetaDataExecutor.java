@@ -43,7 +43,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -117,17 +116,16 @@ public final class ExportMetaDataExecutor implements MetaDataRequiredQueryableRA
     }
     
     private void generateSnapshotInfo(final ShardingSphereMetaData metaData, final ExportedClusterInfo exportedClusterInfo) {
-        Optional<GlobalClockRule> globalClockRule = metaData.getGlobalRuleMetaData().findSingleRule(GlobalClockRule.class);
-        globalClockRule.ifPresent(rule -> {
-            if (rule.getConfiguration().isEnabled()) {
-                GlobalClockProvider globalClockProvider = TypedSPILoader.getService(GlobalClockProvider.class, rule.getGlobalClockProviderType(), rule.getConfiguration().getProps());
-                long csn = globalClockProvider.getCurrentTimestamp();
-                ExportedSnapshotInfo snapshotInfo = new ExportedSnapshotInfo();
-                snapshotInfo.setCsn(csn);
-                snapshotInfo.setCreateTime(LocalDateTime.now());
-                exportedClusterInfo.setSnapshotInfo(snapshotInfo);
-            }
-        });
+        GlobalClockRule globalClockRule = metaData.getGlobalRuleMetaData().getSingleRule(GlobalClockRule.class);
+        if (globalClockRule.getConfiguration().isEnabled()) {
+            GlobalClockProvider globalClockProvider = TypedSPILoader.getService(GlobalClockProvider.class,
+                    globalClockRule.getGlobalClockProviderType(), globalClockRule.getConfiguration().getProps());
+            long csn = globalClockProvider.getCurrentTimestamp();
+            ExportedSnapshotInfo snapshotInfo = new ExportedSnapshotInfo();
+            snapshotInfo.setCsn(String.valueOf(csn));
+            snapshotInfo.setCreateTime(LocalDateTime.now());
+            exportedClusterInfo.setSnapshotInfo(snapshotInfo);
+        }
     }
     
     @Override

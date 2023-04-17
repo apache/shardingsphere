@@ -21,6 +21,8 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.authority.rule.builder.DefaultAuthorityRuleConfigurationBuilder;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportMetaDataStatement;
+import org.apache.shardingsphere.globalclock.core.rule.GlobalClockRule;
+import org.apache.shardingsphere.globalclock.core.rule.builder.DefaultGlobalClockRuleConfigurationBuilder;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -51,6 +53,7 @@ import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -95,13 +98,16 @@ class ExportMetaDataExecutorTest {
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
-        assertThat(row.getCell(3), is("{\"meta_data\":{\"databases\":{\"empty_metadata\":\"databaseName: null\\ndataSources:\\nrules:\\n\"},\"props\":\"\",\"rules\":\"\"}}"));
+        assertThat(row.getCell(3), 
+                is("{\"meta_data\":{\"databases\":{\"empty_metadata\":\"databaseName: null\\ndataSources:\\nrules:\\n\"},"
+                        + "\"props\":\"\",\"rules\":\"rules:\\n- !GLOBAL_CLOCK\\n  enabled: false\\n  provider: local\\n  type: TSO\\n\"}}"));
     }
     
     private ContextManager mockEmptyContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(new HashMap<>(),
-                new ShardingSphereRuleMetaData(Collections.emptyList()),
+                new ShardingSphereRuleMetaData(Collections.singletonList(
+                        new GlobalClockRule(new DefaultGlobalClockRuleConfigurationBuilder().build(), Collections.emptyMap()))),
                 new ConfigurationProperties(new Properties())));
         when(result.getMetaDataContexts()).thenReturn(metaDataContexts);
         return result;
@@ -126,7 +132,8 @@ class ExportMetaDataExecutorTest {
     
     private ContextManager mockContextManager() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(Collections.singletonMap(database.getName(), database),
-                new ShardingSphereRuleMetaData(Collections.singletonList(new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build(), Collections.emptyMap()))),
+                new ShardingSphereRuleMetaData(Arrays.asList(new AuthorityRule(new DefaultAuthorityRuleConfigurationBuilder().build(), Collections.emptyMap()),
+                        new GlobalClockRule(new DefaultGlobalClockRuleConfigurationBuilder().build(), Collections.singletonMap(database.getName(), database)))),
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_SHOW.getKey(), "true")))));
         InstanceContext instanceContext = new InstanceContext(
                 new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null),

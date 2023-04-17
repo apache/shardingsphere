@@ -31,7 +31,7 @@ import java.time.LocalDateTime;
 @Setter
 public class ExportedSnapshotInfo {
     
-    private Long csn;
+    private String csn;
     
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("create_time")
