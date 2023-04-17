@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Check
+name: Check - CheckStyle and License
 
 on:
   push:
@@ -24,7 +24,7 @@ on:
       - '**/src/main/**'
       - '**/src/test/**'
       - 'src/resources/**'
-      - '.github/workflows/checkstyle-and-license-check.yml'
+      - '.github/workflows/check-checkstyle.yml'
       - 'examples/shardingsphere-example-generator/**'
       - 'test/e2e/agent/plugins/**'
       - '!examples/**'
@@ -35,7 +35,7 @@ on:
       - '**/src/main/**'
       - '**/src/test/**'
       - 'src/resources/**'
-      - '.github/workflows/checkstyle-and-license-check.yml'
+      - '.github/workflows/check-checkstyle.yml'
       - 'examples/shardingsphere-example-generator/**'
       - 'test/e2e/agent/plugins/**'
       - '!examples/**'
