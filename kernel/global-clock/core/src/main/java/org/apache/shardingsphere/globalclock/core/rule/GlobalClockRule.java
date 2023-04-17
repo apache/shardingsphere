@@ -62,6 +62,11 @@ public final class GlobalClockRule implements GlobalRule {
                 .flatMap(each -> each.getResourceMetaData().getDataSources().values().stream()).collect(Collectors.toList());
     }
     
+    /**
+     * Get global clock provider type.
+     * 
+     * @return global clock provider type
+     */
     public String getGlobalClockProviderType() {
         return String.join(".", configuration.getType(), configuration.getProvider());
     }
