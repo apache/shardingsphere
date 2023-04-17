@@ -1434,7 +1434,7 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="55">
                     <left>
-                        <common-expression text="@@max_connections" start-index="28" stop-index="44" />
+                        <variable-segment text="@@max_connections" start-index="28" stop-index="44" variable="max_connections" />
                     </left>
                     <operator>&lt;</operator>
                     <right>
