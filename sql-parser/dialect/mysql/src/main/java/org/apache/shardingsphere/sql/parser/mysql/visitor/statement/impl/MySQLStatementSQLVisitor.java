@@ -1081,22 +1081,15 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public ASTNode visitUserVariable(final UserVariableContext ctx) {
-        VariableSegment result = new VariableSegment();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setVariable(ctx.textOrIdentifier().getText());
-        return result;
+        return new VariableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.textOrIdentifier().getText());
     }
     
     @Override
     public ASTNode visitSystemVariable(final SystemVariableContext ctx) {
-        VariableSegment result = new VariableSegment();
+        VariableSegment result = new VariableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), ctx.textOrIdentifier().getText());
         if (null != ctx.systemVariableScope) {
             result.setScope(ctx.systemVariableScope.getText());
         }
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setVariable(ctx.textOrIdentifier().getText());
         return result;
     }
     

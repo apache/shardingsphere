@@ -18,21 +18,34 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+
+import java.util.Optional;
 
 /**
  * Variable segment.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 public final class VariableSegment implements ExpressionSegment {
     
-    private int startIndex;
+    private final int startIndex;
     
-    private int stopIndex;
+    private final int stopIndex;
     
-    private String scope = "";
+    private final String variable;
     
-    private String variable;
+    private String scope;
+    
+    /**
+     * Get scope.
+     *
+     * @return scope
+     */
+    public Optional<String> getScope() {
+        return Optional.ofNullable(scope);
+    }
 }
