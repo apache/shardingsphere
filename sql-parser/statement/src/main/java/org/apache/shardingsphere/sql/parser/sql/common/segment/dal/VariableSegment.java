@@ -19,20 +19,20 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
 /**
  * Variable segment.
  */
 @Getter
 @Setter
-public final class VariableSegment implements SQLSegment {
+public final class VariableSegment implements ExpressionSegment {
     
     private int startIndex;
     
     private int stopIndex;
     
-    private String scope;
+    private String scope = "";
     
     private String variable;
 }

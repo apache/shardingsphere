@@ -112,14 +112,11 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowVar
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWarningsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShutdownContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SystemVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TablesOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UserVariableContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
@@ -980,30 +977,6 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         characterSet.setAssignValue(assignValue);
         MySQLSetStatement result = new MySQLSetStatement();
         result.getVariableAssigns().add(characterSet);
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitVariable(final VariableContext ctx) {
-        return super.visitVariable(ctx);
-    }
-    
-    @Override
-    public ASTNode visitUserVariable(final UserVariableContext ctx) {
-        VariableSegment result = new VariableSegment();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setVariable(ctx.textOrIdentifier().getText());
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitSystemVariable(final SystemVariableContext ctx) {
-        VariableSegment result = new VariableSegment();
-        result.setScope(ctx.systemVariableScope.getText());
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setVariable(ctx.textOrIdentifier().getText());
         return result;
     }
     
