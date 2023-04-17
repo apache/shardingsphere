@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.readwritesplitting.route.qualified.type;
 
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -32,44 +30,33 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class QualifiedReadwriteSplittingPrimaryDataSourceRouterTest {
-    
-    private ReadwriteSplittingDataSourceRule rule;
-    
-    private QualifiedReadwriteSplittingPrimaryDataSourceRouter router;
+public final class QualifiedReadwriteSplittingPrimaryDataSourceRouterTest {
     
     @Mock
     private CommonSQLStatementContext<SQLStatement> sqlStatementContext;
-
-    @BeforeEach
-    void setUp() {
-        router = new QualifiedReadwriteSplittingPrimaryDataSourceRouter();
-    }
-
+    
     @Test
     void assertWriteRouteStatement() {
         MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(selectStatement.getLock()).thenReturn(Optional.of(new LockSegment(0, 1)));
-        assertThat(router.isQualified(sqlStatementContext, null), is(true));
-        MySQLUpdateStatement updateStatement = mock(MySQLUpdateStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(updateStatement);
-        assertThat(router.isQualified(sqlStatementContext, null), is(true));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        assertTrue(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLUpdateStatement.class));
+        assertTrue(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null));
     }
     
     @Test
     void assertHintRouteWriteOnly() {
-        SelectStatement selectStatement = mock(SelectStatement.class);
-        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         when(sqlStatementContext.isHintWriteRouteOnly()).thenReturn(false);
-        assertThat(router.isQualified(sqlStatementContext, null), is(false));
+        assertFalse(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null));
         when(sqlStatementContext.isHintWriteRouteOnly()).thenReturn(true);
-        assertThat(router.isQualified(sqlStatementContext, null), is(true));
+        assertTrue(new QualifiedReadwriteSplittingPrimaryDataSourceRouter().isQualified(sqlStatementContext, null));
     }
 }
