@@ -52,7 +52,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Properties;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -103,8 +102,8 @@ class SQLNodeConverterEngineIT {
         
         // TODO remove the method when all SQL statement support convert to SQL node
         // CHECKSTYLE:OFF
-        private Set<String> getSupportedSQLCaseIDs() {
-            Set<String> result = new HashSet<>();
+        private Collection<String> getSupportedSQLCaseIDs() {
+            Collection<String> result = new HashSet<>();
             result.add("select_with_join_table_subquery");
             result.add("select_with_projection_subquery");
             result.add("select_with_in_subquery_condition");
@@ -194,8 +193,11 @@ class SQLNodeConverterEngineIT {
             result.add("select_char");
             result.add("select_weight_string");
             result.add("select_trim");
+            result.add("select_trim_with_both");
             result.add("select_with_trim_expr");
+            result.add("select_with_trim_expr_and_both");
             result.add("select_with_trim_expr_from_expr");
+            result.add("select_with_trim_expr_from_expr_and_both");
             return result;
         }
         // CHECKSTYLE:ON

@@ -961,10 +961,9 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
         }
         return result;
     }
-
+    
     @Override
     public final ASTNode visitTrimFunction(final TrimFunctionContext ctx) {
-        calculateParameterCount(ctx.expr());
         FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.TRIM().getText(), getOriginalText(ctx));
         if (null != ctx.BOTH()) {
             result.getParameters().add(new LiteralExpressionSegment(ctx.BOTH().getSymbol().getStartIndex(), ctx.BOTH().getSymbol().getStopIndex(),
@@ -979,8 +978,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
                     new OtherLiteralValue(ctx.LEADING().getSymbol().getText()).getValue()));
         }
         for (ExprContext each : ctx.expr()) {
-            ASTNode expr = visit(each);
-            result.getParameters().add((ExpressionSegment) expr);
+            result.getParameters().add((ExpressionSegment) visit(each));
         }
         return result;
     }
