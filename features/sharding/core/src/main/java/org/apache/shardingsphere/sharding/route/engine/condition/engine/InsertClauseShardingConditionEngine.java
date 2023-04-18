@@ -97,7 +97,7 @@ public final class InsertClauseShardingConditionEngine {
             return;
         }
         for (String each : allColumnNames) {
-            if (!columnNames.contains(each) && shardingRule.findShardingColumn(each, tableName).isPresent()) {
+            if (!columnNames.contains(each) && !shardingRule.isGenerateKeyColumn(each, tableName) && shardingRule.findShardingColumn(each, tableName).isPresent()) {
                 appendMissingShardingConditions(shardingConditions, each, tableName);
             }
         }
