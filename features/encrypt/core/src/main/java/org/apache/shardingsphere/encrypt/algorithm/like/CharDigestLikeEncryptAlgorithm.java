@@ -112,18 +112,18 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     
     @SneakyThrows(IOException.class)
     private String initDefaultDict() {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder result = new StringBuilder();
         try (
                 InputStream inputStream = Objects.requireNonNull(CharDigestLikeEncryptAlgorithm.class.getClassLoader().getResourceAsStream("algorithm/like/common_chinese_character.dict"));
                 Scanner scanner = new Scanner(inputStream)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 if (!line.isEmpty() && !line.startsWith("#")) {
-                    builder.append(line);
+                    result.append(line);
                 }
             }
         }
-        return builder.toString();
+        return result.toString();
     }
     
     @Override

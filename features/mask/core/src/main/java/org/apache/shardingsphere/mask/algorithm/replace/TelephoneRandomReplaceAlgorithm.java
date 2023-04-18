@@ -56,18 +56,18 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
     
     @SneakyThrows(IOException.class)
     private String initDefaultNetworkNumbers() {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder result = new StringBuilder();
         try (
                 InputStream inputStream = Objects.requireNonNull(TelephoneRandomReplaceAlgorithm.class.getClassLoader().getResourceAsStream("algorithm/replace/chinese_network_numbers.dict"));
                 Scanner scanner = new Scanner(inputStream)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 if (!line.isEmpty() && !line.startsWith("#")) {
-                    builder.append(line);
+                    result.append(line);
                 }
             }
         }
-        return builder.toString();
+        return result.toString();
     }
     
     private String getNetworkNumber(final String networkNumber) {
