@@ -17,27 +17,25 @@
 
 package org.apache.shardingsphere.mask.algorithm.replace;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.io.CharStreams;
-import com.google.common.io.LineProcessor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 /**
  * Telephone random replace algorithm.
  */
-@SuppressWarnings("UnstableApiUsage")
 public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Object, String> {
     
     private static final String NETWORK_NUMBERS = "network-numbers";
@@ -56,29 +54,20 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
         return Splitter.on(",").trimResults().splitToList(networkNumbers).stream().map(this::getNetworkNumber).distinct().collect(Collectors.toList());
     }
     
-    @SneakyThrows
+    @SneakyThrows(IOException.class)
     private String initDefaultNetworkNumbers() {
-        InputStream inputStream = TelephoneRandomReplaceAlgorithm.class.getClassLoader().getResourceAsStream("algorithm/replace/chinese_network_numbers.dict");
-        LineProcessor<String> lineProcessor = new LineProcessor<String>() {
-            
-            private final StringBuilder builder = new StringBuilder();
-            
-            @Override
-            public boolean processLine(final String line) {
-                if (line.startsWith("#") || 0 == line.length()) {
-                    return true;
-                } else {
-                    builder.append(line);
-                    return false;
+        StringBuilder result = new StringBuilder();
+        try (
+                InputStream inputStream = Objects.requireNonNull(TelephoneRandomReplaceAlgorithm.class.getClassLoader().getResourceAsStream("algorithm/replace/chinese_network_numbers.dict"));
+                Scanner scanner = new Scanner(inputStream)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (!line.isEmpty() && !line.startsWith("#")) {
+                    result.append(line);
                 }
             }
-            
-            @Override
-            public String getResult() {
-                return builder.toString();
-            }
-        };
-        return CharStreams.readLines(new InputStreamReader(inputStream, Charsets.UTF_8), lineProcessor);
+        }
+        return result.toString();
     }
     
     private String getNetworkNumber(final String networkNumber) {
