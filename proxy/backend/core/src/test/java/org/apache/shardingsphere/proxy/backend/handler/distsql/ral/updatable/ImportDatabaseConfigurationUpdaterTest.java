@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
@@ -89,12 +90,12 @@ class ImportDatabaseConfigurationUpdaterTest {
     
     @Test
     void assertImportEmptyDatabaseName() {
-        assertThrows(IllegalStateException.class, () -> assertExecute("sharding_db", "/conf/import/config-empty-database-name.yaml"));
+        assertThrows(UnsupportedSQLOperationException.class, () -> assertExecute("sharding_db", "/conf/import/config-empty-database-name.yaml"));
     }
     
     @Test
     void assertImportEmptyDataSource() {
-        assertThrows(IllegalStateException.class, () -> assertExecute("sharding_db", "/conf/import/config-empty-data-source.yaml"));
+        assertThrows(MissingRequiredDataSourcesException.class, () -> assertExecute("sharding_db", "/conf/import/config-empty-data-source.yaml"));
     }
     
     @Test

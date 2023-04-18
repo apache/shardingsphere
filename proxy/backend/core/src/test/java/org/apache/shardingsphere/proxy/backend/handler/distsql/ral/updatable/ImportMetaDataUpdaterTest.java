@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
+import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -76,7 +77,7 @@ class ImportMetaDataUpdaterTest {
     @Test
     void assertCheckImportEmptyMetaData() {
         init(null);
-        assertThrows(IllegalStateException.class, () -> importMetaDataUpdater.executeUpdate(
+        assertThrows(MissingRequiredDataSourcesException.class, () -> importMetaDataUpdater.executeUpdate(
                 EMPTY, new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(EMPTY))).getPath())));
     }
     

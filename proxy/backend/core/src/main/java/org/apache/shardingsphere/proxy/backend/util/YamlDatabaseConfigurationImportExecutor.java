@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.util;
 
-import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
+import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
@@ -117,7 +117,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void checkDatabase(final String databaseName) {
-        ShardingSpherePreconditions.checkNotNull(databaseName, () -> new IllegalStateException("Property `databaseName` in imported config is required"));
+        ShardingSpherePreconditions.checkNotNull(databaseName, () -> new UnsupportedSQLOperationException("Property `databaseName` in imported config is required"));
         if (ProxyContext.getInstance().databaseExists(databaseName)) {
             ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources().isEmpty(),
                     () -> new UnsupportedSQLOperationException(String.format("Database `%s` exists and is not empty，overwrite is not supported", databaseName)));
@@ -125,7 +125,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void checkDataSource(final Map<String, YamlProxyDataSourceConfiguration> dataSources) {
-        Preconditions.checkState(!dataSources.isEmpty(), "Data source configurations in imported config is required");
+        ShardingSpherePreconditions.checkState(!dataSources.isEmpty(), () -> new MissingRequiredDataSourcesException("Data source configurations in imported config is required"));
     }
     
     private void addDatabase(final String databaseName) {
