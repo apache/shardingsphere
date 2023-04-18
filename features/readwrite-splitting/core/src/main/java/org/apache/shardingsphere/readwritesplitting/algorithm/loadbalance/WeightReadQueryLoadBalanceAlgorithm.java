@@ -78,10 +78,7 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
             index = -index - 1;
             return index < weight.length && randomWeight < weight[index] ? readDataSourceNames.get(index) : readDataSourceNames.get(readDataSourceNames.size() - 1);
         }
-        Preconditions.checkState(index < readDataSourceNames.size(), "index of read data source cannot beyond the range.");
-        String result = readDataSourceNames.get(index);
-        Preconditions.checkState(result != null && result.length() != 0, "read data source name cannot be null or empty.");
-        return result;
+        return readDataSourceNames.get(index);
     }
     
     private double[] initWeight(final List<String> readDataSourceNames) {

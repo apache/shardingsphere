@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.List;
@@ -32,10 +31,7 @@ public final class RoundRobinReadQueryLoadBalanceAlgorithm implements ReadQueryL
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        Preconditions.checkState(readDataSourceNames.size() > 0, "read data need at least 1 source.");
-        String result = readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size());
-        Preconditions.checkState(result != null && result.length() != 0, "read data source name cannot be null or empty");
-        return result;
+        return readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size());
     }
     
     @Override
