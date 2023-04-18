@@ -1102,6 +1102,14 @@
     <reporting>
         <plugins>
             <plugin>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>${maven-site-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>${maven-project-info-reports-plugin.version}</version>
+            </plugin>
+            <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${maven-javadoc-plugin.version}</version>
                 <reportSets>
@@ -1115,11 +1123,6 @@
             <plugin>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>${maven-jxr-plugin.version}</version>
-                <configuration>
-                    <excludes>
-                        <exclude>**/test/**/*.java</exclude>
-                    </excludes>
-                </configuration>
                 <reportSets>
                     <reportSet>
                         <reports>
