@@ -42,7 +42,6 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterCo
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -130,22 +129,27 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
         if (null == buffer || buffer.isEmpty()) {
             return;
         }
-        boolean success = tryFlush(dataSource, buffer);
-        ShardingSpherePreconditions.checkState(!isRunning() || success, PipelineImporterJobWriteException::new);
+        try {
+            tryFlush(dataSource, buffer);
+        } catch (final SQLException ex) {
+            throw new PipelineImporterJobWriteException(ex);
+        }
     }
     
     @SneakyThrows(InterruptedException.class)
-    private boolean tryFlush(final DataSource dataSource, final List<DataRecord> buffer) {
+    private void tryFlush(final DataSource dataSource, final List<DataRecord> buffer) throws SQLException {
         for (int i = 0; isRunning() && i <= importerConfig.getRetryTimes(); i++) {
             try {
                 doFlush(dataSource, buffer);
-                return true;
+                return;
             } catch (final SQLException ex) {
                 log.error("flush failed {}/{} times.", i, importerConfig.getRetryTimes(), ex);
+                if (i == importerConfig.getRetryTimes()) {
+                    throw ex;
+                }
                 Thread.sleep(Math.min(5 * 60 * 1000L, 1000L << i));
             }
         }
-        return false;
     }
     
     private void doFlush(final DataSource dataSource, final List<DataRecord> buffer) throws SQLException {
