@@ -88,7 +88,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     private String getTargetShardingNode(final Closure<?> closure, final String columnName) {
         try {
             return closure.call().toString();
-        } catch (final MissingMethodException | NullPointerException ex) {
+        } catch (final MissingMethodException | NullPointerException ignored) {
             throw new MismatchedInlineShardingAlgorithmExpressionAndColumnException(algorithmExpression, columnName);
         }
     }

@@ -85,8 +85,8 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
         try {
             Integer.parseInt(networkNumber);
             return networkNumber;
-        } catch (final NumberFormatException ex) {
-            throw new MaskAlgorithmInitializationException(getType(), String.format("network-number %s can only be integer number.", networkNumber));
+        } catch (final NumberFormatException ignored) {
+            throw new MaskAlgorithmInitializationException(getType(), String.format("network-number %s can only be integer number", networkNumber));
         }
     }
     

@@ -111,7 +111,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     private TemporalAccessor getDateTime(final String dateTimeKey, final String dateTimeValue, final String dateTimePattern) {
         try {
             return dateTimeFormatter.parse(dateTimeValue);
-        } catch (final DateTimeParseException ex) {
+        } catch (final DateTimeParseException ignored) {
             throw new InvalidDatetimeFormatException(dateTimeKey, dateTimeValue, dateTimePattern);
         }
     }
