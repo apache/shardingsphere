@@ -21,11 +21,11 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
 import org.apache.shardingsphere.infra.exception.UnsupportedStorageTypeException;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,7 +43,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ExternalMetaDataFactory {
     
-    private static final Collection<String> MOCKED_URL = Arrays.asList("jdbc:fixture", "jdbc:mock");
+    private static final Collection<String> MOCKED_URL_PREFIXES = new HashSet<>(Arrays.asList("jdbc:fixture", "jdbc:mock"));
+    
+    private static final Collection<DatabaseType> SUPPORTED_STORAGE_TYPES = new HashSet<>(8, 1);
+    
+    static {
+        Arrays.asList("MySQL", "PostgreSQL", "openGauss", "Oracle", "SQLServer", "H2", "MariaDB")
+                .forEach(each -> TypedSPILoader.findService(DatabaseType.class, each).ifPresent(SUPPORTED_STORAGE_TYPES::add));
+    }
     
     /**
      * Create database meta data for db.
@@ -98,11 +106,12 @@ public final class ExternalMetaDataFactory {
         }
         try (Connection connection = dataSources.values().iterator().next().getConnection()) {
             String url = connection.getMetaData().getURL();
-            if (MOCKED_URL.stream().anyMatch(url::startsWith)) {
+            if (MOCKED_URL_PREFIXES.stream().anyMatch(url::startsWith)) {
                 return;
             }
         }
-        storageTypes.forEach((key, value) -> ShardingSpherePreconditions.checkState(!SQL92DatabaseType.class.equals(value.getClass()), () -> new UnsupportedStorageTypeException(databaseName, key)));
+        storageTypes.forEach((key, value) -> ShardingSpherePreconditions.checkState(SUPPORTED_STORAGE_TYPES.stream()
+                .anyMatch(each -> each.getClass().equals(value.getClass())), () -> new UnsupportedStorageTypeException(databaseName, key)));
     }
     
     private static Map<String, ShardingSphereDatabase> createSystemDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType) {
