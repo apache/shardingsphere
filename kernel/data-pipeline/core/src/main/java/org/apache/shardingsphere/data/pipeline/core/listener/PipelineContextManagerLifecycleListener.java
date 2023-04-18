@@ -37,10 +37,8 @@ import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleLi
 public final class PipelineContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
-    public void onInitialized(final InstanceType instanceType, final String databaseName, final ModeConfiguration modeConfig, final ContextManager contextManager) {
-        if (null == modeConfig) {
-            return;
-        }
+    public void onInitialized(final String databaseName, final ContextManager contextManager) {
+        ModeConfiguration modeConfig = contextManager.getInstanceContext().getModeConfiguration();
         if (!contextManager.getInstanceContext().isCluster()) {
             log.info("mode type is not Cluster, mode type='{}', ignore", modeConfig.getType());
             return;
@@ -49,14 +47,14 @@ public final class PipelineContextManagerLifecycleListener implements ContextMan
         if (DefaultDatabase.LOGIC_NAME.equals(databaseName)) {
             return;
         }
-        PipelineContextKey contextKey = PipelineContextKey.build(instanceType, databaseName);
+        PipelineContextKey contextKey = PipelineContextKey.build(databaseName, contextManager.getInstanceContext().getInstance().getMetaData().getType());
         PipelineContextManager.putContext(contextKey, new PipelineContext(modeConfig, contextManager));
         PipelineMetaDataNodeWatcher.getInstance(contextKey);
         ElasticJobServiceLoader.registerTypedService(ElasticJobListener.class);
     }
     
     @Override
-    public void onDestroyed(final InstanceType instanceType, final String databaseName) {
-        PipelineContextManager.removeContext(PipelineContextKey.build(instanceType, databaseName));
+    public void onDestroyed(final String databaseName, final InstanceType instanceType) {
+        PipelineContextManager.removeContext(PipelineContextKey.build(databaseName, instanceType));
     }
 }
