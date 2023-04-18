@@ -87,7 +87,7 @@ public final class ResultSetUtils {
         }
         try {
             return convertType.cast(value);
-        } catch (final ClassCastException ex) {
+        } catch (final ClassCastException ignored) {
             throw new SQLFeatureNotSupportedException("getObject with type");
         }
     }
@@ -95,7 +95,7 @@ public final class ResultSetUtils {
     private static Object convertURL(final Object value) {
         try {
             return new URL(value.toString());
-        } catch (final MalformedURLException ex) {
+        } catch (final MalformedURLException ignored) {
             throw new UnsupportedDataTypeConversionException(URL.class, value);
         }
     }

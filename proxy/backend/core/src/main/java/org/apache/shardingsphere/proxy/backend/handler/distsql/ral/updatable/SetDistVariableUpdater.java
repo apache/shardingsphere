@@ -89,7 +89,7 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
         try {
             Object propertyValue = new TypedPropertyValue(propertyKey, value).getValue();
             return Enum.class.isAssignableFrom(propertyKey.getType()) ? propertyValue.toString() : propertyValue;
-        } catch (final TypedPropertyValueException ex) {
+        } catch (final TypedPropertyValueException ignored) {
             throw new InvalidValueException(value);
         }
     }
@@ -140,7 +140,7 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
     private TransactionType getTransactionType(final String transactionTypeName) throws UnsupportedVariableException {
         try {
             return TransactionType.valueOf(transactionTypeName.toUpperCase());
-        } catch (final IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ignored) {
             throw new UnsupportedVariableException(transactionTypeName);
         }
     }

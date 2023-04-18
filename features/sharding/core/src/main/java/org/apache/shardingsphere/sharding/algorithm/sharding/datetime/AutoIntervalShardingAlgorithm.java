@@ -71,7 +71,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
         ShardingSpherePreconditions.checkNotNull(value, () -> new ShardingAlgorithmInitializationException(getType(), String.format("%s cannot be null.", DATE_TIME_LOWER_KEY)));
         try {
             return LocalDateTime.parse(value, DATE_TIME_FORMAT);
-        } catch (final DateTimeParseException ex) {
+        } catch (final DateTimeParseException ignored) {
             throw new InvalidDatetimeFormatException(DATE_TIME_LOWER_KEY, value, "yyyy-MM-dd HH:mm:ss");
         }
     }
