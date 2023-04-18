@@ -43,24 +43,32 @@ public final class GlobalClockRule implements GlobalRule {
     public GlobalClockRule(final GlobalClockRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
         if (ruleConfig.isEnabled()) {
-            TypedSPILoader.getService(GlobalClockProvider.class, String.join(".", ruleConfig.getType(), ruleConfig.getProvider()),
-                    null == ruleConfig.getProps() ? new Properties() : ruleConfig.getProps());
+            TypedSPILoader.getService(GlobalClockProvider.class, getGlobalClockProviderType(), configuration.getProps());
         }
-        TypedSPILoader.getService(TransactionHook.class, "GLOBAL_CLOCK", getProps(ruleConfig, databases));
+        TypedSPILoader.getService(TransactionHook.class, "GLOBAL_CLOCK", getProps(databases));
     }
     
-    private Properties getProps(final GlobalClockRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
+    private Properties getProps(final Map<String, ShardingSphereDatabase> databases) {
         Properties result = new Properties();
         result.setProperty("trunkType", DatabaseTypeEngine.getTrunkDatabaseTypeName(DatabaseTypeEngine.getStorageType(getDataSources(databases))));
-        result.setProperty("enabled", String.valueOf(ruleConfig.isEnabled()));
-        result.setProperty("type", ruleConfig.getType());
-        result.setProperty("provider", ruleConfig.getProvider());
+        result.setProperty("enabled", String.valueOf(configuration.isEnabled()));
+        result.setProperty("type", configuration.getType());
+        result.setProperty("provider", configuration.getProvider());
         return result;
     }
     
     private Collection<DataSource> getDataSources(final Map<String, ShardingSphereDatabase> databases) {
         return databases.values().stream().filter(each -> !each.getResourceMetaData().getDataSources().isEmpty())
                 .flatMap(each -> each.getResourceMetaData().getDataSources().values().stream()).collect(Collectors.toList());
+    }
+    
+    /**
+     * Get global clock provider type.
+     * 
+     * @return global clock provider type
+     */
+    public String getGlobalClockProviderType() {
+        return String.join(".", configuration.getType(), configuration.getProvider());
     }
     
     @Override

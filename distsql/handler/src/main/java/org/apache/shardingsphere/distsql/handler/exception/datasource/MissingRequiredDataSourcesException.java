@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.distsql.export;
+package org.apache.shardingsphere.distsql.handler.exception.datasource;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Exported snapshot info.
+ * Missing required data sources exception.
  */
-@Getter
-@Setter
-public class ExportedSnapshotInfo {
+public final class MissingRequiredDataSourcesException extends DataSourceDefinitionViolationException {
     
-    private String csn;
+    private static final long serialVersionUID = -7846645449809082667L;
     
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonProperty("create_time")
-    private LocalDateTime createTime;
+    public MissingRequiredDataSourcesException(final String message) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 201, message);
+    }
 }

@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.distsql.export;
+package org.apache.shardingsphere.distsql.handler.exception.datasource;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
+import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
 
 /**
- * Exported snapshot info.
+ * Data source definition violation exception.
  */
-@Getter
-@Setter
-public class ExportedSnapshotInfo {
+public abstract class DataSourceDefinitionViolationException extends DistSQLException {
     
-    private String csn;
+    private static final long serialVersionUID = -3318829232811230364L;
     
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonProperty("create_time")
-    private LocalDateTime createTime;
+    public DataSourceDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, errorCode, reason, messageArgs);
+    }
 }
