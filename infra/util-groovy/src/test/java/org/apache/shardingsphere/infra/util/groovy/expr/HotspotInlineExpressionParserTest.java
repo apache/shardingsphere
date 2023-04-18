@@ -30,62 +30,62 @@ class HotspotInlineExpressionParserTest {
     
     @Test
     void assertEvaluateForExpressionIsNull() {
-        List<String> expected = new HotspotInlineExpressionParser(null).splitAndEvaluate();
+        List<String> expected = new HotspotInlineExpressionParser().splitAndEvaluate(null);
         assertThat(expected, is(Collections.<String>emptyList()));
     }
     
     @Test
     void assertEvaluateForSimpleString() {
-        List<String> expected = new HotspotInlineExpressionParser(" t_order_0, t_order_1 ").splitAndEvaluate();
+        List<String> expected = new HotspotInlineExpressionParser().splitAndEvaluate(" t_order_0, t_order_1 ");
         assertThat(expected.size(), is(2));
         assertThat(expected, hasItems("t_order_0", "t_order_1"));
     }
     
     @Test
     void assertEvaluateForNull() {
-        List<String> expected = new HotspotInlineExpressionParser("t_order_${null}").splitAndEvaluate();
+        List<String> expected = new HotspotInlineExpressionParser().splitAndEvaluate("t_order_${null}");
         assertThat(expected.size(), is(1));
         assertThat(expected, hasItems("t_order_"));
     }
     
     @Test
     void assertEvaluateForLiteral() {
-        List<String> expected = new HotspotInlineExpressionParser("t_order_${'xx'}").splitAndEvaluate();
+        List<String> expected = new HotspotInlineExpressionParser().splitAndEvaluate("t_order_${'xx'}");
         assertThat(expected.size(), is(1));
         assertThat(expected, hasItems("t_order_xx"));
     }
     
     @Test
     void assertEvaluateForArray() {
-        List<String> expected = new HotspotInlineExpressionParser("t_order_${[0, 1, 2]},t_order_item_${[0, 2]}").splitAndEvaluate();
+        List<String> expected = new HotspotInlineExpressionParser().splitAndEvaluate("t_order_${[0, 1, 2]},t_order_item_${[0, 2]}");
         assertThat(expected.size(), is(5));
         assertThat(expected, hasItems("t_order_0", "t_order_1", "t_order_2", "t_order_item_0", "t_order_item_2"));
     }
     
     @Test
     void assertEvaluateForRange() {
-        List<String> expected = new HotspotInlineExpressionParser("t_order_${0..2},t_order_item_${0..1}").splitAndEvaluate();
+        List<String> expected = new HotspotInlineExpressionParser().splitAndEvaluate("t_order_${0..2},t_order_item_${0..1}");
         assertThat(expected.size(), is(5));
         assertThat(expected, hasItems("t_order_0", "t_order_1", "t_order_2", "t_order_item_0", "t_order_item_1"));
     }
     
     @Test
     void assertEvaluateForComplex() {
-        List<String> expected = new HotspotInlineExpressionParser("t_${['new','old']}_order_${1..2}, t_config").splitAndEvaluate();
+        List<String> expected = new HotspotInlineExpressionParser().splitAndEvaluate("t_${['new','old']}_order_${1..2}, t_config");
         assertThat(expected.size(), is(5));
         assertThat(expected, hasItems("t_new_order_1", "t_new_order_2", "t_old_order_1", "t_old_order_2", "t_config"));
     }
     
     @Test
     void assertEvaluateForCalculate() {
-        List<String> expected = new HotspotInlineExpressionParser("t_${[\"new${1+2}\",'old']}_order_${1..2}").splitAndEvaluate();
+        List<String> expected = new HotspotInlineExpressionParser().splitAndEvaluate("t_${[\"new${1+2}\",'old']}_order_${1..2}");
         assertThat(expected.size(), is(4));
         assertThat(expected, hasItems("t_new3_order_1", "t_new3_order_2", "t_old_order_1", "t_old_order_2"));
     }
     
     @Test
     void assertEvaluateForExpressionPlaceHolder() {
-        List<String> expected = new HotspotInlineExpressionParser("t_$->{[\"new$->{1+2}\",'old']}_order_$->{1..2}").splitAndEvaluate();
+        List<String> expected = new HotspotInlineExpressionParser().splitAndEvaluate("t_$->{[\"new$->{1+2}\",'old']}_order_$->{1..2}");
         assertThat(expected.size(), is(4));
         assertThat(expected, hasItems("t_new3_order_1", "t_new3_order_2", "t_old_order_1", "t_old_order_2"));
     }
@@ -102,19 +102,19 @@ class HotspotInlineExpressionParserTest {
                 expression.append(",");
             }
         }
-        List<String> expected = new HotspotInlineExpressionParser(expression.toString()).splitAndEvaluate();
+        List<String> expected = new HotspotInlineExpressionParser().splitAndEvaluate(expression.toString());
         assertThat(expected.size(), is(1024));
         assertThat(expected, hasItems("ds_0.t_user_0", "ds_15.t_user_1023"));
     }
     
     @Test
     void assertHandlePlaceHolder() {
-        assertThat(HotspotInlineExpressionParser.handlePlaceHolder("t_$->{[\"new$->{1+2}\"]}"), is("t_${[\"new${1+2}\"]}"));
-        assertThat(HotspotInlineExpressionParser.handlePlaceHolder("t_${[\"new$->{1+2}\"]}"), is("t_${[\"new${1+2}\"]}"));
+        assertThat(new HotspotInlineExpressionParser().handlePlaceHolder("t_$->{[\"new$->{1+2}\"]}"), is("t_${[\"new${1+2}\"]}"));
+        assertThat(new HotspotInlineExpressionParser().handlePlaceHolder("t_${[\"new$->{1+2}\"]}"), is("t_${[\"new${1+2}\"]}"));
     }
     
     @Test
     void assertEvaluateClosure() {
-        assertThat(new HotspotInlineExpressionParser("${1+2}").evaluateClosure().call().toString(), is("3"));
+        assertThat(new HotspotInlineExpressionParser().evaluateClosure("${1+2}").call().toString(), is("3"));
     }
 }

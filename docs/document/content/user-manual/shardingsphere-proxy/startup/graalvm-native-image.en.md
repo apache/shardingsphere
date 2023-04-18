@@ -67,6 +67,13 @@ services:
 
 4. If you need to build a Docker Image, make sure `docker-ce` is installed.
 
+5. First, you need to execute the following command in the root directory of the project to collect the GraalVM
+   Reachability Metadata of the Standard form for all submodules.
+
+```shell
+./mvnw -PgenerateStandardMetadata -DskipNativeTests -B -T1C clean test
+```
+
 ## Steps
 
 1. Get Apache ShardingSphere Git Source
@@ -82,7 +89,7 @@ services:
   Image.
 
 ```bash
-./mvnw -am -pl distribution/proxy-native -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
+./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native -DskipTests clean package
 ```
 
 - Scenario 2: It is necessary to use a JAR that has an SPI implementation or a third-party dependent JAR of a LICENSE
@@ -110,7 +117,7 @@ services:
 - Build GraalVM Native Image via command line.
 
 ```bash
-./mvnw -am -pl distribution/proxy-native -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dspotless.apply.skip=true -Drat.skip=true clean package
+./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native -DskipTests clean package
 ```
 
 3. To start Native Image through the command line, you need to bring 4 parameters.
@@ -128,7 +135,7 @@ services:
    exist for SPI implementation or third-party dependencies.
 
 ```shell
-./mvnw -am -pl distribution/proxy-native -B -Pnative,docker.native -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dspotless.apply.skip=true -Drat .skip=true clean package
+./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native,docker.native -DskipTests clean package
 ```
 
 - Assuming that there is a `conf` folder containing `server.yaml` as `./custom/conf`, you can start the Docker Image
@@ -195,5 +202,5 @@ services:
 3. Build the GraalVM Native Image from the command line.
 
 ```bash
-./mvnw -am -pl distribution/proxy-native -B -Pnative -DskipTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dspotbugs.skip=true -Dspotless.apply.skip=true -Drat.skip =true clean package
+./mvnw -am -pl distribution/proxy-native -B -T1C -Prelease.native -DskipTests clean package
 ```

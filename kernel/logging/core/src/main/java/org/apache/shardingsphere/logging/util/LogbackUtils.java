@@ -28,6 +28,8 @@ import ch.qos.logback.core.OutputStreamAppender;
 import ch.qos.logback.core.util.DynamicClassLoadingException;
 import ch.qos.logback.core.util.IncompatibleClassException;
 import ch.qos.logback.core.util.OptionHelper;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 import org.apache.shardingsphere.logging.logger.ShardingSphereAppender;
@@ -41,6 +43,7 @@ import java.util.Optional;
 /**
  * Logback utility class.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LogbackUtils {
     
     /**

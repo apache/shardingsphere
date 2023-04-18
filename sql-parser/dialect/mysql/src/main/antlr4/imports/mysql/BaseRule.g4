@@ -582,7 +582,12 @@ userVariable
     ;
     
 systemVariable
-    : AT_ AT_ systemVariableScope=(GLOBAL | SESSION | LOCAL)? textOrIdentifier (DOT_ identifier)?
+    : AT_ AT_ (systemVariableScope=(GLOBAL | SESSION | LOCAL) DOT_)? rvalueSystemVariable
+    ;
+    
+rvalueSystemVariable
+    : textOrIdentifier
+    | textOrIdentifier DOT_ identifier
     ;
     
 setSystemVariable

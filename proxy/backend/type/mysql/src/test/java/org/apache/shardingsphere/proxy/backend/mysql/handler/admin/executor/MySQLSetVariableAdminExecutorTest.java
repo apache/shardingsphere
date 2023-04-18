@@ -71,14 +71,12 @@ class MySQLSetVariableAdminExecutorTest {
     
     private SetStatement prepareSetStatement() {
         VariableAssignSegment setGlobalMaxConnectionAssignSegment = new VariableAssignSegment();
-        VariableSegment maxConnectionVariableSegment = new VariableSegment();
+        VariableSegment maxConnectionVariableSegment = new VariableSegment(0, 0, "max_connections");
         maxConnectionVariableSegment.setScope("global");
-        maxConnectionVariableSegment.setVariable("max_connections");
         setGlobalMaxConnectionAssignSegment.setVariable(maxConnectionVariableSegment);
         setGlobalMaxConnectionAssignSegment.setAssignValue("151");
         VariableAssignSegment setTestFixtureAssignSegment = new VariableAssignSegment();
-        VariableSegment testFixtureSegment = new VariableSegment();
-        testFixtureSegment.setVariable("test_fixture");
+        VariableSegment testFixtureSegment = new VariableSegment(0, 0, "test_fixture");
         setTestFixtureAssignSegment.setVariable(testFixtureSegment);
         setTestFixtureAssignSegment.setAssignValue("'value'");
         SetStatement result = new MySQLSetStatement();

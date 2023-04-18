@@ -48,6 +48,11 @@ class AESEncryptAlgorithmTest {
     }
     
     @Test
+    void assertCreateNewInstanceWithEmptyAESKey() {
+        assertThrows(EncryptAlgorithmInitializationException.class, () -> encryptAlgorithm.init(PropertiesBuilder.build(new Property("aes-key-value", ""))));
+    }
+    
+    @Test
     void assertEncrypt() {
         Object actual = encryptAlgorithm.encrypt("test", mock(EncryptContext.class));
         assertThat(actual, is("dSpPiyENQGDUXMKFMJPGWA=="));

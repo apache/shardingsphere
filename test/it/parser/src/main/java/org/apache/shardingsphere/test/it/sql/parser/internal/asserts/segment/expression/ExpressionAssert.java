@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.ex
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -57,6 +58,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedListExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedNotExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedTypeCastExpression;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.ExpectedVariableSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.complex.ExpectedCommonExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedLiteralExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
@@ -361,6 +363,15 @@ public final class ExpressionAssert {
         assertExpression(assertContext, actual.getExpression(), expected.getExpression());
     }
     
+    private static void assertVariableSegment(final SQLCaseAssertContext assertContext, final VariableSegment actual, final ExpectedVariableSegment expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Variable segment should not exist."));
+            return;
+        }
+        assertThat(assertContext.getText("Actual scope is different with expected scope."), actual.getScope().orElse(null), is(expected.getScope()));
+        assertThat(assertContext.getText("Actual variable is different with expected variable."), actual.getVariable(), is(expected.getVariable()));
+    }
+    
     /**
      * Assert expression by actual expression segment class type.
      *
@@ -412,6 +423,8 @@ public final class ExpressionAssert {
             assertCaseWhenExpression(assertContext, (CaseWhenExpression) actual, expected.getCaseWhenExpression());
         } else if (actual instanceof TypeCastExpression) {
             assertTypeCastExpression(assertContext, (TypeCastExpression) actual, expected.getTypeCastExpression());
+        } else if (actual instanceof VariableSegment) {
+            assertVariableSegment(assertContext, (VariableSegment) actual, expected.getVariableSegment());
         } else {
             throw new UnsupportedOperationException(String.format("Unsupported expression: %s", actual.getClass().getName()));
         }

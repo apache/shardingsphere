@@ -36,10 +36,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
- * Hotspot Inline expression parser.
+ * Hotspot inline expression parser.
  */
 @RequiredArgsConstructor
-public final class HotspotInlineExpressionParser {
+public final class HotspotInlineExpressionParser implements JVMInlineExpressionParser {
     
     private static final char SPLITTER = ',';
     
@@ -47,33 +47,18 @@ public final class HotspotInlineExpressionParser {
     
     private static final GroovyShell SHELL = new GroovyShell();
     
-    private final String inlineExpression;
-    
-    /**
-     * Replace all inline expression placeholders.
-     * 
-     * @param inlineExpression inline expression with {@code $->}
-     * @return result inline expression with {@code $}
-     */
-    public static String handlePlaceHolder(final String inlineExpression) {
+    @Override
+    public String handlePlaceHolder(final String inlineExpression) {
         return inlineExpression.contains("$->{") ? inlineExpression.replaceAll("\\$->\\{", "\\$\\{") : inlineExpression;
     }
     
-    /**
-     * Split and evaluate inline expression.
-     *
-     * @return result list
-     */
-    public List<String> splitAndEvaluate() {
-        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split()));
+    @Override
+    public List<String> splitAndEvaluate(final String inlineExpression) {
+        return Strings.isNullOrEmpty(inlineExpression) ? Collections.emptyList() : flatten(evaluate(split(inlineExpression)));
     }
     
-    /**
-     * Evaluate closure.
-     *
-     * @return closure
-     */
-    public Closure<?> evaluateClosure() {
+    @Override
+    public Closure<?> evaluateClosure(final String inlineExpression) {
         return (Closure<?>) evaluate("{it -> \"" + inlineExpression + "\"}");
     }
     
@@ -103,7 +88,7 @@ public final class HotspotInlineExpressionParser {
         return script.run();
     }
     
-    private List<String> split() {
+    private List<String> split(final String inlineExpression) {
         List<String> result = new ArrayList<>();
         StringBuilder segment = new StringBuilder();
         int bracketsDepth = 0;

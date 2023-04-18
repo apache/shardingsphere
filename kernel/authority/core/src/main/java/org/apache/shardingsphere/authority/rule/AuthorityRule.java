@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
@@ -40,13 +39,11 @@ public final class AuthorityRule implements GlobalRule {
     @Getter
     private final AuthorityRuleConfiguration configuration;
     
-    private final AuthorityProvider provider;
-    
-    private volatile AuthorityRegistry authorityRegistry;
+    private final AuthorityRegistry authorityRegistry;
     
     public AuthorityRule(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
-        provider = TypedSPILoader.getService(AuthorityProvider.class, ruleConfig.getAuthorityProvider().getType(), ruleConfig.getAuthorityProvider().getProps());
+        AuthorityProvider provider = TypedSPILoader.getService(AuthorityProvider.class, ruleConfig.getAuthorityProvider().getType(), ruleConfig.getAuthorityProvider().getProps());
         authorityRegistry = provider.buildAuthorityRegistry(databases, ruleConfig.getUsers());
     }
     
@@ -80,16 +77,6 @@ public final class AuthorityRule implements GlobalRule {
      */
     public Optional<ShardingSpherePrivileges> findPrivileges(final Grantee grantee) {
         return authorityRegistry.findPrivileges(grantee);
-    }
-    
-    /**
-     * Refresh authority.
-     *
-     * @param databases databases
-     * @param users users
-     */
-    public synchronized void refresh(final Map<String, ShardingSphereDatabase> databases, final Collection<ShardingSphereUser> users) {
-        authorityRegistry = provider.buildAuthorityRegistry(databases, users);
     }
     
     @Override

@@ -19,6 +19,8 @@ package org.apache.shardingsphere.data.pipeline.cdc.util;
 
 import com.google.common.base.Strings;
 import com.google.protobuf.Any;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
@@ -34,6 +36,7 @@ import java.util.List;
 /**
  * Data record result convert utility class.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DataRecordResultConvertUtils {
     
     /**

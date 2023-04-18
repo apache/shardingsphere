@@ -42,6 +42,7 @@ import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtils;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -58,6 +59,11 @@ class SetDistVariableUpdaterTest {
     
     @Mock
     private ConnectionSession connectionSession;
+    
+    @AfterAll
+    static void tearDown() {
+        System.clearProperty("AGENT_PLUGINS_ENABLED");
+    }
     
     @Test
     void assertExecuteWithTransactionType() {
