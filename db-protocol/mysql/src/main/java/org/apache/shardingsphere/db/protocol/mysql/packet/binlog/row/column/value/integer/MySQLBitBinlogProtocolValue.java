@@ -34,7 +34,7 @@ public final class MySQLBitBinlogProtocolValue implements MySQLBinlogProtocolVal
     }
     
     private int getLength(final int meta) {
-        int nbits = ((meta >> 8) * 8) + (meta & 0xff);
+        int nbits = (meta >> 8) * 8 + (meta & 0xff);
         return (nbits + 7) / 8;
     }
 }

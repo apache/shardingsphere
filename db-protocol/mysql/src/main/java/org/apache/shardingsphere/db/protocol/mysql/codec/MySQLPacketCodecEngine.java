@@ -116,7 +116,7 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
     }
     
     private void writeMultiPackets(final ChannelHandlerContext context, final ByteBuf byteBuf) {
-        int packetCount = (byteBuf.skipBytes(PAYLOAD_LENGTH + SEQUENCE_LENGTH).readableBytes() / MAX_PACKET_LENGTH) + 1;
+        int packetCount = byteBuf.skipBytes(PAYLOAD_LENGTH + SEQUENCE_LENGTH).readableBytes() / MAX_PACKET_LENGTH + 1;
         CompositeByteBuf result = context.alloc().compositeBuffer(packetCount * 2);
         AtomicInteger sequenceId = context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get();
         for (int i = 0; i < packetCount; i++) {

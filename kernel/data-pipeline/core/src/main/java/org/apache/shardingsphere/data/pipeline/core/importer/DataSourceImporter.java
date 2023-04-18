@@ -221,7 +221,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
             }
             for (int i = 0; i < conditionColumns.size(); i++) {
                 Column keyColumn = conditionColumns.get(i);
-                preparedStatement.setObject(updatedColumns.size() + i + 1, (keyColumn.isUniqueKey() && keyColumn.isUpdated()) ? keyColumn.getOldValue() : keyColumn.getValue());
+                preparedStatement.setObject(updatedColumns.size() + i + 1, keyColumn.isUniqueKey() && keyColumn.isUpdated() ? keyColumn.getOldValue() : keyColumn.getValue());
             }
             int updateCount = preparedStatement.executeUpdate();
             if (1 != updateCount) {

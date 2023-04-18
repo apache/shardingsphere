@@ -112,7 +112,7 @@ public final class ColumnValueConvertUtils {
             return Int64Value.of(localTime.toNanoOfDay());
         }
         if (object instanceof java.sql.Date) {
-            return Int64Value.of((((java.sql.Date) object).toLocalDate()).toEpochDay());
+            return Int64Value.of(((java.sql.Date) object).toLocalDate().toEpochDay());
         }
         if (object instanceof Date) {
             return converToProtobufTimestamp((Date) object);
