@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.state.impl;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.infra.config.props.BackendExecutorType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -38,25 +37,18 @@ public final class OKProxyState implements ProxyState {
     
     @Override
     public void execute(final ChannelHandlerContext context, final Object message, final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final ConnectionSession connectionSession) {
-        ExecutorService executorService = determineSuitableExecutorService(context, connectionSession);
+        ExecutorService executorService = determineSuitableExecutorService(connectionSession);
         context.channel().config().setAutoRead(false);
         executorService.execute(new CommandExecutorTask(databaseProtocolFrontendEngine, connectionSession, context, message));
     }
     
-    private ExecutorService determineSuitableExecutorService(final ChannelHandlerContext context, final ConnectionSession connectionSession) {
-        if (requireOccupyThreadForConnection(connectionSession)) {
-            return ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId());
-        }
-        return isPreferNettyEventLoop() ? context.executor() : UserExecutorGroup.getInstance().getExecutorService();
+    private ExecutorService determineSuitableExecutorService(final ConnectionSession connectionSession) {
+        return requireOccupyThreadForConnection(connectionSession) ? ConnectionThreadExecutorGroup.getInstance().get(connectionSession.getConnectionId())
+                : UserExecutorGroup.getInstance().getExecutorService();
     }
     
     private boolean requireOccupyThreadForConnection(final ConnectionSession connectionSession) {
         return ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)
                 || TransactionType.isDistributedTransaction(connectionSession.getTransactionStatus().getTransactionType());
-    }
-    
-    private boolean isPreferNettyEventLoop() {
-        return BackendExecutorType.OLTP == ProxyContext.getInstance()
-                .getContextManager().getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE);
     }
 }
