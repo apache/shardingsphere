@@ -200,7 +200,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     
     private ColumnProjection generateCommonProjection(final String tableName, final ColumnProjection column, final ShorthandProjectionSegment segment) {
         String encryptColumnName = getEncryptColumnName(tableName, column.getName());
-        String owner = (null == segment || !segment.getOwner().isPresent()) ? column.getOwner() : segment.getOwner().get().getIdentifier().getValue();
+        String owner = null == segment || !segment.getOwner().isPresent() ? column.getOwner() : segment.getOwner().get().getIdentifier().getValue();
         return new ColumnProjection(owner, encryptColumnName, column.getAlias().orElse(column.getName()));
     }
     
