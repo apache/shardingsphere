@@ -15,31 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.listener;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
 
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Context manager lifecycle listener.
+ * Expected variable segment.
  */
-@SingletonSPI
-public interface ContextManagerLifecycleListener {
+@Getter
+@Setter
+public final class ExpectedVariableSegment extends AbstractExpectedSQLSegment {
     
-    /**
-     * Callback on initialized.
-     *
-     * @param databaseName database name
-     * @param contextManager context manager
-     */
-    void onInitialized(String databaseName, ContextManager contextManager);
+    @XmlAttribute
+    private String scope;
     
-    /**
-     * Callback on destroyed.
-     *
-     * @param databaseName database name
-     * @param instanceType instance type
-     */
-    void onDestroyed(String databaseName, InstanceType instanceType);
+    @XmlAttribute
+    private String variable;
 }

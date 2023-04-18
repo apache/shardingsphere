@@ -31,19 +31,19 @@ import java.util.Objects;
 @Getter
 public final class PipelineContextKey {
     
-    private final InstanceType instanceType;
-    
     private final String databaseName;
+    
+    private final InstanceType instanceType;
     
     /**
      * Build context key.
      *
-     * @param instanceType instance type
      * @param databaseName database name
+     * @param instanceType instance type
      * @return context key
      */
-    public static PipelineContextKey build(final InstanceType instanceType, final String databaseName) {
-        return new PipelineContextKey(instanceType, databaseName);
+    public static PipelineContextKey build(final String databaseName, final InstanceType instanceType) {
+        return new PipelineContextKey(databaseName, instanceType);
     }
     
     /**
@@ -52,7 +52,7 @@ public final class PipelineContextKey {
      * @return context key
      */
     public static PipelineContextKey buildForProxy() {
-        return new PipelineContextKey(InstanceType.PROXY, "");
+        return new PipelineContextKey("", InstanceType.PROXY);
     }
     
     /**
@@ -62,7 +62,7 @@ public final class PipelineContextKey {
      * @return context key
      */
     public static PipelineContextKey buildForProxy(final String databaseName) {
-        return new PipelineContextKey(InstanceType.PROXY, databaseName);
+        return new PipelineContextKey(databaseName, InstanceType.PROXY);
     }
     
     @Override

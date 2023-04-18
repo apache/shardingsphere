@@ -73,6 +73,26 @@
             </expression-projection>
         </projections>
     </select>
+    
+    <select sql-case-id="select_system_variables" >
+        <projections start-index="7" stop-index="121">
+            <expression-projection text="@@session.auto_increment_increment" alias="auto_increment_increment" start-index="7" stop-index="65">
+                <expr>
+                    <variable-segment text="@@session.auto_increment_increment" start-index="7" stop-index="40" scope="session" variable="auto_increment_increment" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="@@global.max_connections" alias="max_connections" start-index="68" stop-index="107">
+                <expr>
+                    <variable-segment text="@@global.max_connections" start-index="68" stop-index="91" scope="global" variable="max_connections" />
+                </expr>
+            </expression-projection>
+            <expression-projection text="@@autocommit" start-index="110" stop-index="121">
+                <expr>
+                    <variable-segment text="@@autocommit" start-index="110" stop-index="121" variable="autocommit" />
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 
     <select sql-case-id="select_sqlmode_ansi_quotes" >
         <projections start-index="7" stop-index="10">

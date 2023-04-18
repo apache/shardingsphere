@@ -29,16 +29,16 @@ class PipelineContextKeyTest {
     
     @Test
     void assertHashCodeEqualsForProxyMode() {
-        PipelineContextKey contextKey1 = PipelineContextKey.build(InstanceType.PROXY, null);
-        PipelineContextKey contextKey2 = PipelineContextKey.build(InstanceType.PROXY, "sharding_db");
+        PipelineContextKey contextKey1 = PipelineContextKey.build(null, InstanceType.PROXY);
+        PipelineContextKey contextKey2 = PipelineContextKey.build("sharding_db", InstanceType.PROXY);
         assertThat(contextKey1.hashCode(), is(contextKey2.hashCode()));
         assertThat(contextKey1, is(contextKey2));
     }
     
     @Test
     void assertHashCodeEqualsForJdbcMode() {
-        PipelineContextKey contextKey1 = PipelineContextKey.build(InstanceType.JDBC, "logic_db");
-        PipelineContextKey contextKey2 = PipelineContextKey.build(InstanceType.JDBC, "sharding_db");
+        PipelineContextKey contextKey1 = PipelineContextKey.build("logic_db", InstanceType.JDBC);
+        PipelineContextKey contextKey2 = PipelineContextKey.build("sharding_db", InstanceType.JDBC);
         assertTrue(contextKey1.hashCode() != contextKey2.hashCode());
         assertNotEquals(contextKey1, contextKey2);
     }

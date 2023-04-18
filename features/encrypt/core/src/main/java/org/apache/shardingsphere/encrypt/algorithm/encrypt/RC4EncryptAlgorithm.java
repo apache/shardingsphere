@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.algorithm.encrypt;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 
 import java.nio.charset.StandardCharsets;
@@ -48,9 +49,8 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     }
     
     private void setKey(final byte[] key) {
-        if (!(key.length >= KEY_MIN_LENGTH && key.length < SBOX_LENGTH)) {
-            throw new EncryptAlgorithmInitializationException("RC4", "Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1));
-        }
+        ShardingSpherePreconditions.checkState(KEY_MIN_LENGTH <= key.length && SBOX_LENGTH > key.length,
+                () -> new EncryptAlgorithmInitializationException(getType(), "Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1)));
         this.key = key;
     }
     

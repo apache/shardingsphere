@@ -94,9 +94,7 @@ public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementS
         }
         if (null != ctx.encoding()) {
             VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
-            VariableSegment variableSegment = new VariableSegment();
-            variableSegment.setVariable("client_encoding");
-            variableAssignSegment.setVariable(variableSegment);
+            variableAssignSegment.setVariable(new VariableSegment(ctx.NAMES().getSymbol().getStartIndex(), ctx.NAMES().getSymbol().getStopIndex(), "client_encoding"));
             String value = ctx.encoding().getText();
             variableAssignSegment.setAssignValue(value);
             variableAssigns.add(variableAssignSegment);
@@ -110,11 +108,7 @@ public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementS
         VariableAssignSegment result = new VariableAssignSegment();
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
-        VariableSegment variable = new VariableSegment();
-        variable.setStartIndex(ctx.varName().start.getStartIndex());
-        variable.setStopIndex(ctx.varName().stop.getStopIndex());
-        variable.setVariable(ctx.varName().getText());
-        result.setVariable(variable);
+        result.setVariable(new VariableSegment(ctx.varName().start.getStartIndex(), ctx.varName().stop.getStopIndex(), ctx.varName().getText()));
         if (null != ctx.varList()) {
             result.setAssignValue(ctx.varList().getText());
         }

@@ -690,11 +690,12 @@ public abstract class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<St
         formatPrint("@@");
         if (null != ctx.systemVariableScope) {
             formatPrint(upperCase ? ctx.systemVariableScope.getText().toUpperCase() : ctx.systemVariableScope.getText().toLowerCase());
-        }
-        visit(ctx.textOrIdentifier());
-        if (null != ctx.DOT_()) {
             formatPrint(".");
-            visit(ctx.identifier());
+        }
+        visit(ctx.rvalueSystemVariable().textOrIdentifier());
+        if (null != ctx.rvalueSystemVariable().DOT_()) {
+            formatPrint(".");
+            visit(ctx.rvalueSystemVariable().identifier());
         }
         return result.toString();
     }
