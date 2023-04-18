@@ -180,7 +180,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 20012       | Invalid binding table configuration in ShardingRuleConfiguration.                                                                |
 | 44000     | 20013       | Can not find sharding rule.                                                                                                      |
 | 44000     | 20014       | Only allowed 0 or 1 sharding strategy configuration.                                                                             |
-| 44000     | 20020       | Sharding value can't be null in insert statement.                                                                                |
+| 44000     | 20020       | Sharding value can't be null in sql statement.                                                                                   |
 | HY004     | 20021       | Found different types for sharding value \`%s\`.                                                                                 |
 | HY004     | 20022       | Invalid %s, datetime pattern should be \`%s\`, value is \`%s\`.                                                                  |
 | 44000     | 20023       | Sharding value %s subtract stop offset %d can not be less than start offset %d.                                                  |

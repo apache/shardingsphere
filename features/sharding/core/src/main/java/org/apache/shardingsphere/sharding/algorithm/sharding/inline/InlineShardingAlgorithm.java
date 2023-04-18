@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.MismatchedInlineShardingAlgorithmExpressionAndColumnException;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
+import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -65,9 +66,9 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
+        ShardingSpherePreconditions.checkNotNull(shardingValue.getValue(), NullShardingValueException::new);
         Closure<?> closure = createClosure();
-        Comparable<?> value = shardingValue.getValue();
-        closure.setProperty(shardingValue.getColumnName(), value);
+        closure.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
         return getTargetShardingNode(closure, shardingValue.getColumnName());
     }
     

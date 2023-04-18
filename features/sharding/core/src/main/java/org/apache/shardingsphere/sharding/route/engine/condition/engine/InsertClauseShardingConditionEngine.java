@@ -23,8 +23,9 @@ import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKey
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -82,17 +84,39 @@ public final class InsertClauseShardingConditionEngine {
         for (InsertValueContext each : insertValueContexts) {
             result.add(createShardingCondition(tableName, columnNames.iterator(), each, params, ++rowNumber));
         }
+        appendMissingShardingConditions(sqlStatementContext, columnNames, result);
         return result;
+    }
+    
+    private void appendMissingShardingConditions(final InsertStatementContext sqlStatementContext, final Collection<String> columnNames, final List<ShardingCondition> shardingConditions) {
+        String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
+        ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
+        String tableName = sqlStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
+        Collection<String> allColumnNames = schema.getTable(tableName).getColumnNames();
+        if (columnNames.size() == allColumnNames.size()) {
+            return;
+        }
+        for (String each : allColumnNames) {
+            if (!columnNames.contains(each) && !shardingRule.isGenerateKeyColumn(each, tableName) && shardingRule.findShardingColumn(each, tableName).isPresent()) {
+                appendMissingShardingConditions(shardingConditions, each, tableName);
+            }
+        }
+    }
+    
+    private static void appendMissingShardingConditions(final List<ShardingCondition> shardingConditions, final String columnName, final String tableName) {
+        for (ShardingCondition each : shardingConditions) {
+            each.getValues().add(new ListShardingConditionValue<>(columnName, tableName, Collections.singletonList(null)));
+        }
     }
     
     private Collection<String> getColumnNames(final InsertStatementContext insertStatementContext) {
         Optional<GeneratedKeyContext> generatedKey = insertStatementContext.getGeneratedKeyContext();
         if (generatedKey.isPresent() && generatedKey.get().isGenerated()) {
-            Collection<String> result = new LinkedList<>(insertStatementContext.getColumnNames());
+            Collection<String> result = new LinkedHashSet<>(insertStatementContext.getColumnNames());
             result.remove(generatedKey.get().getColumnName());
             return result;
         }
-        return insertStatementContext.getColumnNames();
+        return new LinkedHashSet<>(insertStatementContext.getColumnNames());
     }
     
     private ShardingCondition createShardingCondition(final String tableName, final Iterator<String> columnNames,
@@ -116,8 +140,6 @@ public final class InsertClauseShardingConditionEngine {
                 generateShardingCondition((CommonExpressionSegment) each, result, shardingColumn.get(), tableName);
             } else if (ExpressionConditionUtils.isNowExpression(each)) {
                 result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(timeServiceRule.getDatetime())));
-            } else if (ExpressionConditionUtils.isNullExpression(each)) {
-                throw new NullShardingValueException();
             }
         }
         return result;

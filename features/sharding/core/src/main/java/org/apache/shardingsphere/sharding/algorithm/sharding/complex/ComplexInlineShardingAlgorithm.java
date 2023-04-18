@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardi
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
+import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -93,6 +94,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     private String doSharding(final Map<String, Comparable<?>> shardingValues) {
         Closure<?> closure = createClosure();
         for (Entry<String, Comparable<?>> entry : shardingValues.entrySet()) {
+            ShardingSpherePreconditions.checkNotNull(entry.getValue(), NullShardingValueException::new);
             closure.setProperty(entry.getKey(), entry.getValue());
         }
         return closure.call().toString();

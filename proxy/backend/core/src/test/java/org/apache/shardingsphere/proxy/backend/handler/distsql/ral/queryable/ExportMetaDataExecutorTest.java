@@ -98,7 +98,7 @@ class ExportMetaDataExecutorTest {
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
-        assertThat(row.getCell(3), 
+        assertThat(row.getCell(3),
                 is("{\"meta_data\":{\"databases\":{\"empty_metadata\":\"databaseName: null\\ndataSources:\\nrules:\\n\"},"
                         + "\"props\":\"\",\"rules\":\"rules:\\n- !GLOBAL_CLOCK\\n  enabled: false\\n  provider: local\\n  type: TSO\\n\"}}"));
     }

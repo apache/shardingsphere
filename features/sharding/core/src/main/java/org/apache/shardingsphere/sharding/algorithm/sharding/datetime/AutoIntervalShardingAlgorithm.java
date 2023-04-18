@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 import org.apache.shardingsphere.sharding.exception.data.InvalidDatetimeFormatException;
+import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
 import java.text.DecimalFormat;
 import java.text.ParsePosition;
@@ -83,6 +84,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
+        ShardingSpherePreconditions.checkNotNull(shardingValue.getValue(), NullShardingValueException::new);
         String tableNameSuffix = String.valueOf(doSharding(parseDate(shardingValue.getValue())));
         return ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, tableNameSuffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
