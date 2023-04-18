@@ -23,7 +23,7 @@ import ch.qos.logback.classic.LoggerContext;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.config.props.internal.InternalConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
@@ -65,7 +65,7 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
             return ConfigurationPropertyKey.valueOf(name.toUpperCase());
         } catch (final IllegalArgumentException ex) {
             try {
-                return InternalConfigurationPropertyKey.valueOf(name.toUpperCase());
+                return TemporaryConfigurationPropertyKey.valueOf(name.toUpperCase());
             } catch (final IllegalArgumentException exception) {
                 return VariableEnum.getValueOf(name);
             }
@@ -77,7 +77,7 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         Properties props = new Properties();
         props.putAll(metaDataContexts.getMetaData().getProps().getProps());
-        props.putAll(metaDataContexts.getMetaData().getInternalProps().getProps());
+        props.putAll(metaDataContexts.getMetaData().getTemporaryProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
         contextManager.getInstanceContext().getModeContextManager().alterProperties(props);
         refreshRootLogger(props);

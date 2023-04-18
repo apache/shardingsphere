@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.props.internal;
+package org.apache.shardingsphere.infra.config.props.temporary;
 
 import org.apache.shardingsphere.infra.util.props.TypedProperties;
 
 import java.util.Properties;
 
 /**
- * Internal typed properties of configuration.
+ * Temporary typed properties of configuration.
  */
-public final class InternalConfigurationProperties extends TypedProperties<InternalConfigurationPropertyKey> {
+public final class TemporaryConfigurationProperties extends TypedProperties<TemporaryConfigurationPropertyKey> {
     
-    public InternalConfigurationProperties(final Properties props) {
-        super(InternalConfigurationPropertyKey.class, props);
+    public TemporaryConfigurationProperties(final Properties props) {
+        super(TemporaryConfigurationPropertyKey.class, props);
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.props.internal;
+package org.apache.shardingsphere.infra.config.props.temporary;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +26,11 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Internal typed property key of configuration.
+ * Temporary typed property key of configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public enum InternalConfigurationPropertyKey implements TypedPropertyKey {
+public enum TemporaryConfigurationPropertyKey implements TypedPropertyKey {
     
     /**
      * Proxy meta data collector enabled.
@@ -51,6 +51,6 @@ public enum InternalConfigurationPropertyKey implements TypedPropertyKey {
      * @return collection of internal key names
      */
     public static Collection<String> getKeyNames() {
-        return Arrays.stream(values()).map(InternalConfigurationPropertyKey::name).collect(Collectors.toList());
+        return Arrays.stream(values()).map(TemporaryConfigurationPropertyKey::name).collect(Collectors.toList());
     }
 }
