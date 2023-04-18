@@ -92,4 +92,7 @@ public final class ExpectedExpression extends AbstractExpectedSQLSegment {
     
     @XmlElement(name = "type-cast-expression")
     private ExpectedTypeCastExpression typeCastExpression;
+    
+    @XmlElement(name = "variable-segment")
+    private ExpectedVariableSegment variableSegment;
 }

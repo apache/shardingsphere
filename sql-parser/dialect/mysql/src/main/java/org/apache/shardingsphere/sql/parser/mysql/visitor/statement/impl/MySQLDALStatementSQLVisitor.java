@@ -112,14 +112,11 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowVar
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWarningsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShowWhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ShutdownContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SystemVariableContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TablesOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallComponentContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UninstallPluginContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UseContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UserVariableContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.VariableContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
@@ -912,9 +909,8 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
             VariableAssignSegment variableAssign = new VariableAssignSegment();
             variableAssign.setStartIndex(ctx.start.getStartIndex());
             variableAssign.setStopIndex(ctx.setExprOrDefault().stop.getStopIndex());
-            VariableSegment variable = new VariableSegment();
+            VariableSegment variable = new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
             variable.setScope(ctx.optionType().getText());
-            variable.setVariable(ctx.internalVariableName().getText());
             variableAssign.setVariable(variable);
             variableAssign.setAssignValue(ctx.setExprOrDefault().getText());
             result.add(variableAssign);
@@ -931,21 +927,18 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         VariableAssignSegment result = new VariableAssignSegment();
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
-        VariableSegment variable = new VariableSegment();
         if (null != ctx.NAMES()) {
-            variable.setVariable("charset");
-            result.setVariable(variable);
+            result.setVariable(new VariableSegment(ctx.NAMES().getSymbol().getStartIndex(), ctx.NAMES().getSymbol().getStopIndex(), "charset"));
             result.setAssignValue(ctx.charsetName().getText());
         } else if (null != ctx.internalVariableName()) {
-            variable.setVariable(ctx.internalVariableName().getText());
-            result.setVariable(variable);
+            result.setVariable(new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText()));
             result.setAssignValue(ctx.setExprOrDefault().getText());
         } else if (null != ctx.userVariable()) {
-            variable.setVariable(ctx.userVariable().getText());
-            result.setVariable(variable);
+            result.setVariable(new VariableSegment(ctx.userVariable().start.getStartIndex(), ctx.userVariable().stop.getStopIndex(), ctx.userVariable().getText()));
             result.setAssignValue(ctx.expr().getText());
         } else if (null != ctx.setSystemVariable()) {
-            variable.setVariable(ctx.setSystemVariable().internalVariableName().getText());
+            VariableSegment variable = new VariableSegment(
+                    ctx.setSystemVariable().start.getStartIndex(), ctx.setSystemVariable().stop.getStopIndex(), ctx.setSystemVariable().internalVariableName().getText());
             result.setVariable(variable);
             result.setAssignValue(ctx.setExprOrDefault().getText());
             OptionTypeContext optionType = ctx.setSystemVariable().optionType();
@@ -955,15 +948,14 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     }
     
     private VariableAssignSegment getVariableAssign(final OptionValueContext ctx) {
-        VariableAssignSegment result = new VariableAssignSegment();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        VariableSegment variable = new VariableSegment();
         if (null != ctx.optionValueNoOptionType()) {
             return getVariableAssign(ctx.optionValueNoOptionType());
         }
+        VariableAssignSegment result = new VariableAssignSegment();
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        VariableSegment variable = new VariableSegment(ctx.internalVariableName().start.getStartIndex(), ctx.internalVariableName().stop.getStopIndex(), ctx.internalVariableName().getText());
         variable.setScope(ctx.optionType().getText());
-        variable.setVariable(ctx.internalVariableName().getText());
         result.setVariable(variable);
         result.setAssignValue(ctx.setExprOrDefault().getText());
         return result;
@@ -972,38 +964,15 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @Override
     public ASTNode visitSetCharacter(final SetCharacterContext ctx) {
         VariableAssignSegment characterSet = new VariableAssignSegment();
-        VariableSegment variable = new VariableSegment();
+        int startIndex = null != ctx.CHARSET() ? ctx.CHARSET().getSymbol().getStartIndex() : ctx.CHARACTER().getSymbol().getStartIndex();
+        int stopIndex = null != ctx.CHARSET() ? ctx.CHARSET().getSymbol().getStopIndex() : ctx.SET(1).getSymbol().getStopIndex();
         String variableName = (null != ctx.CHARSET()) ? ctx.CHARSET().getText() : "charset";
-        variable.setVariable(variableName);
+        VariableSegment variable = new VariableSegment(startIndex, stopIndex, variableName);
         characterSet.setVariable(variable);
         String assignValue = (null != ctx.DEFAULT()) ? ctx.DEFAULT().getText() : ctx.charsetName().getText();
         characterSet.setAssignValue(assignValue);
         MySQLSetStatement result = new MySQLSetStatement();
         result.getVariableAssigns().add(characterSet);
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitVariable(final VariableContext ctx) {
-        return super.visitVariable(ctx);
-    }
-    
-    @Override
-    public ASTNode visitUserVariable(final UserVariableContext ctx) {
-        VariableSegment result = new VariableSegment();
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setVariable(ctx.textOrIdentifier().getText());
-        return result;
-    }
-    
-    @Override
-    public ASTNode visitSystemVariable(final SystemVariableContext ctx) {
-        VariableSegment result = new VariableSegment();
-        result.setScope(ctx.systemVariableScope.getText());
-        result.setStartIndex(ctx.start.getStartIndex());
-        result.setStopIndex(ctx.stop.getStopIndex());
-        result.setVariable(ctx.textOrIdentifier().getText());
         return result;
     }
     

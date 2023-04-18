@@ -15,37 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 
-import java.util.Optional;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Variable segment.
+ * Expected variable segment.
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
-public final class VariableSegment implements ExpressionSegment {
+public final class ExpectedVariableSegment extends AbstractExpectedSQLSegment {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final String variable;
-    
+    @XmlAttribute
     private String scope;
     
-    /**
-     * Get scope.
-     *
-     * @return scope
-     */
-    public Optional<String> getScope() {
-        return Optional.ofNullable(scope);
-    }
+    @XmlAttribute
+    private String variable;
 }

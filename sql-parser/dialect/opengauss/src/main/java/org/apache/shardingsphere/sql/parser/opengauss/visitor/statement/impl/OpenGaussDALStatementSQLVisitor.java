@@ -101,11 +101,7 @@ public final class OpenGaussDALStatementSQLVisitor extends OpenGaussStatementSQL
         VariableAssignSegment result = new VariableAssignSegment();
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());
-        VariableSegment variable = new VariableSegment();
-        variable.setStartIndex(ctx.varName().start.getStartIndex());
-        variable.setStopIndex(ctx.varName().stop.getStopIndex());
-        variable.setVariable(ctx.varName().getText());
-        result.setVariable(variable);
+        result.setVariable(new VariableSegment(ctx.varName().start.getStartIndex(), ctx.varName().stop.getStopIndex(), ctx.varName().getText()));
         if (null != ctx.varList()) {
             result.setAssignValue(ctx.varList().getText());
         }
