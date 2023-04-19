@@ -79,12 +79,7 @@ public final class EncryptBinaryCondition implements EncryptCondition {
         }
     }
     
-    /**
-     * Get values.
-     *
-     * @param params SQL parameters
-     * @return values
-     */
+    @Override
     public List<Object> getValues(final List<Object> params) {
         List<Object> result = new ArrayList<>(positionValueMap.values());
         for (Entry<Integer, Integer> entry : positionIndexMap.entrySet()) {
