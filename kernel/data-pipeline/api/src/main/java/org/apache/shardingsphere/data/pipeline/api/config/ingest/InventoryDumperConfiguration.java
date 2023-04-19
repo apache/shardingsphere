@@ -40,6 +40,12 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
     
     private List<PipelineColumnMetaData> uniqueKeyColumns;
     
+    private List<String> insertColumnNames;
+    
+    private String querySQL;
+    
+    private Integer transactionIsolation;
+    
     private Integer shardingItem;
     
     private int batchSize = 1000;
@@ -60,6 +66,6 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
      * @return true when there's unique key, else false
      */
     public boolean hasUniqueKey() {
-        return null != uniqueKeyColumns && uniqueKeyColumns.size() > 0;
+        return null != uniqueKeyColumns && !uniqueKeyColumns.isEmpty();
     }
 }

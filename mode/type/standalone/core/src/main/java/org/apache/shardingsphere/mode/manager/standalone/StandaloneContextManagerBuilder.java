@@ -47,19 +47,12 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         StandalonePersistRepository repository = TypedSPILoader.getService(
                 StandalonePersistRepository.class, null == repositoryConfig ? null : repositoryConfig.getType(), null == repositoryConfig ? new Properties() : repositoryConfig.getProps());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
-        persistConfigurations(persistService, param);
         InstanceContext instanceContext = buildInstanceContext(param);
         new ProcessStandaloneSubscriber(instanceContext.getEventBusContext());
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, param, instanceContext);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         setContextManagerAware(result);
         return result;
-    }
-    
-    private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter param) {
-        if (!param.isEmpty()) {
-            persistService.persistConfigurations(param.getDatabaseConfigs(), param.getGlobalRuleConfigs(), param.getProps());
-        }
     }
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter param) {

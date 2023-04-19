@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
+import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -51,6 +52,7 @@ public final class HashModShardingAlgorithm implements StandardShardingAlgorithm
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
+        ShardingSpherePreconditions.checkNotNull(shardingValue.getValue(), NullShardingValueException::new);
         String suffix = String.valueOf(hashShardingValue(shardingValue.getValue()) % shardingCount);
         return ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).orElse(null);
     }

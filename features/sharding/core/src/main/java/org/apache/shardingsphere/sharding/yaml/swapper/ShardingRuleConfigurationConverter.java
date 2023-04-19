@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -28,6 +30,7 @@ import java.util.Optional;
  * Sharding rule configuration converter.
  */
 // TODO Move to pipeline module
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingRuleConfigurationConverter {
     
     /**

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
@@ -39,6 +41,7 @@ import java.util.stream.Collectors;
 /**
  * Parameter marker extractor for MySQL COM_STMT_PREPARE.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLComStmtPrepareParameterMarkerExtractor {
     
     /**

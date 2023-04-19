@@ -28,12 +28,13 @@ import org.apache.shardingsphere.infra.metadata.database.schema.exception.Unsupp
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.metadata.SchemaMetaDataLoaderMaterial;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Schema meta data utility class.
@@ -62,22 +63,12 @@ public final class SchemaMetaDataUtils {
                 addOneActualTableDataNode(material, dataSourceTableGroups, dataNodes, each);
             }
         }
-        return createSchemaMetaDataLoaderMaterials(dataSourceTableGroups, material);
+        return dataSourceTableGroups.entrySet().stream().map(entry -> new SchemaMetaDataLoaderMaterial(entry.getValue(),
+                getDataSource(material, entry.getKey()), material.getStorageTypes().get(entry.getKey()), material.getDefaultSchemaName())).collect(Collectors.toList());
     }
     
-    private static Collection<SchemaMetaDataLoaderMaterial> createSchemaMetaDataLoaderMaterials(final Map<String, Collection<String>> dataSourceTableGroups,
-                                                                                                final GenericSchemaBuilderMaterial material) {
-        Collection<SchemaMetaDataLoaderMaterial> result = new LinkedList<>();
-        for (Entry<String, Collection<String>> entry : dataSourceTableGroups.entrySet()) {
-            String dataSourceName = getDataSourceName(entry.getKey());
-            result.add(new SchemaMetaDataLoaderMaterial(entry.getValue(), dataSourceName, material.getDataSourceMap().get(dataSourceName), material.getStorageTypes().get(entry.getKey()),
-                    material.getDefaultSchemaName()));
-        }
-        return result;
-    }
-    
-    private static String getDataSourceName(final String dataSourceName) {
-        return dataSourceName.contains(".") ? dataSourceName.split("\\.")[0] : dataSourceName;
+    private static DataSource getDataSource(final GenericSchemaBuilderMaterial material, final String dataSourceName) {
+        return material.getDataSourceMap().get(dataSourceName.contains(".") ? dataSourceName.split("\\.")[0] : dataSourceName);
     }
     
     private static void checkDataSourceTypeIncludeInstanceAndSetDatabaseTableMap(final Collection<DatabaseType> notSupportThreeTierStructureStorageTypes, final DataNodes dataNodes,
@@ -105,6 +96,9 @@ public final class SchemaMetaDataUtils {
     private static void addOneActualTableDataNode(final GenericSchemaBuilderMaterial material,
                                                   final Map<String, Collection<String>> dataSourceTableGroups, final DataNodes dataNodes, final String table) {
         Optional<DataNode> dataNode = dataNodes.getDataNodes(table).stream().filter(each -> isSameDataSourceNameSchemaName(material, each)).findFirst();
+        if (!dataNode.isPresent() && !material.getDataSourceMap().keySet().iterator().hasNext()) {
+            return;
+        }
         String dataSourceName = dataNode.map(DataNode::getDataSourceName).orElseGet(() -> material.getDataSourceMap().keySet().iterator().next());
         String tableName = dataNode.map(DataNode::getTableName).orElse(table);
         addDataSourceTableGroups(dataSourceName, tableName, dataSourceTableGroups);

@@ -22,6 +22,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.TypeCastExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
@@ -128,5 +130,15 @@ class ExpressionExtractUtilsTest {
         List<ParameterMarkerExpressionSegment> actual = ExpressionExtractUtils.getParameterMarkerExpressions(input);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), is(expected));
+    }
+    
+    @Test
+    void assertGetParameterMarkerExpressionsFromInExpression() {
+        ListExpression listExpression = new ListExpression(0, 0);
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 1, ParameterMarkerType.QUESTION));
+        listExpression.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 2, ParameterMarkerType.QUESTION));
+        List<ExpressionSegment> inExpressions = Collections.singletonList(new InExpression(0, 0, new ColumnSegment(0, 0, new IdentifierValue("order_id")), listExpression, false));
+        List<ParameterMarkerExpressionSegment> actual = ExpressionExtractUtils.getParameterMarkerExpressions(inExpressions);
+        assertThat(actual.size(), is(2));
     }
 }

@@ -126,11 +126,13 @@ class ShardingRuleTest {
     }
     
     @Test
-    void assertFindTableRuleByDataSourceAndActualTable() {
-        ShardingRule sameActualTableShardingRule = createSameActualTableShardingRule();
-        assertTrue(sameActualTableShardingRule.findTableRuleByDataSourceAndActualTable("ds_0", "table").isPresent());
-        assertTrue(sameActualTableShardingRule.findTableRuleByDataSourceAndActualTable("ds_1", "table").isPresent());
-        assertFalse(sameActualTableShardingRule.findTableRuleByDataSourceAndActualTable("ds_2", "table").isPresent());
+    void assertFindTableRuleByActualTable() {
+        assertTrue(createMaximumShardingRule().findTableRuleByActualTable("table_0").isPresent());
+    }
+    
+    @Test
+    void assertNotFindTableRuleByActualTable() {
+        assertFalse(createMaximumShardingRule().findTableRuleByActualTable("table_3").isPresent());
     }
     
     @Test
@@ -482,13 +484,6 @@ class ShardingRuleTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         shardingRuleConfig.getTables().add(shardingTableRuleConfig);
-        return new ShardingRule(shardingRuleConfig, createDataSourceNames(), mock(InstanceContext.class));
-    }
-    
-    private ShardingRule createSameActualTableShardingRule() {
-        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
-        shardingRuleConfig.getTables().add(createTableRuleConfiguration("LOGIC_TABLE0", "ds_0.table"));
-        shardingRuleConfig.getTables().add(createTableRuleConfiguration("LOGIC_TABLE1", "ds_1.table"));
         return new ShardingRule(shardingRuleConfig, createDataSourceNames(), mock(InstanceContext.class));
     }
     

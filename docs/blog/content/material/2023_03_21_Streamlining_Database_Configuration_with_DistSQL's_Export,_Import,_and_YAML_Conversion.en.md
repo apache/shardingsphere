@@ -378,11 +378,12 @@ If you have any questions or feedback regarding Apache ShardingSphere, please do
 
 # References
 
-```plain-text
-[1] DistSQL Documentation: https://shardingsphere.apache.org/document/5.3.1/cn/user-manual/shardingsphere-proxy/distsql/
-[2] SHOW SHARDING TABLE RULE: documentationhttps://shardingsphere.apache.org/document/5.3.1/cn/user-manual/shardingsphere-proxy/distsql/syntax/rql/rule-query/sharding/show-sharding-table-rule/
-[3] SHOW READWRITE_SPLITTING RULE: https://shardingsphere.apache.org/document/5.3.1/cn/user-manual/shardingsphere-proxy/distsql/syntax/rql/rule-query/readwrite-splitting/show-readwrite-splitting-rule/
-[4] Using the ShardingSphere-Proxy binary release package: https://shardingsphere.apache.org/document/5.3.1/cn/user-manual/shardingsphere-proxy/startup/bin/
-[5] GitHub issue list: https://github.com/apache/shardingsphere/issues
-```
+🔗 [DistSQL Documentation](https://shardingsphere.apache.org/document/5.3.1/cn/user-manual/shardingsphere-proxy/distsql/)
 
+🔗 [SHOW SHARDING TABLE RULE: documentation](https://shardingsphere.apache.org/document/5.3.1/cn/user-manual/shardingsphere-proxy/distsql/syntax/rql/rule-query/sharding/show-sharding-table-rule/)
+
+🔗 [SHOW READWRITE_SPLITTING RULE](https://shardingsphere.apache.org/document/5.3.1/cn/user-manual/shardingsphere-proxy/distsql/syntax/rql/rule-query/readwrite-splitting/show-readwrite-splitting-rule/)
+
+🔗 [Using the ShardingSphere-Proxy binary release package](https://shardingsphere.apache.org/document/5.3.1/cn/user-manual/shardingsphere-proxy/startup/bin/)
+
+🔗 [GitHub issue list](https://github.com/apache/shardingsphere/issues)

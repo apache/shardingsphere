@@ -24,8 +24,7 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -96,8 +95,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     private String getColumnLabel(final Projection projection, final DatabaseType databaseType) {
         if (projection instanceof AggregationDistinctProjection) {
-            boolean isPostgreSQLOpenGaussStatement = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType;
-            return isPostgreSQLOpenGaussStatement ? ((AggregationDistinctProjection) projection).getType().name().toLowerCase() : projection.getExpression();
+            return databaseType instanceof SchemaSupportedDatabaseType ? ((AggregationDistinctProjection) projection).getType().name().toLowerCase() : projection.getExpression();
         }
         return projection.getColumnLabel();
     }
@@ -105,7 +103,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     @Override
     public boolean next() {
         boolean result = enumerator.moveNext();
-        currentRows = result ? (enumerator.current().getClass().isArray() ? (Object[]) enumerator.current() : new Object[]{enumerator.current()}) : new Object[]{};
+        currentRows = result ? enumerator.current().getClass().isArray() ? (Object[]) enumerator.current() : new Object[]{enumerator.current()} : new Object[]{};
         return result;
     }
     

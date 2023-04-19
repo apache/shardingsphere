@@ -19,12 +19,12 @@ package org.apache.shardingsphere.transaction.base.seata.at;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 /**
  * Seata xid context.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SeataXIDContext {
     
     private static final TransmittableThreadLocal<String> XID = new TransmittableThreadLocal<>();

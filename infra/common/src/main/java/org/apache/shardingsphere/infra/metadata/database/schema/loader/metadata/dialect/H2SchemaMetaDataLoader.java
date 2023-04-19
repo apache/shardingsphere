@@ -67,14 +67,14 @@ public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader
     private static final String GENERATED_INFO_SQL_IN_TABLES = GENERATED_INFO_SQL + " AND UPPER(C.TABLE_NAME) IN (%s)";
     
     @Override
-    public Collection<SchemaMetaData> load(final DataSource dataSource, final String dataSourceName, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
+    public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         try (Connection connection = dataSource.getConnection()) {
             Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(connection, tables);
             Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(connection, columnMetaDataMap.keySet());
             for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
                 Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
-                tableMetaDataList.add(new TableMetaData(entry.getKey(), dataSourceName, entry.getValue(), indexMetaDataList, Collections.emptyList()));
+                tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, Collections.emptyList()));
             }
         }
         return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataList));

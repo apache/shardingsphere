@@ -26,9 +26,8 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Der
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -141,7 +140,7 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
     }
     
     private NullsOrderType generateNewNullsOrderType(final DatabaseType databaseType, final OrderDirection orderDirection) {
-        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType || databaseType instanceof OracleDatabaseType) {
+        if (databaseType instanceof SchemaSupportedDatabaseType || databaseType instanceof OracleDatabaseType) {
             return OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.LAST : NullsOrderType.FIRST;
         }
         return OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.FIRST : NullsOrderType.LAST;

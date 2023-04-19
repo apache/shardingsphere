@@ -32,11 +32,7 @@ dropReadwriteSplittingRule
     ;
 
 readwriteSplittingRuleDefinition
-    : ruleName LP_ staticReadwriteSplittingRuleDefinition (COMMA_ algorithmDefinition)? RP_
-    ;
-
-staticReadwriteSplittingRuleDefinition
-    : WRITE_STORAGE_UNIT EQ_ writeStorageUnitName COMMA_ READ_STORAGE_UNITS LP_ readStorageUnitsNames RP_
+    : ruleName LP_ WRITE_STORAGE_UNIT EQ_ writeStorageUnitName COMMA_ READ_STORAGE_UNITS LP_ readStorageUnitsNames RP_ (COMMA_ algorithmDefinition)? RP_
     ;
 
 ruleName

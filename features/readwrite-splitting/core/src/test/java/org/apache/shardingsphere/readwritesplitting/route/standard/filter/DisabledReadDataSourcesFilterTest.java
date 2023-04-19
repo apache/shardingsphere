@@ -19,7 +19,6 @@ package org.apache.shardingsphere.readwritesplitting.route.standard.filter;
 
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,8 +37,7 @@ class DisabledReadDataSourcesFilterTest {
     @BeforeEach
     void setUp() {
         rule = new ReadwriteSplittingDataSourceRule(
-                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr",
-                        new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, null),
+                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null),
                 TransactionalReadQueryStrategy.DYNAMIC, new RandomReadQueryLoadBalanceAlgorithm());
     }
     

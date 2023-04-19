@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.MismatchedInlineShardingAlgorithmExpressionAndColumnException;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
+import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -56,7 +57,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
         ShardingSpherePreconditions.checkState(null != expression && !expression.isEmpty(),
                 () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression cannot be null or empty"));
-        return InlineExpressionParser.handlePlaceHolder(expression.trim());
+        return new InlineExpressionParser().handlePlaceHolder(expression.trim());
     }
     
     private boolean isAllowRangeQuery(final Properties props) {
@@ -65,9 +66,9 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
+        ShardingSpherePreconditions.checkNotNull(shardingValue.getValue(), NullShardingValueException::new);
         Closure<?> closure = createClosure();
-        Comparable<?> value = shardingValue.getValue();
-        closure.setProperty(shardingValue.getColumnName(), value);
+        closure.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
         return getTargetShardingNode(closure, shardingValue.getColumnName());
     }
     
@@ -79,7 +80,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     }
     
     private Closure<?> createClosure() {
-        Closure<?> result = new InlineExpressionParser(algorithmExpression).evaluateClosure().rehydrate(new Expando(), null, null);
+        Closure<?> result = new InlineExpressionParser().evaluateClosure(algorithmExpression).rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
     }
@@ -87,7 +88,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     private String getTargetShardingNode(final Closure<?> closure, final String columnName) {
         try {
             return closure.call().toString();
-        } catch (final MissingMethodException | NullPointerException ex) {
+        } catch (final MissingMethodException | NullPointerException ignored) {
             throw new MismatchedInlineShardingAlgorithmExpressionAndColumnException(algorithmExpression, columnName);
         }
     }

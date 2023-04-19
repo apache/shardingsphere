@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -89,7 +90,7 @@ public final class Portal {
             ((ParameterAware) sqlStatementContext).setUpParameters(params);
         }
         DatabaseType protocolType = ProxyContext.getInstance().getDatabase(databaseName).getProtocolType();
-        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, new HintValueContext(), true);
         backendConnection.getConnectionSession().setQueryContext(queryContext);
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(protocolType, queryContext, backendConnection.getConnectionSession(), true);
     }
@@ -127,7 +128,8 @@ public final class Portal {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         int columnIndex = 0;
         for (QueryHeader each : queryResponseHeader.getQueryHeaders()) {
-            result.add(new PostgreSQLColumnDescription(each.getColumnLabel(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName()));
+            PostgreSQLValueFormat valueFormat = determineValueFormat(columnIndex);
+            result.add(new PostgreSQLColumnDescription(each.getColumnLabel(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName(), valueFormat.getCode()));
         }
         return result;
     }

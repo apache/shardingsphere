@@ -28,11 +28,10 @@ public interface TableNameReviser<T extends ShardingSphereRule> {
     
     /**
      * Revise table meta data.
-     *
+     * 
      * @param originalName original table name
-     * @param dataSourceName data source name
      * @param rule rule
      * @return revised table name
      */
-    String revise(String originalName, String dataSourceName, T rule);
+    String revise(String originalName, T rule);
 }

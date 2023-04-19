@@ -20,20 +20,11 @@ package org.apache.shardingsphere.globalclock.core.provider;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
-import java.util.Properties;
-
 /**
  * Global clock provider.
  */
 @SingletonSPI
 public interface GlobalClockProvider extends TypedSPI {
-    
-    /**
-     * Initialize global clock provider.
-     *
-     * @param props properties to be initialized
-     */
-    void init(Properties props);
     
     /**
      * Get current timestamp.

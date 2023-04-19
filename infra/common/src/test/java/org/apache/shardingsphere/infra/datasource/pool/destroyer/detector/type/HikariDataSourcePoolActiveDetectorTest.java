@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.type;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -50,10 +51,8 @@ class HikariDataSourcePoolActiveDetectorTest {
     
     private HikariDataSource createHikariDataSource() {
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName("org.h2.Driver");
-        config.setJdbcUrl("jdbc:h2:mem:foo_ds;DB_CLOSE_DELAY=-1");
-        config.setUsername("root");
-        config.setPassword("root");
+        config.setDriverClassName(MockedDriver.class.getName());
+        config.setJdbcUrl("mock:jdbc");
         return new HikariDataSource(config);
     }
 }

@@ -72,6 +72,7 @@ public final class LoginRequestHandler extends ChannelInboundHandlerAdapter {
                 break;
             default:
                 ctx.fireChannelRead(msg);
+                break;
         }
     }
     

@@ -17,12 +17,18 @@
 
 package org.apache.shardingsphere.agent.core.plugin;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PluginContextTest {
+    
+    @AfterAll
+    static void tearDown() {
+        System.clearProperty("AGENT_PLUGINS_ENABLED");
+    }
     
     @Test
     void assertNotPluginEnabledKey() {

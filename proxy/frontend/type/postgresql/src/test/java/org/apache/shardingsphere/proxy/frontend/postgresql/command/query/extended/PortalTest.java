@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLEmptyQueryResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -67,14 +69,17 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -132,8 +137,9 @@ class PortalTest {
     @Test
     void assertExecuteSelectStatementAndReturnAllRows() throws SQLException {
         QueryResponseHeader responseHeader = mock(QueryResponseHeader.class);
-        QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
-        when(responseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(queryHeader));
+        QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.VARCHAR, "columnTypeName", 0, 0, false, false, false, false);
+        QueryHeader intColumnQueryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
+        when(responseHeader.getQueryHeaders()).thenReturn(Arrays.asList(queryHeader, intColumnQueryHeader));
         when(proxyBackendHandler.execute()).thenReturn(responseHeader);
         when(proxyBackendHandler.next()).thenReturn(true, true, false);
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
@@ -145,7 +151,15 @@ class PortalTest {
         List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, backendConnection);
         portal.bind();
-        assertThat(portal.describe(), instanceOf(PostgreSQLRowDescriptionPacket.class));
+        PostgreSQLPacket portalDescription = portal.describe();
+        assertThat(portalDescription, instanceOf(PostgreSQLRowDescriptionPacket.class));
+        Optional<Collection<PostgreSQLColumnDescription>> columnDescriptions = ReflectionUtils.getFieldValue(portalDescription, "columnDescriptions");
+        assertTrue(columnDescriptions.isPresent());
+        Iterator<PostgreSQLColumnDescription> columnDescriptionIterator = columnDescriptions.get().iterator();
+        PostgreSQLColumnDescription textColumnDescription = columnDescriptionIterator.next();
+        PostgreSQLColumnDescription intColumnDescription = columnDescriptionIterator.next();
+        assertThat(textColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.TEXT.getCode()));
+        assertThat(intColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.BINARY.getCode()));
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.size(), is(3));
         Iterator<PostgreSQLPacket> actualPacketsIterator = actualPackets.iterator();
@@ -212,7 +226,7 @@ class PortalTest {
         String sql = "set client_encoding = utf8";
         PostgreSQLSetStatement setStatement = new PostgreSQLSetStatement();
         VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
-        variableAssignSegment.setVariable(new VariableSegment());
+        variableAssignSegment.setVariable(new VariableSegment(0, 0, "client_encoding"));
         setStatement.getVariableAssigns().add(variableAssignSegment);
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(sql, new CommonSQLStatementContext<>(setStatement), Collections.emptyList());
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);

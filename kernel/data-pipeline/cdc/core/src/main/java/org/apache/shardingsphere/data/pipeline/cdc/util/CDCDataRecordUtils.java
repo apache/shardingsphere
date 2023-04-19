@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
@@ -31,6 +33,7 @@ import java.util.concurrent.BlockingQueue;
 /**
  * CDC data record utility class.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CDCDataRecordUtils {
     
     /**

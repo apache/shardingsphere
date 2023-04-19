@@ -50,7 +50,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     @Getter
     private volatile String jobId;
     
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private volatile PipelineJobAPI jobAPI;
     
     @Getter
@@ -70,20 +70,26 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         try {
             doPrepare(jobItemContext);
             // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            processFailed(jobItemContext, ex);
+            throw ex;
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            String jobId = jobItemContext.getJobId();
-            log.error("job prepare failed, {}-{}", jobId, jobItemContext.getShardingItem(), ex);
-            jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
-            jobAPI.stop(jobId);
-            if (ex instanceof RuntimeException) {
-                throw (RuntimeException) ex;
-            }
+            processFailed(jobItemContext, ex);
             throw new RuntimeException(ex);
         }
     }
     
     protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws Exception;
+    
+    private void processFailed(final PipelineJobItemContext jobItemContext, final Exception ex) {
+        String jobId = jobItemContext.getJobId();
+        log.error("job prepare failed, {}-{}", jobId, jobItemContext.getShardingItem(), ex);
+        jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
+        jobAPI.stop(jobId);
+    }
     
     @Override
     public Optional<PipelineTasksRunner> getTasksRunner(final int shardingItem) {

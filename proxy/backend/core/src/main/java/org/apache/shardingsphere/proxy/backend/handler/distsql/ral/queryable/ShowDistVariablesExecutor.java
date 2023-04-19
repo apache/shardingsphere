@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.config.props.internal.InternalConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.logging.constant.LoggingConstants;
@@ -32,6 +32,7 @@ import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -50,15 +51,15 @@ public final class ShowDistVariablesExecutor implements ConnectionSessionRequire
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final ShowDistVariablesStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = ConfigurationPropertyKey.getKeyNames().stream().filter(each -> !"sql_show".equalsIgnoreCase(each) && !"sql_simple".equalsIgnoreCase(each))
                 .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), metaData.getProps().getValue(ConfigurationPropertyKey.valueOf(each)).toString())).collect(Collectors.toList());
-        result.addAll(InternalConfigurationPropertyKey.getKeyNames().stream()
-                .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), metaData.getInternalProps().getValue(InternalConfigurationPropertyKey.valueOf(each)).toString()))
+        result.addAll(TemporaryConfigurationPropertyKey.getKeyNames().stream()
+                .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), metaData.getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.valueOf(each)).toString()))
                 .collect(Collectors.toList()));
         result.add(new LocalDataQueryResultRow(
                 VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtils.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
         result.add(new LocalDataQueryResultRow(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), connectionSession.getBackendConnection().getConnectionSize()));
         result.add(new LocalDataQueryResultRow(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), connectionSession.getTransactionStatus().getTransactionType().name()));
         addLoggingPropsRows(metaData, result);
-        return result;
+        return result.stream().sorted(Comparator.comparing(each -> each.getCell(1).toString())).collect(Collectors.toList());
     }
     
     private void addLoggingPropsRows(final ShardingSphereMetaData metaData, final Collection<LocalDataQueryResultRow> result) {

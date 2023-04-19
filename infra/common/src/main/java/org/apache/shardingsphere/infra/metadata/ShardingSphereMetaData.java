@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.internal.InternalConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -45,7 +45,7 @@ public final class ShardingSphereMetaData {
     
     private final ConfigurationProperties props;
     
-    private final InternalConfigurationProperties internalProps;
+    private final TemporaryConfigurationProperties temporaryProps;
     
     public ShardingSphereMetaData() {
         this(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
@@ -56,7 +56,7 @@ public final class ShardingSphereMetaData {
         databases.forEach((key, value) -> this.databases.put(key.toLowerCase(), value));
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
-        internalProps = new InternalConfigurationProperties(props.getProps());
+        temporaryProps = new TemporaryConfigurationProperties(props.getProps());
     }
     
     /**

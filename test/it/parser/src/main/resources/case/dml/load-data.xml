@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <load-data sql-case-id="load_data_into_table_from_server_file">
+        <table name="t_order" start-index="45" stop-index="51" />
+    </load-data>
+    <load-data sql-case-id="load_data_into_table_from_local_file">
+        <table name="t_order" start-index="51" stop-index="57" />
+    </load-data>
+    <load-data sql-case-id="load_data_into_table_with_schema_name">
+        <table name="t_order" start-index="45" stop-index="63">
+            <owner name="sharding_db" start-index="45" stop-index="55" />
+        </table>
+    </load-data>
+    <load-data sql-case-id="load_data_into_table_with_lines_starting">
+        <table name="t_order" start-index="44" stop-index="50" />
+    </load-data>
+    <load-data sql-case-id="load_data_into_table_with_ignore_lines">
+        <table name="t_order" start-index="44" stop-index="50" />
+    </load-data>
+</sql-parser-test-cases>

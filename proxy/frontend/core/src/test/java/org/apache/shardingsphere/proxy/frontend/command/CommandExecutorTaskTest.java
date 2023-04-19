@@ -35,7 +35,6 @@ import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionExcept
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -95,9 +94,6 @@ class CommandExecutorTaskTest {
     @Mock
     private DatabasePacket databasePacket;
     
-    @Mock
-    private FrontendContext frontendContext;
-    
     @BeforeEach
     void setup() {
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
@@ -139,7 +135,6 @@ class CommandExecutorTaskTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertRunByCommandExecutor() throws SQLException, BackendConnectionException {
-        when(engine.getFrontendContext()).thenReturn(frontendContext);
         when(commandExecutor.execute()).thenReturn(Collections.singleton(databasePacket));
         when(engine.getCommandExecuteEngine().getCommandPacket(payload, commandPacketType, connectionSession)).thenReturn(commandPacket);
         when(engine.getCommandExecuteEngine().getCommandExecutor(commandPacketType, commandPacket, connectionSession)).thenReturn(commandExecutor);

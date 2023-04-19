@@ -172,7 +172,7 @@ class DDLE2EIT {
     private void assertTableMetaData(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException {
         String tableName = containerComposer.getAssertion().getInitialSQL().getAffectedTable();
         DataSetMetaData expected = containerComposer.getDataSet().findMetaData(tableName);
-        Collection<DataNode> dataNodes = new InlineExpressionParser(expected.getDataNodes()).splitAndEvaluate().stream().map(DataNode::new).collect(Collectors.toList());
+        Collection<DataNode> dataNodes = new InlineExpressionParser().splitAndEvaluate(expected.getDataNodes()).stream().map(DataNode::new).collect(Collectors.toList());
         if (expected.getColumns().isEmpty()) {
             assertNotContainsTable(containerComposer, dataNodes);
             return;
