@@ -44,7 +44,7 @@ public final class ShardingSphereTable {
     
     private final Map<String, ShardingSphereIndex> indexes;
     
-    private final Map<String, ShardingSphereConstraint> constrains;
+    private final Map<String, ShardingSphereConstraint> constraints;
     
     private final List<String> columnNames = new ArrayList<>();
     
@@ -56,17 +56,17 @@ public final class ShardingSphereTable {
         this("", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     }
     
-    public ShardingSphereTable(final String name, final Collection<ShardingSphereColumn> columnList,
-                               final Collection<ShardingSphereIndex> indexList, final Collection<ShardingSphereConstraint> constraintList) {
+    public ShardingSphereTable(final String name, final Collection<ShardingSphereColumn> columns,
+                               final Collection<ShardingSphereIndex> indexes, final Collection<ShardingSphereConstraint> constraints) {
         this.name = name;
-        columns = getColumns(columnList);
-        indexes = getIndexes(indexList);
-        constrains = getConstrains(constraintList);
+        this.columns = getColumns(columns);
+        this.indexes = getIndexes(indexes);
+        this.constraints = getConstraints(constraints);
     }
     
-    private Map<String, ShardingSphereColumn> getColumns(final Collection<ShardingSphereColumn> columnList) {
-        Map<String, ShardingSphereColumn> result = new LinkedHashMap<>(columnList.size(), 1);
-        for (ShardingSphereColumn each : columnList) {
+    private Map<String, ShardingSphereColumn> getColumns(final Collection<ShardingSphereColumn> columns) {
+        Map<String, ShardingSphereColumn> result = new LinkedHashMap<>(columns.size(), 1);
+        for (ShardingSphereColumn each : columns) {
             String lowerColumnName = each.getName().toLowerCase();
             result.put(lowerColumnName, each);
             columnNames.add(each.getName());
@@ -80,19 +80,29 @@ public final class ShardingSphereTable {
         return result;
     }
     
-    private Map<String, ShardingSphereIndex> getIndexes(final Collection<ShardingSphereIndex> indexList) {
-        Map<String, ShardingSphereIndex> result = new LinkedHashMap<>(indexList.size(), 1);
-        for (ShardingSphereIndex each : indexList) {
+    private Map<String, ShardingSphereIndex> getIndexes(final Collection<ShardingSphereIndex> indexes) {
+        Map<String, ShardingSphereIndex> result = new LinkedHashMap<>(indexes.size(), 1);
+        for (ShardingSphereIndex each : indexes) {
             result.put(each.getName().toLowerCase(), each);
         }
         return result;
     }
     
-    private Map<String, ShardingSphereConstraint> getConstrains(final Collection<ShardingSphereConstraint> constraintList) {
-        Map<String, ShardingSphereConstraint> result = new LinkedHashMap<>(constraintList.size(), 1);
-        for (ShardingSphereConstraint each : constraintList) {
+    private Map<String, ShardingSphereConstraint> getConstraints(final Collection<ShardingSphereConstraint> constraints) {
+        Map<String, ShardingSphereConstraint> result = new LinkedHashMap<>(constraints.size(), 1);
+        for (ShardingSphereConstraint each : constraints) {
             result.put(each.getName().toLowerCase(), each);
         }
         return result;
+    }
+    
+    /**
+     * Get table meta data via column name.
+     *
+     * @param columnName column name
+     * @return table meta data
+     */
+    public ShardingSphereColumn getColumn(final String columnName) {
+        return columns.get(columnName.toLowerCase());
     }
 }
