@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.encrypt.sm.algorithm;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
@@ -33,7 +33,6 @@ import java.security.GeneralSecurityException;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 
@@ -94,7 +93,7 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     
     private byte[] createSm4Iv(final Properties props, final String sm4Mode) {
         if (!"CBC".equalsIgnoreCase(sm4Mode)) {
-            return null;
+            return new byte[0];
         }
         ShardingSpherePreconditions.checkState(props.containsKey(SM4_IV), () -> new EncryptAlgorithmInitializationException("SM4", String.format("%s can not be null", SM4_IV)));
         String sm4IvValue = String.valueOf(props.getProperty(SM4_IV));
@@ -132,11 +131,10 @@ public final class SM4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     private byte[] handle(final byte[] input, final int mode) {
         Cipher cipher = Cipher.getInstance(sm4ModePadding, BouncyCastleProvider.PROVIDER_NAME);
         SecretKeySpec secretKeySpec = new SecretKeySpec(sm4Key, "SM4");
-        Optional<byte[]> sm4Iv = Optional.ofNullable(this.sm4Iv);
-        if (sm4Iv.isPresent()) {
-            cipher.init(mode, secretKeySpec, new IvParameterSpec(sm4Iv.get()));
-        } else {
+        if (0 == sm4Iv.length) {
             cipher.init(mode, secretKeySpec);
+        } else {
+            cipher.init(mode, secretKeySpec, new IvParameterSpec(sm4Iv));
         }
         return cipher.doFinal(input);
     }
