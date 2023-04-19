@@ -48,7 +48,7 @@ public final class LiteralExpressionConverter implements SQLSegmentConverter<Lit
         if (null == segment.getLiterals()) {
             return Optional.of(SqlLiteral.createNull(SqlParserPos.ZERO));
         }
-        if (segment.getLiterals().equals("YEAR")) {
+        if ("YEAR".equals(segment.getLiterals())) {
             return Optional.of(new SqlIntervalQualifier(TimeUnit.YEAR, null, SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof Integer) {
