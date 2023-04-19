@@ -215,6 +215,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         
         private final Collection<Collection<Object>> records;
         
+        @Override
         public Optional<Object> getMaxUniqueKeyValue() {
             return Optional.of(maxUniqueKeyValue);
         }

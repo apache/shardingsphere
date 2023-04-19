@@ -101,6 +101,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         return result;
     }
     
+    @Override
     protected abstract TableBasedPipelineJobInfo getJobInfo(String jobId);
     
     @Override
