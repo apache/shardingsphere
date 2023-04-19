@@ -25,15 +25,25 @@ public enum ClassBasedShardingAlgorithmStrategyType {
     /**
      * The sharding strategy is standard.
      */
-    STANDARD,
+    STANDARD("STANDARD"),
     
     /**
      * The sharding strategy is complex.
      */
-    COMPLEX,
+    COMPLEX("COMPLEX"),
     
     /**
      * The sharding strategy is hint.
      */
-    HINT
+    HINT("HINT");
+
+    private final String type;
+
+    ClassBasedShardingAlgorithmStrategyType(final String type) {
+        this.type = type;
+    }
+
+    static boolean isValidShardingAlgorithmStrategyType(final String type) {
+        return STANDARD.type.equalsIgnoreCase(type) || COMPLEX.type.equalsIgnoreCase(type) || HINT.type.equalsIgnoreCase(type);
+    }
 }

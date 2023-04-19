@@ -60,14 +60,19 @@ public final class ClassBasedShardingAlgorithm implements StandardShardingAlgori
     private ClassBasedShardingAlgorithmStrategyType getStrategy(final Properties props) {
         String strategy = props.getProperty(STRATEGY_KEY);
         ShardingSpherePreconditions.checkNotNull(strategy,
-                () -> new ShardingAlgorithmInitializationException(getType(), String.format("Properties `%s` can not be null when uses class based sharding strategy.", STRATEGY_KEY)));
-        return ClassBasedShardingAlgorithmStrategyType.valueOf(strategy.toUpperCase().trim());
+                () -> new ShardingAlgorithmInitializationException(getType(), String.format("Properties `%s` can not be null when uses class based sharding strategy", STRATEGY_KEY)));
+        String shardingAlgorithmStrategyType = strategy.toUpperCase().trim();
+        ShardingSpherePreconditions.checkState(
+                ClassBasedShardingAlgorithmStrategyType.isValidShardingAlgorithmStrategyType(shardingAlgorithmStrategyType),
+                () -> new ShardingAlgorithmInitializationException(getType(), String.format("Sharding strategy `%s` not support", strategy)));
+        return ClassBasedShardingAlgorithmStrategyType.valueOf(shardingAlgorithmStrategyType);
     }
-    
+
     private String getAlgorithmClassName(final Properties props) {
         String result = props.getProperty(ALGORITHM_CLASS_NAME_KEY);
         ShardingSpherePreconditions.checkNotNull(result,
-                () -> new ShardingAlgorithmInitializationException(getType(), String.format("Properties `%s` can not be null when uses class based sharding strategy.", ALGORITHM_CLASS_NAME_KEY)));
+                () -> new ShardingAlgorithmInitializationException(getType(), String.format("Properties `%s` can not be null when uses class based sharding strategy", ALGORITHM_CLASS_NAME_KEY)));
+        ShardingSpherePreconditions.checkState(!"".equals(result), () -> new ShardingAlgorithmInitializationException(getType(), "Sharding algorithm ClassName can not be a empty string"));
         return result;
     }
     
