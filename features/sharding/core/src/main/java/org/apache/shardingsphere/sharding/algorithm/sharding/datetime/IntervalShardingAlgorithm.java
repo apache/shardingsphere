@@ -225,7 +225,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         Month dateTimeUpperAsMonth = dateTimeUpper.query(Month::from);
         Month dateTimeLowerAsMonth = dateTimeLower.query(Month::from);
         Month calculateTimeAsView = calculateTime.query(Month::from);
-        while (!(calculateTimeAsView.getValue() > dateTimeUpperAsMonth.getValue()) && (calculateTimeAsView.getValue() + stepAmount) <= Month.DECEMBER.getValue()) {
+        while (calculateTimeAsView.getValue() <= dateTimeUpperAsMonth.getValue() && (calculateTimeAsView.getValue() + stepAmount) <= Month.DECEMBER.getValue()) {
             if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount)), range, dateTimeLowerAsMonth, dateTimeUpperAsMonth)) {
                 result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
             }
