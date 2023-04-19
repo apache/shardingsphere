@@ -33,6 +33,10 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.handler.CDCRequestHand
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.LoginRequestHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
+
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * CDC client.
@@ -42,9 +46,12 @@ public final class CDCClient {
     
     private final StartCDCClientParameter parameter;
     
-    public CDCClient(final StartCDCClientParameter parameter) {
+    private final Consumer<List<Record>> consumer;
+    
+    public CDCClient(final StartCDCClientParameter parameter, final Consumer<List<Record>> consumer) {
         validateParameter(parameter);
         this.parameter = parameter;
+        this.consumer = consumer;
     }
     
     private void validateParameter(final StartCDCClientParameter parameter) {
@@ -85,7 +92,7 @@ public final class CDCClient {
                         channel.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
                         channel.pipeline().addLast(new ProtobufEncoder());
                         channel.pipeline().addLast(new LoginRequestHandler(parameter.getUsername(), parameter.getPassword()));
-                        channel.pipeline().addLast(new CDCRequestHandler(parameter));
+                        channel.pipeline().addLast(new CDCRequestHandler(parameter, consumer));
                     }
                 });
         try {
