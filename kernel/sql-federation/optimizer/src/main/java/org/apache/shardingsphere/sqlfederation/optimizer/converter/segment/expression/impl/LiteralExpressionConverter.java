@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import org.apache.calcite.avatica.util.TimeUnit;
+import org.apache.calcite.sql.SqlIntervalQualifier;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.fun.SqlTrimFunction.Flag;
@@ -45,6 +47,9 @@ public final class LiteralExpressionConverter implements SQLSegmentConverter<Lit
     public Optional<SqlNode> convert(final LiteralExpressionSegment segment) {
         if (null == segment.getLiterals()) {
             return Optional.of(SqlLiteral.createNull(SqlParserPos.ZERO));
+        }
+        if (segment.getLiterals().equals("YEAR")) {
+            return Optional.of(new SqlIntervalQualifier(TimeUnit.YEAR, null, SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof Integer) {
             return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(segment.getLiterals()), SqlParserPos.ZERO));

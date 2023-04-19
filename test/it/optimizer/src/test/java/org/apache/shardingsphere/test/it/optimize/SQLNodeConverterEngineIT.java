@@ -198,6 +198,8 @@ class SQLNodeConverterEngineIT {
             result.add("select_with_trim_expr_and_both");
             result.add("select_with_trim_expr_from_expr");
             result.add("select_with_trim_expr_from_expr_and_both");
+            result.add("select_extract");
+            result.add("select_where_with_bit_expr_with_mod_sign");
             return result;
         }
         // CHECKSTYLE:ON
