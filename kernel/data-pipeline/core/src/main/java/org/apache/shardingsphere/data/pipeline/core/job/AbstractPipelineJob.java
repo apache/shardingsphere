@@ -50,7 +50,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     @Getter
     private volatile String jobId;
     
-    @Getter(value = AccessLevel.PROTECTED)
+    @Getter(AccessLevel.PROTECTED)
     private volatile PipelineJobAPI jobAPI;
     
     @Getter
