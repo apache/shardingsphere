@@ -45,11 +45,6 @@
             <property name="maxLineLength" value="200" />
         </properties>
     </rule>
-    <rule ref="category/java/design.xml/TooManyMethods">
-        <properties>
-            <property name="maxmethods" value="30" />
-        </properties>
-    </rule>
     <rule ref="category/java/design.xml/UseUtilityClass">
         <properties>
             <property name="ignoredAnnotations" value="lombok.NoArgsConstructor | org.springframework.boot.autoconfigure.SpringBootApplication" />
