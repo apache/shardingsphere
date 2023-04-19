@@ -49,7 +49,7 @@ public final class PipelineTableMetaDataUtils {
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaName, tableName);
         ShardingSpherePreconditions.checkNotNull(tableMetaData, () -> new SplitPipelineJobByRangeException(tableName, "Can not get table meta data"));
         List<String> primaryKeys = tableMetaData.getPrimaryKeyColumns();
-        if (primaryKeys.size() > 0) {
+        if (!primaryKeys.isEmpty()) {
             return primaryKeys.stream().map(tableMetaData::getColumnMetaData).collect(Collectors.toList());
         }
         Collection<PipelineIndexMetaData> uniqueIndexes = tableMetaData.getUniqueIndexes();

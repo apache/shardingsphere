@@ -66,6 +66,6 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
      * @return true when there's unique key, else false
      */
     public boolean hasUniqueKey() {
-        return null != uniqueKeyColumns && uniqueKeyColumns.size() > 0;
+        return null != uniqueKeyColumns && !uniqueKeyColumns.isEmpty();
     }
 }
