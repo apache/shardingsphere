@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -46,8 +45,7 @@ class CountShardingRuleExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<CountShardingRuleStatement> executor = new CountShardingRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountShardingRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = new CountShardingRuleExecutor().getRows(mockDatabase(), mock(CountShardingRuleStatement.class));
         assertThat(actual.size(), is(3));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -66,8 +64,7 @@ class CountShardingRuleExecutorTest {
     
     @Test
     void assertGetColumns() {
-        RQLExecutor<CountShardingRuleStatement> executor = new CountShardingRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
+        Collection<String> columns = new CountShardingRuleExecutor().getColumnNames();
         assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("rule_name"));

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
 import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -43,8 +42,7 @@ class CountReadwriteSplittingRuleExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<CountReadwriteSplittingRuleStatement> executor = new CountReadwriteSplittingRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountReadwriteSplittingRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = new CountReadwriteSplittingRuleExecutor().getRows(mockDatabase(), mock(CountReadwriteSplittingRuleStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -55,8 +53,7 @@ class CountReadwriteSplittingRuleExecutorTest {
     
     @Test
     void assertGetColumnNames() {
-        RQLExecutor<CountReadwriteSplittingRuleStatement> executor = new CountReadwriteSplittingRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
+        Collection<String> columns = new CountReadwriteSplittingRuleExecutor().getColumnNames();
         assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("rule_name"));
