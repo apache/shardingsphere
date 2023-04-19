@@ -15,28 +15,52 @@ Answer:
 
 ### [JDBC] The tableName and columnName configured in yaml or properties leading incorrect result when loading Oracle metadata？
 
-Answer：
+Answer:
 
 Note that, in Oracle's metadata, the tableName and columnName is default UPPERCASE, while double-quoted such as `CREATE TABLE "TableName"("Id" number)` the tableName and columnName is the actual content double-quoted, refer to the following SQL for the reality in metadata:
-```
+```sql
 SELECT OWNER, TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM ALL_TAB_COLUMNS WHERE TABLE_NAME IN ('TableName') 
 ```
 ShardingSphere uses the `OracleTableMetaDataLoader` to load the metadata, keep the tableName and columnName in the yaml or properties consistent with the metadata.
 ShardingSphere assembled the SQL using the following code:
-```
-    private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData metaData) throws SQLException {
-        StringBuilder stringBuilder = new StringBuilder(28);
-        if (versionContainsIdentityColumn(metaData)) {
-            stringBuilder.append(", IDENTITY_COLUMN");
-        }
-        if (versionContainsCollation(metaData)) {
-            stringBuilder.append(", COLLATION");
-        }
-        String collation = stringBuilder.toString();
-        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
-                : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
-    }
+```java
+ private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData metaData) throws SQLException {
+     StringBuilder stringBuilder = new StringBuilder(28);
+     if (versionContainsIdentityColumn(metaData)) {
+         stringBuilder.append(", IDENTITY_COLUMN");
+     }
+     if (versionContainsCollation(metaData)) {
+         stringBuilder.append(", COLLATION");
+     }
+     String collation = stringBuilder.toString();
+     return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
+             : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+ }
 ``` 
+
+### [JDBC] `SQLException: Unable to unwrap to interface com.mysql.jdbc.Connection` exception thrown when using MySQL XA transaction
+
+Answer:
+
+Incompatibility between multiple MySQL drivers. Because the MySQL5 version of the driver class under the class path is loaded first, when trying to call the `unwrap` method in the MySQL8 driver, the type conversion exception occurs.
+
+The solutions:
+Check whether there are both MySQL5 and MySQL8 drivers in the class path, and only keep one driver package of the corresponding version.
+
+The exception stack is as follows:
+```
+Caused by: java.sql.SQLException: Unable to unwrap to interface com.mysql.jdbc.Connection
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:129)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:97)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:89)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:63)
+	at com.mysql.cj.jdbc.ConnectionImpl.unwrap(ConnectionImpl.java:2650)
+	at com.zaxxer.hikari.pool.ProxyConnection.unwrap(ProxyConnection.java:481)
+	at org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MySQLXAConnectionWrapper.wrap(MySQLXAConnectionWrapper.java:46)
+	at org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource.getConnection(XATransactionDataSource.java:89)
+	at org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager.getConnection(XAShardingSphereTransactionManager.java:96
+```
+
 ## Proxy
 
 ### [Proxy] In Windows environment, could not find or load main class org.apache.shardingsphere.proxy.Bootstrap, how to solve it?

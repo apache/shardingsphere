@@ -42,7 +42,6 @@ props:
   sql-show: false
   check-table-metadata-enabled: false
   proxy-backend-query-fetch-size: -1
-  proxy-backend-executor-suitable: OLAP
   proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
   # Available sql federation type: NONE (default), ORIGINAL, ADVANCED
   sql-federation-type: NONE

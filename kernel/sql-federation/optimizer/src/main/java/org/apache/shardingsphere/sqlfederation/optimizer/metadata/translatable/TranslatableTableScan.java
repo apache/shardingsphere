@@ -150,13 +150,7 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
         return super.computeSelfCost(planner, mq).multiplyBy(((double) number + 2D) / ((double) table.getRowType().getFieldCount() + 2D));
     }
     
-    /**
-     * Generate code for translatable table scan.
-     *
-     * @param implementor EnumerableRelImplementor
-     * @param pref Prefer
-     * @return generated code
-     */
+    @Override
     public Result implement(final EnumerableRelImplementor implementor, final Prefer pref) {
         PhysType physType = PhysTypeImpl.of(implementor.getTypeFactory(), getRowType(), pref.preferArray());
         if (null == filters) {

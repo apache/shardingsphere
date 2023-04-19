@@ -45,7 +45,6 @@ class ConfigurationPropertiesTest {
         assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE), is(20));
-        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE), is(BackendExecutorType.OLTP));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION), is("5.7.22"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT), is(3308));
@@ -67,7 +66,6 @@ class ConfigurationPropertiesTest {
                 new Property(ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey(), Boolean.TRUE.toString()),
                 new Property(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE.getKey(), "20"),
                 new Property(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE.getKey(), "20"),
-                new Property(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE.getKey(), BackendExecutorType.OLTP.name()),
                 new Property(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS.getKey(), "20"),
                 new Property(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION.getKey(), "5.7.22"),
                 new Property(ConfigurationPropertyKey.PROXY_DEFAULT_PORT.getKey(), "3308"),
@@ -90,7 +88,6 @@ class ConfigurationPropertiesTest {
         assertFalse((Boolean) actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE), is(-1));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE), is(0));
-        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE), is(BackendExecutorType.OLAP));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS), is(0));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION), is("5.7.22"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT), is(3307));

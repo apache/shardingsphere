@@ -39,7 +39,7 @@
     <rule ref="category/java/documentation.xml/CommentSize">
         <properties>
             <property name="maxLines" value="40" />
-            <property name="maxLineLength" value="160" />
+            <property name="maxLineLength" value="200" />
         </properties>
     </rule>
     <rule ref="category/java/design.xml/TooManyMethods">
@@ -50,6 +50,14 @@
     <rule ref="category/java/design.xml/UseUtilityClass">
         <properties>
             <property name="ignoredAnnotations" value="lombok.NoArgsConstructor | org.springframework.boot.autoconfigure.SpringBootApplication" />
+        </properties>
+    </rule>
+    <rule ref="category/java/errorprone.xml/AssignmentInOperand">
+        <properties>
+            <property name="allowIf" value="true" />
+            <property name="allowFor" value="true" />
+            <property name="allowWhile" value="true" />
+            <property name="allowIncrementDecrement" value="true" />
         </properties>
     </rule>
 </ruleset>

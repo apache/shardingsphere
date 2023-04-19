@@ -39,12 +39,7 @@ public final class MySQLDataSourcePrivilegeChecker implements DataSourcePrivileg
     
     private static final int MYSQL_MAJOR_VERSION_8 = 8;
     
-    /**
-     * Check privilege.
-     *
-     * @param dataSource data source
-     * @throws XATransactionCheckPrivilegeFailedException XA transaction check privilege failed exception
-     */
+    @Override
     public void checkPrivilege(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection()) {
             if (MYSQL_MAJOR_VERSION_8 == connection.getMetaData().getDatabaseMajorVersion()) {
