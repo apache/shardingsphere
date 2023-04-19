@@ -119,7 +119,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
         BigInteger lower = new BigInteger(shardingValue.getValueRange().lowerEndpoint().toString());
         BigInteger upper = new BigInteger(shardingValue.getValueRange().upperEndpoint().toString());
         BigInteger shardingCountBigInter = new BigInteger(String.valueOf(shardingCount));
-        for (BigInteger i = lower; i.compareTo(upper) <= 0; i = i.add(new BigInteger("1"))) {
+        for (BigInteger i = lower; i.compareTo(upper) <= 0; i = i.add(BigInteger.ONE)) {
             String shardingResultSuffix = getShardingResultSuffix(String.valueOf(i.mod(shardingCountBigInter)));
             ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).ifPresent(result::add);
         }
