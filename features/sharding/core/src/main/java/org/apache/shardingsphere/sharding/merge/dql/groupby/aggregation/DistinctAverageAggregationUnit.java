@@ -46,10 +46,10 @@ public final class DistinctAverageAggregationUnit implements AggregationUnit {
         }
         if (countValues.add(values.get(0)) && sumValues.add(values.get(0))) {
             if (null == count) {
-                count = new BigDecimal("0");
+                count = BigDecimal.ZERO;
             }
             if (null == sum) {
-                sum = new BigDecimal("0");
+                sum = BigDecimal.ZERO;
             }
             count = count.add(new BigDecimal(values.get(0).toString()));
             sum = sum.add(new BigDecimal(values.get(1).toString()));

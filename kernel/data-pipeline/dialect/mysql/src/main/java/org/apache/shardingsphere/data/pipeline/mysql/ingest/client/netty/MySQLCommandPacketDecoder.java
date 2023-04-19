@@ -95,6 +95,7 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
                 MySQLFieldCountPacket fieldCountPacket = new MySQLFieldCountPacket(payload);
                 currentState = States.FieldPacket;
                 internalResultSet = new InternalResultSet(fieldCountPacket);
+                break;
         }
     }
 }

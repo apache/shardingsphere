@@ -132,7 +132,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         this.queryContext = queryContext;
         this.backendConnection = backendConnection;
         if (sqlStatementContext instanceof CursorAvailable) {
-            DatabaseConnector.this.prepareCursorStatementContext((CursorAvailable) sqlStatementContext, backendConnection.getConnectionSession());
+            prepareCursorStatementContext((CursorAvailable) sqlStatementContext, backendConnection.getConnectionSession());
         }
         proxySQLExecutor = new ProxySQLExecutor(driverType, backendConnection, this);
     }
