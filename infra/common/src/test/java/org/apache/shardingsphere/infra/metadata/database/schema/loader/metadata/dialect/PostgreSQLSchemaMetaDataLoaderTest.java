@@ -189,8 +189,8 @@ class PostgreSQLSchemaMetaDataLoaderTest {
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
         assertThat(indexesIterator.next(), is(new IndexMetaData("id")));
-        assertThat(actualTableMetaData.getConstrains().size(), is(1));
-        Iterator<ConstraintMetaData> constrainsIterator = actualTableMetaData.getConstrains().iterator();
+        assertThat(actualTableMetaData.getConstraints().size(), is(1));
+        Iterator<ConstraintMetaData> constrainsIterator = actualTableMetaData.getConstraints().iterator();
         assertThat(constrainsIterator.next(), is(new ConstraintMetaData("tbl_con", "refer_tbl")));
     }
 }
