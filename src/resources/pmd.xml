@@ -29,6 +29,7 @@
         <exclude name="CloseResource" />
         <exclude name="FinalFieldCouldBeStatic" />
         <exclude name="GuardLogStatement" />
+        <exclude name="OverrideBothEqualsAndHashcode" />
         <exclude name="PreserveStackTrace" />
         <exclude name="SingularField" />
         <exclude name="UncommentedEmptyMethodBody" />
