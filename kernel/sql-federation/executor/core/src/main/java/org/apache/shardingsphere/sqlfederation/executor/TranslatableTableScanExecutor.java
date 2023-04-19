@@ -185,7 +185,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
             MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
             MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
             Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
-            return createScalarEnumerable(mergedResult, queryResults.get(0).getMetaData(), statements);
+            return createScalarEnumerable(mergedResult, statements);
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         } finally {
@@ -193,9 +193,9 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         }
     }
     
-    private AbstractEnumerable<Object> createScalarEnumerable(final MergedResult mergedResult, final QueryResultMetaData metaData, final Collection<Statement> statements) throws SQLException {
+    private AbstractEnumerable<Object> createScalarEnumerable(final MergedResult mergedResult, final Collection<Statement> statements) throws SQLException {
         // TODO remove getRows when mergedResult support JDBC first method
-        Collection<Object> rows = getScalarRows(mergedResult, metaData);
+        Collection<Object> rows = getScalarRows(mergedResult);
         return new AbstractEnumerable<Object>() {
             
             @Override
@@ -205,7 +205,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         };
     }
     
-    private Collection<Object> getScalarRows(final MergedResult mergedResult, final QueryResultMetaData metaData) throws SQLException {
+    private Collection<Object> getScalarRows(final MergedResult mergedResult) throws SQLException {
         Collection<Object> result = new LinkedList<>();
         while (mergedResult.next()) {
             Object currentRow = mergedResult.getValue(1, Object.class);
