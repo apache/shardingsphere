@@ -51,7 +51,7 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     public void init(final Properties props) {
         this.props = props;
         dataSourceNames = props.stringPropertyNames();
-        ShardingSpherePreconditions.checkState(!dataSourceNames.isEmpty(), () -> new ReadQueryLoadBalanceAlgorithmInitializationExcpetion(getType(), "data source shouldn't be empty!"));
+        ShardingSpherePreconditions.checkState(!dataSourceNames.isEmpty(), () -> new ReadQueryLoadBalanceAlgorithmInitializationExcpetion(getType(), "Read data source is required"));
         for (String dataSourceName : dataSourceNames) {
             Object weightObject = props.get(dataSourceName);
             ShardingSpherePreconditions.checkNotNull(weightObject,
@@ -118,14 +118,7 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     
     private double getWeightValue(final String readDataSourceName) {
         Object weightObject = props.get(readDataSourceName);
-        ShardingSpherePreconditions.checkNotNull(weightObject,
-                () -> new MissingRequiredReadDatabaseWeightException(getType(), String.format("Read database `%s` access weight is not configured.", readDataSourceName)));
-        double result;
-        try {
-            result = Double.parseDouble(weightObject.toString());
-        } catch (final NumberFormatException ex) {
-            throw new InvalidReadDatabaseWeightException(weightObject);
-        }
+        double result = Double.parseDouble(weightObject.toString());
         if (Double.isInfinite(result)) {
             result = 10000.0D;
         }

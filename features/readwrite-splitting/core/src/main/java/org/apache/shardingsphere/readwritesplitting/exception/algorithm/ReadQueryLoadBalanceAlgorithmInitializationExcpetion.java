@@ -25,6 +25,6 @@ public class ReadQueryLoadBalanceAlgorithmInitializationExcpetion extends Readwr
     private static final long serialVersionUID = -8673960967175624027L;
     
     public ReadQueryLoadBalanceAlgorithmInitializationExcpetion(final String loadBalanceAlgorithmType, final String reason) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 82, "'%s' Read Query Load BalanceAlgorithm initialization failed, reason is: %s.", loadBalanceAlgorithmType, reason);
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 83, "'%s' Read Query Load BalanceAlgorithm initialization failed, reason is: %s.", loadBalanceAlgorithmType, reason);
     }
 }
