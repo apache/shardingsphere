@@ -23,6 +23,7 @@
     <rule ref="rulesets/java/quickstart.xml">
         <exclude name="AbstractClassWithoutAnyMethod" />
         <exclude name="AvoidAccessibilityAlteration" />
+        <exclude name="AvoidBranchingStatementAsLastInLoop" />
         <exclude name="AvoidCatchingThrowable" />
         <exclude name="AvoidUsingVolatile" />
         <exclude name="CloseResource" />
@@ -57,7 +58,6 @@
             <property name="allowIf" value="true" />
             <property name="allowFor" value="true" />
             <property name="allowWhile" value="true" />
-            <property name="allowIncrementDecrement" value="true" />
         </properties>
     </rule>
 </ruleset>
