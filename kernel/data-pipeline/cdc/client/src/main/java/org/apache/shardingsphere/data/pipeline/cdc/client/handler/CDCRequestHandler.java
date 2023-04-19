@@ -91,13 +91,7 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
     private void processDataRecords(final ChannelHandlerContext ctx, final DataRecordResult result) {
         List<Record> recordsList = result.getRecordList();
-        try {
-            consumer.accept(recordsList);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            throw new RuntimeException(ex);
-        }
+        consumer.accept(recordsList);
         ctx.channel().writeAndFlush(CDCRequest.newBuilder().setType(Type.ACK_STREAMING).setAckStreamingRequestBody(AckStreamingRequestBody.newBuilder().setAckId(result.getAckId()).build()).build());
     }
     
