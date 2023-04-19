@@ -23,6 +23,7 @@ import bitronix.tm.resource.common.XAResourceHolder;
 import lombok.RequiredArgsConstructor;
 
 import javax.transaction.xa.XAResource;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public final class SingleXAResourceHolder extends AbstractXAResourceHolder {
     
     @Override
     public List<XAResourceHolder> getXAResourceHolders() {
-        return null;
+        return Collections.emptyList();
     }
     
     @Override

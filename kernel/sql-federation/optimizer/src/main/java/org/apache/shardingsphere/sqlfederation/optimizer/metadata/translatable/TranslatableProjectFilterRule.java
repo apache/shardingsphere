@@ -54,7 +54,7 @@ public class TranslatableProjectFilterRule extends RelOptRule {
         LogicalFilter filter = call.rel(1);
         TranslatableTableScan scan = call.rel(2);
         int[] fields = getProjectFields(project.getProjects());
-        if (null == fields) {
+        if (0 == fields.length) {
             return;
         }
         call.transformTo(new TranslatableTableScan(scan.getCluster(), scan.getTable(), scan.getTranslatableTable(), Collections.singletonList(filter.getCondition()), fields));
@@ -67,7 +67,7 @@ public class TranslatableProjectFilterRule extends RelOptRule {
             if (exp instanceof RexInputRef) {
                 result[index] = ((RexInputRef) exp).getIndex();
             } else {
-                return null;
+                return new int[0];
             }
         }
         return result;
