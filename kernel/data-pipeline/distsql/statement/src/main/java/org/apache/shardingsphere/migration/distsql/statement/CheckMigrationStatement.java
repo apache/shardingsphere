@@ -20,14 +20,14 @@ package org.apache.shardingsphere.migration.distsql.statement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
 
 /**
  * Check migration statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CheckMigrationStatement extends UpdatableScalingRALStatement {
+public final class CheckMigrationStatement extends UpdatableMigrationRALStatement {
     
     private final String jobId;
     

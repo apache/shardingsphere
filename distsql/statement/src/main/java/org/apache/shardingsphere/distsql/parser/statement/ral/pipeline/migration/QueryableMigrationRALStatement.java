@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.scaling;
+package org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.migration;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.QueryablePipelineRALStatement;
 
 /**
- * Updatable RAL statement.
+ * Queryable migration RAL statement.
  */
-public abstract class UpdatableScalingRALStatement extends UpdatableRALStatement {
+public abstract class QueryableMigrationRALStatement extends QueryablePipelineRALStatement implements MigrationRALStatement {
 }
