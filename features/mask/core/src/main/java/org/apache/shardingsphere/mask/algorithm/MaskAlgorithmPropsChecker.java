@@ -77,7 +77,7 @@ public final class MaskAlgorithmPropsChecker {
         }
         try {
             Integer.parseInt(props.getProperty(integerTypeConfigKey));
-        } catch (final NumberFormatException ex) {
+        } catch (final NumberFormatException ignored) {
             throw new MaskAlgorithmInitializationException(maskType, String.format("%s must be a valid integer number", integerTypeConfigKey));
         }
     }

@@ -28,6 +28,7 @@
         <exclude name="CloseResource" />
         <exclude name="FinalFieldCouldBeStatic" />
         <exclude name="GuardLogStatement" />
+        <exclude name="PreserveStackTrace" />
         <exclude name="SingularField" />
         <exclude name="UncommentedEmptyMethodBody" />
         <exclude name="UnusedPrivateField" />

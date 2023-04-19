@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.external.sql.type.generic;
+package org.apache.shardingsphere.infra.exception;
 
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Unsupported SQL operation exception.
+ * Unsupported storage type exception.
  */
-public final class UnsupportedSQLOperationException extends GenericSQLException {
+public final class UnsupportedStorageTypeException extends ConnectionSQLException {
     
-    private static final long serialVersionUID = -4387122733989386705L;
+    private static final long serialVersionUID = 8981789100727786183L;
     
-    public UnsupportedSQLOperationException(final String reason) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 1, "Unsupported SQL operation: %s.", reason);
+    public UnsupportedStorageTypeException(final String databaseName, final String dataSourceName) {
+        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 40, "Unsupported storage type of `%s.%s`.", databaseName, dataSourceName);
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
+import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportMetaDataStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -61,7 +63,7 @@ class ImportMetaDataUpdaterTest {
             + "\"props\":\"props:\\n  system-log-level: INFO\\n  sql-show: false\\n\","
             + "\"rules\":\"rules:\\n- !AUTHORITY\\n  privilege:\\n    type: ALL_PERMITTED\\n  users:\\n  - authenticationMethodName: ''\\n    password: root\\n    user: root@%\\n\"}}";
     
-    private final String empty = "empty_metadata";
+    private static final String EMPTY = "empty_metadata";
     
     private ImportMetaDataUpdater importMetaDataUpdater;
     
@@ -69,27 +71,27 @@ class ImportMetaDataUpdaterTest {
     
     @BeforeEach
     void setup() {
-        featureMap.put(empty, "/conf/import/empty-metadata.json");
+        featureMap.put(EMPTY, "/conf/import/empty-metadata.json");
     }
     
     @Test
     void assertCheckImportEmptyMetaData() {
         init(null);
-        assertThrows(IllegalStateException.class, () -> importMetaDataUpdater.executeUpdate(
-                empty, new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(empty))).getPath())));
+        assertThrows(MissingRequiredDataSourcesException.class, () -> importMetaDataUpdater.executeUpdate(
+                EMPTY, new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(EMPTY))).getPath())));
     }
     
     @Test
     void assertImportMetaDataFromJsonValue() {
-        init(empty);
-        assertThrows(NullPointerException.class, () -> importMetaDataUpdater.executeUpdate(empty, new ImportMetaDataStatement(METADATA_VALUE, null)));
+        init(EMPTY);
+        assertThrows(NullPointerException.class, () -> importMetaDataUpdater.executeUpdate(EMPTY, new ImportMetaDataStatement(METADATA_VALUE, null)));
     }
     
     @Test
     void assertImportExistedMetaDataFromFile() {
-        init(empty);
-        assertThrows(IllegalStateException.class, () -> importMetaDataUpdater.executeUpdate(
-                empty, new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(empty))).getPath())));
+        init(EMPTY);
+        assertThrows(UnsupportedSQLOperationException.class, () -> importMetaDataUpdater.executeUpdate(
+                EMPTY, new ImportMetaDataStatement(null, Objects.requireNonNull(ImportMetaDataUpdaterTest.class.getResource(featureMap.get(EMPTY))).getPath())));
     }
     
     private void init(final String feature) {

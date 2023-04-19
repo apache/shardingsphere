@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
+import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -59,6 +60,7 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     }
     
     private String doSharding(final Comparable<?> shardingValue) {
+        ShardingSpherePreconditions.checkNotNull(shardingValue, NullShardingValueException::new);
         Closure<?> closure = createClosure();
         closure.setProperty(HINT_INLINE_VALUE_PROPERTY_NAME, shardingValue);
         return closure.call().toString();

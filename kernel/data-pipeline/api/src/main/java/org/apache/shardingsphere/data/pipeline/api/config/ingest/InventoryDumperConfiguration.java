@@ -44,6 +44,8 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
     
     private String querySQL;
     
+    private Integer transactionIsolation;
+    
     private Integer shardingItem;
     
     private int batchSize = 1000;

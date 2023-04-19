@@ -74,7 +74,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
             String delta = props.getProperty(DELTA);
             try {
                 return Integer.parseInt(delta);
-            } catch (final NumberFormatException ex) {
+            } catch (final NumberFormatException ignored) {
                 throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_LIKE", "delta can only be a decimal number");
             }
         }
@@ -86,7 +86,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
             String mask = props.getProperty(MASK);
             try {
                 return Integer.parseInt(mask);
-            } catch (final NumberFormatException ex) {
+            } catch (final NumberFormatException ignored) {
                 throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_LIKE", "mask can only be a decimal number");
             }
         }
@@ -98,7 +98,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
             String start = props.getProperty(START);
             try {
                 return Integer.parseInt(start);
-            } catch (final NumberFormatException ex) {
+            } catch (final NumberFormatException ignored) {
                 throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_LIKE", "start can only be a decimal number");
             }
         }
@@ -112,18 +112,18 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     
     @SneakyThrows(IOException.class)
     private String initDefaultDict() {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder result = new StringBuilder();
         try (
                 InputStream inputStream = Objects.requireNonNull(CharDigestLikeEncryptAlgorithm.class.getClassLoader().getResourceAsStream("algorithm/like/common_chinese_character.dict"));
                 Scanner scanner = new Scanner(inputStream)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 if (!line.isEmpty() && !line.startsWith("#")) {
-                    builder.append(line);
+                    result.append(line);
                 }
             }
         }
-        return builder.toString();
+        return result.toString();
     }
     
     @Override

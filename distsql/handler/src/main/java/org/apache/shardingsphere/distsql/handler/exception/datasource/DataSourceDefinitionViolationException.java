@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.external.sql.type.generic;
+package org.apache.shardingsphere.distsql.handler.exception.datasource;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.SQLState;
 
 /**
- * Unsupported SQL operation exception.
+ * Data source definition violation exception.
  */
-public final class UnsupportedSQLOperationException extends GenericSQLException {
+public abstract class DataSourceDefinitionViolationException extends DistSQLException {
     
-    private static final long serialVersionUID = -4387122733989386705L;
+    private static final long serialVersionUID = -3318829232811230364L;
     
-    public UnsupportedSQLOperationException(final String reason) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 1, "Unsupported SQL operation: %s.", reason);
+    public DataSourceDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+        super(sqlState, errorCode, reason, messageArgs);
     }
 }

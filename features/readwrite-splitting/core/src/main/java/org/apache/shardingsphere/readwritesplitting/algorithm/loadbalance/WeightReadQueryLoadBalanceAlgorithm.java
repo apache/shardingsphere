@@ -111,7 +111,7 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
         double result;
         try {
             result = Double.parseDouble(weightObject.toString());
-        } catch (final NumberFormatException ex) {
+        } catch (final NumberFormatException ignored) {
             throw new InvalidReadDatabaseWeightException(weightObject);
         }
         if (Double.isInfinite(result)) {

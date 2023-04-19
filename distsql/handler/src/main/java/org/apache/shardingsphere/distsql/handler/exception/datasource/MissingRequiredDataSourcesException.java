@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.props.internal;
+package org.apache.shardingsphere.distsql.handler.exception.datasource;
 
-import org.apache.shardingsphere.infra.util.props.TypedProperties;
-
-import java.util.Properties;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Internal typed properties of configuration.
+ * Missing required data sources exception.
  */
-public final class InternalConfigurationProperties extends TypedProperties<InternalConfigurationPropertyKey> {
+public final class MissingRequiredDataSourcesException extends DataSourceDefinitionViolationException {
     
-    public InternalConfigurationProperties(final Properties props) {
-        super(InternalConfigurationPropertyKey.class, props);
+    private static final long serialVersionUID = -7846645449809082667L;
+    
+    public MissingRequiredDataSourcesException(final String message) {
+        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 201, message);
     }
 }

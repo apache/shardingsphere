@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.external.sql.type.generic;
+package org.apache.shardingsphere.infra.config.props.temporary;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
+import org.apache.shardingsphere.infra.util.props.TypedProperties;
+
+import java.util.Properties;
 
 /**
- * Unsupported SQL operation exception.
+ * Temporary typed properties of configuration.
  */
-public final class UnsupportedSQLOperationException extends GenericSQLException {
+public final class TemporaryConfigurationProperties extends TypedProperties<TemporaryConfigurationPropertyKey> {
     
-    private static final long serialVersionUID = -4387122733989386705L;
-    
-    public UnsupportedSQLOperationException(final String reason) {
-        super(XOpenSQLState.FEATURE_NOT_SUPPORTED, 1, "Unsupported SQL operation: %s.", reason);
+    public TemporaryConfigurationProperties(final Properties props) {
+        super(TemporaryConfigurationPropertyKey.class, props);
     }
 }

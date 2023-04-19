@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -40,6 +41,7 @@ public final class JsonUtils {
     
     private static ObjectMapper initDefaultMapper() {
         ObjectMapper result = new ObjectMapper();
+        result.registerModule(new JavaTimeModule());
         result.findAndRegisterModules();
         result.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         result.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);

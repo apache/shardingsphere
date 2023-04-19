@@ -62,7 +62,7 @@ public final class RULBackendHandlerFactory {
     private static RULBackendHandler<?> newInstance(final Class<? extends RULBackendHandler<?>> clazz) {
         try {
             return clazz.getDeclaredConstructor().newInstance();
-        } catch (final ReflectiveOperationException ex) {
+        } catch (final ReflectiveOperationException ignored) {
             throw new UnsupportedSQLOperationException(String.format("Can not find public constructor for class `%s`", clazz.getName()));
         }
     }
