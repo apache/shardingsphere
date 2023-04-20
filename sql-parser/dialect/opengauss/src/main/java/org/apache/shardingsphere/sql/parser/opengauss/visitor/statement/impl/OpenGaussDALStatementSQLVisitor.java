@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl;
 
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
@@ -52,17 +51,11 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal.
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Properties;
 
 /**
  * DAL Statement SQL visitor for openGauss.
  */
-@NoArgsConstructor
 public final class OpenGaussDALStatementSQLVisitor extends OpenGaussStatementSQLVisitor implements DALSQLVisitor, SQLStatementVisitor {
-    
-    public OpenGaussDALStatementSQLVisitor(final Properties props) {
-        super(props);
-    }
     
     @Override
     public ASTNode visitShow(final ShowContext ctx) {

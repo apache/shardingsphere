@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 public final class OpenGaussParserStatementExample {
     
@@ -56,7 +55,7 @@ public final class OpenGaussParserStatementExample {
             CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("openGauss", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("openGauss", false, new Properties());
+            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("openGauss", false);
             OpenGaussStatement sqlStatement = visitorEngine.visit(parseASTNode);
             System.out.println(sqlStatement.toString());
         });

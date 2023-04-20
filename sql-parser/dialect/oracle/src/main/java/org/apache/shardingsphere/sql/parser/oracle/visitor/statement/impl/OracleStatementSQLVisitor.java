@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
@@ -145,20 +144,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
  * Oracle Statement SQL visitor.
  */
-@NoArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class OracleStatementSQLVisitor extends OracleStatementBaseVisitor<ASTNode> {
     
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
-    
-    public OracleStatementSQLVisitor(final Properties props) {
-    }
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {

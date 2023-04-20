@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Sta
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 public final class SQL92ParserStatementExample {
     
@@ -56,7 +55,7 @@ public final class SQL92ParserStatementExample {
             CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("SQL92", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQL92", false, new Properties());
+            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQL92", false);
             SQL92Statement sqlStatement = visitorEngine.visit(parseASTNode);
             System.out.println(sqlStatement.toString());
         });

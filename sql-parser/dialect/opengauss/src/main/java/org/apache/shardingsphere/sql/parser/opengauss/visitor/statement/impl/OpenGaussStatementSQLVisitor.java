@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -197,19 +196,14 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * OpenGauss Statement SQL visitor.
  */
-@NoArgsConstructor
 @Getter(AccessLevel.PROTECTED)
 public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBaseVisitor<ASTNode> {
     
     private final Collection<ParameterMarkerSegment> parameterMarkerSegments = new LinkedList<>();
-    
-    public OpenGaussStatementSQLVisitor(final Properties props) {
-    }
     
     @Override
     public final ASTNode visitParameterMarker(final ParameterMarkerContext ctx) {

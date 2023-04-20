@@ -40,7 +40,6 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -62,7 +61,7 @@ public abstract class InternalSQLParserIT {
     private Object parseSQLStatement(final String databaseType, final String sql) {
         return "ShardingSphere".equals(databaseType)
                 ? new DistSQLStatementParserEngine().parse(sql)
-                : new SQLVisitorEngine(databaseType, true, new Properties()).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
+                : new SQLVisitorEngine(databaseType, true).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {

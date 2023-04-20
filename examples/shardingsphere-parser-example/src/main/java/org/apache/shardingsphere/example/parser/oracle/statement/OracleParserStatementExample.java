@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 public final class OracleParserStatementExample {
     
@@ -56,7 +55,7 @@ public final class OracleParserStatementExample {
             CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("Oracle", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("Oracle", false, new Properties());
+            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("Oracle", false);
             OracleStatement sqlStatement = visitorEngine.visit(parseASTNode);
             System.out.println(sqlStatement.toString());
         });

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl;
 
-import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
@@ -52,17 +51,11 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Properties;
 
 /**
  * DML Statement SQL visitor for PostgreSQL.
  */
-@NoArgsConstructor
 public final class PostgreSQLDMLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
-    
-    public PostgreSQLDMLStatementSQLVisitor(final Properties props) {
-        super(props);
-    }
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {

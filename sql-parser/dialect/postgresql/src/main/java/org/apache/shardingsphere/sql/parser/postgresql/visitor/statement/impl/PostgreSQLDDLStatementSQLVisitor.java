@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl;
 
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
@@ -321,17 +320,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * DDL Statement SQL visitor for PostgreSQL.
  */
-@NoArgsConstructor
 public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
-    
-    public PostgreSQLDDLStatementSQLVisitor(final Properties props) {
-        super(props);
-    }
     
     @SuppressWarnings("unchecked")
     @Override
