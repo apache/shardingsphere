@@ -32,9 +32,9 @@ import java.util.Optional;
  * Abstract shadow column condition iterator of where segment.
  */
 @RequiredArgsConstructor
-@Getter(value = AccessLevel.PROTECTED)
 public abstract class AbstractWhereSegmentShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {
     
+    @Getter(AccessLevel.PROTECTED)
     private final String shadowColumn;
     
     private final Iterator<ExpressionSegment> iterator;

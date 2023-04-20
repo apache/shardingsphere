@@ -23,9 +23,15 @@ import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVi
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.DoStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadDataStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LoadXmlStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLCallStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDoStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadDataStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadXMLStatement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,5 +59,20 @@ public final class MySQLDMLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         List<ExpressionSegment> params = new ArrayList<>();
         ctx.expr().forEach(each -> params.add((ExpressionSegment) visit(each)));
         return new MySQLDoStatement(params);
+    }
+    
+    @Override
+    public ASTNode visitLoadStatement(final LoadStatementContext ctx) {
+        return null != ctx.loadDataStatement() ? visit(ctx.loadDataStatement()) : visit(ctx.loadXmlStatement());
+    }
+    
+    @Override
+    public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
+        return new MySQLLoadDataStatement((SimpleTableSegment) visit(ctx.tableName()));
+    }
+    
+    @Override
+    public ASTNode visitLoadXmlStatement(final LoadXmlStatementContext ctx) {
+        return new MySQLLoadXMLStatement((SimpleTableSegment) visit(ctx.tableName()));
     }
 }

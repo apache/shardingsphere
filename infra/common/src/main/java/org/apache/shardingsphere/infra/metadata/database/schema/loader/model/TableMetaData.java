@@ -39,5 +39,5 @@ public final class TableMetaData {
     
     private final Collection<IndexMetaData> indexes;
     
-    private final Collection<ConstraintMetaData> constrains;
+    private final Collection<ConstraintMetaData> constraints;
 }

@@ -71,7 +71,7 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     
     private double[] initWeight(final List<String> readDataSourceNames) {
         double[] result = getWeights(readDataSourceNames);
-        Preconditions.checkState(0 == result.length || !(Math.abs(result[result.length - 1] - 1.0D) >= ACCURACY_THRESHOLD),
+        Preconditions.checkState(!(0 != result.length && Math.abs(result[result.length - 1] - 1.0D) >= ACCURACY_THRESHOLD),
                 "The cumulative weight is calculated incorrectly, and the sum of the probabilities is not equal to 1");
         return result;
     }

@@ -114,13 +114,13 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 calculationContext.close();
             }
             return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
+        } catch (final PipelineSQLException ex) {
+            calculationContext.close();
+            throw ex;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             calculationContext.close();
-            if (ex instanceof PipelineSQLException) {
-                throw (PipelineSQLException) ex;
-            }
             throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
         }
     }

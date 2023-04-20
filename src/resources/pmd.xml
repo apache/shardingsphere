@@ -23,11 +23,14 @@
     <rule ref="rulesets/java/quickstart.xml">
         <exclude name="AbstractClassWithoutAnyMethod" />
         <exclude name="AvoidAccessibilityAlteration" />
+        <exclude name="AvoidBranchingStatementAsLastInLoop" />
         <exclude name="AvoidCatchingThrowable" />
+        <exclude name="AvoidUsingHardCodedIP" />
         <exclude name="AvoidUsingVolatile" />
         <exclude name="CloseResource" />
         <exclude name="FinalFieldCouldBeStatic" />
         <exclude name="GuardLogStatement" />
+        <exclude name="OverrideBothEqualsAndHashcode" />
         <exclude name="PreserveStackTrace" />
         <exclude name="SingularField" />
         <exclude name="UncommentedEmptyMethodBody" />
@@ -42,11 +45,6 @@
             <property name="maxLineLength" value="200" />
         </properties>
     </rule>
-    <rule ref="category/java/design.xml/TooManyMethods">
-        <properties>
-            <property name="maxmethods" value="30" />
-        </properties>
-    </rule>
     <rule ref="category/java/design.xml/UseUtilityClass">
         <properties>
             <property name="ignoredAnnotations" value="lombok.NoArgsConstructor | org.springframework.boot.autoconfigure.SpringBootApplication" />
@@ -57,7 +55,6 @@
             <property name="allowIf" value="true" />
             <property name="allowFor" value="true" />
             <property name="allowWhile" value="true" />
-            <property name="allowIncrementDecrement" value="true" />
         </properties>
     </rule>
 </ruleset>

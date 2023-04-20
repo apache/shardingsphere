@@ -34,7 +34,7 @@ public final class InlineExpressionParser {
     
     static {
         // workaround for https://github.com/helidon-io/helidon-build-tools/issues/858
-        IS_SUBSTRATE_VM = System.getProperty("java.vm.name").equals("Substrate VM");
+        IS_SUBSTRATE_VM = "Substrate VM".equals(System.getProperty("java.vm.name"));
     }
     
     public InlineExpressionParser() {

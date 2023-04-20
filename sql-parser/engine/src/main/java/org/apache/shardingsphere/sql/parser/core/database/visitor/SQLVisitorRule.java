@@ -465,6 +465,8 @@ public enum SQLVisitorRule {
     
     CALL("Call", SQLStatementType.DML),
     
+    LOAD_STATEMENT("LoadStatement", SQLStatementType.DML),
+    
     CHANGE_MASTER("ChangeMaster", SQLStatementType.RL),
     
     START_SLAVE("StartSlave", SQLStatementType.RL),

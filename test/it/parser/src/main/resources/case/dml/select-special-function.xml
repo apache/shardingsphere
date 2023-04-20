@@ -119,7 +119,14 @@
         <projections start-index="7" stop-index="37">
             <expression-projection text="EXTRACT(YEAR FROM '2019-07-02')" start-index="7" stop-index="37">
                 <expr>
-                    <function function-name="EXTRACT" start-index="7" stop-index="37" text="EXTRACT(YEAR FROM '2019-07-02')" />
+                    <function function-name="EXTRACT" start-index="7" stop-index="37" text="EXTRACT(YEAR FROM '2019-07-02')" >
+                        <parameter>
+                            <literal-expression value="YEAR" start-index="15" stop-index="18" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="2019-07-02" start-index="25"  stop-index="36" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>

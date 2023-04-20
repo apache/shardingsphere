@@ -36,7 +36,7 @@ public final class AccumulationAggregationUnit implements AggregationUnit {
             return;
         }
         if (null == result) {
-            result = new BigDecimal("0");
+            result = BigDecimal.ZERO;
         }
         result = result.add(new BigDecimal(values.get(0).toString()));
     }

@@ -105,7 +105,7 @@ public final class ColumnValueConvertUtils {
             return BytesValue.of(ByteString.copyFrom((byte[]) object));
         }
         if (object instanceof Time) {
-            java.sql.Time time = (java.sql.Time) object;
+            Time time = (Time) object;
             long millis = (int) (time.getTime() % MILLISECONDS_PER_SECOND);
             int nanosOfSecond = (int) (millis * NANOSECONDS_PER_MILLISECOND);
             LocalTime localTime = LocalTime.of(time.getHours(), time.getMinutes(), time.getSeconds(), nanosOfSecond);
