@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.facade;
+package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.facade;
 
 import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
@@ -24,55 +24,49 @@ import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl.MySQLDALStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl.MySQLDCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl.MySQLDDLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl.MySQLDMLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl.MySQLRLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl.MySQLTCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDALStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDDLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLTCLStatementSQLVisitor;
 
 /**
- * Statement SQL Visitor facade for MySQL.
+ * SQL visitor facade for PostgreSQL.
  */
-public final class MySQLStatementSQLVisitorFacade implements SQLVisitorFacade {
+public final class PostgreSQLSQLVisitorFacade implements SQLVisitorFacade {
     
     @Override
     public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
-        return MySQLDMLStatementSQLVisitor.class;
+        return PostgreSQLDMLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DDLSQLVisitor> getDDLVisitorClass() {
-        return MySQLDDLStatementSQLVisitor.class;
+        return PostgreSQLDDLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends TCLSQLVisitor> getTCLVisitorClass() {
-        return MySQLTCLStatementSQLVisitor.class;
+        return PostgreSQLTCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DCLSQLVisitor> getDCLVisitorClass() {
-        return MySQLDCLStatementSQLVisitor.class;
+        return PostgreSQLDCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DALSQLVisitor> getDALVisitorClass() {
-        return MySQLDALStatementSQLVisitor.class;
+        return PostgreSQLDALStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends RLSQLVisitor> getRLVisitorClass() {
-        return MySQLRLStatementSQLVisitor.class;
+        return null;
     }
     
     @Override
-    public String getDatabaseType() {
-        return "MySQL";
-    }
-    
-    @Override
-    public String getVisitorType() {
-        return "STATEMENT";
+    public String getType() {
+        return "PostgreSQL";
     }
 }

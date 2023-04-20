@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.facade;
+package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.facade;
 
 import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
@@ -24,40 +24,40 @@ import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDALStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDDLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLDMLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.impl.PostgreSQLTCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleDALStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleDCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleDDLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleDMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl.OracleTCLStatementSQLVisitor;
 
 /**
- * Statement SQL Visitor facade for PostgreSQL.
+ * SQL visitor facade for Oracle.
  */
-public final class PostgreSQLStatementSQLVisitorFacade implements SQLVisitorFacade {
+public final class OracleSQLVisitorFacade implements SQLVisitorFacade {
     
     @Override
     public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
-        return PostgreSQLDMLStatementSQLVisitor.class;
+        return OracleDMLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DDLSQLVisitor> getDDLVisitorClass() {
-        return PostgreSQLDDLStatementSQLVisitor.class;
+        return OracleDDLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends TCLSQLVisitor> getTCLVisitorClass() {
-        return PostgreSQLTCLStatementSQLVisitor.class;
+        return OracleTCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DCLSQLVisitor> getDCLVisitorClass() {
-        return PostgreSQLDCLStatementSQLVisitor.class;
+        return OracleDCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DALSQLVisitor> getDALVisitorClass() {
-        return PostgreSQLDALStatementSQLVisitor.class;
+        return OracleDALStatementSQLVisitor.class;
     }
     
     @Override
@@ -66,12 +66,7 @@ public final class PostgreSQLStatementSQLVisitorFacade implements SQLVisitorFaca
     }
     
     @Override
-    public String getDatabaseType() {
-        return "PostgreSQL";
-    }
-    
-    @Override
-    public String getVisitorType() {
-        return "STATEMENT";
+    public String getType() {
+        return "Oracle";
     }
 }

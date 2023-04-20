@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl;
 
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
@@ -34,17 +33,10 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussCopyStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dml.OpenGaussDoStatement;
 
-import java.util.Properties;
-
 /**
  * DML Statement SQL visitor for openGauss.
  */
-@NoArgsConstructor
 public final class OpenGaussDMLStatementSQLVisitor extends OpenGaussStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
-    
-    public OpenGaussDMLStatementSQLVisitor(final Properties props) {
-        super(props);
-    }
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {

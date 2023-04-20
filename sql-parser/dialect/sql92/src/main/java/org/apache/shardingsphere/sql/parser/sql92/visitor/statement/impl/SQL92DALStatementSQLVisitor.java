@@ -17,19 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl;
 
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
-
-import java.util.Properties;
 
 /**
  * DAL Statement SQL visitor for SQL92.
  */
-@NoArgsConstructor
 public final class SQL92DALStatementSQLVisitor extends SQL92StatementSQLVisitor implements DALSQLVisitor, SQLStatementVisitor {
-    
-    public SQL92DALStatementSQLVisitor(final Properties props) {
-        super(props);
-    }
 }

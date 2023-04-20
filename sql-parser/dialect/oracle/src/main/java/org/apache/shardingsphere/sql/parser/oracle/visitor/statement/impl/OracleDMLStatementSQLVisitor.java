@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl;
 
-import lombok.NoArgsConstructor;
 import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
@@ -167,18 +166,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
  * DML Statement SQL visitor for Oracle.
  */
-@NoArgsConstructor
 public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
-    
-    public OracleDMLStatementSQLVisitor(final Properties props) {
-        super(props);
-    }
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
@@ -1084,7 +1077,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         OracleMergeStatement result = new OracleMergeStatement();
         result.setTarget((SimpleTableSegment) visit(ctx.intoClause()));
         result.setSource((TableSegment) visit(ctx.usingClause()));
-        result.setExpr((ExpressionSegment) (visit(ctx.usingClause().expr())));
+        result.setExpr((ExpressionSegment) visit(ctx.usingClause().expr()));
         if (null != ctx.mergeUpdateClause()) {
             result.getUpdate().setSetAssignment((SetAssignmentSegment) visit(ctx.mergeUpdateClause().mergeSetAssignmentsClause()));
             if (null != ctx.mergeUpdateClause().whereClause()) {

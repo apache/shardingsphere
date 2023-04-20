@@ -22,8 +22,6 @@ import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Properties;
-
 /**
  * SQL statement parser executor.
  */
@@ -35,7 +33,7 @@ public final class SQLStatementParserExecutor {
     
     public SQLStatementParserExecutor(final String databaseType, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
         parserEngine = new SQLParserEngine(databaseType, parseTreeCacheOption);
-        visitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT", isParseComment, new Properties());
+        visitorEngine = new SQLVisitorEngine(databaseType, isParseComment);
     }
     
     /**

@@ -17,24 +17,16 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.impl;
 
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterResourceCostContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleAlterResourceCostStatement;
 
-import java.util.Properties;
-
 /**
  * DAL Statement SQL visitor for Oracle.
  */
-@NoArgsConstructor
 public final class OracleDALStatementSQLVisitor extends OracleStatementSQLVisitor implements DALSQLVisitor, SQLStatementVisitor {
-    
-    public OracleDALStatementSQLVisitor(final Properties props) {
-        super(props);
-    }
     
     @Override
     public ASTNode visitAlterResourceCost(final AlterResourceCostContext ctx) {

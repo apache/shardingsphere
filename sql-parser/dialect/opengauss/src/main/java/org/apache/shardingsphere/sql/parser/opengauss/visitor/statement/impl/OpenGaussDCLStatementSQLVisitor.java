@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl;
 
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
@@ -43,17 +42,11 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dcl.
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * DCL Statement SQL visitor for openGauss.
  */
-@NoArgsConstructor
 public final class OpenGaussDCLStatementSQLVisitor extends OpenGaussStatementSQLVisitor implements DCLSQLVisitor, SQLStatementVisitor {
-    
-    public OpenGaussDCLStatementSQLVisitor(final Properties props) {
-        super(props);
-    }
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {

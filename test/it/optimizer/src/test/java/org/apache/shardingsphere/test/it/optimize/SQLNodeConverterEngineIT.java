@@ -75,7 +75,7 @@ class SQLNodeConverterEngineIT {
     }
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
-        return new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
+        return new SQLVisitorEngine(databaseType, true).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
     }
     
     @SneakyThrows(SqlParseException.class)

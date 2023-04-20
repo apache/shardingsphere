@@ -15,49 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.facade;
+package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.facade;
 
-import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDALStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDDLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDMLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerTCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl.OpenGaussDALStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl.OpenGaussDCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl.OpenGaussDDLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl.OpenGaussDMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.impl.OpenGaussTCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 
 /**
- * Statement SQL Visitor facade for SQLServer.
+ * SQL visitor facade for openGauss.
  */
-public final class SQLServerStatementSQLVisitorFacade implements SQLVisitorFacade {
+public final class OpenGaussSQLVisitorFacade implements SQLVisitorFacade {
     
     @Override
     public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
-        return SQLServerDMLStatementSQLVisitor.class;
+        return OpenGaussDMLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DDLSQLVisitor> getDDLVisitorClass() {
-        return SQLServerDDLStatementSQLVisitor.class;
+        return OpenGaussDDLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends TCLSQLVisitor> getTCLVisitorClass() {
-        return SQLServerTCLStatementSQLVisitor.class;
+        return OpenGaussTCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DCLSQLVisitor> getDCLVisitorClass() {
-        return SQLServerDCLStatementSQLVisitor.class;
+        return OpenGaussDCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DALSQLVisitor> getDALVisitorClass() {
-        return SQLServerDALStatementSQLVisitor.class;
+        return OpenGaussDALStatementSQLVisitor.class;
     }
     
     @Override
@@ -66,12 +66,7 @@ public final class SQLServerStatementSQLVisitorFacade implements SQLVisitorFacad
     }
     
     @Override
-    public String getDatabaseType() {
-        return "SQLServer";
-    }
-    
-    @Override
-    public String getVisitorType() {
-        return "STATEMENT";
+    public String getType() {
+        return "openGauss";
     }
 }
