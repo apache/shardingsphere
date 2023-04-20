@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.UpdatablePipelineRALStatement;
 import org.apache.shardingsphere.migration.distsql.statement.CheckMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.CommitMigrationStatement;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
@@ -54,19 +54,19 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.UnregisterMigrationSourceStorageUnitStatementTestCase;
 
 /**
- * Updatable Scaling RAL statement assert.
+ * Updatable pipeline RAL statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class UpdatableScalingRALStatementAssert {
+public final class UpdatablePipelineRALStatementAssert {
     
     /**
-     * Assert updatable scaling RAL statement is correct with expected parser result.
-     *
+     * Assert updatable pipeline RAL statement is correct with expected parser result.
+     * 
      * @param assertContext assert context
-     * @param actual actual updatable scaling RAL statement
-     * @param expected expected updatable scaling RAL statement test case
+     * @param actual actual updatable pipeline RAL statement
+     * @param expected expected updatable pipeline RAL statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final UpdatableScalingRALStatement actual, final SQLParserTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final UpdatablePipelineRALStatement actual, final SQLParserTestCase expected) {
         // TODO add more test case
         if (actual instanceof MigrateTableStatement) {
             MigrateTableStatementAssert.assertIs(assertContext, (MigrateTableStatement) actual, (MigrateTableStatementTestCase) expected);

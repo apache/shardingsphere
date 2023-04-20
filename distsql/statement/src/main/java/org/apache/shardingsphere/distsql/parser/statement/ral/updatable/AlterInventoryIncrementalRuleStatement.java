@@ -20,14 +20,14 @@ package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.InventoryIncrementalRuleSegment;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
 
 /**
  * Alter inventory incremental rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterInventoryIncrementalRuleStatement extends UpdatableScalingRALStatement {
+public final class AlterInventoryIncrementalRuleStatement extends UpdatableMigrationRALStatement {
     
     private final String jobTypeName;
     

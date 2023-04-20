@@ -15,22 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.migration.distsql.statement;
-
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.migration.UpdatableMigrationRALStatement;
-
-import java.util.Collection;
+package org.apache.shardingsphere.distsql.parser.statement.ral;
 
 /**
- * Unregister migration source storage unit statement.
+ * Featured RAL statement.
  */
-@Getter
-public final class UnregisterMigrationSourceStorageUnitStatement extends UpdatableMigrationRALStatement {
-    
-    private final Collection<String> names;
-    
-    public UnregisterMigrationSourceStorageUnitStatement(final Collection<String> names) {
-        this.names = names;
-    }
+public interface FeaturedRALStatement {
 }

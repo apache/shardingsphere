@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingListStatement;
 import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingStatusStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.QueryablePipelineRALStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckAlgorithmsStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckStatusStatement;
 import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationListStatement;
@@ -38,19 +38,19 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationStatusStatementTestCase;
 
 /**
- * Queryable RAL statement assert.
+ * Queryable pipeline RAL statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class QueryableScalingRALStatementAssert {
+public final class QueryablePipelineRALStatementAssert {
     
     /**
-     * Assert query RAL statement is correct with expected parser result.
-     *
+     * Assert query pipeline RAL statement is correct with expected parser result.
+     * 
      * @param assertContext assert context
-     * @param actual actual queryable RAL statement
-     * @param expected expected queryable RAL statement test case
+     * @param actual actual queryable pipeline RAL statement
+     * @param expected expected queryable pipeline RAL statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final QueryableScalingRALStatement actual, final SQLParserTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final QueryablePipelineRALStatement actual, final SQLParserTestCase expected) {
         // TODO add more test case
         if (actual instanceof ShowMigrationListStatement) {
             ExistingAssert.assertIs(assertContext, actual, expected);

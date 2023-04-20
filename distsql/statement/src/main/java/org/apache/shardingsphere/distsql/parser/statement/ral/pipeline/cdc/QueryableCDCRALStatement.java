@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.scaling;
+package org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.cdc;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.QueryablePipelineRALStatement;
 
 /**
- * Queryable RAL statement.
+ * Queryable CDC RAL statement.
  */
-public abstract class QueryableScalingRALStatement extends QueryableRALStatement {
+public abstract class QueryableCDCRALStatement extends QueryablePipelineRALStatement implements CDCRALStatement {
 }
