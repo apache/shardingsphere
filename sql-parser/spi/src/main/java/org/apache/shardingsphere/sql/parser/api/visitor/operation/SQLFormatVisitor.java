@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.api.visitor.operation;
 
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
 /**
  * SQL format visitor.
  */
-public interface SQLFormatVisitor extends SQLOperationVisitor {
+public interface SQLFormatVisitor extends SQLOperationVisitor, TypedSPI {
 }
