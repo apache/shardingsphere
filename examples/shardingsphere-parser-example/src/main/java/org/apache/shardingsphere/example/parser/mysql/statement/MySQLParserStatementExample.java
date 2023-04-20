@@ -52,12 +52,14 @@ public final class MySQLParserStatementExample {
                 DDL_CREATE_SQL, DDL_DROP_SQL, DDL_ALTER_SQL, DDL_SHOW_SQL);
     }
     
-    public static void main(String[] args) {
+    // CHECKSTYLE:OFF
+    public static void main(final String[] args) {
+        // CHECKSTYLE:ON
         MYSQL_PARSER_STATEMENT_LIST.forEach(each -> {
             CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(each, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "STATEMENT", false, new Properties());
+            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", false, new Properties());
             MySQLStatement sqlStatement = visitorEngine.visit(parseASTNode);
             System.out.println(sqlStatement.toString());
         });

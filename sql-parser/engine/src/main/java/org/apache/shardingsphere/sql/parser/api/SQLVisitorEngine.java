@@ -36,8 +36,6 @@ public final class SQLVisitorEngine {
     
     private final String databaseType;
     
-    private final String visitorType;
-    
     private final boolean isParseComment;
     
     private final Properties props;
@@ -50,7 +48,7 @@ public final class SQLVisitorEngine {
      * @return SQL visitor result
      */
     public <T> T visit(final ParseASTNode parseASTNode) {
-        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseASTNode.getRootNode().getClass()), props);
+        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, SQLVisitorRule.valueOf(parseASTNode.getRootNode().getClass()), props);
         T result = parseASTNode.getRootNode().accept(visitor);
         if (isParseComment) {
             appendSQLComments(parseASTNode, result);

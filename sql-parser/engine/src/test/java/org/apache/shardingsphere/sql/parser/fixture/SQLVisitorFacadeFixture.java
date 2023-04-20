@@ -29,16 +29,6 @@ import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 public final class SQLVisitorFacadeFixture implements SQLVisitorFacade {
     
     @Override
-    public String getDatabaseType() {
-        return "FIXTURE";
-    }
-    
-    @Override
-    public String getVisitorType() {
-        return "FORMAT";
-    }
-    
-    @Override
     public Class<? extends SQLVisitor> getDMLVisitorClass() {
         return DMLSQLVisitor.class;
     }
@@ -66,5 +56,10 @@ public final class SQLVisitorFacadeFixture implements SQLVisitorFacade {
     @Override
     public Class<? extends SQLVisitor> getRLVisitorClass() {
         return RLSQLVisitor.class;
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }

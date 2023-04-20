@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.facade.PostgreSQLStatementSQLVisitorFacade
-org.apache.shardingsphere.sql.parser.postgresql.visitor.format.facade.PostgreSQLFormatSQLVisitorFacade
+org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.facade.PostgreSQLSQLVisitorFacade

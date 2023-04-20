@@ -51,7 +51,7 @@ public abstract class ExternalSQLParserIT {
         try (SQLParseResultReporter resultReporter = TypedSPILoader.getService(SQLParseResultReporterCreator.class, reportType).create(databaseType)) {
             try {
                 ParseASTNode parseASTNode = new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false);
-                new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseASTNode);
+                new SQLVisitorEngine(databaseType, true, new Properties()).visit(parseASTNode);
             } catch (final ShardingSphereExternalException | ClassCastException | NullPointerException | IllegalArgumentException | IndexOutOfBoundsException ignore) {
                 isSuccess = false;
             }

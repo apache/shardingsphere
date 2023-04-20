@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.facade;
+package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.facade;
 
 import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
@@ -24,54 +24,50 @@ import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92DALStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92DCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92DDLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92DMLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql92.visitor.statement.impl.SQL92TCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl.MySQLDALStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl.MySQLDCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl.MySQLDDLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl.MySQLDMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl.MySQLRLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.impl.MySQLTCLStatementSQLVisitor;
 
 /**
- * Statement SQL Visitor facade for SQL92.
+ * SQL visitor facade for MySQL.
  */
-public final class SQL92StatementSQLVisitorFacade implements SQLVisitorFacade {
+public final class MySQLSQLVisitorFacade implements SQLVisitorFacade {
     
     @Override
     public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
-        return SQL92DMLStatementSQLVisitor.class;
+        return MySQLDMLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DDLSQLVisitor> getDDLVisitorClass() {
-        return SQL92DDLStatementSQLVisitor.class;
+        return MySQLDDLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends TCLSQLVisitor> getTCLVisitorClass() {
-        return SQL92TCLStatementSQLVisitor.class;
+        return MySQLTCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DCLSQLVisitor> getDCLVisitorClass() {
-        return SQL92DCLStatementSQLVisitor.class;
+        return MySQLDCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DALSQLVisitor> getDALVisitorClass() {
-        return SQL92DALStatementSQLVisitor.class;
+        return MySQLDALStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends RLSQLVisitor> getRLVisitorClass() {
-        return null;
+        return MySQLRLStatementSQLVisitor.class;
     }
     
     @Override
-    public String getDatabaseType() {
-        return "SQL92";
-    }
-    
-    @Override
-    public String getVisitorType() {
-        return "STATEMENT";
+    public String getType() {
+        return "MySQL";
     }
 }

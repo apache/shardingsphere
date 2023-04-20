@@ -15,59 +15,58 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql92.visitor.format.facade;
+package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.facade;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDALStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDDLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerDMLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.impl.SQLServerTCLStatementSQLVisitor;
 
 /**
- * Format SQL Visitor facade for SQL92.
+ * SQL visitor facade for SQLServer.
  */
-public final class SQL92FormatSQLVisitorFacade implements SQLVisitorFacade {
+public final class SQLServerSQLVisitorFacade implements SQLVisitorFacade {
     
     @Override
     public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
-        throw new UnsupportedSQLOperationException("getDMLVisitorClass");
+        return SQLServerDMLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DDLSQLVisitor> getDDLVisitorClass() {
-        throw new UnsupportedSQLOperationException("getDDLVisitorClass");
+        return SQLServerDDLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends TCLSQLVisitor> getTCLVisitorClass() {
-        throw new UnsupportedSQLOperationException("getTCLVisitorClass");
+        return SQLServerTCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DCLSQLVisitor> getDCLVisitorClass() {
-        throw new UnsupportedSQLOperationException("getDCLVisitorClass");
+        return SQLServerDCLStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends DALSQLVisitor> getDALVisitorClass() {
-        throw new UnsupportedSQLOperationException("getDALVisitorClass");
+        return SQLServerDALStatementSQLVisitor.class;
     }
     
     @Override
     public Class<? extends RLSQLVisitor> getRLVisitorClass() {
-        throw new UnsupportedSQLOperationException("getRLVisitorClass");
+        return null;
     }
     
     @Override
-    public String getDatabaseType() {
-        return "SQL92";
-    }
-    
-    @Override
-    public String getVisitorType() {
-        return "FORMAT";
+    public String getType() {
+        return "SQLServer";
     }
 }

@@ -35,7 +35,7 @@ public final class SQLStatementParserExecutor {
     
     public SQLStatementParserExecutor(final String databaseType, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
         parserEngine = new SQLParserEngine(databaseType, parseTreeCacheOption);
-        visitorEngine = new SQLVisitorEngine(databaseType, "STATEMENT", isParseComment, new Properties());
+        visitorEngine = new SQLVisitorEngine(databaseType, isParseComment, new Properties());
     }
     
     /**

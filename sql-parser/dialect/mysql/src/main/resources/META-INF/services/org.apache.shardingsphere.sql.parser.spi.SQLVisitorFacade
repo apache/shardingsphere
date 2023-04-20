@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.mysql.visitor.statement.facade.MySQLStatementSQLVisitorFacade
+org.apache.shardingsphere.sql.parser.mysql.visitor.statement.facade.MySQLSQLVisitorFacade

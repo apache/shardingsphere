@@ -38,14 +38,13 @@ public final class SQLVisitorFactory {
      * Create new instance of SQL visitor.
      * 
      * @param databaseType database type
-     * @param visitorType SQL visitor type
      * @param visitorRule SQL visitor rule
      * @param props SQL visitor config
      * @param <T> type of visitor result
      * @return created instance
      */
-    public static <T> ParseTreeVisitor<T> newInstance(final String databaseType, final String visitorType, final SQLVisitorRule visitorRule, final Properties props) {
-        SQLVisitorFacade facade = TypedSPILoader.getService(SQLVisitorFacade.class, String.join(".", databaseType, visitorType));
+    public static <T> ParseTreeVisitor<T> newInstance(final String databaseType, final SQLVisitorRule visitorRule, final Properties props) {
+        SQLVisitorFacade facade = TypedSPILoader.getService(SQLVisitorFacade.class, databaseType);
         return createParseTreeVisitor(facade, visitorRule.getType(), props);
     }
     

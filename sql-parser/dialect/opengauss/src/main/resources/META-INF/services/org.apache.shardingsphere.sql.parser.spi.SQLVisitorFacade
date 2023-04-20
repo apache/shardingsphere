@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.facade.OpenGaussStatementSQLVisitorFacade
-org.apache.shardingsphere.sql.parser.opengauss.visitor.format.facade.OpenGaussFormatSQLVisitorFacade
+org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.facade.OpenGaussSQLVisitorFacade
