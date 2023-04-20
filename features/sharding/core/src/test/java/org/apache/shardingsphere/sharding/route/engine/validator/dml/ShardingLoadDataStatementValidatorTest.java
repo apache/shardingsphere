@@ -41,27 +41,24 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ShardingLoadDataStatementValidatorTest {
-
+    
     @Mock
     private ShardingRule shardingRule;
-
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
-
+    
     @Test
-    void assertPreValidateWhenTableSegmentForMySQL() {
+    void assertPreValidateLoadDataWithSingleTable() {
         MySQLLoadDataStatement sqlStatement = new MySQLLoadDataStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         new ShardingLoadDataStatementValidator().preValidate(shardingRule, new LoadDataStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
     }
-
+    
     @Test
-    void assertPreValidateLoadDataWithShardingTableForMySQL() {
+    void assertPreValidateLoadDataWithShardingTable() {
         MySQLLoadDataStatement sqlStatement = new MySQLLoadDataStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        LoadDataStatementContext sqlStatementContext = new LoadDataStatementContext(sqlStatement);
-        String tableName = "t_order";
-        when(shardingRule.isShardingTable(tableName)).thenReturn(true);
-        assertThrows(UnsupportedShardingOperationException.class,
-                () -> new ShardingLoadDataStatementValidator().preValidate(
-                        shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class)));
+        when(shardingRule.isShardingTable("t_order")).thenReturn(true);
+        assertThrows(UnsupportedShardingOperationException.class, () -> new ShardingLoadDataStatementValidator().preValidate(shardingRule, new LoadDataStatementContext(sqlStatement),
+                Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class)));
     }
 }
