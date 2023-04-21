@@ -1073,12 +1073,10 @@ public enum SystemVariable {
     @Getter
     private final String defaultValue;
     
-    private final SystemVariableValueProvider sessionValueGetter;
-    
-    private final SystemVariableValueProvider globalValueGetter;
+    private final SystemVariableValueProvider variableValueProvider;
     
     SystemVariable(final int flag, final String defaultValue) {
-        this(flag, defaultValue, SystemVariableValueProvider.DEFAULT_VALUE_PROVIDER, SystemVariableValueProvider.DEFAULT_VALUE_PROVIDER);
+        this(flag, defaultValue, SystemVariableValueProvider.DEFAULT_VALUE_PROVIDER);
     }
     
     /**
@@ -1100,14 +1098,7 @@ public enum SystemVariable {
      */
     public String getValue(final Scope scope, final ConnectionSession connectionSession) {
         validateGetValue(scope);
-        switch (scope) {
-            case SESSION:
-                return sessionValueGetter.get(connectionSession, scope, this);
-            case GLOBAL:
-                return globalValueGetter.get(connectionSession, scope, this);
-            default:
-        }
-        return (0 == (Flag.ONLY_SESSION & scope()) ? sessionValueGetter : globalValueGetter).get(connectionSession, scope, this);
+        return variableValueProvider.get(scope, connectionSession, this);
     }
     
     private void validateGetValue(final Scope scope) {

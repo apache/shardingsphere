@@ -30,12 +30,12 @@ public interface SystemVariableValueProvider {
     /**
      * Get variable.
      *
-     * @param connectionSession connection session
      * @param scope scope
+     * @param connectionSession connection session
      * @param variable variable
      * @return value of variable
      */
-    default String get(ConnectionSession connectionSession, Scope scope, SystemVariable variable) {
+    default String get(Scope scope, ConnectionSession connectionSession, SystemVariable variable) {
         return variable.getDefaultValue();
     }
 }
