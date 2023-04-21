@@ -1073,12 +1073,12 @@ public enum SystemVariable {
     @Getter
     private final String defaultValue;
     
-    private final SystemVariableGetter sessionValueGetter;
+    private final SystemVariableValueProvider sessionValueGetter;
     
-    private final SystemVariableGetter globalValueGetter;
+    private final SystemVariableValueProvider globalValueGetter;
     
     SystemVariable(final int flag, final String defaultValue) {
-        this(flag, defaultValue, SystemVariableGetter.DEFAULT_VALUE_GETTER, SystemVariableGetter.DEFAULT_VALUE_GETTER);
+        this(flag, defaultValue, SystemVariableValueProvider.DEFAULT_VALUE_PROVIDER, SystemVariableValueProvider.DEFAULT_VALUE_PROVIDER);
     }
     
     /**

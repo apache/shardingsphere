@@ -22,9 +22,9 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 /**
  * System variable getter.
  */
-public interface SystemVariableGetter {
+public interface SystemVariableValueProvider {
     
-    SystemVariableGetter DEFAULT_VALUE_GETTER = new SystemVariableGetter() {
+    SystemVariableValueProvider DEFAULT_VALUE_PROVIDER = new SystemVariableValueProvider() {
     };
     
     /**
