@@ -36,7 +36,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,7 +60,7 @@ public final class MySQLSystemVariableQueryExecutor implements DatabaseAdminQuer
     private MergedResult mergedResult;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) throws SQLException {
+    public void execute(final ConnectionSession connectionSession) {
         List<RawQueryResultColumnMetaData> metaData = new ArrayList<>(projections.size());
         List<Object> columnsOfRow = new ArrayList<>(projections.size());
         for (int i = 0; i < projections.size(); i++) {
