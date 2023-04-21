@@ -274,9 +274,9 @@ class DataRecordMergerTest {
         DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
         result.setType(IngestDataChangeType.DELETE);
         result.setTableName(tableName);
-        result.addColumn(new Column("id", id, true, true));
-        result.addColumn(new Column("user_id", userId, true, false));
-        result.addColumn(new Column("total_price", totalPrice, true, false));
+        result.addColumn(new Column("id", id, null, true, true));
+        result.addColumn(new Column("user_id", userId, null, true, false));
+        result.addColumn(new Column("total_price", totalPrice, null, true, false));
         return result;
     }
 }

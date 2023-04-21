@@ -32,7 +32,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.importer.DataSourceImporter;
 import org.apache.shardingsphere.data.pipeline.core.importer.connector.DataSourceImporterConnector;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +44,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -105,7 +103,7 @@ class DataSourceImporterTest {
     
     @Test
     void assertDeleteDataRecord() throws SQLException {
-        DataRecord deleteRecord = getDataRecord("DELETE");
+        DataRecord deleteRecord = getDeleteDataRecord();
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(deleteRecord));
         jdbcImporter.run();
@@ -152,10 +150,6 @@ class DataSourceImporterTest {
         return result;
     }
     
-    private Collection<Column> mockConditionColumns(final DataRecord dataRecord) {
-        return RecordUtils.extractConditionColumns(dataRecord, Collections.singleton("user"));
-    }
-    
     private List<Record> mockRecords(final DataRecord dataRecord) {
         List<Record> result = new LinkedList<>();
         result.add(dataRecord);
@@ -170,6 +164,16 @@ class DataSourceImporterTest {
         result.addColumn(new Column("id", 1, false, true));
         result.addColumn(new Column("user", 10, true, false));
         result.addColumn(new Column("status", recordType, true, false));
+        return result;
+    }
+    
+    private DataRecord getDeleteDataRecord() {
+        DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
+        result.setTableName(TABLE_NAME);
+        result.setType("DELETE");
+        result.addColumn(new Column("id", null, 1, false, true));
+        result.addColumn(new Column("user", null, 10, true, false));
+        result.addColumn(new Column("status", null, "DELETE", true, false));
         return result;
     }
     
