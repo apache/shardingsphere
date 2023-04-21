@@ -34,7 +34,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public enum SystemSchemaBuilderRule {
-
+    
     MYSQL_INFORMATION_SCHEMA("MySQL", "information_schema", new HashSet<>(Arrays.asList("character_sets", "collation_character_set_applicability", "collations", "column_privileges", "columns",
             "engines", "events", "files", "global_status", "global_variables",
             "innodb_buffer_page", "innodb_buffer_page_lru", "innodb_buffer_pool_stats", "innodb_cmp", "innodb_cmp_per_index", "innodb_cmp_per_index_reset", "innodb_cmp_reset",
@@ -45,13 +45,13 @@ public enum SystemSchemaBuilderRule {
             "innodb_sys_tablestats", "innodb_sys_virtual", "innodb_temp_table_info", "innodb_trx", "key_column_usage", "optimizer_trace", "parameters", "partitions", "plugins",
             "processlist", "profiling", "referential_constraints", "routines", "schema_privileges", "schemata", "session_status", "session_variables", "statistics",
             "table_constraints", "table_privileges", "tables", "tablespaces", "triggers", "user_privileges", "views"))),
-
+    
     MYSQL_MYSQL("MySQL", "mysql", new HashSet<>(Arrays.asList("columns_priv", "db", "engine_cost", "event", "func", "general_log", "gtid_executed",
             "help_category", "help_keyword", "help_relation",
             "help_topic", "innodb_index_stats", "innodb_table_stats", "ndb_binlog_index", "plugin", "proc", "procs_priv", "proxies_priv", "server_cost", "servers",
             "slave_master_info", "slave_relay_log_info", "slave_worker_info", "slow_log", "tables_priv", "time_zone", "time_zone_leap_second",
             "time_zone_name", "time_zone_transition", "time_zone_transition_type", "user"))),
-
+    
     MYSQL_PERFORMANCE_SCHEMA("MySQL", "performance_schema", new HashSet<>(Arrays.asList("accounts", "cond_instances", "events_stages_current", "events_stages_history", "events_stages_history_long",
             "events_stages_summary_by_account_by_event_name", "events_stages_summary_by_host_by_event_name", "events_stages_summary_by_thread_by_event_name",
             "events_stages_summary_by_user_by_event_name", "events_statements_current", "events_statements_history", "events_statements_history_long",
@@ -64,63 +64,63 @@ public enum SystemSchemaBuilderRule {
             "events_waits_summary_global_by_event_name", "file_instances", "file_summary_by_event_name", "file_summary_by_instance", "global_status", "global_variables", "host_cache", "hosts",
             "memory_summary_by_account_by_event_name", "memory_summary_by_host_by_event_name", "memory_summary_by_thread_by_event_name", "memory_summary_by_user_by_event_name",
             "memory_summary_global_by_event_name", "metadata_locks"))),
-
+    
     MYSQL_SYS("MySQL", "sys", new HashSet<>(Collections.singleton("sys"))),
-
+    
     MYSQL_SHARDING_SPHERE("MySQL", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information"))),
-
+    
     POSTGRESQL_INFORMATION_SCHEMA("PostgreSQL", "information_schema", new HashSet<>(Arrays.asList("columns", "tables", "views"))),
-
+    
     POSTGRESQL_PG_CATALOG("PostgreSQL", "pg_catalog", new HashSet<>(Arrays.asList("pg_class", "pg_database", "pg_inherits", "pg_tablespace", "pg_trigger", "pg_namespace"))),
-
+    
     POSTGRESQL_SHARDING_SPHERE("PostgreSQL", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information"))),
-
+    
     OPEN_GAUSS_INFORMATION_SCHEMA("openGauss", "information_schema", Collections.emptySet()),
-
+    
     OPEN_GAUSS_PG_CATALOG("openGauss", "pg_catalog", new HashSet<>(Arrays.asList("pg_class", "pg_namespace"))),
-
+    
     OPEN_GAUSS_BLOCKCHAIN("openGauss", "blockchain", Collections.emptySet()),
-
+    
     OPEN_GAUSS_CSTORE("openGauss", "cstore", Collections.emptySet()),
-
+    
     OPEN_GAUSS_DB4AI("openGauss", "db4ai", Collections.emptySet()),
-
+    
     OPEN_GAUSS_DBE_PERF("openGauss", "dbe_perf", Collections.emptySet()),
-
+    
     OPEN_GAUSS_DBE_PLDEBUGGER("openGauss", "dbe_pldebugger", Collections.emptySet()),
-
+    
     OPEN_GAUSS_GAUSSDB("openGauss", "gaussdb", Collections.emptySet()),
-
+    
     OPEN_GAUSS_ORACLE("openGauss", "oracle", Collections.emptySet()),
-
+    
     OPEN_GAUSS_PKG_SERVICE("openGauss", "pkg_service", Collections.emptySet()),
-
+    
     OPEN_GAUSS_SNAPSHOT("openGauss", "snapshot", Collections.emptySet()),
-
+    
     OPEN_GAUSS_PLDEVELOPER("openGauss", "dbe_pldeveloper", Collections.emptySet()),
-
+    
     OPEN_GAUSS_PG_TOAST("openGauss", "pg_toast", Collections.emptySet()),
-
+    
     OPEN_GAUSS_PKG_UTIL("openGauss", "pkg_util", Collections.emptySet()),
-
+    
     OPEN_GAUSS_SQLADVISOR("openGauss", "sqladvisor", Collections.emptySet()),
-
+    
     OPEN_GAUSS_SHARDING_SPHERE("openGauss", "shardingsphere", new HashSet<>(Arrays.asList("sharding_table_statistics", "cluster_information")));
-
+    
     private static final Map<String, SystemSchemaBuilderRule> SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP = new HashMap<>(values().length, 1);
-
+    
     private final String databaseType;
-
+    
     private final String schema;
-
+    
     private final Collection<String> tables;
-
+    
     static {
         for (SystemSchemaBuilderRule each : values()) {
             SCHEMA_PATH_SYSTEM_SCHEMA_BUILDER_RULE_MAP.put(each.getDatabaseType() + "." + each.getSchema(), each);
         }
     }
-
+    
     /**
      * Value of builder rule.
      *
@@ -134,7 +134,7 @@ public enum SystemSchemaBuilderRule {
         Preconditions.checkNotNull(result, "Can not find builder rule: `%s`", schemaPath);
         return result;
     }
-
+    
     /**
      * Judge whether current table is system table or not.
      *
