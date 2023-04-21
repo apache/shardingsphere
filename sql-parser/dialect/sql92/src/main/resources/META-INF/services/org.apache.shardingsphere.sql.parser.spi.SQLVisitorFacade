@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.sql92.visitor.statement.facade.SQL92SQLVisitorFacade
+org.apache.shardingsphere.sql.parser.sql92.visitor.facade.SQL92SQLVisitorFacade

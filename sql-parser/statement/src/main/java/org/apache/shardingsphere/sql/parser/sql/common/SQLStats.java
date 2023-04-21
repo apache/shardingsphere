@@ -24,6 +24,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * SQL stats.
+ */
 @Getter
 public final class SQLStats {
     
@@ -32,8 +35,9 @@ public final class SQLStats {
     private final Map<Integer, ColumnSegment> columns = new LinkedHashMap<>();
     
     /**
-     * add table to tables.
-     * @param tableSegment SimpleTableSegment.
+     * Add table to tables.
+     * 
+     * @param tableSegment table segment
      */
     public void addTable(final SimpleTableSegment tableSegment) {
         if (!tables.containsKey(tableSegment.getTableName().getIdentifier().getValue())) {
@@ -42,13 +46,14 @@ public final class SQLStats {
     }
     
     /**
-     * add column to columns.
-     * @param column ColumnSegment.
+     * Add column to columns.
+     * 
+     * @param columnSegment column segment
      */
-    public void addColumn(final ColumnSegment column) {
-        int columnHashcode = column.hashCode();
+    public void addColumn(final ColumnSegment columnSegment) {
+        int columnHashcode = columnSegment.hashCode();
         if (!columns.containsKey(columnHashcode)) {
-            columns.put(columnHashcode, column);
+            columns.put(columnHashcode, columnSegment);
         }
     }
 }
