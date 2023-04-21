@@ -1004,13 +1004,13 @@ public enum SystemVariable {
     DATE_FORMAT(Flag.GLOBAL | Flag.READONLY, "%Y-%m-%d"),
     
     DATETIME_FORMAT(Flag.GLOBAL | Flag.READONLY, "%Y-%m-%d %H:%i:%s"),
-
+    
     HAVE_CRYPT(Flag.GLOBAL | Flag.READONLY, "NO"),
     
     IGNORE_BUILTIN_INNODB(Flag.GLOBAL | Flag.READONLY, "0"),
     
     IGNORE_DB_DIRS(Flag.GLOBAL | Flag.READONLY, ""),
-
+    
     INTERNAL_TMP_DISK_STORAGE_ENGINE(Flag.GLOBAL, "InnoDB"),
     
     LOG_BUILTIN_AS_IDENTIFIED_BY_PASSWORD(Flag.GLOBAL, "0"),
@@ -1040,7 +1040,7 @@ public enum SystemVariable {
     QUERY_CACHE_MIN_RES_UNIT(Flag.GLOBAL, "4096"),
     
     QUERY_CACHE_SIZE(Flag.GLOBAL, "1048576"),
-
+    
     QUERY_CACHE_TYPE(Flag.SESSION, "OFF"),
     
     QUERY_CACHE_WLOCK_INVALIDATE(Flag.SESSION, "0"),
