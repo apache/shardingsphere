@@ -284,7 +284,7 @@ public enum SystemVariable {
     
     // HAVE_RTREE_KEYS(Flag.GLOBAL | Flag.READONLY, "TODO"),
     
-    // HAVE_SSL(Flag.GLOBAL | Flag.READONLY, "TODO"),
+    HAVE_SSL(Flag.GLOBAL | Flag.READONLY, "NO"),
     
     // HAVE_STATEMENT_TIMEOUT(Flag.GLOBAL | Flag.READONLY, "TODO"),
     
@@ -816,7 +816,7 @@ public enum SystemVariable {
     
     SLAVE_COMPRESSED_PROTOCOL(Flag.GLOBAL, "0"),
     
-    // SLAVE_EXEC_MODE(Flag.GLOBAL, "TODO"),
+    SLAVE_EXEC_MODE(Flag.GLOBAL, "STRICT"),
     
     SLAVE_LOAD_TMPDIR(Flag.GLOBAL | Flag.READONLY, ""),
     
@@ -824,7 +824,7 @@ public enum SystemVariable {
     
     SLAVE_NET_TIMEOUT(Flag.GLOBAL, "60"),
     
-    // SLAVE_PARALLEL_TYPE(Flag.GLOBAL | Flag.PERSIST_AS_READ_ONLY, "TODO"),
+    SLAVE_PARALLEL_TYPE(Flag.GLOBAL | Flag.PERSIST_AS_READ_ONLY, "LOGICAL_CLOCK"),
     
     SLAVE_PARALLEL_WORKERS(Flag.GLOBAL | Flag.PERSIST_AS_READ_ONLY, "4"),
     
@@ -832,7 +832,7 @@ public enum SystemVariable {
     
     SLAVE_PRESERVE_COMMIT_ORDER(Flag.GLOBAL | Flag.PERSIST_AS_READ_ONLY, "1"),
     
-    // SLAVE_ROWS_SEARCH_ALGORITHMS(Flag.GLOBAL, "TODO"),
+    SLAVE_ROWS_SEARCH_ALGORITHMS(Flag.GLOBAL, "INDEX_SCAN,HASH_SCAN"),
     
     SLAVE_SKIP_ERRORS(Flag.GLOBAL | Flag.READONLY, ""),
     
@@ -840,7 +840,7 @@ public enum SystemVariable {
     
     SLAVE_TRANSACTION_RETRIES(Flag.GLOBAL, "10"),
     
-    // SLAVE_TYPE_CONVERSIONS(Flag.GLOBAL, "TODO"),
+    SLAVE_TYPE_CONVERSIONS(Flag.GLOBAL, ""),
     
     SLOW_LAUNCH_TIME(Flag.GLOBAL, "2"),
     
@@ -896,7 +896,7 @@ public enum SystemVariable {
     
     SSL_CRLPATH(Flag.GLOBAL | Flag.PERSIST_AS_READ_ONLY, ""),
     
-    // SSL_FIPS_MODE(Flag.GLOBAL, "TODO"),
+    SSL_FIPS_MODE(Flag.GLOBAL, "OFF"),
     
     SSL_KEY(Flag.GLOBAL | Flag.PERSIST_AS_READ_ONLY, ""),
     
@@ -938,11 +938,11 @@ public enum SystemVariable {
     
     TEMPTABLE_USE_MMAP(Flag.GLOBAL, "1"),
     
-    // TERMINOLOGY_USE_PREVIOUS(Flag.SESSION, "TODO"),
+    TERMINOLOGY_USE_PREVIOUS(Flag.SESSION, "NONE"),
     
     THREAD_CACHE_SIZE(Flag.GLOBAL, "0"),
     
-    // THREAD_HANDLING(Flag.GLOBAL | Flag.READONLY, "TODO"),
+    THREAD_HANDLING(Flag.GLOBAL | Flag.READONLY, "one-thread-per-connection"),
     
     THREAD_STACK(Flag.GLOBAL | Flag.READONLY, "1048576"),
     
@@ -968,13 +968,13 @@ public enum SystemVariable {
     
     TRANSACTION_READ_ONLY(Flag.SESSION | Flag.TRI_LEVEL, "0"),
     
-    // TRANSACTION_WRITE_SET_EXTRACTION(Flag.SESSION, "TODO"),
+    TRANSACTION_WRITE_SET_EXTRACTION(Flag.SESSION, "XXHASH64"),
     
     UNIQUE_CHECKS(Flag.SESSION | Flag.HINT_UPDATEABLE, "1"),
     
-    // UPDATABLE_VIEWS_WITH_LIMIT(Flag.SESSION | Flag.HINT_UPDATEABLE, "TODO"),
+    UPDATABLE_VIEWS_WITH_LIMIT(Flag.SESSION | Flag.HINT_UPDATEABLE, "YES"),
     
-    // USE_SECONDARY_ENGINE(Flag.ONLY_SESSION | Flag.HINT_UPDATEABLE, "TODO"),
+    USE_SECONDARY_ENGINE(Flag.ONLY_SESSION | Flag.HINT_UPDATEABLE, "ON"),
     
     VALIDATE_USER_PLUGINS(Flag.GLOBAL | Flag.READONLY | Flag.INVISIBLE, "1"),
     
@@ -994,7 +994,65 @@ public enum SystemVariable {
     
     WINDOWING_USE_HIGH_PRECISION(Flag.SESSION | Flag.HINT_UPDATEABLE, "1"),
     
-    XA_DETACH_ON_PREPARE(Flag.SESSION | Flag.HINT_UPDATEABLE, "1");
+    // The following variables are from MySQL 5.7
+    
+    XA_DETACH_ON_PREPARE(Flag.SESSION | Flag.HINT_UPDATEABLE, "1"),
+    
+    DATE_FORMAT(Flag.GLOBAL | Flag.READONLY, "%Y-%m-%d"),
+    
+    DATETIME_FORMAT(Flag.GLOBAL | Flag.READONLY, "%Y-%m-%d %H:%i:%s"),
+
+    HAVE_CRYPT(Flag.GLOBAL | Flag.READONLY, "NO"),
+    
+    IGNORE_BUILTIN_INNODB(Flag.GLOBAL | Flag.READONLY, "0"),
+    
+    IGNORE_DB_DIRS(Flag.GLOBAL | Flag.READONLY, ""),
+
+    INTERNAL_TMP_DISK_STORAGE_ENGINE(Flag.GLOBAL, "InnoDB"),
+    
+    LOG_BUILTIN_AS_IDENTIFIED_BY_PASSWORD(Flag.GLOBAL, "0"),
+    
+    LOG_SYSLOG(Flag.GLOBAL, "0"),
+    
+    LOG_SYSLOG_FACILITY(Flag.GLOBAL, "daemon"),
+    
+    LOG_SYSLOG_INCLUDE_PID(Flag.GLOBAL, "1"),
+    
+    LOG_SYSLOG_TAG(Flag.GLOBAL, ""),
+    
+    LOG_WARNINGS(Flag.GLOBAL, "2"),
+    
+    MAX_TMP_TABLES(Flag.SESSION, "32"),
+    
+    METADATA_LOCKS_CACHE_SIZE(Flag.GLOBAL | Flag.READONLY, "1024"),
+    
+    METADATA_LOCKS_HASH_INSTANCES(Flag.GLOBAL | Flag.READONLY, "8"),
+    
+    MULTI_RANGE_COUNT(Flag.SESSION, "256"),
+    
+    OLD_PASSWORDS(Flag.SESSION, "0"),
+    
+    QUERY_CACHE_LIMIT(Flag.GLOBAL, "1048576"),
+    
+    QUERY_CACHE_MIN_RES_UNIT(Flag.GLOBAL, "4096"),
+    
+    QUERY_CACHE_SIZE(Flag.GLOBAL, "1048576"),
+
+    QUERY_CACHE_TYPE(Flag.SESSION, "OFF"),
+    
+    QUERY_CACHE_WLOCK_INVALIDATE(Flag.SESSION, "0"),
+    
+    SECURE_AUTH(Flag.GLOBAL, "1"),
+    
+    SHOW_COMPATIBILITY_56(Flag.GLOBAL, "0"),
+    
+    SYNC_FRM(Flag.GLOBAL, "1"),
+    
+    TIME_FORMAT(Flag.GLOBAL | Flag.READONLY, "%H:%i:%s"),
+
+    // TX_ISOLATION(Flag.SESSION | Flag.TRI_LEVEL, "TODO"),
+    
+    TX_READ_ONLY(Flag.SESSION | Flag.TRI_LEVEL, "0");
     
     private static final Map<String, SystemVariable> ALL_VARIABLES = Arrays.stream(values()).collect(Collectors.toMap(Enum::name, Function.identity()));
     
