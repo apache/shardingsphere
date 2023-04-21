@@ -48,8 +48,8 @@ public final class SelectTableExecutor extends DefaultDatabaseMetaDataExecutor {
     
     private List<String> tableNames;
     
-    public SelectTableExecutor(final String sql) {
-        super(sql);
+    public SelectTableExecutor(final String sql, final List<Object> parameters) {
+        super(sql, parameters);
     }
     
     @Override
@@ -60,7 +60,7 @@ public final class SelectTableExecutor extends DefaultDatabaseMetaDataExecutor {
     }
     
     @Override
-    protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
+    protected Collection<String> getDatabaseNames(final ConnectionSession connectionSession) {
         Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> isAuthorized(each, connectionSession.getGrantee())).collect(Collectors.toList());
         return databaseNames.stream().filter(AbstractDatabaseMetaDataExecutor::hasDataSource).collect(Collectors.toList());
     }

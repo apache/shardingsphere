@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
@@ -43,17 +44,13 @@ import java.util.function.Consumer;
 /**
  * CDC request handler.
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
     private final StartCDCClientParameter parameter;
     
     private final Consumer<List<Record>> consumer;
-    
-    public CDCRequestHandler(final StartCDCClientParameter parameter) {
-        this.parameter = parameter;
-        consumer = parameter.getConsumer();
-    }
     
     @Override
     public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
@@ -91,13 +88,7 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
     private void processDataRecords(final ChannelHandlerContext ctx, final DataRecordResult result) {
         List<Record> recordsList = result.getRecordList();
-        try {
-            consumer.accept(recordsList);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            throw new RuntimeException(ex);
-        }
+        consumer.accept(recordsList);
         ctx.channel().writeAndFlush(CDCRequest.newBuilder().setType(Type.ACK_STREAMING).setAckStreamingRequestBody(AckStreamingRequestBody.newBuilder().setAckId(result.getAckId()).build()).build());
     }
     

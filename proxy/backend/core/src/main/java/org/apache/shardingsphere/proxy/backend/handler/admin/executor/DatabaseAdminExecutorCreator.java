@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -43,7 +44,8 @@ public interface DatabaseAdminExecutorCreator extends TypedSPI {
      * @param sqlStatementContext SQL statement context
      * @param sql SQL
      * @param databaseName database name
+     * @param parameters parameters
      * @return created instance
      */
-    Optional<DatabaseAdminExecutor> create(SQLStatementContext<?> sqlStatementContext, String sql, String databaseName);
+    Optional<DatabaseAdminExecutor> create(SQLStatementContext<?> sqlStatementContext, String sql, String databaseName, List<Object> parameters);
 }

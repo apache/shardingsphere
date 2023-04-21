@@ -94,7 +94,7 @@
         <jetcd.version>0.7.5</jetcd.version>
         <apollo-client.version>1.9.0</apollo-client.version>
         
-        <elasticjob.version>3.0.2</elasticjob.version>
+        <elasticjob.version>3.0.3</elasticjob.version>
         
         <slf4j.version>1.7.36</slf4j.version>
         <logback.version>1.2.11</logback.version>

@@ -26,8 +26,6 @@ import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLVisitorRule
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-import java.util.Properties;
-
 /**
  * SQL visitor engine.
  */
@@ -36,11 +34,7 @@ public final class SQLVisitorEngine {
     
     private final String databaseType;
     
-    private final String visitorType;
-    
     private final boolean isParseComment;
-    
-    private final Properties props;
     
     /**
      * Visit parse context.
@@ -50,7 +44,7 @@ public final class SQLVisitorEngine {
      * @return SQL visitor result
      */
     public <T> T visit(final ParseASTNode parseASTNode) {
-        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseASTNode.getRootNode().getClass()), props);
+        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, SQLVisitorRule.valueOf(parseASTNode.getRootNode().getClass()));
         T result = parseASTNode.getRootNode().accept(visitor);
         if (isParseComment) {
             appendSQLComments(parseASTNode, result);

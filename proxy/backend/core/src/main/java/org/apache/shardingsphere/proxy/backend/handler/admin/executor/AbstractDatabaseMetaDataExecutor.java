@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.StorageUnitNotExistedException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import javax.sql.DataSource;
@@ -65,13 +64,13 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     
     private MergedResult mergedResult;
     
-    private final LinkedList<Map<String, Object>> rows = new LinkedList<>();
+    private final List<Map<String, Object>> rows = new LinkedList<>();
     
     private final Collection<String> labels = new LinkedList<>();
     
     @Override
     public final void execute(final ConnectionSession connectionSession) throws SQLException {
-        List<String> databaseNames = getDatabaseNames(connectionSession);
+        Collection<String> databaseNames = getDatabaseNames(connectionSession);
         for (String databaseName : databaseNames) {
             initDatabaseData(databaseName);
             getSourceData(databaseName, resultSet -> handleResultSet(databaseName, resultSet));
@@ -93,7 +92,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
             }
             rowPostProcessing(databaseName, rowMap, aliasMap);
             if (!rowMap.isEmpty()) {
-                rows.addFirst(rowMap);
+                rows.add(rowMap);
             }
         }
         if (rows.isEmpty()) {
@@ -105,7 +104,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     
     protected abstract void initDatabaseData(String databaseName);
     
-    protected abstract List<String> getDatabaseNames(ConnectionSession connectionSession);
+    protected abstract Collection<String> getDatabaseNames(ConnectionSession connectionSession);
     
     protected abstract void createPreProcessing();
     
@@ -146,12 +145,14 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         
         private final String sql;
         
+        private final List<Object> parameters;
+        
         @Override
         protected void initDatabaseData(final String databaseName) {
         }
         
         @Override
-        protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
+        protected Collection<String> getDatabaseNames(final ConnectionSession connectionSession) {
             Optional<String> database = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> isAuthorized(each, connectionSession.getGrantee()))
                     .filter(AbstractDatabaseMetaDataExecutor::hasDataSource).findFirst();
             return database.map(Collections::singletonList).orElse(Collections.emptyList());
@@ -161,12 +162,18 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         protected void getSourceData(final String databaseName, final Consumer<ResultSet> callback) throws SQLException {
             ShardingSphereResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
             Optional<Entry<String, DataSource>> dataSourceEntry = resourceMetaData.getDataSources().entrySet().stream().findFirst();
-            log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(() -> new StorageUnitNotExistedException(databaseName)).getKey(), sql);
+            if (!dataSourceEntry.isPresent()) {
+                return;
+            }
             try (
                     Connection connection = dataSourceEntry.get().getValue().getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
-                    ResultSet resultSet = preparedStatement.executeQuery()) {
-                callback.accept(resultSet);
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                for (int i = 0; i < parameters.size(); i++) {
+                    preparedStatement.setObject(i + 1, parameters.get(i));
+                }
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    callback.accept(resultSet);
+                }
             }
         }
         

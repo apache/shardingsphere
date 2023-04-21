@@ -66,7 +66,8 @@ class OpenGaussAdminExecutorFactoryTest {
     void assertNewInstanceWithSelectDatabase() {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("pg_database"));
-        Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext, "select datcompatibility from pg_database where datname = 'sharding_db'", "");
+        String sql = "select datcompatibility from pg_database where datname = 'sharding_db'";
+        Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext, sql, "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(OpenGaussSystemCatalogAdminQueryExecutor.class));
     }
@@ -76,8 +77,8 @@ class OpenGaussAdminExecutorFactoryTest {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
         DatabaseAdminExecutor expected = mock(DatabaseAdminExecutor.class);
-        when(postgreSQLAdminExecutorFactory.create(sqlStatementContext, "", "")).thenReturn(Optional.of(expected));
-        Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext, "", "");
+        when(postgreSQLAdminExecutorFactory.create(sqlStatementContext, "", "", Collections.emptyList())).thenReturn(Optional.of(expected));
+        Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(expected));
     }

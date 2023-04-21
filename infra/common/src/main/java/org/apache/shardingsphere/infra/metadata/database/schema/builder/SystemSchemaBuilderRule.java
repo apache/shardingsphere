@@ -61,7 +61,9 @@ public enum SystemSchemaBuilderRule {
             "events_transactions_summary_by_host_by_event_name", "events_transactions_summary_by_thread_by_event_name", "events_transactions_summary_by_user_by_event_name",
             "events_transactions_summary_global_by_event_name", "events_waits_current", "events_waits_history", "events_waits_history_long", "events_waits_summary_by_account_by_event_name",
             "events_waits_summary_by_host_by_event_name", "events_waits_summary_by_instance", "events_waits_summary_by_thread_by_event_name", "events_waits_summary_by_user_by_event_name",
-            "events_waits_summary_global_by_event_name", "file_instances", "file_summary_by_event_name", "file_summary_by_instance"))),
+            "events_waits_summary_global_by_event_name", "file_instances", "file_summary_by_event_name", "file_summary_by_instance", "global_status", "global_variables", "host_cache", "hosts",
+            "memory_summary_by_account_by_event_name", "memory_summary_by_host_by_event_name", "memory_summary_by_thread_by_event_name", "memory_summary_by_user_by_event_name",
+            "memory_summary_global_by_event_name", "metadata_locks"))),
     
     MYSQL_SYS("MySQL", "sys", new HashSet<>(Collections.singleton("sys"))),
     

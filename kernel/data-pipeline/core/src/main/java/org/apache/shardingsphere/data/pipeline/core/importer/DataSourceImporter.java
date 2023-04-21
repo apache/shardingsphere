@@ -242,7 +242,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
             for (DataRecord each : dataRecords) {
                 conditionColumns = RecordUtils.extractConditionColumns(each, importerConfig.getShardingColumns(each.getTableName()));
                 for (int i = 0; i < conditionColumns.size(); i++) {
-                    preparedStatement.setObject(i + 1, conditionColumns.get(i).getValue());
+                    preparedStatement.setObject(i + 1, conditionColumns.get(i).getOldValue());
                 }
                 preparedStatement.addBatch();
             }

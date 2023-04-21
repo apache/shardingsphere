@@ -27,9 +27,9 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphere
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -82,7 +82,7 @@ class DefaultDatabaseMetaDataExecutorTest {
         ShardingSphereDatabase database = createDatabase(expectedResultSetMap);
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(sql);
+        DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(sql, Collections.emptyList());
         executor.execute(connectionSession);
         assertThat(executor.getRows().get(0).get("sn"), is("foo_ds"));
         assertThat(executor.getRows().get(0).get("DEFAULT_CHARACTER_SET_NAME"), is("utf8mb4"));
@@ -94,7 +94,21 @@ class DefaultDatabaseMetaDataExecutorTest {
         ShardingSphereDatabase database = createDatabase(Collections.singletonMap("support_ndb", "0"));
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(sql);
+        DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(sql, Collections.emptyList());
+        executor.execute(connectionSession);
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
+        while (executor.getMergedResult().next()) {
+            assertThat(executor.getMergedResult().getValue(1, String.class), is("0"));
+        }
+    }
+    
+    @Test
+    void assertExecuteWithPreparedStatement() throws SQLException {
+        String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = ?";
+        ShardingSphereDatabase database = createDatabase(Collections.singletonMap("support_ndb", "0"));
+        ContextManager contextManager = mockContextManager(database);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        DefaultDatabaseMetaDataExecutor executor = new DefaultDatabaseMetaDataExecutor(sql, Collections.singletonList("ndbcluster"));
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         while (executor.getMergedResult().next()) {

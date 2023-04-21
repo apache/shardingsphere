@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLFormatVisitor;
+import org.apache.shardingsphere.sql.parser.api.format.SQLFormatVisitor;
 
 import java.util.Properties;
 

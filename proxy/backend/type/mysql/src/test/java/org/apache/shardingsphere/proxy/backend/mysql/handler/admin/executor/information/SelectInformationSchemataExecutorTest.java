@@ -91,7 +91,7 @@ class SelectInformationSchemataExecutorTest {
         ContextManager contextManager = mockContextManager(createDatabase("no_auth_db"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("no_auth_db"));
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
+        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql, Collections.emptyList());
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
         assertFalse(executor.getMergedResult().next());
@@ -107,7 +107,7 @@ class SelectInformationSchemataExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
         when(ProxyContext.getInstance().getDatabase("auth_db")).thenReturn(database);
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
+        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql, Collections.emptyList());
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
         assertTrue(executor.getMergedResult().next());
@@ -121,7 +121,7 @@ class SelectInformationSchemataExecutorTest {
         ContextManager contextManager = mockContextManager(createDatabase("auth_db"));
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("auth_db"));
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
+        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql, Collections.emptyList());
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
         assertTrue(executor.getMergedResult().next());
@@ -135,7 +135,7 @@ class SelectInformationSchemataExecutorTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.emptyList());
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
+        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql, Collections.emptyList());
         executor.execute(connectionSession);
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
     }
