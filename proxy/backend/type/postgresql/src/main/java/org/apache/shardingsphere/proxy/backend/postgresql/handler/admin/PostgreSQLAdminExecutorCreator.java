@@ -71,7 +71,7 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String databaseName) {
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof SelectStatement) {
             Collection<String> selectedTableNames = getSelectedTableNames((SelectStatement) sqlStatement);
@@ -79,14 +79,14 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
                 return Optional.empty();
             }
             if (selectedTableNames.contains(PG_DATABASE)) {
-                return Optional.of(new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql));
+                return Optional.of(new SelectDatabaseExecutor((SelectStatement) sqlStatement, sql, parameters));
             }
             if (isQueryPgTable(selectedTableNames)) {
-                return Optional.of(new SelectTableExecutor(sql));
+                return Optional.of(new SelectTableExecutor(sql, parameters));
             }
             for (String each : selectedTableNames) {
                 if (each.startsWith(PG_PREFIX)) {
-                    return Optional.of(new DefaultDatabaseMetaDataExecutor(sql));
+                    return Optional.of(new DefaultDatabaseMetaDataExecutor(sql, parameters));
                 }
             }
         }

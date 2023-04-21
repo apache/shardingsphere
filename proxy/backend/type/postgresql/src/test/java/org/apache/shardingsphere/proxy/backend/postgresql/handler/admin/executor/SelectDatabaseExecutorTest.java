@@ -75,7 +75,7 @@ class SelectDatabaseExecutorTest {
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Arrays.asList("sharding_db", "empty_db"));
         when(ProxyContext.getInstance().getDatabase("sharding_db")).thenReturn(shardingDatabase);
         when(ProxyContext.getInstance().getDatabase("empty_db")).thenReturn(emptyDatabase);
-        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
+        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql, Collections.emptyList());
         executor.execute(mock(ConnectionSession.class));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(4));
         int count = 0;
@@ -102,7 +102,7 @@ class SelectDatabaseExecutorTest {
         ContextManager contextManager = mockContextManager(createEmptyDatabase());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_db"));
-        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
+        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql, Collections.emptyList());
         executor.execute(mock(ConnectionSession.class));
         while (executor.getMergedResult().next()) {
             assertThat(executor.getMergedResult().getValue(1, String.class), is("empty_db"));
@@ -115,7 +115,7 @@ class SelectDatabaseExecutorTest {
         ContextManager contextManager = mockContextManager(createEmptyDatabase());
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("empty_db"));
-        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
+        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql, Collections.emptyList());
         executor.execute(mock(ConnectionSession.class));
         while (executor.getMergedResult().next()) {
             assertThat(executor.getMergedResult().getValue(1, String.class), is(""));
@@ -131,7 +131,7 @@ class SelectDatabaseExecutorTest {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.emptyList());
-        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql);
+        SelectDatabaseExecutor executor = new SelectDatabaseExecutor((SelectStatement) sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false), sql, Collections.emptyList());
         executor.execute(mock(ConnectionSession.class));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
     }

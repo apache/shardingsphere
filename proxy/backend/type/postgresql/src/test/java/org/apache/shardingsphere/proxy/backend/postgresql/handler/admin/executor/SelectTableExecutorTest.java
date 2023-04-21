@@ -66,7 +66,7 @@ class SelectTableExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("public"));
         when(ProxyContext.getInstance().getDatabase("public")).thenReturn(database);
-        SelectTableExecutor executor = new SelectTableExecutor(sql);
+        SelectTableExecutor executor = new SelectTableExecutor(sql, Collections.emptyList());
         executor.execute(mock(ConnectionSession.class));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(3));
         int count = 0;

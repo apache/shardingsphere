@@ -52,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -79,7 +80,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String databaseName) {
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof UseStatement) {
             return Optional.of(new UseDatabaseExecutor((UseStatement) sqlStatement));
@@ -105,7 +106,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
                 return getSelectFunctionOrVariableExecutor(selectStatement, sql, databaseName);
             }
             if (isQueryInformationSchema(databaseName)) {
-                return MySQLInformationSchemaExecutorFactory.newInstance(selectStatement, sql);
+                return MySQLInformationSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
             }
             if (isQueryPerformanceSchema(databaseName)) {
                 // TODO
