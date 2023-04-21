@@ -1,0 +1,171 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: replication_connection_configuration
+columns:
+  channel_name:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: CHANNEL_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  host:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: HOST
+    primaryKey: false
+    unsigned: false
+    visible: true
+  port:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PORT
+    primaryKey: false
+    unsigned: false
+    visible: true
+  user:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: USER
+    primaryKey: false
+    unsigned: false
+    visible: true
+  network_interface:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: NETWORK_INTERFACE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  auto_position:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: AUTO_POSITION
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_allowed:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SSL_ALLOWED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_ca_file:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SSL_CA_FILE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_ca_path:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SSL_CA_PATH
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_certificate:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SSL_CERTIFICATE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_cipher:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SSL_CIPHER
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_key:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SSL_KEY
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_verify_server_certificate:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SSL_VERIFY_SERVER_CERTIFICATE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_crl_file:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SSL_CRL_FILE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_crl_path:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SSL_CRL_PATH
+    primaryKey: false
+    unsigned: false
+    visible: true
+  connection_retry_interval:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: CONNECTION_RETRY_INTERVAL
+    primaryKey: false
+    unsigned: false
+    visible: true
+  connection_retry_count:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: CONNECTION_RETRY_COUNT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  heartbeat_interval:
+    caseSensitive: false
+    dataType: 8
+    generated: false
+    name: HEARTBEAT_INTERVAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  tls_version:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TLS_VERSION
+    primaryKey: false
+    unsigned: false
+    visible: true
