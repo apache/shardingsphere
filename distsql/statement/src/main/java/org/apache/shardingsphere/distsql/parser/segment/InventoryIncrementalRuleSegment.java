@@ -19,7 +19,7 @@ package org.apache.shardingsphere.distsql.parser.segment;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
  * Inventory incremental rule segment.

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.hbase.result;
 
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
@@ -52,7 +52,7 @@ public final class HBaseSupportedSQLStatement {
      * @return SQL statement
      */
     public static SQLStatement parseSQLStatement(final String sql) {
-        return new SQLVisitorEngine("MySQL", false).visit(new SQLParserEngine("MySQL", new CacheOption(128, 4)).parse(sql, false));
+        return new SQLStatementVisitorEngine("MySQL", false).visit(new SQLParserEngine("MySQL", new CacheOption(128, 4)).parse(sql, false));
     }
     
     /**
