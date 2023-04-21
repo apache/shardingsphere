@@ -89,12 +89,12 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
     }
     
     private String getWriteDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, String> exportDataSources) {
-        return null == exportDataSources ? dataSourceRuleConfig.getStaticStrategy().getWriteDataSourceName() : exportDataSources.get(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME);
+        return null == exportDataSources ? dataSourceRuleConfig.getWriteDataSourceName() : exportDataSources.get(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME);
     }
     
     private String getReadDataSourceNames(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, String> exportDataSources) {
         return null == exportDataSources
-                ? Joiner.on(",").join(dataSourceRuleConfig.getStaticStrategy().getReadDataSourceNames())
+                ? Joiner.on(",").join(dataSourceRuleConfig.getReadDataSourceNames())
                 : exportDataSources.get(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES);
     }
     

@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.hbase.connector;
 
 import com.google.common.base.Strings;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.client.Connection;
@@ -34,8 +36,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * HBase connection factory.
+ * Connection factory of HBase.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HBaseConnectionFactory {
     
     /**

@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 /**
  * Job ID assert.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JobIdAssert {
     
     /**

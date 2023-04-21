@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.distsql.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
 import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -45,8 +44,7 @@ class CountShadowRuleExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<CountShadowRuleStatement> executor = new CountShadowRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountShadowRuleStatement.class));
+        Collection<LocalDataQueryResultRow> actual = new CountShadowRuleExecutor().getRows(mockDatabase(), mock(CountShadowRuleStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -57,8 +55,7 @@ class CountShadowRuleExecutorTest {
     
     @Test
     void assertGetColumnNames() {
-        RQLExecutor<CountShadowRuleStatement> executor = new CountShadowRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
+        Collection<String> columns = new CountShadowRuleExecutor().getColumnNames();
         assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("rule_name"));

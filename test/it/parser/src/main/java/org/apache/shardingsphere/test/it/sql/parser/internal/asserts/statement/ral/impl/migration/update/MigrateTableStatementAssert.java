@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.update;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.migration.distsql.statement.MigrateTableStatement;
 import org.apache.shardingsphere.migration.distsql.statement.pojo.SourceTargetEntry;
@@ -29,6 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Migrate table statement assert.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MigrateTableStatementAssert {
     
     /**

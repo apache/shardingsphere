@@ -86,8 +86,6 @@ jobs:
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-        volumes:
-          - .github/workflows/resources/scripts/nightly-build-example/init-mysql-container.sh:/docker-entrypoint-initdb.d/
       zookeeper:
         image: zookeeper:3.6.3
         ports:
@@ -105,6 +103,8 @@ jobs:
           key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
+      - name: Prepare environments
+        run: sh .github/workflows/resources/scripts/nightly-build-example/init-mysql-container.sh
       - name: Build with Maven
         run: ./mvnw -B -T1C -ntp clean install -DskipITs -DskipTests
       - name: Generate examples

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.dialect.mysql.exception.AccessDeniedException;
 import org.apache.shardingsphere.dialect.mysql.exception.DatabaseAccessDeniedException;
 import org.apache.shardingsphere.dialect.mysql.exception.HandshakeException;
+import org.apache.shardingsphere.dialect.mysql.exception.IncorrectGlobalLocalVariableException;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStatementException;
@@ -95,6 +96,10 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
         if (sqlDialectException instanceof DatabaseAccessDeniedException) {
             DatabaseAccessDeniedException ex = (DatabaseAccessDeniedException) sqlDialectException;
             return toSQLException(MySQLVendorError.ER_DBACCESS_DENIED_ERROR, ex.getUsername(), ex.getHostname(), ex.getDatabaseName());
+        }
+        if (sqlDialectException instanceof IncorrectGlobalLocalVariableException) {
+            IncorrectGlobalLocalVariableException ex = (IncorrectGlobalLocalVariableException) sqlDialectException;
+            return toSQLException(MySQLVendorError.ER_INCORRECT_GLOBAL_LOCAL_VAR, ex.getVariableName(), ex.getScope());
         }
         return new UnknownSQLException(sqlDialectException).toSQLException();
     }

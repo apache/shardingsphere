@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.cdc.distsql.statement;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.cdc.QueryableCDCRALStatement;
 
 /**
  * Show streaming list statement.
  */
-public final class ShowStreamingListStatement extends QueryableScalingRALStatement {
+public final class ShowStreamingListStatement extends QueryableCDCRALStatement {
 }

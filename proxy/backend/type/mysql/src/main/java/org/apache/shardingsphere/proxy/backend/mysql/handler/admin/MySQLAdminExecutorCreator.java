@@ -22,6 +22,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.KillProcessExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLSystemVariableQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.NoResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowConnectionIdExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowCreateDatabaseExecutor;
@@ -32,7 +33,6 @@ import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.Show
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowProcedureStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowProcessListExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowTablesExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowTransactionExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowVersionExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.UnicastResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.UseDatabaseExecutor;
@@ -52,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -79,7 +80,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String databaseName) {
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof UseStatement) {
             return Optional.of(new UseDatabaseExecutor((UseStatement) sqlStatement));
@@ -102,10 +103,10 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         if (sqlStatement instanceof SelectStatement) {
             SelectStatement selectStatement = (SelectStatement) sqlStatement;
             if (null == selectStatement.getFrom()) {
-                return getSelectFunctionOrVariableExecutor(selectStatement, sql, databaseName);
+                return findAdminExecutorForSelectWithoutFrom(sql, databaseName, selectStatement);
             }
             if (isQueryInformationSchema(databaseName)) {
-                return MySQLInformationSchemaExecutorFactory.newInstance(selectStatement, sql);
+                return MySQLInformationSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
             }
             if (isQueryPerformanceSchema(databaseName)) {
                 // TODO
@@ -113,6 +114,11 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             }
         }
         return Optional.empty();
+    }
+    
+    private Optional<DatabaseAdminExecutor> findAdminExecutorForSelectWithoutFrom(final String sql, final String databaseName, final SelectStatement selectStatement) {
+        Optional<DatabaseAdminExecutor> result = MySQLSystemVariableQueryExecutor.tryGetSystemVariableQueryExecutor(selectStatement);
+        return result.isPresent() ? result : getSelectFunctionOrVariableExecutor(selectStatement, sql, databaseName);
     }
     
     private Optional<DatabaseAdminExecutor> getSelectFunctionOrVariableExecutor(final SelectStatement selectStatement, final String sql, final String databaseName) {
@@ -125,13 +131,6 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         if (isShowSpecialFunction(selectStatement, ShowCurrentUserExecutor.FUNCTION_NAME)
                 || isShowSpecialFunction(selectStatement, ShowCurrentUserExecutor.FUNCTION_NAME_ALIAS)) {
             return Optional.of(new ShowCurrentUserExecutor());
-        }
-        boolean hasNoResource = hasNoResource();
-        if (hasNoResource && isShowSpecialFunction(selectStatement, ShowTransactionExecutor.TRANSACTION_READ_ONLY)) {
-            return Optional.of(new ShowTransactionExecutor(ShowTransactionExecutor.TRANSACTION_READ_ONLY));
-        }
-        if (hasNoResource && isShowSpecialFunction(selectStatement, ShowTransactionExecutor.TRANSACTION_ISOLATION)) {
-            return Optional.of(new ShowTransactionExecutor(ShowTransactionExecutor.TRANSACTION_ISOLATION));
         }
         if (isShowSpecialFunction(selectStatement, ShowCurrentDatabaseExecutor.FUNCTION_NAME)) {
             return Optional.of(new ShowCurrentDatabaseExecutor());

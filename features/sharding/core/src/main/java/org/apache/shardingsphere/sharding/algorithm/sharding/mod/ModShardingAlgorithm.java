@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
+import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 import org.apache.shardingsphere.sharding.exception.data.ShardingValueOffsetException;
 
 import java.math.BigInteger;
@@ -98,6 +99,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
+        ShardingSpherePreconditions.checkNotNull(shardingValue.getValue(), NullShardingValueException::new);
         String shardingResultSuffix = getShardingResultSuffix(cutShardingValue(shardingValue.getValue()).mod(new BigInteger(String.valueOf(shardingCount))).toString());
         return ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).orElse(null);
     }
@@ -117,7 +119,7 @@ public final class ModShardingAlgorithm implements StandardShardingAlgorithm<Com
         BigInteger lower = new BigInteger(shardingValue.getValueRange().lowerEndpoint().toString());
         BigInteger upper = new BigInteger(shardingValue.getValueRange().upperEndpoint().toString());
         BigInteger shardingCountBigInter = new BigInteger(String.valueOf(shardingCount));
-        for (BigInteger i = lower; i.compareTo(upper) <= 0; i = i.add(new BigInteger("1"))) {
+        for (BigInteger i = lower; i.compareTo(upper) <= 0; i = i.add(BigInteger.ONE)) {
             String shardingResultSuffix = getShardingResultSuffix(String.valueOf(i.mod(shardingCountBigInter)));
             ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, shardingResultSuffix, shardingValue.getDataNodeInfo()).ifPresent(result::add);
         }

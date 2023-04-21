@@ -29,10 +29,10 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.Exportabl
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -121,7 +122,7 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Conn
         return readResources.stream().map(each -> buildRow(each, disabledReadResources.get(each))).collect(Collectors.toList());
     }
     
-    private LinkedList<String> deconstructString(final String str) {
+    private List<String> deconstructString(final String str) {
         return new LinkedList<>(Arrays.asList(str.split(",")));
     }
     

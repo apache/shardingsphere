@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rql.rule;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSingleTableStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -40,8 +39,7 @@ class CountSingleTableExecutorTest {
     
     @Test
     void assertGetRowData() {
-        RQLExecutor<CountSingleTableStatement> executor = new CountSingleTableExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountSingleTableStatement.class));
+        Collection<LocalDataQueryResultRow> actual = new CountSingleTableExecutor().getRows(mockDatabase(), mock(CountSingleTableStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -51,8 +49,7 @@ class CountSingleTableExecutorTest {
     
     @Test
     void assertGetColumnNames() {
-        RQLExecutor<CountSingleTableStatement> executor = new CountSingleTableExecutor();
-        Collection<String> columns = executor.getColumnNames();
+        Collection<String> columns = new CountSingleTableExecutor().getColumnNames();
         assertThat(columns.size(), is(2));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("database"));

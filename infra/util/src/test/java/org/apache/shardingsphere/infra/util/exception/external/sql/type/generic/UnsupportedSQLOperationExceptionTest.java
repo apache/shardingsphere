@@ -32,6 +32,6 @@ class UnsupportedSQLOperationExceptionTest {
         SQLException actual = new UnsupportedSQLOperationException("foo_reason").toSQLException();
         assertThat(actual.getSQLState(), is(XOpenSQLState.FEATURE_NOT_SUPPORTED.getValue()));
         assertThat(actual.getErrorCode(), is(30001));
-        assertThat(actual.getMessage(), is("Unsupported SQL operation: foo_reason"));
+        assertThat(actual.getMessage(), is("Unsupported SQL operation: foo_reason."));
     }
 }

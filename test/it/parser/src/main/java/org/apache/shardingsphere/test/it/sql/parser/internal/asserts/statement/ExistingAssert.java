@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
@@ -27,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 /**
  * Existing assert.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExistingAssert {
     
     /**

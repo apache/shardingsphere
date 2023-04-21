@@ -26,20 +26,6 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 public interface SQLVisitorFacade extends TypedSPI {
     
     /**
-     * Get database type.
-     *
-     * @return database type
-     */
-    String getDatabaseType();
-    
-    /**
-     * Get visitor type.
-     *
-     * @return visitor type
-     */
-    String getVisitorType();
-    
-    /**
      * Get DML visitor class.
      *
      * @return DML visitor class
@@ -80,9 +66,4 @@ public interface SQLVisitorFacade extends TypedSPI {
      * @return RL visitor class
      */
     Class<? extends SQLVisitor> getRLVisitorClass();
-    
-    @Override
-    default String getType() {
-        return String.join(".", getDatabaseType(), getVisitorType());
-    }
 }

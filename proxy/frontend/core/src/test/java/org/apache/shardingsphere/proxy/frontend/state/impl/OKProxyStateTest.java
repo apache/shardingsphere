@@ -19,9 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.state.impl;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.embedded.EmbeddedChannel;
-import io.netty.util.concurrent.EventExecutor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.config.props.BackendExecutorType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -89,19 +87,6 @@ class OKProxyStateTest {
         new OKProxyState().execute(context, null, mock(DatabaseProtocolFrontendEngine.class), connectionSession);
         verify(executorService).execute(any(CommandExecutorTask.class));
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(1);
-    }
-    
-    @Test
-    void assertExecuteWithProxyBackendExecutorSuitableForOLTP() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
-        when(contextManager.getMetaDataContexts().getMetaData().getProps().<BackendExecutorType>getValue(
-                ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn(BackendExecutorType.OLTP);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        EventExecutor eventExecutor = mock(EventExecutor.class);
-        when(context.executor()).thenReturn(eventExecutor);
-        new OKProxyState().execute(context, null, mock(DatabaseProtocolFrontendEngine.class), mock(ConnectionSession.class, RETURNS_DEEP_STUBS));
-        verify(eventExecutor).execute(any(CommandExecutorTask.class));
     }
     
     @SuppressWarnings({"unchecked", "SameParameterValue"})

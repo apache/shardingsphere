@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.information.SelectInformationSchemataExecutor;
@@ -26,11 +28,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Construct the information schema executor's factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLInformationSchemaExecutorFactory {
     
     public static final String SCHEMATA_TABLE = "SCHEMATA";
@@ -42,15 +46,16 @@ public final class MySQLInformationSchemaExecutorFactory {
      *
      * @param sqlStatement SQL statement
      * @param sql SQL being executed
+     * @param parameters parameters
      * @return executor
      */
-    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatement sqlStatement, final String sql) {
+    public static Optional<DatabaseAdminExecutor> newInstance(final SelectStatement sqlStatement, final String sql, final List<Object> parameters) {
         String tableName = ((SimpleTableSegment) sqlStatement.getFrom()).getTableName().getIdentifier().getValue();
         if (SCHEMATA_TABLE.equalsIgnoreCase(tableName)) {
-            return Optional.of(new SelectInformationSchemataExecutor(sqlStatement, sql));
+            return Optional.of(new SelectInformationSchemataExecutor(sqlStatement, sql, parameters));
         }
         if (DEFAULT_EXECUTOR_TABLES.contains(tableName.toUpperCase())) {
-            return Optional.of(new DefaultDatabaseMetaDataExecutor(sql));
+            return Optional.of(new DefaultDatabaseMetaDataExecutor(sql, parameters));
         }
         return Optional.empty();
     }

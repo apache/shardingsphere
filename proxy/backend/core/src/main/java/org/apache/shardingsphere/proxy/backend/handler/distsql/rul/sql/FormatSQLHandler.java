@@ -22,9 +22,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.SQLRULBackendHandler;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import org.apache.shardingsphere.sql.parser.api.SQLFormatEngine;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -52,10 +50,6 @@ public final class FormatSQLHandler extends SQLRULBackendHandler<FormatStatement
     private Object formatSQL(final String sql, final String databaseType) {
         Properties props = new Properties();
         props.setProperty("parameterized", Boolean.FALSE.toString());
-        return new SQLVisitorEngine(databaseType, "FORMAT", false, props).visit(parseSQL(sql, databaseType));
-    }
-    
-    private ParseASTNode parseSQL(final String sql, final String databaseType) {
-        return new SQLParserEngine(databaseType, new CacheOption(1, 1L)).parse(sql, false);
+        return new SQLFormatEngine(databaseType, new CacheOption(1, 1L)).format(sql, false, props);
     }
 }

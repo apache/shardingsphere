@@ -58,7 +58,7 @@ public final class BootstrapArguments {
                 return Optional.empty();
             }
             return Optional.of(port);
-        } catch (final NumberFormatException ex) {
+        } catch (final NumberFormatException ignored) {
             throw new IllegalArgumentException(String.format("Invalid port `%s`.", args[0]));
         }
     }
@@ -125,7 +125,7 @@ public final class BootstrapArguments {
     private boolean isValidPath(final String path) {
         try {
             Paths.get(path);
-        } catch (InvalidPathException ex) {
+        } catch (InvalidPathException ignored) {
             throw new IllegalArgumentException(String.format("Invalid path `%s`.", path));
         }
         return true;

@@ -36,7 +36,7 @@ public final class JooQSQLTranslator implements SQLTranslator {
             Query query = DSL.using(JooQDialectRegistry.getSQLDialect(protocolType)).parser().parseQuery(sql);
             return DSL.using(JooQDialectRegistry.getSQLDialect(storageType)).render(query);
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final Exception ignored) {
             // CHECKSTYLE:ON
             throw new UnsupportedTranslatedSQLException(sql);
         }

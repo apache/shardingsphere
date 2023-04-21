@@ -99,9 +99,7 @@ SQLStatement sqlStatement = sqlVisitorEngine.visit(parseASTNode);
 - SQL 格式化
 
 ```java
-ParseASTNode parseASTNode = parserEngine.parse(sql, useCache);
-SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(sql, "FORMAT", useCache, new Properties());
-String result = sqlVisitorEngine.visit(parseASTNode);
+new SQLFormatEngine(databaseType, cacheOption).format(sql, useCache, props);
 ```
 
 例子：

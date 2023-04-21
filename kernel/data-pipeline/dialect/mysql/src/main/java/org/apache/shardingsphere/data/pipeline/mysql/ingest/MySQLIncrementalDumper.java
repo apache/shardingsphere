@@ -188,7 +188,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
                 if (isColumnUnneeded(columnNameSet, columnMetaData.getName())) {
                     continue;
                 }
-                record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, columnMetaData.isUniqueKey()));
+                record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), null, true, columnMetaData.isUniqueKey()));
             }
             channel.pushRecord(record);
         }

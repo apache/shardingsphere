@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.listener;
 
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -31,18 +30,16 @@ public interface ContextManagerLifecycleListener {
     /**
      * Callback on initialized.
      *
-     * @param instanceType instance type
      * @param databaseName database name
-     * @param modeConfig mode configuration
      * @param contextManager context manager
      */
-    void onInitialized(InstanceType instanceType, String databaseName, ModeConfiguration modeConfig, ContextManager contextManager);
+    void onInitialized(String databaseName, ContextManager contextManager);
     
     /**
      * Callback on destroyed.
      *
-     * @param instanceType instance type
      * @param databaseName database name
+     * @param instanceType instance type
      */
-    void onDestroyed(InstanceType instanceType, String databaseName);
+    void onDestroyed(String databaseName, InstanceType instanceType);
 }

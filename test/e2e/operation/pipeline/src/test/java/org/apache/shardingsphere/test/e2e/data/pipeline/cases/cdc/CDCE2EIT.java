@@ -170,8 +170,7 @@ class CDCE2EIT {
     private void startCDCClient(final PipelineContainerComposer containerComposer) {
         DataSource dataSource = StorageContainerUtils.generateDataSource(containerComposer.appendExtraParameter(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false)),
                 containerComposer.getUsername(), containerComposer.getPassword());
-        DataSourceRecordConsumer dataSourceRecordConsumer = new DataSourceRecordConsumer(dataSource, containerComposer.getDatabaseType());
-        StartCDCClientParameter parameter = new StartCDCClientParameter(dataSourceRecordConsumer);
+        StartCDCClientParameter parameter = new StartCDCClientParameter();
         parameter.setAddress("localhost");
         parameter.setPort(containerComposer.getContainerComposer().getProxyCDCPort());
         parameter.setUsername(ProxyContainerConstants.USERNAME);
@@ -181,7 +180,8 @@ class CDCE2EIT {
         parameter.setFull(true);
         String schema = containerComposer.getDatabaseType().isSchemaAvailable() ? "test" : "";
         parameter.setSchemaTables(Collections.singletonList(SchemaTable.newBuilder().setTable(SOURCE_TABLE_NAME).setSchema(schema).build()));
-        CompletableFuture.runAsync(() -> new CDCClient(parameter).start(), executor).whenComplete((unused, throwable) -> {
+        DataSourceRecordConsumer recordConsumer = new DataSourceRecordConsumer(dataSource, containerComposer.getDatabaseType());
+        CompletableFuture.runAsync(() -> new CDCClient(parameter, recordConsumer).start(), executor).whenComplete((unused, throwable) -> {
             if (null != throwable) {
                 log.error("cdc client sync failed, ", throwable);
             }

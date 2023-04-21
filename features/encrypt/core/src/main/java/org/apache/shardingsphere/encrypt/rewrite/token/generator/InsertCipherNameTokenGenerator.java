@@ -48,7 +48,7 @@ public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenG
         if (!(sqlStatementContext instanceof InsertStatementContext)) {
             return false;
         }
-        Optional<InsertColumnsSegment> insertColumnsSegment = (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getInsertColumns();
+        Optional<InsertColumnsSegment> insertColumnsSegment = ((InsertStatementContext) sqlStatementContext).getSqlStatement().getInsertColumns();
         return insertColumnsSegment.isPresent() && !insertColumnsSegment.get().getColumns().isEmpty();
     }
     

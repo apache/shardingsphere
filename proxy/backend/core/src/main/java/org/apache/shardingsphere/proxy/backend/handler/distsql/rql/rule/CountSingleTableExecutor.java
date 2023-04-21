@@ -33,14 +33,14 @@ import java.util.Collections;
 public final class CountSingleTableExecutor implements RQLExecutor<CountSingleTableStatement> {
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountSingleTableStatement sqlStatement) {
-        SingleRule rule = database.getRuleMetaData().getSingleRule(SingleRule.class);
-        return Collections.singleton(new LocalDataQueryResultRow(database.getName(), rule.getAllTables().size()));
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("database", "count");
     }
     
     @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList("database", "count");
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountSingleTableStatement sqlStatement) {
+        SingleRule rule = database.getRuleMetaData().getSingleRule(SingleRule.class);
+        return Collections.singleton(new LocalDataQueryResultRow(database.getName(), rule.getAllTables().size()));
     }
     
     @Override

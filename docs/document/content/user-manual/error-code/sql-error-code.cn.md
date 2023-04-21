@@ -24,6 +24,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
 | 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables.                         |
+| 0A000     | 10040       | Unsupported storage type of \`%s.%s\`.                       |
 
 ### 数据
 
@@ -70,6 +71,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 25000     | 14200       | Can not start new XA transaction in a active transaction.                          |
 | 25000     | 14201       | Failed to create \`%s\` XA data source.                                            |
 | 25000     | 14202       | Max length of xa unique resource name \`%s\` exceeded: should be less than 45.     |
+| 25000     | 14203       | Check privileges failed on data source, reason is: \`%s\`     |
+| 25000     | 14204       | Failed to create XA transaction manager, requires \`%s\` privileges    |
 | 25000     | 14301       | ShardingSphere Seata-AT transaction has been disabled.                             |
 | 25000     | 14302       | Please config application id within seata.conf file.                               |
 
@@ -178,7 +181,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 20012       | Invalid binding table configuration in ShardingRuleConfiguration.                                                                |
 | 44000     | 20013       | Can not find sharding rule.                                                                                                      |
 | 44000     | 20014       | Only allowed 0 or 1 sharding strategy configuration.                                                                             |
-| 44000     | 20020       | Sharding value can't be null in insert statement.                                                                                |
+| 44000     | 20020       | Sharding value can't be null in sql statement.                                                                                   |
 | HY004     | 20021       | Found different types for sharding value \`%s\`.                                                                                 |
 | HY004     | 20022       | Invalid %s, datetime pattern should be \`%s\`, value is \`%s\`.                                                                  |
 | 44000     | 20023       | Sharding value %s subtract stop offset %d can not be less than start offset %d.                                                  |
@@ -225,7 +228,6 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 44000     | 20295       | Auto aware data source name is required in database \`%s\.`                                 |
 | 42S02     | 20296       | Not found load balance type in database \`%s\.`                                             |
 | 44000     | 20297       | Weight load balancer datasource name config does not match data sources in database \`%s\.` |
-
 
 ### 数据库高可用
 

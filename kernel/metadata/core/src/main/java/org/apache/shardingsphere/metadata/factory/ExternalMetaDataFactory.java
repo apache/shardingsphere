@@ -17,15 +17,25 @@
 
 package org.apache.shardingsphere.metadata.factory;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.exception.UnsupportedStorageTypeException;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +43,17 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * External meta data factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExternalMetaDataFactory {
+    
+    private static final Collection<String> MOCKED_URL_PREFIXES = new HashSet<>(Arrays.asList("jdbc:fixture", "jdbc:mock"));
+    
+    private static final Collection<DatabaseType> SUPPORTED_STORAGE_TYPES = new HashSet<>(8, 1);
+    
+    static {
+        Arrays.asList("MySQL", "PostgreSQL", "openGauss", "Oracle", "SQLServer", "H2", "MariaDB")
+                .forEach(each -> TypedSPILoader.findService(DatabaseType.class, each).ifPresent(SUPPORTED_STORAGE_TYPES::add));
+    }
     
     /**
      * Create database meta data for db.
@@ -76,10 +96,25 @@ public final class ExternalMetaDataFactory {
             String databaseName = entry.getKey();
             if (!entry.getValue().getDataSources().isEmpty() || !protocolType.getSystemSchemas().contains(databaseName)) {
                 Map<String, DatabaseType> storageTypes = DatabaseTypeEngine.getStorageTypes(entry.getKey(), entry.getValue());
+                checkSupportedStorageTypes(entry.getValue().getDataSources(), databaseName, storageTypes);
                 result.put(databaseName.toLowerCase(), ShardingSphereDatabase.create(databaseName, protocolType, storageTypes, entry.getValue(), props, instanceContext));
             }
         }
         return result;
+    }
+    
+    private static void checkSupportedStorageTypes(final Map<String, DataSource> dataSources, final String databaseName, final Map<String, DatabaseType> storageTypes) throws SQLException {
+        if (dataSources.isEmpty()) {
+            return;
+        }
+        try (Connection connection = dataSources.values().iterator().next().getConnection()) {
+            String url = connection.getMetaData().getURL();
+            if (MOCKED_URL_PREFIXES.stream().anyMatch(url::startsWith)) {
+                return;
+            }
+        }
+        storageTypes.forEach((key, value) -> ShardingSpherePreconditions.checkState(SUPPORTED_STORAGE_TYPES.stream()
+                .anyMatch(each -> each.getClass().equals(value.getClass())), () -> new UnsupportedStorageTypeException(databaseName, key)));
     }
     
     private static Map<String, ShardingSphereDatabase> createSystemDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType) {

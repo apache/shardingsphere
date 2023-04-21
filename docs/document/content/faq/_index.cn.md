@@ -15,24 +15,47 @@ chapter = true
 ### [JDBC] Oracle 表名、字段名配置大小写在加载 `metadata` 元数据时结果不正确？
 回答：
 需要注意，Oracle 表名和字段名，默认元数据都是大写，除非建表语句中带双引号，如 `CREATE TABLE "TableName"("Id" number)` 元数据为双引号中内容，可参考以下SQL查看元数据的具体情况：
-```
+```sql
 SELECT OWNER, TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM ALL_TAB_COLUMNS WHERE TABLE_NAME IN ('TableName') 
 ```
 ShardingSphere 使用 `OracleTableMetaDataLoader` 对 Oracle 元数据进行加载，配置时需确保表名、字段名的大小写配置与数据库中的一致。
 ShardingSphere 查询元数据关键SQL:
+```java
+ private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData metaData) throws SQLException {
+     StringBuilder stringBuilder = new StringBuilder(28);
+     if (versionContainsIdentityColumn(metaData)) {
+         stringBuilder.append(", IDENTITY_COLUMN");
+     }
+     if (versionContainsCollation(metaData)) {
+         stringBuilder.append(", COLLATION");
+     }
+     String collation = stringBuilder.toString();
+     return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
+             : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+ }
 ```
-    private String getTableMetaDataSQL(final Collection<String> tables, final DatabaseMetaData metaData) throws SQLException {
-        StringBuilder stringBuilder = new StringBuilder(28);
-        if (versionContainsIdentityColumn(metaData)) {
-            stringBuilder.append(", IDENTITY_COLUMN");
-        }
-        if (versionContainsCollation(metaData)) {
-            stringBuilder.append(", COLLATION");
-        }
-        String collation = stringBuilder.toString();
-        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, collation)
-                : String.format(TABLE_META_DATA_SQL_IN_TABLES, collation, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
-    }
+
+### [JDBC] 使用 MySQL XA 事务时报 `SQLException: Unable to unwrap to interface com.mysql.jdbc.Connection` 异常
+
+回答：
+
+多个 MySQL 驱动之间不兼容。由于优先加载了类路径下 MySQL5 版本的驱动类，当试图调用 MySQL8 驱动里的 `unwrap` 方法时，类型转换异常。
+
+解决方案：
+检查类路径下是否同时存在 MySQL5 和 MySQL8 的驱动，只保留对应版本的一个驱动包即可。
+
+异常堆栈如下：
+```
+Caused by: java.sql.SQLException: Unable to unwrap to interface com.mysql.jdbc.Connection
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:129)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:97)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:89)
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:63)
+	at com.mysql.cj.jdbc.ConnectionImpl.unwrap(ConnectionImpl.java:2650)
+	at com.zaxxer.hikari.pool.ProxyConnection.unwrap(ProxyConnection.java:481)
+	at org.apache.shardingsphere.transaction.xa.jta.connection.dialect.MySQLXAConnectionWrapper.wrap(MySQLXAConnectionWrapper.java:46)
+	at org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource.getConnection(XATransactionDataSource.java:89)
+	at org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager.getConnection(XAShardingSphereTransactionManager.java:96
 ```
 
 ## Proxy

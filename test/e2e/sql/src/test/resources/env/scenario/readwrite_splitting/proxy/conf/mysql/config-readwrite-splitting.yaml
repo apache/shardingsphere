@@ -71,8 +71,7 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     write-read-ds:
-      staticStrategy:
-        writeDataSourceName: write_ds
-        readDataSourceNames:
-          - read_0
-          - read_1
+      writeDataSourceName: write_ds
+      readDataSourceNames:
+        - read_0
+        - read_1

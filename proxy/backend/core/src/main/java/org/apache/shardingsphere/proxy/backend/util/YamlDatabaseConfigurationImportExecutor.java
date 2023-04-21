@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.backend.util;
 
-import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
+import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidStorageUnitsException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
@@ -35,6 +35,8 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCrea
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.mask.api.config.MaskRuleConfiguration;
 import org.apache.shardingsphere.mask.rule.MaskRule;
@@ -115,14 +117,15 @@ public final class YamlDatabaseConfigurationImportExecutor {
     }
     
     private void checkDatabase(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Property `databaseName` in imported config is required");
+        ShardingSpherePreconditions.checkNotNull(databaseName, () -> new UnsupportedSQLOperationException("Property `databaseName` in imported config is required"));
         if (ProxyContext.getInstance().databaseExists(databaseName)) {
-            Preconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources().isEmpty(), "Database `%s` exists and is not empty", databaseName);
+            ShardingSpherePreconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResourceMetaData().getDataSources().isEmpty(),
+                    () -> new UnsupportedSQLOperationException(String.format("Database `%s` exists and is not empty，overwrite is not supported", databaseName)));
         }
     }
     
     private void checkDataSource(final Map<String, YamlProxyDataSourceConfiguration> dataSources) {
-        Preconditions.checkState(!dataSources.isEmpty(), "Data source configurations in imported config is required");
+        ShardingSpherePreconditions.checkState(!dataSources.isEmpty(), () -> new MissingRequiredDataSourcesException("Data source configurations in imported config is required"));
     }
     
     private void addDatabase(final String databaseName) {

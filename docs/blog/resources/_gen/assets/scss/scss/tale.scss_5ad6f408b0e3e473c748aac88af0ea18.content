@@ -21,7 +21,6 @@ html {
   @media (min-width: 700px) {
     html {
       font-size: 16px; } }
-
 body {
   -webkit-text-size-adjust: 100%; }
 
@@ -52,7 +51,6 @@ blockquote {
   @media (min-width: 600px) {
     blockquote {
       padding: 1rem 2rem 0.25rem 2rem; } }
-
 img {
   display: block;
   margin: 0 0 1rem;
@@ -89,11 +87,11 @@ code {
   border-radius: 3px;
   color: #bf616a;
   font-size: 85%;
-  padding: .25em .5em;
-  white-space: pre-wrap; }
+  padding: .25em .5em; }
 
 pre {
-  margin: 0 0 1rem; }
+  margin: 0 0 1rem;
+  padding: 1rem; }
 
 pre code {
   background-color: transparent;
@@ -532,8 +530,7 @@ footer {
   padding: 0 25px;
   max-height: 30em;
   margin-top: 10px; }
-  .catalogue-item:hover .catalogue-line,
-  .catalogue-item:focus .catalogue-line {
+  .catalogue-item:hover .catalogue-line, .catalogue-item:focus .catalogue-line {
     width: 5rem; }
   .catalogue-item:last-child {
     border: 0; }

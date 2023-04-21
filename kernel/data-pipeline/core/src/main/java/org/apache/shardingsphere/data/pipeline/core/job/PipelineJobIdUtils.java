@@ -26,7 +26,7 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.job.util.InstanceTypeUtil;
+import org.apache.shardingsphere.data.pipeline.core.job.util.InstanceTypeUtils;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobTypeFactory;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
@@ -50,7 +50,7 @@ public final class PipelineJobIdUtils {
         String databaseName = instanceType == InstanceType.PROXY ? "" : pipelineJobId.getContextKey().getDatabaseName();
         String databaseNameHex = Hex.encodeHexString(databaseName.getBytes(StandardCharsets.UTF_8), true);
         String databaseNameLengthHex = Hex.encodeHexString(Shorts.toByteArray((short) databaseNameHex.length()), true);
-        char encodedInstanceType = InstanceTypeUtil.encode(instanceType);
+        char encodedInstanceType = InstanceTypeUtils.encode(instanceType);
         return 'j' + pipelineJobId.getJobType().getTypeCode() + pipelineJobId.getFormatVersion() + encodedInstanceType + databaseNameLengthHex + databaseNameHex;
     }
     
@@ -85,6 +85,6 @@ public final class PipelineJobIdUtils {
         char instanceType = jobId.charAt(5);
         short databaseNameLength = Shorts.fromByteArray(Hex.decodeHex(jobId.substring(6, 10)));
         String databaseName = new String(Hex.decodeHex(jobId.substring(10, 10 + databaseNameLength)), StandardCharsets.UTF_8);
-        return PipelineContextKey.build(InstanceTypeUtil.decode(instanceType), databaseName);
+        return PipelineContextKey.build(databaseName, InstanceTypeUtils.decode(instanceType));
     }
 }

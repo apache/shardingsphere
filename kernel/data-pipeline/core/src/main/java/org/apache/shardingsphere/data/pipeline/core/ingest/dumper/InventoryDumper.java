@@ -114,6 +114,9 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     private void dump(final PipelineTableMetaData tableMetaData, final Connection connection) throws SQLException {
         int batchSize = dumperConfig.getBatchSize();
         DatabaseType databaseType = dumperConfig.getDataSourceConfig().getDatabaseType();
+        if (null != dumperConfig.getTransactionIsolation()) {
+            connection.setTransactionIsolation(dumperConfig.getTransactionIsolation());
+        }
         try (PreparedStatement preparedStatement = JDBCStreamQueryUtils.generateStreamQueryPreparedStatement(databaseType, connection, buildInventoryDumpSQL())) {
             dumpStatement = preparedStatement;
             if (!(databaseType instanceof MySQLDatabaseType)) {

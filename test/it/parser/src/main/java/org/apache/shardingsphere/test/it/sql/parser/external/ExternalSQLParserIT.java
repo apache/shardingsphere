@@ -38,7 +38,6 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.Properties;
 import java.util.stream.Stream;
 
 public abstract class ExternalSQLParserIT {
@@ -51,7 +50,7 @@ public abstract class ExternalSQLParserIT {
         try (SQLParseResultReporter resultReporter = TypedSPILoader.getService(SQLParseResultReporterCreator.class, reportType).create(databaseType)) {
             try {
                 ParseASTNode parseASTNode = new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false);
-                new SQLVisitorEngine(databaseType, "STATEMENT", true, new Properties()).visit(parseASTNode);
+                new SQLVisitorEngine(databaseType, true).visit(parseASTNode);
             } catch (final ShardingSphereExternalException | ClassCastException | NullPointerException | IllegalArgumentException | IndexOutOfBoundsException ignore) {
                 isSuccess = false;
             }

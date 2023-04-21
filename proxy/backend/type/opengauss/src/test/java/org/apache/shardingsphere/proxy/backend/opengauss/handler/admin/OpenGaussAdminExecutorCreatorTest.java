@@ -41,7 +41,7 @@ class OpenGaussAdminExecutorCreatorTest {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getTablesContext().getTableNames().contains("pg_database")).thenReturn(true);
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator()
-                .create(selectStatementContext, "select datname, datcompatibility from pg_database where datname = 'sharding_db'", "postgres");
+                .create(selectStatementContext, "select datname, datcompatibility from pg_database where datname = 'sharding_db'", "postgres", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(OpenGaussSystemCatalogAdminQueryExecutor.class));
     }
@@ -50,7 +50,7 @@ class OpenGaussAdminExecutorCreatorTest {
     void assertCreateExecutorForSelectVersion() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getSqlStatement().getProjections().getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(-1, -1, "VERSION()")));
-        Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator().create(selectStatementContext, "select VERSION()", "postgres");
+        Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator().create(selectStatementContext, "select VERSION()", "postgres", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(OpenGaussSystemCatalogAdminQueryExecutor.class));
     }
@@ -61,7 +61,7 @@ class OpenGaussAdminExecutorCreatorTest {
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
         assertThat(creator.create(sqlStatementContext), is(Optional.empty()));
-        assertThat(creator.create(sqlStatementContext, "", ""), is(Optional.empty()));
+        assertThat(creator.create(sqlStatementContext, "", "", Collections.emptyList()), is(Optional.empty()));
     }
     
     @Test

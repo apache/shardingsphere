@@ -17,19 +17,32 @@
 
 package org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl;
 
+import org.apache.calcite.avatica.util.TimeUnit;
+import org.apache.calcite.sql.SqlIntervalQualifier;
 import org.apache.calcite.sql.SqlLiteral;
 import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.fun.SqlTrimFunction.Flag;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 
-import java.math.BigDecimal;
 import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Literal expression converter.
  */
 public final class LiteralExpressionConverter implements SQLSegmentConverter<LiteralExpressionSegment, SqlNode> {
+
+    private static final Collection<String> TRIM_FUNCTION_FLAGS = new HashSet<>(3, 1);
+
+    static {
+        TRIM_FUNCTION_FLAGS.add("BOTH");
+        TRIM_FUNCTION_FLAGS.add("LEADING");
+        TRIM_FUNCTION_FLAGS.add("TRAILING");
+    }
     
     @Override
     public Optional<SqlNode> convert(final LiteralExpressionSegment segment) {

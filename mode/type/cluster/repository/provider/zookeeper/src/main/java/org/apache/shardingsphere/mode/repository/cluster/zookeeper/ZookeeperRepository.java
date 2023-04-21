@@ -207,13 +207,12 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Inst
     public void persistExclusiveEphemeral(final String key, final String value) {
         try {
             client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(key, value.getBytes(StandardCharsets.UTF_8));
+        } catch (final NodeExistsException ex) {
+            throw new ClusterPersistRepositoryException(ex);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            if (ex instanceof NodeExistsException) {
-                throw new ClusterPersistRepositoryException(ex);
-            }
             ZookeeperExceptionHandler.handleException(ex);
+            // CHECKSTYLE:ON
         }
     }
     
