@@ -40,6 +40,10 @@ public final class Column {
     
     private final boolean uniqueKey;
     
+    public Column(final String name, final Object value, final boolean updated, final boolean uniqueKey) {
+        this(name, null, value, updated, uniqueKey);
+    }
+    
     @Override
     public String toString() {
         return String.format("%s=%s", name, value);

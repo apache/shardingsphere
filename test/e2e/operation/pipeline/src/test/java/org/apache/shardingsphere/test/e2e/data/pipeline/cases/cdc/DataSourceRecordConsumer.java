@@ -125,9 +125,8 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
                     }
                     break;
                 case DELETE:
-                    TableColumn orderId = record.getBeforeList().stream().filter(each -> "order_id".equals(each.getName())).findFirst().orElseThrow(() ->
-                            new UnsupportedOperationException("No primary key found in the t_order"));
-                    preparedStatement.setObject(1, convertValueFromAny(tableMetaData, orderId));
+                    Object orderId = convertValueFromAny(tableMetaData, afterMap.get("order_id"));
+                    preparedStatement.setObject(1, orderId);
                     preparedStatement.execute();
                     break;
                 default:

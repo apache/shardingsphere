@@ -119,22 +119,21 @@ public final class DataRecordMerger {
     }
     
     private void mergeDelete(final DataRecord dataRecord, final Map<DataRecord.Key, DataRecord> dataRecords) {
-        DataRecord beforeDataRecord = dataRecords.get(dataRecord.getOldKey());
+        DataRecord beforeDataRecord = dataRecords.get(dataRecord.getKey());
         ShardingSpherePreconditions.checkState(null == beforeDataRecord
                 || !IngestDataChangeType.DELETE.equals(beforeDataRecord.getType()), () -> new PipelineUnexpectedDataRecordOrderException(beforeDataRecord, dataRecord));
         if (null != beforeDataRecord && IngestDataChangeType.UPDATE.equals(beforeDataRecord.getType()) && checkUpdatedPrimaryKey(beforeDataRecord)) {
             DataRecord mergedDataRecord = new DataRecord(dataRecord.getPosition(), dataRecord.getColumnCount());
             for (int i = 0; i < dataRecord.getColumnCount(); i++) {
-                boolean isUniqueKey = dataRecord.getColumn(i).isUniqueKey();
                 mergedDataRecord.addColumn(new Column(dataRecord.getColumn(i).getName(),
-                        isUniqueKey ? beforeDataRecord.getColumn(i).getOldValue() : beforeDataRecord.getColumn(i).getValue(), null, true, isUniqueKey));
+                        dataRecord.getColumn(i).isUniqueKey() ? beforeDataRecord.getColumn(i).getOldValue() : beforeDataRecord.getColumn(i).getValue(), true, dataRecord.getColumn(i).isUniqueKey()));
             }
             mergedDataRecord.setTableName(dataRecord.getTableName());
             mergedDataRecord.setType(IngestDataChangeType.DELETE);
             dataRecords.remove(beforeDataRecord.getKey());
             dataRecords.put(mergedDataRecord.getKey(), mergedDataRecord);
         } else {
-            dataRecords.put(dataRecord.getOldKey(), dataRecord);
+            dataRecords.put(dataRecord.getKey(), dataRecord);
         }
     }
     

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.importer;
 
-import com.google.common.base.Objects;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
@@ -121,7 +120,7 @@ class DataSourceImporterTest {
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
         jdbcImporter.run();
-        verify(preparedStatement).setObject(1, 20);
+        verify(preparedStatement).setObject(1, 10);
         verify(preparedStatement).setObject(2, "UPDATE");
         verify(preparedStatement).setObject(3, 1);
         verify(preparedStatement).setObject(4, 10);
@@ -139,7 +138,7 @@ class DataSourceImporterTest {
         inOrder.verify(preparedStatement).setObject(2, 10);
         inOrder.verify(preparedStatement).setObject(3, "UPDATE");
         inOrder.verify(preparedStatement).setObject(4, 1);
-        inOrder.verify(preparedStatement).setObject(5, 0);
+        inOrder.verify(preparedStatement).setObject(5, 10);
         inOrder.verify(preparedStatement).executeUpdate();
     }
     
@@ -148,8 +147,8 @@ class DataSourceImporterTest {
         result.setTableName(TABLE_NAME);
         result.setType("UPDATE");
         result.addColumn(new Column("id", 1, 2, true, true));
-        result.addColumn(new Column("user", 0, 10, true, false));
-        result.addColumn(new Column("status", null, "UPDATE", true, false));
+        result.addColumn(new Column("user", 10, true, false));
+        result.addColumn(new Column("status", "UPDATE", true, false));
         return result;
     }
     
@@ -168,32 +167,9 @@ class DataSourceImporterTest {
         DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
         result.setTableName(TABLE_NAME);
         result.setType(recordType);
-        Integer idOldValue = null;
-        Integer userOldValue = null;
-        Integer idValue = null;
-        Integer userValue = null;
-        String statusOldValue = null;
-        String statusValue = null;
-        if (Objects.equal("INSERT", recordType)) {
-            idValue = 1;
-            userValue = 10;
-            statusValue = recordType;
-        }
-        if (Objects.equal("UPDATE", recordType)) {
-            idOldValue = 1;
-            idValue = idOldValue;
-            userOldValue = 10;
-            userValue = 20;
-            statusValue = recordType;
-        }
-        if (Objects.equal("DELETE", recordType)) {
-            idOldValue = 1;
-            userOldValue = 10;
-            statusOldValue = recordType;
-        }
-        result.addColumn(new Column("id", idOldValue, idValue, false, true));
-        result.addColumn(new Column("user", userOldValue, userValue, true, false));
-        result.addColumn(new Column("status", statusOldValue, statusValue, true, false));
+        result.addColumn(new Column("id", 1, false, true));
+        result.addColumn(new Column("user", 10, true, false));
+        result.addColumn(new Column("status", recordType, true, false));
         return result;
     }
     

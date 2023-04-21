@@ -35,12 +35,12 @@ class DataRecordTest {
     void assertKeyEqual() {
         beforeDataRecord = new DataRecord(new PlaceholderPosition(), 2);
         beforeDataRecord.setTableName("t1");
-        beforeDataRecord.addColumn(new Column("id", null, 1, true, true));
-        beforeDataRecord.addColumn(new Column("name", null, "1", true, false));
+        beforeDataRecord.addColumn(new Column("id", 1, true, true));
+        beforeDataRecord.addColumn(new Column("name", "1", true, false));
         afterDataRecord = new DataRecord(new PlaceholderPosition(), 2);
         afterDataRecord.setTableName("t1");
-        afterDataRecord.addColumn(new Column("id", null, 1, true, true));
-        afterDataRecord.addColumn(new Column("name", null, "2", true, false));
+        afterDataRecord.addColumn(new Column("id", 1, true, true));
+        afterDataRecord.addColumn(new Column("name", "2", true, false));
         assertThat(beforeDataRecord.getKey(), is(afterDataRecord.getKey()));
     }
     
@@ -48,12 +48,12 @@ class DataRecordTest {
     void assertOldKeyEqual() {
         beforeDataRecord = new DataRecord(new PlaceholderPosition(), 2);
         beforeDataRecord.setTableName("t1");
-        beforeDataRecord.addColumn(new Column("id", null, 1, true, true));
-        beforeDataRecord.addColumn(new Column("name", null, "1", true, false));
+        beforeDataRecord.addColumn(new Column("id", 1, true, true));
+        beforeDataRecord.addColumn(new Column("name", "1", true, false));
         afterDataRecord = new DataRecord(new PlaceholderPosition(), 2);
         afterDataRecord.setTableName("t1");
         afterDataRecord.addColumn(new Column("id", 1, 2, true, true));
-        afterDataRecord.addColumn(new Column("name", null, "2", true, false));
+        afterDataRecord.addColumn(new Column("name", "2", true, false));
         assertThat(beforeDataRecord.getKey(), is(afterDataRecord.getOldKey()));
     }
 }
