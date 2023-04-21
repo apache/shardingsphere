@@ -119,7 +119,7 @@ public final class DataRecordMerger {
     }
     
     private void mergeDelete(final DataRecord dataRecord, final Map<DataRecord.Key, DataRecord> dataRecords) {
-        DataRecord beforeDataRecord = dataRecords.get(dataRecord.getKey());
+        DataRecord beforeDataRecord = dataRecords.get(dataRecord.getOldKey());
         ShardingSpherePreconditions.checkState(null == beforeDataRecord
                 || !IngestDataChangeType.DELETE.equals(beforeDataRecord.getType()), () -> new PipelineUnexpectedDataRecordOrderException(beforeDataRecord, dataRecord));
         if (null != beforeDataRecord && IngestDataChangeType.UPDATE.equals(beforeDataRecord.getType()) && checkUpdatedPrimaryKey(beforeDataRecord)) {
@@ -133,7 +133,7 @@ public final class DataRecordMerger {
             dataRecords.remove(beforeDataRecord.getKey());
             dataRecords.put(mergedDataRecord.getKey(), mergedDataRecord);
         } else {
-            dataRecords.put(dataRecord.getKey(), dataRecord);
+            dataRecords.put(dataRecord.getOldKey(), dataRecord);
         }
     }
     
