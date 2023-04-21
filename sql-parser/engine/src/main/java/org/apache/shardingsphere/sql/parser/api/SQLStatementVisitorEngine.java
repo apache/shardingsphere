@@ -21,16 +21,16 @@ import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLVisitorFactory;
+import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory;
 import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLVisitorRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * SQL visitor engine.
+ * SQL statement visitor engine.
  */
 @RequiredArgsConstructor
-public final class SQLVisitorEngine {
+public final class SQLStatementVisitorEngine {
     
     private final String databaseType;
     
@@ -44,7 +44,7 @@ public final class SQLVisitorEngine {
      * @return SQL visitor result
      */
     public <T> T visit(final ParseASTNode parseASTNode) {
-        ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, SQLVisitorRule.valueOf(parseASTNode.getRootNode().getClass()));
+        ParseTreeVisitor<T> visitor = SQLStatementVisitorFactory.newInstance(databaseType, SQLVisitorRule.valueOf(parseASTNode.getRootNode().getClass()));
         T result = parseASTNode.getRootNode().accept(visitor);
         if (isParseComment) {
             appendSQLComments(parseASTNode, result);

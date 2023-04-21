@@ -27,10 +27,10 @@ import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
 
 /**
- * SQL visitor factory.
+ * SQL statement visitor factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SQLVisitorFactory {
+public final class SQLStatementVisitorFactory {
     
     /**
      * Create new instance of SQL visitor.
