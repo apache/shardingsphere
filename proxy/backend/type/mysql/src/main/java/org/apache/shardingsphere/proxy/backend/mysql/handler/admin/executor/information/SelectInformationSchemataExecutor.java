@@ -19,9 +19,9 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.inf
 
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
@@ -34,7 +34,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,7 +54,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     
     public static final String DEFAULT_ENCRYPTION = "DEFAULT_ENCRYPTION";
     
-    private static final Set<String> SCHEMA_WITHOUT_DATA_SOURCE = new LinkedHashSet<>();
+    private static final Collection<String> SCHEMA_WITHOUT_DATA_SOURCE = new LinkedHashSet<>();
     
     private final SelectStatement sqlStatement;
     
@@ -63,8 +62,8 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     
     private boolean queryDatabase;
     
-    public SelectInformationSchemataExecutor(final SelectStatement sqlStatement, final String sql) {
-        super(sql);
+    public SelectInformationSchemataExecutor(final SelectStatement sqlStatement, final String sql, final List<Object> parameters) {
+        super(sql, parameters);
         this.sqlStatement = sqlStatement;
     }
     
@@ -75,17 +74,17 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     
     private void removeDuplicatedRow() {
         if (queryDatabase) {
-            List<Map<String, Object>> reservedRow = getRows().stream().collect(Collectors.groupingBy(each -> each.get(schemaNameAlias), Collectors.toCollection(LinkedList::new)))
+            Collection<Map<String, Object>> reservedRow = getRows().stream().collect(Collectors.groupingBy(each -> each.get(schemaNameAlias), Collectors.toCollection(LinkedList::new)))
                     .values().stream().map(LinkedList::getFirst).collect(Collectors.toList());
             reservedRow.forEach(each -> getRows().removeIf(row -> !getRows().contains(each)));
         }
     }
     
     @Override
-    protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
+    protected Collection<String> getDatabaseNames(final ConnectionSession connectionSession) {
         Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> isAuthorized(each, connectionSession.getGrantee())).collect(Collectors.toList());
         SCHEMA_WITHOUT_DATA_SOURCE.addAll(databaseNames.stream().filter(each -> !AbstractDatabaseMetaDataExecutor.hasDataSource(each)).collect(Collectors.toSet()));
-        List<String> result = databaseNames.stream().filter(AbstractDatabaseMetaDataExecutor::hasDataSource).collect(Collectors.toList());
+        Collection<String> result = databaseNames.stream().filter(AbstractDatabaseMetaDataExecutor::hasDataSource).collect(Collectors.toList());
         if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
             fillSchemasWithoutDataSource();
         }
@@ -95,7 +94,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     @Override
     protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
         ShardingSphereResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
-        Set<String> catalogs = resourceMetaData.getDataSources().keySet().stream().map(each -> resourceMetaData.getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
+        Collection<String> catalogs = resourceMetaData.getDataSources().keySet().stream().map(each -> resourceMetaData.getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
         schemaNameAlias = aliasMap.getOrDefault(SCHEMA_NAME, "");
         String rowValue = rowMap.getOrDefault(schemaNameAlias, "").toString();
         queryDatabase = !rowValue.isEmpty();
@@ -114,7 +113,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
         SCHEMA_WITHOUT_DATA_SOURCE.forEach(each -> {
             Map<String, Object> row = new HashMap<>(defaultRowData);
             row.replace(SCHEMA_NAME, each);
-            getRows().addLast(row);
+            getRows().add(row);
         });
         SCHEMA_WITHOUT_DATA_SOURCE.clear();
     }
