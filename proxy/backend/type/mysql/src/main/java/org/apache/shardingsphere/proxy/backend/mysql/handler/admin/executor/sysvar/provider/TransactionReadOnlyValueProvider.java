@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysv
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
- * Transaction read only
+ * Transaction read only.
  */
 public final class TransactionReadOnlyValueProvider implements SystemVariableValueProvider {
     

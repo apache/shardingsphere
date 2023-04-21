@@ -211,7 +211,7 @@ class MySQLAdminExecutorCreatorTest {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         VariableSegment variableSegment = new VariableSegment(0, 0, "transaction_isolation");
         variableSegment.setScope("SESSION");
-        when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 10, "@@session.transaction_isolation",  variableSegment)));
+        when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 10, "@@session.transaction_isolation", variableSegment)));
         when(mySQLSelectStatement.getProjections()).thenReturn(projectionsSegment);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mySQLSelectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select @@session.transaction_isolation", "", Collections.emptyList());
