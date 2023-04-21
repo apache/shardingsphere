@@ -1312,7 +1312,14 @@
                     </left>
                     <operator>+</operator>
                     <right>
-                        <expression-projection text="INTERVAL 1 SECOND" start-index="47" stop-index="63" />
+                        <function function-name="INTERVAL" text="INTERVAL" start-index="47" stop-index="54" >
+                            <parameter>
+                                <literal-expression value="1" start-index="56" stop-index="56" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="SECOND" start-index="58" stop-index="63" />
+                            </parameter>
+                        </function>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1336,7 +1343,14 @@
                     </left>
                     <operator>-</operator>
                     <right>
-                        <expression-projection text="INTERVAL 1 SECOND" start-index="47" stop-index="63" />
+                        <function function-name="INTERVAL" text="INTERVAL" start-index="47" stop-index="54" >
+                            <parameter>
+                                <literal-expression value="1" start-index="56" stop-index="56" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="SECOND" start-index="58" stop-index="63" />
+                            </parameter>
+                        </function>
                     </right>
                 </binary-operation-expression>
             </expr>

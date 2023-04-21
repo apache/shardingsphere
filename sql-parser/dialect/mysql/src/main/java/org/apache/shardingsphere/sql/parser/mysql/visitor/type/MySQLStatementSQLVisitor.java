@@ -758,7 +758,6 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     
     @Override
     public final ASTNode visitIntervalExpression(final IntervalExpressionContext ctx) {
-        calculateParameterCount(Collections.singleton(ctx.intervalValue().expr()));
         FunctionSegment result = new FunctionSegment(ctx.INTERVAL().getSymbol().getStartIndex(), ctx.INTERVAL().getSymbol().getStopIndex(), ctx.INTERVAL().getText(), ctx.INTERVAL().getText());
         result.getParameters().add((ExpressionSegment) visit(ctx.intervalValue().expr()));
         result.getParameters().add(new LiteralExpressionSegment(ctx.intervalValue().intervalUnit().getStart().getStartIndex(), ctx.intervalValue().intervalUnit().getStop().getStopIndex(),
