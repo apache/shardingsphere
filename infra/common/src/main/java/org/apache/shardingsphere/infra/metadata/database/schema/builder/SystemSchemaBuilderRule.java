@@ -125,7 +125,7 @@ public enum SystemSchemaBuilderRule {
      * Value of builder rule.
      *
      * @param databaseType database type
-     * @param schema       schema
+     * @param schema schema
      * @return builder rule
      */
     public static SystemSchemaBuilderRule valueOf(final String databaseType, final String schema) {
@@ -138,7 +138,7 @@ public enum SystemSchemaBuilderRule {
     /**
      * Judge whether current table is system table or not.
      *
-     * @param schema    schema
+     * @param schema schema
      * @param tableName table name
      * @return whether current table is system table or not
      */
