@@ -30,6 +30,7 @@ import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTran
 import org.apache.shardingsphere.dialect.mysql.exception.AccessDeniedException;
 import org.apache.shardingsphere.dialect.mysql.exception.DatabaseAccessDeniedException;
 import org.apache.shardingsphere.dialect.mysql.exception.HandshakeException;
+import org.apache.shardingsphere.dialect.mysql.exception.IncorrectGlobalLocalVariableException;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownCollationException;
 import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStatementException;
@@ -76,7 +77,8 @@ class MySQLDialectExceptionMapperTest {
                     Arguments.of(UnknownCollationException.class, MySQLVendorError.ER_UNKNOWN_COLLATION),
                     Arguments.of(HandshakeException.class, MySQLVendorError.ER_HANDSHAKE_ERROR),
                     Arguments.of(AccessDeniedException.class, MySQLVendorError.ER_ACCESS_DENIED_ERROR),
-                    Arguments.of(DatabaseAccessDeniedException.class, MySQLVendorError.ER_DBACCESS_DENIED_ERROR));
+                    Arguments.of(DatabaseAccessDeniedException.class, MySQLVendorError.ER_DBACCESS_DENIED_ERROR),
+                    Arguments.of(IncorrectGlobalLocalVariableException.class, MySQLVendorError.ER_INCORRECT_GLOBAL_LOCAL_VAR));
         }
     }
 }

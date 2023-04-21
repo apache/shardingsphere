@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sys
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dialect.mysql.exception.IncorrectGlobalLocalVariableException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.TransactionIsolationValueProvider;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.TransactionReadOnlyValueProvider;
@@ -1105,10 +1106,12 @@ public enum SystemVariable {
     
     private void validateGetValue(final Scope scope) {
         if (Scope.GLOBAL == scope) {
-            ShardingSpherePreconditions.checkState(0 == (Flag.ONLY_SESSION & scope()), IllegalArgumentException::new);
+            ShardingSpherePreconditions.checkState(0 == (Flag.ONLY_SESSION & scope()),
+                    () -> new IncorrectGlobalLocalVariableException(this.name().toLowerCase(), Scope.SESSION.name()));
         }
         if (Scope.SESSION == scope) {
-            ShardingSpherePreconditions.checkState(0 != ((Flag.SESSION | Flag.ONLY_SESSION) & scope()), IllegalArgumentException::new);
+            ShardingSpherePreconditions.checkState(0 != ((Flag.SESSION | Flag.ONLY_SESSION) & scope()),
+                    () -> new IncorrectGlobalLocalVariableException(this.name().toLowerCase(), Scope.GLOBAL.name()));
         }
     }
     
