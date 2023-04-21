@@ -37,7 +37,10 @@ import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-public class JDBCRepositoryProviderLoader {
+/**
+ * JDBC repository provider Loader.
+ */
+public final class JDBCRepositoryProviderLoader {
     
     private static final String ROOT_DIRECTORY = "JAXB/JDBCRepositoryProvider/";
     
