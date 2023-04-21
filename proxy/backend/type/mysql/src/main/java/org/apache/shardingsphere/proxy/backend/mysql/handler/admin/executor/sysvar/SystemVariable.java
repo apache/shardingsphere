@@ -20,6 +20,8 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sys
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.TransactionIsolationValueProvider;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.TransactionReadOnlyValueProvider;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.util.Arrays;
@@ -962,11 +964,11 @@ public enum SystemVariable {
     
     TRANSACTION_ALLOW_BATCHING(Flag.ONLY_SESSION, "0"),
     
-    // TRANSACTION_ISOLATION(Flag.SESSION | Flag.TRI_LEVEL, "TODO"),
+    TRANSACTION_ISOLATION(Flag.SESSION | Flag.TRI_LEVEL, "REPEATABLE-READ", new TransactionIsolationValueProvider()),
     
     TRANSACTION_PREALLOC_SIZE(Flag.SESSION, "4096"),
     
-    TRANSACTION_READ_ONLY(Flag.SESSION | Flag.TRI_LEVEL, "0"),
+    TRANSACTION_READ_ONLY(Flag.SESSION | Flag.TRI_LEVEL, "0", new TransactionReadOnlyValueProvider()),
     
     TRANSACTION_WRITE_SET_EXTRACTION(Flag.SESSION, "XXHASH64"),
     
@@ -1050,9 +1052,9 @@ public enum SystemVariable {
     
     TIME_FORMAT(Flag.GLOBAL | Flag.READONLY, "%H:%i:%s"),
     
-    // TX_ISOLATION(Flag.SESSION | Flag.TRI_LEVEL, "TODO"),
+    TX_ISOLATION(Flag.SESSION | Flag.TRI_LEVEL, "REPEATABLE-READ", new TransactionIsolationValueProvider()),
     
-    TX_READ_ONLY(Flag.SESSION | Flag.TRI_LEVEL, "0"),
+    TX_READ_ONLY(Flag.SESSION | Flag.TRI_LEVEL, "0", new TransactionReadOnlyValueProvider()),
     
     // The following variables are from MySQL 5.6
     

@@ -33,7 +33,6 @@ import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.Show
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowProcedureStatusExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowProcessListExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowTablesExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowTransactionExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowVersionExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.UnicastResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.UseDatabaseExecutor;
@@ -132,13 +131,6 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         if (isShowSpecialFunction(selectStatement, ShowCurrentUserExecutor.FUNCTION_NAME)
                 || isShowSpecialFunction(selectStatement, ShowCurrentUserExecutor.FUNCTION_NAME_ALIAS)) {
             return Optional.of(new ShowCurrentUserExecutor());
-        }
-        boolean hasNoResource = hasNoResource();
-        if (hasNoResource && isShowSpecialFunction(selectStatement, ShowTransactionExecutor.TRANSACTION_READ_ONLY)) {
-            return Optional.of(new ShowTransactionExecutor(ShowTransactionExecutor.TRANSACTION_READ_ONLY));
-        }
-        if (hasNoResource && isShowSpecialFunction(selectStatement, ShowTransactionExecutor.TRANSACTION_ISOLATION)) {
-            return Optional.of(new ShowTransactionExecutor(ShowTransactionExecutor.TRANSACTION_ISOLATION));
         }
         if (isShowSpecialFunction(selectStatement, ShowCurrentDatabaseExecutor.FUNCTION_NAME)) {
             return Optional.of(new ShowCurrentDatabaseExecutor());
