@@ -35,9 +35,9 @@ import java.util.HashSet;
  * Literal expression converter.
  */
 public final class LiteralExpressionConverter implements SQLSegmentConverter<LiteralExpressionSegment, SqlNode> {
-
+    
     private static final Collection<String> TRIM_FUNCTION_FLAGS = new HashSet<>(3, 1);
-
+    
     static {
         TRIM_FUNCTION_FLAGS.add("BOTH");
         TRIM_FUNCTION_FLAGS.add("LEADING");
