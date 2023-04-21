@@ -837,7 +837,14 @@
                             <function function-name="now" text="now()" start-index="71" stop-index="75" />
                         </parameter>
                         <parameter>
-                            <expression-projection text="interval ? second" literal-text="interval 1 second" start-index="77" stop-index="93" />
+                            <function function-name="interval" text="interval" start-index="77" stop-index="84" >
+                                <parameter>
+                                    <literal-expression value="1" start-index="86" stop-index="86" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="second" start-index="88" stop-index="93" />
+                                </parameter>
+                            </function>
                         </parameter>
                     </function>
                 </assignment-value>

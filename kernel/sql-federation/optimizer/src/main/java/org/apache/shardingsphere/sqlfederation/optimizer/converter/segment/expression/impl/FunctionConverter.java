@@ -45,6 +45,7 @@ public class FunctionConverter implements SQLSegmentConverter<FunctionSegment, S
     @Override
     public Optional<SqlNode> convert(final FunctionSegment segment) {
         SqlIdentifier functionName = new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO);
+        List<SqlOperator> functions = new LinkedList<>();
         // TODO optimize sql parse logic for select current_user.
         if ("CURRENT_USER".equalsIgnoreCase(functionName.getSimple())) {
             return Optional.of(functionName);
@@ -52,7 +53,9 @@ public class FunctionConverter implements SQLSegmentConverter<FunctionSegment, S
         if ("TRIM".equalsIgnoreCase(functionName.getSimple())) {
             return new TrimFunctionConverter().convert(segment);
         }
-        List<SqlOperator> functions = new LinkedList<>();
+        if ("INTERVAL".equalsIgnoreCase(functionName.getSimple())) {
+            return Optional.of(new SqlBasicCall(SqlStdOperatorTable.INTERVAL, getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO));
+        }
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.FUNCTION, functions, SqlNameMatchers.withCaseSensitive(false));
         return Optional.of(functions.isEmpty()
                 ? new SqlBasicCall(
