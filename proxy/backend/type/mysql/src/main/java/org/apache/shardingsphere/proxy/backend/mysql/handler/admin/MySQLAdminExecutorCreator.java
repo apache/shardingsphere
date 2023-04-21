@@ -22,6 +22,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.KillProcessExecutor;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.MySQLSystemVariableQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.NoResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowConnectionIdExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.ShowCreateDatabaseExecutor;
@@ -103,7 +104,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         if (sqlStatement instanceof SelectStatement) {
             SelectStatement selectStatement = (SelectStatement) sqlStatement;
             if (null == selectStatement.getFrom()) {
-                return getSelectFunctionOrVariableExecutor(selectStatement, sql, databaseName);
+                return findAdminExecutorForSelectWithoutFrom(sql, databaseName, selectStatement);
             }
             if (isQueryInformationSchema(databaseName)) {
                 return MySQLInformationSchemaExecutorFactory.newInstance(selectStatement, sql, parameters);
@@ -114,6 +115,11 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             }
         }
         return Optional.empty();
+    }
+    
+    private Optional<DatabaseAdminExecutor> findAdminExecutorForSelectWithoutFrom(final String sql, final String databaseName, final SelectStatement selectStatement) {
+        Optional<DatabaseAdminExecutor> result = MySQLSystemVariableQueryExecutor.tryGetSystemVariableQueryExecutor(selectStatement);
+        return result.isPresent() ? result : getSelectFunctionOrVariableExecutor(selectStatement, sql, databaseName);
     }
     
     private Optional<DatabaseAdminExecutor> getSelectFunctionOrVariableExecutor(final SelectStatement selectStatement, final String sql, final String databaseName) {
