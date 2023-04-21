@@ -69,6 +69,7 @@ public enum SystemVariable {
     
     AUTO_INCREMENT_OFFSET(Flag.SESSION | Flag.HINT_UPDATEABLE, "1"),
     
+    // TODO Get or set session value.
     AUTOCOMMIT(Flag.SESSION, "1"),
     
     AUTOMATIC_SP_PRIVILEGES(Flag.GLOBAL, "1"),
@@ -137,6 +138,7 @@ public enum SystemVariable {
     
     BULK_INSERT_BUFFER_SIZE(Flag.SESSION | Flag.HINT_UPDATEABLE, "8388608"),
     
+    // TODO Properly handling character set of session.
     CHARACTER_SET_CLIENT(Flag.SESSION, "utf8mb4"),
     
     CHARACTER_SET_CONNECTION(Flag.SESSION, "utf8mb4"),
@@ -923,7 +925,8 @@ public enum SystemVariable {
     
     SYNC_SOURCE_INFO(Flag.GLOBAL, "10000"),
     
-    // SYSTEM_TIME_ZONE(Flag.GLOBAL | Flag.READONLY, "TODO"),
+    // TODO Retrieve proper system time zone.
+    SYSTEM_TIME_ZONE(Flag.GLOBAL | Flag.READONLY, "UTC"),
     
     TABLE_DEFINITION_CACHE(Flag.GLOBAL, "400"),
     
@@ -949,7 +952,7 @@ public enum SystemVariable {
     
     THREAD_STACK(Flag.GLOBAL | Flag.READONLY, "1048576"),
     
-    TIME_ZONE(Flag.SESSION | Flag.HINT_UPDATEABLE, ""),
+    TIME_ZONE(Flag.SESSION | Flag.HINT_UPDATEABLE, "SYSTEM"),
     
     TIMESTAMP(Flag.ONLY_SESSION | Flag.HINT_UPDATEABLE, "0"),
     
@@ -981,6 +984,7 @@ public enum SystemVariable {
     
     VALIDATE_USER_PLUGINS(Flag.GLOBAL | Flag.READONLY | Flag.INVISIBLE, "1"),
     
+    // TODO Get version of ShardingSphere-Proxy
     VERSION(Flag.GLOBAL | Flag.READONLY, ""),
     
     VERSION_COMMENT(Flag.GLOBAL | Flag.READONLY, "Source distribution"),
