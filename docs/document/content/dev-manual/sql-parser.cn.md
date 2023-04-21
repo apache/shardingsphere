@@ -31,7 +31,7 @@ chapter = true
 
 ### 全限定类名
 
-[`org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/spi/src/main/java/org/apache/shardingsphere/sql/parser/spi/SQLVisitorFacade.java)
+[`org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade`](https://github.com/apache/shardingsphere/blob/master/sql-parser/spi/src/main/java/org/apache/shardingsphere/sql/parser/spi/SQLVisitorFacade.java)
 
 ### 定义
 

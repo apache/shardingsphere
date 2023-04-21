@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.facade;
 
-import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.type.SQLServerDALStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.type.SQLServerDCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.type.SQLServerDDLStatementSQLVisitor;
@@ -31,9 +31,9 @@ import org.apache.shardingsphere.sql.parser.sqlserver.visitor.type.SQLServerDMLS
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.type.SQLServerTCLStatementSQLVisitor;
 
 /**
- * SQL visitor facade for SQLServer.
+ * SQL statement visitor facade for SQLServer.
  */
-public final class SQLServerSQLVisitorFacade implements SQLVisitorFacade {
+public final class SQLServerSQLStatementVisitorFacade implements SQLStatementVisitorFacade {
     
     @Override
     public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {

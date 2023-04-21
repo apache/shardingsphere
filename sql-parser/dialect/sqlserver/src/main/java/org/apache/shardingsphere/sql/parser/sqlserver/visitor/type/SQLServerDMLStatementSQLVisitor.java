@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.type;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLSQLVisitor;
 
 /**
  * DML Statement SQL visitor for SQLServer.

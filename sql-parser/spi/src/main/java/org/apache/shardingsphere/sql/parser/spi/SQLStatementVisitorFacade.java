@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL visitor facade.
+ * SQL statement visitor facade.
  */
-public interface SQLVisitorFacade extends TypedSPI {
+public interface SQLStatementVisitorFacade extends TypedSPI {
     
     /**
      * Get DML visitor class.

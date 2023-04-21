@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.sql.parser.fixture;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 
-public final class SQLVisitorFacadeFixture implements SQLVisitorFacade {
+public final class SQLStatementVisitorFacadeFixture implements SQLStatementVisitorFacade {
     
     @Override
     public Class<? extends SQLVisitor> getDMLVisitorClass() {

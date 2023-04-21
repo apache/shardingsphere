@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.mysql.format;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.apache.shardingsphere.sql.parser.api.format.SQLFormatVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.format.SQLFormatVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterCommandListContext;

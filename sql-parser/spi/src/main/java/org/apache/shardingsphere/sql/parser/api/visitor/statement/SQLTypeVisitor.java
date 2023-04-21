@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.visitor.type;
+package org.apache.shardingsphere.sql.parser.api.visitor.statement;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 

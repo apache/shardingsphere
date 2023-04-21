@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.oracle.visitor.facade;
 
-import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.type.OracleDALStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.type.OracleDCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.type.OracleDDLStatementSQLVisitor;
@@ -31,9 +31,9 @@ import org.apache.shardingsphere.sql.parser.oracle.visitor.type.OracleDMLStateme
 import org.apache.shardingsphere.sql.parser.oracle.visitor.type.OracleTCLStatementSQLVisitor;
 
 /**
- * SQL visitor facade for Oracle.
+ * SQL statement visitor facade for Oracle.
  */
-public final class OracleSQLVisitorFacade implements SQLVisitorFacade {
+public final class OracleSQLStatementVisitorFacade implements SQLStatementVisitorFacade {
     
     @Override
     public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {

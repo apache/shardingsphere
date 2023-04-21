@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.facade;
 
-import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.type.PostgreSQLDALStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.type.PostgreSQLDCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.type.PostgreSQLDDLStatementSQLVisitor;
@@ -31,9 +31,9 @@ import org.apache.shardingsphere.sql.parser.postgresql.visitor.type.PostgreSQLDM
 import org.apache.shardingsphere.sql.parser.postgresql.visitor.type.PostgreSQLTCLStatementSQLVisitor;
 
 /**
- * SQL visitor facade for PostgreSQL.
+ * SQL statement visitor facade for PostgreSQL.
  */
-public final class PostgreSQLSQLVisitorFacade implements SQLVisitorFacade {
+public final class PostgreSQLSQLStatementVisitorFacade implements SQLStatementVisitorFacade {
     
     @Override
     public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {

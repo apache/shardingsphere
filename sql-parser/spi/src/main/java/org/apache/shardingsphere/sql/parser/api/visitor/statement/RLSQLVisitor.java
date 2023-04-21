@@ -15,13 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.api.format;
-
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+package org.apache.shardingsphere.sql.parser.api.visitor.statement;
 
 /**
- * SQL format visitor.
+ * RL SQL visitor.
  */
-public interface SQLFormatVisitor extends SQLVisitor, TypedSPI {
+public interface RLSQLVisitor extends SQLTypeVisitor {
 }

@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
-import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
 
 /**
@@ -41,13 +41,13 @@ public final class SQLVisitorFactory {
      * @return created instance
      */
     public static <T> ParseTreeVisitor<T> newInstance(final String databaseType, final SQLVisitorRule visitorRule) {
-        SQLVisitorFacade facade = TypedSPILoader.getService(SQLVisitorFacade.class, databaseType);
+        SQLStatementVisitorFacade facade = TypedSPILoader.getService(SQLStatementVisitorFacade.class, databaseType);
         return createParseTreeVisitor(facade, visitorRule.getType());
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private static <T> ParseTreeVisitor<T> createParseTreeVisitor(final SQLVisitorFacade visitorFacade, final SQLStatementType type) {
+    private static <T> ParseTreeVisitor<T> createParseTreeVisitor(final SQLStatementVisitorFacade visitorFacade, final SQLStatementType type) {
         switch (type) {
             case DML:
                 return (ParseTreeVisitor<T>) visitorFacade.getDMLVisitorClass().getConstructor().newInstance();

@@ -17,23 +17,23 @@
 
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.facade;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.type.OpenGaussDALStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.type.OpenGaussDCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.type.OpenGaussDDLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.type.OpenGaussDMLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.opengauss.visitor.type.OpenGaussTCLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
+import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 
 /**
- * SQL visitor facade for openGauss.
+ * SQL statement visitor facade for openGauss.
  */
-public final class OpenGaussSQLVisitorFacade implements SQLVisitorFacade {
+public final class OpenGaussSQLStatementVisitorFacade implements SQLStatementVisitorFacade {
     
     @Override
     public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {

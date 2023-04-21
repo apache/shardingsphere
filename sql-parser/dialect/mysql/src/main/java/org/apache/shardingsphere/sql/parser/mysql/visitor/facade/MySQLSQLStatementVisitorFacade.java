@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sql.parser.mysql.visitor.facade;
 
 import org.apache.shardingsphere.sql.parser.mysql.visitor.type.MySQLRLStatementSQLVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.RLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.type.MySQLDALStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.type.MySQLDCLStatementSQLVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.type.MySQLDDLStatementSQLVisitor;
@@ -32,9 +32,9 @@ import org.apache.shardingsphere.sql.parser.mysql.visitor.type.MySQLDMLStatement
 import org.apache.shardingsphere.sql.parser.mysql.visitor.type.MySQLTCLStatementSQLVisitor;
 
 /**
- * SQL visitor facade for MySQL.
+ * SQL statement visitor facade for MySQL.
  */
-public final class MySQLSQLVisitorFacade implements SQLVisitorFacade {
+public final class MySQLSQLStatementVisitorFacade implements SQLStatementVisitorFacade {
     
     @Override
     public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
