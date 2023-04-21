@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.type;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.TCLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AbortContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.BeginTransactionContext;
@@ -47,7 +46,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.tcl.
 /**
  * TCL Statement SQL visitor for openGauss.
  */
-public final class OpenGaussTCLStatementSQLVisitor extends OpenGaussStatementSQLVisitor implements TCLSQLVisitor, SQLStatementVisitor {
+public final class OpenGaussTCLStatementSQLVisitor extends OpenGaussStatementSQLVisitor implements TCLSQLVisitor {
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {

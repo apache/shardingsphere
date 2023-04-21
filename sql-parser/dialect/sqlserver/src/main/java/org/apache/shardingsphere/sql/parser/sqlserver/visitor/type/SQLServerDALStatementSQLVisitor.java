@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.type;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExplainContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ExplainableStatementContext;
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dal.
 /**
  * DAL Statement SQL visitor for SQLServer.
  */
-public final class SQLServerDALStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DALSQLVisitor, SQLStatementVisitor {
+public final class SQLServerDALStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DALSQLVisitor {
     
     @Override
     public ASTNode visitExplain(final ExplainContext ctx) {

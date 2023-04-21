@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.mysql.visitor.type;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DALSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterResourceGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AnalyzeTableContext;
@@ -223,7 +222,7 @@ import java.util.List;
 /**
  * DAL Statement SQL visitor for MySQL.
  */
-public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor implements DALSQLVisitor, SQLStatementVisitor {
+public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor implements DALSQLVisitor {
     
     @Override
     public ASTNode visitUninstallPlugin(final UninstallPluginContext ctx) {

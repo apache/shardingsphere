@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.type;
 
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DMLSQLVisitor;
 
 /**
  * DML Statement SQL visitor for SQLServer.
  */
-public final class SQLServerDMLStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DMLSQLVisitor, SQLStatementVisitor {
+public final class SQLServerDMLStatementSQLVisitor extends SQLServerStatementSQLVisitor implements DMLSQLVisitor {
 }

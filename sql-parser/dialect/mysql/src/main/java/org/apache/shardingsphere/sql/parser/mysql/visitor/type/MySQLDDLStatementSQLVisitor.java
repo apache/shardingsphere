@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor.type;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AddTableConstraintContext;
@@ -179,7 +178,7 @@ import java.util.List;
 /**
  * DDL Statement SQL visitor for MySQL.
  */
-public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor implements DDLSQLVisitor, SQLStatementVisitor {
+public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor implements DDLSQLVisitor {
     
     @Override
     public ASTNode visitCreateView(final CreateViewContext ctx) {
