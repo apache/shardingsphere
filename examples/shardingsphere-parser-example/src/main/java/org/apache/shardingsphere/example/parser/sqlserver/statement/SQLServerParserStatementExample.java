@@ -19,7 +19,7 @@ package org.apache.shardingsphere.example.parser.sqlserver.statement;
 
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
@@ -57,7 +57,7 @@ public final class SQLServerParserStatementExample {
             CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("SQLServer", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQLServer", false);
+            SQLStatementVisitorEngine visitorEngine = new SQLStatementVisitorEngine("SQLServer", false);
             SQLServerStatement sqlStatement = visitorEngine.visit(parseASTNode);
             System.out.println(sqlStatement);
         });

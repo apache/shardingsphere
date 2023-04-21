@@ -20,7 +20,7 @@ package org.apache.shardingsphere.traffic.distsql.parser.segment;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 import java.util.Collection;
 

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.parser.segment.strategy;
 
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 import java.util.Optional;
 

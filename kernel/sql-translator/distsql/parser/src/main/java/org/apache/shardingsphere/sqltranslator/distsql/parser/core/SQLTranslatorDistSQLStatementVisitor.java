@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sqltranslator.distsql.parser.core;
 
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.SQLTranslatorDistSQLStatementParser.ShowSQLTranslatorRuleContext;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sqltranslator.distsql.parser.statement.ShowSQLTranslatorRuleStatement;
 

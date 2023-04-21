@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.parser.segment.table;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 import java.util.Arrays;
 import java.util.Collection;

@@ -19,12 +19,12 @@ package org.apache.shardingsphere.sql.parser.opengauss.parser;
 
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
+import org.apache.shardingsphere.sql.parser.spi.SQLDialectParserFacade;
 
 /**
  * SQL parser facade for openGauss.
  */
-public final class OpenGaussParserFacade implements DatabaseTypedSQLParserFacade {
+public final class OpenGaussParserFacade implements SQLDialectParserFacade {
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {

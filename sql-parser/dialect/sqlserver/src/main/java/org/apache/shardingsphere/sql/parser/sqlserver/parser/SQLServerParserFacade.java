@@ -19,12 +19,12 @@ package org.apache.shardingsphere.sql.parser.sqlserver.parser;
 
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.spi.DatabaseTypedSQLParserFacade;
+import org.apache.shardingsphere.sql.parser.spi.SQLDialectParserFacade;
 
 /**
  * SQL parser facade for SQLServer.
  */
-public final class SQLServerParserFacade implements DatabaseTypedSQLParserFacade {
+public final class SQLServerParserFacade implements SQLDialectParserFacade {
     
     @Override
     public Class<? extends SQLLexer> getLexerClass() {
