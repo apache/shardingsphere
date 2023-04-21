@@ -49,8 +49,14 @@ public final class LiteralExpressionConverter implements SQLSegmentConverter<Lit
         if (null == segment.getLiterals()) {
             return Optional.of(SqlLiteral.createNull(SqlParserPos.ZERO));
         }
+        if ("YEAR".equals(segment.getLiterals())) {
+            return Optional.of(new SqlIntervalQualifier(TimeUnit.YEAR, null, SqlParserPos.ZERO));
+        }
         if (segment.getLiterals() instanceof Integer || segment.getLiterals() instanceof BigDecimal) {
             return Optional.of(SqlLiteral.createExactNumeric(String.valueOf(segment.getLiterals()), SqlParserPos.ZERO));
+        }
+        if (TRIM_FUNCTION_FLAGS.contains(String.valueOf(segment.getLiterals()))) {
+            return Optional.of(SqlLiteral.createSymbol(Flag.valueOf(String.valueOf(segment.getLiterals())), SqlParserPos.ZERO));
         }
         if (segment.getLiterals() instanceof String) {
             return Optional.of(SqlLiteral.createCharString(String.valueOf(segment.getLiterals()), SqlParserPos.ZERO));
