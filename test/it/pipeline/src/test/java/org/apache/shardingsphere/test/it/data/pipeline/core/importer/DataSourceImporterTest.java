@@ -103,7 +103,7 @@ class DataSourceImporterTest {
     
     @Test
     void assertDeleteDataRecord() throws SQLException {
-        DataRecord deleteRecord = getDeleteDataRecord();
+        DataRecord deleteRecord = getDataRecord("DELETE");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(deleteRecord));
         jdbcImporter.run();
@@ -118,10 +118,10 @@ class DataSourceImporterTest {
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
         jdbcImporter.run();
-        verify(preparedStatement).setObject(1, 10);
+        verify(preparedStatement).setObject(1, 20);
         verify(preparedStatement).setObject(2, "UPDATE");
         verify(preparedStatement).setObject(3, 1);
-        verify(preparedStatement).setObject(4, 10);
+        verify(preparedStatement).setObject(4, 20);
         verify(preparedStatement).executeUpdate();
     }
     
@@ -145,8 +145,8 @@ class DataSourceImporterTest {
         result.setTableName(TABLE_NAME);
         result.setType("UPDATE");
         result.addColumn(new Column("id", 1, 2, true, true));
-        result.addColumn(new Column("user", 10, true, false));
-        result.addColumn(new Column("status", "UPDATE", true, false));
+        result.addColumn(new Column("user", 0, 10, true, false));
+        result.addColumn(new Column("status", null, "UPDATE", true, false));
         return result;
     }
     
@@ -161,19 +161,32 @@ class DataSourceImporterTest {
         DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
         result.setTableName(TABLE_NAME);
         result.setType(recordType);
-        result.addColumn(new Column("id", 1, false, true));
-        result.addColumn(new Column("user", 10, true, false));
-        result.addColumn(new Column("status", recordType, true, false));
-        return result;
-    }
-    
-    private DataRecord getDeleteDataRecord() {
-        DataRecord result = new DataRecord(new PlaceholderPosition(), 3);
-        result.setTableName(TABLE_NAME);
-        result.setType("DELETE");
-        result.addColumn(new Column("id", null, 1, false, true));
-        result.addColumn(new Column("user", null, 10, true, false));
-        result.addColumn(new Column("status", null, "DELETE", true, false));
+        Integer idOldValue = null;
+        Integer userOldValue = null;
+        Integer idValue = null;
+        Integer userValue = null;
+        String statusOldValue = null;
+        String statusValue = null;
+        if ("INSERT".equals(recordType)) {
+            idValue = 1;
+            userValue = 10;
+            statusValue = recordType;
+        }
+        if ("UPDATE".equals(recordType)) {
+            idOldValue = 1;
+            idValue = idOldValue;
+            userOldValue = 10;
+            userValue = 20;
+            statusValue = recordType;
+        }
+        if ("DELETE".equals(recordType)) {
+            idOldValue = 1;
+            userOldValue = 10;
+            statusOldValue = recordType;
+        }
+        result.addColumn(new Column("id", idOldValue, idValue, false, true));
+        result.addColumn(new Column("user", userOldValue, userValue, true, false));
+        result.addColumn(new Column("status", statusOldValue, statusValue, true, false));
         return result;
     }
     
