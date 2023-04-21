@@ -1049,10 +1049,22 @@ public enum SystemVariable {
     SYNC_FRM(Flag.GLOBAL, "1"),
     
     TIME_FORMAT(Flag.GLOBAL | Flag.READONLY, "%H:%i:%s"),
-
+    
     // TX_ISOLATION(Flag.SESSION | Flag.TRI_LEVEL, "TODO"),
     
-    TX_READ_ONLY(Flag.SESSION | Flag.TRI_LEVEL, "0");
+    TX_READ_ONLY(Flag.SESSION | Flag.TRI_LEVEL, "0"),
+    
+    // The following variables are from MySQL 5.6
+    
+    BINLOGGING_IMPOSSIBLE_MODE(Flag.GLOBAL, "IGNORE_ERROR"),
+    
+    SIMPLIFIED_BINLOG_GTID_RECOVERY(Flag.READONLY, "0"),
+    
+    STORAGE_ENGINE(Flag.SESSION, ""),
+    
+    THREAD_CONCURRENCY(Flag.READONLY, "10"),
+    
+    TIMED_MUTEXES(Flag.GLOBAL, "0");
     
     private static final Map<String, SystemVariable> ALL_VARIABLES = Arrays.stream(values()).collect(Collectors.toMap(Enum::name, Function.identity()));
     
