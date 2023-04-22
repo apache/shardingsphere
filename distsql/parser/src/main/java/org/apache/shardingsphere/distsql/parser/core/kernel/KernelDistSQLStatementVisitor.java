@@ -121,7 +121,7 @@ import java.util.stream.Collectors;
 /**
  * SQL statement visitor for kernel DistSQL.
  */
-public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitRegisterStorageUnit(final RegisterStorageUnitContext ctx) {

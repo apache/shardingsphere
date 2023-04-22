@@ -69,7 +69,7 @@ import java.util.stream.Collectors;
 /**
  * SQL statement visitor for shadow DistSQL.
  */
-public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateShadowRule(final CreateShadowRuleContext ctx) {

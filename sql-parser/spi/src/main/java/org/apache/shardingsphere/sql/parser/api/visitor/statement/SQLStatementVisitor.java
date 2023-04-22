@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.sql.parser.api.visitor.statement;
 
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+
 /**
- * RL SQL visitor.
+ * SQL statement visitor.
  */
-public interface RLSQLVisitor extends SQLTypeVisitor {
+public interface SQLStatementVisitor extends SQLVisitor<ASTNode> {
 }

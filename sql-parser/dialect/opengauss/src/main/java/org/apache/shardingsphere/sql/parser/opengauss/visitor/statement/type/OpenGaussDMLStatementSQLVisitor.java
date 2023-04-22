@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLSQLVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CheckpointContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CopyContext;

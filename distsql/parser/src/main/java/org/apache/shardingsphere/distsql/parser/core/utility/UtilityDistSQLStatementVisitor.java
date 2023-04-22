@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 /**
  * SQL statement visitor for utility DistSQL.
  */
-public final class UtilityDistSQLStatementVisitor extends UtilityDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class UtilityDistSQLStatementVisitor extends UtilityDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitPreviewSQL(final PreviewSQLContext ctx) {

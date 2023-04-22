@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * SQL statement visitor for traffic DistSQL.
  */
-public final class TrafficDistSQLStatementVisitor extends TrafficDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class TrafficDistSQLStatementVisitor extends TrafficDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitAlterTrafficRule(final AlterTrafficRuleContext ctx) {
