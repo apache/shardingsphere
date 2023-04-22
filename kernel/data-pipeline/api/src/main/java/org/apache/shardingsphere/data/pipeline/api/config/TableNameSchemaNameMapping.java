@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.api.config;
 import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,7 +38,7 @@ public final class TableNameSchemaNameMapping {
      * @param tableSchemaMap table name and schema name map
      */
     public TableNameSchemaNameMapping(final Map<String, String> tableSchemaMap) {
-        mapping = null == tableSchemaMap ? Collections.emptyMap() : getLogicTableNameMap(tableSchemaMap);
+        mapping = getLogicTableNameMap(tableSchemaMap);
     }
     
     private Map<LogicTableName, String> getLogicTableNameMap(final Map<String, String> tableSchemaMap) {
