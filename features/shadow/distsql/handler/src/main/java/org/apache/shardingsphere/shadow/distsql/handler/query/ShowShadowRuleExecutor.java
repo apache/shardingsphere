@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -50,6 +52,10 @@ public final class ShowShadowRuleExecutor implements RQLExecutor<ShowShadowRules
     
     private static final String SHADOW_TABLE = "shadow_table";
     
+    private static final String ALGORITHM_TYPE = "algorithm_type";
+    
+    private static final String ALGORITHM_PROPS = "algorithm_props";
+    
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShadowRulesStatement sqlStatement) {
         Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
@@ -61,7 +67,7 @@ public final class ShowShadowRuleExecutor implements RQLExecutor<ShowShadowRules
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         while (data.hasNext()) {
             Map<String, String> row = data.next();
-            result.add(new LocalDataQueryResultRow(row.get(RULE_NAME), row.get(SOURCE_NAME), row.get(SHADOW_NAME), row.getOrDefault(SHADOW_TABLE, "")));
+            result.add(new LocalDataQueryResultRow(row.get(SHADOW_TABLE), row.get(RULE_NAME), row.get(SOURCE_NAME), row.get(SHADOW_NAME), row.get(ALGORITHM_TYPE), row.get(ALGORITHM_PROPS)));
         }
         return result;
     }
@@ -70,7 +76,9 @@ public final class ShowShadowRuleExecutor implements RQLExecutor<ShowShadowRules
         Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap = convertToDataSourceTableMap(ruleConfig.getTables());
         Collection<ShadowDataSourceConfiguration> specifiedConfigs = !isSpecified(sqlStatement) ? ruleConfig.getDataSources()
                 : ruleConfig.getDataSources().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).collect(Collectors.toList());
-        return specifiedConfigs.stream().map(each -> buildDataItem(each, dataSourceTableMap)).collect(Collectors.toList()).iterator();
+        Collection<Map<String, String>> result = new LinkedList<>();
+        specifiedConfigs.forEach(each -> result.addAll(buildDataItems(each, dataSourceTableMap, ruleConfig.getShadowAlgorithms())));
+        return result.iterator();
     }
     
     private Map<String, Map<String, ShadowTableConfiguration>> convertToDataSourceTableMap(final Map<String, ShadowTableConfiguration> tables) {
@@ -84,28 +92,32 @@ public final class ShowShadowRuleExecutor implements RQLExecutor<ShowShadowRules
         return null != sqlStatement.getRuleName() && !sqlStatement.getRuleName().isEmpty();
     }
     
-    private Map<String, String> buildDataItem(final ShadowDataSourceConfiguration dataSourceConfiguration, final Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap) {
-        Map<String, String> result = convertToDataSourceMap(dataSourceConfiguration);
-        Map<String, ShadowTableConfiguration> dataSourceTable = dataSourceTableMap.getOrDefault(result.get(RULE_NAME), Collections.emptyMap());
-        result.put(SHADOW_TABLE, convertToString(dataSourceTable.keySet()));
+    private Collection<Map<String, String>> buildDataItems(final ShadowDataSourceConfiguration dataSourceConfig, final Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap,
+                                                           final Map<String, AlgorithmConfiguration> algorithmConfigs) {
+        Map<String, ShadowTableConfiguration> dataSourceTable = dataSourceTableMap.getOrDefault(dataSourceConfig.getName(), Collections.emptyMap());
+        Collection<Map<String, String>> result = new LinkedList<>();
+        dataSourceTable.forEach((each, value) -> {
+            value.getShadowAlgorithmNames().forEach(algorithm -> {
+                result.add(buildDataItem(dataSourceConfig, algorithmConfigs.get(algorithm), each));
+            });
+        });
         return result;
     }
     
-    private Map<String, String> convertToDataSourceMap(final ShadowDataSourceConfiguration dataSourceConfiguration) {
-        Map<String, String> result = new HashMap<>();
-        result.put(RULE_NAME, dataSourceConfiguration.getName());
-        result.put(SOURCE_NAME, dataSourceConfiguration.getProductionDataSourceName());
-        result.put(SHADOW_NAME, dataSourceConfiguration.getShadowDataSourceName());
+    private Map<String, String> buildDataItem(final ShadowDataSourceConfiguration dataSourceConfig, final AlgorithmConfiguration algorithmConfig, final String tableName) {
+        Map<String, String> result = new HashMap<>(6, 1);
+        result.put(RULE_NAME, dataSourceConfig.getName());
+        result.put(SOURCE_NAME, dataSourceConfig.getProductionDataSourceName());
+        result.put(SHADOW_NAME, dataSourceConfig.getShadowDataSourceName());
+        result.put(ALGORITHM_TYPE, algorithmConfig.getType());
+        result.put(ALGORITHM_PROPS, PropertiesConverter.convert(algorithmConfig.getProps()));
+        result.put(SHADOW_TABLE, tableName);
         return result;
-    }
-    
-    private String convertToString(final Collection<String> shadowTables) {
-        return null == shadowTables ? "" : String.join(",", shadowTables);
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList(RULE_NAME, SOURCE_NAME, SHADOW_NAME, SHADOW_TABLE);
+        return Arrays.asList(SHADOW_TABLE, RULE_NAME, SOURCE_NAME, SHADOW_NAME, ALGORITHM_TYPE, ALGORITHM_PROPS);
     }
     
     @Override
