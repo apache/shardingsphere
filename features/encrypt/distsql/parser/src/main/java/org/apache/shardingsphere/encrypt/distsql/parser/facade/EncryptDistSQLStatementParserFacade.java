@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatem
 import org.apache.shardingsphere.encrypt.distsql.parser.core.EncryptDistSQLLexer;
 import org.apache.shardingsphere.encrypt.distsql.parser.core.EncryptDistSQLParser;
 import org.apache.shardingsphere.encrypt.distsql.parser.core.EncryptDistSQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -41,7 +42,7 @@ public final class EncryptDistSQLStatementParserFacade implements FeaturedDistSQ
     }
     
     @Override
-    public Class<? extends SQLVisitor> getVisitorClass() {
+    public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return EncryptDistSQLStatementVisitor.class;
     }
     
