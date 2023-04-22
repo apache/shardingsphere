@@ -32,7 +32,6 @@ public final class EmptyRowEnumerator<T> implements Enumerator<T> {
     @Override
     public T current() {
         ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
-        System.out.println(type.getActualTypeArguments()[0].getTypeName());
         if ("Object".equals(type.getActualTypeArguments()[0].getTypeName())) {
             return (T) new Object();
         } else {
