@@ -106,7 +106,6 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
                 }
                 if (encryptTable.findPlainColumn(columnName).isPresent()) {
                     addPlainColumn(result, encryptTable, columnName, columnIndex);
-                    columnIndex++;
                 }
             }
         }

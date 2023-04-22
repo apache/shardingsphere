@@ -31,6 +31,8 @@ import java.util.HashSet;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CacheableShardingAlgorithmChecker {
     
+    private static final Collection<Class<? extends ShardingAlgorithm>> CACHEABLE_SHARDING_ALGORITHM_CLASSES;
+    
     static {
         Collection<Class<? extends ShardingAlgorithm>> result = new HashSet<>();
         for (CacheableShardingAlgorithmClassProvider each : ShardingSphereServiceLoader.getServiceInstances(CacheableShardingAlgorithmClassProvider.class)) {
@@ -38,8 +40,6 @@ public final class CacheableShardingAlgorithmChecker {
         }
         CACHEABLE_SHARDING_ALGORITHM_CLASSES = result;
     }
-    
-    private static final Collection<Class<? extends ShardingAlgorithm>> CACHEABLE_SHARDING_ALGORITHM_CLASSES;
     
     /**
      * Check if sharding algorithm is cacheable.
