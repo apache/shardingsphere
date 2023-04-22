@@ -33,7 +33,6 @@
         <exclude name="GuardLogStatement" />
         <exclude name="OverrideBothEqualsAndHashcode" />
         <exclude name="PreserveStackTrace" />
-        <exclude name="SingularField" />
         <exclude name="UncommentedEmptyMethodBody" />
         <exclude name="UnusedPrivateField" />
         <exclude name="UnusedPrivateMethod" />
