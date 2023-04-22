@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAnalyticViewContext;
@@ -256,7 +256,7 @@ import java.util.LinkedList;
 /**
  * DDL statement visitor for Oracle.
  */
-public final class OracleDDLStatementVisitor extends OracleStatementVisitor implements DDLSQLVisitor {
+public final class OracleDDLStatementVisitor extends OracleStatementVisitor implements DDLStatementVisitor {
     
     @SuppressWarnings("unchecked")
     @Override

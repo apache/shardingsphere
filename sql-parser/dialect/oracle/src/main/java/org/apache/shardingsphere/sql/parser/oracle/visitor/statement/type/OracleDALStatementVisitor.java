@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterResourceCostContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.OracleAlterResourceCostStatement;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dal.Ora
 /**
  * DAL statement visitor for Oracle.
  */
-public final class OracleDALStatementVisitor extends OracleStatementVisitor implements DALSQLVisitor {
+public final class OracleDALStatementVisitor extends OracleStatementVisitor implements DALStatementVisitor {
     
     @Override
     public ASTNode visitAlterResourceCost(final AlterResourceCostContext ctx) {

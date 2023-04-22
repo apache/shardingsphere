@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AbsoluteCountContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AddConstraintSpecificationContext;
@@ -324,7 +324,7 @@ import java.util.Optional;
 /**
  * DDL statement visitor for PostgreSQL.
  */
-public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisitor implements DDLSQLVisitor {
+public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisitor implements DDLStatementVisitor {
     
     @SuppressWarnings("unchecked")
     @Override

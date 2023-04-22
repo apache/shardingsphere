@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement;
 
 import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type.SQLServerDALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type.SQLServerDCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type.SQLServerDDLStatementVisitor;
@@ -36,32 +36,32 @@ import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type.SQL
 public final class SQLServerStatementVisitorFacade implements SQLStatementVisitorFacade {
     
     @Override
-    public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
+    public Class<? extends DMLStatementVisitor> getDMLVisitorClass() {
         return SQLServerDMLStatementVisitor.class;
     }
     
     @Override
-    public Class<? extends DDLSQLVisitor> getDDLVisitorClass() {
+    public Class<? extends DDLStatementVisitor> getDDLVisitorClass() {
         return SQLServerDDLStatementVisitor.class;
     }
     
     @Override
-    public Class<? extends TCLSQLVisitor> getTCLVisitorClass() {
+    public Class<? extends TCLStatementVisitor> getTCLVisitorClass() {
         return SQLServerTCLStatementVisitor.class;
     }
     
     @Override
-    public Class<? extends DCLSQLVisitor> getDCLVisitorClass() {
+    public Class<? extends DCLStatementVisitor> getDCLVisitorClass() {
         return SQLServerDCLStatementVisitor.class;
     }
     
     @Override
-    public Class<? extends DALSQLVisitor> getDALVisitorClass() {
+    public Class<? extends DALStatementVisitor> getDALVisitorClass() {
         return SQLServerDALStatementVisitor.class;
     }
     
     @Override
-    public Class<? extends RLSQLVisitor> getRLVisitorClass() {
+    public Class<? extends RLStatementVisitor> getRLVisitorClass() {
         return null;
     }
     

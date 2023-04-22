@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql92.visitor.statement.type;
 
 import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AliasContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentValueContext;
@@ -103,7 +103,7 @@ import java.util.stream.Collectors;
 /**
  * DML statement visitor for SQL92.
  */
-public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implements DMLSQLVisitor {
+public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implements DMLStatementVisitor {
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {

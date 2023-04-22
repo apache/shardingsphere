@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AccountLockPasswordExpireOptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AccountLockPasswordExpireOptionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.AlterUserContext;
@@ -119,7 +119,7 @@ import java.util.stream.Collectors;
 /**
  * DCL statement visitor for MySQL.
  */
-public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implements DCLSQLVisitor {
+public final class MySQLDCLStatementVisitor extends MySQLStatementVisitor implements DCLStatementVisitor {
     
     @Override
     public ASTNode visitGrantRoleOrPrivilegeTo(final GrantRoleOrPrivilegeToContext ctx) {

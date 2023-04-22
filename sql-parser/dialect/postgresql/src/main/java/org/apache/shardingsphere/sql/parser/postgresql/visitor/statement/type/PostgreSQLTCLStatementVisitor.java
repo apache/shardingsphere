@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AbortContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitContext;
@@ -60,7 +60,7 @@ import java.util.List;
 /**
  * TCL statement visitor for PostgreSQL.
  */
-public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisitor implements TCLSQLVisitor {
+public final class PostgreSQLTCLStatementVisitor extends PostgreSQLStatementVisitor implements TCLStatementVisitor {
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {

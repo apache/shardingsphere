@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeMasterToContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StartSlaveContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.StopSlaveContext;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQL
 /**
  * RL statement visitor for MySQL.
  */
-public final class MySQLRLStatementVisitor extends MySQLStatementVisitor implements RLSQLVisitor {
+public final class MySQLRLStatementVisitor extends MySQLStatementVisitor implements RLStatementVisitor {
     
     @Override
     public ASTNode visitChangeMasterTo(final ChangeMasterToContext ctx) {

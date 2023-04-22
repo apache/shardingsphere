@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.oracle.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SavepointContext;
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.tcl.Ora
 /**
  * TCL statement visitor for Oracle.
  */
-public final class OracleTCLStatementVisitor extends OracleStatementVisitor implements TCLSQLVisitor {
+public final class OracleTCLStatementVisitor extends OracleStatementVisitor implements TCLStatementVisitor {
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {

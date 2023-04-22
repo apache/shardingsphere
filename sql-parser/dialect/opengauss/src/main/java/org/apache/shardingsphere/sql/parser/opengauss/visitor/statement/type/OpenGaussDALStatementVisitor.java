@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AnalyzeTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColIdContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ConfigurationParameterClauseContext;
@@ -55,7 +55,7 @@ import java.util.LinkedList;
 /**
  * DAL statement visitor for openGauss.
  */
-public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisitor implements DALSQLVisitor {
+public final class OpenGaussDALStatementVisitor extends OpenGaussStatementVisitor implements DALStatementVisitor {
     
     @Override
     public ASTNode visitShow(final ShowContext ctx) {

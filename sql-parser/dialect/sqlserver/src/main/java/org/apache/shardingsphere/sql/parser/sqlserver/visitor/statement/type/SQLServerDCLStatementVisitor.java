@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterLoginContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterUserContext;
@@ -77,7 +77,7 @@ import java.util.LinkedList;
 /**
  * DCL statement visitor for SQLServer.
  */
-public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisitor implements DCLSQLVisitor {
+public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisitor implements DCLStatementVisitor {
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {

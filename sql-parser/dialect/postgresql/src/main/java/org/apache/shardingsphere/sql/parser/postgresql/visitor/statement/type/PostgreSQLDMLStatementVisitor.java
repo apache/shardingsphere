@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type;
 
 import org.antlr.v4.runtime.misc.Interval;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CallArgumentContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CallContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CheckpointContext;
@@ -55,7 +55,7 @@ import java.util.LinkedList;
 /**
  * DML statement visitor for PostgreSQL.
  */
-public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisitor implements DMLSQLVisitor {
+public final class PostgreSQLDMLStatementVisitor extends PostgreSQLStatementVisitor implements DMLStatementVisitor {
     
     @Override
     public ASTNode visitCall(final CallContext ctx) {

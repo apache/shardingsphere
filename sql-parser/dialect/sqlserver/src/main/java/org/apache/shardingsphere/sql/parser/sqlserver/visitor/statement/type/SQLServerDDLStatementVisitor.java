@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterCheckConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.AlterColumnAddOptionContext;
@@ -125,7 +125,7 @@ import java.util.LinkedList;
 /**
  * DDL statement visitor for SQLServer.
  */
-public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisitor implements DDLSQLVisitor {
+public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisitor implements DDLStatementVisitor {
     
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type;
 
 import org.antlr.v4.runtime.Token;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.LockContext;
@@ -57,7 +57,7 @@ import java.util.List;
 /**
  * TCL statement visitor for MySQL.
  */
-public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implements TCLSQLVisitor {
+public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implements TCLStatementVisitor {
     
     @Override
     public ASTNode visitSetTransaction(final SetTransactionContext ctx) {

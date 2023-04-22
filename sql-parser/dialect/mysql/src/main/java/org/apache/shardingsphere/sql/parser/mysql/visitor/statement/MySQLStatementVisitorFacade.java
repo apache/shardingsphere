@@ -19,12 +19,12 @@ package org.apache.shardingsphere.sql.parser.mysql.visitor.statement;
 
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLRLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDDLStatementVisitor;
@@ -37,32 +37,32 @@ import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLTC
 public final class MySQLStatementVisitorFacade implements SQLStatementVisitorFacade {
     
     @Override
-    public Class<? extends DMLSQLVisitor> getDMLVisitorClass() {
+    public Class<? extends DMLStatementVisitor> getDMLVisitorClass() {
         return MySQLDMLStatementVisitor.class;
     }
     
     @Override
-    public Class<? extends DDLSQLVisitor> getDDLVisitorClass() {
+    public Class<? extends DDLStatementVisitor> getDDLVisitorClass() {
         return MySQLDDLStatementVisitor.class;
     }
     
     @Override
-    public Class<? extends TCLSQLVisitor> getTCLVisitorClass() {
+    public Class<? extends TCLStatementVisitor> getTCLVisitorClass() {
         return MySQLTCLStatementVisitor.class;
     }
     
     @Override
-    public Class<? extends DCLSQLVisitor> getDCLVisitorClass() {
+    public Class<? extends DCLStatementVisitor> getDCLVisitorClass() {
         return MySQLDCLStatementVisitor.class;
     }
     
     @Override
-    public Class<? extends DALSQLVisitor> getDALVisitorClass() {
+    public Class<? extends DALStatementVisitor> getDALVisitorClass() {
         return MySQLDALStatementVisitor.class;
     }
     
     @Override
-    public Class<? extends RLSQLVisitor> getRLVisitorClass() {
+    public Class<? extends RLStatementVisitor> getRLVisitorClass() {
         return MySQLRLStatementVisitor.class;
     }
     

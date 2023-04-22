@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AbsoluteCountContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AddConstraintSpecificationContext;
@@ -251,7 +251,7 @@ import java.util.Optional;
 /**
  * DDL statement visitor for openGauss.
  */
-public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisitor implements DDLSQLVisitor {
+public final class OpenGaussDDLStatementVisitor extends OpenGaussStatementVisitor implements DDLStatementVisitor {
     
     @SuppressWarnings("unchecked")
     @Override

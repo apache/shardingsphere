@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type;
 
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
-import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AlterUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateRoleContext;
@@ -46,7 +46,7 @@ import java.util.Optional;
 /**
  * DCL statement visitor for openGauss.
  */
-public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisitor implements DCLSQLVisitor {
+public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisitor implements DCLStatementVisitor {
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
