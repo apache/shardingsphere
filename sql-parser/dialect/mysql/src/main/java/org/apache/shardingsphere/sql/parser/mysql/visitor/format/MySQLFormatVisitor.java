@@ -73,9 +73,9 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WithCla
 import java.util.Properties;
 
 /**
- * Format SQL visitor for MySQL.
+ * SQL format visitor for MySQL.
  */
-public final class MySQLFormatSQLVisitor extends MySQLStatementBaseVisitor<String> implements SQLFormatVisitor {
+public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> implements SQLFormatVisitor {
     
     private final StringBuilder formattedSQL = new StringBuilder();
     
