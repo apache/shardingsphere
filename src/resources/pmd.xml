@@ -43,6 +43,12 @@
     <rule ref="category/java/bestpractices.xml/AvoidReassigningCatchVariables" />
     <rule ref="category/java/bestpractices.xml/AvoidReassigningLoopVariables" />
     <rule ref="category/java/bestpractices.xml/AvoidReassigningParameters" />
+    <rule ref="category/java/bestpractices.xml/ForLoopVariableCount">
+        <properties>
+            <property name="maximumVariables" value="2" />
+        </properties>
+    </rule>
+    <rule ref="category/java/bestpractices.xml/JUnit5TestShouldBePackagePrivate" />
     
     <rule ref="category/java/documentation.xml/CommentSize">
         <properties>
