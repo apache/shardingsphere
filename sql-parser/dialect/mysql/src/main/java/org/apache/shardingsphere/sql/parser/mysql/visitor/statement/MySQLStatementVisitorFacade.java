@@ -15,50 +15,59 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.fixture;
+package org.apache.shardingsphere.sql.parser.mysql.visitor.statement;
 
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLRLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDALStatementVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDDLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLDMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLTCLStatementVisitor;
 
-public final class SQLStatementVisitorFacadeFixture implements SQLStatementVisitorFacade {
+/**
+ * Statement visitor facade for MySQL.
+ */
+public final class MySQLStatementVisitorFacade implements SQLStatementVisitorFacade {
     
     @Override
     public Class<? extends DMLStatementVisitor> getDMLVisitorClass() {
-        return DMLStatementVisitor.class;
+        return MySQLDMLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends DDLStatementVisitor> getDDLVisitorClass() {
-        return DDLStatementVisitor.class;
+        return MySQLDDLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends TCLStatementVisitor> getTCLVisitorClass() {
-        return TCLStatementVisitor.class;
+        return MySQLTCLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends DCLStatementVisitor> getDCLVisitorClass() {
-        return DCLStatementVisitor.class;
+        return MySQLDCLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends DALStatementVisitor> getDALVisitorClass() {
-        return DALStatementVisitor.class;
+        return MySQLDALStatementVisitor.class;
     }
     
     @Override
     public Class<? extends RLStatementVisitor> getRLVisitorClass() {
-        return RLStatementVisitor.class;
+        return MySQLRLStatementVisitor.class;
     }
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "MySQL";
     }
 }

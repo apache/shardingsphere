@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleSQLStatementVisitorFacade
+org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitorFacade

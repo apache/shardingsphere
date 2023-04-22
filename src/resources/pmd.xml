@@ -25,6 +25,7 @@
         <exclude name="AvoidAccessibilityAlteration" />
         <exclude name="AvoidBranchingStatementAsLastInLoop" />
         <exclude name="AvoidCatchingThrowable" />
+        <exclude name="AvoidStringBufferField" />
         <exclude name="AvoidUsingHardCodedIP" />
         <exclude name="AvoidUsingVolatile" />
         <exclude name="CloseResource" />

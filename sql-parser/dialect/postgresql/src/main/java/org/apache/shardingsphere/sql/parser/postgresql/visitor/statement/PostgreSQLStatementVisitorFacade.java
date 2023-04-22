@@ -15,50 +15,58 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.fixture;
+package org.apache.shardingsphere.sql.parser.postgresql.visitor.statement;
 
+import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDALStatementVisitor;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDDLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLDMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.postgresql.visitor.statement.type.PostgreSQLTCLStatementVisitor;
 
-public final class SQLStatementVisitorFacadeFixture implements SQLStatementVisitorFacade {
+/**
+ * Statement visitor facade for PostgreSQL.
+ */
+public final class PostgreSQLStatementVisitorFacade implements SQLStatementVisitorFacade {
     
     @Override
     public Class<? extends DMLStatementVisitor> getDMLVisitorClass() {
-        return DMLStatementVisitor.class;
+        return PostgreSQLDMLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends DDLStatementVisitor> getDDLVisitorClass() {
-        return DDLStatementVisitor.class;
+        return PostgreSQLDDLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends TCLStatementVisitor> getTCLVisitorClass() {
-        return TCLStatementVisitor.class;
+        return PostgreSQLTCLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends DCLStatementVisitor> getDCLVisitorClass() {
-        return DCLStatementVisitor.class;
+        return PostgreSQLDCLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends DALStatementVisitor> getDALVisitorClass() {
-        return DALStatementVisitor.class;
+        return PostgreSQLDALStatementVisitor.class;
     }
     
     @Override
     public Class<? extends RLStatementVisitor> getRLVisitorClass() {
-        return RLStatementVisitor.class;
+        return null;
     }
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "PostgreSQL";
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.fixture;
+package org.apache.shardingsphere.sql.parser.opengauss.visitor.statement;
 
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
@@ -23,42 +23,50 @@ import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatem
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDDLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussTCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDALStatementVisitor;
+import org.apache.shardingsphere.sql.parser.opengauss.visitor.statement.type.OpenGaussDMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 
-public final class SQLStatementVisitorFacadeFixture implements SQLStatementVisitorFacade {
+/**
+ * Statement visitor facade for openGauss.
+ */
+public final class OpenGaussStatementVisitorFacade implements SQLStatementVisitorFacade {
     
     @Override
     public Class<? extends DMLStatementVisitor> getDMLVisitorClass() {
-        return DMLStatementVisitor.class;
+        return OpenGaussDMLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends DDLStatementVisitor> getDDLVisitorClass() {
-        return DDLStatementVisitor.class;
+        return OpenGaussDDLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends TCLStatementVisitor> getTCLVisitorClass() {
-        return TCLStatementVisitor.class;
+        return OpenGaussTCLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends DCLStatementVisitor> getDCLVisitorClass() {
-        return DCLStatementVisitor.class;
+        return OpenGaussDCLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends DALStatementVisitor> getDALVisitorClass() {
-        return DALStatementVisitor.class;
+        return OpenGaussDALStatementVisitor.class;
     }
     
     @Override
     public Class<? extends RLStatementVisitor> getRLVisitorClass() {
-        return RLStatementVisitor.class;
+        return null;
     }
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "openGauss";
     }
 }

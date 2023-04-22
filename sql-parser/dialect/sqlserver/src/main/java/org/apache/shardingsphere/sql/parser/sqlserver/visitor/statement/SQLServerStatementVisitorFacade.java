@@ -15,50 +15,58 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.fixture;
+package org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement;
 
+import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.spi.SQLStatementVisitorFacade;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type.SQLServerDALStatementVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type.SQLServerDCLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type.SQLServerDDLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type.SQLServerDMLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.type.SQLServerTCLStatementVisitor;
 
-public final class SQLStatementVisitorFacadeFixture implements SQLStatementVisitorFacade {
+/**
+ * Statement visitor facade for SQLServer.
+ */
+public final class SQLServerStatementVisitorFacade implements SQLStatementVisitorFacade {
     
     @Override
     public Class<? extends DMLStatementVisitor> getDMLVisitorClass() {
-        return DMLStatementVisitor.class;
+        return SQLServerDMLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends DDLStatementVisitor> getDDLVisitorClass() {
-        return DDLStatementVisitor.class;
+        return SQLServerDDLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends TCLStatementVisitor> getTCLVisitorClass() {
-        return TCLStatementVisitor.class;
+        return SQLServerTCLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends DCLStatementVisitor> getDCLVisitorClass() {
-        return DCLStatementVisitor.class;
+        return SQLServerDCLStatementVisitor.class;
     }
     
     @Override
     public Class<? extends DALStatementVisitor> getDALVisitorClass() {
-        return DALStatementVisitor.class;
+        return SQLServerDALStatementVisitor.class;
     }
     
     @Override
     public Class<? extends RLStatementVisitor> getRLVisitorClass() {
-        return RLStatementVisitor.class;
+        return null;
     }
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "SQLServer";
     }
 }
