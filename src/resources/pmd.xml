@@ -20,6 +20,7 @@
          name="full-pmd-ruleset" xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
     <description>PMD of Apache ShardingSphere</description>
     <exclude-pattern>.*/target/.*</exclude-pattern>
+    
     <rule ref="rulesets/java/quickstart.xml">
         <exclude name="AbstractClassWithoutAnyMethod" />
         <exclude name="AvoidAccessibilityAlteration" />
@@ -38,17 +39,22 @@
         <exclude name="UseLocaleWithCaseConversions" />
     </rule>
     
+    <rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace" />
+    <rule ref="category/java/bestpractices.xml/AvoidReassigningCatchVariables" />
+    
     <rule ref="category/java/documentation.xml/CommentSize">
         <properties>
             <property name="maxLines" value="40" />
             <property name="maxLineLength" value="200" />
         </properties>
     </rule>
+    
     <rule ref="category/java/design.xml/UseUtilityClass">
         <properties>
             <property name="ignoredAnnotations" value="lombok.NoArgsConstructor | org.springframework.boot.autoconfigure.SpringBootApplication" />
         </properties>
     </rule>
+    
     <rule ref="category/java/errorprone.xml/AssignmentInOperand">
         <properties>
             <property name="allowIf" value="true" />
