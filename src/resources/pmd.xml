@@ -34,8 +34,6 @@
         <exclude name="OverrideBothEqualsAndHashcode" />
         <exclude name="PreserveStackTrace" />
         <exclude name="UncommentedEmptyMethodBody" />
-        <exclude name="UnusedPrivateField" />
-        <exclude name="UnusedPrivateMethod" />
         <exclude name="UseLocaleWithCaseConversions" />
     </rule>
     
