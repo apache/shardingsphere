@@ -20,6 +20,7 @@
          name="full-pmd-ruleset" xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
     <description>PMD of Apache ShardingSphere</description>
     <exclude-pattern>.*/target/.*</exclude-pattern>
+    
     <rule ref="rulesets/java/quickstart.xml">
         <exclude name="AbstractClassWithoutAnyMethod" />
         <exclude name="AvoidAccessibilityAlteration" />
@@ -33,12 +34,30 @@
         <exclude name="GuardLogStatement" />
         <exclude name="OverrideBothEqualsAndHashcode" />
         <exclude name="PreserveStackTrace" />
-        <exclude name="SingularField" />
         <exclude name="UncommentedEmptyMethodBody" />
-        <exclude name="UnusedPrivateField" />
         <exclude name="UnusedPrivateMethod" />
         <exclude name="UseLocaleWithCaseConversions" />
     </rule>
+    
+    <rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace" />
+    <rule ref="category/java/bestpractices.xml/AvoidReassigningCatchVariables" />
+    <rule ref="category/java/bestpractices.xml/AvoidReassigningLoopVariables" />
+    <rule ref="category/java/bestpractices.xml/AvoidReassigningParameters" />
+    <rule ref="category/java/bestpractices.xml/ForLoopVariableCount">
+        <properties>
+            <property name="maximumVariables" value="2" />
+        </properties>
+    </rule>
+    <rule ref="category/java/bestpractices.xml/JUnit5TestShouldBePackagePrivate" />
+    <rule ref="category/java/bestpractices.xml/JUnitTestsShouldIncludeAssert" />
+    <rule ref="category/java/bestpractices.xml/MethodReturnsInternalArray" />
+    <rule ref="category/java/bestpractices.xml/ReplaceEnumerationWithIterator" />
+    <rule ref="category/java/bestpractices.xml/ReplaceHashtableWithMap" />
+    <rule ref="category/java/bestpractices.xml/ReplaceVectorWithList" />
+    <rule ref="category/java/bestpractices.xml/SystemPrintln" />
+    <rule ref="category/java/bestpractices.xml/UnusedAssignment" />
+    <rule ref="category/java/bestpractices.xml/UseTryWithResources" />
+    <rule ref="category/java/bestpractices.xml/WhileLoopWithLiteralBoolean" />
     
     <rule ref="category/java/documentation.xml/CommentSize">
         <properties>
@@ -46,11 +65,13 @@
             <property name="maxLineLength" value="200" />
         </properties>
     </rule>
+    
     <rule ref="category/java/design.xml/UseUtilityClass">
         <properties>
             <property name="ignoredAnnotations" value="lombok.NoArgsConstructor | org.springframework.boot.autoconfigure.SpringBootApplication" />
         </properties>
     </rule>
+    
     <rule ref="category/java/errorprone.xml/AssignmentInOperand">
         <properties>
             <property name="allowIf" value="true" />
