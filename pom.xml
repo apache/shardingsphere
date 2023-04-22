@@ -856,10 +856,10 @@
                     <configuration>
                         <java>
                             <eclipse>
-                                <file>src/resources/spotless/java.xml</file>
+                                <file>${maven.multiModuleProjectDirectory}/src/resources/spotless/java.xml</file>
                             </eclipse>
                             <licenseHeader>
-                                <file>src/resources/spotless/copyright.txt</file>
+                                <file>${maven.multiModuleProjectDirectory}/src/resources/spotless/copyright.txt</file>
                             </licenseHeader>
                         </java>
                         <pom>
