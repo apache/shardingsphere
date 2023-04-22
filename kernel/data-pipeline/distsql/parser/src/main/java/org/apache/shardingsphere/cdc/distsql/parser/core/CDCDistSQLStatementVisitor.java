@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 /**
  * SQL statement visitor for CDC DistSQL.
  */
-public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class CDCDistSQLStatementVisitor extends CDCDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitShowStreamingList(final ShowStreamingListContext ctx) {

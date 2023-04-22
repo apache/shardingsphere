@@ -18,7 +18,12 @@
 package org.apache.shardingsphere.sql.parser.spi;
 
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DCLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DDLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DMLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.RLSQLVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.TCLSQLVisitor;
 
 /**
  * SQL statement visitor facade.
@@ -30,40 +35,40 @@ public interface SQLStatementVisitorFacade extends TypedSPI {
      *
      * @return DML visitor class
      */
-    Class<? extends SQLVisitor> getDMLVisitorClass();
+    Class<? extends DMLSQLVisitor> getDMLVisitorClass();
     
     /**
      * Get DDL visitor class.
      *
      * @return DDL visitor class
      */
-    Class<? extends SQLVisitor> getDDLVisitorClass();
+    Class<? extends DDLSQLVisitor> getDDLVisitorClass();
     
     /**
      * Get TCL visitor class.
      *
      * @return TCL visitor class
      */
-    Class<? extends SQLVisitor> getTCLVisitorClass();
+    Class<? extends TCLSQLVisitor> getTCLVisitorClass();
     
     /**
      * Get DCL visitor class.
      *
      * @return DCL visitor class
      */
-    Class<? extends SQLVisitor> getDCLVisitorClass();
+    Class<? extends DCLSQLVisitor> getDCLVisitorClass();
     
     /**
      * Get DAL visitor class.
      *
      * @return DAL visitor class
      */
-    Class<? extends SQLVisitor> getDALVisitorClass();
+    Class<? extends DALSQLVisitor> getDALVisitorClass();
     
     /**
      * Get RL visitor class.
      *
      * @return RL visitor class
      */
-    Class<? extends SQLVisitor> getRLVisitorClass();
+    Class<? extends RLSQLVisitor> getRLVisitorClass();
 }

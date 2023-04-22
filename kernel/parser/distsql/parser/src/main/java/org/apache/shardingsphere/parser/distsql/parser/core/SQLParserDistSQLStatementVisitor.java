@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 /**
  * SQL statement visitor for SQL parser DistSQL.
  */
-public final class SQLParserDistSQLStatementVisitor extends SQLParserDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class SQLParserDistSQLStatementVisitor extends SQLParserDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitShowSQLParserRule(final ShowSQLParserRuleContext ctx) {
