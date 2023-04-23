@@ -568,4 +568,44 @@
     <test-case sql="SELECT * FROM performance_schema.metadata_locks" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_performance_schema_metadata_locks.xml" />
     </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.mutex_instances" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_mutex_instances.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.objects_summary_global_by_type" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_objects_summary_global_by_type.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.performance_timers" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_performance_timers.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.prepared_statements_instances" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_prepared_statements_instances.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.replication_applier_configuration" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_replication_applier_configuration.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.replication_applier_status" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_replication_applier_status.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.replication_applier_status_by_coordinator" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_replication_applier_status_by_coordinator.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.replication_applier_status_by_worker" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_replication_applier_status_by_worker.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.replication_connection_configuration" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_replication_connection_configuration.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.replication_connection_status" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_replication_connection_status.xml" />
+    </test-case>
 </integration-test-cases>
