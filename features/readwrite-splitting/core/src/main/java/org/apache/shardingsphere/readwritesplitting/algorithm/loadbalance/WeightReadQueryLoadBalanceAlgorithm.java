@@ -53,13 +53,13 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
         dataSourceNames = props.stringPropertyNames();
         ShardingSpherePreconditions.checkState(!dataSourceNames.isEmpty(), () -> new ReadQueryLoadBalanceAlgorithmInitializationExcpetion(getType(), "Read data source is required"));
         for (String dataSourceName : dataSourceNames) {
-            Object weightObject = props.get(dataSourceName);
-            ShardingSpherePreconditions.checkNotNull(weightObject,
+            String weight = props.getProperty(dataSourceName);
+            ShardingSpherePreconditions.checkNotNull(weight,
                     () -> new MissingRequiredReadDatabaseWeightException(getType(), String.format("Read database `%s` access weight is not configured.", dataSourceName)));
             try {
-                Double.parseDouble(weightObject.toString());
+                Double.parseDouble(weight);
             } catch (final NumberFormatException ex) {
-                throw new InvalidReadDatabaseWeightException(weightObject);
+                throw new InvalidReadDatabaseWeightException(weight);
             }
         }
     }
