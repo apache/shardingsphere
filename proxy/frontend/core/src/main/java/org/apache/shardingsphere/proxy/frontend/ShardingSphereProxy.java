@@ -50,13 +50,19 @@ import java.util.List;
 @Slf4j
 public final class ShardingSphereProxy {
     
-    private EventLoopGroup bossGroup;
+    private final EventLoopGroup bossGroup;
     
-    private EventLoopGroup workerGroup;
+    private final EventLoopGroup workerGroup;
     
     public ShardingSphereProxy() {
-        createEventLoopGroup();
+        bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
+        workerGroup = getWorkerGroup();
         Runtime.getRuntime().addShutdownHook(new Thread(this::close));
+    }
+    
+    private EventLoopGroup getWorkerGroup() {
+        int workerThreads = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE);
+        return Epoll.isAvailable() ? new EpollEventLoopGroup(workerThreads) : new NioEventLoopGroup(workerThreads);
     }
     
     /**
@@ -91,7 +97,6 @@ public final class ShardingSphereProxy {
                 log.info("The listening address for DomainSocket is {}", socketPath);
             } else {
                 log.error("DomainSocket failed to start:{}", futureParams.cause().getMessage());
-                futureParams.cause().printStackTrace();
             }
         });
     }
@@ -117,16 +122,6 @@ public final class ShardingSphereProxy {
         for (ChannelFuture future : futures) {
             future.channel().closeFuture().sync();
         }
-    }
-    
-    private void createEventLoopGroup() {
-        bossGroup = Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1);
-        workerGroup = getWorkerGroup();
-    }
-    
-    private EventLoopGroup getWorkerGroup() {
-        int workerThreads = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_EXECUTOR_SIZE);
-        return Epoll.isAvailable() ? new EpollEventLoopGroup(workerThreads) : new NioEventLoopGroup(workerThreads);
     }
     
     private void initServerBootstrap(final ServerBootstrap bootstrap) {
