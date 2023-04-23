@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.InvalidReadDatabaseWeightException;
+import org.apache.shardingsphere.readwritesplitting.exception.algorithm.ReadQueryLoadBalanceAlgorithmInitializationExcpetion;
 import org.apache.shardingsphere.readwritesplitting.exception.algorithm.MissingRequiredReadDatabaseWeightException;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
@@ -50,6 +51,17 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     public void init(final Properties props) {
         this.props = props;
         dataSourceNames = props.stringPropertyNames();
+        ShardingSpherePreconditions.checkState(!dataSourceNames.isEmpty(), () -> new ReadQueryLoadBalanceAlgorithmInitializationExcpetion(getType(), "Read data source is required"));
+        for (String dataSourceName : dataSourceNames) {
+            String weight = props.getProperty(dataSourceName);
+            ShardingSpherePreconditions.checkNotNull(weight,
+                    () -> new MissingRequiredReadDatabaseWeightException(getType(), String.format("Read database `%s` access weight is not configured.", dataSourceName)));
+            try {
+                Double.parseDouble(weight);
+            } catch (final NumberFormatException ex) {
+                throw new InvalidReadDatabaseWeightException(weight);
+            }
+        }
     }
     
     @Override
@@ -108,12 +120,7 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
         Object weightObject = props.get(readDataSourceName);
         ShardingSpherePreconditions.checkNotNull(weightObject,
                 () -> new MissingRequiredReadDatabaseWeightException(getType(), String.format("Read database `%s` access weight is not configured.", readDataSourceName)));
-        double result;
-        try {
-            result = Double.parseDouble(weightObject.toString());
-        } catch (final NumberFormatException ignored) {
-            throw new InvalidReadDatabaseWeightException(weightObject);
-        }
+        double result = Double.parseDouble(weightObject.toString());
         if (Double.isInfinite(result)) {
             result = 10000.0D;
         }
