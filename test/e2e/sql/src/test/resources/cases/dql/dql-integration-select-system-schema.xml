@@ -608,4 +608,44 @@
     <test-case sql="SELECT * FROM performance_schema.replication_connection_status" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_performance_schema_replication_connection_status.xml" />
     </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.replication_group_member_stats" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_replication_group_member_stats.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.replication_group_members" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_replication_group_members.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.rwlock_instances" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_rwlock_instances.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.session_account_connect_attrs" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_session_account_connect_attrs.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.session_connect_attrs" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_session_connect_attrs.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.session_status" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_session_status.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.session_variables" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_session_variables.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.setup_actors" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_setup_actors.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.setup_consumers" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_setup_consumers.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.setup_instruments" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_setup_instruments.xml" />
+    </test-case>
 </integration-test-cases>
