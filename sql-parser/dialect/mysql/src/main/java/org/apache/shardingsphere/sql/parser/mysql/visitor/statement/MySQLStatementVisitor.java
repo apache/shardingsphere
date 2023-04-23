@@ -949,8 +949,8 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         FunctionSegment result = new FunctionSegment(
                 ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null == ctx.SUBSTR() ? ctx.SUBSTRING().getText() : ctx.SUBSTR().getText(), getOriginalText(ctx));
         result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
-        for (TerminalNode node : ctx.NUMBER_()) {
-            result.getParameters().add(new LiteralExpressionSegment(node.getSymbol().getStartIndex(), node.getSymbol().getStopIndex(), new NumberLiteralValue(node.getText()).getValue()));
+        for (TerminalNode each : ctx.NUMBER_()) {
+            result.getParameters().add(new LiteralExpressionSegment(each.getSymbol().getStartIndex(), each.getSymbol().getStopIndex(), new NumberLiteralValue(each.getText()).getValue()));
         }
         return result;
     }
