@@ -19,11 +19,10 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     write-read-ds:
-      staticStrategy:
-        writeDataSourceName: shadowDataSource
-        readDataSourceNames:
-          - read_0
-          - read_1
+      writeDataSourceName: shadowDataSource
+      readDataSourceNames:
+        - read_0
+        - read_1
 
 - !SHADOW
   dataSources:

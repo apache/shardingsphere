@@ -133,6 +133,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
                 break;
             default:
                 log.warn("can't handle this type of request {}", request);
+                break;
         }
     }
     

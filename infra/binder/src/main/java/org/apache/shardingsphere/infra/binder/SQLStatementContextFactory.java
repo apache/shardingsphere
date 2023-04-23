@@ -59,6 +59,8 @@ import org.apache.shardingsphere.infra.binder.statement.dml.CopyStatementContext
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.DoStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.LoadDataStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.LoadXMLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -106,6 +108,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadDataStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLLoadXMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
@@ -178,6 +182,12 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof DoStatement) {
             return new DoStatementContext((DoStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof MySQLLoadDataStatement) {
+            return new LoadDataStatementContext((MySQLLoadDataStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof MySQLLoadXMLStatement) {
+            return new LoadXMLStatementContext((MySQLLoadXMLStatement) sqlStatement);
         }
         throw new UnsupportedSQLOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }

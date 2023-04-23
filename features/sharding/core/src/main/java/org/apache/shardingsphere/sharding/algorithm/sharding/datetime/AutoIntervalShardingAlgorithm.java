@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
 import org.apache.shardingsphere.sharding.exception.data.InvalidDatetimeFormatException;
+import org.apache.shardingsphere.sharding.exception.data.NullShardingValueException;
 
 import java.text.DecimalFormat;
 import java.text.ParsePosition;
@@ -70,7 +71,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
         ShardingSpherePreconditions.checkNotNull(value, () -> new ShardingAlgorithmInitializationException(getType(), String.format("%s cannot be null.", DATE_TIME_LOWER_KEY)));
         try {
             return LocalDateTime.parse(value, DATE_TIME_FORMAT);
-        } catch (final DateTimeParseException ex) {
+        } catch (final DateTimeParseException ignored) {
             throw new InvalidDatetimeFormatException(DATE_TIME_LOWER_KEY, value, "yyyy-MM-dd HH:mm:ss");
         }
     }
@@ -83,6 +84,7 @@ public final class AutoIntervalShardingAlgorithm implements StandardShardingAlgo
     
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
+        ShardingSpherePreconditions.checkNotNull(shardingValue.getValue(), NullShardingValueException::new);
         String tableNameSuffix = String.valueOf(doSharding(parseDate(shardingValue.getValue())));
         return ShardingAutoTableAlgorithmUtils.findMatchedTargetName(availableTargetNames, tableNameSuffix, shardingValue.getDataNodeInfo()).orElse(null);
     }

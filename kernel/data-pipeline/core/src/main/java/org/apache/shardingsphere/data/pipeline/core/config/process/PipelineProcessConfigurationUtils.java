@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.config.process;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineProcessConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.process.yaml.YamlPipelineReadConfiguration;
@@ -29,6 +31,7 @@ import java.util.Properties;
 /**
  * Pipeline process configuration utility class.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineProcessConfigurationUtils {
     
     private static final YamlPipelineProcessConfigurationSwapper SWAPPER = new YamlPipelineProcessConfigurationSwapper();

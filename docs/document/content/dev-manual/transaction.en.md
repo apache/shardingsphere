@@ -76,3 +76,20 @@ Data source property provider service definition
 | *Configuration Type*               | *Description*                               | *Fully-qualified class name*                                                                                                                                                                                                                                                                             |
 |------------------------------------|---------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | com.zaxxer.hikari.HikariDataSource | Used to get standard properties of HikariCP | [`org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl.HikariCPPropertyProvider`](https://github.com/apache/shardingsphere/blob/master/kernel/transaction/type/xa/core/src/main/java/org/apache/shardingsphere/transaction/xa/jta/datasource/swapper/impl/HikariCPPropertyProvider.java) |
+
+## DataSourcePrivilegeChecker
+
+### Fully-qualified class name
+
+[`org.apache.shardingsphere.transaction.xa.jta.datasource.checker.DataSourcePrivilegeChecker`](https://github.com/apache/shardingsphere/blob/master/kernel/transaction/type/xa/core/src/main/java/org/apache/shardingsphere/transaction/xa/jta/datasource/checker/DataSourcePrivilegeChecker.java)
+
+### Definition
+
+Check transaction privilege through the data source
+
+### Implementation classes
+
+| *配置标识*  | *详细说明*                                | *全限定类名*                                                                                                                                                                                                                                                                                                                              |
+|---------|---------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| MySQL   | Verify MySQL XA transaction privilege | [`org.apache.shardingsphere.transaction.xa.jta.datasource.checker.dialect.MySQLDataSourcePrivilegeChecker`](https://github.com/apache/shardingsphere/blob/master/kernel/transaction/type/xa/core/src/main/java/org/apache/shardingsphere/transaction/xa/jta/datasource/checker/dialect/MySQLDataSourcePrivilegeChecker.java) ｜         |
+| Default | Not verify transaction privilege by default    | [`org.apache.shardingsphere.transaction.xa.jta.datasource.checker.DefaultDataSourcePrivilegeChecker`](https://github.com/apache/shardingsphere/blob/master/kernel/transaction/type/xa/core/src/main/java/org/apache/shardingsphere/transaction/xa/jta/datasource/DefaultDataSourcePrivilegeChecker.java) ｜                 |

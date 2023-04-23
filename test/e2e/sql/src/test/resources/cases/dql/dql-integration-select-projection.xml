@@ -52,7 +52,7 @@
         <assertion expected-data-source-name="read_dataset" />
     </test-case>
     
-    <test-case sql="SELECT order_id AS id FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
+    <test-case sql="SELECT order_id AS id, creation_date AS timestamp FROM t_order WHERE user_id = ? AND order_id = ?" db-types="MySQL,openGauss" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting">
         <assertion parameters="10:int, 1000:int" expected-data-source-name="read_dataset" />
     </test-case>
     

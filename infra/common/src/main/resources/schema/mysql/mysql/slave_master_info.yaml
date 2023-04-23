@@ -1,0 +1,222 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: slave_master_info
+columns:
+  number_of_lines:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: Number_of_lines
+    primaryKey: false
+    unsigned: true
+    visible: true
+  master_log_name:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Master_log_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  master_log_pos:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: Master_log_pos
+    primaryKey: false
+    unsigned: true
+    visible: true
+  host:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: Host
+    primaryKey: false
+    unsigned: false
+    visible: true
+  user_name:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: User_name
+    primaryKey: false
+    unsigned: false
+    visible: true
+  user_password:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: User_password
+    primaryKey: false
+    unsigned: false
+    visible: true
+  port:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: Port
+    primaryKey: false
+    unsigned: true
+    visible: true
+  connect_retry:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: Connect_retry
+    primaryKey: false
+    unsigned: true
+    visible: true
+  enabled_ssl:
+    caseSensitive: false
+    dataType: -6
+    generated: false
+    name: Enabled_ssl
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_ca:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Ssl_ca
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_capath:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Ssl_capath
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_cert:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Ssl_cert
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_cipher:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Ssl_cipher
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_key:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Ssl_key
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_verify_server_cert:
+    caseSensitive: false
+    dataType: -6
+    generated: false
+    name: Ssl_verify_server_cert
+    primaryKey: false
+    unsigned: false
+    visible: true
+  heartbeat:
+    caseSensitive: false
+    dataType: 7
+    generated: false
+    name: Heartbeat
+    primaryKey: false
+    unsigned: false
+    visible: true
+  bind:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Bind
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ignored_server_ids:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Ignored_server_ids
+    primaryKey: false
+    unsigned: false
+    visible: true
+  uuid:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Uuid
+    primaryKey: false
+    unsigned: false
+    visible: true
+  retry_count:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: Retry_count
+    primaryKey: false
+    unsigned: true
+    visible: true
+  ssl_crl:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Ssl_crl
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ssl_crlpath:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Ssl_crlpath
+    primaryKey: false
+    unsigned: false
+    visible: true
+  enabled_auto_position:
+    caseSensitive: false
+    dataType: -6
+    generated: false
+    name: Enabled_auto_position
+    primaryKey: false
+    unsigned: false
+    visible: true
+  channel_name:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: Channel_name
+    primaryKey: true
+    unsigned: false
+    visible: true
+  tls_version:
+    caseSensitive: true
+    dataType: -1
+    generated: false
+    name: Tls_version
+    primaryKey: false
+    unsigned: false
+    visible: true
+indexes:
+  primary:
+    name: PRIMARY

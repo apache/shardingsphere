@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.execute;
 
-import org.apache.shardingsphere.infra.config.props.internal.InternalConfigurationPropertyKey;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -25,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * ShardingSphere data job worker.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShardingSphereDataJobWorker {
     
     private static final AtomicBoolean WORKER_INITIALIZED = new AtomicBoolean(false);
@@ -36,7 +39,7 @@ public final class ShardingSphereDataJobWorker {
      */
     public static void initialize(final ContextManager contextManager) {
         if (WORKER_INITIALIZED.compareAndSet(false, true)) {
-            boolean collectorEnabled = contextManager.getMetaDataContexts().getMetaData().getInternalProps().getValue(InternalConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED);
+            boolean collectorEnabled = contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED);
             if (collectorEnabled) {
                 startScheduleThread(contextManager);
             }

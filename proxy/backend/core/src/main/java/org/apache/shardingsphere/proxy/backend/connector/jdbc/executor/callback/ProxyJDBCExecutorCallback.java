@@ -64,14 +64,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     @Override
     public ExecuteResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final DatabaseType storageType) throws SQLException {
-        if (fetchMetaData && !hasMetaData) {
-            hasMetaData = true;
-            return executeSQL(sql, statement, connectionMode, true, storageType);
-        }
-        return executeSQL(sql, statement, connectionMode, false, storageType);
-    }
-    
-    private ExecuteResult executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode, final boolean withMetaData, final DatabaseType storageType) throws SQLException {
+        hasMetaData = fetchMetaData && !hasMetaData;
         databaseConnector.add(statement);
         if (execute(sql, statement, isReturnGeneratedKeys)) {
             ResultSet resultSet = statement.getResultSet();

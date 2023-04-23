@@ -55,17 +55,6 @@ class AuthorityRuleTest {
         assertTrue(createAuthorityRule().findPrivileges(new Grantee("admin", "localhost")).isPresent());
     }
     
-    @Test
-    void assertRefresh() {
-        Collection<ShardingSphereUser> users = new LinkedList<>();
-        users.add(new ShardingSphereUser("root", "root", "localhost"));
-        users.add(new ShardingSphereUser("admin", "123456", "localhost"));
-        users.add(new ShardingSphereUser("sharding-sphere", "123456", "127.0.0.1"));
-        AuthorityRule rule = createAuthorityRule();
-        rule.refresh(Collections.emptyMap(), users);
-        assertTrue(rule.findPrivileges(new Grantee("sharding-sphere", "localhost")).isPresent());
-    }
-    
     private AuthorityRule createAuthorityRule() {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         users.add(new ShardingSphereUser("root", "root", "localhost"));

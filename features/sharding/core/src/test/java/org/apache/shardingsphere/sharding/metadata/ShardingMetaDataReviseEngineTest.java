@@ -66,6 +66,6 @@ class ShardingMetaDataReviseEngineTest {
                 new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false),
                 new ColumnMetaData("pwd_plain", Types.VARCHAR, false, false, true, true, false),
                 new ColumnMetaData("product_id", Types.INTEGER, false, false, true, true, false));
-        return new TableMetaData("t_order", "ds_0", columns, Collections.emptyList(), Collections.emptyList());
+        return new TableMetaData("t_order", columns, Collections.emptyList(), Collections.emptyList());
     }
 }

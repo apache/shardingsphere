@@ -281,64 +281,54 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds_0:
-      staticStrategy:
-        writeDataSourceName: write_ds_0
-        readDataSourceNames:
-          - read_ds_0
+      writeDataSourceName: write_ds_0
+      readDataSourceNames:
+        - read_ds_0
       loadBalancerName: roundRobin
     readwrite_ds_1:
-      staticStrategy:
-        writeDataSourceName: write_ds_1
-        readDataSourceNames:
-          - read_ds_1
+      writeDataSourceName: write_ds_1
+      readDataSourceNames:
+        - read_ds_1
       loadBalancerName: roundRobin
     readwrite_ds_2:
-      staticStrategy:
-        writeDataSourceName: write_ds_2
-        readDataSourceNames:
-          - read_ds_2
+      writeDataSourceName: write_ds_2
+      readDataSourceNames:
+        - read_ds_2
       loadBalancerName: roundRobin
     readwrite_ds_3:
-      staticStrategy:
-        writeDataSourceName: write_ds_3
-        readDataSourceNames:
-          - read_ds_3
+      writeDataSourceName: write_ds_3
+      readDataSourceNames:
+        - read_ds_3
       loadBalancerName: roundRobin
     readwrite_ds_4:
-      staticStrategy:
-        writeDataSourceName: write_ds_4
-        readDataSourceNames:
-          - read_ds_4
+      writeDataSourceName: write_ds_4
+      readDataSourceNames:
+        - read_ds_4
       loadBalancerName: roundRobin
     readwrite_ds_5:
-      staticStrategy:
-        writeDataSourceName: write_ds_5
-        readDataSourceNames:
-          - read_ds_5
+      writeDataSourceName: write_ds_5
+      readDataSourceNames:
+        - read_ds_5
       loadBalancerName: roundRobin
     readwrite_ds_6:
-      staticStrategy:
-        writeDataSourceName: write_ds_6
-        readDataSourceNames:
-          - read_ds_6
+      writeDataSourceName: write_ds_6
+      readDataSourceNames:
+        - read_ds_6
       loadBalancerName: roundRobin
     readwrite_ds_7:
-      staticStrategy:
-        writeDataSourceName: write_ds_7
-        readDataSourceNames:
-          - read_ds_7
+      writeDataSourceName: write_ds_7
+      readDataSourceNames:
+        - read_ds_7
       loadBalancerName: roundRobin
     readwrite_ds_8:
-      staticStrategy:
-        writeDataSourceName: write_ds_8
-        readDataSourceNames:
-          - read_ds_8
+      writeDataSourceName: write_ds_8
+      readDataSourceNames:
+        - read_ds_8
       loadBalancerName: roundRobin
     readwrite_ds_9:
-      staticStrategy:
-        writeDataSourceName: write_ds_9
-        readDataSourceNames:
-          - read_ds_9
+      writeDataSourceName: write_ds_9
+      readDataSourceNames:
+        - read_ds_9
       loadBalancerName: roundRobin
   loadBalancers:
     roundRobin:

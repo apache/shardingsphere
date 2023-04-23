@@ -60,7 +60,7 @@ public class CommonHeterogeneousSQLStatementChecker<T extends SQLStatement> impl
         BinaryOperationExpression expression = (BinaryOperationExpression) whereExpr;
         Preconditions.checkArgument(!(expression.getLeft() instanceof BinaryOperationExpression), "Do not supported Multiple expressions");
         Preconditions.checkArgument(expression.getLeft() instanceof ColumnSegment, "left segment must is ColumnSegment");
-        Preconditions.checkArgument(expression.getOperator().equals("="), "Only Supported `=` operator");
+        Preconditions.checkArgument("=".equals(expression.getOperator()), "Only Supported `=` operator");
         String rowKey = ((ColumnSegment) expression.getLeft()).getIdentifier().getValue();
         boolean isAllowKey = ALLOW_KEYS.stream().anyMatch(each -> each.equalsIgnoreCase(rowKey));
         Preconditions.checkArgument(isAllowKey, String.format("%s is not a allowed key", rowKey));

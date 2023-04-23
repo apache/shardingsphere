@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.util.expr;
 
 import groovy.lang.Closure;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.util.groovy.expr.JVMInlineExpressionParser;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.TypeLiteral;
 import org.graalvm.polyglot.Value;
@@ -25,70 +27,49 @@ import org.graalvm.polyglot.Value;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * Espresso Inline expression parser.
+ * Espresso inline expression parser.
  */
-public final class EspressoInlineExpressionParser {
+public final class EspressoInlineExpressionParser implements JVMInlineExpressionParser {
     
     private static final Context POLYGLOT;
     
-    private final Value espressoInlineExpressionParser;
-    
     static {
-        // https://github.com/oracle/graal/issues/4555 not yet closed
+        // TODO https://github.com/oracle/graal/issues/4555 not yet closed
         String javaHome = System.getenv("JAVA_HOME");
-        if (null == javaHome) {
-            throw new RuntimeException("Failed to determine the system's environment variable JAVA_HOME!");
-        }
-        URL resource = Thread.currentThread().getContextClassLoader().getResource("espresso-need-libs");
-        assert null != resource;
+        ShardingSpherePreconditions.checkNotNull(javaHome, () -> new RuntimeException("Failed to determine the system's environment variable JAVA_HOME!"));
+        URL resource = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("espresso-need-libs"));
         String dir = resource.getPath();
         String javaClasspath = String.join(":", dir + "/groovy.jar", dir + "/guava.jar", dir + "/shardingsphere-infra-util-groovy.jar");
         POLYGLOT = Context.newBuilder().allowAllAccess(true)
                 .option("java.Properties.org.graalvm.home", javaHome)
-                .option("java.MultiThreaded", "true")
+                .option("java.MultiThreaded", Boolean.TRUE.toString())
                 .option("java.Classpath", javaClasspath)
                 .build();
     }
     
-    public EspressoInlineExpressionParser(final String inlineExpression) {
-        espressoInlineExpressionParser = POLYGLOT.getBindings("java")
-                .getMember("org.apache.shardingsphere.infra.util.expr.InlineExpressionParser")
-                .newInstance(inlineExpression);
-    }
-    
-    /**
-     * Replace all inline expression placeholders.
-     *
-     * @param inlineExpression inline expression with {@code $->}
-     * @return result inline expression with {@code $}
-     */
-    public static String handlePlaceHolder(final String inlineExpression) {
+    @Override
+    public String handlePlaceHolder(final String inlineExpression) {
         return POLYGLOT.getBindings("java")
-                .getMember("org.apache.shardingsphere.infra.util.expr.InlineExpressionParser")
-                .invokeMember("handlePlaceHolder", inlineExpression)
-                .asString();
+                .getMember("org.apache.shardingsphere.infra.util.expr.InlineExpressionParser").invokeMember("handlePlaceHolder", inlineExpression).asString();
     }
     
-    /**
-     * Split and evaluate inline expression.
-     *
-     * @return result list
-     */
-    public List<String> splitAndEvaluate() {
-        List<String> splitAndEvaluate = espressoInlineExpressionParser.invokeMember("splitAndEvaluate").as(new TypeLiteral<List<String>>() {
+    @Override
+    public List<String> splitAndEvaluate(final String inlineExpression) {
+        List<String> splitAndEvaluate = getInlineExpressionParser().invokeMember("splitAndEvaluate", inlineExpression).as(new TypeLiteral<List<String>>() {
         });
         // GraalVM Truffle Espresso 22.3.1 has a different behavior for generic List than Hotspot.
-        return splitAndEvaluate.size() == 0 ? Collections.emptyList() : splitAndEvaluate;
+        return splitAndEvaluate.isEmpty() ? Collections.emptyList() : splitAndEvaluate;
     }
     
-    /**
-     * Evaluate closure.
-     *
-     * @return closure
-     */
-    public Closure<?> evaluateClosure() {
-        return espressoInlineExpressionParser.invokeMember("evaluateClosure").as(Closure.class);
+    @Override
+    public Closure<?> evaluateClosure(final String inlineExpression) {
+        return getInlineExpressionParser().invokeMember("evaluateClosure", inlineExpression).as(Closure.class);
+    }
+    
+    private Value getInlineExpressionParser() {
+        return POLYGLOT.getBindings("java").getMember("org.apache.shardingsphere.infra.util.expr.InlineExpressionParser").newInstance();
     }
 }

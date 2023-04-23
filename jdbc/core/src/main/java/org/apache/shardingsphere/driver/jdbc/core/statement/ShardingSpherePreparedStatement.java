@@ -599,7 +599,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         HintValueContext hintValueContext = sqlParserRule.isSqlCommentParseEnabled() ? new HintValueContext() : SQLHintUtils.extractHint(sql);
-        return new QueryContext(sqlStatementContext, sql, params, hintValueContext);
+        return new QueryContext(sqlStatementContext, sql, params, hintValueContext, true);
     }
     
     private MergedResult mergeQuery(final List<QueryResult> queryResults) throws SQLException {

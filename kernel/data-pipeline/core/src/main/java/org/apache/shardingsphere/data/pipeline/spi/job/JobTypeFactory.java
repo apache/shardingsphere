@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.spi.job;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
@@ -27,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Job type factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class JobTypeFactory {
     

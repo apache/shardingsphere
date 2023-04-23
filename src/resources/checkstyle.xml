@@ -106,9 +106,6 @@
             <property name="message" value="Consider using special escape sequence instead of octal value or Unicode escaped value." />
         </module>
         <module name="IllegalType" />
-        <module name="MagicNumber">
-            <property name="severity" value="warning" />
-        </module>
         <module name="MissingSwitchDefault" />
         <module name="ModifiedControlVariable" />
         <module name="MultipleVariableDeclarations" />

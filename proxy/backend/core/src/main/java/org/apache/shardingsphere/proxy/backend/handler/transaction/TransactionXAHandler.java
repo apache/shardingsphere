@@ -57,12 +57,12 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
     
     @Override
     public boolean next() throws SQLException {
-        return this.tclStatement.getOp().equals("RECOVER") && this.backendHandler.next();
+        return "RECOVER".equals(this.tclStatement.getOp()) && backendHandler.next();
     }
     
     @Override
     public QueryResponseRow getRowData() throws SQLException {
-        return this.tclStatement.getOp().equals("RECOVER") ? this.backendHandler.getRowData() : new QueryResponseRow(Collections.emptyList());
+        return "RECOVER".equals(this.tclStatement.getOp()) ? backendHandler.getRowData() : new QueryResponseRow(Collections.emptyList());
     }
     
     @Override

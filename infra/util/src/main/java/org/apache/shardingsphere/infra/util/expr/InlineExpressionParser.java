@@ -18,36 +18,27 @@
 package org.apache.shardingsphere.infra.util.expr;
 
 import groovy.lang.Closure;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.groovy.expr.HotspotInlineExpressionParser;
+import org.apache.shardingsphere.infra.util.groovy.expr.JVMInlineExpressionParser;
 
 import java.util.List;
 
 /**
  * Inline expression parser.
  */
-@RequiredArgsConstructor
 public final class InlineExpressionParser {
     
     private static final boolean IS_SUBSTRATE_VM;
     
-    private final EspressoInlineExpressionParser espressoInlineExpressionParser;
-    
-    private final HotspotInlineExpressionParser hotspotInlineExpressionParser;
+    private final JVMInlineExpressionParser jvmInlineExpressionParser;
     
     static {
         // workaround for https://github.com/helidon-io/helidon-build-tools/issues/858
-        IS_SUBSTRATE_VM = System.getProperty("java.vm.name").equals("Substrate VM");
+        IS_SUBSTRATE_VM = "Substrate VM".equals(System.getProperty("java.vm.name"));
     }
     
-    public InlineExpressionParser(final String inlineExpression) {
-        if (IS_SUBSTRATE_VM) {
-            this.hotspotInlineExpressionParser = null;
-            this.espressoInlineExpressionParser = new EspressoInlineExpressionParser(inlineExpression);
-        } else {
-            this.hotspotInlineExpressionParser = new HotspotInlineExpressionParser(inlineExpression);
-            this.espressoInlineExpressionParser = null;
-        }
+    public InlineExpressionParser() {
+        jvmInlineExpressionParser = IS_SUBSTRATE_VM ? new EspressoInlineExpressionParser() : new HotspotInlineExpressionParser();
     }
     
     /**
@@ -56,41 +47,31 @@ public final class InlineExpressionParser {
      * @param inlineExpression inline expression with {@code $->}
      * @return result inline expression with {@code $}
      */
-    public static String handlePlaceHolder(final String inlineExpression) {
+    public String handlePlaceHolder(final String inlineExpression) {
         if (IS_SUBSTRATE_VM) {
-            return EspressoInlineExpressionParser.handlePlaceHolder(inlineExpression);
+            return new EspressoInlineExpressionParser().handlePlaceHolder(inlineExpression);
         } else {
-            return HotspotInlineExpressionParser.handlePlaceHolder(inlineExpression);
+            return new HotspotInlineExpressionParser().handlePlaceHolder(inlineExpression);
         }
     }
     
     /**
      * Split and evaluate inline expression.
      *
+     * @param inlineExpression inline expression
      * @return result list
      */
-    public List<String> splitAndEvaluate() {
-        if (IS_SUBSTRATE_VM) {
-            assert null != espressoInlineExpressionParser;
-            return espressoInlineExpressionParser.splitAndEvaluate();
-        } else {
-            assert null != hotspotInlineExpressionParser;
-            return hotspotInlineExpressionParser.splitAndEvaluate();
-        }
+    public List<String> splitAndEvaluate(final String inlineExpression) {
+        return jvmInlineExpressionParser.splitAndEvaluate(inlineExpression);
     }
     
     /**
      * Evaluate closure.
      *
+     * @param inlineExpression inline expression
      * @return closure
      */
-    public Closure<?> evaluateClosure() {
-        if (IS_SUBSTRATE_VM) {
-            assert null != espressoInlineExpressionParser;
-            return espressoInlineExpressionParser.evaluateClosure();
-        } else {
-            assert null != hotspotInlineExpressionParser;
-            return hotspotInlineExpressionParser.evaluateClosure();
-        }
+    public Closure<?> evaluateClosure(final String inlineExpression) {
+        return jvmInlineExpressionParser.evaluateClosure(inlineExpression);
     }
 }

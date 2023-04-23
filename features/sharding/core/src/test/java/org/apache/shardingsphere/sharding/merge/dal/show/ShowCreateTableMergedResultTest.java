@@ -76,16 +76,12 @@ class ShowCreateTableMergedResultTest {
     
     @Test
     void assertNextForTableRulePresent() throws SQLException {
-        SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
-        assertTrue(new ShowCreateTableMergedResult(shardingRule, sqlStatementContext, schema, Collections.singletonList(mockQueryResult())).next());
+        assertTrue(new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult())).next());
     }
     
     @Test
     void assertGetValueForTableRulePresent() throws SQLException {
-        SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("t_order"));
-        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, sqlStatementContext, schema, Collections.singletonList(mockQueryResult()));
+        ShowCreateTableMergedResult actual = new ShowCreateTableMergedResult(shardingRule, mock(SQLStatementContext.class), schema, Collections.singletonList(mockQueryResult()));
         assertTrue(actual.next());
         assertThat(actual.getValue(1, String.class), is("t_order"));
         assertThat(actual.getValue(2, String.class), is("CREATE TABLE `t_order` (\n"

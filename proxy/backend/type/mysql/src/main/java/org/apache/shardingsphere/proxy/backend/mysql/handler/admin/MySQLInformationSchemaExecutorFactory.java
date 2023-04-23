@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetaDataExecutor.DefaultDatabaseMetaDataExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.information.SelectInformationSchemataExecutor;
@@ -31,6 +33,7 @@ import java.util.Optional;
 /**
  * Construct the information schema executor's factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLInformationSchemaExecutorFactory {
     
     public static final String SCHEMATA_TABLE = "SCHEMATA";

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
@@ -59,7 +58,7 @@ public final class BootstrapInitializer {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
         ContextManager contextManager = createContextManager(proxyConfig, modeConfig, port, force);
         ProxyContext.init(contextManager);
-        contextManagerInitializedCallback(modeConfig, contextManager);
+        contextManagerInitializedCallback(contextManager);
         ShardingSphereProxyVersion.setVersion(contextManager);
     }
     
@@ -76,10 +75,10 @@ public final class BootstrapInitializer {
         return TypedSPILoader.getService(InstanceMetaDataBuilder.class, instanceType).build(port);
     }
     
-    private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {
+    private void contextManagerInitializedCallback(final ContextManager contextManager) {
         for (ContextManagerLifecycleListener each : ShardingSphereServiceLoader.getServiceInstances(ContextManagerLifecycleListener.class)) {
             try {
-                each.onInitialized(InstanceType.PROXY, null, modeConfig, contextManager);
+                each.onInitialized(null, contextManager);
                 // CHECKSTYLE:OFF
             } catch (final Exception ex) {
                 // CHECKSTYLE:ON

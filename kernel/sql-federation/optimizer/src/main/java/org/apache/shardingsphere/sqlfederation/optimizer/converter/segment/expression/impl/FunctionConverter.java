@@ -40,7 +40,7 @@ import java.util.Optional;
 /**
  * Function converter.
  */
-public final class FunctionConverter implements SQLSegmentConverter<FunctionSegment, SqlNode> {
+public class FunctionConverter implements SQLSegmentConverter<FunctionSegment, SqlNode> {
     
     @Override
     public Optional<SqlNode> convert(final FunctionSegment segment) {
@@ -48,6 +48,9 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
         // TODO optimize sql parse logic for select current_user.
         if ("CURRENT_USER".equalsIgnoreCase(functionName.getSimple())) {
             return Optional.of(functionName);
+        }
+        if ("TRIM".equalsIgnoreCase(functionName.getSimple())) {
+            return new TrimFunctionConverter().convert(segment);
         }
         List<SqlOperator> functions = new LinkedList<>();
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.FUNCTION, functions, SqlNameMatchers.withCaseSensitive(false));

@@ -90,12 +90,12 @@ public final class ShardingRuleConfigurationImportChecker {
     }
     
     private Collection<String> getDataSourceNames(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
-        Collection<String> actualDataSources = new InlineExpressionParser(shardingAutoTableRuleConfig.getActualDataSources()).splitAndEvaluate();
+        Collection<String> actualDataSources = new InlineExpressionParser().splitAndEvaluate(shardingAutoTableRuleConfig.getActualDataSources());
         return new HashSet<>(actualDataSources);
     }
     
     private Collection<String> getDataSourceNames(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
-        Collection<String> actualDataNodes = new InlineExpressionParser(shardingTableRuleConfig.getActualDataNodes()).splitAndEvaluate();
+        Collection<String> actualDataNodes = new InlineExpressionParser().splitAndEvaluate(shardingTableRuleConfig.getActualDataNodes());
         return actualDataNodes.stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
     }
     

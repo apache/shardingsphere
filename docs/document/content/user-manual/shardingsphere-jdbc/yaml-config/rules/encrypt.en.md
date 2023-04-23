@@ -84,10 +84,11 @@ rules:
       type: AES
       props:
         aes-key-value: 123456abc
-    like_encryptor:
-      type: CHAR_DIGEST_LIKE
     pwd_encryptor:
       type: MD5
+  likeEncryptors:
+    like_encryptor:
+      type: CHAR_DIGEST_LIKE
 ```
 
 Read the YAML configuration to create a data source according to the createDataSource method of YamlShardingSphereDataSourceFactory.

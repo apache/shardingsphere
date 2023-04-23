@@ -19,7 +19,9 @@ package org.apache.shardingsphere.test.fixture.jdbc;
 
 import java.sql.Connection;
 import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -31,8 +33,19 @@ import static org.mockito.Mockito.mock;
  */
 public final class MockedDriver implements Driver {
     
+    static {
+        try {
+            DriverManager.registerDriver(new MockedDriver());
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
     @Override
-    public Connection connect(final String url, final Properties info) {
+    public Connection connect(final String url, final Properties info) throws SQLException {
+        if (url.contains("invalid")) {
+            throw new SQLException("Invalid URL.");
+        }
         return mock(Connection.class, RETURNS_DEEP_STUBS);
     }
     

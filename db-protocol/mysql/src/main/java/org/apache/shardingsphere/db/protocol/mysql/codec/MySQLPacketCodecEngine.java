@@ -61,11 +61,9 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
             in.resetReaderIndex();
             return;
         }
-        short sequenceId = in.readUnsignedByte();
-        context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get().set(sequenceId + 1);
-        ByteBuf message = in.readRetainedSlice(payloadLength);
+        ByteBuf message = in.readRetainedSlice(remainPayloadLength);
         if (MAX_PACKET_LENGTH == payloadLength) {
-            pendingMessages.add(message);
+            pendingMessages.add(message.skipBytes(SEQUENCE_LENGTH));
         } else if (pendingMessages.isEmpty()) {
             out.add(message);
         } else {
@@ -74,7 +72,8 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
     }
     
     private void aggregateMessages(final ChannelHandlerContext context, final ByteBuf lastMessage, final List<Object> out) {
-        CompositeByteBuf result = context.alloc().compositeBuffer(pendingMessages.size() + 1);
+        CompositeByteBuf result = context.alloc().compositeBuffer(SEQUENCE_LENGTH + pendingMessages.size() + 1);
+        result.addComponent(true, lastMessage.readSlice(SEQUENCE_LENGTH));
         Iterator<ByteBuf> pendingMessagesIterator = pendingMessages.iterator();
         result.addComponent(true, pendingMessagesIterator.next());
         while (pendingMessagesIterator.hasNext()) {
@@ -117,7 +116,7 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
     }
     
     private void writeMultiPackets(final ChannelHandlerContext context, final ByteBuf byteBuf) {
-        int packetCount = (byteBuf.skipBytes(PAYLOAD_LENGTH + SEQUENCE_LENGTH).readableBytes() / MAX_PACKET_LENGTH) + 1;
+        int packetCount = byteBuf.skipBytes(PAYLOAD_LENGTH + SEQUENCE_LENGTH).readableBytes() / MAX_PACKET_LENGTH + 1;
         CompositeByteBuf result = context.alloc().compositeBuffer(packetCount * 2);
         AtomicInteger sequenceId = context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get();
         for (int i = 0; i < packetCount; i++) {

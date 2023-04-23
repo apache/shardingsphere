@@ -92,7 +92,7 @@ public final class DataSourceSwapper {
             result.put("user", findGetterMethod(dataSource, provider.getUsernamePropertyName()).invoke(dataSource));
             result.put("password", findGetterMethod(dataSource, provider.getPasswordPropertyName()).invoke(dataSource));
             return result;
-        } catch (final ReflectiveOperationException ex) {
+        } catch (final ReflectiveOperationException ignored) {
             throw new XADataSourceInitializeException(xaDataSourceDefinition);
         }
     }

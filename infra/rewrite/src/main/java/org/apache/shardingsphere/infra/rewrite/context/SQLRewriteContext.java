@@ -73,7 +73,7 @@ public final class SQLRewriteContext {
         if (!((CommonSQLStatementContext<?>) sqlStatementContext).isHintSkipSQLRewrite()) {
             addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(sqlStatementContext).getSQLTokenGenerators());
         }
-        parameterBuilder = (sqlStatementContext instanceof InsertStatementContext && null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext())
+        parameterBuilder = sqlStatementContext instanceof InsertStatementContext && null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()
                 ? new GroupedParameterBuilder(
                         ((InsertStatementContext) sqlStatementContext).getGroupedParameters(), ((InsertStatementContext) sqlStatementContext).getOnDuplicateKeyUpdateParameters())
                 : new StandardParameterBuilder(params);

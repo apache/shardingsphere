@@ -76,3 +76,20 @@ XA 分布式事务管理器
 | *配置标识*                             | *详细说明*                 | *全限定类名*                                                                                                                                                                                                                                                                                                    |
 |------------------------------------|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | com.zaxxer.hikari.HikariDataSource | 用于获取 HikariCP 连接池的标准属性 | [`org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.impl.HikariCPPropertyProvider`](https://github.com/apache/shardingsphere/blob/master/kernel/transaction/type/xa/core/src/main/java/org/apache/shardingsphere/transaction/xa/jta/datasource/swapper/impl/HikariCPPropertyProvider.java) ｜ |
+
+## DataSourcePrivilegeChecker
+
+### 全限定类名
+
+[`org.apache.shardingsphere.transaction.xa.jta.datasource.checker.DataSourcePrivilegeChecker`](https://github.com/apache/shardingsphere/blob/master/kernel/transaction/type/xa/core/src/main/java/org/apache/shardingsphere/transaction/xa/jta/datasource/checker/DataSourcePrivilegeChecker.java)
+
+### 定义
+
+用于通过数据源校验事务所需的权限
+
+### 已知实现
+
+| *配置标识*  | *详细说明*           | *全限定类名*                                                                                                                                                                                                                                                                                                                              |
+|---------|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| MySQL   | 校验 MySQL XA 事务所需的权限 | [`org.apache.shardingsphere.transaction.xa.jta.datasource.checker.dialect.MySQLDataSourcePrivilegeChecker`](https://github.com/apache/shardingsphere/blob/master/kernel/transaction/type/xa/core/src/main/java/org/apache/shardingsphere/transaction/xa/jta/datasource/checker/dialect/MySQLDataSourcePrivilegeChecker.java) ｜         |
+| Default | 默认不校验事务所需的权限     | [`org.apache.shardingsphere.transaction.xa.jta.datasource.checker.DefaultDataSourcePrivilegeChecker`](https://github.com/apache/shardingsphere/blob/master/kernel/transaction/type/xa/core/src/main/java/org/apache/shardingsphere/transaction/xa/jta/datasource/DefaultDataSourcePrivilegeChecker.java) ｜                 |

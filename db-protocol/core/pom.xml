@@ -36,7 +36,7 @@
         
         <dependency>
             <groupId>io.netty</groupId>
-            <artifactId>netty-codec</artifactId>
+            <artifactId>netty-handler</artifactId>
         </dependency>
     </dependencies>
 </project>

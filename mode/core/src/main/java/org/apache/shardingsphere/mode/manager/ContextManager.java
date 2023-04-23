@@ -384,7 +384,7 @@ public final class ContextManager implements AutoCloseable {
         DatabaseConfiguration toBeCreatedDatabaseConfig =
                 new DataSourceProvidedDatabaseConfiguration(metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources(), toBeCreatedRuleConfigs);
         ShardingSphereDatabase changedDatabase = MetaDataFactory.create(metaDataContexts.getMetaData().getActualDatabaseName(databaseName),
-                internalLoadMetaData, toBeCreatedDatabaseConfig, metaDataContexts.getMetaData().getProps(), instanceContext);
+                internalLoadMetaData, metaDataContexts.getPersistService(), toBeCreatedDatabaseConfig, metaDataContexts.getMetaData().getProps(), instanceContext);
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(metaDataContexts.getMetaData().getDatabases());
         changedDatabase.getSchemas().putAll(newShardingSphereSchemas(changedDatabase));
         result.put(databaseName.toLowerCase(), changedDatabase);
@@ -686,7 +686,7 @@ public final class ContextManager implements AutoCloseable {
     public void updateClusterState(final String status) {
         try {
             clusterStateContext.switchState(ClusterState.valueOf(status));
-        } catch (IllegalArgumentException ignore) {
+        } catch (final IllegalArgumentException ignore) {
         }
     }
     

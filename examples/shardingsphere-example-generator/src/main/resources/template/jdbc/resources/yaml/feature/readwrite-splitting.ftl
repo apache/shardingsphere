@@ -17,11 +17,10 @@
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds:
-      staticStrategy:
-        writeDataSourceName: ds_0
-        readDataSourceNames:
-          - ds_1
-          - ds_2
+      writeDataSourceName: ds_0
+      readDataSourceNames:
+        - ds_1
+        - ds_2
       loadBalancerName: round_robin
   loadBalancers:
     round_robin:

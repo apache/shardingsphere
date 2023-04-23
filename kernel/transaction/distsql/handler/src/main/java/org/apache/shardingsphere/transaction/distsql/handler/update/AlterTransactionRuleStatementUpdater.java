@@ -48,7 +48,7 @@ public final class AlterTransactionRuleStatementUpdater implements GlobalRuleRAL
     private void checkTransactionType(final AlterTransactionRuleStatement statement) {
         try {
             TransactionType.valueOf(statement.getDefaultType().toUpperCase());
-        } catch (final IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ignored) {
             throw new InvalidRuleConfigurationException("Transaction", String.format("Unsupported transaction type `%s`", statement.getDefaultType()));
         }
     }

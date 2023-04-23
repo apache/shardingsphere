@@ -157,6 +157,9 @@ public final class DataRecordMerger {
     }
     
     private Object mergePrimaryKeyOldValue(final Column beforeColumn, final Column column) {
-        return beforeColumn.isUpdated() ? beforeColumn.getOldValue() : (column.isUpdated() ? column.getOldValue() : null);
+        if (beforeColumn.isUpdated()) {
+            return beforeColumn.getOldValue();
+        }
+        return column.isUpdated() ? column.getOldValue() : null;
     }
 }

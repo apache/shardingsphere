@@ -351,7 +351,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
                 Connection connection = createConnection(dataSourceName, dataSource, transactionConnectionContext);
                 methodInvocationRecorder.replay(connection);
                 result.add(connection);
-            } catch (final SQLException ex) {
+            } catch (final SQLException ignored) {
                 for (Connection each : result) {
                     each.close();
                 }

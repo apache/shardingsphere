@@ -136,7 +136,7 @@ public final class WhereClauseShardingConditionEngine {
                     return new AlwaysFalseShardingCondition();
                 }
                 result.getValues().add(shardingConditionValue);
-            } catch (final ClassCastException ex) {
+            } catch (final ClassCastException ignored) {
                 throw new ShardingValueDataTypeException(entry.getKey());
             }
         }

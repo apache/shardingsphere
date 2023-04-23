@@ -73,10 +73,10 @@ public final class NacosMetaDataUtils {
     @SneakyThrows(NacosException.class)
     public static String getKey(final Instance instance) {
         return instance.getMetadata().keySet().stream()
-                .filter(entryKey -> !entryKey.equals(PreservedMetadataKeys.HEART_BEAT_INTERVAL)
-                        && !entryKey.equals(PreservedMetadataKeys.HEART_BEAT_TIMEOUT)
-                        && !entryKey.equals(PreservedMetadataKeys.IP_DELETE_TIMEOUT)
-                        && !entryKey.equals(UTC_ZONE_OFFSET.toString()))
+                .filter(entryKey -> !PreservedMetadataKeys.HEART_BEAT_INTERVAL.equals(entryKey)
+                        && !PreservedMetadataKeys.HEART_BEAT_TIMEOUT.equals(entryKey)
+                        && !PreservedMetadataKeys.IP_DELETE_TIMEOUT.equals(entryKey)
+                        && !UTC_ZONE_OFFSET.toString().equals(entryKey))
                 .findFirst().orElseThrow(() -> new NacosException(NacosException.RESOURCE_NOT_FOUND, "Failed to find key "));
     }
 }

@@ -95,13 +95,11 @@ public final class ShowRulesUsedStorageUnitExecutor implements RQLExecutor<ShowR
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : config.getDataSources()) {
-            if (null != each.getStaticStrategy()) {
-                if (each.getStaticStrategy().getWriteDataSourceName().equalsIgnoreCase(resourceName)) {
-                    result.add(buildRow(READWRITE_SPLITTING, each.getName()));
-                }
-                if (each.getStaticStrategy().getReadDataSourceNames().contains(resourceName)) {
-                    result.add(buildRow(READWRITE_SPLITTING, each.getName()));
-                }
+            if (each.getWriteDataSourceName().equalsIgnoreCase(resourceName)) {
+                result.add(buildRow(READWRITE_SPLITTING, each.getName()));
+            }
+            if (each.getReadDataSourceNames().contains(resourceName)) {
+                result.add(buildRow(READWRITE_SPLITTING, each.getName()));
             }
         }
         return result;

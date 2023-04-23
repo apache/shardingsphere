@@ -48,7 +48,7 @@ public final class ShowTransactionExecutor implements DatabaseAdminQueryExecutor
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        String row = functionName.equals(TRANSACTION_ISOLATION) ? "REPEATABLE-READ" : "0";
+        String row = TRANSACTION_ISOLATION.equals(functionName) ? "REPEATABLE-READ" : "0";
         mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(row)));
     }
     
