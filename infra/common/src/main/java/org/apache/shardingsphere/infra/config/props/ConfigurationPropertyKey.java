@@ -99,11 +99,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_FRONTEND_MAX_CONNECTIONS("proxy-frontend-max-connections", "0", int.class, false),
     
     /**
-     * Proxy MySQL default version.
-     */
-    PROXY_MYSQL_DEFAULT_VERSION("proxy-mysql-default-version", "5.7.22", String.class, false),
-    
-    /**
      * Proxy default start port.
      */
     PROXY_DEFAULT_PORT("proxy-default-port", "3307", int.class, true),
