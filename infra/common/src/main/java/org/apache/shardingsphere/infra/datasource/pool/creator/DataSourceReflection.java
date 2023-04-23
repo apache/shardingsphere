@@ -43,12 +43,6 @@ import java.util.Properties;
  */
 public final class DataSourceReflection {
     
-    static {
-        GENERAL_CLASS_TYPES = new HashSet<>(
-                Arrays.asList(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class, Properties.class));
-        SKIPPED_PROPERTY_KEYS = new HashSet<>(Arrays.asList("loginTimeout", "driverClassName"));
-    }
-    
     private static final Collection<Class<?>> GENERAL_CLASS_TYPES;
     
     private static final Collection<String> SKIPPED_PROPERTY_KEYS;
@@ -62,6 +56,12 @@ public final class DataSourceReflection {
     private final DataSource dataSource;
     
     private final Method[] dataSourceMethods;
+    
+    static {
+        GENERAL_CLASS_TYPES = new HashSet<>(
+                Arrays.asList(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class, Properties.class));
+        SKIPPED_PROPERTY_KEYS = new HashSet<>(Arrays.asList("loginTimeout", "driverClassName"));
+    }
     
     public DataSourceReflection(final DataSource dataSource) {
         this.dataSource = dataSource;

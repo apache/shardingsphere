@@ -30,11 +30,11 @@ import java.util.regex.Pattern;
 public final class RegularUtils {
     
     /**
-     * Tells whether or not this input string matches the given regular expression.
+     * Tells whether this input string matches the given regular expression.
      * 
      * @param regex the regular expression to which the input string is to be matched
      * @param toBeMatched the string to be matched
-     * @return whether or not the regular expression matches on the input
+     * @return whether the regular expression matches on the input
      */
     public static boolean matchesCaseInsensitive(final String regex, final String toBeMatched) {
         Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);

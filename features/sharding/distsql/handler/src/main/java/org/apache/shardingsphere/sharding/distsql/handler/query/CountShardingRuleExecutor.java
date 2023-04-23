@@ -43,7 +43,7 @@ public final class CountShardingRuleExecutor implements RQLExecutor<CountShardin
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountShardingRuleStatement sqlStatement) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        rule.ifPresent(optional -> fillRows(result, rule.get(), database.getName()));
+        rule.ifPresent(optional -> fillRows(result, optional, database.getName()));
         return result;
     }
     

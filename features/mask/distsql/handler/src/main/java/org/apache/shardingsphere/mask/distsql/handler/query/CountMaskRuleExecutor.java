@@ -42,7 +42,7 @@ public final class CountMaskRuleExecutor implements RQLExecutor<CountMaskRuleSta
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountMaskRuleStatement sqlStatement) {
         Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        rule.ifPresent(optional -> fillRows(result, rule.get(), database.getName()));
+        rule.ifPresent(optional -> fillRows(result, optional, database.getName()));
         return result;
     }
     
