@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.proxy.backend.connector.sane.SaneQueryResultEngine;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.SystemVariable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -71,10 +73,14 @@ public final class MySQLSaneQueryResultEngine implements SaneQueryResultEngine {
         List<Object> data = new ArrayList<>(sqlStatement.getProjections().getProjections().size());
         for (ProjectionSegment each : sqlStatement.getProjections().getProjections()) {
             if (each instanceof ExpressionProjectionSegment) {
-                String text = ((ExpressionProjectionSegment) each).getText();
-                String alias = ((ExpressionProjectionSegment) each).getAlias().orElse(((ExpressionProjectionSegment) each).getText());
+                ExpressionProjectionSegment expressionProjection = (ExpressionProjectionSegment) each;
+                String text = expressionProjection.getText();
+                String alias = expressionProjection.getAlias().orElse(expressionProjection.getText());
                 queryResultColumnMetaDataList.add(createRawQueryResultColumnMetaData(text, alias));
-                data.add(MySQLDefaultVariable.containsVariable(alias) ? MySQLDefaultVariable.getVariable(alias) : "1");
+                String value = expressionProjection.getExpr() instanceof VariableSegment
+                        ? SystemVariable.findSystemVariable(((VariableSegment) expressionProjection.getExpr()).getVariable()).map(SystemVariable::getDefaultValue).orElse("1")
+                        : "1";
+                data.add(value);
             }
         }
         return queryResultColumnMetaDataList.isEmpty()
