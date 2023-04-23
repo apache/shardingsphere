@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+package org.apache.shardingsphere.cdc.distsql.statement;
 
-import BaseRule;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.cdc.UpdatableCDCRALStatement;
 
-showStreamingList
-    : SHOW STREAMING LIST
-    ;
-
-showStreamingStatus
-    : SHOW STREAMING STATUS jobId
-    ;
-
-dropStreaming
-    : DROP STREAMING jobId
-    ;
-
-jobId
-    : INT_ | IDENTIFIER_ | STRING_
-    ;
+/**
+ * Drop streaming statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class DropStreamingStatement extends UpdatableCDCRALStatement {
+    
+    private final String jobId;
+}

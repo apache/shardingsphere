@@ -38,3 +38,7 @@ LIST
 STATUS
     : S T A T U S
     ;
+
+DROP
+    : D R O P
+    ;
