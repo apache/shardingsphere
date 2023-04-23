@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.core.job;
 
 import org.apache.shardingsphere.data.pipeline.cdc.api.job.type.CDCJobType;
+import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
@@ -34,7 +35,7 @@ class CDCJobIdTest {
     @Test
     void parseJobType() {
         PipelineContextKey contextKey = PipelineContextKey.build("sharding_db", InstanceType.PROXY);
-        CDCJobId pipelineJobId = new CDCJobId(contextKey, Arrays.asList("test", "t_order"), false);
+        CDCJobId pipelineJobId = new CDCJobId(contextKey, Arrays.asList("test", "t_order"), false, CDCSinkType.SOCKET.name());
         String jobId = PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + "abcd";
         JobType actualJobType = PipelineJobIdUtils.parseJobType(jobId);
         assertThat(actualJobType, instanceOf(CDCJobType.class));

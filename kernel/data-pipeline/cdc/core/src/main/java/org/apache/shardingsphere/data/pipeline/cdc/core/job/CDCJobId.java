@@ -36,9 +36,12 @@ public final class CDCJobId extends AbstractPipelineJobId {
     
     private final boolean full;
     
-    public CDCJobId(final PipelineContextKey contextKey, final List<String> schemaTableNames, final boolean full) {
+    private final String sinkType;
+    
+    public CDCJobId(final PipelineContextKey contextKey, final List<String> schemaTableNames, final boolean full, final String sinkType) {
         super(new CDCJobType(), contextKey);
         this.schemaTableNames = schemaTableNames;
         this.full = full;
+        this.sinkType = sinkType;
     }
 }
