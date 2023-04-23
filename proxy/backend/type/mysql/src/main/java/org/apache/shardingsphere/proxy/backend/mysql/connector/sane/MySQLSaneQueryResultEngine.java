@@ -78,7 +78,8 @@ public final class MySQLSaneQueryResultEngine implements SaneQueryResultEngine {
                 String alias = expressionProjection.getAlias().orElse(expressionProjection.getText());
                 queryResultColumnMetaDataList.add(createRawQueryResultColumnMetaData(text, alias));
                 String value = expressionProjection.getExpr() instanceof VariableSegment
-                        ? SystemVariable.findSystemVariable(((VariableSegment) expressionProjection.getExpr()).getVariable()).map(SystemVariable::getDefaultValue).orElse("1") : "1";
+                        ? SystemVariable.findSystemVariable(((VariableSegment) expressionProjection.getExpr()).getVariable()).map(SystemVariable::getDefaultValue).orElse("1")
+                        : "1";
                 data.add(value);
             }
         }
