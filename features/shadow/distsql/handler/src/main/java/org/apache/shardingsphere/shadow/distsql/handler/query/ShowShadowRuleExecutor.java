@@ -96,11 +96,7 @@ public final class ShowShadowRuleExecutor implements RQLExecutor<ShowShadowRules
                                                            final Map<String, AlgorithmConfiguration> algorithmConfigs) {
         Map<String, ShadowTableConfiguration> dataSourceTable = dataSourceTableMap.getOrDefault(dataSourceConfig.getName(), Collections.emptyMap());
         Collection<Map<String, String>> result = new LinkedList<>();
-        dataSourceTable.forEach((each, value) -> {
-            value.getShadowAlgorithmNames().forEach(algorithm -> {
-                result.add(buildDataItem(dataSourceConfig, algorithmConfigs.get(algorithm), each));
-            });
-        });
+        dataSourceTable.forEach((key, value) -> value.getShadowAlgorithmNames().forEach(each -> result.add(buildDataItem(dataSourceConfig, algorithmConfigs.get(each), key))));
         return result;
     }
     
