@@ -27,3 +27,4 @@ org.apache.shardingsphere.migration.distsql.handler.update.StartMigrationCheckUp
 org.apache.shardingsphere.migration.distsql.handler.update.StopMigrationCheckUpdater
 org.apache.shardingsphere.migration.distsql.handler.update.DropMigrationCheckUpdater
 org.apache.shardingsphere.cdc.distsql.handler.update.RollbackStreamingUpdater
+org.apache.shardingsphere.cdc.distsql.handler.update.CommitStreamingUpdater

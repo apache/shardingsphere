@@ -345,7 +345,13 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     
     @Override
     public void commit(final String jobId) {
-        throw new UnsupportedOperationException();
+        CDCJobConfiguration jobConfig = getJobConfiguration(jobId);
+        if (CDCSinkType.SOCKET == jobConfig.getSinkConfig().getSinkType()) {
+            PipelineJobCenter.stop(jobId);
+        } else {
+            stop(jobId);
+        }
+        dropJob(jobId);
     }
     
     @Override

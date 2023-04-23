@@ -31,6 +31,10 @@ rollbackStreaming
     : ROLLBACK STREAMING jobId
     ;
 
+commitStreaming
+    : COMMIT STREAMING jobId
+    ;
+
 jobId
     : INT_ | IDENTIFIER_ | STRING_
     ;

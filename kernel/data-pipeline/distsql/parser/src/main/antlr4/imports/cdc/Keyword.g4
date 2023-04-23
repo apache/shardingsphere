@@ -42,3 +42,7 @@ STATUS
 ROLLBACK
     : R O L L B A C K
     ;
+
+COMMIT
+    : C O M M I T
+    ;
