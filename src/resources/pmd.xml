@@ -61,6 +61,7 @@
     
     <rule ref="category/java/codestyle.xml/AvoidUsingNativeCode" />
     <rule ref="category/java/codestyle.xml/BooleanGetMethodName" />
+    <rule ref="category/java/codestyle.xml/CommentDefaultAccessModifier" />
     
     <rule ref="category/java/documentation.xml/CommentSize">
         <properties>

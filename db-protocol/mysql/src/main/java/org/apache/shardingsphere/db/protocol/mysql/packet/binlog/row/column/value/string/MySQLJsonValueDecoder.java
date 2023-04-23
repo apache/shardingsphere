@@ -238,8 +238,11 @@ public final class MySQLJsonValueDecoder {
         out.append('"');
     }
     
+    /**
+     * Json value types.
+     */
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    static final class JsonValueTypes {
+    public static final class JsonValueTypes {
         
         public static final byte SMALL_JSON_OBJECT = 0x00;
         

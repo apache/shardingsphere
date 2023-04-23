@@ -151,7 +151,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         }
     }
     
-    boolean isColumnUnneeded(final Set<ColumnName> columnNameSet, final String columnName) {
+    private boolean isColumnUnneeded(final Set<ColumnName> columnNameSet, final String columnName) {
         return null != columnNameSet && !columnNameSet.contains(new ColumnName(columnName));
     }
     

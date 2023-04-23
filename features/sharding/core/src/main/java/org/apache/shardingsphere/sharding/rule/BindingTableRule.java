@@ -81,7 +81,16 @@ public final class BindingTableRule {
         return tableRules.keySet();
     }
     
-    Map<String, String> getLogicAndActualTables(final String dataSource, final String logicTable, final String actualTable, final Collection<String> availableLogicBindingTables) {
+    /**
+     * Get logic and actual tables.
+     * 
+     * @param dataSource data source
+     * @param logicTable logic table
+     * @param actualTable actual table
+     * @param availableLogicBindingTables available logic binding tables
+     * @return logic and actual tables
+     */
+    public Map<String, String> getLogicAndActualTables(final String dataSource, final String logicTable, final String actualTable, final Collection<String> availableLogicBindingTables) {
         Map<String, String> result = new LinkedHashMap<>();
         for (String each : availableLogicBindingTables) {
             String availableLogicTable = each.toLowerCase();

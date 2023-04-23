@@ -212,7 +212,7 @@ public final class ShardingRouteCacheableChecker {
     
     @EqualsAndHashCode(of = "sql")
     @Getter
-    private static class Key {
+    private static final class Key {
         
         private final ShardingSphereDatabase database;
         
@@ -222,7 +222,7 @@ public final class ShardingRouteCacheableChecker {
         
         private final List<Object> parameters;
         
-        Key(final ShardingSphereDatabase database, final String sql, final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
+        private Key(final ShardingSphereDatabase database, final String sql, final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
             this.database = database;
             this.sql = sql;
             this.sqlStatementContext = sqlStatementContext;

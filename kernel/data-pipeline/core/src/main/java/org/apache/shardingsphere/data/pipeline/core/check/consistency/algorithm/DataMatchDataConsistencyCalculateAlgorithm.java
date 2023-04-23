@@ -204,9 +204,12 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         }
     }
     
+    /**
+     * Calculated result.
+     */
     @RequiredArgsConstructor
     @Getter
-    static final class CalculatedResult implements DataConsistencyCalculatedResult {
+    public static final class CalculatedResult implements DataConsistencyCalculatedResult {
         
         @NonNull
         private final Object maxUniqueKeyValue;

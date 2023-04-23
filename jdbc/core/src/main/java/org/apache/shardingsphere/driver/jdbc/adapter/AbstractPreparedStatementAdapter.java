@@ -297,7 +297,7 @@ public abstract class AbstractPreparedStatementAdapter extends AbstractUnsupport
     }
     
     @FunctionalInterface
-    interface PreparedStatementInvocationReplayer {
+    private interface PreparedStatementInvocationReplayer {
         
         void replayOn(PreparedStatement preparedStatement) throws SQLException;
     }
