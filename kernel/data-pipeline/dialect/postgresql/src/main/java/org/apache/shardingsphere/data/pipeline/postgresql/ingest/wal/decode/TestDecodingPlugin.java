@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
 import com.google.common.base.Preconditions;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * Test decoding plugin.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public final class TestDecodingPlugin implements DecodingPlugin {
     
     private final BaseTimestampUtils timestampUtils;
@@ -56,6 +56,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     
     private AbstractRowEvent readTableEvent(final ByteBuffer data) {
         AbstractRowEvent result;
+        String tableName = readTableName(data);
         String rowEventType = readRowEventType(data);
         switch (rowEventType) {
             case IngestDataChangeType.INSERT:
@@ -70,7 +71,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
             default:
                 throw new IngestException("Unknown rowEventType: " + rowEventType);
         }
-        String[] tableMetaData = readTableName(data).split("\\.");
+        String[] tableMetaData = tableName.split("\\.");
         result.setDatabaseName(tableMetaData[0]);
         result.setTableName(tableMetaData[1].substring(0, tableMetaData[1].length() - 1));
         return result;
