@@ -118,8 +118,6 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     
     private double getWeightValue(final String readDataSourceName) {
         Object weightObject = props.get(readDataSourceName);
-        ShardingSpherePreconditions.checkNotNull(weightObject,
-                () -> new MissingRequiredReadDatabaseWeightException(getType(), String.format("Read database `%s` access weight is not configured.", readDataSourceName)));
         double result = Double.parseDouble(weightObject.toString());
         if (Double.isInfinite(result)) {
             result = 10000.0D;
