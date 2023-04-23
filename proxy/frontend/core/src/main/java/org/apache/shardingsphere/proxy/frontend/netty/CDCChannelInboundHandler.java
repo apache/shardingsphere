@@ -34,8 +34,8 @@ import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCServerException;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
-import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.DropStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.LoginRequestBody.BasicBody;
+import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.RollbackStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StartStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StopStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
@@ -128,8 +128,8 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             case START_STREAMING:
                 processStartStreamingRequest(ctx, request, connectionContext);
                 break;
-            case DROP_STREAMING:
-                processDropStreamingRequest(ctx, request, connectionContext);
+            case ROLLBACK_STREAMING:
+                processRollbackStreamingRequest(ctx, request, connectionContext);
                 break;
             default:
                 log.warn("can't handle this type of request {}", request);
@@ -218,12 +218,12 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
     }
     
-    private void processDropStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
-        DropStreamingRequestBody requestBody = request.getDropStreamingRequestBody();
+    private void processRollbackStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
+        RollbackStreamingRequestBody requestBody = request.getRollbackStreamingRequestBody();
         String database = backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId());
         checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), database);
         try {
-            backendHandler.dropStreaming(connectionContext.getJobId());
+            backendHandler.rollbackStreaming(connectionContext.getJobId());
             connectionContext.setStatus(CDCConnectionStatus.LOGGED_IN);
             connectionContext.setJobId(null);
             ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());

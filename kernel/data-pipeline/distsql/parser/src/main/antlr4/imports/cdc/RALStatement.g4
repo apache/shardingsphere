@@ -27,8 +27,8 @@ showStreamingStatus
     : SHOW STREAMING STATUS jobId
     ;
 
-dropStreaming
-    : DROP STREAMING jobId
+rollbackStreaming
+    : ROLLBACK STREAMING jobId
     ;
 
 jobId

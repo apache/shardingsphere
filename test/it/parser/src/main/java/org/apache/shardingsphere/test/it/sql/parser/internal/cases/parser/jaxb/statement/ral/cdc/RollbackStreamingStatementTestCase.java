@@ -15,18 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.cdc.distsql.statement;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.cdc.UpdatableCDCRALStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Drop streaming statement.
+ * Rollback streaming statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class DropStreamingStatement extends UpdatableCDCRALStatement {
+@Setter
+public final class RollbackStreamingStatementTestCase extends SQLParserTestCase {
     
-    private final String jobId;
+    @XmlElement(name = "job-id")
+    private String jobId;
 }

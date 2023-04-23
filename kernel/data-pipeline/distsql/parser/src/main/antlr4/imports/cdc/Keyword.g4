@@ -39,6 +39,6 @@ STATUS
     : S T A T U S
     ;
 
-DROP
-    : D R O P
+ROLLBACK
+    : R O L L B A C K
     ;

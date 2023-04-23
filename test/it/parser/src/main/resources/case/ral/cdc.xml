@@ -23,7 +23,7 @@
         <job-id>123</job-id>
     </show-streaming-status>
 
-    <drop-streaming sql-case-id="drop-streaming">
+    <rollback-streaming sql-case-id="rollback-streaming">
         <job-id>123</job-id>
-    </drop-streaming>
+    </rollback-streaming>
 </sql-parser-test-cases>

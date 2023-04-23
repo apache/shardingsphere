@@ -19,26 +19,26 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.cdc.distsql.statement.DropStreamingStatement;
+import org.apache.shardingsphere.cdc.distsql.statement.RollbackStreamingStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.JobIdAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc.DropStreamingStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc.RollbackStreamingStatementTestCase;
 
 /**
- * Drop streaming statement assert.
+ * Rollback streaming statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DropStreamingStatementAssert {
+public final class RollbackStreamingStatementAssert {
     
     /**
-     * Assert drop streaming statement is correct with expected parser result.
+     * Assert rollback streaming statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual        actual
      * @param expected      expected
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final DropStreamingStatement actual, final DropStreamingStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final RollbackStreamingStatement actual, final RollbackStreamingStatementTestCase expected) {
         if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             JobIdAssert.assertJobId(assertContext, actual.getJobId(), expected.getJobId());
         }

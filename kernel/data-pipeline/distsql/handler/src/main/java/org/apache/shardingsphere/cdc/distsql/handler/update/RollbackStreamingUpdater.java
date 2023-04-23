@@ -15,21 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc;
+package org.apache.shardingsphere.cdc.distsql.handler.update;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.cdc.distsql.statement.RollbackStreamingStatement;
+import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
+import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 
-import javax.xml.bind.annotation.XmlElement;
+import java.sql.SQLException;
 
 /**
- * Drop streaming statement test case.
+ * Rollback streaming updater.
  */
-@Getter
-@Setter
-public final class DropStreamingStatementTestCase extends SQLParserTestCase {
+public final class RollbackStreamingUpdater implements RALUpdater<RollbackStreamingStatement> {
     
-    @XmlElement(name = "job-id")
-    private String jobId;
+    private final CDCJobAPI jobAPI = new CDCJobAPI();
+    
+    @Override
+    public void executeUpdate(final String databaseName, final RollbackStreamingStatement sqlStatement) throws SQLException {
+        jobAPI.rollback(sqlStatement.getJobId());
+    }
+    
+    @Override
+    public String getType() {
+        return RollbackStreamingStatement.class.getName();
+    }
 }

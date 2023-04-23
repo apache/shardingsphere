@@ -155,12 +155,12 @@ public final class CDCBackendHandler {
     }
     
     /**
-     * Drop streaming.
+     * Rollback streaming.
      *
      * @param jobId job id.
      * @throws SQLException sql exception
      */
-    public void dropStreaming(final String jobId) throws SQLException {
+    public void rollbackStreaming(final String jobId) throws SQLException {
         jobAPI.rollback(jobId);
     }
     

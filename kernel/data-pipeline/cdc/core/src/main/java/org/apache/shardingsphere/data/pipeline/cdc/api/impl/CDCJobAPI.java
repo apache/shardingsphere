@@ -229,8 +229,8 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     public void startJob(final String jobId, final ImporterConnector importerConnector) {
         CDCJob job = new CDCJob(importerConnector);
         PipelineJobCenter.addJob(jobId, job);
+        updateJobConfigurationDisabled(jobId, false);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        updateJobConfigurationDisabled(jobConfigPOJO, false);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfigPOJO.toJobConfiguration());
         job.setJobBootstrap(oneOffJobBootstrap);
         oneOffJobBootstrap.execute();
@@ -244,11 +244,6 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
      */
     public void updateJobConfigurationDisabled(final String jobId, final boolean disabled) {
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        updateJobConfigurationDisabled(jobConfigPOJO, disabled);
-    }
-    
-    private void updateJobConfigurationDisabled(final JobConfigurationPOJO jobConfigPOJO, final boolean disabled) {
-        // TODO, ensure that there is only one consumer at a time, job config disable may not be updated when the program is forced to close
         jobConfigPOJO.setDisabled(disabled);
         if (disabled) {
             jobConfigPOJO.getProps().setProperty("stop_time_millis", String.valueOf(System.currentTimeMillis()));
