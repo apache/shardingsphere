@@ -42,7 +42,7 @@ public final class CountEncryptRuleExecutor implements RQLExecutor<CountEncryptR
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountEncryptRuleStatement sqlStatement) {
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        rule.ifPresent(optional -> fillRows(result, rule.get(), database.getName()));
+        rule.ifPresent(optional -> fillRows(result, optional, database.getName()));
         return result;
     }
     

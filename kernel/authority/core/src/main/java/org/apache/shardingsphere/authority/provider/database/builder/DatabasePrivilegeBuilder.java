@@ -98,7 +98,7 @@ public final class DatabasePrivilegeBuilder {
         Set<String> result = new HashSet<>();
         for (Entry<ShardingSphereUser, Collection<String>> entry : userDatabaseMappings.entrySet()) {
             boolean isAnyOtherHost = checkAnyOtherHost(entry.getKey().getGrantee(), shardingSphereUser);
-            if (isAnyOtherHost || shardingSphereUser == entry.getKey() || shardingSphereUser.equals(entry.getKey())) {
+            if (isAnyOtherHost || shardingSphereUser.equals(entry.getKey())) {
                 result.addAll(entry.getValue());
             }
         }
