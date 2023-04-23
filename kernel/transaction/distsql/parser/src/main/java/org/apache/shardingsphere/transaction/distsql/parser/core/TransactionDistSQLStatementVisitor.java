@@ -37,7 +37,7 @@ import java.util.Properties;
 /**
  * SQL statement visitor for transaction DistSQL.
  */
-public final class TransactionDistSQLStatementVisitor extends TransactionDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class TransactionDistSQLStatementVisitor extends TransactionDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitShowTransactionRule(final ShowTransactionRuleContext ctx) {

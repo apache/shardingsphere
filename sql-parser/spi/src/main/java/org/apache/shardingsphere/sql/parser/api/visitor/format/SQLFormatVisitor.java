@@ -23,5 +23,5 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 /**
  * SQL format visitor.
  */
-public interface SQLFormatVisitor extends SQLVisitor, TypedSPI {
+public interface SQLFormatVisitor extends SQLVisitor<String>, TypedSPI {
 }

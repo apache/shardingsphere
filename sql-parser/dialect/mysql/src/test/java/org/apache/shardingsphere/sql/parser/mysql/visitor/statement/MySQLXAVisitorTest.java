@@ -22,7 +22,7 @@ import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser;
 import org.apache.shardingsphere.sql.parser.mysql.parser.MySQLLexer;
-import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLTCLStatementSQLVisitor;
+import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.type.MySQLTCLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXAStatement;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -44,7 +44,7 @@ class MySQLXAVisitorTest {
         CodePointBuffer buffer = CodePointBuffer.withChars(CharBuffer.wrap(inputSQL.toCharArray()));
         MySQLLexer lexer = new MySQLLexer(CodePointCharStream.fromBuffer(buffer));
         MySQLStatementParser parser = new MySQLStatementParser(new CommonTokenStream(lexer));
-        MySQLTCLStatementSQLVisitor visitor = new MySQLTCLStatementSQLVisitor();
+        MySQLTCLStatementVisitor visitor = new MySQLTCLStatementVisitor();
         MySQLXAStatement xaStatement = (MySQLXAStatement) visitor.visitXa(parser.xa());
         assertThat("XA parse error.", parser.getNumberOfSyntaxErrors(), is(0));
         assertThat("XA operation error.", xaStatement.getOp(), is(operation));

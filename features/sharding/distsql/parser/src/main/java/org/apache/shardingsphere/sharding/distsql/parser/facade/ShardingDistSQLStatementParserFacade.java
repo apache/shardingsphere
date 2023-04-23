@@ -21,6 +21,7 @@ import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatem
 import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingDistSQLStatementVisitor;
 import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingDistSQLLexer;
 import org.apache.shardingsphere.sharding.distsql.parser.core.ShardingDistSQLParser;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -41,7 +42,7 @@ public final class ShardingDistSQLStatementParserFacade implements FeaturedDistS
     }
     
     @Override
-    public Class<? extends SQLVisitor> getVisitorClass() {
+    public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return ShardingDistSQLStatementVisitor.class;
     }
     

@@ -19,12 +19,13 @@ package org.apache.shardingsphere.sql.parser.api;
 
 import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.Token;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
+import org.apache.shardingsphere.sql.parser.api.visitor.statement.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLStatementVisitorFactory;
 import org.apache.shardingsphere.sql.parser.core.database.visitor.SQLVisitorRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * SQL statement visitor engine.
@@ -40,16 +41,15 @@ public final class SQLStatementVisitorEngine {
      * Visit parse context.
      *
      * @param parseASTNode parse AST node
-     * @param <T> type of SQL visitor result
      * @return SQL visitor result
      */
-    public <T> T visit(final ParseASTNode parseASTNode) {
-        ParseTreeVisitor<T> visitor = SQLStatementVisitorFactory.newInstance(databaseType, SQLVisitorRule.valueOf(parseASTNode.getRootNode().getClass()));
-        T result = parseASTNode.getRootNode().accept(visitor);
+    public SQLStatement visit(final ParseASTNode parseASTNode) {
+        SQLStatementVisitor visitor = SQLStatementVisitorFactory.newInstance(databaseType, SQLVisitorRule.valueOf(parseASTNode.getRootNode().getClass()));
+        ASTNode result = parseASTNode.getRootNode().accept(visitor);
         if (isParseComment) {
             appendSQLComments(parseASTNode, result);
         }
-        return result;
+        return (SQLStatement) result;
     }
     
     private <T> void appendSQLComments(final ParseASTNode parseASTNode, final T visitResult) {

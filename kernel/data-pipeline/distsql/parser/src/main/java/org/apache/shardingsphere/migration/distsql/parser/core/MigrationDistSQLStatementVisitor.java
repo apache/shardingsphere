@@ -78,7 +78,7 @@ import java.util.stream.Collectors;
 /**
  * SQL statement visitor for migration DistSQL.
  */
-public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitMigrateTable(final MigrateTableContext ctx) {

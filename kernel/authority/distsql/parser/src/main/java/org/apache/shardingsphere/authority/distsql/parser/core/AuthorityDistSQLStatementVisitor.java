@@ -26,7 +26,7 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 /**
  * SQL statement visitor for authority DistSQL.
  */
-public final class AuthorityDistSQLStatementVisitor extends AuthorityDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class AuthorityDistSQLStatementVisitor extends AuthorityDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitShowAuthorityRule(final ShowAuthorityRuleContext ctx) {

@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 /**
  * SQL statement visitor for mask DistSQL.
  */
-public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateMaskRule(final CreateMaskRuleContext ctx) {
