@@ -22,4 +22,8 @@
     <show-streaming-status sql-case-id="show-streaming-status">
         <job-id>123</job-id>
     </show-streaming-status>
+
+    <drop-streaming sql-case-id="drop-streaming">
+        <job-id>123</job-id>
+    </drop-streaming>
 </sql-parser-test-cases>
