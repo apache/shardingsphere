@@ -37,7 +37,7 @@ public final class ShowTransactionRuleExecutor implements MetaDataRequiredQuerya
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ShowTransactionRuleStatement sqlStatement) {
         TransactionRule rule = metaData.getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         return Collections.singleton(new LocalDataQueryResultRow(rule.getDefaultType().name(), null != rule.getProviderType() ? rule.getProviderType() : "",
-                !rule.getProps().isEmpty() ? PropertiesConverter.convert(rule.getProps()) : ""));
+                rule.getProps().isEmpty() ? "" : PropertiesConverter.convert(rule.getProps())));
     }
     
     @Override

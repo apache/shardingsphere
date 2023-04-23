@@ -66,7 +66,6 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
         for (int index = 0; index < onDuplicateKeyUpdateValueContext.getValueExpressions().size(); index++) {
             String encryptLogicColumnName = onDuplicateKeyUpdateValueContext.getColumn(index).getIdentifier().getValue();
-            EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, tableName, encryptLogicColumnName);
             Optional<EncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, encryptLogicColumnName);
             if (!encryptor.isPresent()) {
                 continue;
@@ -75,6 +74,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
             if (plainColumnValue instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) plainColumnValue).getFunctionName())) {
                 return;
             }
+            EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, tableName, encryptLogicColumnName);
             Object cipherColumnValue = encryptor.get().encrypt(plainColumnValue, encryptContext);
             groupedParamBuilder.getGenericParameterBuilder().addReplacedParameters(index, cipherColumnValue);
             Collection<Object> addedParams = new LinkedList<>();

@@ -115,9 +115,9 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
     private static void validateSameDataSource(final SQLStatementContext<?> sqlStatementContext, final SingleRule rule,
                                                final ConfigurationProperties props, final Collection<QualifiedTable> singleTableNames, final RouteContext routeContext) {
         String sqlFederationType = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
-        boolean allTablesInSameDataSource = !"NONE".equals(sqlFederationType)
-                ? sqlStatementContext instanceof SelectStatementContext || rule.isSingleTablesInSameDataSource(singleTableNames)
-                : rule.isAllTablesInSameDataSource(routeContext, singleTableNames);
+        boolean allTablesInSameDataSource = "NONE".equals(sqlFederationType)
+                ? rule.isAllTablesInSameDataSource(routeContext, singleTableNames)
+                : sqlStatementContext instanceof SelectStatementContext || rule.isSingleTablesInSameDataSource(singleTableNames);
         Preconditions.checkState(allTablesInSameDataSource, "All tables must be in the same datasource.");
     }
     

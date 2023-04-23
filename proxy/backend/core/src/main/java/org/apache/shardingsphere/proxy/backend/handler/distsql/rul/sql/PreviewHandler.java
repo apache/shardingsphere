@@ -168,13 +168,9 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
     }
     
     private String getDatabaseName() {
-        String result = !Strings.isNullOrEmpty(getConnectionSession().getDatabaseName()) ? getConnectionSession().getDatabaseName() : getConnectionSession().getDefaultDatabaseName();
-        if (Strings.isNullOrEmpty(result)) {
-            throw new NoDatabaseSelectedException();
-        }
-        if (!ProxyContext.getInstance().databaseExists(result)) {
-            throw new UnknownDatabaseException(result);
-        }
+        String result = Strings.isNullOrEmpty(getConnectionSession().getDatabaseName()) ? getConnectionSession().getDefaultDatabaseName() : getConnectionSession().getDatabaseName();
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(result), NoDatabaseSelectedException::new);
+        ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(result), () -> new UnknownDatabaseException(result));
         return result;
     }
 }

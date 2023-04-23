@@ -68,8 +68,9 @@ public final class ShowShadowRuleExecutor implements RQLExecutor<ShowShadowRules
     
     private Iterator<Map<String, String>> buildDataSourceIterator(final ShadowRuleConfiguration ruleConfig, final ShowShadowRulesStatement sqlStatement) {
         Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap = convertToDataSourceTableMap(ruleConfig.getTables());
-        Collection<ShadowDataSourceConfiguration> specifiedConfigs = !isSpecified(sqlStatement) ? ruleConfig.getDataSources()
-                : ruleConfig.getDataSources().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).collect(Collectors.toList());
+        Collection<ShadowDataSourceConfiguration> specifiedConfigs = isSpecified(sqlStatement)
+                ? ruleConfig.getDataSources().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).collect(Collectors.toList())
+                : ruleConfig.getDataSources();
         return specifiedConfigs.stream().map(each -> buildDataItem(each, dataSourceTableMap)).collect(Collectors.toList()).iterator();
     }
     

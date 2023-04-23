@@ -81,7 +81,7 @@ public enum MySQLBinaryColumnType implements BinaryColumnType {
      *
      * @see <a href="https://github.com/apache/shardingsphere/issues/4795"></a>
      */
-    MySQL_TYPE_JSON(0xf5),
+    MYSQL_TYPE_JSON(0xf5),
     
     MYSQL_TYPE_NEWDECIMAL(0xf6),
     

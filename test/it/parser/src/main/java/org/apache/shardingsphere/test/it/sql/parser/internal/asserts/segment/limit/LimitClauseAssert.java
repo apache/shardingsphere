@@ -70,7 +70,7 @@ public final class LimitClauseAssert {
             assertNull(expected, assertContext.getText("Row count should not exist."));
             return;
         }
-        if (SQLCaseType.Placeholder == assertContext.getCaseType()) {
+        if (SQLCaseType.PLACEHOLDER == assertContext.getCaseType()) {
             assertThat(assertContext.getText("Row count index assertion error: "),
                     ((ParameterMarkerPaginationValueSegment) actual).getParameterIndex(), is(expected.getParameterIndex()));
         } else {

@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 
 import java.util.Collection;
@@ -104,11 +105,8 @@ public final class EncryptPredicateRightValueTokenGenerator
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
         if (encryptCondition instanceof EncryptBinaryCondition && "LIKE".equalsIgnoreCase(((EncryptBinaryCondition) encryptCondition).getOperator())) {
             Optional<String> likeQueryColumn = encryptRule.findLikeQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
-            if (!likeQueryColumn.isPresent()) {
-                throw new UnsupportedEncryptSQLException("LIKE");
-            } else {
-                return encryptRule.getEncryptLikeQueryValues(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
-            }
+            ShardingSpherePreconditions.checkState(likeQueryColumn.isPresent(), () -> new UnsupportedEncryptSQLException("LIKE"));
+            return encryptRule.getEncryptLikeQueryValues(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
         }
         Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         return assistedQueryColumn.isPresent()

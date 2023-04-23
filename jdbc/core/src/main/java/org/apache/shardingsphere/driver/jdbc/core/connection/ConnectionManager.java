@@ -303,7 +303,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
         DataSource dataSource = dataSourceMap.get(dataSourceName);
-        Preconditions.checkState(null != dataSource, "Missing the data source name: '%s'", dataSourceName);
+        Preconditions.checkNotNull(dataSource, "Missing the data source name: '%s'", dataSourceName);
         Collection<Connection> connections;
         synchronized (cachedConnections) {
             connections = cachedConnections.get(dataSourceName);
@@ -311,18 +311,18 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
         List<Connection> result;
         if (connections.size() >= connectionSize) {
             result = new ArrayList<>(connections).subList(0, connectionSize);
-        } else if (!connections.isEmpty()) {
+        } else if (connections.isEmpty()) {
+            result = new ArrayList<>(createConnections(dataSourceName, dataSource, connectionSize, connectionMode));
+            synchronized (cachedConnections) {
+                cachedConnections.putAll(dataSourceName, result);
+            }
+        } else {
             result = new ArrayList<>(connectionSize);
             result.addAll(connections);
             List<Connection> newConnections = createConnections(dataSourceName, dataSource, connectionSize - connections.size(), connectionMode);
             result.addAll(newConnections);
             synchronized (cachedConnections) {
                 cachedConnections.putAll(dataSourceName, newConnections);
-            }
-        } else {
-            result = new ArrayList<>(createConnections(dataSourceName, dataSource, connectionSize, connectionMode));
-            synchronized (cachedConnections) {
-                cachedConnections.putAll(dataSourceName, result);
             }
         }
         return result;

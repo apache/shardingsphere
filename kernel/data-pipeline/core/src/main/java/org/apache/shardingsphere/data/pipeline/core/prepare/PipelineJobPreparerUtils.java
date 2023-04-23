@@ -170,11 +170,11 @@ public final class PipelineJobPreparerUtils {
      * @param targetDataSources target data sources
      */
     public static void checkTargetDataSource(final String databaseType, final ImporterConfiguration importerConfig, final Collection<? extends DataSource> targetDataSources) {
-        DataSourceChecker dataSourceChecker = PipelineTypedSPILoader.findDatabaseTypedService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType));
         if (null == targetDataSources || targetDataSources.isEmpty()) {
             log.info("target data source is empty, skip check");
             return;
         }
+        DataSourceChecker dataSourceChecker = PipelineTypedSPILoader.findDatabaseTypedService(DataSourceChecker.class, databaseType).orElseGet(() -> new BasicDataSourceChecker(databaseType));
         dataSourceChecker.checkConnection(targetDataSources);
         dataSourceChecker.checkTargetTable(targetDataSources, importerConfig.getTableNameSchemaNameMapping(), importerConfig.getLogicTableNames());
     }

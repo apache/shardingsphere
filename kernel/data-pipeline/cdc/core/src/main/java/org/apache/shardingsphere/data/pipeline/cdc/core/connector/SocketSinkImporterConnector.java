@@ -113,13 +113,13 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
             return;
         }
         if (ImporterType.INVENTORY == importerType || null == dataRecordComparator) {
-            Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
             int dataRecordCount = (int) recordList.stream().filter(each -> each instanceof DataRecord).count();
             Record lastRecord = recordList.get(recordList.size() - 1);
             if (lastRecord instanceof FinishedRecord && 0 == dataRecordCount) {
                 socketSinkImporter.ackWithLastDataRecord(new CDCAckPosition(lastRecord, 0));
                 return;
             }
+            Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
             importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(RecordUtils.getLastNormalRecord(recordList), dataRecordCount));
             writeImmediately(recordList, importerDataRecordMap);
         } else if (ImporterType.INCREMENTAL == importerType) {

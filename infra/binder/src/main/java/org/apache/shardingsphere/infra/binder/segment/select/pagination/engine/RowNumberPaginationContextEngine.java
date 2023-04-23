@@ -58,7 +58,7 @@ public final class RowNumberPaginationContextEngine {
      * @return pagination context
      */
     public PaginationContext createPaginationContext(final Collection<ExpressionSegment> expressions, final ProjectionsContext projectionsContext, final List<Object> params) {
-        Optional<String> rowNumberAlias = isRowNumberAlias(projectionsContext);
+        Optional<String> rowNumberAlias = findRowNumberAlias(projectionsContext);
         if (!rowNumberAlias.isPresent()) {
             return new PaginationContext(null, null, params);
         }
@@ -79,7 +79,7 @@ public final class RowNumberPaginationContextEngine {
         return result;
     }
     
-    private Optional<String> isRowNumberAlias(final ProjectionsContext projectionsContext) {
+    private Optional<String> findRowNumberAlias(final ProjectionsContext projectionsContext) {
         for (String each : ROW_NUMBER_IDENTIFIERS) {
             Optional<String> result = projectionsContext.findAlias(each);
             if (result.isPresent()) {
