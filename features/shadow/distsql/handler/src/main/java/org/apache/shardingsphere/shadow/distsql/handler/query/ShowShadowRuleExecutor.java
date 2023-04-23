@@ -31,8 +31,6 @@ import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -44,41 +42,21 @@ import java.util.stream.Collectors;
  */
 public final class ShowShadowRuleExecutor implements RQLExecutor<ShowShadowRulesStatement> {
     
-    private static final String RULE_NAME = "rule_name";
-    
-    private static final String SOURCE_NAME = "source_name";
-    
-    private static final String SHADOW_NAME = "shadow_name";
-    
-    private static final String SHADOW_TABLE = "shadow_table";
-    
-    private static final String ALGORITHM_TYPE = "algorithm_type";
-    
-    private static final String ALGORITHM_PROPS = "algorithm_props";
-    
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final ShowShadowRulesStatement sqlStatement) {
         Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
-        rule.ifPresent(optional -> buildDataSourceIterator((ShadowRuleConfiguration) optional.getConfiguration(), sqlStatement));
-        Iterator<Map<String, String>> data = Collections.emptyIterator();
-        if (rule.isPresent()) {
-            data = buildDataSourceIterator((ShadowRuleConfiguration) rule.get().getConfiguration(), sqlStatement);
-        }
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        while (data.hasNext()) {
-            Map<String, String> row = data.next();
-            result.add(new LocalDataQueryResultRow(row.get(SHADOW_TABLE), row.get(RULE_NAME), row.get(SOURCE_NAME), row.get(SHADOW_NAME), row.get(ALGORITHM_TYPE), row.get(ALGORITHM_PROPS)));
+        if (rule.isPresent()) {
+            result = buildData((ShadowRuleConfiguration) rule.get().getConfiguration(), sqlStatement);
         }
         return result;
     }
     
-    private Iterator<Map<String, String>> buildDataSourceIterator(final ShadowRuleConfiguration ruleConfig, final ShowShadowRulesStatement sqlStatement) {
+    private Collection<LocalDataQueryResultRow> buildData(final ShadowRuleConfiguration ruleConfig, final ShowShadowRulesStatement sqlStatement) {
         Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap = convertToDataSourceTableMap(ruleConfig.getTables());
         Collection<ShadowDataSourceConfiguration> specifiedConfigs = !isSpecified(sqlStatement) ? ruleConfig.getDataSources()
                 : ruleConfig.getDataSources().stream().filter(each -> each.getName().equalsIgnoreCase(sqlStatement.getRuleName())).collect(Collectors.toList());
-        Collection<Map<String, String>> result = new LinkedList<>();
-        specifiedConfigs.forEach(each -> result.addAll(buildDataItems(each, dataSourceTableMap, ruleConfig.getShadowAlgorithms())));
-        return result.iterator();
+        return specifiedConfigs.stream().map(each -> buildColumnData(each, dataSourceTableMap, ruleConfig.getShadowAlgorithms())).flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     private Map<String, Map<String, ShadowTableConfiguration>> convertToDataSourceTableMap(final Map<String, ShadowTableConfiguration> tables) {
@@ -92,28 +70,21 @@ public final class ShowShadowRuleExecutor implements RQLExecutor<ShowShadowRules
         return null != sqlStatement.getRuleName() && !sqlStatement.getRuleName().isEmpty();
     }
     
-    private Collection<Map<String, String>> buildDataItems(final ShadowDataSourceConfiguration dataSourceConfig, final Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap,
-                                                           final Map<String, AlgorithmConfiguration> algorithmConfigs) {
+    private Collection<LocalDataQueryResultRow> buildColumnData(final ShadowDataSourceConfiguration dataSourceConfig, final Map<String, Map<String, ShadowTableConfiguration>> dataSourceTableMap,
+                                                                final Map<String, AlgorithmConfiguration> algorithmConfigs) {
         Map<String, ShadowTableConfiguration> dataSourceTable = dataSourceTableMap.getOrDefault(dataSourceConfig.getName(), Collections.emptyMap());
-        Collection<Map<String, String>> result = new LinkedList<>();
-        dataSourceTable.forEach((key, value) -> value.getShadowAlgorithmNames().forEach(each -> result.add(buildDataItem(dataSourceConfig, algorithmConfigs.get(each), key))));
-        return result;
-    }
-    
-    private Map<String, String> buildDataItem(final ShadowDataSourceConfiguration dataSourceConfig, final AlgorithmConfiguration algorithmConfig, final String tableName) {
-        Map<String, String> result = new HashMap<>(6, 1);
-        result.put(RULE_NAME, dataSourceConfig.getName());
-        result.put(SOURCE_NAME, dataSourceConfig.getProductionDataSourceName());
-        result.put(SHADOW_NAME, dataSourceConfig.getShadowDataSourceName());
-        result.put(ALGORITHM_TYPE, algorithmConfig.getType());
-        result.put(ALGORITHM_PROPS, PropertiesConverter.convert(algorithmConfig.getProps()));
-        result.put(SHADOW_TABLE, tableName);
+        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
+        dataSourceTable.forEach((key, value) -> value.getShadowAlgorithmNames().forEach(each -> {
+            AlgorithmConfiguration algorithmConfig = algorithmConfigs.get(each);
+            result.add(new LocalDataQueryResultRow(Arrays.asList(key, dataSourceConfig.getName(), dataSourceConfig.getProductionDataSourceName(), dataSourceConfig.getShadowDataSourceName(),
+                    algorithmConfig.getType(), PropertiesConverter.convert(algorithmConfig.getProps()))));
+        }));
         return result;
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList(SHADOW_TABLE, RULE_NAME, SOURCE_NAME, SHADOW_NAME, ALGORITHM_TYPE, ALGORITHM_PROPS);
+        return Arrays.asList("shadow_table", "rule_name", "source_name", "shadow_name", "algorithm_type", "algorithm_props");
     }
     
     @Override
