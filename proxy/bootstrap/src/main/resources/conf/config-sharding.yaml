@@ -22,18 +22,18 @@
 # 
 ######################################################################################################
 #
-#databaseName: sharding_db
+databaseName: proxy_db
 #
-#dataSources:
-#  ds_0:
-#    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_0
-#    username: postgres
-#    password: postgres
-#    connectionTimeoutMilliseconds: 30000
-#    idleTimeoutMilliseconds: 60000
-#    maxLifetimeMilliseconds: 1800000
-#    maxPoolSize: 50
-#    minPoolSize: 1
+dataSources:
+  ds_0:
+    url: jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
 #  ds_1:
 #    url: jdbc:postgresql://127.0.0.1:5432/demo_ds_1
 #    username: postgres
