@@ -78,7 +78,12 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     }
     
     private int getChunkSize(final Properties props) {
-        int result = Integer.parseInt(props.getProperty(CHUNK_SIZE_KEY, DEFAULT_CHUNK_SIZE + ""));
+        int result;
+        try {
+            result = Integer.parseInt(props.getProperty(CHUNK_SIZE_KEY, DEFAULT_CHUNK_SIZE + ""));
+        } catch (final NumberFormatException ex) {
+            return DEFAULT_CHUNK_SIZE;
+        }
         if (result <= 0) {
             log.warn("Invalid result={}, use default value", result);
             return DEFAULT_CHUNK_SIZE;
