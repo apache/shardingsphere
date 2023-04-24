@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord.Key;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
@@ -48,7 +49,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -116,11 +121,24 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
                 insertRecordNumber++;
             }
         }
-        List<GroupedDataRecord> result = MERGER.group(dataRecords);
+        Map<Key, List<DataRecord>> mergedDataRecords = MERGER.merge(dataRecords);
+        List<DataRecord> groupRecords = new LinkedList<>();
+        List<DataRecord> notGroupRecords = new LinkedList<>();
+        for (Entry<Key, List<DataRecord>> entry : mergedDataRecords.entrySet()) {
+            if (1 == entry.getValue().size()) {
+                groupRecords.add(entry.getValue().get(0));
+                continue;
+            }
+            notGroupRecords.addAll(entry.getValue());
+        }
+        List<GroupedDataRecord> result = MERGER.group(groupRecords);
         for (GroupedDataRecord each : result) {
             flushInternal(dataSource, each.getDeleteDataRecords());
             flushInternal(dataSource, each.getInsertDataRecords());
             flushInternal(dataSource, each.getUpdateDataRecords());
+        }
+        for (DataRecord each : notGroupRecords) {
+            tryFlush(dataSource, Collections.singletonList(each));
         }
         return new PipelineJobProgressUpdatedParameter(insertRecordNumber);
     }
@@ -129,15 +147,11 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
         if (null == buffer || buffer.isEmpty()) {
             return;
         }
-        try {
-            tryFlush(dataSource, buffer);
-        } catch (final SQLException ex) {
-            throw new PipelineImporterJobWriteException(ex);
-        }
+        tryFlush(dataSource, buffer);
     }
     
     @SneakyThrows(InterruptedException.class)
-    private void tryFlush(final DataSource dataSource, final List<DataRecord> buffer) throws SQLException {
+    private void tryFlush(final DataSource dataSource, final List<DataRecord> buffer) {
         for (int i = 0; isRunning() && i <= importerConfig.getRetryTimes(); i++) {
             try {
                 doFlush(dataSource, buffer);
@@ -145,7 +159,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
             } catch (final SQLException ex) {
                 log.error("flush failed {}/{} times.", i, importerConfig.getRetryTimes(), ex);
                 if (i == importerConfig.getRetryTimes()) {
-                    throw ex;
+                    throw new PipelineImporterJobWriteException(ex);
                 }
                 Thread.sleep(Math.min(5 * 60 * 1000L, 1000L << i));
             }
@@ -242,7 +256,11 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
             for (DataRecord each : dataRecords) {
                 conditionColumns = RecordUtils.extractConditionColumns(each, importerConfig.getShardingColumns(each.getTableName()));
                 for (int i = 0; i < conditionColumns.size(); i++) {
-                    preparedStatement.setObject(i + 1, conditionColumns.get(i).getOldValue());
+                    Object oldValue = conditionColumns.get(i).getOldValue();
+                    if (null == oldValue) {
+                        log.warn("Old value is null, column={}", conditionColumns.get(i));
+                    }
+                    preparedStatement.setObject(i + 1, oldValue);
                 }
                 preparedStatement.addBatch();
             }
