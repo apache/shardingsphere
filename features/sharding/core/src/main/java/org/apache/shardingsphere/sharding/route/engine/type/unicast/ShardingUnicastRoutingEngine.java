@@ -117,7 +117,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     
     private String getRandomDataSourceName(final Collection<String> dataSourceNames) {
         Collection<String> preferredDataSourceNames = connectionContext.getPreferredDataSourceNames();
-        List<String> availableDataSourceNames = new ArrayList<>(!preferredDataSourceNames.isEmpty() ? preferredDataSourceNames : dataSourceNames);
+        List<String> availableDataSourceNames = new ArrayList<>(preferredDataSourceNames.isEmpty() ? dataSourceNames : preferredDataSourceNames);
         return availableDataSourceNames.get(ThreadLocalRandom.current().nextInt(availableDataSourceNames.size()));
     }
 }

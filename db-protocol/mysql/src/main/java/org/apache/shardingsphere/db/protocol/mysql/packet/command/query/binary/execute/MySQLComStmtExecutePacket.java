@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute;
 
 import com.google.common.base.Preconditions;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
@@ -41,6 +42,7 @@ import java.util.Set;
  *
  * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-execute.html">COM_STMT_EXECUTE</a>
  */
+@Getter
 @ToString(of = "statementId")
 public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
     
@@ -50,17 +52,15 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
     
     private final MySQLPacketPayload payload;
     
-    @Getter
     private final int statementId;
     
     private final int flags;
     
+    @Getter(AccessLevel.NONE)
     private final MySQLNullBitmap nullBitmap;
     
-    @Getter
     private final MySQLNewParametersBoundFlag newParametersBoundFlag;
     
-    @Getter
     private final List<MySQLPreparedStatementParameterType> newParameterTypes;
     
     public MySQLComStmtExecutePacket(final MySQLPacketPayload payload, final int paramCount) {

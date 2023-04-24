@@ -107,10 +107,10 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     
     private PipelineJobProgressUpdatedParameter flush(final DataSource dataSource, final List<Record> buffer) {
         List<DataRecord> dataRecords = buffer.stream().filter(each -> each instanceof DataRecord).map(each -> (DataRecord) each).collect(Collectors.toList());
-        int insertRecordNumber = 0;
         if (dataRecords.isEmpty()) {
             return new PipelineJobProgressUpdatedParameter(0);
         }
+        int insertRecordNumber = 0;
         for (DataRecord each : dataRecords) {
             if (IngestDataChangeType.INSERT.equals(each.getType())) {
                 insertRecordNumber++;

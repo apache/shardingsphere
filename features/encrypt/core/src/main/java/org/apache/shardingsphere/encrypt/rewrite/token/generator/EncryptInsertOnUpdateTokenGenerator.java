@@ -65,7 +65,6 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
     public Collection<EncryptAssignmentToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
         Collection<EncryptAssignmentToken> result = new LinkedList<>();
         InsertStatement insertStatement = insertStatementContext.getSqlStatement();
-        String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
         Preconditions.checkState(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement).isPresent());
         OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement).get();
         Collection<AssignmentSegment> onDuplicateKeyColumnsSegments = onDuplicateKeyColumnsSegment.getColumns();
@@ -73,6 +72,7 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
             return result;
         }
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
+        String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : onDuplicateKeyColumnsSegments) {
             boolean leftEncryptorPresent = encryptRule.findEncryptor(tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent();
             if (each.getValue() instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) each.getValue()).getFunctionName())) {

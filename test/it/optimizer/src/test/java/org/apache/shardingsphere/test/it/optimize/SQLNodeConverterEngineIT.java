@@ -31,7 +31,7 @@ import org.apache.calcite.util.Litmus;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.parser.dialect.OptimizerSQLDialectBuilder;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.SQLNodeConverterEngine;
@@ -75,7 +75,7 @@ class SQLNodeConverterEngineIT {
     }
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
-        return new SQLVisitorEngine(databaseType, true).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
+        return new SQLStatementVisitorEngine(databaseType, true).visit(new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false));
     }
     
     @SneakyThrows(SqlParseException.class)
@@ -200,6 +200,9 @@ class SQLNodeConverterEngineIT {
             result.add("select_with_trim_expr_from_expr_and_both");
             result.add("select_extract");
             result.add("select_where_with_bit_expr_with_mod_sign");
+            result.add("select_with_spatial_function");
+            result.add("select_from_dual");
+            result.add("select_substring");
             result.add("select_where_with_bit_expr_with_plus_interval");
             result.add("select_where_with_bit_expr_with_minus_interval");
             return result;
@@ -222,7 +225,7 @@ class SQLNodeConverterEngineIT {
         }
         
         private boolean isPlaceholderWithoutParameter(final InternalSQLParserTestParameter testParam) {
-            return SQLCaseType.Placeholder == testParam.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(testParam.getSqlCaseId()).getParameters().isEmpty();
+            return SQLCaseType.PLACEHOLDER == testParam.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(testParam.getSqlCaseId()).getParameters().isEmpty();
         }
         
         private boolean isSupportedSQLCase(final InternalSQLParserTestParameter testParam) {

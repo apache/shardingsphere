@@ -38,7 +38,7 @@ import org.apache.shardingsphere.mask.distsql.parser.statement.CountMaskRuleStat
 import org.apache.shardingsphere.mask.distsql.parser.statement.CreateMaskRuleStatement;
 import org.apache.shardingsphere.mask.distsql.parser.statement.DropMaskRuleStatement;
 import org.apache.shardingsphere.mask.distsql.parser.statement.ShowMaskRulesStatement;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 /**
  * SQL statement visitor for mask DistSQL.
  */
-public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateMaskRule(final CreateMaskRuleContext ctx) {

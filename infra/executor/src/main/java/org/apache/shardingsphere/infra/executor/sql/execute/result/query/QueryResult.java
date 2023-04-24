@@ -26,7 +26,7 @@ import java.util.Calendar;
 /**
  * Query result.
  */
-public interface QueryResult extends ExecuteResult {
+public interface QueryResult extends ExecuteResult, AutoCloseable {
     
     /**
      * Iterate next data.
@@ -81,11 +81,4 @@ public interface QueryResult extends ExecuteResult {
      * @return query result meta data
      */
     QueryResultMetaData getMetaData();
-    
-    /**
-     * Close.
-     *
-     * @throws SQLException SQL exception
-     */
-    void close() throws SQLException;
 }

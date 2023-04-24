@@ -4,6 +4,7 @@ weight = 7
 +++
 
 ## 背景信息
+
 SQL 是使用者与数据库交流的标准语言。 SQL 解析引擎负责将 SQL 字符串解析为抽象语法树，供 Apache ShardingSphere 理解并实现其增量功能。
 目前支持 MySQL, PostgreSQL, SQLServer, Oracle, openGauss 以及符合 SQL92 规范的 SQL 方言。 由于 SQL 语法的复杂性，目前仍然存在少量不支持的 SQL。
 通过 Java API 形式使用 SQL 解析，可以方便得集成进入各种系统，灵活定制用户需求。
@@ -43,7 +44,7 @@ SQL 是使用者与数据库交流的标准语言。 SQL 解析引擎负责将 S
 CacheOption cacheOption = new CacheOption(128, 1024L);
 SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
 ParseASTNode parseASTNode = parserEngine.parse("SELECT t.id, t.name, t.age FROM table1 AS t ORDER BY t.id DESC;", false);
-SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "STATEMENT", false, new Properties());
+SQLStatementVisitorEngine visitorEngine = new SQLStatementVisitorEngine("MySQL", false);
 MySQLStatement sqlStatement = visitorEngine.visit(parseASTNode);
 System.out.println(sqlStatement.toString());
 ```

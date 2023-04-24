@@ -113,16 +113,16 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     private void handleCachingSha2Auth(final ChannelHandlerContext ctx, final MySQLAuthMoreDataPacket authMoreData) {
         // how caching_sha2_password works: https://dev.mysql.com/doc/dev/mysql-server/8.0.11/page_caching_sha2_authentication_exchanges.html#sect_caching_sha2_info
-        if (!publicKeyRequested) {
-            if (PERFORM_FULL_AUTHENTICATION == authMoreData.getPluginData()[0]) {
-                publicKeyRequested = true;
-                ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(new byte[]{REQUEST_PUBLIC_KEY}));
-            }
-        } else {
+        if (publicKeyRequested) {
             ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(
                     PasswordEncryption.encryptWithRSAPublicKey(password, seed,
                             serverInfo.getServerVersion().greaterThanOrEqualTo(8, 0, 5) ? "RSA/ECB/OAEPWithSHA-1AndMGF1Padding" : "RSA/ECB/PKCS1Padding",
                             new String(authMoreData.getPluginData()))));
+        } else {
+            if (PERFORM_FULL_AUTHENTICATION == authMoreData.getPluginData()[0]) {
+                publicKeyRequested = true;
+                ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(new byte[]{REQUEST_PUBLIC_KEY}));
+            }
         }
     }
     

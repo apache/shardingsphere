@@ -19,7 +19,7 @@ package org.apache.shardingsphere.parser.distsql.parser.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
  * Cache option segment.

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Table name and schema name mapping.
@@ -38,17 +39,19 @@ public final class TableNameSchemaNameMapping {
      * @param tableSchemaMap table name and schema name map
      */
     public TableNameSchemaNameMapping(final Map<String, String> tableSchemaMap) {
-        if (null == tableSchemaMap) {
-            mapping = Collections.emptyMap();
-            return;
-        }
-        Map<LogicTableName, String> mapping = new HashMap<>();
-        tableSchemaMap.forEach((tableName, schemaName) -> {
+        mapping = null == tableSchemaMap ? Collections.emptyMap() : getLogicTableNameMap(tableSchemaMap);
+    }
+    
+    private Map<LogicTableName, String> getLogicTableNameMap(final Map<String, String> tableSchemaMap) {
+        Map<LogicTableName, String> result = new HashMap<>(tableSchemaMap.size(), 1);
+        for (Entry<String, String> entry : tableSchemaMap.entrySet()) {
+            String tableName = entry.getKey();
+            String schemaName = entry.getValue();
             if (null != schemaName) {
-                mapping.put(new LogicTableName(tableName), schemaName);
+                result.put(new LogicTableName(tableName), schemaName);
             }
-        });
-        this.mapping = mapping;
+        }
+        return result;
     }
     
     /**

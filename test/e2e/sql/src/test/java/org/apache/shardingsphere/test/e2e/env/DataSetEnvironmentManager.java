@@ -96,7 +96,7 @@ public final class DataSetEnvironmentManager {
         try {
             EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final Exception ignored) {
             // CHECKSTYLE:ON
         }
     }
@@ -144,7 +144,7 @@ public final class DataSetEnvironmentManager {
         try {
             EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(deleteTasks);
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final Exception ignored) {
             // CHECKSTYLE:ON
         }
     }

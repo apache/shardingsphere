@@ -42,7 +42,7 @@ public final class CountShadowRuleExecutor implements RQLExecutor<CountShadowRul
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountShadowRuleStatement sqlStatement) {
         Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        rule.ifPresent(optional -> fillRows(result, rule.get(), database.getName()));
+        rule.ifPresent(optional -> fillRows(result, optional, database.getName()));
         return result;
     }
     

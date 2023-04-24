@@ -17,8 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.api.visitor;
 
+import org.antlr.v4.runtime.tree.ParseTreeVisitor;
+
 /**
  * SQL visitor.
+ * 
+ * @param <T> type of visit return value
  */
-public interface SQLVisitor {
+public interface SQLVisitor<T> extends ParseTreeVisitor<T> {
 }

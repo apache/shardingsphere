@@ -65,7 +65,7 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
         return insertStatementContext.getInsertColumnNames();
     }
     
-    private class ShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {
+    private final class ShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {
         
         private int index;
         
@@ -75,7 +75,7 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
         
         private final List<InsertValueContext> insertValueContexts;
         
-        ShadowColumnConditionIterator(final String shadowColumn, final Iterator<String> iterator, final List<InsertValueContext> insertValueContexts) {
+        private ShadowColumnConditionIterator(final String shadowColumn, final Iterator<String> iterator, final List<InsertValueContext> insertValueContexts) {
             index = 0;
             this.shadowColumn = shadowColumn;
             this.iterator = iterator;

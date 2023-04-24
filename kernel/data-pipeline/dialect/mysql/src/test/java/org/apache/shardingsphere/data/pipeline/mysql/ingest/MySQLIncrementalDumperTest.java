@@ -65,13 +65,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -133,13 +130,6 @@ class MySQLIncrementalDumperTest {
     @AfterEach
     void tearDown() {
         dataSourceManager.close();
-    }
-    
-    @Test
-    void assertIsColumnUnneeded() {
-        assertFalse(incrementalDumper.isColumnUnneeded(null, "order_id"));
-        assertFalse(incrementalDumper.isColumnUnneeded(Stream.of("order_id", "user_id").map(ColumnName::new).collect(Collectors.toSet()), "order_id"));
-        assertTrue(incrementalDumper.isColumnUnneeded(Stream.of("order_id", "user_id").map(ColumnName::new).collect(Collectors.toSet()), "status"));
     }
     
     @Test

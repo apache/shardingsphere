@@ -61,10 +61,10 @@ public final class StateChangedSubscriber {
      */
     @Subscribe
     public synchronized void renew(final StorageNodeChangedEvent event) {
-        QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
         if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getQualifiedDatabase().getDatabaseName())) {
             return;
         }
+        QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
         Optional<StaticDataSourceContainedRule> staticDataSourceRule = contextManager.getMetaDataContexts()
                 .getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData().findSingleRule(StaticDataSourceContainedRule.class);
         staticDataSourceRule.ifPresent(optional -> optional.updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource())));

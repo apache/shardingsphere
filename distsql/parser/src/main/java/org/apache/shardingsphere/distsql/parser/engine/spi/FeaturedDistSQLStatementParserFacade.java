@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.distsql.parser.engine.spi;
 
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.spi.SQLParserFacade;
 
@@ -32,5 +33,5 @@ public interface FeaturedDistSQLStatementParserFacade extends SQLParserFacade {
      *
      * @return visitor class
      */
-    Class<? extends SQLVisitor> getVisitorClass();
+    Class<? extends SQLVisitor<ASTNode>> getVisitorClass();
 }
