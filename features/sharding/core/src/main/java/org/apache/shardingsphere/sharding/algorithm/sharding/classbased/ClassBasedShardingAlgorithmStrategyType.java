@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sharding.algorithm.sharding.classbased;
 
+import java.util.Arrays;
+
 /**
  * Class based sharding strategy.
  */
@@ -25,25 +27,19 @@ public enum ClassBasedShardingAlgorithmStrategyType {
     /**
      * The sharding strategy is standard.
      */
-    STANDARD("STANDARD"),
+    STANDARD,
     
     /**
      * The sharding strategy is complex.
      */
-    COMPLEX("COMPLEX"),
+    COMPLEX,
     
     /**
      * The sharding strategy is hint.
      */
-    HINT("HINT");
-
-    private final String type;
-
-    ClassBasedShardingAlgorithmStrategyType(final String type) {
-        this.type = type;
-    }
+    HINT;
 
     static boolean isValidShardingAlgorithmStrategyType(final String type) {
-        return STANDARD.type.equalsIgnoreCase(type) || COMPLEX.type.equalsIgnoreCase(type) || HINT.type.equalsIgnoreCase(type);
+        return Arrays.stream(values()).anyMatch(each -> each.name().equals(type));
     }
 }
