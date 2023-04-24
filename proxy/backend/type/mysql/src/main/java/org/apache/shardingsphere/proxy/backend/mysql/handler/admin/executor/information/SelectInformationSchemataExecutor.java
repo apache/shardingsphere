@@ -74,7 +74,8 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     
     private void removeDuplicatedRow() {
         if (queryDatabase) {
-            Collection<Map<String, Object>> reservedRow = getRows().stream().collect(Collectors.groupingBy(each -> Optional.ofNullable(each.get(schemaNameAlias)), Collectors.toCollection(LinkedList::new)))
+            Collection<Map<String, Object>> reservedRow = getRows().stream()
+                    .collect(Collectors.groupingBy(each -> Optional.ofNullable(each.get(schemaNameAlias)), Collectors.toCollection(LinkedList::new)))
                     .values().stream().map(LinkedList::getFirst).collect(Collectors.toList());
             reservedRow.forEach(each -> getRows().removeIf(row -> !getRows().contains(each)));
         }
@@ -124,7 +125,8 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
         if (projections.stream().anyMatch(each -> each instanceof ShorthandProjectionSegment)) {
             result = Stream.of(CATALOG_NAME, SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME, SQL_PATH, DEFAULT_ENCRYPTION).collect(Collectors.toMap(each -> each, each -> ""));
         } else {
-            result = projections.stream().map(each -> ((ColumnProjectionSegment) each).getColumn().getIdentifier()).map(each -> each.getValue().toUpperCase()).collect(Collectors.toMap(each -> each, each -> ""));
+            result = projections.stream().map(each -> ((ColumnProjectionSegment) each).getColumn().getIdentifier())
+                    .map(each -> each.getValue().toUpperCase()).collect(Collectors.toMap(each -> each, each -> ""));
         }
         return result;
     }
