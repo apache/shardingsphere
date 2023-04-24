@@ -26,13 +26,13 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.r
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc.CommitStreamingStatementTestCase;
 
 /**
- * Rollback streaming statement assert.
+ * Commit streaming statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommitStreamingStatementAssert {
     
     /**
-     * Assert rollback streaming statement is correct with expected parser result.
+     * Assert commit streaming statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual        actual
