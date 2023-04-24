@@ -59,7 +59,7 @@ class ClassBasedShardingAlgorithmTest {
         assertThrows(ShardingAlgorithmInitializationException.class,
                 () -> TypedSPILoader.getService(ShardingAlgorithm.class, "CLASS_BASED", PropertiesBuilder.build(new Property("strategy", "standard"))));
     }
-
+    
     @Test
     void assertInitWithEmptyClassName() {
         assertThrows(ShardingAlgorithmInitializationException.class,

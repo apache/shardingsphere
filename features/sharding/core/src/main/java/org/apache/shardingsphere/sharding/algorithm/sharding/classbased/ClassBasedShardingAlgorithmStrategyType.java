@@ -38,7 +38,7 @@ public enum ClassBasedShardingAlgorithmStrategyType {
      * The sharding strategy is hint.
      */
     HINT;
-
+    
     static boolean isValidShardingAlgorithmStrategyType(final String type) {
         return Arrays.stream(values()).anyMatch(each -> each.name().equals(type));
     }
