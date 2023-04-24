@@ -846,7 +846,7 @@
                     <artifactId>apache-rat-plugin</artifactId>
                     <version>${apache-rat-plugin.version}</version>
                     <configuration>
-                        <excludesFile>src/resources/rat.txt</excludesFile>
+                        <excludesFile>${maven.multiModuleProjectDirectory}/src/resources/rat.txt</excludesFile>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -895,7 +895,7 @@
                         <failOnViolation>true</failOnViolation>
                         <failsOnError>true</failsOnError>
                         <violationSeverity>error</violationSeverity>
-                        <configLocation>src/resources/checkstyle.xml</configLocation>
+                        <configLocation>${maven.multiModuleProjectDirectory}/src/resources/checkstyle.xml</configLocation>
                         <includeTestSourceDirectory>true</includeTestSourceDirectory>
                         <excludes>**/autogen/**/*</excludes>
                     </configuration>
@@ -907,7 +907,7 @@
                         <aggregate>true</aggregate>
                         <targetJdk>${java.version}</targetJdk>
                         <rulesets>
-                            <ruleset>src/resources/pmd.xml</ruleset>
+                            <ruleset>${maven.multiModuleProjectDirectory}/src/resources/pmd.xml</ruleset>
                         </rulesets>
                     </configuration>
                 </plugin>
@@ -918,7 +918,7 @@
                     <configuration>
                         <fork>false</fork>
                         <failOnError>false</failOnError>
-                        <excludeFilterFile>src/resources/spotbugs.xml</excludeFilterFile>
+                        <excludeFilterFile>${maven.multiModuleProjectDirectory}/src/resources/spotbugs.xml</excludeFilterFile>
                         <plugins>
                             <plugin>
                                 <groupId>com.mebigfatguy.fb-contrib</groupId>
@@ -1143,7 +1143,7 @@
                     <failOnViolation>false</failOnViolation>
                     <failsOnError>false</failsOnError>
                     <violationSeverity>warning</violationSeverity>
-                    <configLocation>src/resources/checkstyle.xml</configLocation>
+                    <configLocation>${maven.multiModuleProjectDirectory}/src/resources/checkstyle.xml</configLocation>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <excludes>**/autogen/**/*</excludes>
                     <goal>checkstyle-aggregate</goal>
