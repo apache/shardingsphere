@@ -3349,6 +3349,9 @@
     </select>
 
     <select sql-case-id="select_from_dual" >
+        <from>
+            <simple-table name="DUAL" start-index="14" stop-index="17" />
+        </from>
         <projections start-index="7" stop-index="7">
             <expression-projection text="1" start-index="7" stop-index="7" />
         </projections>
