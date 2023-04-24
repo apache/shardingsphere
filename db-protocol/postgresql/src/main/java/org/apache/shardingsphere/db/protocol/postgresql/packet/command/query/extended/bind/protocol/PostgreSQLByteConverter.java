@@ -390,10 +390,6 @@ public final class PostgreSQLByteConverter {
             return index;
         }
         
-        public boolean isEmpty() {
-            return 0 == index;
-        }
-        
         public short pop() {
             return index > 0 ? shorts[--index] : -1;
         }
