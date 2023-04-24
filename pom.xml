@@ -846,6 +846,7 @@
                     <artifactId>apache-rat-plugin</artifactId>
                     <version>${apache-rat-plugin.version}</version>
                     <configuration>
+                        <!--suppress MavenModelInspection -->
                         <excludesFile>${maven.multiModuleProjectDirectory}/src/resources/rat.txt</excludesFile>
                     </configuration>
                 </plugin>
@@ -856,9 +857,11 @@
                     <configuration>
                         <java>
                             <eclipse>
+                                <!--suppress MavenModelInspection -->
                                 <file>${maven.multiModuleProjectDirectory}/src/resources/spotless/java.xml</file>
                             </eclipse>
                             <licenseHeader>
+                                <!--suppress MavenModelInspection -->
                                 <file>${maven.multiModuleProjectDirectory}/src/resources/spotless/copyright.txt</file>
                             </licenseHeader>
                         </java>
@@ -895,6 +898,7 @@
                         <failOnViolation>true</failOnViolation>
                         <failsOnError>true</failsOnError>
                         <violationSeverity>error</violationSeverity>
+                        <!--suppress MavenModelInspection -->
                         <configLocation>${maven.multiModuleProjectDirectory}/src/resources/checkstyle.xml</configLocation>
                         <includeTestSourceDirectory>true</includeTestSourceDirectory>
                         <excludes>**/autogen/**/*</excludes>
@@ -907,6 +911,7 @@
                         <aggregate>true</aggregate>
                         <targetJdk>${java.version}</targetJdk>
                         <rulesets>
+                            <!--suppress MavenModelInspection -->
                             <ruleset>${maven.multiModuleProjectDirectory}/src/resources/pmd.xml</ruleset>
                         </rulesets>
                     </configuration>
@@ -918,6 +923,7 @@
                     <configuration>
                         <fork>false</fork>
                         <failOnError>false</failOnError>
+                        <!--suppress MavenModelInspection -->
                         <excludeFilterFile>${maven.multiModuleProjectDirectory}/src/resources/spotbugs.xml</excludeFilterFile>
                         <plugins>
                             <plugin>
@@ -1143,6 +1149,7 @@
                     <failOnViolation>false</failOnViolation>
                     <failsOnError>false</failsOnError>
                     <violationSeverity>warning</violationSeverity>
+                    <!--suppress MavenModelInspection -->
                     <configLocation>${maven.multiModuleProjectDirectory}/src/resources/checkstyle.xml</configLocation>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
                     <excludes>**/autogen/**/*</excludes>
