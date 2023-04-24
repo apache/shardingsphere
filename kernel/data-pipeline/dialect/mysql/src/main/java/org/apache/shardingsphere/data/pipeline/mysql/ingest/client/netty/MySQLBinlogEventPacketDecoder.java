@@ -94,14 +94,14 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
             case TABLE_MAP_EVENT:
                 decodeTableMapEvent(binlogEventHeader, payload);
                 return null;
-            case WRITE_ROWS_EVENTv1:
-            case WRITE_ROWS_EVENTv2:
+            case WRITE_ROWS_EVENT_V1:
+            case WRITE_ROWS_EVENT_V2:
                 return decodeWriteRowsEventV2(binlogEventHeader, payload);
-            case UPDATE_ROWS_EVENTv1:
-            case UPDATE_ROWS_EVENTv2:
+            case UPDATE_ROWS_EVENT_V1:
+            case UPDATE_ROWS_EVENT_V2:
                 return decodeUpdateRowsEventV2(binlogEventHeader, payload);
-            case DELETE_ROWS_EVENTv1:
-            case DELETE_ROWS_EVENTv2:
+            case DELETE_ROWS_EVENT_V1:
+            case DELETE_ROWS_EVENT_V2:
                 return decodeDeleteRowsEventV2(binlogEventHeader, payload);
             default:
                 PlaceholderEvent result = createPlaceholderEvent(binlogEventHeader);

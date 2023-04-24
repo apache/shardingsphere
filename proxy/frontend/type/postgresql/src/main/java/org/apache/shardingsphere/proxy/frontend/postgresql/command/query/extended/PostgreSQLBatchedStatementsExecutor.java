@@ -192,9 +192,9 @@ public final class PostgreSQLBatchedStatementsExecutor {
         return result;
     }
     
-    private static class BatchedStatementsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
+    private static final class BatchedStatementsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
         
-        BatchedStatementsJDBCExecutorCallback(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+        private BatchedStatementsJDBCExecutorCallback(final DatabaseType protocolType, final Map<String, DatabaseType> storageTypes, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
             super(protocolType, storageTypes, sqlStatement, isExceptionThrown);
         }
         

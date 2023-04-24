@@ -32,6 +32,7 @@ import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -117,14 +118,13 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
     }
     
     private Map<String, String> findByShadowColumn(final Collection<String> relatedShadowTables, final ShadowRule shadowRule, final ShadowOperationType shadowOperationType) {
-        Map<String, String> result = new LinkedHashMap<>();
         for (String each : relatedShadowTables) {
             Collection<String> relatedShadowColumnNames = shadowRule.getRelatedShadowColumnNames(shadowOperationType, each);
             if (!relatedShadowColumnNames.isEmpty() && isMatchAnyColumnShadowAlgorithms(each, relatedShadowColumnNames, shadowRule, shadowOperationType)) {
                 return shadowRule.getRelatedShadowDataSourceMappings(each);
             }
         }
-        return result;
+        return Collections.emptyMap();
     }
     
     private boolean isMatchAnyColumnShadowAlgorithms(final String shadowTable, final Collection<String> shadowColumnNames, final ShadowRule shadowRule, final ShadowOperationType shadowOperation) {

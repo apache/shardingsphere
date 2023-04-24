@@ -45,7 +45,7 @@ public final class ShowMigrationJobStatusExecutor implements QueryableRALExecuto
         return jobItemInfos.stream().map(each -> generateResultRow(each, currentTimeMillis)).collect(Collectors.toList());
     }
     
-    LocalDataQueryResultRow generateResultRow(final InventoryIncrementalJobItemInfo jobItemInfo, final long currentTimeMillis) {
+    private LocalDataQueryResultRow generateResultRow(final InventoryIncrementalJobItemInfo jobItemInfo, final long currentTimeMillis) {
         InventoryIncrementalJobItemProgress jobItemProgress = jobItemInfo.getJobItemProgress();
         if (null == jobItemProgress) {
             return new LocalDataQueryResultRow(jobItemInfo.getShardingItem(), "", "", "", "", "", "", "", jobItemInfo.getErrorMessage());

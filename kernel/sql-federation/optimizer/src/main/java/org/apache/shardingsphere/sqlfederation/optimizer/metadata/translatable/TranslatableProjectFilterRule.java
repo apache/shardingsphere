@@ -51,12 +51,12 @@ public class TranslatableProjectFilterRule extends RelOptRule {
     @Override
     public void onMatch(final RelOptRuleCall call) {
         LogicalProject project = call.rel(0);
-        LogicalFilter filter = call.rel(1);
-        TranslatableTableScan scan = call.rel(2);
         int[] fields = getProjectFields(project.getProjects());
         if (0 == fields.length) {
             return;
         }
+        LogicalFilter filter = call.rel(1);
+        TranslatableTableScan scan = call.rel(2);
         call.transformTo(new TranslatableTableScan(scan.getCluster(), scan.getTable(), scan.getTranslatableTable(), Collections.singletonList(filter.getCondition()), fields));
     }
     

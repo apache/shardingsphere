@@ -41,7 +41,10 @@ public final class DataConsistencyCheckUtils {
     public static boolean isBigDecimalEquals(final BigDecimal one, final BigDecimal another) {
         BigDecimal decimalOne;
         BigDecimal decimalTwo;
-        if (one.scale() != another.scale()) {
+        if (one.scale() == another.scale()) {
+            decimalOne = one;
+            decimalTwo = another;
+        } else {
             if (one.scale() > another.scale()) {
                 decimalOne = one;
                 decimalTwo = another.setScale(one.scale(), RoundingMode.UNNECESSARY);
@@ -49,9 +52,6 @@ public final class DataConsistencyCheckUtils {
                 decimalOne = one.setScale(another.scale(), RoundingMode.UNNECESSARY);
                 decimalTwo = another;
             }
-        } else {
-            decimalOne = one;
-            decimalTwo = another;
         }
         return decimalOne.equals(decimalTwo);
     }

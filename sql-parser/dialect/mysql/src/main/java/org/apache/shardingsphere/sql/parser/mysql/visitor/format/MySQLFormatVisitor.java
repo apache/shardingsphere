@@ -440,14 +440,14 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
         int childCount = ctx.getChildCount();
         for (int i = 0; i < childCount; i++) {
             ParseTree child = ctx.getChild(i);
-            if (i != 0) {
+            if (i == 0) {
+                child.accept(this);
+            } else {
                 if (child instanceof TerminalNode) {
                     formatPrintln(",");
                 } else {
                     child.accept(this);
                 }
-            } else {
-                child.accept(this);
             }
         }
         return formattedSQL.toString();

@@ -223,7 +223,7 @@ class SQLNodeConverterEngineIT {
         }
         
         private boolean isPlaceholderWithoutParameter(final InternalSQLParserTestParameter testParam) {
-            return SQLCaseType.Placeholder == testParam.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(testParam.getSqlCaseId()).getParameters().isEmpty();
+            return SQLCaseType.PLACEHOLDER == testParam.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(testParam.getSqlCaseId()).getParameters().isEmpty();
         }
         
         private boolean isSupportedSQLCase(final InternalSQLParserTestParameter testParam) {

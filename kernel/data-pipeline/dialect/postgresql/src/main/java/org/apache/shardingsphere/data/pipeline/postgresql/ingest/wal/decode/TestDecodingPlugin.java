@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode;
 
 import com.google.common.base.Preconditions;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * Test decoding plugin.
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 public final class TestDecodingPlugin implements DecodingPlugin {
     
     private final BaseTimestampUtils timestampUtils;

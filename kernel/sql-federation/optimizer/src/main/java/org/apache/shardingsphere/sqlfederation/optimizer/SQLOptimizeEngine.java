@@ -61,10 +61,10 @@ public final class SQLOptimizeEngine {
     
     private RelNode optimizeWithCBO(final RelNode bestPlan, final SqlToRelConverter converter) {
         RelOptPlanner planner = converter.getCluster().getPlanner();
-        if (!bestPlan.getTraitSet().equals(converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE))) {
-            planner.setRoot(planner.changeTraits(bestPlan, converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE)));
-        } else {
+        if (bestPlan.getTraitSet().equals(converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE))) {
             planner.setRoot(bestPlan);
+        } else {
+            planner.setRoot(planner.changeTraits(bestPlan, converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE)));
         }
         return planner.findBestExp();
     }

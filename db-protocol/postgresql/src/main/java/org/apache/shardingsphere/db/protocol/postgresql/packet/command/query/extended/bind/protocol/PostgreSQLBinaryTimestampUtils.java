@@ -42,11 +42,11 @@ public final class PostgreSQLBinaryTimestampUtils {
      * @return PostgreSQL time
      */
     public static long toPostgreSQLTime(final Timestamp timestamp, final boolean withTimeZone) {
-        long millis = timestamp.getTime() - (timestamp.getNanos() / 1000000) + (!withTimeZone ? TimeZone.getDefault().getRawOffset() : 0);
-        long nanos = timestamp.getNanos() / 1000;
+        long millis = timestamp.getTime() - (timestamp.getNanos() / 1000000L) + (withTimeZone ? 0L : TimeZone.getDefault().getRawOffset());
+        long nanos = timestamp.getNanos() / 1000L;
         long pgSeconds = convertJavaEpochToPgEpoch(millis / 1000L);
-        if (nanos >= 1000000) {
-            nanos -= 1000000;
+        if (nanos >= 1000000L) {
+            nanos -= 1000000L;
             pgSeconds++;
         }
         return pgSeconds * 1000000 + nanos;

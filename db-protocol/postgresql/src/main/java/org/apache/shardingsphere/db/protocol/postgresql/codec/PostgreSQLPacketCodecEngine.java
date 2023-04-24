@@ -71,10 +71,10 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
             PostgreSQLCommandPacketType commandPacketType = PostgreSQLCommandPacketType.valueOf(type);
             if (requireAggregation(commandPacketType)) {
                 pendingMessages.add(in.readRetainedSlice(MESSAGE_TYPE_LENGTH + payloadLength));
-            } else if (!pendingMessages.isEmpty()) {
-                handlePendingMessages(context, in, out, payloadLength);
-            } else {
+            } else if (pendingMessages.isEmpty()) {
                 out.add(in.readRetainedSlice(MESSAGE_TYPE_LENGTH + payloadLength));
+            } else {
+                handlePendingMessages(context, in, out, payloadLength);
             }
         }
     }

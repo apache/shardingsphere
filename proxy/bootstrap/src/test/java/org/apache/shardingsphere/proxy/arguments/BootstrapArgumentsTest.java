@@ -108,11 +108,11 @@ class BootstrapArgumentsTest {
     
     @Test
     void assertGetForce() {
-        assertFalse(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1"}).getForce());
-        assertFalse(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1", "false"}).getForce());
-        assertTrue(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1", "true "}).getForce());
-        assertTrue(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1", "true"}).getForce());
-        assertTrue(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1", "TrUe"}).getForce());
+        assertFalse(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1"}).isForce());
+        assertFalse(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1", "false"}).isForce());
+        assertTrue(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1", "true "}).isForce());
+        assertTrue(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1", "true"}).isForce());
+        assertTrue(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1", "TrUe"}).isForce());
     }
     
     @Test

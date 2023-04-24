@@ -60,7 +60,7 @@ public final class SQLCaseAssertContext {
     
     private void appendSQL(final StringBuilder builder) {
         builder.append("SQL         : ");
-        if (SQLCaseType.Placeholder == caseType) {
+        if (SQLCaseType.PLACEHOLDER == caseType) {
             builder.append(sql);
             builder.append(System.lineSeparator());
             builder.append("SQL Params  : ");

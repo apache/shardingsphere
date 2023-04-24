@@ -150,12 +150,12 @@ public final class SQLOptimizerRexNodeVisitor extends SQLOptimizerRexNodeBaseVis
     @Override
     public RexNode visitInputRef(final InputRefContext ctx) {
         Integer index = Integer.valueOf(ctx.INTEGER_().getText());
-        String sign = ctx.getParent().getStop().getText();
         if (null != columnMap.get(index)) {
             Class<?> dataType = getClass(columnMap.get(index));
             return rexBuilder.makeInputRef(typeFactory.createJavaType(dataType), index);
         }
         if (ctx.getParent() instanceof CastContext) {
+            String sign = ctx.getParent().getStop().getText();
             return makeCastInputRef(sign, index);
         }
         return rexBuilder.makeInputRef(typeFactory.createJavaType(Integer.class), index);

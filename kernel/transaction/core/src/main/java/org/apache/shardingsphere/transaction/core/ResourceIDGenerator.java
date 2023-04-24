@@ -46,7 +46,7 @@ public final class ResourceIDGenerator {
      *
      * @return next ID
      */
-    String nextId() {
+    public String nextId() {
         return String.format("%d-", count.incrementAndGet());
     }
 }

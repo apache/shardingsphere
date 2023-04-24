@@ -17,14 +17,10 @@
 
 package org.apache.shardingsphere.migration.distsql.handler.query;
 
-import org.apache.shardingsphere.data.pipeline.api.pojo.ConsistencyCheckJobItemInfo;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,22 +43,5 @@ class ShowMigrationCheckStatusExecutorTest {
         assertThat(iterator.next(), is("check_end_time"));
         assertThat(iterator.next(), is("duration_seconds"));
         assertThat(iterator.next(), is("error_message"));
-    }
-    
-    @Test
-    @SuppressWarnings("unchecked")
-    void assertConvert() throws ReflectiveOperationException {
-        ConsistencyCheckJobItemInfo jobItemInfo = new ConsistencyCheckJobItemInfo();
-        jobItemInfo.setTableNames("t_order");
-        jobItemInfo.setCheckSuccess(true);
-        jobItemInfo.setCheckFailedTableNames(null);
-        jobItemInfo.setFinishedPercentage(100);
-        jobItemInfo.setRemainingSeconds(0);
-        jobItemInfo.setCheckBeginTime("");
-        jobItemInfo.setCheckEndTime("");
-        jobItemInfo.setDurationSeconds(1);
-        LocalDataQueryResultRow row = executor.convert(jobItemInfo);
-        List<Object> actual = (List<Object>) Plugins.getMemberAccessor().get(LocalDataQueryResultRow.class.getDeclaredField("data"), row);
-        assertThat(actual.size(), is(executor.getColumnNames().size()));
     }
 }

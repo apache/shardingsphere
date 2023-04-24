@@ -233,11 +233,24 @@ public final class TableRule {
         return dataSourceToTablesMap.getOrDefault(targetDataSource, Collections.emptySet());
     }
     
-    int findActualTableIndex(final String dataSourceName, final String actualTableName) {
+    /**
+     * Find actual table index.
+     * 
+     * @param dataSourceName data source name
+     * @param actualTableName actual table name
+     * @return actual table index
+     */
+    public int findActualTableIndex(final String dataSourceName, final String actualTableName) {
         return dataNodeIndexMap.getOrDefault(new DataNode(dataSourceName, actualTableName), -1);
     }
     
-    boolean isExisted(final String actualTableName) {
+    /**
+     * Is existed.
+     * 
+     * @param actualTableName actual table name
+     * @return is existed or not
+     */
+    public boolean isExisted(final String actualTableName) {
         return actualTables.contains(actualTableName);
     }
     
