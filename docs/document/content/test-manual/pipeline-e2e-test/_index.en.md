@@ -1,48 +1,44 @@
 +++
 pre = "<b>6.4. </b>"
-title = "Pipeline Integration Test"
+title = "Pipeline E2E Test"
 weight = 4
 +++
 
 ## Objectives
 
-Verify the functional correctness of data migration and dependency modules. 
+Verify the functional correctness of pipeline scenarios.
 
-## Test environment
+## Test environment type
 
-Currently, Native and Docker environments are supported.
-1. The Native environment runs directly in the test environment provided by the developer, and users need to start ShardingSphere-Proxy and the corresponding database instance by themselves, which is suitable for debugging scenarios.
-2. The Docker environment is run by Maven, which is suitable for cloud compilation environment and ShardingSphere-Proxy testing scenarios, such as GitHub Action.
+Currently, Native and Docker are available.
+1. Native : Run on developer local machine. Need to start ShardingSphere-Proxy instance (run proxy installation package or run `org.apache.shardingsphere.proxy.Bootstrap` in IDE) and database instance by developer. It could be used for local debugging.
+2. Docker : Run on Docker started by Maven plugin. It could be used for GitHub Actions, and it could be used for local debugging too.
 
-Currently, you can use MySQL, PostgreSQL and openGuass databases.
+Supported databases: MySQL, PostgreSQL and openGuass.
 
 ## User guide
 
-Module path: `shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-pipeline`.
+Module path: `test/e2e/operation/pipeline`.
 
 ### Environment setup
 
-`${DOCKER-IMAGE}` refers to the name of a Docker mirror, such as `mysql:8`. `${DATABASE-TYPE}` refers to database types.
-Directory: `src/test/resources/env`
-- `it-env.properties`: the startup parameters of integration testing.
-- `${DATABASE-TYPE}/server.yaml`: ShardingSphere-Proxy configuration file corresponding to the database.
-- `${DATABASE-TYPE}/initdb.sql`: The database initializes SQL.
-- `${DATABASE-TYPE}/*.cnf,*.conf`: Files ending with cnf or conf are database configuration files for Docker mount.
-- `common/command.xml`: The DistSQL used in the test.
-- `scenario/`: Store SQL in the test scenarios.
+`${DOCKER-IMAGE}` refers to the name of a Docker mirror, such as `mysql:5.7`. `${DATABASE-TYPE}` refers to database types.
+
+Directory: `src/test/resources/env/`
+- `it-env.properties`: Environment setup configuration file.
+- `${DATABASE-TYPE}/server.yaml`: ShardingSphere-Proxy configuration fi;e.
+- `${DATABASE-TYPE}/initdb.sql`: Database initialization SQL file.
+- `${DATABASE-TYPE}/*.cnf,*.conf`: Database configuration files.
+- `common/*.xml`: DistSQL files.
+- `scenario/`: SQL files for different scenarios.
 
 ### Test case
 
-Currently, all the test cases are directly inherited from `BaseExtraSQLITCase` and indirectly inherited from `BaseITCase`.
-- `BaseITCase`: Provide generic methods for sub-class.
-- `BaseExtraSQLITCase`: Provide table creation and CRUD statement execution methods.
-
-Test case example: MySQLGeneralPipelineE2EIT.
+Test case example: MySQLMigrationGeneralE2EIT.
 Functions included:
 - Database-level migration (all tables).
 - Table-level migration (any number).
 - Verify migration data consistency.
-- Stop writing is supported during data migration.
 - Support restart during data migration.
 - Support integer primary keys during data migration.
 - Support string primary keys during data migration.
@@ -50,13 +46,13 @@ Functions included:
 
 ### Running the test case
 
-All property values of `it-env.properties` can be introduced by the Maven command line `-D`, and its priority is higher than that of the configuration file.
+Any property of `it-env.properties` could be defined by Maven command line parameter `-D`, and its priority is higher than configuration file.
 
 #### Native environment setup
 
-The user starts ShardingSphere-Proxy locally in advance, along with dependent configuration centers (such as ZooKeeper) and databases.
-The port required for ShardingSphere-Proxy is 3307.
-Take MySQL as an example, `it-env.properties` can be configured as follows: 
+Start ShardingSphere-Proxy, registry center (e.g. ZooKeeper) and database.
+Suppose ShardingSphere-Proxy port is 3307.
+Take MySQL as an example, `it-env.properties` could be configured as follows: 
 ```
 pipeline.it.env.type=NATIVE
 pipeline.it.native.database=mysql
@@ -65,32 +61,34 @@ pipeline.it.native.mysql.password=root
 pipeline.it.native.mysql.port=3306
 ```
 
-Find the appropriate test case and start it with Junit under the IDE.
+Find test class and start it on IDE.
 
 #### Docker environment setup
 
-Step 1: Package mirror.
+Refer to `.github/workflows/e2e-pipeline.yml` for more details.
+
+Step 1: Build docker image.
 
 ```
-./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-pipeline -Pit.env.docker -DskipTests
+./mvnw -B clean install -am -pl test/e2e/operation/pipeline -Pit.env.docker -DskipTests
 ```
 
-Running the above command will build a Docker mirror apache/shardingsphere-proxy-test:latest used for integration testing. 
-The mirror sets the port for remote debugging and the default port is 3308. If only the test code is modified, you can reuse the existing test mirror without rebuilding it. 
+Running the above command will build a Docker image `apache/shardingsphere-proxy-test:latest`.
 
-If you need to adjust Docker mirror startup parameters, you can modify the configuration of the ShardingSphereProxyDockerContainer file.
+The Docker image has port `3308` for remote debugging.
 
-The output log of ShardingSphere-Proxy has the prefix Pipeline-Proxy.
+If only test code is modified, you could reuse existing docker image.
 
-Use Maven to run the test cases. Take MySQL as an example:
-
-```
-./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-test-e2e/shardingsphere-test-e2e-pipeline/pom.xml -Dpipeline.it.env.type=DOCKER -Dpipeline.it.docker.mysql.version=${image-name}
-```
-
-You can also use IDE to run test cases. `it-env.properties` can be configured as follows: 
+Step 2: Configure `it-env.properties`.
 
 ```
 pipeline.it.env.type=DOCKER
 pipeline.it.docker.mysql.version=mysql:5.7
+```
+
+Step 3: Run test cases.
+
+Take MySQL as an example:
+```
+./mvnw -nsu -B install -f test/e2e/operation/pipeline/pom.xml -Dpipeline.it.env.type=docker -Dpipeline.it.docker.mysql.version=mysql:5.7
 ```
