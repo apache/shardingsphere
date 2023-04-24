@@ -41,7 +41,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         enableStreamingQuery(rootConfig);
         ShardingRuleConfigurationConverter.findYamlShardingRuleConfiguration(rootConfig.getRules()).ifPresent(this::enableRangeQueryForInline);
         rootConfig.setDatabaseName(rootConfig.getDatabaseName());
-        rootConfig.setSchemaName(null);
+        rootConfig.setSchemaName(rootConfig.getSchemaName());
         return YamlShardingSphereDataSourceFactory.createDataSourceWithoutCache(rootConfig);
     }
     
