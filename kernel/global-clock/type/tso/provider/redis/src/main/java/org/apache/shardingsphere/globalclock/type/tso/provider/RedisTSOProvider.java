@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -64,7 +63,7 @@ public final class RedisTSOProvider implements TSOProvider {
                 getValue(props, RedisTSOPropertyKey.PASSWORD));
     }
     
-    private void checkJedisPool() throws JedisConnectionException {
+    private void checkJedisPool() {
         try (Jedis jedis = jedisPool.getResource()) {
             jedis.ping();
         }
@@ -84,21 +83,17 @@ public final class RedisTSOProvider implements TSOProvider {
     }
     
     @Override
-    public long getCurrentTimestamp() throws JedisConnectionException {
-        long result;
+    public long getCurrentTimestamp() {
         try (Jedis jedis = jedisPool.getResource()) {
-            result = Long.parseLong(jedis.get(CSN_KEY));
+            return Long.parseLong(jedis.get(CSN_KEY));
         }
-        return result;
     }
     
     @Override
-    public long getNextTimestamp() throws JedisConnectionException {
-        long result;
+    public long getNextTimestamp() {
         try (Jedis jedis = jedisPool.getResource()) {
-            result = jedis.incr(CSN_KEY);
+            return jedis.incr(CSN_KEY);
         }
-        return result;
     }
     
     @Override

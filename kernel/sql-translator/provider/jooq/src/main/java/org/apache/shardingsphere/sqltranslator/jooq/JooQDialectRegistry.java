@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
 import org.apache.shardingsphere.sqltranslator.exception.syntax.UnsupportedTranslatedDatabaseException;
 import org.jooq.SQLDialect;
 
@@ -51,9 +50,8 @@ public final class JooQDialectRegistry {
      *
      * @param databaseType database type
      * @return SQL dialect
-     * @throws SQLTranslationException SQL translation exception
      */
-    public static SQLDialect getSQLDialect(final DatabaseType databaseType) throws SQLTranslationException {
+    public static SQLDialect getSQLDialect(final DatabaseType databaseType) {
         SQLDialect result = DATABASE_DIALECT_MAP.get(databaseType);
         ShardingSpherePreconditions.checkState(null != result, () -> new UnsupportedTranslatedDatabaseException(databaseType));
         return result;

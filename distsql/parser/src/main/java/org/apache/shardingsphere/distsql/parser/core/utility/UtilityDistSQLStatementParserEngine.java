@@ -44,7 +44,7 @@ public final class UtilityDistSQLStatementParserEngine {
     private ASTNode parseToASTNode(final String sql) {
         try {
             return SQLParserFactory.newInstance(sql, UtilityDistSQLLexer.class, UtilityDistSQLParser.class).parse();
-        } catch (final ParseCancellationException | SQLParsingException ignored) {
+        } catch (final ParseCancellationException ignored) {
             throw new SQLParsingException(sql);
         }
     }
