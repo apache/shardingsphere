@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public final class SQLTokenGenerators {
     
-    private final Map<Class<?>, SQLTokenGenerator> sqlTokenGenerators = new LinkedHashMap<>();
+    private final Map<Class<?>, SQLTokenGenerator> generators = new LinkedHashMap<>();
     
     /**
      * Add all SQL token generators.
@@ -46,8 +46,8 @@ public final class SQLTokenGenerators {
      */
     public void addAll(final Collection<SQLTokenGenerator> sqlTokenGenerators) {
         for (SQLTokenGenerator each : sqlTokenGenerators) {
-            if (!this.sqlTokenGenerators.containsKey(each.getClass())) {
-                this.sqlTokenGenerators.put(each.getClass(), each);
+            if (!this.generators.containsKey(each.getClass())) {
+                this.generators.put(each.getClass(), each);
             }
         }
     }
@@ -66,7 +66,7 @@ public final class SQLTokenGenerators {
     public List<SQLToken> generateSQLTokens(final String databaseName, final Map<String, ShardingSphereSchema> schemas,
                                             final SQLStatementContext sqlStatementContext, final List<Object> params, final ConnectionContext connectionContext) {
         List<SQLToken> result = new LinkedList<>();
-        for (SQLTokenGenerator each : sqlTokenGenerators.values()) {
+        for (SQLTokenGenerator each : generators.values()) {
             setUpSQLTokenGenerator(each, params, databaseName, schemas, result, connectionContext);
             if (each instanceof OptionalSQLTokenGenerator) {
                 SQLToken sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatementContext);
