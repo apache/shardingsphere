@@ -93,28 +93,4 @@ public final class YamlPipelineReadConfiguration implements YamlConfiguration {
             rateLimiter = another.rateLimiter;
         }
     }
-    
-    /**
-     * Set field to null.
-     *
-     * @param nodeName node name
-     */
-    public void setFieldNull(final String nodeName) {
-        switch (nodeName.toUpperCase()) {
-            case "WORKER_THREAD":
-                workerThread = null;
-                break;
-            case "BATCH_SIZE":
-                batchSize = null;
-                break;
-            case "SHARDING_SIZE":
-                shardingSize = null;
-                break;
-            case "RATE_LIMITER":
-                rateLimiter = null;
-                break;
-            default:
-                break;
-        }
-    }
 }
