@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
@@ -58,7 +57,7 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
         checkToBeAlteredLikeEncryptors(sqlStatement);
     }
     
-    private void checkCurrentRuleConfiguration(final String databaseName, final EncryptRuleConfiguration currentRuleConfig) throws MissingRequiredRuleException {
+    private void checkCurrentRuleConfiguration(final String databaseName, final EncryptRuleConfiguration currentRuleConfig) {
         ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Encrypt", databaseName));
     }
     
@@ -85,7 +84,7 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
         return columns.stream().filter(each -> !each.isCorrectDataType()).map(each -> String.format("%s.%s", tableName, each.getName())).collect(Collectors.toList());
     }
     
-    private void checkToBeAlteredEncryptors(final AlterEncryptRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
+    private void checkToBeAlteredEncryptors(final AlterEncryptRuleStatement sqlStatement) {
         Collection<AlgorithmSegment> encryptors = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> each.getColumns().forEach(column -> {
             encryptors.add(column.getEncryptor());
@@ -94,7 +93,7 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
         encryptors.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(EncryptAlgorithm.class, each.getName(), each.getProps()));
     }
     
-    private void checkToBeAlteredLikeEncryptors(final AlterEncryptRuleStatement sqlStatement) throws InvalidAlgorithmConfigurationException {
+    private void checkToBeAlteredLikeEncryptors(final AlterEncryptRuleStatement sqlStatement) {
         Collection<AlgorithmSegment> likeEncryptors = new LinkedHashSet<>();
         sqlStatement.getRules().forEach(each -> each.getColumns().forEach(column -> likeEncryptors.add(column.getLikeQueryEncryptor())));
         likeEncryptors.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(LikeEncryptAlgorithm.class, each.getName(), each.getProps()));

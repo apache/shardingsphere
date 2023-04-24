@@ -36,13 +36,13 @@ public final class HikariDataSourcePoolPropertiesValidator implements DataSource
     private static final long KEEP_ALIVE_TIME_FLOOR = TimeUnit.SECONDS.toMillis(30);
     
     @Override
-    public void validateProperties(final DataSourceProperties dataSourceProps) throws IllegalArgumentException {
+    public void validateProperties(final DataSourceProperties dataSourceProps) {
         validateConnectionTimeout(dataSourceProps);
         validateIdleTimeout(dataSourceProps);
         validateMaxLifetime(dataSourceProps);
         validateMaximumPoolSize(dataSourceProps);
         validateMinimumIdle(dataSourceProps);
-        validateKeepaliveTime(dataSourceProps);
+        validateKeepAliveTime(dataSourceProps);
     }
     
     private void validateConnectionTimeout(final DataSourceProperties dataSourceProps) {
@@ -86,15 +86,15 @@ public final class HikariDataSourcePoolPropertiesValidator implements DataSource
         ShardingSpherePreconditions.checkState(minimumIdle >= 0, () -> new IllegalArgumentException("minimumIdle cannot be negative"));
     }
     
-    private void validateKeepaliveTime(final DataSourceProperties dataSourceProps) {
+    private void validateKeepAliveTime(final DataSourceProperties dataSourceProps) {
         if (!checkValueExist(dataSourceProps, "keepaliveTime")) {
             return;
         }
-        int keepaliveTime = Integer.parseInt(dataSourceProps.getAllLocalProperties().get("keepaliveTime").toString());
-        if (keepaliveTime == 0) {
+        int keepAliveTime = Integer.parseInt(dataSourceProps.getAllLocalProperties().get("keepaliveTime").toString());
+        if (keepAliveTime == 0) {
             return;
         }
-        ShardingSpherePreconditions.checkState(keepaliveTime >= KEEP_ALIVE_TIME_FLOOR,
+        ShardingSpherePreconditions.checkState(keepAliveTime >= KEEP_ALIVE_TIME_FLOOR,
                 () -> new IllegalArgumentException(String.format("keepaliveTime cannot be less than %sms", KEEP_ALIVE_TIME_FLOOR)));
     }
     

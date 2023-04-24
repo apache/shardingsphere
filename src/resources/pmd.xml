@@ -76,16 +76,31 @@
     <rule ref="category/java/codestyle.xml/UseDiamondOperator" />
     <rule ref="category/java/codestyle.xml/UseShortArrayInitializer" />
     
+    <rule ref="category/java/design.xml/AvoidThrowingNewInstanceOfSameException" />
+    <rule ref="category/java/design.xml/AvoidThrowingNullPointerException" />
+    <rule ref="category/java/design.xml/AvoidThrowingRawExceptionTypes" />
+    <rule ref="category/java/design.xml/AvoidUncheckedExceptionsInSignatures" />
+    <rule ref="category/java/design.xml/CognitiveComplexity" />
+    <rule ref="category/java/design.xml/CollapsibleIfStatements" />
+    <rule ref="category/java/design.xml/CouplingBetweenObjects" />
+    <rule ref="category/java/design.xml/DataClass" />
+    <rule ref="category/java/design.xml/ExceptionAsFlowControl" />
+    <rule ref="category/java/design.xml/GodClass" />
+    <rule ref="category/java/design.xml/ImmutableField" />
+    <rule ref="category/java/design.xml/MutableStaticState" />
+    <rule ref="category/java/design.xml/SignatureDeclareThrowsException" />
+    <rule ref="category/java/design.xml/SimplifyBooleanExpressions" />
+    <rule ref="category/java/design.xml/UseObjectForClearerAPI" />
+    <rule ref="category/java/design.xml/UseUtilityClass">
+        <properties>
+            <property name="ignoredAnnotations" value="lombok.NoArgsConstructor | org.springframework.boot.autoconfigure.SpringBootApplication" />
+        </properties>
+    </rule>
+    
     <rule ref="category/java/documentation.xml/CommentSize">
         <properties>
             <property name="maxLines" value="40" />
             <property name="maxLineLength" value="200" />
-        </properties>
-    </rule>
-    
-    <rule ref="category/java/design.xml/UseUtilityClass">
-        <properties>
-            <property name="ignoredAnnotations" value="lombok.NoArgsConstructor | org.springframework.boot.autoconfigure.SpringBootApplication" />
         </properties>
     </rule>
     

@@ -36,6 +36,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.stream.Stream;
@@ -45,7 +46,7 @@ public abstract class ExternalSQLParserIT {
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertParseSQL(final String sqlCaseId, final String databaseType, final String sql, final String reportType) throws Exception {
+    void assertParseSQL(final String sqlCaseId, final String databaseType, final String sql, final String reportType) throws IOException {
         boolean isSuccess = true;
         try (SQLParseResultReporter resultReporter = TypedSPILoader.getService(SQLParseResultReporterCreator.class, reportType).create(databaseType)) {
             try {

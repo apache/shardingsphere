@@ -222,10 +222,8 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         if (!previousAlgorithm.isPresent() && !currentAlgorithm.isPresent()) {
             return;
         }
-        if (previousAlgorithm.isPresent() && currentAlgorithm.isPresent() && previousAlgorithm.get().equals(currentAlgorithm.get())) {
-            if (checkPreviousAndAfterHasSameColumnNumber(tableName, segment)) {
-                return;
-            }
+        if (previousAlgorithm.isPresent() && currentAlgorithm.isPresent() && previousAlgorithm.get().equals(currentAlgorithm.get()) && checkPreviousAndAfterHasSameColumnNumber(tableName, segment)) {
+            return;
         }
         throw new EncryptColumnAlterException(tableName, segment.getColumnDefinition().getColumnName().getIdentifier().getValue(), segment.getPreviousColumn().getIdentifier().getValue());
     }

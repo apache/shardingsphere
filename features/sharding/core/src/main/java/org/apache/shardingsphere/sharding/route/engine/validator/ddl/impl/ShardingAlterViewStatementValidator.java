@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.exception.syntax.RenamedViewWithoutSameConfigurationException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -58,14 +59,10 @@ public final class ShardingAlterViewStatementValidator extends ShardingDDLStatem
     }
     
     private void validateBroadcastShardingView(final ShardingRule shardingRule, final String originView, final String targetView) {
-        if (shardingRule.isBroadcastTable(originView) ^ shardingRule.isBroadcastTable(targetView)) {
-            throw new RenamedViewWithoutSameConfigurationException(originView, targetView);
-        }
-        if (shardingRule.isShardingTable(originView) || shardingRule.isShardingTable(targetView)) {
-            if (!shardingRule.isAllBindingTables(Arrays.asList(originView, targetView))) {
-                throw new RenamedViewWithoutSameConfigurationException(originView, targetView);
-            }
-        }
+        ShardingSpherePreconditions.checkState(shardingRule.isBroadcastTable(originView) == shardingRule.isBroadcastTable(targetView),
+                () -> new RenamedViewWithoutSameConfigurationException(originView, targetView));
+        ShardingSpherePreconditions.checkState(!shardingRule.isShardingTable(originView) && !shardingRule.isShardingTable(targetView)
+                || shardingRule.isAllBindingTables(Arrays.asList(originView, targetView)), () -> new RenamedViewWithoutSameConfigurationException(originView, targetView));
     }
     
     @Override
