@@ -92,7 +92,7 @@ public final class MySQLBinlogProtocolValueFactory {
         BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_STRING, new MySQLStringBinlogProtocolValue());
         BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR, new MySQLVarcharBinlogProtocolValue());
         BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, new MySQLVarcharBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MySQL_TYPE_JSON, new MySQLJsonBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_JSON, new MySQLJsonBinlogProtocolValue());
     }
     
     private static void registerBlobTypeValue() {

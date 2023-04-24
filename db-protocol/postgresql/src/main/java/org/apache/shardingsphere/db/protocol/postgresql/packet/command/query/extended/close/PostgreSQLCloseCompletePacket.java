@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  */
 public final class PostgreSQLCloseCompletePacket implements PostgreSQLPacket {
     
-    private static final byte[] VALUE = new byte[]{(byte) PostgreSQLMessagePacketType.CLOSE_COMPLETE.getValue(), 0, 0, 0, 4};
+    private static final byte[] VALUE = {(byte) PostgreSQLMessagePacketType.CLOSE_COMPLETE.getValue(), 0, 0, 0, 4};
     
     private static final PostgreSQLCloseCompletePacket INSTANCE = new PostgreSQLCloseCompletePacket();
     

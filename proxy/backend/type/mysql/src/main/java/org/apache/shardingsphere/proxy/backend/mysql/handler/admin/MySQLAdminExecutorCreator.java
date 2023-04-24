@@ -155,10 +155,10 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     }
     
     private Optional<DatabaseAdminExecutor> mockExecutor(final String databaseName, final SelectStatement sqlStatement, final String sql) {
-        boolean isNotUseSchema = null == databaseName && null == sqlStatement.getFrom();
         if (hasNoResource()) {
             return Optional.of(new NoResourceShowExecutor(sqlStatement));
         }
+        boolean isNotUseSchema = null == databaseName && null == sqlStatement.getFrom();
         return isNotUseSchema ? Optional.of(new UnicastResourceShowExecutor(sqlStatement, sql)) : Optional.empty();
     }
     

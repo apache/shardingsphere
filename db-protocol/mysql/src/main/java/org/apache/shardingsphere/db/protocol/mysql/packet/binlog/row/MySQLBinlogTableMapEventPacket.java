@@ -103,7 +103,7 @@ public final class MySQLBinlogTableMapEventPacket extends AbstractMySQLBinlogEve
             case MYSQL_TYPE_TIME2:
             case MYSQL_TYPE_TIMESTAMP2:
             case MYSQL_TYPE_DATETIME2:
-            case MySQL_TYPE_JSON:
+            case MYSQL_TYPE_JSON:
                 return payload.readInt1();
             default:
                 return 0;

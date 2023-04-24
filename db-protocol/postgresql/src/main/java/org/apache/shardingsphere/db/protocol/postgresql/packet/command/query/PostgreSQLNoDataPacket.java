@@ -29,7 +29,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLNoDataPacket implements PostgreSQLPacket {
     
-    private static final byte[] VALUE = new byte[]{(byte) PostgreSQLMessagePacketType.NO_DATA.getValue(), 0, 0, 0, 4};
+    private static final byte[] VALUE = {(byte) PostgreSQLMessagePacketType.NO_DATA.getValue(), 0, 0, 0, 4};
     
     private static final PostgreSQLNoDataPacket INSTANCE = new PostgreSQLNoDataPacket();
     

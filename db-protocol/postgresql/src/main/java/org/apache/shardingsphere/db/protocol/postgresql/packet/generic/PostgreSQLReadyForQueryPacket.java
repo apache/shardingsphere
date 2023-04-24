@@ -35,7 +35,7 @@ public final class PostgreSQLReadyForQueryPacket implements PostgreSQLPacket {
     
     public static final PostgreSQLReadyForQueryPacket TRANSACTION_FAILED = new PostgreSQLReadyForQueryPacket((byte) 'E');
     
-    private static final byte[] PREFIX = new byte[]{(byte) PostgreSQLMessagePacketType.READY_FOR_QUERY.getValue(), 0, 0, 0, 5};
+    private static final byte[] PREFIX = {(byte) PostgreSQLMessagePacketType.READY_FOR_QUERY.getValue(), 0, 0, 0, 5};
     
     private final byte status;
     

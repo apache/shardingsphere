@@ -33,7 +33,7 @@ public final class YamlPipelineReadConfiguration implements YamlConfiguration {
     
     private static final Integer DEFAULT_BATCH_SIZE = 1000;
     
-    private static final Integer DEFAULT_SHARDING_SIZE = 1000_0000;
+    private static final Integer DEFAULT_SHARDING_SIZE = 10000000;
     
     private Integer workerThread;
     

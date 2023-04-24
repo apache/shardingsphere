@@ -30,7 +30,7 @@ class MySQLBinlogEventTypeTest {
     
     @Test
     void assertGetValue() {
-        assertThat(MySQLBinlogEventType.WRITE_ROWS_EVENTv2.getValue(), is(0x1e));
+        assertThat(MySQLBinlogEventType.WRITE_ROWS_EVENT_V2.getValue(), is(0x1e));
     }
     
     @Test

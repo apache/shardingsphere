@@ -72,11 +72,11 @@ public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
     }
     
     private String readDatabase(final MySQLPacketPayload payload) {
-        return 0 != (capabilityFlags & MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue()) ? payload.readStringNul() : null;
+        return 0 == (capabilityFlags & MySQLCapabilityFlag.CLIENT_CONNECT_WITH_DB.getValue()) ? null : payload.readStringNul();
     }
     
     private String readAuthPluginName(final MySQLPacketPayload payload) {
-        return 0 != (capabilityFlags & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue()) ? payload.readStringNul() : null;
+        return 0 == (capabilityFlags & MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue()) ? null : payload.readStringNul();
     }
     
     /**
@@ -92,7 +92,7 @@ public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
     /**
      * Set authentication plugin name.
      *
-     * @param authenticationMethod MySQL authentication method
+     * @param authenticationMethod authentication method of MySQL
      */
     public void setAuthPluginName(final MySQLAuthenticationMethod authenticationMethod) {
         authPluginName = authenticationMethod.getMethodName();

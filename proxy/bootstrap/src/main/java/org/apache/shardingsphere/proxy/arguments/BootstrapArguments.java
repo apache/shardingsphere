@@ -103,7 +103,7 @@ public final class BootstrapArguments {
      *
      * @return force parameter
      */
-    public boolean getForce() {
+    public boolean isForce() {
         return args.length >= 4 && parseForceParameter(args[3]);
     }
     
