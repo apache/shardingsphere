@@ -57,9 +57,9 @@ public final class JdbcUrlAppender {
         for (Entry<Object, Object> entry : queryProps.entrySet()) {
             result.append(entry.getKey());
             if (null != entry.getValue()) {
-                result.append("=").append(entry.getValue());
+                result.append('=').append(entry.getValue());
             }
-            result.append("&");
+            result.append('&');
         }
         result.deleteCharAt(result.length() - 1);
         return result.toString();

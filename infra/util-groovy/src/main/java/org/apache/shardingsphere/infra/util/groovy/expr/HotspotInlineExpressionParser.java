@@ -67,10 +67,10 @@ public final class HotspotInlineExpressionParser implements JVMInlineExpressionP
         for (String each : inlineExpressions) {
             StringBuilder expression = new StringBuilder(handlePlaceHolder(each));
             if (!each.startsWith("\"")) {
-                expression.insert(0, "\"");
+                expression.insert(0, '"');
             }
             if (!each.endsWith("\"")) {
-                expression.append("\"");
+                expression.append('"');
             }
             result.add(evaluate(expression.toString()));
         }

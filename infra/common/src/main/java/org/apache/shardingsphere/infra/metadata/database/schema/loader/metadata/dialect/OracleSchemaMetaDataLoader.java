@@ -124,7 +124,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     }
     
     private String getOriginalDataType(final String dataType) {
-        int index = dataType.indexOf("(");
+        int index = dataType.indexOf('(');
         if (index > 0) {
             return dataType.substring(0, index);
         }

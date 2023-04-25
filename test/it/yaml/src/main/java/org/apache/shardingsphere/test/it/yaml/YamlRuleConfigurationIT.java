@@ -24,9 +24,11 @@ import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,13 +49,11 @@ public abstract class YamlRuleConfigurationIT {
     }
     
     @Test
-    void assertUnmarshalWithYamlBytes() throws IOException {
+    void assertUnmarshalWithYamlBytes() throws IOException, URISyntaxException {
         URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFile);
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
-        try (
-                FileReader fileReader = new FileReader(url.getFile());
-                BufferedReader reader = new BufferedReader(fileReader)) {
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get(url.toURI()))) {
             String line;
             while (null != (line = reader.readLine())) {
                 yamlContent.append(line).append(System.lineSeparator());

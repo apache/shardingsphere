@@ -77,7 +77,7 @@ import java.util.Properties;
  */
 public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> implements SQLFormatVisitor {
     
-    private final StringBuilder formattedSQL = new StringBuilder();
+    private final StringBuilder formattedSQL = new StringBuilder(256);
     
     private boolean upperCase = true;
     
@@ -103,11 +103,11 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
         } else {
             visit(ctx.queryExpression());
             if (null != ctx.lockClauseList()) {
-                formattedSQL.append(" ");
+                formattedSQL.append(' ');
                 visit(ctx.lockClauseList());
             }
         }
-        formatPrint(";");
+        formatPrint(';');
         return formattedSQL.toString();
     }
     
@@ -115,15 +115,15 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
     public String visitQueryExpression(final QueryExpressionContext ctx) {
         if (null != ctx.withClause()) {
             visit(ctx.withClause());
-            formatPrint(" ");
+            formatPrint(' ');
         }
         visit(null == ctx.queryExpressionBody() ? ctx.queryExpressionParens() : ctx.queryExpressionBody());
         if (null != ctx.orderByClause()) {
-            formatPrint(" ");
+            formatPrint(' ');
             visit(ctx.orderByClause());
         }
         if (null != ctx.limitClause()) {
-            formatPrint(" ");
+            formatPrint(' ');
             visit(ctx.limitClause());
         }
         return formattedSQL.toString();
@@ -133,12 +133,12 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
     public String visitQueryExpressionParens(final QueryExpressionParensContext ctx) {
         formatPrintln();
         indentCount++;
-        formatPrint("(");
+        formatPrint('(');
         formatPrintln();
         if (null == ctx.queryExpressionParens()) {
             visit(ctx.queryExpression());
             if (null != ctx.lockClauseList()) {
-                formattedSQL.append(" ");
+                formattedSQL.append(' ');
                 visit(ctx.lockClauseList());
             }
         } else {
@@ -146,7 +146,7 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
         }
         indentCount--;
         formatPrintln();
-        formatPrint(")");
+        formatPrint(')');
         return formattedSQL.toString();
     }
     
@@ -169,7 +169,7 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
         formattedSQL.append("\nUNION\n");
         if (null != ctx.combineOption()) {
             visit(ctx.combineOption());
-            formattedSQL.append(" ");
+            formattedSQL.append(' ');
         }
         visit(null == ctx.queryPrimary() ? ctx.queryExpressionParens() : ctx.queryPrimary());
         return formattedSQL.toString();
@@ -181,7 +181,7 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
         int selectSpecCount = ctx.selectSpecification().size();
         for (int i = 0; i < selectSpecCount; i++) {
             visit(ctx.selectSpecification(i));
-            formatPrint(" ");
+            formatPrint(' ');
         }
         visit(ctx.projections());
         if (null != ctx.fromClause()) {
@@ -217,15 +217,15 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
     @Override
     public String visitInsert(final InsertContext ctx) {
         visit(ctx.INSERT());
-        formatPrint(" ");
+        formatPrint(' ');
         visit(ctx.insertSpecification());
-        formatPrint(" ");
+        formatPrint(' ');
         if (null != ctx.INTO()) {
             visit(ctx.INTO());
-            formatPrint(" ");
+            formatPrint(' ');
         }
         visit(ctx.tableName());
-        formatPrint(" ");
+        formatPrint(' ');
         if (null != ctx.partitionNames()) {
             formatPrintln();
             visit(ctx.partitionNames());
@@ -255,18 +255,18 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
             }
             visit(ctx.identifier(i));
         }
-        formatPrint(")");
+        formatPrint(')');
         return formattedSQL.toString();
     }
     
     @Override
     public String visitInsertValuesClause(final InsertValuesClauseContext ctx) {
         if (null != ctx.LP_()) {
-            formatPrint("(");
+            formatPrint('(');
             if (null != ctx.fields()) {
                 visit(ctx.fields());
             }
-            formatPrint(")");
+            formatPrint(')');
         }
         formatPrintln();
         visit(null == ctx.VALUE() ? ctx.VALUES() : ctx.VALUE());
@@ -276,7 +276,7 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
             int valueCount = ctx.assignmentValues().size();
             for (int i = 0; i < valueCount; i++) {
                 if (0 != i) {
-                    formatPrint(",");
+                    formatPrint(',');
                     formatPrintln();
                 }
                 visit(ctx.assignmentValues(i));
@@ -299,10 +299,10 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
     public String visitInsertSelectClause(final InsertSelectClauseContext ctx) {
         if (null != ctx.valueReference()) {
             visit(ctx.valueReference());
-            formatPrint(" ");
+            formatPrint(' ');
         }
         if (null != ctx.LP_()) {
-            formatPrint("(");
+            formatPrint('(');
             if (null != ctx.fields()) {
                 visit(ctx.fields());
             }
@@ -317,11 +317,11 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
     public String visitSetAssignmentsClause(final SetAssignmentsClauseContext ctx) {
         if (null != ctx.valueReference()) {
             visit(ctx.valueReference());
-            formatPrint(" ");
+            formatPrint(' ');
         }
         indentCount++;
         visit(ctx.SET());
-        formatPrint(" ");
+        formatPrint(' ');
         int assignmentCount = ctx.assignment().size();
         for (int i = 0; i < assignmentCount; i++) {
             if (0 != i) {
@@ -550,7 +550,7 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
         indentCount++;
         if (null != ctx.unqualifiedShorthand()) {
             visit(ctx.unqualifiedShorthand());
-            formattedSQL.append(" ");
+            formattedSQL.append(' ');
         }
         int projectionCount = ctx.projection().size();
         int lineItemCount = 0;
@@ -754,7 +754,7 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
         formatPrint("WITH ");
         if (null != ctx.RECURSIVE()) {
             visit(ctx.RECURSIVE());
-            formattedSQL.append(" ");
+            formattedSQL.append(' ');
         }
         for (int i = 0; i < ctx.cteClause().size(); i++) {
             if (i != 0 && i < ctx.cteClause().size() - 1) {
@@ -763,7 +763,7 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
             visit(ctx.cteClause(i));
         }
         if (null != ctx.parent) {
-            formattedSQL.append("\n");
+            formattedSQL.append('\n');
         }
         return formattedSQL.toString();
     }
@@ -771,10 +771,10 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
     @Override
     public String visitCteClause(final CteClauseContext ctx) {
         visit(ctx.identifier());
-        formattedSQL.append(" ");
+        formattedSQL.append(' ');
         if (null != ctx.columnNames()) {
             visit(ctx.columnNames());
-            formattedSQL.append(" ");
+            formattedSQL.append(' ');
         }
         formattedSQL.append("AS ");
         visit(ctx.subquery());

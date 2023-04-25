@@ -138,4 +138,25 @@
     <rule ref="category/java/errorprone.xml/UnnecessaryCaseChange" />
     <rule ref="category/java/errorprone.xml/UseCorrectExceptionLogging" />
     <rule ref="category/java/errorprone.xml/UseProperClassLoader" />
+    
+    <rule ref="category/java/performance.xml/AddEmptyString" />
+    <rule ref="category/java/performance.xml/AppendCharacterWithChar" />
+    <rule ref="category/java/performance.xml/AvoidArrayLoops" />
+    <rule ref="category/java/performance.xml/AvoidCalendarDateCreation" />
+    <rule ref="category/java/performance.xml/AvoidFileStream" />
+    <rule ref="category/java/performance.xml/ConsecutiveAppendsShouldReuse" />
+    <rule ref="category/java/performance.xml/ConsecutiveLiteralAppends" />
+    <rule ref="category/java/performance.xml/InefficientEmptyStringCheck" />
+    <rule ref="category/java/performance.xml/InefficientStringBuffering" />
+    <rule ref="category/java/performance.xml/RedundantFieldInitializer" />
+    <rule ref="category/java/performance.xml/StringInstantiation" />
+    <rule ref="category/java/performance.xml/StringToString" />
+    <rule ref="category/java/performance.xml/TooFewBranchesForASwitchStatement" />
+    <rule ref="category/java/performance.xml/UseArrayListInsteadOfVector" />
+    <rule ref="category/java/performance.xml/UseArraysAsList" />
+    <rule ref="category/java/performance.xml/UseIndexOfChar" />
+    <rule ref="category/java/performance.xml/UseIOStreamsWithApacheCommonsFileItem" />
+    <rule ref="category/java/performance.xml/UselessStringValueOf" />
+    <rule ref="category/java/performance.xml/UseStringBufferForStringAppends" />
+    <rule ref="category/java/performance.xml/UseStringBufferLength" />
 </ruleset>

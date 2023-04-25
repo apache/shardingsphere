@@ -59,7 +59,7 @@ public final class ConstraintToken extends SQLToken implements Substitutable, Ro
         StringBuilder result = new StringBuilder(identifier.getValue());
         Map<String, String> logicAndActualTables = TokenUtils.getLogicAndActualTables(routeUnit, sqlStatementContext, shardingRule);
         sqlStatementContext.getTablesContext().getTableNames().stream().findFirst().map(optional -> logicAndActualTables.get(optional.toLowerCase()))
-                .ifPresent(optional -> result.append("_").append(optional));
+                .ifPresent(optional -> result.append('_').append(optional));
         return result.toString();
     }
 }
