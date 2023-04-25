@@ -117,4 +117,25 @@
     <rule ref="category/java/errorprone.xml/AvoidLosingExceptionInformation" />
     <rule ref="category/java/errorprone.xml/ConstructorCallsOverridableMethod" />
     <rule ref="category/java/errorprone.xml/DetachedTestCase" />
+    <rule ref="category/java/errorprone.xml/DoNotHardCodeSDCard" />
+    <rule ref="category/java/errorprone.xml/DoNotTerminateVM" />
+    <rule ref="category/java/errorprone.xml/DoNotThrowExceptionInFinally" />
+    <rule ref="category/java/errorprone.xml/DontImportSun" />
+    <rule ref="category/java/errorprone.xml/InvalidLogMessageFormat" />
+    <rule ref="category/java/errorprone.xml/MethodWithSameNameAsEnclosingClass" />
+    <rule ref="category/java/errorprone.xml/MissingSerialVersionUID" />
+    <rule ref="category/java/errorprone.xml/MoreThanOneLogger" />
+    <rule ref="category/java/errorprone.xml/NonSerializableClass" />
+    <rule ref="category/java/errorprone.xml/NullAssignment" />
+    <rule ref="category/java/errorprone.xml/SimpleDateFormatNeedsLocale" />
+    <rule ref="category/java/errorprone.xml/StringBufferInstantiationWithChar" />
+    <rule ref="category/java/errorprone.xml/TestClassWithoutTestCases">
+        <properties>
+            <property name="testClassPattern" value="^(?:.*\.)?Test$" />
+        </properties>
+    </rule>
+    <rule ref="category/java/errorprone.xml/UnnecessaryBooleanAssertion" />
+    <rule ref="category/java/errorprone.xml/UnnecessaryCaseChange" />
+    <rule ref="category/java/errorprone.xml/UseCorrectExceptionLogging" />
+    <rule ref="category/java/errorprone.xml/UseProperClassLoader" />
 </ruleset>

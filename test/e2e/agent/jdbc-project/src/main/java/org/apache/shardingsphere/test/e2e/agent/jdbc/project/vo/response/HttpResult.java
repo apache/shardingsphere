@@ -32,6 +32,8 @@ import java.io.Serializable;
 @Getter
 public class HttpResult<T> implements Serializable {
     
+    private static final long serialVersionUID = -7263644459975356117L;
+    
     private int code;
     
     private String message;

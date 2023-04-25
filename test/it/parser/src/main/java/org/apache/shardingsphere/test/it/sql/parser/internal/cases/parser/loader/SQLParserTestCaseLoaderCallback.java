@@ -43,7 +43,7 @@ public final class SQLParserTestCaseLoaderCallback implements CaseLoaderCallback
     public Map<String, SQLParserTestCase> loadFromJar(final File jarFile, final String rootDirectory) throws JAXBException {
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (String each : CaseFileLoader.loadFileNamesFromJar(jarFile, rootDirectory)) {
-            Map<String, SQLParserTestCase> testCases = createTestCases(SQLParserTestCaseLoaderCallback.class.getClassLoader().getResourceAsStream(each));
+            Map<String, SQLParserTestCase> testCases = createTestCases(Thread.currentThread().getContextClassLoader().getResourceAsStream(each));
             checkDuplicatedTestCases(testCases, result);
             result.putAll(testCases);
         }
