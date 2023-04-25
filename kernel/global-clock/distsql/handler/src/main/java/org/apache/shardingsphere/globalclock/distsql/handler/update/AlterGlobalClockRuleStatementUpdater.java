@@ -22,7 +22,7 @@ import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfigura
 import org.apache.shardingsphere.globalclock.distsql.parser.statement.updatable.AlterGlobalClockRuleStatement;
 
 /**
- * Alter global clock rule statement handler.
+ * Alter global clock rule statement updater.
  */
 public final class AlterGlobalClockRuleStatementUpdater implements GlobalRuleRALUpdater<AlterGlobalClockRuleStatement, GlobalClockRuleConfiguration> {
     
