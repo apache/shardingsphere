@@ -15,42 +15,22 @@
  * limitations under the License.
  */
 
-grammar RALStatement;
+grammar BaseRule;
 
-import BaseRule;
+import Symbol, Keyword, Literals;
 
-showGlobalClockRule
-    : SHOW GLOBAL CLOCK RULE
+propertiesDefinition
+    : PROPERTIES LP_ properties? RP_
     ;
 
-alterGlobalClockRule
-    : ALTER GLOBAL CLOCK RULE globalClockRuleDefinition
+properties
+    : property (COMMA_ property)*
     ;
 
-globalClockRuleDefinition
-    : LP_ typeDefinition COMMA_ providerDefinition COMMA_ enabledDefinition (COMMA_ propertiesDefinition)? RP_
+property
+    : key=STRING_ EQ_ value=literal
     ;
 
-typeDefinition
-    : TYPE EQ_ typeName
-    ;
-
-providerDefinition
-    : PROVIDER EQ_ providerName
-    ;
-
-enabledDefinition
-    : ENABLED EQ_ enabled
-    ;
-
-typeName
-    : STRING_
-    ;
-
-providerName
-    : STRING_
-    ;
-
-enabled
-    : TRUE | FALSE
+literal
+    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
     ;
