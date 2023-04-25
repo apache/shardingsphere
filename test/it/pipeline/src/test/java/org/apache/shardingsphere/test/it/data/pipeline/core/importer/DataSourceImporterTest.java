@@ -93,7 +93,7 @@ class DataSourceImporterTest {
     void assertWriteInsertDataRecord() throws SQLException {
         DataRecord insertRecord = getDataRecord("INSERT");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(insertRecord));
+        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(insertRecord));
         jdbcImporter.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(2, 10);
@@ -105,7 +105,7 @@ class DataSourceImporterTest {
     void assertDeleteDataRecord() throws SQLException {
         DataRecord deleteRecord = getDataRecord("DELETE");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(deleteRecord));
+        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(deleteRecord));
         jdbcImporter.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(2, 10);
@@ -116,7 +116,7 @@ class DataSourceImporterTest {
     void assertUpdateDataRecord() throws SQLException {
         DataRecord updateRecord = getDataRecord("UPDATE");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
+        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(updateRecord));
         jdbcImporter.run();
         verify(preparedStatement).setObject(1, 20);
         verify(preparedStatement).setObject(2, "UPDATE");
@@ -129,7 +129,7 @@ class DataSourceImporterTest {
     void assertUpdatePrimaryKeyDataRecord() throws SQLException {
         DataRecord updateRecord = getUpdatePrimaryKeyDataRecord();
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt())).thenReturn(mockRecords(updateRecord));
+        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(updateRecord));
         jdbcImporter.run();
         InOrder inOrder = inOrder(preparedStatement);
         inOrder.verify(preparedStatement).setObject(1, 2);

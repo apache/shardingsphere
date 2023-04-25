@@ -49,6 +49,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -133,6 +134,6 @@ class PostgreSQLWALDumperTest {
             walDumper.start();
         } catch (final IngestException ignored) {
         }
-        assertThat(channel.fetchRecords(100, 0).size(), is(1));
+        assertThat(channel.fetchRecords(100, 0, TimeUnit.SECONDS).size(), is(1));
     }
 }

@@ -63,6 +63,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -150,7 +151,7 @@ class MySQLIncrementalDumperTest {
         rowsEvent.setAfterRows(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
         Method method = MySQLIncrementalDumper.class.getDeclaredMethod("handleWriteRowsEvent", WriteRowsEvent.class, PipelineTableMetaData.class);
         Plugins.getMemberAccessor().invoke(method, incrementalDumper, rowsEvent, pipelineTableMetaData);
-        List<Record> actual = channel.fetchRecords(1, 0);
+        List<Record> actual = channel.fetchRecords(1, 0, TimeUnit.SECONDS);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
         assertThat(((DataRecord) actual.get(0)).getType(), is(IngestDataChangeType.INSERT));
@@ -180,7 +181,7 @@ class MySQLIncrementalDumperTest {
         rowsEvent.setAfterRows(Collections.singletonList(new Serializable[]{101, 1, "OK2"}));
         Method method = MySQLIncrementalDumper.class.getDeclaredMethod("handleUpdateRowsEvent", UpdateRowsEvent.class, PipelineTableMetaData.class);
         Plugins.getMemberAccessor().invoke(method, incrementalDumper, rowsEvent, pipelineTableMetaData);
-        List<Record> actual = channel.fetchRecords(1, 0);
+        List<Record> actual = channel.fetchRecords(1, 0, TimeUnit.SECONDS);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
         assertThat(((DataRecord) actual.get(0)).getType(), is(IngestDataChangeType.UPDATE));
@@ -205,7 +206,7 @@ class MySQLIncrementalDumperTest {
         rowsEvent.setBeforeRows(Collections.singletonList(new Serializable[]{101, 1, "OK"}));
         Method method = MySQLIncrementalDumper.class.getDeclaredMethod("handleDeleteRowsEvent", DeleteRowsEvent.class, PipelineTableMetaData.class);
         Plugins.getMemberAccessor().invoke(method, incrementalDumper, rowsEvent, pipelineTableMetaData);
-        List<Record> actual = channel.fetchRecords(1, 0);
+        List<Record> actual = channel.fetchRecords(1, 0, TimeUnit.SECONDS);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
         assertThat(((DataRecord) actual.get(0)).getType(), is(IngestDataChangeType.DELETE));
@@ -215,7 +216,7 @@ class MySQLIncrementalDumperTest {
     @Test
     void assertPlaceholderEvent() throws ReflectiveOperationException {
         Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", AbstractBinlogEvent.class), incrementalDumper, new PlaceholderEvent());
-        List<Record> actual = channel.fetchRecords(1, 0);
+        List<Record> actual = channel.fetchRecords(1, 0, TimeUnit.SECONDS);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(PlaceholderRecord.class));
     }
@@ -225,7 +226,7 @@ class MySQLIncrementalDumperTest {
         WriteRowsEvent rowsEvent = new WriteRowsEvent();
         rowsEvent.setDatabaseName("unknown_database");
         Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", AbstractBinlogEvent.class), incrementalDumper, rowsEvent);
-        List<Record> actual = channel.fetchRecords(1, 0);
+        List<Record> actual = channel.fetchRecords(1, 0, TimeUnit.SECONDS);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(PlaceholderRecord.class));
     }
