@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.query;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.pipeline.migration.update;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.migration.distsql.statement.ShowMigrationCheckStatusStatement;
+import org.apache.shardingsphere.migration.distsql.statement.StopMigrationStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.JobIdAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.ShowMigrationCheckStatusStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.pipeline.JobIdAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.StopMigrationStatementTestCase;
 
 /**
- * Show migration check status statement assert.
+ * Stop migration statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShowMigrationCheckStatusStatementAssert {
+public final class StopMigrationStatementAssert {
     
     /**
-     * Assert migration check status statement is correct with expected parser result.
+     * Assert stop migration statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual check migration statement
-     * @param expected expected check migration statement test case
+     * @param actual actual stop migration statement
+     * @param expected expected stop migration statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowMigrationCheckStatusStatement actual, final ShowMigrationCheckStatusStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final StopMigrationStatement actual, final StopMigrationStatementTestCase expected) {
         if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             JobIdAssert.assertJobId(assertContext, actual.getJobId(), expected.getJobId());
         }

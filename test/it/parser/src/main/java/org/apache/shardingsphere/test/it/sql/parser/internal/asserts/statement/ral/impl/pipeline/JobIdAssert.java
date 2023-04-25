@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.pipeline;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

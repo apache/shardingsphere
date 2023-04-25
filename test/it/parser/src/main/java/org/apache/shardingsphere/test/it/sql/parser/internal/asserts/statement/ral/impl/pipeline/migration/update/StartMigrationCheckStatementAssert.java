@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.cdc;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.pipeline.migration.update;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.cdc.distsql.statement.ShowStreamingStatusStatement;
+import org.apache.shardingsphere.migration.distsql.statement.StartMigrationCheckStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.JobIdAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc.ShowStreamingStatusStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.pipeline.JobIdAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.StartMigrationCheckStatementTestCase;
 
 /**
- * Show streaming status statement assert.
+ * Start migration check statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShowStreamingStatusStatementAssert {
+public final class StartMigrationCheckStatementAssert {
     
     /**
-     * Assert show streaming status statement is correct with expected parser result.
+     * Assert start migration check statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show streaming status statement
-     * @param expected expected show streaming status statement test case
+     * @param actual actual start migration statement
+     * @param expected expected start migration statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowStreamingStatusStatement actual, final ShowStreamingStatusStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final StartMigrationCheckStatement actual, final StartMigrationCheckStatementTestCase expected) {
         if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             JobIdAssert.assertJobId(assertContext, actual.getJobId(), expected.getJobId());
         }
