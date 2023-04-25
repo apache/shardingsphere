@@ -50,6 +50,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -93,7 +94,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     protected void runBlocking() {
         int batchSize = importerConfig.getBatchSize() * 2;
         while (isRunning()) {
-            List<Record> records = channel.fetchRecords(batchSize, 3);
+            List<Record> records = channel.fetchRecords(batchSize, 3, TimeUnit.SECONDS);
             if (null != records && !records.isEmpty()) {
                 PipelineJobProgressUpdatedParameter updatedParam = flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
                 channel.ack(records);

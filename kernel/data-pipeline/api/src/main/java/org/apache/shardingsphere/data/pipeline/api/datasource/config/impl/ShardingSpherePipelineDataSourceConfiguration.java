@@ -71,7 +71,7 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     }
     
     public ShardingSpherePipelineDataSourceConfiguration(final YamlRootConfiguration rootConfig) {
-        this(YamlEngine.marshal(new YamlParameterConfiguration(rootConfig.getDataSources(), rootConfig.getRules())));
+        this(YamlEngine.marshal(new YamlParameterConfiguration(rootConfig.getDatabaseName(), rootConfig.getDataSources(), rootConfig.getRules())));
     }
     
     private String getJdbcUrl(final Map<String, Object> props) {
@@ -134,6 +134,8 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     @Getter
     @Setter
     private static class YamlParameterConfiguration implements YamlConfiguration {
+        
+        private String databaseName;
         
         private Map<String, Map<String, Object>> dataSources = new HashMap<>();
         

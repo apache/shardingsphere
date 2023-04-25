@@ -49,7 +49,7 @@ public final class AdvisorConfigurationLoader {
      */
     public static Map<String, AdvisorConfiguration> load(final Collection<JarFile> pluginJars, final Collection<String> pluginTypes) {
         Map<String, AdvisorConfiguration> result = new HashMap<>();
-        AgentPluginClassLoader agentPluginClassLoader = new AgentPluginClassLoader(AdvisorConfigurationLoader.class.getClassLoader(), pluginJars);
+        AgentPluginClassLoader agentPluginClassLoader = new AgentPluginClassLoader(Thread.currentThread().getContextClassLoader(), pluginJars);
         for (String each : pluginTypes) {
             InputStream advisorsResourceStream = getResourceStream(agentPluginClassLoader, each);
             if (null == advisorsResourceStream) {

@@ -114,7 +114,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     private String initDefaultDict() {
         StringBuilder result = new StringBuilder();
         try (
-                InputStream inputStream = Objects.requireNonNull(CharDigestLikeEncryptAlgorithm.class.getClassLoader().getResourceAsStream("algorithm/like/common_chinese_character.dict"));
+                InputStream inputStream = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("algorithm/like/common_chinese_character.dict"));
                 Scanner scanner = new Scanner(inputStream)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();

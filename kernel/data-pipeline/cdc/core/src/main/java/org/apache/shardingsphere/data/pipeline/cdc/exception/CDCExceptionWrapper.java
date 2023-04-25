@@ -28,6 +28,8 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSpher
 @Getter
 public final class CDCExceptionWrapper extends RuntimeException {
     
+    private static final long serialVersionUID = -929604775277797727L;
+    
     private final String requestId;
     
     private final ShardingSphereSQLException exception;

@@ -76,7 +76,7 @@ public final class CaseFileLoader {
      */
     @SneakyThrows({URISyntaxException.class, IOException.class})
     public static Collection<File> loadFilesFromDirectory(final String rootDirectory) {
-        URL url = CaseFileLoader.class.getClassLoader().getResource(rootDirectory);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(rootDirectory);
         if (null == url) {
             return Collections.emptyList();
         }

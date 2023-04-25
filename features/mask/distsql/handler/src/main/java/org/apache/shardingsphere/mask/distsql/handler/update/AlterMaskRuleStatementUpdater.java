@@ -43,7 +43,7 @@ public final class AlterMaskRuleStatementUpdater implements RuleDefinitionAlterU
         checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
     }
     
-    private void checkCurrentRuleConfiguration(final String databaseName, final MaskRuleConfiguration currentRuleConfig) throws MissingRequiredRuleException {
+    private void checkCurrentRuleConfiguration(final String databaseName, final MaskRuleConfiguration currentRuleConfig) {
         ShardingSpherePreconditions.checkNotNull(currentRuleConfig, () -> new MissingRequiredRuleException("Mask", databaseName));
     }
     
