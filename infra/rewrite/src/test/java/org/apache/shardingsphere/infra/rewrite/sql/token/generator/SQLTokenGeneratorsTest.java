@@ -96,6 +96,6 @@ class SQLTokenGeneratorsTest {
     
     @SuppressWarnings("unchecked")
     private Map<Class<?>, SQLTokenGenerator> getSQLTokenGeneratorsMap(final SQLTokenGenerators sqlTokenGenerators) throws ReflectiveOperationException {
-        return (Map<Class<?>, SQLTokenGenerator>) Plugins.getMemberAccessor().get(sqlTokenGenerators.getClass().getDeclaredField("sqlTokenGenerators"), sqlTokenGenerators);
+        return (Map<Class<?>, SQLTokenGenerator>) Plugins.getMemberAccessor().get(sqlTokenGenerators.getClass().getDeclaredField("generators"), sqlTokenGenerators);
     }
 }
