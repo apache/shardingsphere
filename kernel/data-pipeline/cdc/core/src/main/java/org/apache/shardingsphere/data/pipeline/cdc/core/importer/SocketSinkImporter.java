@@ -80,7 +80,7 @@ public final class SocketSinkImporter extends AbstractLifecycleExecutor implemen
             importerConnector.sendIncrementalStartEvent(this, batchSize);
         }
         while (isRunning()) {
-            List<Record> records = channel.fetchRecords(batchSize, 3, TimeUnit.SECONDS);
+            List<Record> records = channel.fetchRecords(batchSize, 500, TimeUnit.MILLISECONDS);
             if (null != records && !records.isEmpty()) {
                 List<Record> recordList = records.stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
                 try {
