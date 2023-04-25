@@ -6,13 +6,14 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=apache_shardingsphere&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=apache_shardingsphere)
 [![codecov](https://codecov.io/gh/apache/shardingsphere/branch/master/graph/badge.svg)](https://codecov.io/gh/apache/shardingsphere)
 [![snyk](https://snyk.io/test/github/apache/shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/shardingsphere?targetFile=pom.xml)
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5394/badge)](https://bestpractices.coreinfrastructure.org/projects/5394)
+[![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/5394/badge)](https://bestpractices.coreinfrastructure.org/projects/5394)
 
-[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/ShardingSphere.svg?style=social&label=Follow%20%40ShardingSphere)](https://twitter.com/ShardingSphere)
 [![Slack](https://img.shields.io/badge/%20Slack-ShardingSphere%20Channel-blueviolet)](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 [![Gitter](https://badges.gitter.im/shardingsphere/shardingsphere.svg)](https://gitter.im/shardingsphere/Lobby)
 
-| **Stargazers Over Time**                                                                                              | **Contributors Over Time**                                                                                                                                                                                                                       |
+[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/ShardingSphere.svg?style=social&label=Follow%20%40ShardingSphere)](https://twitter.com/ShardingSphere)
+
+|                                               **Stargazers Over Time**                                                | **Contributors Over Time**                                                                                                                                                                                                                       |
 |:---------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | [![Stargazers over time](https://starchart.cc/apache/shardingsphere.svg)](https://starchart.cc/apache/shardingsphere) | [![Contributor over time](https://contributor-graph-api.apiseven.com/contributors-svg?chart=contributorOverTime&repo=apache/shardingsphere)](https://www.apiseven.com/en/contributor-graph?chart=contributorOverTime&repo=apache/shardingsphere) |
 
@@ -172,10 +173,10 @@ Through the mixed use of ShardingSphere-JDBC & ShardingSphere-Proxy together wit
 
 <hr>
 
-| *Solutions/Features* |  *Distributed Database* | *Data Security*      | *Database Gateway*                | *Stress Testing* |
-| -------------------- | ----------------------- | ---------------------| --------------------------------- | ---------------- |
-|                      | Data Sharding           | Data Encryption         | Heterogeneous Databases Supported | Shadow Database  |
-|                      | Read/write Splitting     | Row Authority (TODO) | SQL Dialect Translate (TODO)      | Observability    |
+| *Solutions/Features* | *Distributed Database*  | *Data Security*      | *Database Gateway*                | *Stress Testing* |
+|----------------------|-------------------------|----------------------|-----------------------------------|------------------|
+|                      | Data Sharding           | Data Encryption      | Heterogeneous Databases Supported | Shadow Database  |
+|                      | Read/write Splitting    | Row Authority (TODO) | SQL Dialect Translate (TODO)      | Observability    |
 |                      | Distributed Transaction | SQL Audit (TODO)     |                                   |                  |
 |                      | Elastic Scale-out       | SQL Firewall (TODO)  |                                   |                  |
 |                      | High Availability       |                      |                                   |                  |
