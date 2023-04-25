@@ -15,30 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.update;
+package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.pipeline.migration.update;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.migration.distsql.statement.StartMigrationCheckStatement;
+import org.apache.shardingsphere.migration.distsql.statement.RollbackMigrationStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.JobIdAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.StartMigrationCheckStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.pipeline.JobIdAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.migration.RollbackMigrationStatementTestCase;
 
 /**
- * Start migration check statement assert.
+ * Rollback migration statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StartMigrationCheckStatementAssert {
+public final class RollbackMigrationStatementAssert {
     
     /**
-     * Assert start migration check statement is correct with expected parser result.
+     * Assert whether parsed rollback migration statement is correct or not.
      *
      * @param assertContext assert context
-     * @param actual actual start migration statement
-     * @param expected expected start migration statement test case
+     * @param actual actual statement
+     * @param expected expected statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final StartMigrationCheckStatement actual, final StartMigrationCheckStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final RollbackMigrationStatement actual, final RollbackMigrationStatementTestCase expected) {
         if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             JobIdAssert.assertJobId(assertContext, actual.getJobId(), expected.getJobId());
         }
