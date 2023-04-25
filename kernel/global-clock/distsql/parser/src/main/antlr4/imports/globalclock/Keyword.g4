@@ -15,20 +15,54 @@
  * limitations under the License.
  */
 
-lexer grammar Literals;
+lexer grammar Keyword;
 
-import Alphabet, Symbol;
+import Alphabet;
 
-IDENTIFIER_
-    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    | BQ_ ~'`'+ BQ_
+WS
+    : [ \t\r\n] + ->skip
     ;
 
-STRING_
-    : (DQ_ ('\\'. | '""' | ~('"' | '\\'))* DQ_)
-    | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
+SHOW
+    : S H O W
     ;
 
-INT_
-    : [0-9]+
+ALTER
+    : A L T E R
+    ;
+
+RULE
+    : R U L E
+    ;
+
+GLOBAL
+    : G L O B A L
+    ;
+
+CLOCK
+    : C L O C K
+    ;
+
+TYPE
+    : T Y P E
+    ;
+
+PROVIDER
+    :  P R O V I D E R
+    ;
+
+ENABLED
+    :  E N A B L E D
+    ;
+
+PROPERTIES
+    : P R O P E R T I E S
+    ;
+
+TRUE
+    : T R U E
+    ;
+
+FALSE
+    : F A L S E
     ;

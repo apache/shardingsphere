@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-lexer grammar Literals;
+package org.apache.shardingsphere.globalclock.distsql.parser.statement.queryable;
 
-import Alphabet, Symbol;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
-IDENTIFIER_
-    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    | BQ_ ~'`'+ BQ_
-    ;
-
-STRING_
-    : (DQ_ ('\\'. | '""' | ~('"' | '\\'))* DQ_)
-    | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
-    ;
-
-INT_
-    : [0-9]+
-    ;
+/**
+ * Show global clock rule statement.
+ */
+public final class ShowGlobalClockRuleStatement extends QueryableRALStatement {
+}

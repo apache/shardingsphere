@@ -15,20 +15,42 @@
  * limitations under the License.
  */
 
-lexer grammar Literals;
+grammar RALStatement;
 
-import Alphabet, Symbol;
+import BaseRule;
 
-IDENTIFIER_
-    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    | BQ_ ~'`'+ BQ_
+showGlobalClockRule
+    : SHOW GLOBAL CLOCK RULE
     ;
 
-STRING_
-    : (DQ_ ('\\'. | '""' | ~('"' | '\\'))* DQ_)
-    | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
+alterGlobalClockRule
+    : ALTER GLOBAL CLOCK RULE globalClockRuleDefinition
     ;
 
-INT_
-    : [0-9]+
+globalClockRuleDefinition
+    : LP_ typeDefinition COMMA_ providerDefinition COMMA_ enabledDefinition (COMMA_ propertiesDefinition)? RP_
+    ;
+
+typeDefinition
+    : TYPE EQ_ typeName
+    ;
+
+providerDefinition
+    : PROVIDER EQ_ providerName
+    ;
+
+enabledDefinition
+    : ENABLED EQ_ enabled
+    ;
+
+typeName
+    : STRING_
+    ;
+
+providerName
+    : STRING_
+    ;
+
+enabled
+    : TRUE | FALSE
     ;

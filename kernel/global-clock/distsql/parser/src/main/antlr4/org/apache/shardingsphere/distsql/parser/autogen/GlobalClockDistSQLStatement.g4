@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-lexer grammar Literals;
+grammar GlobalClockDistSQLStatement;
 
-import Alphabet, Symbol;
+import Symbol, RALStatement;
 
-IDENTIFIER_
-    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    | BQ_ ~'`'+ BQ_
-    ;
-
-STRING_
-    : (DQ_ ('\\'. | '""' | ~('"' | '\\'))* DQ_)
-    | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
-    ;
-
-INT_
-    : [0-9]+
+execute
+    : (showGlobalClockRule
+    | alterGlobalClockRule
+    ) SEMI?
     ;

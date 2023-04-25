@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-lexer grammar Literals;
+package org.apache.shardingsphere.globalclock.distsql.parser.core;
 
-import Alphabet, Symbol;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.GlobalClockDistSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
-IDENTIFIER_
-    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    | BQ_ ~'`'+ BQ_
-    ;
-
-STRING_
-    : (DQ_ ('\\'. | '""' | ~('"' | '\\'))* DQ_)
-    | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
-    ;
-
-INT_
-    : [0-9]+
-    ;
+/**
+ * SQL lexer for global clock DistSQL.
+ */
+public final class GlobalClockDistSQLLexer extends GlobalClockDistSQLStatementLexer implements SQLLexer {
+    
+    public GlobalClockDistSQLLexer(final CharStream input) {
+        super(input);
+    }
+}

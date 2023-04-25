@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-lexer grammar Literals;
+package org.apache.shardingsphere.globalclock.distsql.parser.statement.updatable;
 
-import Alphabet, Symbol;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableGlobalRuleRALStatement;
 
-IDENTIFIER_
-    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    | BQ_ ~'`'+ BQ_
-    ;
+import java.util.Properties;
 
-STRING_
-    : (DQ_ ('\\'. | '""' | ~('"' | '\\'))* DQ_)
-    | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
-    ;
-
-INT_
-    : [0-9]+
-    ;
+/**
+ * Alter global clock rule statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class AlterGlobalClockRuleStatement extends UpdatableGlobalRuleRALStatement {
+    
+    private final String type;
+    
+    private final String provider;
+    
+    private final boolean enabled;
+    
+    private final Properties props;
+}
