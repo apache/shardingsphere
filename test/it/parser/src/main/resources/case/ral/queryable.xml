@@ -32,6 +32,7 @@
     <show-sql-parser-rule sql-case-id="show-sql-parser-rule" />
     <show-traffic-rules sql-case-id="show-traffic-rules" rule-name="rule_name" />
     <show-sql-translator-rule sql-case-id="show-sql-translator-rule" />
+    <show-global-clock-rule sql-case-id="show-global-clock-rule" />
 
     <show-compute-nodes sql-case-id="show-compute-nodes" />
     <show-compute-node-info sql-case-id="show-compute-node-info" />

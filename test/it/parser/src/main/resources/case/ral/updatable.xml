@@ -46,6 +46,11 @@
             </load-balancer>
         </rule>
     </alter-traffic-rule>
+    
+    <alter-global-clock-rule sql-case-id="alter-global-clock-rule" type="TSO" provider="redis" enabled="false">
+        <property key="host" value="127.0.0.1" />
+        <property key="port" value="6379" />
+    </alter-global-clock-rule>
 
     <alter-compute-node sql-case-id="alter-compute-node-xa-recovery-nodes" instance-id="instance_xa_recovery" key="XA_RECOVERY_NODES" value="instance_1" />
     <alter-compute-node sql-case-id="alter-compute-node-xa-recovery-nodes-with-multiple-values" instance-id="instance_xa_recovery_multiple" key="XA_RECOVERY_NODES" value="instance_1,instance_2" />
