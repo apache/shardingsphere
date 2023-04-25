@@ -26,14 +26,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnPr
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -74,7 +74,8 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     
     private void removeDuplicatedRow() {
         if (queryDatabase) {
-            Collection<Map<String, Object>> reservedRow = getRows().stream().collect(Collectors.groupingBy(each -> each.get(schemaNameAlias), Collectors.toCollection(LinkedList::new)))
+            Collection<Map<String, Object>> reservedRow = getRows().stream()
+                    .collect(Collectors.groupingBy(each -> Optional.ofNullable(each.get(schemaNameAlias)), Collectors.toCollection(LinkedList::new)))
                     .values().stream().map(LinkedList::getFirst).collect(Collectors.toList());
             reservedRow.forEach(each -> getRows().removeIf(row -> !getRows().contains(each)));
         }
@@ -111,7 +112,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
         }
         Map<String, String> defaultRowData = getTheDefaultRowData();
         SCHEMA_WITHOUT_DATA_SOURCE.forEach(each -> {
-            Map<String, Object> row = new HashMap<>(defaultRowData);
+            Map<String, Object> row = new LinkedHashMap<>(defaultRowData);
             row.replace(SCHEMA_NAME, each);
             getRows().add(row);
         });
@@ -124,7 +125,8 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
         if (projections.stream().anyMatch(each -> each instanceof ShorthandProjectionSegment)) {
             result = Stream.of(CATALOG_NAME, SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME, SQL_PATH, DEFAULT_ENCRYPTION).collect(Collectors.toMap(each -> each, each -> ""));
         } else {
-            result = projections.stream().map(each -> ((ColumnProjectionSegment) each).getColumn().getIdentifier()).map(IdentifierValue::getValue).collect(Collectors.toMap(each -> each, each -> ""));
+            result = projections.stream().map(each -> ((ColumnProjectionSegment) each).getColumn().getIdentifier())
+                    .map(each -> each.getValue().toUpperCase()).collect(Collectors.toMap(each -> each, each -> ""));
         }
         return result;
     }
