@@ -24,7 +24,7 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 42S02     | 10021       | Single table \`%s\` does not exist.                                            |
 | HY000     | 10022       | Can not load table with database name \`%s\` and data source name \`%s\`.      |
 | 0A000     | 10030       | Can not drop schema \`%s\` because of contains tables.                         |
-| 0A000     | 10040       | Unsupported storage type of \`%s.%s\`.                       |
+| 0A000     | 10040       | Unsupported storage type of \`%s.%s\`.                                         |
 
 ### 数据
 
@@ -71,8 +71,8 @@ SQL 错误码以标准的 SQL State，Vendor Code 和详细错误信息提供，
 | 25000     | 14200       | Can not start new XA transaction in a active transaction.                          |
 | 25000     | 14201       | Failed to create \`%s\` XA data source.                                            |
 | 25000     | 14202       | Max length of xa unique resource name \`%s\` exceeded: should be less than 45.     |
-| 25000     | 14203       | Check privileges failed on data source, reason is: \`%s\`     |
-| 25000     | 14204       | Failed to create XA transaction manager, requires \`%s\` privileges    |
+| 25000     | 14203       | Check privileges failed on data source, reason is: \`%s\`                          |
+| 25000     | 14204       | Failed to create XA transaction manager, requires \`%s\` privileges                |
 | 25000     | 14301       | ShardingSphere Seata-AT transaction has been disabled.                             |
 | 25000     | 14302       | Please config application id within seata.conf file.                               |
 

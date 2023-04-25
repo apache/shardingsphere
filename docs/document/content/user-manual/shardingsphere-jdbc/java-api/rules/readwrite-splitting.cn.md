@@ -26,13 +26,13 @@ Java API 形式配置的读写分离可以方便的适用于各种场景，不�
 
 可配置属性：
 
-| *名称*                               | *数据类型*                                 | *说明*                                                                        | *默认值*    |
-|------------------------------------|--------------------------------------------|-----------------------------------------------------------------------------|----------|
-| name                               | String                                     | 读写分离数据源名称                                                                   | -        |
-| writeDataSourceName                | String                                     | 写库数据源名称                                                                    | -        |
-| readDataSourceNames                | List\<String\>                             | 写库数据源名称                                                                    | -        |
-| transactionalReadQueryStrategy (?) | TransactionalReadQueryStrategy             | 事务内读请求的路由策略，可选值：PRIMARY（路由至主库）、FIXED（同一事务内路由至固定数据源）、DYNAMIC（同一事务内路由至非固定数据源） | DYNAMIC  |
-| loadBalancerName (?)               | String                                     | 读库负载均衡算法名称                                                                  | 轮询负载均衡算法 |
+| *名称*                               | *数据类型*                         | *说明*                                                                        | *默认值*    |
+|------------------------------------|--------------------------------|-----------------------------------------------------------------------------|----------|
+| name                               | String                         | 读写分离数据源名称                                                                   | -        |
+| writeDataSourceName                | String                         | 写库数据源名称                                                                     | -        |
+| readDataSourceNames                | List\<String\>                 | 写库数据源名称                                                                     | -        |
+| transactionalReadQueryStrategy (?) | TransactionalReadQueryStrategy | 事务内读请求的路由策略，可选值：PRIMARY（路由至主库）、FIXED（同一事务内路由至固定数据源）、DYNAMIC（同一事务内路由至非固定数据源） | DYNAMIC  |
+| loadBalancerName (?)               | String                         | 读库负载均衡算法名称                                                                  | 轮询负载均衡算法 |
 
 算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/common-config/builtin-algorithm/load-balance)。
 查询一致性路由的详情，请参见[核心特性：读写分离](/cn/features/readwrite-splitting/)。

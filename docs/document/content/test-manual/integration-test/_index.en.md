@@ -194,4 +194,4 @@ After editing the above information, run Run -> Run -> e2e-debug in IDEA to star
 #### Notice
 
 1. To test Oracle, add an Oracle driver dependency to pom.xml.
-1. In order to ensure the integrity and legibility of the test data, 10 database shards and 10 table shards are used in the sharding of the integration testing, which takes a long time to run the test cases completely.
+2. In order to ensure the integrity and legibility of the test data, 10 database shards and 10 table shards are used in the sharding of the integration testing, which takes a long time to run the test cases completely.

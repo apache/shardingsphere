@@ -29,7 +29,7 @@ variableName ::=
 | Columns        | Description           |
 |----------------|-----------------------|
 | variable_name  | system variable name  |
-| variable_value | systen variable value |
+| variable_value | system variable value |
 
 ### Supplement
 
