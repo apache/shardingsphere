@@ -71,7 +71,7 @@ public final class ClassBasedShardingAlgorithm implements StandardShardingAlgori
     
     private String getAlgorithmClassName(final Properties props) {
         String result = props.getProperty(ALGORITHM_CLASS_NAME_KEY);
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(result), () -> new ShardingAlgorithmInitializationException(getType(), "Sharding algorithm ClassName can not be null or empty"));
+        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(result), () -> new ShardingAlgorithmInitializationException(getType(), "Sharding algorithm class name can not be null or empty"));
         return result;
     }
     
