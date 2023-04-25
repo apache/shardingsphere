@@ -18,15 +18,20 @@
 package org.apache.shardingsphere.data.pipeline.core.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord.Key;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -35,36 +40,56 @@ import java.util.stream.Collectors;
 public final class DataRecordMerger {
     
     /**
-     * Merge data record if the data record has the same key.
-     *
-     * @param dataRecords data records
-     * @return merged data records
-     */
-    public Map<DataRecord.Key, List<DataRecord>> merge(final List<DataRecord> dataRecords) {
-        Map<DataRecord.Key, List<DataRecord>> result = new LinkedHashMap<>();
-        for (DataRecord each : dataRecords) {
-            if (IngestDataChangeType.DELETE.equals(each.getType())) {
-                result.computeIfAbsent(each.getOldKey(), key -> new LinkedList<>()).add(each);
-                continue;
-            }
-            result.computeIfAbsent(each.getKey(), key -> new LinkedList<>()).add(each);
-        }
-        return result;
-    }
-    
-    /**
      * Group by table and type.
      *
      * @param dataRecords data records
      * @return grouped data records
      */
     public List<GroupedDataRecord> group(final List<DataRecord> dataRecords) {
+        int insertCount = 0;
+        Map<Key, Boolean> duplicateKeyMap = new HashMap<>();
+        Set<String> tableNames = new LinkedHashSet<>();
+        for (DataRecord each : dataRecords) {
+            if (IngestDataChangeType.INSERT.equals(each.getType())) {
+                insertCount++;
+            }
+            tableNames.add(each.getTableName());
+            Key key = getKeyFromDataRecord(each);
+            if (duplicateKeyMap.containsKey(key)) {
+                duplicateKeyMap.put(key, true);
+                continue;
+            }
+            duplicateKeyMap.put(key, false);
+        }
         List<GroupedDataRecord> result = new ArrayList<>(100);
-        Map<String, List<DataRecord>> tableGroup = dataRecords.stream().collect(Collectors.groupingBy(DataRecord::getTableName));
-        for (Entry<String, List<DataRecord>> entry : tableGroup.entrySet()) {
-            Map<String, List<DataRecord>> typeGroup = entry.getValue().stream().collect(Collectors.groupingBy(DataRecord::getType));
-            result.add(new GroupedDataRecord(entry.getKey(), typeGroup.get(IngestDataChangeType.INSERT), typeGroup.get(IngestDataChangeType.UPDATE), typeGroup.get(IngestDataChangeType.DELETE)));
+        if (insertCount == dataRecords.size()) {
+            Map<String, List<DataRecord>> tableGroup = dataRecords.stream().collect(Collectors.groupingBy(DataRecord::getTableName));
+            for (Entry<String, List<DataRecord>> entry : tableGroup.entrySet()) {
+                result.add(new GroupedDataRecord(entry.getKey(), entry.getValue(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
+            }
+            return result;
+        }
+        Map<String, List<DataRecord>> nonBatchRecords = new LinkedHashMap<>();
+        Map<String, Map<String, List<DataRecord>>> batchDataRecords = new LinkedHashMap<>();
+        for (DataRecord each : dataRecords) {
+            Key key = getKeyFromDataRecord(each);
+            if (duplicateKeyMap.getOrDefault(key, false)) {
+                nonBatchRecords.computeIfAbsent(each.getTableName(), ignored -> new LinkedList<>()).add(each);
+                continue;
+            }
+            Map<String, List<DataRecord>> recordMap = batchDataRecords.computeIfAbsent(each.getTableName(), ignored -> new HashMap<>());
+            recordMap.computeIfAbsent(each.getType(), ignored -> new LinkedList<>()).add(each);
+        }
+        for (String each : tableNames) {
+            Map<String, List<DataRecord>> batchMap = batchDataRecords.getOrDefault(each, Collections.emptyMap());
+            List<DataRecord> nonBatchRecordMap = nonBatchRecords.getOrDefault(each, Collections.emptyList());
+            result.add(new GroupedDataRecord(each, batchMap.getOrDefault(IngestDataChangeType.INSERT, Collections.emptyList()),
+                    batchMap.getOrDefault(IngestDataChangeType.UPDATE, Collections.emptyList()), batchMap.getOrDefault(IngestDataChangeType.DELETE, Collections.emptyList()), nonBatchRecordMap));
         }
         return result;
+    }
+    
+    private Key getKeyFromDataRecord(final DataRecord dataRecord) {
+        return IngestDataChangeType.DELETE.equals(dataRecord.getType()) ? dataRecord.getOldKey() : dataRecord.getKey();
     }
 }

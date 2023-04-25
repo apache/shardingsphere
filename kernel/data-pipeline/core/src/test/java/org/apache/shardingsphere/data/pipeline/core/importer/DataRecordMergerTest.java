@@ -25,9 +25,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
@@ -41,94 +39,96 @@ class DataRecordMergerTest {
     void assertDeleteBeforeInsert() {
         DataRecord beforeDataRecord = mockDeleteDataRecord(1, 2, 2);
         DataRecord afterDataRecord = mockInsertDataRecord(1, 1, 1);
-        Map<DataRecord.Key, List<DataRecord>> actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
+        List<GroupedDataRecord> actual = dataRecordMerger.group(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        assertDataRecordsMatched(actual.values().iterator().next(), Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertDataRecordsMatched(actual.iterator().next().getNonBatchRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
     }
     
     @Test
     void assertInsertBeforeUpdate() {
         DataRecord beforeDataRecord = mockInsertDataRecord(1, 1, 1);
         DataRecord afterDataRecord = mockUpdateDataRecord(1, 2, 2);
-        Map<DataRecord.Key, List<DataRecord>> actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
+        List<GroupedDataRecord> actual = dataRecordMerger.group(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        assertDataRecordsMatched(actual.values().iterator().next(), Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertDataRecordsMatched(actual.iterator().next().getNonBatchRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
     }
     
     @Test
     void assertInsertBeforeUpdatePrimaryKey() {
         DataRecord beforeDataRecord = mockInsertDataRecord(1, 1, 1);
         DataRecord afterDataRecord = mockUpdateDataRecord(1, 1, 2, 2);
-        Map<DataRecord.Key, List<DataRecord>> actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
+        List<GroupedDataRecord> actual = dataRecordMerger.group(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        assertDataRecordsMatched(actual.values().iterator().next(), Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertDataRecordsMatched(actual.iterator().next().getNonBatchRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
     }
     
     @Test
     void assertUpdateBeforeUpdate() {
         DataRecord beforeDataRecord = mockUpdateDataRecord(1, 1, 1);
         DataRecord afterDataRecord = mockUpdateDataRecord(1, 2, 2);
-        Map<DataRecord.Key, List<DataRecord>> actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
+        List<GroupedDataRecord> actual = dataRecordMerger.group(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        assertDataRecordsMatched(actual.values().iterator().next(), Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertDataRecordsMatched(actual.iterator().next().getNonBatchRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
     }
     
     @Test
     void assertUpdateBeforeUpdatePrimaryKey() {
         DataRecord beforeDataRecord = mockUpdateDataRecord(1, 1, 1);
         DataRecord afterDataRecord = mockUpdateDataRecord(1, 2, 2, 2);
-        Map<DataRecord.Key, List<DataRecord>> actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
-        assertThat(actual.size(), is(2));
+        List<GroupedDataRecord> actual = dataRecordMerger.group(Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertThat(actual.size(), is(1));
+        assertDataRecordsMatched(actual.iterator().next().getBatchUpdateDataRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
     }
     
     @Test
     void assertUpdatePrimaryKeyBeforeUpdatePrimaryKey() {
         DataRecord beforeDataRecord = mockUpdateDataRecord(1, 2, 1, 1);
         DataRecord afterDataRecord = mockUpdateDataRecord(2, 3, 2, 2);
-        Map<DataRecord.Key, List<DataRecord>> actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
-        assertThat(actual.size(), is(2));
-        Iterator<List<DataRecord>> iterator = actual.values().iterator();
-        List<DataRecord> actualFirstDataRecord = iterator.next();
-        assertThat(actualFirstDataRecord.get(0).getType(), is(IngestDataChangeType.UPDATE));
-        assertThat(actualFirstDataRecord.get(0).getTableName(), is("order"));
-        assertThat(actualFirstDataRecord.get(0).getColumn(0).getOldValue(), is(1));
-        assertThat(actualFirstDataRecord.get(0).getColumn(0).getValue(), is(2));
-        assertThat(actualFirstDataRecord.get(0).getColumn(1).getValue(), is(1));
-        assertThat(actualFirstDataRecord.get(0).getColumn(2).getValue(), is(1));
-        List<DataRecord> actualSecondDataRecord = iterator.next();
-        assertThat(actualSecondDataRecord.get(0).getType(), is(IngestDataChangeType.UPDATE));
-        assertThat(actualSecondDataRecord.get(0).getTableName(), is("order"));
-        assertThat(actualSecondDataRecord.get(0).getColumn(0).getOldValue(), is(2));
-        assertThat(actualSecondDataRecord.get(0).getColumn(0).getValue(), is(3));
-        assertThat(actualSecondDataRecord.get(0).getColumn(1).getValue(), is(2));
-        assertThat(actualSecondDataRecord.get(0).getColumn(2).getValue(), is(2));
+        List<GroupedDataRecord> actual = dataRecordMerger.group(Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getBatchUpdateDataRecords().size(), is(2));
+        GroupedDataRecord actualGroupedDataRecord = actual.get(0);
+        DataRecord actualFirstDataRecord = actualGroupedDataRecord.getBatchUpdateDataRecords().get(0);
+        assertThat(actualFirstDataRecord.getType(), is(IngestDataChangeType.UPDATE));
+        assertThat(actualFirstDataRecord.getTableName(), is("order"));
+        assertThat(actualFirstDataRecord.getColumn(0).getOldValue(), is(1));
+        assertThat(actualFirstDataRecord.getColumn(0).getValue(), is(2));
+        assertThat(actualFirstDataRecord.getColumn(1).getValue(), is(1));
+        assertThat(actualFirstDataRecord.getColumn(2).getValue(), is(1));
+        DataRecord actualSecondDataRecord = actualGroupedDataRecord.getBatchUpdateDataRecords().get(1);
+        assertThat(actualSecondDataRecord.getType(), is(IngestDataChangeType.UPDATE));
+        assertThat(actualSecondDataRecord.getTableName(), is("order"));
+        assertThat(actualSecondDataRecord.getColumn(0).getOldValue(), is(2));
+        assertThat(actualSecondDataRecord.getColumn(0).getValue(), is(3));
+        assertThat(actualSecondDataRecord.getColumn(1).getValue(), is(2));
+        assertThat(actualSecondDataRecord.getColumn(2).getValue(), is(2));
     }
     
     @Test
     void assertInsertBeforeDelete() {
         DataRecord beforeDataRecord = mockInsertDataRecord(1, 1, 1);
         DataRecord afterDataRecord = mockDeleteDataRecord(1, 1, 1);
-        Map<DataRecord.Key, List<DataRecord>> actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
+        List<GroupedDataRecord> actual = dataRecordMerger.group(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        assertDataRecordsMatched(actual.values().iterator().next(), Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertDataRecordsMatched(actual.iterator().next().getNonBatchRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
     }
     
     @Test
     void assertUpdateBeforeDelete() {
         DataRecord beforeDataRecord = mockUpdateDataRecord(1, 1, 1);
         DataRecord afterDataRecord = mockDeleteDataRecord(1, 1, 1);
-        Map<DataRecord.Key, List<DataRecord>> actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
+        List<GroupedDataRecord> actual = dataRecordMerger.group(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        assertDataRecordsMatched(actual.values().iterator().next(), Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertDataRecordsMatched(actual.iterator().next().getNonBatchRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
     }
     
     @Test
     void assertUpdatePrimaryKeyBeforeDelete() {
         DataRecord beforeDataRecord = mockUpdateDataRecord(1, 2, 1, 1);
         DataRecord afterDataRecord = mockDeleteDataRecord(2, 1, 1);
-        Map<DataRecord.Key, List<DataRecord>> actual = dataRecordMerger.merge(Arrays.asList(beforeDataRecord, afterDataRecord));
+        List<GroupedDataRecord> actual = dataRecordMerger.group(Arrays.asList(beforeDataRecord, afterDataRecord));
         assertThat(actual.size(), is(1));
-        assertDataRecordsMatched(actual.values().iterator().next(), Arrays.asList(beforeDataRecord, afterDataRecord));
+        assertDataRecordsMatched(actual.iterator().next().getNonBatchRecords(), Arrays.asList(beforeDataRecord, afterDataRecord));
     }
     
     private void assertDataRecordsMatched(final List<DataRecord> actualRecords, final List<DataRecord> expectedRecords) {
@@ -141,22 +141,23 @@ class DataRecordMergerTest {
     void assertGroup() {
         List<DataRecord> dataRecords = Arrays.asList(
                 mockInsertDataRecord("t1", 1, 1, 1),
-                mockInsertDataRecord("t1", 10, 10, 10),
                 mockUpdateDataRecord("t1", 1, 2, 1),
                 mockUpdateDataRecord("t1", 1, 2, 2),
                 mockUpdateDataRecord("t1", 2, 1, 1),
                 mockUpdateDataRecord("t1", 2, 2, 1),
                 mockUpdateDataRecord("t1", 2, 2, 2),
+                mockInsertDataRecord("t1", 10, 10, 10),
                 mockDeleteDataRecord("t1", 3, 1, 1),
                 mockInsertDataRecord("t2", 1, 1, 1));
         List<GroupedDataRecord> groupedDataRecords = dataRecordMerger.group(dataRecords);
         assertThat(groupedDataRecords.size(), is(2));
         assertThat(groupedDataRecords.get(0).getTableName(), is("t1"));
-        assertThat(groupedDataRecords.get(0).getInsertDataRecords().size(), is(2));
-        assertThat(groupedDataRecords.get(0).getUpdateDataRecords().size(), is(5));
-        assertThat(groupedDataRecords.get(0).getDeleteDataRecords().size(), is(1));
+        assertThat(groupedDataRecords.get(0).getBatchInsertDataRecords().size(), is(1));
+        assertThat(groupedDataRecords.get(0).getBatchUpdateDataRecords().size(), is(0));
+        assertThat(groupedDataRecords.get(0).getBatchDeleteDataRecords().size(), is(1));
+        assertThat(groupedDataRecords.get(0).getNonBatchRecords().size(), is(6));
         assertThat(groupedDataRecords.get(1).getTableName(), is("t2"));
-        assertThat(groupedDataRecords.get(1).getInsertDataRecords().size(), is(1));
+        assertThat(groupedDataRecords.get(1).getBatchInsertDataRecords().size(), is(1));
     }
     
     private DataRecord mockInsertDataRecord(final int id, final int userId, final int totalPrice) {

@@ -28,7 +28,6 @@ import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord.Key;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
@@ -50,10 +49,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -121,24 +117,12 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
                 insertRecordNumber++;
             }
         }
-        Map<Key, List<DataRecord>> mergedDataRecords = MERGER.merge(dataRecords);
-        List<DataRecord> groupRecords = new LinkedList<>();
-        List<DataRecord> notGroupRecords = new LinkedList<>();
-        for (Entry<Key, List<DataRecord>> entry : mergedDataRecords.entrySet()) {
-            if (1 == entry.getValue().size()) {
-                groupRecords.add(entry.getValue().get(0));
-                continue;
-            }
-            notGroupRecords.addAll(entry.getValue());
-        }
-        List<GroupedDataRecord> result = MERGER.group(groupRecords);
+        List<GroupedDataRecord> result = MERGER.group(dataRecords);
         for (GroupedDataRecord each : result) {
-            flushInternal(dataSource, each.getDeleteDataRecords());
-            flushInternal(dataSource, each.getInsertDataRecords());
-            flushInternal(dataSource, each.getUpdateDataRecords());
-        }
-        for (DataRecord each : notGroupRecords) {
-            tryFlush(dataSource, Collections.singletonList(each));
+            flushInternal(dataSource, each.getBatchDeleteDataRecords());
+            flushInternal(dataSource, each.getBatchInsertDataRecords());
+            flushInternal(dataSource, each.getBatchUpdateDataRecords());
+            sequentialFlush(dataSource, each.getNonBatchRecords());
         }
         return new PipelineJobProgressUpdatedParameter(insertRecordNumber);
     }
@@ -258,15 +242,43 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
                 for (int i = 0; i < conditionColumns.size(); i++) {
                     Object oldValue = conditionColumns.get(i).getOldValue();
                     if (null == oldValue) {
-                        log.warn("Old value is null, column={}", conditionColumns.get(i));
+                        log.warn("Record old value is null, record={}", each);
                     }
                     preparedStatement.setObject(i + 1, oldValue);
                 }
                 preparedStatement.addBatch();
             }
-            preparedStatement.executeBatch();
+            int[] executeBatch = preparedStatement.executeBatch();
+            if (executeBatch.length == 0) {
+                log.warn("executeDelete failed, deleteSQL={}, conditionColumns={}", deleteSQL, conditionColumns);
+            }
         } finally {
             batchDeleteStatement = null;
+        }
+    }
+    
+    private void sequentialFlush(final DataSource dataSource, final List<DataRecord> buffer) {
+        try (Connection connection = dataSource.getConnection()) {
+            // TODO it's better use transaction, but execute delete maybe not effect when open transaction of PostgreSQL
+            if (null != rateLimitAlgorithm) {
+                rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
+            }
+            for (DataRecord each : buffer) {
+                switch (each.getType()) {
+                    case IngestDataChangeType.INSERT:
+                        executeBatchInsert(connection, Collections.singletonList(each));
+                        break;
+                    case IngestDataChangeType.UPDATE:
+                        executeUpdate(connection, each);
+                        break;
+                    case IngestDataChangeType.DELETE:
+                        executeBatchDelete(connection, Collections.singletonList(each));
+                        break;
+                    default:
+                }
+            }
+        } catch (final SQLException ex) {
+            throw new PipelineImporterJobWriteException(ex);
         }
     }
     
