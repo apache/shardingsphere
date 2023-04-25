@@ -46,9 +46,7 @@ public final class SQLTokenGenerators {
      */
     public void addAll(final Collection<SQLTokenGenerator> sqlTokenGenerators) {
         for (SQLTokenGenerator each : sqlTokenGenerators) {
-            if (!this.generators.containsKey(each.getClass())) {
-                this.generators.put(each.getClass(), each);
-            }
+            generators.putIfAbsent(each.getClass(), each);
         }
     }
     
@@ -58,7 +56,7 @@ public final class SQLTokenGenerators {
      * @param databaseName database name
      * @param sqlStatementContext SQL statement context
      * @param params SQL parameters
-     * @param schemas ShardingSphere schema map
+     * @param schemas schema map
      * @param connectionContext connection context
      * @return SQL tokens
      */
