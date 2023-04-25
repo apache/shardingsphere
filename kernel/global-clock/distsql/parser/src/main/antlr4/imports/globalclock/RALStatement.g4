@@ -64,5 +64,9 @@ properties
     ;
 
 property
-    : key=STRING_ EQ_ value=STRING_
+    : key=STRING_ EQ_ value=literal
+    ;
+
+literal
+    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
     ;

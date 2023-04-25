@@ -98,3 +98,11 @@ RANDOM
 ROUND_ROBIN
     : R O U N D UL_ R O B I N
     ;
+
+TRUE
+    : T R U E
+    ;
+
+FALSE
+    : F A L S E
+    ;
