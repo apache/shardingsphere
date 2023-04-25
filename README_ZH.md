@@ -6,13 +6,14 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=apache_shardingsphere&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=apache_shardingsphere)
 [![codecov](https://codecov.io/gh/apache/shardingsphere/branch/master/graph/badge.svg)](https://codecov.io/gh/apache/shardingsphere)
 [![snyk](https://snyk.io/test/github/apache/shardingsphere/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/apache/shardingsphere?targetFile=pom.xml)
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5394/badge)](https://bestpractices.coreinfrastructure.org/projects/5394)
+[![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/5394/badge)](https://bestpractices.coreinfrastructure.org/projects/5394)
 
-[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/ShardingSphere.svg?style=social&label=Follow%20%40ShardingSphere)](https://twitter.com/ShardingSphere)
 [![Slack](https://img.shields.io/badge/%20Slack-ShardingSphere%20Channel-blueviolet)](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
 [![Gitter](https://badges.gitter.im/shardingsphere/shardingsphere.svg)](https://gitter.im/shardingsphere/Lobby)
 
-| **星评增长时间线**                                                                                                       | **贡献者增长时间线**                                                                                                                                                                                                                                |
+[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/ShardingSphere.svg?style=social&label=Follow%20%40ShardingSphere)](https://twitter.com/ShardingSphere)
+
+|                                                      **星评增长时间线**                                                      |                                                                                                                   **贡献者增长时间线**                                                                                                                   |
 |:---------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
 | [![Stargazers over time](https://starchart.cc/apache/shardingsphere.svg)](https://starchart.cc/apache/shardingsphere) | [![Contributor over time](https://contributor-graph-api.apiseven.com/contributors-svg?chart=contributorOverTime&repo=apache/shardingsphere)](https://www.apiseven.com/en/contributor-graph?chart=contributorOverTime&repo=apache/shardingsphere) |
 
@@ -118,14 +119,14 @@ Apache ShardingSphere 由 JDBC、Proxy 这 2 款既能够独立部署，又支�
 
 :link: 更多信息请参考[官方网站](https://shardingsphere.apache.org/document/current/en/overview/#shardingsphere-proxy)。
 
-|           | *ShardingSphere-JDBC* | *ShardingSphere-Proxy* |
-| --------- | --------------------- | ---------------------- |
-| 数据库     | 任意                   | MySQL/PostgreSQL       |
-| 连接消耗数  | 高                    | 低                     |
-| 异构语言    | 仅 Java               | 任意                   |
-| 性能       | 损耗低                 | 损耗略高                |
-| 无中心化    | 是                    | 否                     |
-| 静态入口    | 无                    | 有                     |
+|       | *ShardingSphere-JDBC* | *ShardingSphere-Proxy* |
+|-------|-----------------------|------------------------|
+| 数据库   | 任意                    | MySQL/PostgreSQL       |
+| 连接消耗数 | 高                     | 低                      |
+| 异构语言  | 仅 Java                | 任意                     |
+| 性能    | 损耗低                   | 损耗略高                   |
+| 无中心化  | 是                     | 否                      |
+| 静态入口  | 无                     | 有                      |
 
 ### 混合架构
 
@@ -145,13 +146,13 @@ Apache ShardingSphere 是多接入端共同组成的生态圈。
 
 <hr>
 
-| *解决方案/功能* |  *分布式数据库* | *数据安全*        | *数据库网关*        | *全链路压测* |
-| ------------- | ------------- | ----------------| ----------------- | ---------- |
-|               | 数据分片       | 数据加密          | 异构数据库支持       | 影子库     |
-|               | 读写分离       | 行级权限（TODO）   | SQL 方言转换（TODO）| 可观测性    |
-|               | 分布式事务     | SQL 审计（TODO）   |                   |           |
-|               | 弹性伸缩       | SQL 防火墙（TODO） |                   |           |
-|               | 高可用        |                   |                   |           |
+| *解决方案/功能* | *分布式数据库* | *数据安全*        | *数据库网关*        | *全链路压测* |
+|-----------|----------|---------------|----------------|---------|
+|           | 数据分片     | 数据加密          | 异构数据库支持        | 影子库     |
+|           | 读写分离     | 行级权限（TODO）    | SQL 方言转换（TODO） | 可观测性    |
+|           | 分布式事务    | SQL 审计（TODO）  |                |         |
+|           | 弹性伸缩     | SQL 防火墙（TODO） |                |         |
+|           | 高可用      |               |                |         |
 
 ##
 
