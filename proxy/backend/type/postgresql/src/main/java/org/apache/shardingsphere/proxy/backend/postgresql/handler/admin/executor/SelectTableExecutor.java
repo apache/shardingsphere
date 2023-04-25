@@ -66,14 +66,14 @@ public final class SelectTableExecutor extends DefaultDatabaseMetaDataExecutor {
     }
     
     @Override
-    protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
+    protected void preProcess(final String databaseName, final Map<String, Object> rows, final Map<String, String> alias) {
         if (actualTableName.isEmpty()) {
-            actualTableName = aliasMap.getOrDefault(REL_NAME, aliasMap.getOrDefault(TABLE_NAME, aliasMap.getOrDefault(NAME, aliasMap.getOrDefault(REF_NAME, ""))));
+            actualTableName = alias.getOrDefault(REL_NAME, alias.getOrDefault(TABLE_NAME, alias.getOrDefault(NAME, alias.getOrDefault(REF_NAME, ""))));
         }
     }
     
     @Override
-    protected void createPreProcessing() {
+    protected void postProcess() {
         if (actualTableName.isEmpty()) {
             return;
         }

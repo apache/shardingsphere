@@ -73,9 +73,9 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         Collection<String> databaseNames = getDatabaseNames(connectionSession);
         for (String databaseName : databaseNames) {
             initDatabaseData(databaseName);
-            getSourceData(databaseName, resultSet -> handleResultSet(databaseName, resultSet));
+            processMetaData(databaseName, resultSet -> handleResultSet(databaseName, resultSet));
         }
-        createPreProcessing();
+        postProcess();
         queryResultMetaData = createQueryResultMetaData();
         mergedResult = createMergedResult();
     }
@@ -90,7 +90,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
                 aliasMap.put(metaData.getColumnName(i), metaData.getColumnLabel(i));
                 rowMap.put(metaData.getColumnLabel(i), resultSet.getString(i));
             }
-            rowPostProcessing(databaseName, rowMap, aliasMap);
+            preProcess(databaseName, rowMap, aliasMap);
             if (!rowMap.isEmpty()) {
                 rows.add(rowMap);
             }
@@ -106,11 +106,11 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
     
     protected abstract Collection<String> getDatabaseNames(ConnectionSession connectionSession);
     
-    protected abstract void createPreProcessing();
+    protected abstract void preProcess(String databaseName, Map<String, Object> rows, Map<String, String> alias);
     
-    protected abstract void getSourceData(String databaseName, Consumer<ResultSet> callback) throws SQLException;
+    protected abstract void postProcess();
     
-    protected abstract void rowPostProcessing(String databaseName, Map<String, Object> rowMap, Map<String, String> aliasMap);
+    protected abstract void processMetaData(String databaseName, Consumer<ResultSet> callback) throws SQLException;
     
     private MergedResult createMergedResult() {
         List<MemoryQueryResultDataRow> resultDataRows = rows.stream().map(each -> new MemoryQueryResultDataRow(new LinkedList<>(each.values()))).collect(Collectors.toList());
@@ -159,7 +159,7 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         }
         
         @Override
-        protected void getSourceData(final String databaseName, final Consumer<ResultSet> callback) throws SQLException {
+        protected void processMetaData(final String databaseName, final Consumer<ResultSet> callback) throws SQLException {
             ShardingSphereResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
             Optional<Entry<String, DataSource>> dataSourceEntry = resourceMetaData.getDataSources().entrySet().stream().findFirst();
             if (!dataSourceEntry.isPresent()) {
@@ -178,11 +178,11 @@ public abstract class AbstractDatabaseMetaDataExecutor implements DatabaseAdminQ
         }
         
         @Override
-        protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
+        protected void preProcess(final String databaseName, final Map<String, Object> rows, final Map<String, String> alias) {
         }
         
         @Override
-        protected void createPreProcessing() {
+        protected void postProcess() {
         }
     }
 }

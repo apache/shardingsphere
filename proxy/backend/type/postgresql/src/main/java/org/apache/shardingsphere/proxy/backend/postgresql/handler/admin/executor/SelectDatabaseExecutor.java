@@ -60,7 +60,7 @@ public final class SelectDatabaseExecutor extends DefaultDatabaseMetaDataExecuto
     }
     
     @Override
-    protected void createPreProcessing() {
+    protected void postProcess() {
         removeDuplicatedRow();
         addDefaultRow();
     }
@@ -85,17 +85,17 @@ public final class SelectDatabaseExecutor extends DefaultDatabaseMetaDataExecuto
     }
     
     @Override
-    protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
-        buildColumnNames(aliasMap);
+    protected void preProcess(final String databaseName, final Map<String, Object> rows, final Map<String, String> alias) {
+        buildColumnNames(alias);
         ShardingSphereResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
         Collection<String> catalogs = resourceMetaData.getDataSources().keySet().stream().map(each -> resourceMetaData.getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
-        databaseNameAlias = aliasMap.getOrDefault(DATABASE_NAME, aliasMap.getOrDefault(DATNAME, aliasMap.getOrDefault(NAME, "")));
-        String rowValue = rowMap.getOrDefault(databaseNameAlias, "").toString();
+        databaseNameAlias = alias.getOrDefault(DATABASE_NAME, alias.getOrDefault(DATNAME, alias.getOrDefault(NAME, "")));
+        String rowValue = rows.getOrDefault(databaseNameAlias, "").toString();
         isQueryDatabase = !rowValue.isEmpty();
         if (catalogs.contains(rowValue)) {
-            rowMap.replace(databaseNameAlias, databaseName);
+            rows.replace(databaseNameAlias, databaseName);
         } else {
-            rowMap.clear();
+            rows.clear();
         }
     }
     
