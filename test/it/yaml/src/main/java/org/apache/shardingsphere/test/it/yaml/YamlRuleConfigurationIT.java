@@ -39,7 +39,7 @@ public abstract class YamlRuleConfigurationIT {
     
     @Test
     void assertUnmarshalWithYamlFile() throws IOException {
-        URL url = getClass().getClassLoader().getResource(yamlFile);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFile);
         assertNotNull(url);
         YamlRootConfiguration actual = YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
         assertThat(actual.getRules().size(), is(1));
@@ -48,7 +48,7 @@ public abstract class YamlRuleConfigurationIT {
     
     @Test
     void assertUnmarshalWithYamlBytes() throws IOException {
-        URL url = getClass().getClassLoader().getResource(yamlFile);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(yamlFile);
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
         try (
