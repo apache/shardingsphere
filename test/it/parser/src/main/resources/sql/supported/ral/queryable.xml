@@ -29,6 +29,7 @@
     <sql-case id="show-sql-parser-rule" value="SHOW SQL_PARSER RULE" db-types="ShardingSphere" />
     <sql-case id="show-traffic-rules" value="SHOW TRAFFIC RULE rule_name" db-types="ShardingSphere" />
     <sql-case id="show-sql-translator-rule" value="SHOW SQL_TRANSLATOR RULE" db-types="ShardingSphere" />
+    <sql-case id="show-global-clock-rule" value="SHOW GLOBAL CLOCK RULE" db-types="ShardingSphere" />
     
     <sql-case id="show-compute-nodes" value="SHOW COMPUTE NODES" db-types="ShardingSphere" />
     <sql-case id="show-compute-node-info" value="SHOW COMPUTE NODE INFO" db-types="ShardingSphere" />
