@@ -63,7 +63,7 @@ public final class SQLParserExternalITEnvironment {
     @SneakyThrows(IOException.class)
     private Properties loadProperties() {
         Properties result = new Properties();
-        try (InputStream inputStream = SQLParserExternalITEnvironment.class.getClassLoader().getResourceAsStream("env/sql-parser-external-it-env.properties")) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/sql-parser-external-it-env.properties")) {
             result.load(inputStream);
         }
         for (String each : System.getProperties().stringPropertyNames()) {

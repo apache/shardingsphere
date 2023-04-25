@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.metadata.generator;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.binder.QueryContext;
@@ -86,7 +87,7 @@ public final class PipelineDDLGenerator {
     
     private Optional<String> decorate(final DatabaseType databaseType, final DataSource dataSource, final String schemaName, final String targetTableName,
                                       final SQLParserEngine parserEngine, final String sql) throws SQLException {
-        if (sql.trim().isEmpty()) {
+        if (StringUtils.isBlank(sql)) {
             return Optional.empty();
         }
         String databaseName;

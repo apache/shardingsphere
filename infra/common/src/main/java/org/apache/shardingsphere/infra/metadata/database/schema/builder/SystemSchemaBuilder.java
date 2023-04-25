@@ -65,7 +65,7 @@ public final class SystemSchemaBuilder {
         SystemSchemaBuilderRule builderRule = SystemSchemaBuilderRule.valueOf(databaseType.getType(), schemaName);
         Collection<InputStream> result = new LinkedList<>();
         for (String each : builderRule.getTables()) {
-            result.add(SystemSchemaBuilder.class.getClassLoader().getResourceAsStream("schema/" + databaseType.getType().toLowerCase() + "/" + schemaName + "/" + each + ".yaml"));
+            result.add(Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/" + databaseType.getType().toLowerCase() + "/" + schemaName + "/" + each + ".yaml"));
         }
         return result;
     }

@@ -109,7 +109,7 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
         StringBuilder builder = new StringBuilder();
         String owner = columnProjection.getOwner();
         if (!Strings.isNullOrEmpty(owner)) {
-            builder.append(quoteCharacter.wrap(logicActualTableNames.getOrDefault(owner, owner))).append(".");
+            builder.append(quoteCharacter.wrap(logicActualTableNames.getOrDefault(owner, owner))).append('.');
         }
         builder.append(quoteCharacter.wrap(columnProjection.getName()));
         if (columnProjection.getAlias().isPresent()) {

@@ -59,8 +59,7 @@ public final class JobDataNodeEntry {
      */
     public String marshal() {
         StringBuilder result = new StringBuilder();
-        result.append(logicTableName);
-        result.append(":");
+        result.append(logicTableName).append(':');
         for (DataNode each : dataNodes) {
             result.append(DataNodeUtils.formatWithSchema(each)).append(',');
         }

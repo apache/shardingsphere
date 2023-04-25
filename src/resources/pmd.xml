@@ -76,16 +76,31 @@
     <rule ref="category/java/codestyle.xml/UseDiamondOperator" />
     <rule ref="category/java/codestyle.xml/UseShortArrayInitializer" />
     
+    <rule ref="category/java/design.xml/AvoidThrowingNewInstanceOfSameException" />
+    <rule ref="category/java/design.xml/AvoidThrowingNullPointerException" />
+    <rule ref="category/java/design.xml/AvoidThrowingRawExceptionTypes" />
+    <rule ref="category/java/design.xml/AvoidUncheckedExceptionsInSignatures" />
+    <rule ref="category/java/design.xml/CognitiveComplexity" />
+    <rule ref="category/java/design.xml/CollapsibleIfStatements" />
+    <rule ref="category/java/design.xml/CouplingBetweenObjects" />
+    <rule ref="category/java/design.xml/DataClass" />
+    <rule ref="category/java/design.xml/ExceptionAsFlowControl" />
+    <rule ref="category/java/design.xml/GodClass" />
+    <rule ref="category/java/design.xml/ImmutableField" />
+    <rule ref="category/java/design.xml/MutableStaticState" />
+    <rule ref="category/java/design.xml/SignatureDeclareThrowsException" />
+    <rule ref="category/java/design.xml/SimplifyBooleanExpressions" />
+    <rule ref="category/java/design.xml/UseObjectForClearerAPI" />
+    <rule ref="category/java/design.xml/UseUtilityClass">
+        <properties>
+            <property name="ignoredAnnotations" value="lombok.NoArgsConstructor | org.springframework.boot.autoconfigure.SpringBootApplication" />
+        </properties>
+    </rule>
+    
     <rule ref="category/java/documentation.xml/CommentSize">
         <properties>
             <property name="maxLines" value="40" />
             <property name="maxLineLength" value="200" />
-        </properties>
-    </rule>
-    
-    <rule ref="category/java/design.xml/UseUtilityClass">
-        <properties>
-            <property name="ignoredAnnotations" value="lombok.NoArgsConstructor | org.springframework.boot.autoconfigure.SpringBootApplication" />
         </properties>
     </rule>
     
@@ -96,4 +111,52 @@
             <property name="allowWhile" value="true" />
         </properties>
     </rule>
+    <rule ref="category/java/errorprone.xml/AvoidCallingFinalize" />
+    <rule ref="category/java/errorprone.xml/AvoidCatchingNPE" />
+    <rule ref="category/java/errorprone.xml/AvoidFieldNameMatchingTypeName" />
+    <rule ref="category/java/errorprone.xml/AvoidLosingExceptionInformation" />
+    <rule ref="category/java/errorprone.xml/ConstructorCallsOverridableMethod" />
+    <rule ref="category/java/errorprone.xml/DetachedTestCase" />
+    <rule ref="category/java/errorprone.xml/DoNotHardCodeSDCard" />
+    <rule ref="category/java/errorprone.xml/DoNotTerminateVM" />
+    <rule ref="category/java/errorprone.xml/DoNotThrowExceptionInFinally" />
+    <rule ref="category/java/errorprone.xml/DontImportSun" />
+    <rule ref="category/java/errorprone.xml/InvalidLogMessageFormat" />
+    <rule ref="category/java/errorprone.xml/MethodWithSameNameAsEnclosingClass" />
+    <rule ref="category/java/errorprone.xml/MissingSerialVersionUID" />
+    <rule ref="category/java/errorprone.xml/MoreThanOneLogger" />
+    <rule ref="category/java/errorprone.xml/NonSerializableClass" />
+    <rule ref="category/java/errorprone.xml/NullAssignment" />
+    <rule ref="category/java/errorprone.xml/SimpleDateFormatNeedsLocale" />
+    <rule ref="category/java/errorprone.xml/StringBufferInstantiationWithChar" />
+    <rule ref="category/java/errorprone.xml/TestClassWithoutTestCases">
+        <properties>
+            <property name="testClassPattern" value="^(?:.*\.)?Test$" />
+        </properties>
+    </rule>
+    <rule ref="category/java/errorprone.xml/UnnecessaryBooleanAssertion" />
+    <rule ref="category/java/errorprone.xml/UnnecessaryCaseChange" />
+    <rule ref="category/java/errorprone.xml/UseCorrectExceptionLogging" />
+    <rule ref="category/java/errorprone.xml/UseProperClassLoader" />
+    
+    <rule ref="category/java/performance.xml/AddEmptyString" />
+    <rule ref="category/java/performance.xml/AppendCharacterWithChar" />
+    <rule ref="category/java/performance.xml/AvoidArrayLoops" />
+    <rule ref="category/java/performance.xml/AvoidCalendarDateCreation" />
+    <rule ref="category/java/performance.xml/AvoidFileStream" />
+    <rule ref="category/java/performance.xml/ConsecutiveAppendsShouldReuse" />
+    <rule ref="category/java/performance.xml/ConsecutiveLiteralAppends" />
+    <rule ref="category/java/performance.xml/InefficientEmptyStringCheck" />
+    <rule ref="category/java/performance.xml/InefficientStringBuffering" />
+    <rule ref="category/java/performance.xml/RedundantFieldInitializer" />
+    <rule ref="category/java/performance.xml/StringInstantiation" />
+    <rule ref="category/java/performance.xml/StringToString" />
+    <rule ref="category/java/performance.xml/TooFewBranchesForASwitchStatement" />
+    <rule ref="category/java/performance.xml/UseArrayListInsteadOfVector" />
+    <rule ref="category/java/performance.xml/UseArraysAsList" />
+    <rule ref="category/java/performance.xml/UseIndexOfChar" />
+    <rule ref="category/java/performance.xml/UseIOStreamsWithApacheCommonsFileItem" />
+    <rule ref="category/java/performance.xml/UselessStringValueOf" />
+    <rule ref="category/java/performance.xml/UseStringBufferForStringAppends" />
+    <rule ref="category/java/performance.xml/UseStringBufferLength" />
 </ruleset>

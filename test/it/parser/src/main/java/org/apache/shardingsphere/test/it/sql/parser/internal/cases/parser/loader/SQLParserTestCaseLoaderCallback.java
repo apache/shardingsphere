@@ -26,9 +26,10 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.loader.CaseLoaderCa
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,7 +44,7 @@ public final class SQLParserTestCaseLoaderCallback implements CaseLoaderCallback
     public Map<String, SQLParserTestCase> loadFromJar(final File jarFile, final String rootDirectory) throws JAXBException {
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (String each : CaseFileLoader.loadFileNamesFromJar(jarFile, rootDirectory)) {
-            Map<String, SQLParserTestCase> testCases = createTestCases(SQLParserTestCaseLoaderCallback.class.getClassLoader().getResourceAsStream(each));
+            Map<String, SQLParserTestCase> testCases = createTestCases(Thread.currentThread().getContextClassLoader().getResourceAsStream(each));
             checkDuplicatedTestCases(testCases, result);
             result.putAll(testCases);
         }
@@ -54,7 +55,7 @@ public final class SQLParserTestCaseLoaderCallback implements CaseLoaderCallback
     public Map<String, SQLParserTestCase> loadFromDirectory(final String rootDirectory) throws IOException, JAXBException {
         Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
         for (File each : CaseFileLoader.loadFilesFromDirectory(rootDirectory)) {
-            try (FileInputStream inputStream = new FileInputStream(each)) {
+            try (InputStream inputStream = Files.newInputStream(Paths.get(each.toURI()))) {
                 Map<String, SQLParserTestCase> testCases = createTestCases(inputStream);
                 checkDuplicatedTestCases(testCases, result);
                 result.putAll(testCases);

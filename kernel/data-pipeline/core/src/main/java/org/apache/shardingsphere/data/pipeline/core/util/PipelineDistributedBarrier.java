@@ -141,7 +141,7 @@ public final class PipelineDistributedBarrier {
         if (Strings.isNullOrEmpty(nodePath)) {
             return;
         }
-        String barrierPath = nodePath.substring(0, nodePath.lastIndexOf("/"));
+        String barrierPath = nodePath.substring(0, nodePath.lastIndexOf('/'));
         InnerCountDownLatchHolder holder = countDownLatchHolders.get(barrierPath);
         if (null != holder && getRepository().getChildrenKeys(barrierPath).size() == holder.getTotalCount()) {
             holder.getCountDownLatch().countDown();
