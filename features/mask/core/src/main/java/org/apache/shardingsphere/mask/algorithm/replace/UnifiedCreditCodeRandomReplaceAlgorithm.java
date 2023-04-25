@@ -85,9 +85,9 @@ public final class UnifiedCreditCodeRandomReplaceAlgorithm implements MaskAlgori
     
     private String randomReplace() {
         StringBuilder result = new StringBuilder();
-        result.append(registrationDepartmentCodes.get(random.nextInt(registrationDepartmentCodes.size())));
-        result.append(categoryCodes.get(random.nextInt(categoryCodes.size())));
-        result.append(administrativeDivisionCodes.get(random.nextInt(administrativeDivisionCodes.size())));
+        result.append(registrationDepartmentCodes.get(random.nextInt(registrationDepartmentCodes.size())))
+                .append(categoryCodes.get(random.nextInt(categoryCodes.size())))
+                .append(administrativeDivisionCodes.get(random.nextInt(administrativeDivisionCodes.size())));
         for (int i = 0; i < 10; i++) {
             result.append(Character.forDigit(random.nextInt(10), 10));
         }

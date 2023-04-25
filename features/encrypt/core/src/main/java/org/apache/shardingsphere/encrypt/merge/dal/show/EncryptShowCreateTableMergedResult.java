@@ -68,12 +68,12 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
             if (!encryptTable.isPresent()) {
                 return result;
             }
-            StringBuilder builder = new StringBuilder(result.substring(0, result.indexOf("(") + 1));
-            List<String> columnDefinitions = Splitter.on(COMMA).splitToList(result.substring(result.indexOf("(") + 1, result.lastIndexOf(")")));
+            StringBuilder builder = new StringBuilder(result.substring(0, result.indexOf('(') + 1));
+            List<String> columnDefinitions = Splitter.on(COMMA).splitToList(result.substring(result.indexOf('(') + 1, result.lastIndexOf(')')));
             for (String each : columnDefinitions) {
                 findLogicColumnDefinition(each, encryptTable.get()).ifPresent(optional -> builder.append(optional).append(COMMA));
             }
-            builder.deleteCharAt(builder.length() - 1).append(result.substring(result.lastIndexOf(")")));
+            builder.deleteCharAt(builder.length() - 1).append(result.substring(result.lastIndexOf(')')));
             return builder.toString();
         }
         return getOriginalValue(columnIndex, type);

@@ -94,10 +94,10 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
             fields.put(FIELD_TYPE_HINT, serverErrorMessage.getHint());
         }
         if (serverErrorMessage.getPosition() > 0) {
-            fields.put(FIELD_TYPE_POSITION, serverErrorMessage.getPosition() + "");
+            fields.put(FIELD_TYPE_POSITION, String.valueOf(serverErrorMessage.getPosition()));
         }
         if (serverErrorMessage.getInternalPosition() > 0) {
-            fields.put(FIELD_TYPE_INTERNAL_POSITION, serverErrorMessage.getInternalPosition() + "");
+            fields.put(FIELD_TYPE_INTERNAL_POSITION, String.valueOf(serverErrorMessage.getInternalPosition()));
         }
         if (null != serverErrorMessage.getInternalQuery()) {
             fields.put(FIELD_TYPE_INTERNAL_QUERY, serverErrorMessage.getInternalQuery());
@@ -109,7 +109,7 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
             fields.put(FIELD_TYPE_FILE, serverErrorMessage.getFile());
         }
         if (serverErrorMessage.getLine() > 0) {
-            fields.put(FIELD_TYPE_LINE, serverErrorMessage.getLine() + "");
+            fields.put(FIELD_TYPE_LINE, String.valueOf(serverErrorMessage.getLine()));
         }
         if (null != serverErrorMessage.getRoutine()) {
             fields.put(FIELD_TYPE_ROUTINE, serverErrorMessage.getRoutine());

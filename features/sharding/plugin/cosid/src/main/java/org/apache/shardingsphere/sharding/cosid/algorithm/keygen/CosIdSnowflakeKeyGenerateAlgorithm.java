@@ -73,7 +73,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     }
     
     private long getEpoch(final Properties props) {
-        long result = Long.parseLong(props.getProperty(EPOCH_KEY, DEFAULT_EPOCH + ""));
+        long result = Long.parseLong(props.getProperty(EPOCH_KEY, String.valueOf(DEFAULT_EPOCH)));
         ShardingSpherePreconditions.checkState(result > 0L,
                 () -> new ShardingPluginException("Key generate algorithm `%s` initialization failed, reason is: %s.", getType(), "Epoch must be positive."));
         return result;

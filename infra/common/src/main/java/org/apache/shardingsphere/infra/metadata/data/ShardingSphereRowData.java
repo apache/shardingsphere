@@ -48,7 +48,11 @@ public final class ShardingSphereRowData {
     private String generateUniqueKey(final List<Object> rows) {
         StringBuilder uniqueKeyText = new StringBuilder();
         for (Object each : rows) {
-            uniqueKeyText.append(null == each ? "" : each.toString()).append("|");
+            if (null == each) {
+                uniqueKeyText.append('|');
+            } else {
+                uniqueKeyText.append(each).append('|');
+            }
         }
         return useMd5GenerateUniqueKey(uniqueKeyText);
     }
