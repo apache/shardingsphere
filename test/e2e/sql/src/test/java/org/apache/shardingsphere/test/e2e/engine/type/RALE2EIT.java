@@ -38,7 +38,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -54,7 +53,7 @@ class RALE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException {
+    void assertExecute(final AssertionTestParameter testParam) throws SQLException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
@@ -66,7 +65,7 @@ class RALE2EIT {
         }
     }
     
-    private void assertExecute(final SingleE2EContainerComposer containerComposer) throws SQLException, ParseException {
+    private void assertExecute(final SingleE2EContainerComposer containerComposer) throws SQLException {
         try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 assertResultSet(containerComposer, statement);
@@ -114,7 +113,7 @@ class RALE2EIT {
         waitCompleted(1000L);
     }
     
-    private void assertResultSet(final SingleE2EContainerComposer containerComposer, final Statement statement) throws SQLException, ParseException {
+    private void assertResultSet(final SingleE2EContainerComposer containerComposer, final Statement statement) throws SQLException {
         if (null == containerComposer.getAssertion().getAssertionSQL()) {
             assertResultSet(containerComposer, statement, containerComposer.getSQL());
         } else {

@@ -40,7 +40,7 @@ public final class MySQLTextResultSetRowPacket implements MySQLPacket {
     
     private static final int NULL = 0xfb;
     
-    private static final DateTimeFormatter DT_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     private final Collection<Object> data;
     
@@ -66,7 +66,7 @@ public final class MySQLTextResultSetRowPacket implements MySQLPacket {
                 } else if (each instanceof Boolean) {
                     payload.writeBytesLenenc((Boolean) each ? new byte[]{1} : new byte[]{0});
                 } else if (each instanceof LocalDateTime) {
-                    payload.writeStringLenenc(DT_FMT.format((LocalDateTime) each));
+                    payload.writeStringLenenc(DATE_TIME_FORMATTER.format((LocalDateTime) each));
                 } else {
                     payload.writeStringLenenc(each.toString());
                 }

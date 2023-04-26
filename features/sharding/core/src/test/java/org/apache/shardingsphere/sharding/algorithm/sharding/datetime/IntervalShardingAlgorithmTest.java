@@ -30,8 +30,6 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -334,7 +332,7 @@ class IntervalShardingAlgorithmTest {
     }
     
     @Test
-    void assertTimestampInJDBCTypeWithZeroMillisecond() throws ParseException {
+    void assertTimestampInJDBCTypeWithZeroMillisecond() {
         Collection<String> actualAsLocalDateTime = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(LocalDateTime.of(2021, 6, 15, 2, 25, 27), LocalDateTime.of(2021, 7, 31, 2, 25, 27))));
@@ -363,10 +361,11 @@ class IntervalShardingAlgorithmTest {
                                 ZonedDateTime.of(2021, 6, 15, 2, 25, 27, 0, ZoneId.systemDefault()),
                                 ZonedDateTime.of(2021, 7, 31, 2, 25, 27, 0, ZoneId.systemDefault()))));
         assertThat(actualAsZonedDateTime.size(), is(24));
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
         Collection<String> actualAsDate = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
-                        Range.closed(simpleDateFormat.parse("2021-06-15 02:25:27.000"), simpleDateFormat.parse("2021-07-31 02:25:27.000"))));
+                        Range.closed(Date.from(LocalDate.from(dateTimeFormatter.parse("2021-06-15 02:25:27.000")).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
+                                Date.from(LocalDate.from(dateTimeFormatter.parse("2021-07-31 02:25:27.000")).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()))));
         assertThat(actualAsDate.size(), is(24));
     }
     

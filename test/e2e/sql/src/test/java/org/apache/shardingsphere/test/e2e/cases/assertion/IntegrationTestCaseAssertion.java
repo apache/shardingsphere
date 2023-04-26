@@ -26,7 +26,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,9 +65,8 @@ public final class IntegrationTestCaseAssertion {
      * Get SQL values.
      * 
      * @return SQL values
-     * @throws ParseException parse exception
      */
-    public Collection<SQLValue> getSQLValues() throws ParseException {
+    public Collection<SQLValue> getSQLValues() {
         if (null == parameters) {
             return Collections.emptyList();
         }
