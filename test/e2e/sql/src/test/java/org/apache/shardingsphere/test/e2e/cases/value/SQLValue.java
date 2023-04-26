@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.cases.value;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -32,6 +33,7 @@ import java.time.format.DateTimeFormatter;
 /**
  * SQL value.
  */
+@Slf4j
 @Getter
 public final class SQLValue {
     
@@ -85,6 +87,9 @@ public final class SQLValue {
                 return Boolean.parseBoolean(value);
             case "Date":
             case "datetime":
+                log.error("====value1====:" + value);
+                log.error("====value2====:" + dateFormatter.parse(value));
+                log.error("====value3====:" + LocalDate.from(dateFormatter.parse(value)).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
                 return LocalDate.from(dateFormatter.parse(value)).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
             case "time":
                 return LocalDate.from(timeFormatter.parse(value)).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
