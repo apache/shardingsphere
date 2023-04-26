@@ -80,17 +80,6 @@ public final class PipelineMetaDataNodeWatcher {
      * @return instance
      */
     public static PipelineMetaDataNodeWatcher getInstance(final PipelineContextKey contextKey) {
-        PipelineMetaDataNodeWatcher result = INSTANCE_MAP.get(contextKey);
-        if (null != result) {
-            return result;
-        }
-        synchronized (INSTANCE_MAP) {
-            result = INSTANCE_MAP.get(contextKey);
-            if (null == result) {
-                result = new PipelineMetaDataNodeWatcher(contextKey);
-                INSTANCE_MAP.put(contextKey, result);
-            }
-        }
-        return result;
+        return INSTANCE_MAP.computeIfAbsent(contextKey, PipelineMetaDataNodeWatcher::new);
     }
 }
