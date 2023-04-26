@@ -58,9 +58,9 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     MAX_CONNECTIONS_SIZE_PER_QUERY("max-connections-size-per-query", String.valueOf(1), int.class, false),
     
     /**
-     * Whether validate table meta data consistency when application startup or updated.
+     * Whether validate table metadata consistency when application startup or updated.
      */
-    CHECK_TABLE_META_DATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
+    CHECK_TABLE_METADATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * SQL federation type.
