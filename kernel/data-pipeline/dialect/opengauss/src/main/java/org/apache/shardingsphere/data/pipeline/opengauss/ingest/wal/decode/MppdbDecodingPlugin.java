@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
@@ -108,7 +109,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         try {
             mppTableData = OBJECT_MAPPER.readValue(mppData, MppTableData.class);
         } catch (final JsonProcessingException ex) {
-            throw new RuntimeException(ex);
+            throw new PipelineInternalException(ex);
         }
         AbstractRowEvent result;
         String rowEventType = mppTableData.getOpType();
