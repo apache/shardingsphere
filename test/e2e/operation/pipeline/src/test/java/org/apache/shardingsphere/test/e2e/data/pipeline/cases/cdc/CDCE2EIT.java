@@ -149,7 +149,7 @@ class CDCE2EIT {
                     tableMetaData.getColumnNames(), primaryKeyMetaData, null, progressContext);
             DataConsistencyCheckResult checkResult = checker.check(new DataMatchDataConsistencyCalculateAlgorithm());
             assertTrue(checkResult.isMatched());
-            containerComposer.proxyExecuteWithLog(String.format("ROLLBACK STREAMING '%s'", jobId), 0);
+            containerComposer.proxyExecuteWithLog(String.format("COMMIT STREAMING '%s'", jobId), 0);
             assertTrue(containerComposer.queryForListWithLog("SHOW STREAMING LIST").isEmpty());
         }
     }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.cdc.distsql.handler.update;
 
 import org.apache.shardingsphere.cdc.distsql.statement.CommitStreamingStatement;
-import org.apache.shardingsphere.cdc.distsql.statement.RollbackStreamingStatement;
 import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 
@@ -38,6 +37,6 @@ public final class CommitStreamingUpdater implements RALUpdater<CommitStreamingS
     
     @Override
     public String getType() {
-        return RollbackStreamingStatement.class.getName();
+        return CommitStreamingStatement.class.getName();
     }
 }
