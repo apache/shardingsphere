@@ -648,4 +648,44 @@
     <test-case sql="SELECT * FROM performance_schema.setup_instruments" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_performance_schema_setup_instruments.xml" />
     </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.setup_objects" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_setup_objects.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.setup_timers" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_setup_timers.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.socket_instances" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_socket_instances.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.socket_summary_by_event_name" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_socket_summary_by_event_name.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.socket_summary_by_instance" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_socket_summary_by_instance.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.status_by_account" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_status_by_account.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.status_by_host" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_status_by_host.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.status_by_thread" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_status_by_thread.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.status_by_user" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_status_by_user.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.table_handles" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_table_handles.xml" />
+    </test-case>
 </integration-test-cases>
