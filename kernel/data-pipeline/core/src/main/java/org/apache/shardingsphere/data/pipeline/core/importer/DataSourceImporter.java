@@ -48,11 +48,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Default importer.
@@ -180,6 +182,30 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
         }
     }
     
+    private void doFlush(final Connection connection, final DataRecord each) throws SQLException {
+        switch (each.getType()) {
+            case IngestDataChangeType.INSERT:
+                if (null != rateLimitAlgorithm) {
+                    rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
+                }
+                executeBatchInsert(connection, Collections.singletonList(each));
+                break;
+            case IngestDataChangeType.UPDATE:
+                if (null != rateLimitAlgorithm) {
+                    rateLimitAlgorithm.intercept(JobOperationType.UPDATE, 1);
+                }
+                executeUpdate(connection, each);
+                break;
+            case IngestDataChangeType.DELETE:
+                if (null != rateLimitAlgorithm) {
+                    rateLimitAlgorithm.intercept(JobOperationType.DELETE, 1);
+                }
+                executeBatchDelete(connection, Collections.singletonList(each));
+                break;
+            default:
+        }
+    }
+    
     private void executeBatchInsert(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
         DataRecord dataRecord = dataRecords.get(0);
         String insertSql = pipelineSqlBuilder.buildInsertSQL(getSchemaName(dataRecord.getTableName()), dataRecord);
@@ -249,9 +275,9 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
                 }
                 preparedStatement.addBatch();
             }
-            int[] executeBatch = preparedStatement.executeBatch();
-            if (executeBatch.length == 0) {
-                log.warn("executeDelete failed, deleteSQL={}, conditionColumns={}", deleteSQL, conditionColumns);
+            int[] counts = preparedStatement.executeBatch();
+            if (IntStream.of(counts).anyMatch(value -> 1 != value)) {
+                log.warn("batchDelete failed, counts={}, sql={}", Arrays.toString(counts), deleteSQL);
             }
         } finally {
             batchDeleteStatement = null;
@@ -259,23 +285,16 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     }
     
     private void sequentialFlush(final DataSource dataSource, final List<DataRecord> buffer) {
+        if (buffer.isEmpty()) {
+            return;
+        }
         try (Connection connection = dataSource.getConnection()) {
-            // TODO it's better use transaction, but execute delete maybe not effect when open transaction of PostgreSQL
-            if (null != rateLimitAlgorithm) {
-                rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
-            }
+            // TODO it's better use transaction, but execute delete maybe not effect when open transaction of PostgreSQL sometimes
             for (DataRecord each : buffer) {
-                switch (each.getType()) {
-                    case IngestDataChangeType.INSERT:
-                        executeBatchInsert(connection, Collections.singletonList(each));
-                        break;
-                    case IngestDataChangeType.UPDATE:
-                        executeUpdate(connection, each);
-                        break;
-                    case IngestDataChangeType.DELETE:
-                        executeBatchDelete(connection, Collections.singletonList(each));
-                        break;
-                    default:
+                try {
+                    doFlush(connection, each);
+                } catch (final SQLException ex) {
+                    throw new PipelineImporterJobWriteException("Write failed, record={}", ex);
                 }
             }
         } catch (final SQLException ex) {
