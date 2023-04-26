@@ -38,61 +38,6 @@ public final class YamlPipelineProcessConfiguration implements YamlConfiguration
     private YamlAlgorithmConfiguration streamChannel;
     
     /**
-     * Copy non-null fields from another.
-     *
-     * @param another another configuration
-     */
-    // TODO add unit test
-    public void copyNonNullFields(final YamlPipelineProcessConfiguration another) {
-        if (null == another) {
-            return;
-        }
-        if (null == read) {
-            read = another.read;
-        } else {
-            read.copyNonNullFields(another.read);
-        }
-        if (null == write) {
-            write = another.write;
-        } else {
-            write.copyNonNullFields(another.write);
-        }
-        if (null == streamChannel) {
-            streamChannel = another.streamChannel;
-        }
-    }
-    
-    /**
-     * Set all fields null.
-     */
-    public void setAllFieldsNull() {
-        read = null;
-        write = null;
-        streamChannel = null;
-    }
-    
-    /**
-     * Set field to null.
-     *
-     * @param nodeName node name
-     */
-    public void setFieldNull(final String nodeName) {
-        switch (nodeName.toUpperCase()) {
-            case "READ":
-                read = null;
-                break;
-            case "WRITE":
-                write = null;
-                break;
-            case "STREAM_CHANNEL":
-                streamChannel = null;
-                break;
-            default:
-                break;
-        }
-    }
-    
-    /**
      * Check all fields is null.
      *
      * @return true if all fields is null, otherwise is false.

@@ -70,27 +70,4 @@ public final class YamlPipelineReadConfiguration implements YamlConfiguration {
             shardingSize = DEFAULT_SHARDING_SIZE;
         }
     }
-    
-    /**
-     * Copy non-null fields from another.
-     *
-     * @param another another configuration
-     */
-    public void copyNonNullFields(final YamlPipelineReadConfiguration another) {
-        if (null == another) {
-            return;
-        }
-        if (null != another.workerThread) {
-            workerThread = another.workerThread;
-        }
-        if (null != another.batchSize) {
-            batchSize = another.batchSize;
-        }
-        if (null != another.shardingSize) {
-            shardingSize = another.shardingSize;
-        }
-        if (null != another.rateLimiter) {
-            rateLimiter = another.rateLimiter;
-        }
-    }
 }
