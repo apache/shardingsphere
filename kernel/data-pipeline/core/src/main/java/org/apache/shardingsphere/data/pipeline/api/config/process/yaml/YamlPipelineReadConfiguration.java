@@ -33,7 +33,7 @@ public final class YamlPipelineReadConfiguration implements YamlConfiguration {
     
     private static final Integer DEFAULT_BATCH_SIZE = 1000;
     
-    private static final Integer DEFAULT_SHARDING_SIZE = 1000_0000;
+    private static final Integer DEFAULT_SHARDING_SIZE = 10000000;
     
     private Integer workerThread;
     
@@ -91,30 +91,6 @@ public final class YamlPipelineReadConfiguration implements YamlConfiguration {
         }
         if (null != another.rateLimiter) {
             rateLimiter = another.rateLimiter;
-        }
-    }
-    
-    /**
-     * Set field to null.
-     *
-     * @param nodeName node name
-     */
-    public void setFieldNull(final String nodeName) {
-        switch (nodeName.toUpperCase()) {
-            case "WORKER_THREAD":
-                workerThread = null;
-                break;
-            case "BATCH_SIZE":
-                batchSize = null;
-                break;
-            case "SHARDING_SIZE":
-                shardingSize = null;
-                break;
-            case "RATE_LIMITER":
-                rateLimiter = null;
-                break;
-            default:
-                break;
         }
     }
 }

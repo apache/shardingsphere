@@ -79,7 +79,13 @@ public final class BackendConnection implements ExecutorJDBCConnectionManager {
         List<Connection> result;
         if (connections.size() >= connectionSize) {
             result = new ArrayList<>(connections).subList(0, connectionSize);
-        } else if (!connections.isEmpty()) {
+        } else if (connections.isEmpty()) {
+            result = createNewConnections(dataSourceName, connectionSize, connectionMode);
+            synchronized (cachedConnections) {
+                cachedConnections.putAll(connectionSession.getDatabaseName().toLowerCase() + "." + dataSourceName, result);
+            }
+            executeTransactionHooksAfterCreateConnections(result);
+        } else {
             result = new ArrayList<>(connectionSize);
             result.addAll(connections);
             List<Connection> newConnections = createNewConnections(dataSourceName, connectionSize - connections.size(), connectionMode);
@@ -87,12 +93,6 @@ public final class BackendConnection implements ExecutorJDBCConnectionManager {
             synchronized (cachedConnections) {
                 cachedConnections.putAll(connectionSession.getDatabaseName().toLowerCase() + "." + dataSourceName, newConnections);
             }
-        } else {
-            result = createNewConnections(dataSourceName, connectionSize, connectionMode);
-            synchronized (cachedConnections) {
-                cachedConnections.putAll(connectionSession.getDatabaseName().toLowerCase() + "." + dataSourceName, result);
-            }
-            executeTransactionHooksAfterCreateConnections(result);
         }
         return result;
     }

@@ -74,17 +74,17 @@ public enum MySQLBinlogEventType {
     
     TABLE_MAP_EVENT(19),
     
-    WRITE_ROWS_EVENTv0(20),
+    WRITE_ROWS_EVENT_V0(20),
     
-    UPDATE_ROWS_EVENTv0(21),
+    UPDATE_ROWS_EVENT_V0(21),
     
-    DELETE_ROWS_EVENTv0(22),
+    DELETE_ROWS_EVENT_V0(22),
     
-    WRITE_ROWS_EVENTv1(23),
+    WRITE_ROWS_EVENT_V1(23),
     
-    UPDATE_ROWS_EVENTv1(24),
+    UPDATE_ROWS_EVENT_V1(24),
     
-    DELETE_ROWS_EVENTv1(25),
+    DELETE_ROWS_EVENT_V1(25),
     
     INCIDENT_EVENT(26),
     
@@ -94,11 +94,11 @@ public enum MySQLBinlogEventType {
     
     ROWS_QUERY_LOG_EVENT(29),
     
-    WRITE_ROWS_EVENTv2(30),
+    WRITE_ROWS_EVENT_V2(30),
     
-    UPDATE_ROWS_EVENTv2(31),
+    UPDATE_ROWS_EVENT_V2(31),
     
-    DELETE_ROWS_EVENTv2(32),
+    DELETE_ROWS_EVENT_V2(32),
     
     GTID_LOG_EVENT(33),
     

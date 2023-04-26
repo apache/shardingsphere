@@ -48,11 +48,8 @@ public final class ClusterStateChangedWatcher implements GovernanceWatcher<Gover
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         String clusterStatus = ComputeNode.getClusterStatusNodePath();
-        if (!Strings.isNullOrEmpty(clusterStatus)) {
-            if (event.getKey().equals(ComputeNode.getClusterStatusNodePath()) && Type.DELETED != event.getType()) {
-                return Optional.of(new ClusterStateEvent(event.getValue()));
-            }
-        }
-        return Optional.empty();
+        return Strings.isNullOrEmpty(clusterStatus) || Type.DELETED == event.getType() || !event.getKey().equals(ComputeNode.getClusterStatusNodePath())
+                ? Optional.empty()
+                : Optional.of(new ClusterStateEvent(event.getValue()));
     }
 }

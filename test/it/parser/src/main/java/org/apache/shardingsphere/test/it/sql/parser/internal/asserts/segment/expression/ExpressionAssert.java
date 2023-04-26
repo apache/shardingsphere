@@ -128,7 +128,7 @@ public final class ExpressionAssert {
             assertNull(actual, assertContext.getText("Actual common expression should not exist."));
         } else {
             assertNotNull(actual, assertContext.getText("Actual common expression should exist."));
-            String expectedText = SQLCaseType.Literal == assertContext.getCaseType() && null != expected.getLiteralText() ? expected.getLiteralText() : expected.getText();
+            String expectedText = SQLCaseType.LITERAL == assertContext.getCaseType() && null != expected.getLiteralText() ? expected.getLiteralText() : expected.getText();
             assertThat(assertContext.getText("Common expression text assertion error: "), actual.getText(), is(expectedText));
             SQLSegmentAssert.assertIs(assertContext, actual, expected);
         }
@@ -300,7 +300,7 @@ public final class ExpressionAssert {
     public static void assertFunction(final SQLCaseAssertContext assertContext, final FunctionSegment actual, final ExpectedFunction expected) {
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
         assertThat(assertContext.getText("Function method name assertion error: "), actual.getFunctionName(), is(expected.getFunctionName()));
-        String expectedText = SQLCaseType.Literal == assertContext.getCaseType() && null != expected.getLiteralText()
+        String expectedText = SQLCaseType.LITERAL == assertContext.getCaseType() && null != expected.getLiteralText()
                 ? expected.getLiteralText()
                 : expected.getText();
         assertThat(assertContext.getText("Function text name assertion error: "), actual.getText(), is(expectedText));

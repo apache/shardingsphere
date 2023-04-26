@@ -38,14 +38,16 @@ public final class DataConsistencyCalculateAlgorithmChooser {
      * @return algorithm
      */
     public static DataConsistencyCalculateAlgorithm choose(final DatabaseType databaseType, final DatabaseType peerDatabaseType) {
-        String algorithmType;
+        return TypedSPILoader.getService(DataConsistencyCalculateAlgorithm.class, getAlgorithmType(databaseType, peerDatabaseType));
+    }
+    
+    private static String getAlgorithmType(final DatabaseType databaseType, final DatabaseType peerDatabaseType) {
         if (!databaseType.getType().equalsIgnoreCase(peerDatabaseType.getType())) {
-            algorithmType = "DATA_MATCH";
-        } else if (databaseType instanceof MySQLDatabaseType) {
-            algorithmType = "CRC32_MATCH";
-        } else {
-            algorithmType = "DATA_MATCH";
+            return "DATA_MATCH";
         }
-        return TypedSPILoader.getService(DataConsistencyCalculateAlgorithm.class, algorithmType);
+        if (databaseType instanceof MySQLDatabaseType) {
+            return "CRC32_MATCH";
+        }
+        return "DATA_MATCH";
     }
 }

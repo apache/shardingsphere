@@ -38,10 +38,10 @@ import java.util.List;
 public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
     private enum States {
-        ResponsePacket, FieldPacket, RowDataPacket
+        RESPONSE_PACKET, FIELD_PACKET, ROW_DATA_PACKET
     }
     
-    private volatile States currentState = States.ResponsePacket;
+    private volatile States currentState = States.RESPONSE_PACKET;
     
     private volatile InternalResultSet internalResultSet;
     
@@ -52,11 +52,11 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     }
     
     private void decodeCommandPacket(final MySQLPacketPayload payload, final List<Object> out) {
-        if (States.FieldPacket == currentState) {
+        if (States.FIELD_PACKET == currentState) {
             decodeFieldPacket(payload);
             return;
         }
-        if (States.RowDataPacket == currentState) {
+        if (States.ROW_DATA_PACKET == currentState) {
             decodeRowDataPacket(payload, out);
             return;
         }
@@ -64,22 +64,22 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     }
     
     private void decodeFieldPacket(final MySQLPacketPayload payload) {
-        if (MySQLEofPacket.HEADER != (payload.getByteBuf().getByte(0) & 0xff)) {
-            internalResultSet.getFieldDescriptors().add(new MySQLColumnDefinition41Packet(payload));
-        } else {
+        if (MySQLEofPacket.HEADER == (payload.getByteBuf().getByte(0) & 0xff)) {
             new MySQLEofPacket(payload);
-            currentState = States.RowDataPacket;
+            currentState = States.ROW_DATA_PACKET;
+        } else {
+            internalResultSet.getFieldDescriptors().add(new MySQLColumnDefinition41Packet(payload));
         }
     }
     
     private void decodeRowDataPacket(final MySQLPacketPayload payload, final List<Object> out) {
-        if (MySQLEofPacket.HEADER != (payload.getByteBuf().getByte(0) & 0xff)) {
-            internalResultSet.getFieldValues().add(new MySQLTextResultSetRowPacket(payload, internalResultSet.getHeader().getColumnCount()));
-        } else {
+        if (MySQLEofPacket.HEADER == (payload.getByteBuf().getByte(0) & 0xff)) {
             new MySQLEofPacket(payload);
             out.add(internalResultSet);
-            currentState = States.ResponsePacket;
+            currentState = States.RESPONSE_PACKET;
             internalResultSet = null;
+        } else {
+            internalResultSet.getFieldValues().add(new MySQLTextResultSetRowPacket(payload, internalResultSet.getHeader().getColumnCount()));
         }
     }
     
@@ -93,7 +93,7 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
                 break;
             default:
                 MySQLFieldCountPacket fieldCountPacket = new MySQLFieldCountPacket(payload);
-                currentState = States.FieldPacket;
+                currentState = States.FIELD_PACKET;
                 internalResultSet = new InternalResultSet(fieldCountPacket);
                 break;
         }

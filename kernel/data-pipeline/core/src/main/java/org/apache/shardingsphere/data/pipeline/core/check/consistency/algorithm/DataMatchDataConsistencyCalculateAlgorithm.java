@@ -78,9 +78,15 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     }
     
     private int getChunkSize(final Properties props) {
-        int result = Integer.parseInt(props.getProperty(CHUNK_SIZE_KEY, DEFAULT_CHUNK_SIZE + ""));
+        int result;
+        try {
+            result = Integer.parseInt(props.getProperty(CHUNK_SIZE_KEY, Integer.toString(DEFAULT_CHUNK_SIZE)));
+        } catch (final NumberFormatException ignore) {
+            log.warn("'chunk-size' is not a valid number, use default value {}", DEFAULT_CHUNK_SIZE);
+            return DEFAULT_CHUNK_SIZE;
+        }
         if (result <= 0) {
-            log.warn("Invalid result={}, use default value", result);
+            log.warn("Invalid 'chunk-size': {}, use default value {}", result, DEFAULT_CHUNK_SIZE);
             return DEFAULT_CHUNK_SIZE;
         }
         return result;
@@ -204,9 +210,12 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         }
     }
     
+    /**
+     * Calculated result.
+     */
     @RequiredArgsConstructor
     @Getter
-    static final class CalculatedResult implements DataConsistencyCalculatedResult {
+    public static final class CalculatedResult implements DataConsistencyCalculatedResult {
         
         @NonNull
         private final Object maxUniqueKeyValue;

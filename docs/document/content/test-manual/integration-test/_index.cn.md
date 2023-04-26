@@ -195,4 +195,4 @@ IDEA -> Run -> Edit Configurations -> Add New Configuration -> Remote JVM Debug
 #### 注意事项
 
 1. 如需测试 Oracle，请在 pom.xml 中增加 Oracle 驱动依赖；
-1. 为了保证测试数据的完整性和易读性，整合测试中的分库分表采用了 10 库 10 表的方式，完全运行测试用例所需时间较长。
+2. 为了保证测试数据的完整性和易读性，整合测试中的分库分表采用了 10 库 10 表的方式，完全运行测试用例所需时间较长。

@@ -24,6 +24,8 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSource
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.DataMatchDataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -110,6 +112,23 @@ class DataMatchDataConsistencyCalculateAlgorithmTest {
         DataConsistencyCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 5);
         Optional<DataConsistencyCalculatedResult> sourceCalculateResult = calculateAlgorithm.calculateChunk(sourceParam);
         DataConsistencyCalculateParameter targetParam = generateParameter(target, "t_order", 5);
+        Optional<DataConsistencyCalculatedResult> targetCalculateResult = calculateAlgorithm.calculateChunk(targetParam);
+        assertTrue(sourceCalculateResult.isPresent());
+        assertTrue(targetCalculateResult.isPresent());
+        assertTrue(sourceCalculateResult.get().getMaxUniqueKeyValue().isPresent());
+        assertTrue(targetCalculateResult.get().getMaxUniqueKeyValue().isPresent());
+        assertThat(sourceCalculateResult.get().getMaxUniqueKeyValue().get(), is(targetCalculateResult.get().getMaxUniqueKeyValue().get()));
+        assertThat(targetCalculateResult.get().getMaxUniqueKeyValue().get(), is(10L));
+        assertThat(sourceCalculateResult.get(), is(targetCalculateResult.get()));
+    }
+    
+    @Test
+    void assertInitWithWrongProps() {
+        DataMatchDataConsistencyCalculateAlgorithm calculateAlgorithm = new DataMatchDataConsistencyCalculateAlgorithm();
+        calculateAlgorithm.init(PropertiesBuilder.build(new Property("chunk-size", "wrong")));
+        DataConsistencyCalculateParameter sourceParam = generateParameter(source, "t_order_copy", 0);
+        Optional<DataConsistencyCalculatedResult> sourceCalculateResult = calculateAlgorithm.calculateChunk(sourceParam);
+        DataConsistencyCalculateParameter targetParam = generateParameter(target, "t_order", 0);
         Optional<DataConsistencyCalculatedResult> targetCalculateResult = calculateAlgorithm.calculateChunk(targetParam);
         assertTrue(sourceCalculateResult.isPresent());
         assertTrue(targetCalculateResult.isPresent());

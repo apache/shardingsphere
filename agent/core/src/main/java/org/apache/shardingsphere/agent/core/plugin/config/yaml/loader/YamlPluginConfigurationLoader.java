@@ -23,8 +23,10 @@ import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlAgentC
 import org.apache.shardingsphere.agent.core.yaml.AgentYamlEngine;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 /**
@@ -41,7 +43,7 @@ public final class YamlPluginConfigurationLoader {
      * @throws IOException IO exception
      */
     public static Optional<YamlAgentConfiguration> load(final File yamlFile) throws IOException {
-        try (FileInputStream fileInputStream = new FileInputStream(yamlFile)) {
+        try (InputStream fileInputStream = Files.newInputStream(Paths.get(yamlFile.toURI()))) {
             YamlAgentConfiguration result = AgentYamlEngine.unmarshalYamlAgentConfiguration(fileInputStream);
             return null == result ? Optional.empty() : Optional.of(result);
         }

@@ -37,9 +37,9 @@ public final class CaseTypedSQLBuilderFactory {
      */
     public static CaseTypedSQLBuilder newInstance(final SQLCaseType caseType) {
         switch (caseType) {
-            case Literal:
+            case LITERAL:
                 return new LiteralSQLBuilder();
-            case Placeholder:
+            case PLACEHOLDER:
                 return new PlaceholderSQLBuilder();
             default:
                 throw new UnsupportedOperationException(caseType.name());

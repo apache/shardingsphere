@@ -206,9 +206,9 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     }
     
     private IngestPosition<?> newPosition(final ResultSet resultSet) throws SQLException {
-        return !dumperConfig.hasUniqueKey()
-                ? new PlaceholderPosition()
-                : PrimaryKeyPositionFactory.newInstance(resultSet.getObject(dumperConfig.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue());
+        return dumperConfig.hasUniqueKey()
+                ? PrimaryKeyPositionFactory.newInstance(resultSet.getObject(dumperConfig.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue())
+                : new PlaceholderPosition();
     }
     
     @Override

@@ -92,7 +92,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         } else if (dataText.startsWith("COMMIT")) {
             int commitBeginIndex = dataText.indexOf("COMMIT") + "COMMIT".length() + 1;
             int csnBeginIndex = dataText.indexOf("CSN") + "CSN".length() + 1;
-            result = new CommitTXEvent(Long.parseLong(dataText.substring(commitBeginIndex, dataText.indexOf(" ", commitBeginIndex))), Long.parseLong(dataText.substring(csnBeginIndex)));
+            result = new CommitTXEvent(Long.parseLong(dataText.substring(commitBeginIndex, dataText.indexOf(' ', commitBeginIndex))), Long.parseLong(dataText.substring(csnBeginIndex)));
         } else if (dataText.startsWith("{")) {
             result = readTableEvent(dataText);
         }

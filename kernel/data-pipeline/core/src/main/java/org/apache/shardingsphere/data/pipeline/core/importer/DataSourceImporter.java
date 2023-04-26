@@ -48,9 +48,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Default importer.
@@ -93,7 +97,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     protected void runBlocking() {
         int batchSize = importerConfig.getBatchSize() * 2;
         while (isRunning()) {
-            List<Record> records = channel.fetchRecords(batchSize, 3);
+            List<Record> records = channel.fetchRecords(batchSize, 3, TimeUnit.SECONDS);
             if (null != records && !records.isEmpty()) {
                 PipelineJobProgressUpdatedParameter updatedParam = flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
                 channel.ack(records);
@@ -107,10 +111,10 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     
     private PipelineJobProgressUpdatedParameter flush(final DataSource dataSource, final List<Record> buffer) {
         List<DataRecord> dataRecords = buffer.stream().filter(each -> each instanceof DataRecord).map(each -> (DataRecord) each).collect(Collectors.toList());
-        int insertRecordNumber = 0;
         if (dataRecords.isEmpty()) {
             return new PipelineJobProgressUpdatedParameter(0);
         }
+        int insertRecordNumber = 0;
         for (DataRecord each : dataRecords) {
             if (IngestDataChangeType.INSERT.equals(each.getType())) {
                 insertRecordNumber++;
@@ -118,9 +122,10 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
         }
         List<GroupedDataRecord> result = MERGER.group(dataRecords);
         for (GroupedDataRecord each : result) {
-            flushInternal(dataSource, each.getDeleteDataRecords());
-            flushInternal(dataSource, each.getInsertDataRecords());
-            flushInternal(dataSource, each.getUpdateDataRecords());
+            flushInternal(dataSource, each.getBatchDeleteDataRecords());
+            flushInternal(dataSource, each.getBatchInsertDataRecords());
+            flushInternal(dataSource, each.getBatchUpdateDataRecords());
+            sequentialFlush(dataSource, each.getNonBatchRecords());
         }
         return new PipelineJobProgressUpdatedParameter(insertRecordNumber);
     }
@@ -129,15 +134,11 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
         if (null == buffer || buffer.isEmpty()) {
             return;
         }
-        try {
-            tryFlush(dataSource, buffer);
-        } catch (final SQLException ex) {
-            throw new PipelineImporterJobWriteException(ex);
-        }
+        tryFlush(dataSource, buffer);
     }
     
     @SneakyThrows(InterruptedException.class)
-    private void tryFlush(final DataSource dataSource, final List<DataRecord> buffer) throws SQLException {
+    private void tryFlush(final DataSource dataSource, final List<DataRecord> buffer) {
         for (int i = 0; isRunning() && i <= importerConfig.getRetryTimes(); i++) {
             try {
                 doFlush(dataSource, buffer);
@@ -145,7 +146,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
             } catch (final SQLException ex) {
                 log.error("flush failed {}/{} times.", i, importerConfig.getRetryTimes(), ex);
                 if (i == importerConfig.getRetryTimes()) {
-                    throw ex;
+                    throw new PipelineImporterJobWriteException(ex);
                 }
                 Thread.sleep(Math.min(5 * 60 * 1000L, 1000L << i));
             }
@@ -178,6 +179,30 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
                     break;
             }
             connection.commit();
+        }
+    }
+    
+    private void doFlush(final Connection connection, final DataRecord each) throws SQLException {
+        switch (each.getType()) {
+            case IngestDataChangeType.INSERT:
+                if (null != rateLimitAlgorithm) {
+                    rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
+                }
+                executeBatchInsert(connection, Collections.singletonList(each));
+                break;
+            case IngestDataChangeType.UPDATE:
+                if (null != rateLimitAlgorithm) {
+                    rateLimitAlgorithm.intercept(JobOperationType.UPDATE, 1);
+                }
+                executeUpdate(connection, each);
+                break;
+            case IngestDataChangeType.DELETE:
+                if (null != rateLimitAlgorithm) {
+                    rateLimitAlgorithm.intercept(JobOperationType.DELETE, 1);
+                }
+                executeBatchDelete(connection, Collections.singletonList(each));
+                break;
+            default:
         }
     }
     
@@ -242,13 +267,38 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
             for (DataRecord each : dataRecords) {
                 conditionColumns = RecordUtils.extractConditionColumns(each, importerConfig.getShardingColumns(each.getTableName()));
                 for (int i = 0; i < conditionColumns.size(); i++) {
-                    preparedStatement.setObject(i + 1, conditionColumns.get(i).getOldValue());
+                    Object oldValue = conditionColumns.get(i).getOldValue();
+                    if (null == oldValue) {
+                        log.warn("Record old value is null, record={}", each);
+                    }
+                    preparedStatement.setObject(i + 1, oldValue);
                 }
                 preparedStatement.addBatch();
             }
-            preparedStatement.executeBatch();
+            int[] counts = preparedStatement.executeBatch();
+            if (IntStream.of(counts).anyMatch(value -> 1 != value)) {
+                log.warn("batchDelete failed, counts={}, sql={}", Arrays.toString(counts), deleteSQL);
+            }
         } finally {
             batchDeleteStatement = null;
+        }
+    }
+    
+    private void sequentialFlush(final DataSource dataSource, final List<DataRecord> buffer) {
+        if (buffer.isEmpty()) {
+            return;
+        }
+        try (Connection connection = dataSource.getConnection()) {
+            // TODO it's better use transaction, but execute delete maybe not effect when open transaction of PostgreSQL sometimes
+            for (DataRecord each : buffer) {
+                try {
+                    doFlush(connection, each);
+                } catch (final SQLException ex) {
+                    throw new PipelineImporterJobWriteException(String.format("Write failed, record=%s", each), ex);
+                }
+            }
+        } catch (final SQLException ex) {
+            throw new PipelineImporterJobWriteException(ex);
         }
     }
     

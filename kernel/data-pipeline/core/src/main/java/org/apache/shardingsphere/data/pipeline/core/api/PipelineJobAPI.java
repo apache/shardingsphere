@@ -28,7 +28,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.PipelineJobInfo;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
@@ -110,9 +109,8 @@ public interface PipelineJobAPI extends TypedSPI {
      *
      * @param jobId job id
      * @return job configuration
-     * @throws PipelineJobNotFoundException job not found
      */
-    PipelineJobConfiguration getJobConfiguration(String jobId) throws PipelineJobNotFoundException;
+    PipelineJobConfiguration getJobConfiguration(String jobId);
     
     /**
      * Get pipeline job info.

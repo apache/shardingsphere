@@ -51,7 +51,7 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
      * It's not thread-safe, it should be executed in only one thread at the same time.
      */
     @RequiredArgsConstructor
-    final class ResultIterable implements Iterable<DataConsistencyCalculatedResult> {
+    private final class ResultIterable implements Iterable<DataConsistencyCalculatedResult> {
         
         private final DataConsistencyCalculateParameter param;
         
@@ -62,7 +62,7 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
     }
     
     @RequiredArgsConstructor
-    final class ResultIterator implements Iterator<DataConsistencyCalculatedResult> {
+    private final class ResultIterator implements Iterator<DataConsistencyCalculatedResult> {
         
         private final DataConsistencyCalculateParameter param;
         

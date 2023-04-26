@@ -137,7 +137,7 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
         }
     }
     
-    private TransactionType getTransactionType(final String transactionTypeName) throws UnsupportedVariableException {
+    private TransactionType getTransactionType(final String transactionTypeName) {
         try {
             return TransactionType.valueOf(transactionTypeName.toUpperCase());
         } catch (final IllegalArgumentException ignored) {

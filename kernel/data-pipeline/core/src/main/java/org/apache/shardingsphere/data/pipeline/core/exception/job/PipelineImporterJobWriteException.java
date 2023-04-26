@@ -30,4 +30,8 @@ public final class PipelineImporterJobWriteException extends PipelineSQLExceptio
     public PipelineImporterJobWriteException(final Exception cause) {
         super(XOpenSQLState.GENERAL_ERROR, 91, "Importer job write data failed.", cause);
     }
+    
+    public PipelineImporterJobWriteException(final String reason, final Exception cause) {
+        super(XOpenSQLState.GENERAL_ERROR, 91, reason, cause);
+    }
 }

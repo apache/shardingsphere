@@ -80,7 +80,7 @@ public final class ShadowSelectStatementRoutingEngine extends AbstractShadowDMLS
     
     private final class ShadowColumnConditionIterator extends AbstractWhereSegmentShadowColumnConditionIterator {
         
-        ShadowColumnConditionIterator(final String shadowColumn, final Collection<ExpressionSegment> predicates) {
+        private ShadowColumnConditionIterator(final String shadowColumn, final Collection<ExpressionSegment> predicates) {
             super(shadowColumn, predicates.iterator());
         }
         

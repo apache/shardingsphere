@@ -94,14 +94,14 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
             case TABLE_MAP_EVENT:
                 decodeTableMapEvent(binlogEventHeader, payload);
                 return null;
-            case WRITE_ROWS_EVENTv1:
-            case WRITE_ROWS_EVENTv2:
+            case WRITE_ROWS_EVENT_V1:
+            case WRITE_ROWS_EVENT_V2:
                 return decodeWriteRowsEventV2(binlogEventHeader, payload);
-            case UPDATE_ROWS_EVENTv1:
-            case UPDATE_ROWS_EVENTv2:
+            case UPDATE_ROWS_EVENT_V1:
+            case UPDATE_ROWS_EVENT_V2:
                 return decodeUpdateRowsEventV2(binlogEventHeader, payload);
-            case DELETE_ROWS_EVENTv1:
-            case DELETE_ROWS_EVENTv2:
+            case DELETE_ROWS_EVENT_V1:
+            case DELETE_ROWS_EVENT_V2:
                 return decodeDeleteRowsEventV2(binlogEventHeader, payload);
             default:
                 PlaceholderEvent result = createPlaceholderEvent(binlogEventHeader);
@@ -121,10 +121,8 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
             String sqlState = payload.readStringFix(5);
             throw new RuntimeException(String.format("Decode binlog event failed, errorCode: %d, sqlState: %s, errorMessage: %s", errorNo, sqlState, payload.readStringEOF()));
         }
-        if (0 != statusCode) {
-            if (log.isDebugEnabled()) {
-                log.debug("Illegal binlog status code {}, remaining packet \n{}", statusCode, readRemainPacket(payload));
-            }
+        if (0 != statusCode && log.isDebugEnabled()) {
+            log.debug("Illegal binlog status code {}, remaining packet \n{}", statusCode, readRemainPacket(payload));
         }
     }
     

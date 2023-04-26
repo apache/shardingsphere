@@ -46,7 +46,7 @@ public final class ShowMigrationCheckStatusExecutor implements QueryableRALExecu
         return result;
     }
     
-    LocalDataQueryResultRow convert(final ConsistencyCheckJobItemInfo info) {
+    private LocalDataQueryResultRow convert(final ConsistencyCheckJobItemInfo info) {
         String checkResult = null == info.getCheckSuccess() ? "" : info.getCheckSuccess().toString();
         return new LocalDataQueryResultRow(Optional.ofNullable(info.getTableNames()).orElse(""), checkResult, Optional.ofNullable(info.getCheckFailedTableNames()).orElse(""),
                 String.valueOf(info.getFinishedPercentage()), info.getRemainingSeconds(),

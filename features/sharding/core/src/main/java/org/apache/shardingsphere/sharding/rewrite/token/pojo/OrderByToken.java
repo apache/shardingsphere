@@ -45,12 +45,12 @@ public final class OrderByToken extends SQLToken implements Attachable {
         result.append(" ORDER BY ");
         for (int i = 0; i < columnLabels.size(); i++) {
             if (0 == i) {
-                result.append(columnLabels.get(0)).append(" ").append(orderDirections.get(i).name());
+                result.append(columnLabels.get(0)).append(' ').append(orderDirections.get(i).name());
             } else {
-                result.append(",").append(columnLabels.get(i)).append(" ").append(orderDirections.get(i).name());
+                result.append(',').append(columnLabels.get(i)).append(' ').append(orderDirections.get(i).name());
             }
         }
-        result.append(" ");
+        result.append(' ');
         return result.toString();
     }
 }

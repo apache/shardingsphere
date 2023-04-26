@@ -122,7 +122,7 @@ public final class PostgreSQLByteConverter {
     }
     
     private static byte[] initBytesZeroCase(final int scale) {
-        final byte[] result = new byte[]{0, 0, -1, -1, 0, 0, 0, 0};
+        final byte[] result = {0, 0, -1, -1, 0, 0, 0, 0};
         int2(result, 6, Math.max(0, scale));
         return result;
     }
@@ -388,10 +388,6 @@ public final class PostgreSQLByteConverter {
         
         public int size() {
             return index;
-        }
-        
-        public boolean isEmpty() {
-            return 0 == index;
         }
         
         public short pop() {

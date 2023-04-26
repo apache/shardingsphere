@@ -84,7 +84,7 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
             if (column.isUniqueKey()) {
                 continue;
             }
-            result.append(quote(column.getName())).append("=EXCLUDED.").append(quote(column.getName())).append(",");
+            result.append(quote(column.getName())).append("=EXCLUDED.").append(quote(column.getName())).append(',');
         }
         result.setLength(result.length() - 1);
         return result.toString();

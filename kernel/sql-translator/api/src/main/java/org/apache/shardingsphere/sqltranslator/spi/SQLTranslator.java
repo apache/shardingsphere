@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
 
 /**
  * SQL translator.
@@ -37,7 +36,6 @@ public interface SQLTranslator extends TypedSPI {
      * @param protocolType protocol type
      * @param storageType storage type
      * @return translated SQL
-     * @throws SQLTranslationException SQL translation exception
      */
-    String translate(String sql, SQLStatement sqlStatement, DatabaseType protocolType, DatabaseType storageType) throws SQLTranslationException;
+    String translate(String sql, SQLStatement sqlStatement, DatabaseType protocolType, DatabaseType storageType);
 }

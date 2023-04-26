@@ -53,27 +53,19 @@ public final class SQLCaseAssertContext {
     }
     
     private void appendSQLCaseId(final StringBuilder builder) {
-        builder.append("SQL Case ID : ");
-        builder.append(caseId);
-        builder.append(System.lineSeparator());
+        builder.append("SQL Case ID : ").append(caseId).append(System.lineSeparator());
     }
     
     private void appendSQL(final StringBuilder builder) {
         builder.append("SQL         : ");
-        if (SQLCaseType.Placeholder == caseType) {
-            builder.append(sql);
-            builder.append(System.lineSeparator());
-            builder.append("SQL Params  : ");
-            builder.append(params);
-            builder.append(System.lineSeparator());
+        if (SQLCaseType.PLACEHOLDER == caseType) {
+            builder.append(sql).append(System.lineSeparator()).append("SQL Params  : ").append(params).append(System.lineSeparator());
         } else {
             builder.append(sql);
         }
     }
     
     private void appendFailureMessage(final String failureMessage, final StringBuilder builder) {
-        builder.append(System.lineSeparator());
-        builder.append(failureMessage);
-        builder.append(System.lineSeparator());
+        builder.append(System.lineSeparator()).append(failureMessage).append(System.lineSeparator());
     }
 }

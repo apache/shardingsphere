@@ -23,7 +23,6 @@ In DistSQL statement, except for keywords, the input format of other elements sh
 - algorithm name
 
 2. The allowed characters in the identifier are: [`A-Z, A-Z, 0-9, _`] (letters, numbers, underscores) and should start with a letter.
-
 3. When keywords or special characters appear in the identifier, use the backticks (`).
 
 ### Literal

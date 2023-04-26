@@ -200,6 +200,9 @@ class SQLNodeConverterEngineIT {
             result.add("select_with_trim_expr_from_expr_and_both");
             result.add("select_extract");
             result.add("select_where_with_bit_expr_with_mod_sign");
+            result.add("select_with_spatial_function");
+            result.add("select_from_dual");
+            result.add("select_substring");
             return result;
         }
         // CHECKSTYLE:ON
@@ -220,7 +223,7 @@ class SQLNodeConverterEngineIT {
         }
         
         private boolean isPlaceholderWithoutParameter(final InternalSQLParserTestParameter testParam) {
-            return SQLCaseType.Placeholder == testParam.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(testParam.getSqlCaseId()).getParameters().isEmpty();
+            return SQLCaseType.PLACEHOLDER == testParam.getSqlCaseType() && SQL_PARSER_TEST_CASES.get(testParam.getSqlCaseId()).getParameters().isEmpty();
         }
         
         private boolean isSupportedSQLCase(final InternalSQLParserTestParameter testParam) {

@@ -172,7 +172,7 @@ public final class ShowShardingTableRuleExecutor implements RQLExecutor<ShowShar
                 auditorTypes.add(shardingRuleConfig.getAuditors().get(each).getType());
             }
         }
-        return !auditorTypes.isEmpty() ? String.join(",", auditorTypes) : "";
+        return auditorTypes.isEmpty() ? "" : String.join(",", auditorTypes);
     }
     
     private String getAllowHintDisable(final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig) {
