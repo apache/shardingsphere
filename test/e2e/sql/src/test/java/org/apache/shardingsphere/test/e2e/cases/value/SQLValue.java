@@ -27,6 +27,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
@@ -85,15 +86,11 @@ public final class SQLValue {
                 return Boolean.parseBoolean(value);
             case "Date":
             case "datetime":
-                return LocalDate.from(dateFormatter.parse(value)).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                return Date.valueOf(LocalDate.parse(value, dateFormatter));
             case "time":
-                log.error("=====value1======" + value);
-                log.error("=====timeFormatter.parse(value)======" + timeFormatter.parse(value));
-                return LocalDate.from(timeFormatter.parse(value)).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                return Time.valueOf(LocalTime.parse("18:30:30", timeFormatter));
             case "timestamp":
-                log.error("=====value2======" + value);
-                log.error("=====timestampFormatter.parse(value)======" + timestampFormatter.parse(value));
-                return LocalDate.from(timestampFormatter.parse(value)).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                return Timestamp.valueOf(LocalDateTime.parse(value, timestampFormatter));
             case "bytes":
                 return value.getBytes(StandardCharsets.UTF_8);
             default:
