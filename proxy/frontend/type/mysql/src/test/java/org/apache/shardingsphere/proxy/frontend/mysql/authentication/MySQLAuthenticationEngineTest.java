@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.authentication;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPipeline;
 import io.netty.util.Attribute;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.provider.simple.model.privilege.AllPrivilegesPermittedShardingSpherePrivileges;
@@ -50,6 +51,8 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResultBuilder;
 import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
+import org.apache.shardingsphere.proxy.frontend.mysql.ssl.MySQLSSLRequestHandler;
+import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -74,6 +77,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -82,7 +86,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
+@StaticMockSettings({ProxyContext.class, ProxySSLContext.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class MySQLAuthenticationEngineTest {
     
@@ -91,9 +95,19 @@ class MySQLAuthenticationEngineTest {
     private final byte[] authResponse = {-27, 89, -20, -27, 65, -120, -64, -101, 86, -100, -108, -100, 6, -125, -37, 117, 14, -43, 95, -113};
     
     @Test
-    void assertHandshake() {
+    void assertHandshakeWithSSLNotEnabled() {
         ChannelHandlerContext context = mockChannelHandlerContext();
         assertTrue(authenticationEngine.handshake(context) > 0);
+        verify(context).writeAndFlush(any(MySQLHandshakePacket.class));
+    }
+    
+    @Test
+    void assertHandshakeWithSSLEnabled() {
+        when(ProxySSLContext.getInstance().isSSLEnabled()).thenReturn(true);
+        ChannelHandlerContext context = mockChannelHandlerContext();
+        when(context.pipeline()).thenReturn(mock(ChannelPipeline.class));
+        assertTrue(authenticationEngine.handshake(context) > 0);
+        verify(context.pipeline()).addFirst(eq(MySQLSSLRequestHandler.class.getSimpleName()), any(MySQLSSLRequestHandler.class));
         verify(context).writeAndFlush(any(MySQLHandshakePacket.class));
     }
     
