@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WALPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
@@ -97,7 +98,7 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
         if (10 <= connection.getMetaData().getDatabaseMajorVersion()) {
             return "SELECT PG_CURRENT_WAL_LSN()";
         }
-        throw new RuntimeException("Unsupported PostgreSQL version: " + connection.getMetaData().getDatabaseProductVersion());
+        throw new PipelineInternalException("Unsupported PostgreSQL version: " + connection.getMetaData().getDatabaseProductVersion());
     }
     
     @Override
