@@ -30,9 +30,11 @@ public final class GroupedDataRecord {
     
     private final String tableName;
     
-    private final List<DataRecord> insertDataRecords;
+    private final List<DataRecord> batchInsertDataRecords;
     
-    private final List<DataRecord> updateDataRecords;
+    private final List<DataRecord> batchUpdateDataRecords;
     
-    private final List<DataRecord> deleteDataRecords;
+    private final List<DataRecord> batchDeleteDataRecords;
+    
+    private final List<DataRecord> nonBatchRecords;
 }

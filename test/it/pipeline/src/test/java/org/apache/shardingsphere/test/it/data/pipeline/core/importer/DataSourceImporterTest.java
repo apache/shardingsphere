@@ -106,6 +106,7 @@ class DataSourceImporterTest {
         DataRecord deleteRecord = getDataRecord("DELETE");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
         when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(deleteRecord));
+        when(preparedStatement.executeBatch()).thenReturn(new int[]{1});
         jdbcImporter.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(2, 10);
