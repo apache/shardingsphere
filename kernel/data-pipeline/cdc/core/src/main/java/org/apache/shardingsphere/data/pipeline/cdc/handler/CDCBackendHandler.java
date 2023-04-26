@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.cdc;
+package org.apache.shardingsphere.data.pipeline.cdc.handler;
 
 import com.google.common.base.Strings;
 import io.netty.channel.Channel;
@@ -162,6 +162,16 @@ public final class CDCBackendHandler {
      */
     public void rollbackStreaming(final String jobId) throws SQLException {
         jobAPI.rollback(jobId);
+    }
+    
+    /**
+     * Commit streaming.
+     *
+     * @param jobId job id.
+     * @throws SQLException sql exception
+     */
+    public void commitStreaming(final String jobId) throws SQLException {
+        jobAPI.commit(jobId);
     }
     
     /**
