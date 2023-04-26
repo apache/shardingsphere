@@ -158,7 +158,8 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
     private void fulfillCalculationContext(final CalculationContext calculationContext, final DataConsistencyCalculateParameter param) throws SQLException {
         String sql = getQuerySQL(param);
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, param.getDatabaseType());
-        PreparedStatement preparedStatement = setCurrentStatement(JDBCStreamQueryUtils.generateStreamQueryPreparedStatement(databaseType, calculationContext.getConnection(), sql));
+        PreparedStatement preparedStatement = JDBCStreamQueryUtils.generateStreamQueryPreparedStatement(databaseType, calculationContext.getConnection(), sql);
+        setCurrentStatement(preparedStatement);
         if (!(databaseType instanceof MySQLDatabaseType)) {
             preparedStatement.setFetchSize(chunkSize);
         }

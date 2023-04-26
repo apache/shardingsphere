@@ -36,9 +36,8 @@ public abstract class AbstractDataConsistencyCalculateAlgorithm implements DataC
     
     private volatile Statement currentStatement;
     
-    protected <T extends Statement> T setCurrentStatement(final T statement) {
+    protected void setCurrentStatement(final Statement statement) {
         this.currentStatement = statement;
-        return statement;
     }
     
     @Override
