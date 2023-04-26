@@ -165,26 +165,32 @@ public final class BatchPreparedStatementExecutor {
         return false;
     }
     
-    private int[] accumulate(final List<int[]> results) {
+    private int[] accumulate(final List<int[]> executeResults) {
         int[] result = new int[batchCount];
         int count = 0;
         for (ExecutionGroup<JDBCExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (JDBCExecutionUnit eachUnit : each.getInputs()) {
-                Map<Integer, Integer> jdbcAndActualAddBatchCallTimesMap = Collections.emptyMap();
-                for (BatchExecutionUnit eachExecutionUnit : batchExecutionUnits) {
-                    if (isSameDataSourceAndSQL(eachExecutionUnit, eachUnit)) {
-                        jdbcAndActualAddBatchCallTimesMap = eachExecutionUnit.getJdbcAndActualAddBatchCallTimesMap();
-                        break;
-                    }
-                }
-                for (Entry<Integer, Integer> entry : jdbcAndActualAddBatchCallTimesMap.entrySet()) {
-                    int value = null == results.get(count) ? 0 : results.get(count)[entry.getValue()];
-                    result[entry.getKey()] += value;
-                }
+                accumulate(executeResults.get(count), result, eachUnit);
                 count++;
             }
         }
         return result;
+    }
+    
+    private void accumulate(final int[] executeResult, final int[] addBatchCounts, final JDBCExecutionUnit executionUnit) {
+        for (Entry<Integer, Integer> entry : getJDBCAndActualAddBatchCallTimesMap(executionUnit).entrySet()) {
+            int value = null == executeResult ? 0 : executeResult[entry.getValue()];
+            addBatchCounts[entry.getKey()] += value;
+        }
+    }
+    
+    private Map<Integer, Integer> getJDBCAndActualAddBatchCallTimesMap(final JDBCExecutionUnit executionUnit) {
+        for (BatchExecutionUnit each : batchExecutionUnits) {
+            if (isSameDataSourceAndSQL(each, executionUnit)) {
+                return each.getJdbcAndActualAddBatchCallTimesMap();
+            }
+        }
+        return Collections.emptyMap();
     }
     
     private boolean isSameDataSourceAndSQL(final BatchExecutionUnit batchExecutionUnit, final JDBCExecutionUnit jdbcExecutionUnit) {
