@@ -46,7 +46,7 @@ public final class SQLValue {
     
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
     
-    private final DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private final DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
     
     public SQLValue(final String value, final String type, final int index) {
         this.value = null == type ? value : getValue(value, type);
@@ -87,7 +87,7 @@ public final class SQLValue {
             case "datetime":
                 return Date.valueOf(LocalDate.parse(value, dateFormatter));
             case "time":
-                return Time.valueOf(LocalTime.parse("18:30:30", timeFormatter));
+                return Time.valueOf(LocalTime.parse(value, timeFormatter));
             case "timestamp":
                 return Timestamp.valueOf(LocalDateTime.parse(value, timestampFormatter));
             case "bytes":
