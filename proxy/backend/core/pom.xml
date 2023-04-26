@@ -110,6 +110,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-global-clock-distsql-handler</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-traffic-distsql-handler</artifactId>
             <version>${project.version}</version>
         </dependency>

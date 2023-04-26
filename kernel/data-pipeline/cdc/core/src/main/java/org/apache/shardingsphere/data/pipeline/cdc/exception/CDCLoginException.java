@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpe
  */
 public final class CDCLoginException extends PipelineSQLException {
     
+    private static final long serialVersionUID = 6951330476924442374L;
+    
     public CDCLoginException(final String reason) {
         super(XOpenSQLState.GENERAL_ERROR, 202, String.format("CDC login failed, reason is: %s", reason));
     }

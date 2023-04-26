@@ -36,8 +36,10 @@ import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map.Entry;
@@ -61,7 +63,7 @@ public final class ExportUtils {
         if (!file.exists()) {
             file.getParentFile().mkdirs();
         }
-        try (FileOutputStream output = new FileOutputStream(file)) {
+        try (OutputStream output = Files.newOutputStream(Paths.get(file.toURI()))) {
             output.write(exportedData.getBytes());
             output.flush();
         } catch (final IOException ex) {
@@ -98,7 +100,7 @@ public final class ExportUtils {
     }
     
     private static void appendDataSourceConfiguration(final String name, final DataSource dataSource, final StringBuilder stringBuilder) {
-        stringBuilder.append("  ").append(name).append(":").append(System.lineSeparator());
+        stringBuilder.append("  ").append(name).append(':').append(System.lineSeparator());
         DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(dataSource);
         dataSourceProps.getConnectionPropertySynonyms().getStandardProperties()
                 .forEach((key, value) -> stringBuilder.append("    ").append(key).append(": ").append(value).append(System.lineSeparator()));

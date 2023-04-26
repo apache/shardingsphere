@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpe
  */
 public final class CDCServerException extends PipelineSQLException {
     
+    private static final long serialVersionUID = -1064162731346147038L;
+    
     public CDCServerException(final String reason) {
         super(XOpenSQLState.GENERAL_ERROR, 201, String.format("CDC server exception, reason is: %s.", reason));
     }

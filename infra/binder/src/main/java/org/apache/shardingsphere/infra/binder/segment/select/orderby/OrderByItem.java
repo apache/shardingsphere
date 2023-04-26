@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.segment.select.orderby;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Or
 @RequiredArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode
 public final class OrderByItem {
     
     private final OrderByItemSegment segment;
@@ -43,5 +41,10 @@ public final class OrderByItem {
         }
         OrderByItem orderByItem = (OrderByItem) obj;
         return segment.getOrderDirection() == orderByItem.segment.getOrderDirection() && index == orderByItem.index;
+    }
+    
+    @Override
+    public int hashCode() {
+        return segment.getOrderDirection().hashCode() + Integer.hashCode(index);
     }
 }

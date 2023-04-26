@@ -77,7 +77,7 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
     private String buildConflictSQL(final DataRecord dataRecord) {
         StringBuilder result = new StringBuilder(" ON CONFLICT (");
         for (Column each : RecordUtils.extractPrimaryColumns(dataRecord)) {
-            result.append(each.getName()).append(",");
+            result.append(each.getName()).append(',');
         }
         result.setLength(result.length() - 1);
         result.append(") DO UPDATE SET ");
@@ -86,7 +86,7 @@ public final class PostgreSQLPipelineSQLBuilder extends AbstractPipelineSQLBuild
             if (column.isUniqueKey()) {
                 continue;
             }
-            result.append(quote(column.getName())).append("=EXCLUDED.").append(quote(column.getName())).append(",");
+            result.append(quote(column.getName())).append("=EXCLUDED.").append(quote(column.getName())).append(',');
         }
         result.setLength(result.length() - 1);
         return result.toString();

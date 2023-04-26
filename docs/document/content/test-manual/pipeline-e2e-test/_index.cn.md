@@ -13,7 +13,7 @@ weight = 4
 目前支持 Native 和 Docker。
 
 1. Native：运行在开发者本机环境。需要在本机启动 ShardingSphere-Proxy 实例（通过 proxy 安装包或者在 IDE 运行 `org.apache.shardingsphere.proxy.Bootstrap`）和数据库实例。一般用于本机调试。
-1. Docker：运行在 Maven 插件拉起的 Docker 环境。一般用于 GitHub Action，也可以在本机运行。
+2. Docker：运行在 Maven 插件拉起的 Docker 环境。一般用于 GitHub Action，也可以在本机运行。
 
 支持的数据库：MySQL、PostgreSQL、openGauss。
 

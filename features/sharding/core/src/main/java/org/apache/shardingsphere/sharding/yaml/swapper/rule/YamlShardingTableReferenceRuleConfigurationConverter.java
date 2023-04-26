@@ -53,8 +53,8 @@ public final class YamlShardingTableReferenceRuleConfigurationConverter {
     }
     
     private static ShardingTableReferenceRuleConfiguration convertYamlConfigurationWithName(final String referenceConfig) {
-        String name = referenceConfig.substring(0, referenceConfig.indexOf(":"));
-        String reference = referenceConfig.substring(referenceConfig.indexOf(":") + 1);
+        String name = referenceConfig.substring(0, referenceConfig.indexOf(':'));
+        String reference = referenceConfig.substring(referenceConfig.indexOf(':') + 1);
         return new ShardingTableReferenceRuleConfiguration(name, reference);
     }
     

@@ -17,7 +17,7 @@
 
 grammar RALStatement;
 
-import Keyword, Literals;
+import BaseRule;
 
 showTransactionRule
     : SHOW TRANSACTION RULE
@@ -49,16 +49,4 @@ providerName
 
 buildInProviderTypeName
     : ATOMIKOS | NARAYANA | BITRONIX
-    ;
-
-propertiesDefinition
-    : PROPERTIES LP_ properties? RP_
-    ;
-
-properties
-    : property (COMMA_ property)*
-    ;
-
-property
-    : key=STRING_ EQ_ value=STRING_
     ;

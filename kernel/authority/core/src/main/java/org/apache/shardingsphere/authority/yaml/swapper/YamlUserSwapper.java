@@ -56,8 +56,8 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
         if (!yamlUser.contains("@")) {
             return new Grantee(yamlUser, "");
         }
-        String username = yamlUser.substring(0, yamlUser.indexOf("@"));
-        String hostname = yamlUser.substring(yamlUser.indexOf("@") + 1);
+        String username = yamlUser.substring(0, yamlUser.indexOf('@'));
+        String hostname = yamlUser.substring(yamlUser.indexOf('@') + 1);
         Preconditions.checkArgument(!Strings.isNullOrEmpty(username), "user configuration `%s` is invalid, the legal format is `username@hostname`", yamlUser);
         return new Grantee(username, hostname);
     }

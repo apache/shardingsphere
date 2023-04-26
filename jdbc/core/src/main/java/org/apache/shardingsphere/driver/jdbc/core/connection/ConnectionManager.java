@@ -127,7 +127,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     private String createJdbcUrl(final ProxyInstanceMetaData instanceMetaData, final String schema, final Map<String, Object> props) {
         String jdbcUrl = String.valueOf(props.get("jdbcUrl"));
         String jdbcUrlPrefix = jdbcUrl.substring(0, jdbcUrl.indexOf("//"));
-        String jdbcUrlSuffix = jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?")) : "";
+        String jdbcUrlSuffix = jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf('?')) : "";
         return String.format("%s//%s:%s/%s%s", jdbcUrlPrefix, instanceMetaData.getIp(), instanceMetaData.getPort(), schema, jdbcUrlSuffix);
     }
     

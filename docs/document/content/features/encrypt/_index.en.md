@@ -12,8 +12,7 @@ Security control has always been a crucial link of data governance, data encrypt
 The demand for data encryption is generally divided into two situations in real business scenarios:
 
 1. When the new business start to launch, and the security department stipulates that the sensitive information related to users, such as banks and mobile phone numbers, should be encrypted and stored in the database, and then decrypted when used. Because it is a brand new system, there is no inventory data cleaning problem, so the implementation is relatively simple.
-
-1. For the service has been launched, and plaintext has been stored in the database before. The relevant department suddenly needs to encrypt the data from the on-line business. This scenario generally needs to deal with three issues as followings:
+2. For the service has been launched, and plaintext has been stored in the database before. The relevant department suddenly needs to encrypt the data from the on-line business. This scenario generally needs to deal with three issues as followings:
 
 - How to encrypt the historical data, a.k.a.s data clean.
 - How to encrypt the newly added data and store it in the database without changing the business SQL and logic; then decrypt the taken out data when use it.
