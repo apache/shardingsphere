@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class RequiredSessionVariableRecorder {
     
     private static final String DEFAULT = "DEFAULT";
+    private static final String MYSQL_DEFAULT = "NULL";
     
     private final Map<String, String> sessionVariables = new ConcurrentHashMap<>();
     
@@ -114,7 +115,7 @@ public final class RequiredSessionVariableRecorder {
     private String aggregateToMySQLSetDefaultSQLs() {
         StringJoiner result = new StringJoiner(",", "SET ", "");
         for (String each : sessionVariables.keySet()) {
-            result.add(each + "=" + DEFAULT);
+            result.add(each + "=" + MYSQL_DEFAULT);
         }
         return result.toString();
     }

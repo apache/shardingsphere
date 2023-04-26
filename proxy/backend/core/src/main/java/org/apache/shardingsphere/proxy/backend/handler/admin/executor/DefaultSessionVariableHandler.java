@@ -37,11 +37,16 @@ public abstract class DefaultSessionVariableHandler implements SessionVariableHa
     @Override
     public final void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
         if (TypedSPILoader.findService(ReplayedSessionVariablesProvider.class, databaseType).map(ReplayedSessionVariablesProvider::getVariables).orElseGet(Collections::emptySet)
-                .contains(variableName)) {
+                .contains(variableName)
+                || isNeedHandel(variableName)) {
             connectionSession.getRequiredSessionVariableRecorder().setVariable(variableName, assignValue);
         } else {
             log.debug("Set statement {} = {} was discarded.", variableName, assignValue);
         }
+    }
+    
+    protected boolean isNeedHandel(final String variableName) {
+        return false;
     }
     
     @Override

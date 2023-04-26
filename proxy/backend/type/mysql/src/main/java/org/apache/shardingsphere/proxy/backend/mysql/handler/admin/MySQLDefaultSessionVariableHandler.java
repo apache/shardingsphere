@@ -27,4 +27,9 @@ public final class MySQLDefaultSessionVariableHandler extends DefaultSessionVari
     public MySQLDefaultSessionVariableHandler() {
         super("MySQL");
     }
+    
+    @Override
+    protected boolean isNeedHandel(final String variableName) {
+        return variableName.startsWith("@");
+    }
 }
