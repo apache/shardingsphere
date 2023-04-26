@@ -52,10 +52,10 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     
     private String authPluginName;
     
-    public MySQLHandshakePacket(final int connectionId, final MySQLAuthenticationPluginData authPluginData) {
+    public MySQLHandshakePacket(final int connectionId, final boolean sslEnabled, final MySQLAuthenticationPluginData authPluginData) {
         serverVersion = MySQLServerInfo.getDefaultServerVersion();
         this.connectionId = connectionId;
-        capabilityFlagsLower = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower();
+        capabilityFlagsLower = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower() | (sslEnabled ? MySQLCapabilityFlag.CLIENT_SSL.getValue() : 0);
         characterSet = MySQLServerInfo.DEFAULT_CHARSET.getId();
         statusFlag = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT;
         capabilityFlagsUpper = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
