@@ -78,8 +78,8 @@ class MySQLTextResultSetRowPacketTest {
     @Test
     void assertLocalDateTime() {
         String localDateTimeStr = "2021-08-23T17:30:30";
-        LocalDateTime time = LocalDateTime.parse(localDateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(Collections.singletonList(time));
+        LocalDateTime dateTime = LocalDateTime.parse(localDateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(Collections.singletonList(dateTime));
         actual.write(payload);
         verify(payload).writeStringLenenc(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.parse(localDateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))));
     }

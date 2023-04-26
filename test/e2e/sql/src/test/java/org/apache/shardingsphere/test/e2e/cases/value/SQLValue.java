@@ -28,7 +28,6 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -104,13 +103,13 @@ public final class SQLValue {
             return formatString((String) value);
         }
         if (value instanceof Date) {
-            return formatString(dateFormatter.format(LocalDateTime.ofInstant(((Date) value).toInstant(), ZoneId.systemDefault())));
+            return formatString(dateFormatter.format(((Date) value).toLocalDate()));
         }
         if (value instanceof Time) {
-            return formatString(timeFormatter.format(LocalDateTime.ofInstant(((Time) value).toInstant(), ZoneId.systemDefault())));
+            return formatString(timeFormatter.format(((Time) value).toLocalTime()));
         }
         if (value instanceof Timestamp) {
-            return formatString(timestampFormatter.format(LocalDateTime.ofInstant(((Timestamp) value).toInstant(), ZoneId.systemDefault())));
+            return formatString(timestampFormatter.format(((Timestamp) value).toLocalDateTime()));
         }
         if (value instanceof byte[]) {
             return formatString(new String((byte[]) value, StandardCharsets.UTF_8));
