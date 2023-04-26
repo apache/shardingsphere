@@ -49,6 +49,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @E2ETestCaseSettings(SQLCommandType.DAL)
 class DALE2EIT {
     
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
@@ -133,7 +135,6 @@ class DALE2EIT {
         if (E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
             return;
         }
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         assertThat(dateTimeFormatter.format(actual.getDate(columnIndex).toLocalDate()), is(expected));
         assertThat(dateTimeFormatter.format(actual.getDate(columnLabel).toLocalDate()), is(expected));
     }
