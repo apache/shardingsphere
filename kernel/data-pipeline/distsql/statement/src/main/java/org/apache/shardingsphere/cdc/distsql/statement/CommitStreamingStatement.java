@@ -15,14 +15,18 @@
  * limitations under the License.
  */
 
-grammar CDCDistSQLStatement;
+package org.apache.shardingsphere.cdc.distsql.statement;
 
-import Symbol, RALStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.cdc.UpdatableCDCRALStatement;
 
-execute
-    : (showStreamingList
-    | showStreamingStatus
-    | rollbackStreaming
-    | commitStreaming
-    ) SEMI?
-    ;
+/**
+ * Commit streaming statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class CommitStreamingStatement extends UpdatableCDCRALStatement {
+    
+    private final String jobId;
+}

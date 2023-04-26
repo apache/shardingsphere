@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.cdc;
+package org.apache.shardingsphere.data.pipeline.cdc.handler;
 
 import com.google.common.base.Strings;
 import io.netty.channel.Channel;
@@ -28,7 +28,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckHolder;
 import org.apache.shardingsphere.data.pipeline.cdc.core.connector.SocketSinkImporterConnector;
-import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJob;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCExceptionWrapper;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCServerException;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.NotFindStreamDataSourceTableException;
@@ -41,14 +40,9 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataResult;
 import org.apache.shardingsphere.data.pipeline.cdc.util.CDCSchemaTableUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.util.CDCTableRuleUtils;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
-import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
-import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
-import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobConfigurationAPI;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -74,6 +68,16 @@ import java.util.stream.Collectors;
 public final class CDCBackendHandler {
     
     private final CDCJobAPI jobAPI = new CDCJobAPI();
+    
+    /**
+     * Get database name by job id.
+     *
+     * @param jobId job id
+     * @return database
+     */
+    public String getDatabaseNameByJobId(final String jobId) {
+        return jobAPI.getJobConfiguration(jobId).getDatabaseName();
+    }
     
     /**
      * Stream data.
@@ -116,16 +120,6 @@ public final class CDCBackendHandler {
     }
     
     /**
-     * Get database name by job id.
-     *
-     * @param jobId job id
-     * @return database
-     */
-    public String getDatabaseNameByJobId(final String jobId) {
-        return jobAPI.getJobConfiguration(jobId).getDatabaseName();
-    }
-    
-    /**
      * Start streaming.
      *
      * @param jobId job id
@@ -138,20 +132,11 @@ public final class CDCBackendHandler {
         if (PipelineJobCenter.isJobExisting(jobId)) {
             PipelineJobCenter.stop(jobId);
         }
-        JobConfigurationAPI jobConfigAPI = PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobId));
-        JobConfigurationPOJO jobConfigPOJO = jobConfigAPI.getJobConfiguration(jobId);
-        // TODO, ensure that there is only one consumer at a time, job config disable may not be updated when the program is forced to close
-        jobConfigPOJO.setDisabled(false);
-        jobConfigAPI.updateJobConfiguration(jobConfigPOJO);
         ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(cdcJobConfig.getDatabaseName());
         Comparator<DataRecord> dataRecordComparator = cdcJobConfig.isDecodeWithTX()
                 ? DataRecordComparatorGenerator.generatorIncrementalComparator(database.getProtocolType())
                 : null;
-        CDCJob job = new CDCJob(new SocketSinkImporterConnector(channel, database, cdcJobConfig.getJobShardingCount(), cdcJobConfig.getSchemaTableNames(), dataRecordComparator));
-        PipelineJobCenter.addJob(jobId, job);
-        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfigPOJO.toJobConfiguration());
-        job.setJobBootstrap(oneOffJobBootstrap);
-        oneOffJobBootstrap.execute();
+        jobAPI.startJob(jobId, new SocketSinkImporterConnector(channel, database, cdcJobConfig.getJobShardingCount(), cdcJobConfig.getSchemaTableNames(), dataRecordComparator));
         connectionContext.setJobId(jobId);
     }
     
@@ -166,20 +151,27 @@ public final class CDCBackendHandler {
             return;
         }
         PipelineJobCenter.stop(jobId);
-        JobConfigurationAPI jobConfigAPI = PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobId));
-        JobConfigurationPOJO jobConfig = jobConfigAPI.getJobConfiguration(jobId);
-        jobConfig.setDisabled(true);
-        jobConfigAPI.updateJobConfiguration(jobConfig);
+        jobAPI.updateJobConfigurationDisabled(jobId, true);
     }
     
     /**
-     * Drop streaming.
+     * Rollback streaming.
      *
      * @param jobId job id.
      * @throws SQLException sql exception
      */
-    public void dropStreaming(final String jobId) throws SQLException {
+    public void rollbackStreaming(final String jobId) throws SQLException {
         jobAPI.rollback(jobId);
+    }
+    
+    /**
+     * Commit streaming.
+     *
+     * @param jobId job id.
+     * @throws SQLException sql exception
+     */
+    public void commitStreaming(final String jobId) throws SQLException {
+        jobAPI.commit(jobId);
     }
     
     /**

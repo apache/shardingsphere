@@ -265,7 +265,6 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
             batchDeleteStatement = preparedStatement;
             preparedStatement.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
-                conditionColumns = RecordUtils.extractConditionColumns(each, importerConfig.getShardingColumns(each.getTableName()));
                 for (int i = 0; i < conditionColumns.size(); i++) {
                     Object oldValue = conditionColumns.get(i).getOldValue();
                     if (null == oldValue) {

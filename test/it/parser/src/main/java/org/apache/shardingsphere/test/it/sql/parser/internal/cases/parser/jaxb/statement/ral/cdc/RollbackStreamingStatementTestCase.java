@@ -15,14 +15,21 @@
  * limitations under the License.
  */
 
-grammar CDCDistSQLStatement;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.cdc;
 
-import Symbol, RALStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
-execute
-    : (showStreamingList
-    | showStreamingStatus
-    | rollbackStreaming
-    | commitStreaming
-    ) SEMI?
-    ;
+import javax.xml.bind.annotation.XmlElement;
+
+/**
+ * Rollback streaming statement test case.
+ */
+@Getter
+@Setter
+public final class RollbackStreamingStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "job-id")
+    private String jobId;
+}

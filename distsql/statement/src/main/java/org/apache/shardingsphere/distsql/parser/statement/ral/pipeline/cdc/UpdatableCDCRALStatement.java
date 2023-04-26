@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-grammar CDCDistSQLStatement;
+package org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.cdc;
 
-import Symbol, RALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.UpdatablePipelineRALStatement;
 
-execute
-    : (showStreamingList
-    | showStreamingStatus
-    | rollbackStreaming
-    | commitStreaming
-    ) SEMI?
-    ;
+/**
+ * Updatable CDC RAL statement.
+ */
+public abstract class UpdatableCDCRALStatement extends UpdatablePipelineRALStatement implements CDCRALStatement {
+}

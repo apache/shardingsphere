@@ -22,4 +22,12 @@
     <show-streaming-status sql-case-id="show-streaming-status">
         <job-id>123</job-id>
     </show-streaming-status>
+
+    <rollback-streaming sql-case-id="rollback-streaming">
+        <job-id>123</job-id>
+    </rollback-streaming>
+
+    <commit-streaming sql-case-id="commit-streaming">
+        <job-id>123</job-id>
+    </commit-streaming>
 </sql-parser-test-cases>
