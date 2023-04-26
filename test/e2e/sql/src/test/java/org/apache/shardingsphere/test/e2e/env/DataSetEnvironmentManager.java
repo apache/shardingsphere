@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -73,9 +72,8 @@ public final class DataSetEnvironmentManager {
      * Fill data.
      *
      * @throws SQLException SQL exception
-     * @throws ParseException parse exception
      */
-    public void fillData() throws SQLException, ParseException {
+    public void fillData() throws SQLException {
         Map<DataNode, List<DataSetRow>> dataNodeListMap = getDataSetRowMap();
         List<Callable<Void>> fillDataTasks = new LinkedList<>();
         for (Entry<DataNode, List<DataSetRow>> entry : dataNodeListMap.entrySet()) {

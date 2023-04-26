@@ -24,9 +24,10 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 /**
  * SQL value.
@@ -38,12 +39,21 @@ public final class SQLValue {
     
     private final int index;
     
-    public SQLValue(final String value, final String type, final int index) throws ParseException {
+    private final DateTimeFormatter dateFormatter;
+    
+    private final DateTimeFormatter timeFormatter;
+    
+    private final DateTimeFormatter timestampFormatter;
+    
+    public SQLValue(final String value, final String type, final int index) {
         this.value = null == type ? value : getValue(value, type);
         this.index = index;
+        dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        timestampFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     }
     
-    private Object getValue(final String value, final String type) throws ParseException {
+    private Object getValue(final String value, final String type) {
         if (type.startsWith("enum#") || type.startsWith("cast#")) {
             return value;
         }
@@ -75,11 +85,11 @@ public final class SQLValue {
                 return Boolean.parseBoolean(value);
             case "Date":
             case "datetime":
-                return new Date(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(value).getTime());
+                return LocalDate.from(dateFormatter.parse(value)).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
             case "time":
-                return new Time(new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).parse(value).getTime());
+                return LocalDate.from(timeFormatter.parse(value)).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
             case "timestamp":
-                return new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(value).getTime());
+                return LocalDate.from(timestampFormatter.parse(value)).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
             case "bytes":
                 return value.getBytes(StandardCharsets.UTF_8);
             default:
@@ -93,13 +103,13 @@ public final class SQLValue {
             return formatString((String) value);
         }
         if (value instanceof Date) {
-            return formatString(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(value));
+            return formatString(dateFormatter.format(LocalDateTime.ofInstant(((Date) value).toInstant(), ZoneId.systemDefault())));
         }
         if (value instanceof Time) {
-            return formatString(new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(value));
+            return formatString(timeFormatter.format(LocalDateTime.ofInstant(((Time) value).toInstant(), ZoneId.systemDefault())));
         }
         if (value instanceof Timestamp) {
-            return formatString(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(value));
+            return formatString(timestampFormatter.format(LocalDateTime.ofInstant(((Timestamp) value).toInstant(), ZoneId.systemDefault())));
         }
         if (value instanceof byte[]) {
             return formatString(new String((byte[]) value, StandardCharsets.UTF_8));

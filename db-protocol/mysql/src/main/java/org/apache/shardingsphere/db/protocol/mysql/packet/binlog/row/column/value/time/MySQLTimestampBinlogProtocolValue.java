@@ -23,6 +23,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
 
 /**
  * MySQL TIMESTAMP binlog protocol value.
@@ -34,6 +35,6 @@ public final class MySQLTimestampBinlogProtocolValue implements MySQLBinlogProto
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int seconds = payload.readInt4();
-        return 0 == seconds ? MySQLTimeValueUtils.DATETIME_OF_ZERO : MySQLTimeValueUtils.getSimpleDateFormat().format(new Timestamp(seconds * 1000L));
+        return 0 == seconds ? MySQLTimeValueUtils.DATETIME_OF_ZERO : DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(new Timestamp(seconds * 1000L).toLocalDateTime());
     }
 }
