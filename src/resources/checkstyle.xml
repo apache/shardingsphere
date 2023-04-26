@@ -91,9 +91,7 @@
         <module name="DefaultComesLast" />
         <module name="EmptyStatement" />
         <module name="EqualsAvoidNull" />
-        <module name="EqualsHashCode">
-            <property name="severity" value="warning" />
-        </module>
+        <module name="EqualsHashCode" />
         <module name="ExplicitInitialization" />
         <module name="FallThrough" />
         <module name="IllegalCatch" />
