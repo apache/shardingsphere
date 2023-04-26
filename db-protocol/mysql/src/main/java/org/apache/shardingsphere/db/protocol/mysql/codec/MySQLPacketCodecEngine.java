@@ -20,9 +20,8 @@ package org.apache.shardingsphere.db.protocol.mysql.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
@@ -39,7 +38,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Database packet codec for MySQL.
  */
-@Slf4j
 public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<MySQLPacket> {
     
     private static final int MAX_PACKET_LENGTH = 0xFFFFFF;
