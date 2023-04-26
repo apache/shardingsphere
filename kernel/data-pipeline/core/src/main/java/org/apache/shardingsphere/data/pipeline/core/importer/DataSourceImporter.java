@@ -294,7 +294,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
                 try {
                     doFlush(connection, each);
                 } catch (final SQLException ex) {
-                    throw new PipelineImporterJobWriteException("Write failed, record={}", ex);
+                    throw new PipelineImporterJobWriteException(String.format("Write failed, record=%s", each), ex);
                 }
             }
         } catch (final SQLException ex) {
