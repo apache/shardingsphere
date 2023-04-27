@@ -81,8 +81,7 @@ class ReadwriteSplittingSQLRouterTest {
     @BeforeEach
     void setUp() {
         staticRule = new ReadwriteSplittingRule("logic_db", new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME,
-                WRITE_DATASOURCE, Collections.singletonList(READ_DATASOURCE), "")),
-                Collections.emptyMap()), Collections.emptyList(), mock(InstanceContext.class));
+                WRITE_DATASOURCE, Collections.singletonList(READ_DATASOURCE), "")), Collections.emptyMap()), mock(InstanceContext.class));
         sqlRouter = (ReadwriteSplittingSQLRouter) OrderedSPILoader.getServices(SQLRouter.class, Collections.singleton(staticRule)).get(staticRule);
     }
     
