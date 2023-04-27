@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -99,13 +99,13 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         rowValues.add(processContext.getUsername());
         rowValues.add(processContext.getHostname());
         rowValues.add(processContext.getDatabaseName());
-        rowValues.add(ExecuteProcessStatusEnum.SLEEP == processContext.getProcessStatus() ? "Sleep" : "Execute");
+        rowValues.add(ExecuteProcessStatus.SLEEP == processContext.getProcessStatus() ? "Sleep" : "Execute");
         rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - processContext.getStartTimeMillis()));
         String sql = null;
-        if (ExecuteProcessStatusEnum.SLEEP == processContext.getProcessStatus()) {
+        if (ExecuteProcessStatus.SLEEP == processContext.getProcessStatus()) {
             rowValues.add("");
         } else {
-            int processDoneCount = processContext.getUnitStatuses().stream().map(each -> ExecuteProcessStatusEnum.DONE == each.getProcessStatus() ? 1 : 0).reduce(0, Integer::sum);
+            int processDoneCount = processContext.getUnitStatuses().stream().map(each -> ExecuteProcessStatus.DONE == each.getProcessStatus() ? 1 : 0).reduce(0, Integer::sum);
             String statePrefix = "Executing ";
             rowValues.add(statePrefix + processDoneCount + "/" + processContext.getUnitStatuses().size());
             sql = processContext.getSql();

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
@@ -72,7 +72,7 @@ public final class ExecuteProcessEngine {
     public void initializeExecution(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
             ExecuteIDContext.set(executionGroupContext.getReportContext().getExecutionID());
-            reporter.report(queryContext, executionGroupContext, ExecuteProcessStatusEnum.START);
+            reporter.report(queryContext, executionGroupContext, ExecuteProcessStatus.START);
         }
     }
     
@@ -85,7 +85,7 @@ public final class ExecuteProcessEngine {
         if (ExecuteIDContext.isEmpty()) {
             return;
         }
-        reporter.report(ExecuteIDContext.get(), executionUnit, ExecuteProcessStatusEnum.DONE);
+        reporter.report(ExecuteIDContext.get(), executionUnit, ExecuteProcessStatus.DONE);
     }
     
     /**
