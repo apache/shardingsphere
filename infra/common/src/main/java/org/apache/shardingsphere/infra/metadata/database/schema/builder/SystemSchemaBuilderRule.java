@@ -66,7 +66,8 @@ public enum SystemSchemaBuilderRule {
             "memory_summary_global_by_event_name", "metadata_locks", "mutex_instances", "objects_summary_global_by_type", "performance_timers", "prepared_statements_instances",
             "replication_applier_configuration", "replication_applier_status", "replication_applier_status_by_coordinator", "replication_applier_status_by_worker",
             "replication_connection_configuration", "replication_connection_status", "replication_group_member_stats", "replication_group_members", "rwlock_instances", "session_account_connect_attrs",
-            "session_connect_attrs", "session_status", "session_variables", "setup_actors", "setup_consumers", "setup_instruments"))),
+            "session_connect_attrs", "session_status", "session_variables", "setup_actors", "setup_consumers", "setup_instruments", "setup_objects", "setup_timers", "socket_instances",
+            "socket_summary_by_event_name", "socket_summary_by_instance", "status_by_account", "status_by_host", "status_by_thread", "status_by_user", "table_handles"))),
     
     MYSQL_SYS("MySQL", "sys", new HashSet<>(Collections.singleton("sys"))),
     
