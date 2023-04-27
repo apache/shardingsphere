@@ -67,7 +67,7 @@ public final class ExecuteProcessReporter {
     public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessStatus processStatus) {
         ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), processStatus);
         ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setProcessStatus(executeProcessUnit.getProcessStatus()));
+        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setStatus(executeProcessUnit.getStatus()));
     }
     
     /**
