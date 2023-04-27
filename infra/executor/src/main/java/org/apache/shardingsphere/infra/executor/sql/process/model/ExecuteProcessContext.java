@@ -89,5 +89,4 @@ public final class ExecuteProcessContext {
         startMillis = System.currentTimeMillis();
         status = ExecuteProcessStatus.SLEEP;
     }
-    
 }
