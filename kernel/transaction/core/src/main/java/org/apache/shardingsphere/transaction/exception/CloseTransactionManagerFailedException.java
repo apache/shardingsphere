@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.type.tso.provider;
+package org.apache.shardingsphere.transaction.exception;
 
-import org.apache.shardingsphere.globalclock.core.provider.GlobalClockProvider;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Timestamp oracle provider.
+ * Close transaction manager failed exception.
  */
-public interface TSOProvider extends GlobalClockProvider {
+public final class CloseTransactionManagerFailedException extends TransactionSQLException {
+    
+    private static final long serialVersionUID = -3396778990357223580L;
+    
+    public CloseTransactionManagerFailedException(final Exception exception) {
+        super(XOpenSQLState.INVALID_TRANSACTION_STATE, 205, "Close transaction manager failed, `%s`", exception.getMessage());
+    }
 }

@@ -128,7 +128,7 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     }
     
     @Override
-    public void close() throws Exception {
+    public void close() {
         for (XATransactionDataSource each : cachedDataSources.values()) {
             each.close();
         }
