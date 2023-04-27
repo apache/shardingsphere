@@ -50,7 +50,7 @@ public final class ExecuteProcessContext {
     
     private final Collection<Statement> processStatements = new LinkedList<>();
     
-    private long startTimeMillis = System.currentTimeMillis();
+    private long startMillis = System.currentTimeMillis();
     
     private ExecuteProcessStatus status;
     
@@ -86,7 +86,7 @@ public final class ExecuteProcessContext {
      */
     public void reset() {
         sql = "";
-        startTimeMillis = System.currentTimeMillis();
+        startMillis = System.currentTimeMillis();
         status = ExecuteProcessStatus.SLEEP;
     }
     
