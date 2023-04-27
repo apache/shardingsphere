@@ -48,3 +48,4 @@ props:
   proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
   sql-federation-type: ADVANCED
   proxy-frontend-database-protocol-type: PostgreSQL
+  proxy-frontend-ssl-enabled: true
