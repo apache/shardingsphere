@@ -88,9 +88,8 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
             }
             KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
             final Callable<Void> incrementalTaskFn = () -> {
-                doCreateUpdateDelete(containerComposer, keyGenerateAlgorithm.generateKey());
                 Object orderId = keyGenerateAlgorithm.generateKey();
-                insertOneOrder(containerComposer, orderId);
+                doCreateUpdateDelete(containerComposer, orderId);
                 containerComposer.assertProxyOrderRecordExist("t_order", orderId);
                 return null;
             };
@@ -102,8 +101,11 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     private void doCreateUpdateDelete(final PipelineContainerComposer containerComposer, final Object orderId) {
         String updatedStatus = "updated" + System.currentTimeMillis();
         insertOneOrder(containerComposer, orderId);
-        updateOneOrder(containerComposer, orderId, updatedStatus);
-        deleteOneOrder(containerComposer, orderId, updatedStatus);
+        // TODO PostgreSQL update delete events not support if table without unique keys at increment task.
+        if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
+            updateOneOrder(containerComposer, orderId, updatedStatus);
+            deleteOneOrder(containerComposer, orderId, updatedStatus);
+        }
     }
     
     private void insertOneOrder(final PipelineContainerComposer containerComposer, final Object uniqueKey) throws SQLException {

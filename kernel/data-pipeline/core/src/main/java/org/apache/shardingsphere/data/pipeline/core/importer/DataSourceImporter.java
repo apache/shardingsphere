@@ -246,8 +246,14 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
             }
             for (int i = 0; i < conditionColumns.size(); i++) {
                 Column keyColumn = conditionColumns.get(i);
+                // TODO There to be compatible with PostgreSQL before value is null except primary key and unsupported updating sharding value now.
+                if (shardingColumns.contains(keyColumn.getName()) && keyColumn.getOldValue() == null) {
+                    preparedStatement.setObject(updatedColumns.size() + i + 1, keyColumn.getValue());
+                    continue;
+                }
                 preparedStatement.setObject(updatedColumns.size() + i + 1, keyColumn.getOldValue());
             }
+            // TODO if table without unique key the conditionColumns before values is null, so update will fail at PostgreSQL
             int updateCount = preparedStatement.executeUpdate();
             if (1 != updateCount) {
                 log.warn("executeUpdate failed, updateCount={}, updateSql={}, updatedColumns={}, conditionColumns={}", updateCount, updateSql, updatedColumns, conditionColumns);
