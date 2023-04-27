@@ -48,7 +48,9 @@ class YamlAuthorityRuleConfigurationSwapperTest {
     void assertSwapToObject() {
         YamlAuthorityRuleConfiguration authorityRuleConfig = new YamlAuthorityRuleConfiguration();
         authorityRuleConfig.setUsers(Collections.singletonList(getYamlUser()));
-        authorityRuleConfig.setPrivilege(new YamlAlgorithmConfiguration("type", new Properties()));
+        YamlAlgorithmConfiguration yamlAlgorithmConfig = new YamlAlgorithmConfiguration();
+        yamlAlgorithmConfig.setType("type");
+        authorityRuleConfig.setPrivilege(yamlAlgorithmConfig);
         AuthorityRuleConfiguration actual = swapper.swapToObject(authorityRuleConfig);
         assertThat(actual.getUsers().size(), is(1));
         assertNotNull(actual.getAuthorityProvider());

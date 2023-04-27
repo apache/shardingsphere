@@ -38,7 +38,9 @@ class YamlAlgorithmConfigurationSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        YamlAlgorithmConfiguration yamlConfig = new YamlAlgorithmConfiguration("TEST", PropertiesBuilder.build(new Property("key", "value")));
+        YamlAlgorithmConfiguration yamlConfig = new YamlAlgorithmConfiguration();
+        yamlConfig.setType("TEST");
+        yamlConfig.setProps(PropertiesBuilder.build(new Property("key", "value")));
         AlgorithmConfiguration actual = new YamlAlgorithmConfigurationSwapper().swapToObject(yamlConfig);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProps().getProperty("key"), is("value"));
