@@ -18,7 +18,7 @@
 name: Nightly Check - SonarCloud
 on:
   schedule:
-    - cron: '0 17 */1 * *'  # once a day. UTC time
+    - cron: '0 */2 * * *'  # every two hours
   workflow_dispatch:
 
 concurrency:
@@ -54,6 +54,8 @@ jobs:
           key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
+      - name: Build dependencies
+        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
       - name: Build and analyze
         env:
           MAVEN_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
