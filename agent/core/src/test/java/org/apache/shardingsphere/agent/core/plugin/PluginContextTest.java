@@ -17,41 +17,45 @@
 
 package org.apache.shardingsphere.agent.core.plugin;
 
-import org.junit.jupiter.api.AfterAll;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
+import org.apache.shardingsphere.test.mock.StaticMockSettings;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
+@StaticMockSettings(ProxyContext.class)
 class PluginContextTest {
     
-    @AfterAll
-    static void tearDown() {
-        System.clearProperty("AGENT_PLUGINS_ENABLED");
+    @AfterEach
+    void reset() {
+        PluginContext.getInstance().setContextManager(null);
     }
     
     @Test
-    void assertNotPluginEnabledKey() {
-        assertFalse(PluginContext.isPluginEnabled());
+    void assertPluginEnabledIsTrue() {
+        PluginContext.getInstance().setEnhancedForProxy(true);
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED)).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        assertTrue(PluginContext.getInstance().isPluginEnabled());
     }
     
     @Test
-    void assertPluginEnabledKeyIsFalse() {
-        System.setProperty("AGENT_PLUGINS_ENABLED", "false");
-        assertFalse(PluginContext.isPluginEnabled());
-    }
-    
-    @Test
-    void assertPluginEnabledKeyIsZero() {
-        System.setProperty("AGENT_PLUGINS_ENABLED", "0");
-        assertFalse(PluginContext.isPluginEnabled());
-    }
-    
-    @Test
-    void assertPluginEnabled() {
-        System.setProperty("AGENT_PLUGINS_ENABLED", "1");
-        assertTrue(PluginContext.isPluginEnabled());
-        System.setProperty("AGENT_PLUGINS_ENABLED", "true");
-        assertTrue(PluginContext.isPluginEnabled());
+    void assertPluginEnabledIsFalse() {
+        PluginContext.getInstance().setEnhancedForProxy(true);
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED)).thenReturn(false);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        assertFalse(PluginContext.getInstance().isPluginEnabled());
     }
 }
