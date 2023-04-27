@@ -179,7 +179,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     private String buildWhereSQL(final Collection<Column> conditionColumns) {
         StringBuilder where = new StringBuilder();
         for (Column each : conditionColumns) {
-            where.append(String.format("%s = ? and ", quote(each.getName())));
+            where.append(String.format("%s = ? AND ", quote(each.getName())));
         }
         where.setLength(where.length() - 5);
         return where.toString();
