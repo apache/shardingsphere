@@ -154,7 +154,7 @@ public final class ShardingSphereSchema {
      * @return contains column name or not
      */
     public boolean containsColumn(final String tableName, final String columnName) {
-        return containsTable(tableName) && getTable(tableName).getColumns().containsKey(columnName.toLowerCase());
+        return containsTable(tableName) && getTable(tableName).containsColumn(columnName);
     }
     
     /**
@@ -165,7 +165,7 @@ public final class ShardingSphereSchema {
      * @return whether contains index name or not
      */
     public boolean containsIndex(final String tableName, final String indexName) {
-        return containsTable(tableName) && getTable(tableName).getIndexes().containsKey(indexName.toLowerCase());
+        return containsTable(tableName) && getTable(tableName).containsIndex(indexName);
     }
     
     /**

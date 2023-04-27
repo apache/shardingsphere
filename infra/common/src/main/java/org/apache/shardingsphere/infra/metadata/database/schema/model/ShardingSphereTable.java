@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -32,7 +31,6 @@ import java.util.Map;
 /**
  * ShardingSphere table.
  */
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
@@ -59,12 +57,12 @@ public final class ShardingSphereTable {
     public ShardingSphereTable(final String name, final Collection<ShardingSphereColumn> columns,
                                final Collection<ShardingSphereIndex> indexes, final Collection<ShardingSphereConstraint> constraints) {
         this.name = name;
-        this.columns = getColumns(columns);
-        this.indexes = getIndexes(indexes);
-        this.constraints = getConstraints(constraints);
+        this.columns = createColumns(columns);
+        this.indexes = createIndexes(indexes);
+        this.constraints = createConstraints(constraints);
     }
     
-    private Map<String, ShardingSphereColumn> getColumns(final Collection<ShardingSphereColumn> columns) {
+    private Map<String, ShardingSphereColumn> createColumns(final Collection<ShardingSphereColumn> columns) {
         Map<String, ShardingSphereColumn> result = new LinkedHashMap<>(columns.size(), 1);
         for (ShardingSphereColumn each : columns) {
             String lowerColumnName = each.getName().toLowerCase();
@@ -80,7 +78,7 @@ public final class ShardingSphereTable {
         return result;
     }
     
-    private Map<String, ShardingSphereIndex> getIndexes(final Collection<ShardingSphereIndex> indexes) {
+    private Map<String, ShardingSphereIndex> createIndexes(final Collection<ShardingSphereIndex> indexes) {
         Map<String, ShardingSphereIndex> result = new LinkedHashMap<>(indexes.size(), 1);
         for (ShardingSphereIndex each : indexes) {
             result.put(each.getName().toLowerCase(), each);
@@ -88,12 +86,21 @@ public final class ShardingSphereTable {
         return result;
     }
     
-    private Map<String, ShardingSphereConstraint> getConstraints(final Collection<ShardingSphereConstraint> constraints) {
+    private Map<String, ShardingSphereConstraint> createConstraints(final Collection<ShardingSphereConstraint> constraints) {
         Map<String, ShardingSphereConstraint> result = new LinkedHashMap<>(constraints.size(), 1);
         for (ShardingSphereConstraint each : constraints) {
             result.put(each.getName().toLowerCase(), each);
         }
         return result;
+    }
+    
+    /**
+     * Put column meta data.
+     * 
+     * @param column ShardingSphere column
+     */
+    public void putColumn(final ShardingSphereColumn column) {
+        columns.put(column.getName().toLowerCase(), column);
     }
     
     /**
@@ -104,5 +111,80 @@ public final class ShardingSphereTable {
      */
     public ShardingSphereColumn getColumn(final String columnName) {
         return columns.get(columnName.toLowerCase());
+    }
+    
+    /**
+     * Get table meta data collection.
+     *
+     * @return table meta data collection
+     */
+    public Collection<ShardingSphereColumn> getColumns() {
+        return columns.values();
+    }
+    
+    /**
+     * Judge whether contains column or not.
+     *
+     * @param columnName column name
+     * @return whether contains column or not
+     */
+    public boolean containsColumn(final String columnName) {
+        return columns.containsKey(columnName.toLowerCase());
+    }
+    
+    /**
+     * Put index meta data.
+     * 
+     * @param index ShardingSphere index
+     */
+    public void putIndex(final ShardingSphereIndex index) {
+        indexes.put(index.getName().toLowerCase(), index);
+    }
+    
+    /**
+     * Remove index meta data via index name.
+     * 
+     * @param indexName index name
+     */
+    public void removeIndex(final String indexName) {
+        indexes.remove(indexName.toLowerCase());
+    }
+    
+    /**
+     * Get index meta data via index name.
+     *
+     * @param indexName index name
+     * @return index meta data
+     */
+    public ShardingSphereIndex getIndex(final String indexName) {
+        return indexes.get(indexName.toLowerCase());
+    }
+    
+    /**
+     * Get index meta data collection.
+     *
+     * @return index meta data collection
+     */
+    public Collection<ShardingSphereIndex> getIndexes() {
+        return indexes.values();
+    }
+    
+    /**
+     * Judge whether contains index or not.
+     *
+     * @param indexName index name
+     * @return whether contains index or not
+     */
+    public boolean containsIndex(final String indexName) {
+        return indexes.containsKey(indexName.toLowerCase());
+    }
+    
+    /**
+     * Get constraint meta data collection.
+     *
+     * @return constraint meta data collection
+     */
+    public Collection<ShardingSphereConstraint> getConstraints() {
+        return constraints.values();
     }
 }

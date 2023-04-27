@@ -148,7 +148,7 @@ public final class ShardingSphereDataScheduleCollector {
             ShardingSphereSchemaDataAlteredEvent result = new ShardingSphereSchemaDataAlteredEvent(databaseName, schemaName, tableData.getName());
             Map<String, ShardingSphereRowData> tableDataMap = tableData.getRows().stream().collect(Collectors.toMap(ShardingSphereRowData::getUniqueKey, Function.identity()));
             Map<String, ShardingSphereRowData> changedTableDataMap = changedTableData.getRows().stream().collect(Collectors.toMap(ShardingSphereRowData::getUniqueKey, Function.identity()));
-            YamlShardingSphereRowDataSwapper swapper = new YamlShardingSphereRowDataSwapper(new ArrayList<>(table.getColumns().values()));
+            YamlShardingSphereRowDataSwapper swapper = new YamlShardingSphereRowDataSwapper(new ArrayList<>(table.getColumns()));
             for (Entry<String, ShardingSphereRowData> entry : changedTableDataMap.entrySet()) {
                 if (!tableDataMap.containsKey(entry.getKey())) {
                     result.getAddedRows().add(swapper.swapToYamlConfiguration(entry.getValue()));
