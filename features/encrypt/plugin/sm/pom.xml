@@ -27,10 +27,6 @@
     <artifactId>shardingsphere-encrypt-sm</artifactId>
     <name>${project.artifactId}</name>
     
-    <properties>
-        <bcprov-jdk15on.version>1.70</bcprov-jdk15on.version>
-    </properties>
-    
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
@@ -54,7 +50,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>${bcprov-jdk15on.version}</version>
+            <version>${bouncycastle.version}</version>
         </dependency>
     </dependencies>
 </project>

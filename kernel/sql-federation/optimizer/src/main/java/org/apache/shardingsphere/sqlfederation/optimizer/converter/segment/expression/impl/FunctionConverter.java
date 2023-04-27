@@ -52,9 +52,6 @@ public class FunctionConverter implements SQLSegmentConverter<FunctionSegment, S
         if ("TRIM".equalsIgnoreCase(functionName.getSimple())) {
             return new TrimFunctionConverter().convert(segment);
         }
-        if ("INTERVAL".equalsIgnoreCase(functionName.getSimple())) {
-            return Optional.of(new SqlBasicCall(SqlStdOperatorTable.INTERVAL, getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO));
-        }
         List<SqlOperator> functions = new LinkedList<>();
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.FUNCTION, functions, SqlNameMatchers.withCaseSensitive(false));
         return Optional.of(functions.isEmpty()

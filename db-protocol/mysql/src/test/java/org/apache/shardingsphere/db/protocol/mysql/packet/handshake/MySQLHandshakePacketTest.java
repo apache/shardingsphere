@@ -84,9 +84,21 @@ class MySQLHandshakePacketTest {
     }
     
     @Test
+    void assertNewWithSSLEnabled() {
+        MySQLHandshakePacket actual = new MySQLHandshakePacket(1, true, new MySQLAuthenticationPluginData());
+        assertThat(actual.getCapabilityFlagsLower() & MySQLCapabilityFlag.CLIENT_SSL.getValue(), is(MySQLCapabilityFlag.CLIENT_SSL.getValue()));
+    }
+    
+    @Test
+    void assertNewWithSSLNotEnabled() {
+        MySQLHandshakePacket actual = new MySQLHandshakePacket(1, false, new MySQLAuthenticationPluginData());
+        assertThat(actual.getCapabilityFlagsLower() & MySQLCapabilityFlag.CLIENT_SSL.getValue(), is(0));
+    }
+    
+    @Test
     void assertWrite() {
         MySQLAuthenticationPluginData authPluginData = new MySQLAuthenticationPluginData(part1, part2);
-        new MySQLHandshakePacket(1000, authPluginData).write(payload);
+        new MySQLHandshakePacket(1000, false, authPluginData).write(payload);
         verify(payload).writeInt1(MySQLServerInfo.PROTOCOL_VERSION);
         verify(payload).writeStringNul(MySQLServerInfo.getDefaultServerVersion());
         verify(payload).writeInt4(1000);
@@ -103,7 +115,7 @@ class MySQLHandshakePacketTest {
     @Test
     void assertWriteWithClientPluginAuth() {
         MySQLAuthenticationPluginData authPluginData = new MySQLAuthenticationPluginData(part1, part2);
-        MySQLHandshakePacket actual = new MySQLHandshakePacket(1000, authPluginData);
+        MySQLHandshakePacket actual = new MySQLHandshakePacket(1000, false, authPluginData);
         actual.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
         actual.write(payload);
         verify(payload).writeInt1(MySQLServerInfo.PROTOCOL_VERSION);

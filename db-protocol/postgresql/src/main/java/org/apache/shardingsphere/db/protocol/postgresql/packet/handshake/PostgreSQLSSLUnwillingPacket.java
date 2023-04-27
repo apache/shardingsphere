@@ -15,34 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.globalclock.type.tso.provider;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.handshake;
 
-import java.util.concurrent.atomic.AtomicLong;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 /**
- * Local timestamp oracle provider.
+ * SSL unwilling packet for PostgreSQL.
  */
-public final class LocalTSOProvider implements TSOProvider {
+public final class PostgreSQLSSLUnwillingPacket implements PostgreSQLPacket {
     
-    private final AtomicLong localClock = new AtomicLong();
-    
-    @Override
-    public long getCurrentTimestamp() {
-        return localClock.get();
-    }
+    private static final char STATUS_CODE = 'N';
     
     @Override
-    public long getNextTimestamp() {
-        return localClock.incrementAndGet();
-    }
-    
-    @Override
-    public String getType() {
-        return "TSO.local";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+    public void write(final PostgreSQLPacketPayload payload) {
+        payload.writeInt1(STATUS_CODE);
     }
 }

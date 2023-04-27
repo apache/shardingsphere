@@ -17,21 +17,19 @@
 
 package org.apache.shardingsphere.infra.datasource.mapper;
 
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Data source role info.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 @EqualsAndHashCode
-@AllArgsConstructor
 public final class DataSourceRoleInfo {
     
-    private String name;
+    private final String name;
     
-    private DataSourceRole role;
+    private final DataSourceRole role;
 }

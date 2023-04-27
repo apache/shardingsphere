@@ -21,5 +21,6 @@ package org.apache.shardingsphere.infra.datasource.mapper;
  * Data source role.
  */
 public enum DataSourceRole {
+    
     PRIMARY, MEMBER, PRODUCTION, SHADOW
 }

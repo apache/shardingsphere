@@ -39,13 +39,7 @@ public final class LocalTransactionManager {
      * Begin transaction.
      */
     public void begin() {
-        connection.getConnectionPostProcessors().add(target -> {
-            try {
-                target.setAutoCommit(false);
-            } catch (final SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+        connection.getConnectionPostProcessors().add(target -> target.setAutoCommit(false));
     }
     
     /**

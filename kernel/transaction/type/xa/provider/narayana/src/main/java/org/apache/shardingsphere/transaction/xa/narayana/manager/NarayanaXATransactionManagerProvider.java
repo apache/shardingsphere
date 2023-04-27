@@ -27,6 +27,7 @@ import com.arjuna.common.util.propertyservice.PropertiesFactory;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
+import org.apache.shardingsphere.transaction.exception.CloseTransactionManagerFailedException;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
@@ -79,8 +80,14 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
     }
     
     @Override
-    public void close() throws Exception {
-        recoveryManagerService.stop();
+    public void close() {
+        try {
+            recoveryManagerService.stop();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            throw new CloseTransactionManagerFailedException(ex);
+        }
         recoveryManagerService.destroy();
         cleanPropertiesFactory();
         cleanBeanInstances();

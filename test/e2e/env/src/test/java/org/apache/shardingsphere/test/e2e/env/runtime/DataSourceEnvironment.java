@@ -64,9 +64,10 @@ public final class DataSourceEnvironment {
             case "H2":
                 return "jdbc:h2:mem:test_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=root;PASSWORD=Root@123";
             case "MySQL":
-                return String.format("jdbc:mysql://%s:%s?useServerPrepStmts=true&serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8", host, port);
+                return String.format("jdbc:mysql://%s:%s?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false"
+                        + "&useServerPrepStmts=true&serverTimezone=UTC&useLocalSessionState=true&characterEncoding=utf-8", host, port);
             case "PostgreSQL":
-                return String.format("jdbc:postgresql://%s:%s/", host, port);
+                return String.format("jdbc:postgresql://%s:%s/?ssl=on&sslmode=prefer", host, port);
             case "SQLServer":
                 return String.format("jdbc:sqlserver://%s:%s", host, port);
             case "Oracle":
@@ -93,10 +94,12 @@ public final class DataSourceEnvironment {
             case "H2":
                 return String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL;USER=root;PASSWORD=Root@123", dataSourceName);
             case "MySQL":
-                return String.format("jdbc:mysql://%s:%s/%s?useServerPrepStmts=true&serverTimezone=UTC&useSSL=false&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true",
+                return String.format(
+                        "jdbc:mysql://%s:%s/%s?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false"
+                                + "&useServerPrepStmts=true&serverTimezone=UTC&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true",
                         host, port, dataSourceName);
             case "PostgreSQL":
-                return String.format("jdbc:postgresql://%s:%s/%s", host, port, dataSourceName);
+                return String.format("jdbc:postgresql://%s:%s/%s?ssl=on&sslmode=prefer", host, port, dataSourceName);
             case "SQLServer":
                 return String.format("jdbc:sqlserver://%s:%s;DatabaseName=%s", host, port, dataSourceName);
             case "Oracle":
