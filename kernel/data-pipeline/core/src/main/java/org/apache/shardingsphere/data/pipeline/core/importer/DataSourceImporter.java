@@ -282,7 +282,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
             }
             int[] counts = preparedStatement.executeBatch();
             if (IntStream.of(counts).anyMatch(value -> 1 != value)) {
-                log.warn("batchDelete failed, counts={}, sql={}", Arrays.toString(counts), deleteSQL);
+                log.warn("batchDelete failed, counts={}, sql={}, conditionColumns={}", Arrays.toString(counts), deleteSQL, conditionColumns);
             }
         } finally {
             batchDeleteStatement = null;
