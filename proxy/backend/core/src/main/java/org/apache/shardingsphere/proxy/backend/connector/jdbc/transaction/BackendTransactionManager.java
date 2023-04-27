@@ -138,13 +138,7 @@ public final class BackendTransactionManager implements TransactionManager {
         for (Connection each : connection.getCachedConnections().values()) {
             ConnectionSavepointManager.getInstance().setSavepoint(each, savepointName);
         }
-        connection.getConnectionPostProcessors().add(target -> {
-            try {
-                ConnectionSavepointManager.getInstance().setSavepoint(target, savepointName);
-            } catch (final SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+        connection.getConnectionPostProcessors().add(target -> ConnectionSavepointManager.getInstance().setSavepoint(target, savepointName));
     }
     
     @Override

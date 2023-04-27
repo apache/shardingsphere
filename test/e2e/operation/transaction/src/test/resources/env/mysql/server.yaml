@@ -41,3 +41,4 @@ props:
   proxy-hint-enabled: true
   sql-show: true
   sql-federation-type: ADVANCED
+  proxy-frontend-ssl-enabled: true

@@ -149,7 +149,7 @@ public final class BackendConnection implements ExecutorJDBCConnectionManager {
         throw sqlException;
     }
     
-    private void replayMethodsInvocation(final Connection target) {
+    private void replayMethodsInvocation(final Connection target) throws SQLException {
         for (ConnectionPostProcessor each : connectionPostProcessors) {
             each.process(target);
         }

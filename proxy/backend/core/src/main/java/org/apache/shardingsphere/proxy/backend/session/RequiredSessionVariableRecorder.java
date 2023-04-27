@@ -32,6 +32,8 @@ public final class RequiredSessionVariableRecorder {
     
     private static final String DEFAULT = "DEFAULT";
     
+    private static final String NULL = "NULL";
+    
     private final Map<String, String> sessionVariables = new ConcurrentHashMap<>();
     
     /**
@@ -114,7 +116,11 @@ public final class RequiredSessionVariableRecorder {
     private String aggregateToMySQLSetDefaultSQLs() {
         StringJoiner result = new StringJoiner(",", "SET ", "");
         for (String each : sessionVariables.keySet()) {
-            result.add(each + "=" + DEFAULT);
+            if (each.startsWith("@")) {
+                result.add(each + "=" + NULL);
+            } else {
+                result.add(each + "=" + DEFAULT);
+            }
         }
         return result.toString();
     }
