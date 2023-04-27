@@ -88,15 +88,15 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         databaseMetaDataService.dropSchema(alterSchemaPOJO.getDatabaseName(), alterSchemaPOJO.getSchemaName());
     }
     
-    private void putSchemaMetaData(final ShardingSphereDatabase database, final String schemaName, final String renameSchemaName, final Optional<String> logicDataSourceName) {
+    private void putSchemaMetaData(final ShardingSphereDatabase database, final String schemaName, final String renameSchemaName, final String logicDataSourceName) {
         ShardingSphereSchema schema = database.getSchema(schemaName);
         database.putSchema(renameSchemaName, schema);
         addDataNode(database, logicDataSourceName, schemaName, schema.getAllTableNames());
     }
     
-    private void addDataNode(final ShardingSphereDatabase database, final Optional<String> logicDataSourceName, final String schemaName, final Collection<String> tobeAddedTableNames) {
+    private void addDataNode(final ShardingSphereDatabase database, final String logicDataSourceName, final String schemaName, final Collection<String> tobeAddedTableNames) {
         tobeAddedTableNames.forEach(each -> {
-            if (logicDataSourceName.isPresent() && !containsInImmutableDataNodeContainedRule(each, database)) {
+            if (!Strings.isNullOrEmpty(logicDataSourceName) && !containsInImmutableDataNodeContainedRule(each, database)) {
                 database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(rule -> rule.put(logicDataSourceName, schemaName, each));
             }
         });
