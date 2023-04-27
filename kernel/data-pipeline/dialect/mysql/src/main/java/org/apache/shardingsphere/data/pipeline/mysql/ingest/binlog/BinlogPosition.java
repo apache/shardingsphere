@@ -35,15 +35,6 @@ public final class BinlogPosition implements IngestPosition<BinlogPosition> {
     private final long serverId;
     
     @Override
-    public int compareTo(final BinlogPosition position) {
-        return null == position ? 1 : Long.compare(toLong(), position.toLong());
-    }
-    
-    private long toLong() {
-        return Long.parseLong(filename.substring(filename.lastIndexOf('.') + 1)) << 32 | position;
-    }
-    
-    @Override
     public String toString() {
         return String.format("%s#%d", filename, position);
     }
