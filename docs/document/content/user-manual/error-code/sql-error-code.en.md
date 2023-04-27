@@ -73,6 +73,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 25000     | 14202       | Max length of xa unique resource name \`%s\` exceeded: should be less than 45.     |
 | 25000     | 14203       | Check privileges failed on data source, reason is: \`%s\`                          |
 | 25000     | 14204       | Failed to create XA transaction manager, requires \`%s\` privileges                |
+| 25000     | 14205       | Close transaction manager failed, \`%s\`                                           |
 | 25000     | 14301       | ShardingSphere Seata-AT transaction has been disabled.                             |
 | 25000     | 14302       | Please config application id within seata.conf file.                               |
 

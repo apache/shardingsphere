@@ -80,10 +80,8 @@ public final class ShardingSphereTransactionManagerEngine {
     
     /**
      * Close transaction managers.
-     * 
-     * @throws Exception exception
      */
-    public void close() throws Exception {
+    public void close() {
         for (Entry<TransactionType, ShardingSphereTransactionManager> entry : transactionManagers.entrySet()) {
             entry.getValue().close();
         }
