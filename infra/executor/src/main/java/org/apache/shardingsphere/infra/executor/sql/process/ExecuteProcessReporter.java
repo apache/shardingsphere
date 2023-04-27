@@ -67,33 +67,33 @@ public final class ExecuteProcessReporter {
     public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessStatus processStatus) {
         ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), processStatus);
         ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setProcessStatus(executeProcessUnit.getProcessStatus()));
+        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setStatus(executeProcessUnit.getStatus()));
     }
     
     /**
-     * Report clean the task.
+     * Reset report.
      *
      * @param executionID execution ID
      */
-    public void reportClean(final String executionID) {
+    public void reset(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessStatement(executionID);
         ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
         if (null == executeProcessContext) {
             return;
         }
         if (executeProcessContext.isProxyContext()) {
-            executeProcessContext.resetExecuteProcessContextToSleep();
+            executeProcessContext.reset();
         } else {
             ShowProcessListManager.getInstance().removeProcessContext(executionID);
         }
     }
     
     /**
-     * Report remove process context.
+     * Remove process context.
      *
      * @param executionID execution ID
      */
-    public void reportRemove(final String executionID) {
+    public void remove(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessStatement(executionID);
         ShowProcessListManager.getInstance().removeProcessContext(executionID);
     }

@@ -39,8 +39,8 @@ public final class YamlExecuteProcessContextSwapper implements YamlConfiguration
         result.setHostname(data.getHostname());
         result.setSql(data.getSql());
         result.setUnitStatuses(data.getProcessUnits().values().stream().map(yamlExecuteProcessUnitSwapper::swapToYamlConfiguration).collect(Collectors.toList()));
-        result.setStartTimeMillis(data.getStartTimeMillis());
-        result.setProcessStatus(data.getProcessStatus());
+        result.setStartTimeMillis(data.getStartMillis());
+        result.setProcessStatus(data.getStatus());
         return result;
     }
     

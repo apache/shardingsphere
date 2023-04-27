@@ -30,7 +30,7 @@ public final class YamlExecuteProcessUnitSwapper implements YamlConfigurationSwa
     public YamlExecuteProcessUnit swapToYamlConfiguration(final ExecuteProcessUnit data) {
         YamlExecuteProcessUnit result = new YamlExecuteProcessUnit();
         result.setUnitID(data.getUnitID());
-        result.setProcessStatus(data.getProcessStatus());
+        result.setProcessStatus(data.getStatus());
         return result;
     }
     

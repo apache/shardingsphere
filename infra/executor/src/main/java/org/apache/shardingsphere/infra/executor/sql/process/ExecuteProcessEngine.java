@@ -60,7 +60,7 @@ public final class ExecuteProcessEngine {
      * @param executionID execution ID
      */
     public void finishConnection(final String executionID) {
-        reporter.reportRemove(executionID);
+        reporter.remove(executionID);
     }
     
     /**
@@ -95,7 +95,7 @@ public final class ExecuteProcessEngine {
         if (ExecuteIDContext.isEmpty()) {
             return;
         }
-        reporter.reportClean(ExecuteIDContext.get());
+        reporter.reset(ExecuteIDContext.get());
         ExecuteIDContext.remove();
     }
     

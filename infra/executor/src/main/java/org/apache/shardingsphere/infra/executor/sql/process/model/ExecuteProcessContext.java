@@ -50,22 +50,21 @@ public final class ExecuteProcessContext {
     
     private final Collection<Statement> processStatements = new LinkedList<>();
     
-    private long startTimeMillis = System.currentTimeMillis();
+    private long startMillis = System.currentTimeMillis();
     
-    private ExecuteProcessStatus processStatus;
+    private ExecuteProcessStatus status;
     
     private final boolean proxyContext;
     
-    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus processStatus,
-                                 final boolean isProxyContext) {
+    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus status, final boolean isProxyContext) {
         this.executionID = executionGroupContext.getReportContext().getExecutionID();
         this.sql = sql;
         this.databaseName = executionGroupContext.getReportContext().getDatabaseName();
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
         this.username = null != grantee ? grantee.getUsername() : null;
         this.hostname = null != grantee ? grantee.getHostname() : null;
-        this.processStatus = processStatus;
-        addProcessUnitsAndStatements(executionGroupContext, processStatus);
+        this.status = status;
+        addProcessUnitsAndStatements(executionGroupContext, status);
         proxyContext = isProxyContext;
     }
     
@@ -82,12 +81,12 @@ public final class ExecuteProcessContext {
     }
     
     /**
-     * Reset execute process context to sleep.
+     * Reset.
      */
-    public void resetExecuteProcessContextToSleep() {
-        this.sql = "";
-        this.startTimeMillis = System.currentTimeMillis();
-        this.processStatus = ExecuteProcessStatus.SLEEP;
+    public void reset() {
+        sql = "";
+        startMillis = System.currentTimeMillis();
+        status = ExecuteProcessStatus.SLEEP;
     }
     
 }
