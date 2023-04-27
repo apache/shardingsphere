@@ -98,6 +98,7 @@ public final class ExecuteEngine {
         BlockingQueue<CompletableFuture<?>> futureQueue = new LinkedBlockingQueue<>();
         for (CompletableFuture<?> each : futures) {
             each.whenComplete(new BiConsumer<Object, Throwable>() {
+                
                 @SneakyThrows(InterruptedException.class)
                 @Override
                 public void accept(final Object unused, final Throwable throwable) {
