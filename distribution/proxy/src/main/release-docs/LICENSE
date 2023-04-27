@@ -277,6 +277,13 @@ The text of each license is the standard Apache 2.0 license.
     netty-handler 4.1.90.Final: https://github.com/netty, Apache 2.0
     netty-handler-proxy 4.1.90.Final: https://github.com/netty, Apache 2.0
     netty-resolver 4.1.90.Final: https://github.com/netty, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.59.Final: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.59.Final-linux-aarch_64: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.59.Final-linux-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.59.Final-osx-aarch_64: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.59.Final-osx-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-boringssl-static 2.0.59.Final-windows-x86_64: https://github.com/netty/netty-tcnative, Apache 2.0
+    netty-tcnative-classes 2.0.59.Final: https://github.com/netty/netty-tcnative, Apache 2.0
     netty-transport 4.1.90.Final: https://github.com/netty, Apache 2.0
     netty-transport-classes-epoll 4.1.90.Final: https://github.com/netty, Apache 2.0
     netty-transport-native-epoll 4.1.90.Final-linux-aarch_64: https://github.com/netty, Apache 2.0
@@ -353,7 +360,10 @@ MIT licenses
 The following components are provided under the MIT License. See project link for details.
 The text of each license is also included at licenses/LICENSE-[project].txt.
 
+    bcpkix-jdk15on 1.70: https://www.bouncycastle.org, MIT
     bcprov-jdk15on 1.70: https://www.bouncycastle.org, MIT
+    bctls-jdk15on 1.70: https://www.bouncycastle.org, MIT
+    bcutil-jdk15on 1.70: https://www.bouncycastle.org, MIT
     checker-qual 3.5.0: https://github.com/typetools/checker-framework/blob/master/checker-qual, MIT
     jul-to-slf4j 1.7.36: https://www.slf4j.org, MIT
     slf4j-api 1.7.36: https://www.slf4j.org, MIT
