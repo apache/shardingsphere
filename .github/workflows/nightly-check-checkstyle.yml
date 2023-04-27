@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Nightly - Check
+name: Nightly Check - CheckStyle
 
 on:
   schedule:
