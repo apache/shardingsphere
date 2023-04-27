@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.shardingsphere.test.e2e;
 
 import java.sql.ResultSet;
@@ -13,6 +30,7 @@ import java.util.stream.Collectors;
  * 结果集打印机.将结果集中的数据打印成表格.
  */
 public class ResultSetPrinter {
+    
     public static void printResultSet(ResultSet rs) throws SQLException {
         ResultSetMetaData resultSetMetaData = rs.getMetaData();
         // 获取列数
@@ -45,7 +63,7 @@ public class ResultSetPrinter {
             columnStr = iterator.next();
             for (int i = 0; i < ColumnCount; i++) {
                 System.out.printf("|%" + (columnMaxLengths[i] + 1) + "s", columnStr[i]);
-                //System.out.printf("|%" + columnMaxLengths[i] + "s", columnStr[i]);
+                // System.out.printf("|%" + columnMaxLengths[i] + "s", columnStr[i]);
             }
             System.out.println("|");
         }
@@ -63,7 +81,7 @@ public class ResultSetPrinter {
         int columnCount = resultSetMetaData.getColumnCount();
         for (int i = 0; i < columnCount; i++) {
             System.out.printf("|%" + (columnMaxLengths[i] + 1) + "s", resultSetMetaData.getColumnName(i + 1));
-            //System.out.printf("|%" + columnMaxLengths[i] + "s", resultSetMetaData.getColumnName(i + 1));
+            // System.out.printf("|%" + columnMaxLengths[i] + "s", resultSetMetaData.getColumnName(i + 1));
         }
         System.out.println("|");
     }
@@ -85,11 +103,11 @@ public class ResultSetPrinter {
     }
     // An highlighted block
     
-    public static void main(String[] args){
+    public static void main(String[] args) {
         User user1 = new User(18, "女");
         User user2 = new User(19, "女");
         User user3 = new User(20, "男");
-        //没有性别的人需要用null表示
+        // 没有性别的人需要用null表示
         User user4 = new User(18, null);
         List<User> list = new ArrayList<>();
         list.add(user1);
@@ -99,14 +117,15 @@ public class ResultSetPrinter {
         groupBy(list);
         
     }
-    //对用户按照年纪分组
-    public static void groupBy(List<User> userList){
-        //此时这里会抛出空指针异常
+    // 对用户按照年纪分组
+    public static void groupBy(List<User> userList) {
+        // 此时这里会抛出空指针异常
         System.out.println(userList.stream().collect(Collectors.groupingBy(x -> Optional.ofNullable(x.getSex()))));
     }
     
 }
-class User{
+class User {
+    
     private Integer age;
     private String sex;
     
@@ -118,6 +137,5 @@ class User{
     public String getSex() {
         return sex;
     }
-    
     
 }
