@@ -129,7 +129,7 @@ public final class ShardingSphereTable {
      * @return whether contains column or not
      */
     public boolean containsColumn(final String columnName) {
-        return columns.containsKey(columnName.toLowerCase());
+        return null != columnName && columns.containsKey(columnName.toLowerCase());
     }
     
     /**
@@ -176,7 +176,7 @@ public final class ShardingSphereTable {
      * @return whether contains index or not
      */
     public boolean containsIndex(final String indexName) {
-        return indexes.containsKey(indexName.toLowerCase());
+        return null != indexName && indexes.containsKey(indexName.toLowerCase());
     }
     
     /**
