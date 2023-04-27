@@ -87,10 +87,15 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
                 return;
             }
             KeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
+            // TODO PostgreSQL update delete events not support if table without unique keys at increment task.
             final Callable<Void> incrementalTaskFn = () -> {
                 Object orderId = keyGenerateAlgorithm.generateKey();
-                doCreateUpdateDelete(containerComposer, orderId);
-                containerComposer.assertProxyOrderRecordExist("t_order", orderId);
+                insertOneOrder(containerComposer, orderId);
+                if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
+                    updateOneOrder(containerComposer, orderId, "updated");
+                    deleteOneOrder(containerComposer, orderId, "updated");
+                    insertOneOrder(containerComposer, keyGenerateAlgorithm.generateKey());
+                }
                 return null;
             };
             assertMigrationSuccess(containerComposer, sql, "user_id", keyGenerateAlgorithm, consistencyCheckAlgorithmType, incrementalTaskFn);
@@ -101,11 +106,8 @@ class IndexesMigrationE2EIT extends AbstractMigrationE2EIT {
     private void doCreateUpdateDelete(final PipelineContainerComposer containerComposer, final Object orderId) {
         String updatedStatus = "updated" + System.currentTimeMillis();
         insertOneOrder(containerComposer, orderId);
-        // TODO PostgreSQL update delete events not support if table without unique keys at increment task.
-        if (containerComposer.getDatabaseType() instanceof MySQLDatabaseType) {
-            updateOneOrder(containerComposer, orderId, updatedStatus);
-            deleteOneOrder(containerComposer, orderId, updatedStatus);
-        }
+        updateOneOrder(containerComposer, orderId, updatedStatus);
+        deleteOneOrder(containerComposer, orderId, updatedStatus);
     }
     
     private void insertOneOrder(final PipelineContainerComposer containerComposer, final Object uniqueKey) throws SQLException {
