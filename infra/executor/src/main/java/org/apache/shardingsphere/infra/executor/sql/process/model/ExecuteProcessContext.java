@@ -44,28 +44,29 @@ public final class ExecuteProcessContext {
     
     private final String hostname;
     
-    private String sql;
+    private final boolean proxyContext;
     
     private final Map<String, ExecuteProcessUnit> processUnits = new HashMap<>();
     
     private final Collection<Statement> processStatements = new LinkedList<>();
     
-    private long startMillis = System.currentTimeMillis();
+    private String sql;
     
     private ExecuteProcessStatus status;
     
-    private final boolean proxyContext;
+    private long startMillis;
     
     public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus status, final boolean isProxyContext) {
-        this.executionID = executionGroupContext.getReportContext().getExecutionID();
-        this.sql = sql;
-        this.databaseName = executionGroupContext.getReportContext().getDatabaseName();
+        executionID = executionGroupContext.getReportContext().getExecutionID();
+        databaseName = executionGroupContext.getReportContext().getDatabaseName();
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
-        this.username = null != grantee ? grantee.getUsername() : null;
-        this.hostname = null != grantee ? grantee.getHostname() : null;
-        this.status = status;
-        addProcessUnitsAndStatements(executionGroupContext, status);
+        username = null == grantee ? null : grantee.getUsername();
+        hostname = null == grantee ? null : grantee.getHostname();
         proxyContext = isProxyContext;
+        this.sql = sql;
+        this.status = status;
+        startMillis = System.currentTimeMillis();
+        addProcessUnitsAndStatements(executionGroupContext, status);
     }
     
     private void addProcessUnitsAndStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus processStatus) {
@@ -88,5 +89,4 @@ public final class ExecuteProcessContext {
         startMillis = System.currentTimeMillis();
         status = ExecuteProcessStatus.SLEEP;
     }
-    
 }
