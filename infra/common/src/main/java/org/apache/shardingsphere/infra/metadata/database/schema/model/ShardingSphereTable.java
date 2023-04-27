@@ -97,26 +97,26 @@ public final class ShardingSphereTable {
     /**
      * Put column meta data.
      * 
-     * @param column ShardingSphere column
+     * @param column column meta data
      */
     public void putColumn(final ShardingSphereColumn column) {
         columns.put(column.getName().toLowerCase(), column);
     }
     
     /**
-     * Get table meta data via column name.
+     * Get column meta data via column name.
      *
      * @param columnName column name
-     * @return table meta data
+     * @return column meta data
      */
     public ShardingSphereColumn getColumn(final String columnName) {
         return columns.get(columnName.toLowerCase());
     }
     
     /**
-     * Get table meta data collection.
+     * Get column meta data collection.
      *
-     * @return table meta data collection
+     * @return column meta data collection
      */
     public Collection<ShardingSphereColumn> getColumns() {
         return columns.values();
@@ -135,7 +135,7 @@ public final class ShardingSphereTable {
     /**
      * Put index meta data.
      * 
-     * @param index ShardingSphere index
+     * @param index index meta data
      */
     public void putIndex(final ShardingSphereIndex index) {
         indexes.put(index.getName().toLowerCase(), index);
