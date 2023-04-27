@@ -17,26 +17,22 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 
 /**
- * Binlog Position.
+ * Binlog position.
  */
 @RequiredArgsConstructor
-@AllArgsConstructor
 @Getter
-@Setter
 public final class BinlogPosition implements IngestPosition<BinlogPosition> {
     
     private final String filename;
     
     private final long position;
     
-    private long serverId;
+    private final long serverId;
     
     @Override
     public int compareTo(final BinlogPosition position) {
