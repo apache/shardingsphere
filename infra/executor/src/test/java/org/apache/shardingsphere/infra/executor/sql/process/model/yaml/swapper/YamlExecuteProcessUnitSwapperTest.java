@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.process.model.yaml.swapper;
 
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.junit.jupiter.api.Test;
@@ -35,10 +35,10 @@ class YamlExecuteProcessUnitSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(new ExecutionUnit("foo_ds", new SQLUnit("SELECT 1", Collections.emptyList())), ExecuteProcessStatusEnum.START);
+        ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(new ExecutionUnit("foo_ds", new SQLUnit("SELECT 1", Collections.emptyList())), ExecuteProcessStatus.START);
         YamlExecuteProcessUnit actual = new YamlExecuteProcessUnitSwapper().swapToYamlConfiguration(executeProcessUnit);
         assertNotNull(actual.getUnitID());
-        assertThat(actual.getProcessStatus(), is(ExecuteProcessStatusEnum.START));
+        assertThat(actual.getProcessStatus(), is(ExecuteProcessStatus.START));
     }
     
     @Test

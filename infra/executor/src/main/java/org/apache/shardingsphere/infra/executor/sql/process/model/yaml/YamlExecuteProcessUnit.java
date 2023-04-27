@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.process.model.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
@@ -31,5 +31,5 @@ public final class YamlExecuteProcessUnit implements YamlConfiguration {
     
     private String unitID;
     
-    private ExecuteProcessStatusEnum processStatus;
+    private ExecuteProcessStatus processStatus;
 }

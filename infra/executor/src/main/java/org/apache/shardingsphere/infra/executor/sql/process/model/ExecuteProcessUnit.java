@@ -30,9 +30,9 @@ public final class ExecuteProcessUnit {
     
     private final String unitID;
     
-    private volatile ExecuteProcessStatusEnum processStatus;
+    private volatile ExecuteProcessStatus processStatus;
     
-    public ExecuteProcessUnit(final ExecutionUnit executionUnit, final ExecuteProcessStatusEnum processStatus) {
+    public ExecuteProcessUnit(final ExecutionUnit executionUnit, final ExecuteProcessStatus processStatus) {
         this.unitID = String.valueOf(executionUnit.hashCode());
         this.processStatus = processStatus;
     }

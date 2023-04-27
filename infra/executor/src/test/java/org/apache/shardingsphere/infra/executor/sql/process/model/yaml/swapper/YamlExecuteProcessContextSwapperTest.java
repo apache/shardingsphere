@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupConte
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ class YamlExecuteProcessContextSwapperTest {
     void assertSwapToYamlConfiguration() {
         ExecutionGroupReportContext reportContext = new ExecutionGroupReportContext("foo_db", new Grantee("root", "localhost"));
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("SELECT 1", executionGroupContext, ExecuteProcessStatusEnum.START, true);
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("SELECT 1", executionGroupContext, ExecuteProcessStatus.START, true);
         YamlExecuteProcessContext actual = new YamlExecuteProcessContextSwapper().swapToYamlConfiguration(executeProcessContext);
         assertNotNull(actual.getExecutionID());
         assertThat(actual.getDatabaseName(), is("foo_db"));
@@ -50,7 +50,7 @@ class YamlExecuteProcessContextSwapperTest {
         assertThat(actual.getSql(), is("SELECT 1"));
         assertTrue(actual.getUnitStatuses().isEmpty());
         assertThat(actual.getStartTimeMillis(), lessThanOrEqualTo(System.currentTimeMillis()));
-        assertThat(actual.getProcessStatus(), is(ExecuteProcessStatusEnum.START));
+        assertThat(actual.getProcessStatus(), is(ExecuteProcessStatus.START));
     }
     
     @Test
