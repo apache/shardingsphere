@@ -60,7 +60,7 @@ class MySQLSSLRequestHandlerTest {
         assertNull(channel.pipeline().get(MySQLSSLRequestHandler.class));
     }
     
-    private boolean assertTLSHandshakeByteBuf(Object actual) {
+    private boolean assertTLSHandshakeByteBuf(final Object actual) {
         assertThat(ByteBufUtil.getBytes((ByteBuf) actual), is(FAKE_TLS_HANDSHAKE));
         return true;
     }
