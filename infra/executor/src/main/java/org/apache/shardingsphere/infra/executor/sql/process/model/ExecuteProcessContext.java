@@ -52,11 +52,11 @@ public final class ExecuteProcessContext {
     
     private long startTimeMillis = System.currentTimeMillis();
     
-    private ExecuteProcessStatus processStatus;
+    private ExecuteProcessStatus status;
     
     private final boolean proxyContext;
     
-    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus processStatus,
+    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus status,
                                  final boolean isProxyContext) {
         this.executionID = executionGroupContext.getReportContext().getExecutionID();
         this.sql = sql;
@@ -64,8 +64,8 @@ public final class ExecuteProcessContext {
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
         this.username = null != grantee ? grantee.getUsername() : null;
         this.hostname = null != grantee ? grantee.getHostname() : null;
-        this.processStatus = processStatus;
-        addProcessUnitsAndStatements(executionGroupContext, processStatus);
+        this.status = status;
+        addProcessUnitsAndStatements(executionGroupContext, status);
         proxyContext = isProxyContext;
     }
     
@@ -82,12 +82,12 @@ public final class ExecuteProcessContext {
     }
     
     /**
-     * Reset execute process context to sleep.
+     * Reset.
      */
-    public void resetExecuteProcessContextToSleep() {
-        this.sql = "";
-        this.startTimeMillis = System.currentTimeMillis();
-        this.processStatus = ExecuteProcessStatus.SLEEP;
+    public void reset() {
+        sql = "";
+        startTimeMillis = System.currentTimeMillis();
+        status = ExecuteProcessStatus.SLEEP;
     }
     
 }

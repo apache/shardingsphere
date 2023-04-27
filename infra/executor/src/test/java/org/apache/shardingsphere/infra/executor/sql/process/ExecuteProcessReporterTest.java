@@ -79,7 +79,7 @@ class ExecuteProcessReporterTest {
     @Test
     void assertReportClean() {
         when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ExecuteProcessContext.class));
-        new ExecuteProcessReporter().reportClean("foo_id");
+        new ExecuteProcessReporter().reset("foo_id");
         verify(showProcessListManager).removeProcessStatement("foo_id");
     }
 }

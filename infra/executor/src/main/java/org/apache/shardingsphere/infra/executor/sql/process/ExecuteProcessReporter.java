@@ -71,29 +71,29 @@ public final class ExecuteProcessReporter {
     }
     
     /**
-     * Report clean the task.
+     * Reset report.
      *
      * @param executionID execution ID
      */
-    public void reportClean(final String executionID) {
+    public void reset(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessStatement(executionID);
         ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
         if (null == executeProcessContext) {
             return;
         }
         if (executeProcessContext.isProxyContext()) {
-            executeProcessContext.resetExecuteProcessContextToSleep();
+            executeProcessContext.reset();
         } else {
             ShowProcessListManager.getInstance().removeProcessContext(executionID);
         }
     }
     
     /**
-     * Report remove process context.
+     * Remove process context.
      *
      * @param executionID execution ID
      */
-    public void reportRemove(final String executionID) {
+    public void remove(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessStatement(executionID);
         ShowProcessListManager.getInstance().removeProcessContext(executionID);
     }
