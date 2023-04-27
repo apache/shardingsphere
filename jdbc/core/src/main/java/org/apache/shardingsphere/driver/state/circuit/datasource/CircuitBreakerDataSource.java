@@ -25,7 +25,7 @@ import java.sql.Connection;
 /**
  * Circuit breaker datasource.
  */
-public final class CircuitBreakerDataSource extends AbstractDataSourceAdapter implements AutoCloseable {
+public final class CircuitBreakerDataSource extends AbstractDataSourceAdapter {
     
     @Override
     public Connection getConnection() {
@@ -44,9 +44,5 @@ public final class CircuitBreakerDataSource extends AbstractDataSourceAdapter im
     
     @Override
     public void setLoginTimeout(final int seconds) {
-    }
-    
-    @Override
-    public void close() {
     }
 }
