@@ -116,7 +116,32 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * CDC server port.
      */
-    CDC_SERVER_PORT("cdc-server-port", "33071", int.class, true);
+    CDC_SERVER_PORT("cdc-server-port", "33071", int.class, true),
+    
+    /**
+     * Proxy frontend SSL enabled.
+     */
+    PROXY_FRONTEND_SSL_ENABLED("proxy-frontend-ssl-enabled", String.valueOf(Boolean.FALSE), boolean.class, true),
+    
+    /**
+     * Proxy frontend SSL certificate file.
+     */
+    PROXY_FRONTEND_SSL_CERT_FILE("proxy-frontend-ssl-cert-file", "", String.class, true),
+    
+    /**
+     * Proxy frontend SSL private key file.
+     */
+    PROXY_FRONTEND_SSL_KEY_FILE("proxy-frontend-ssl-key-file", "", String.class, true),
+    
+    /**
+     * Proxy frontend SSL protocol version.
+     */
+    PROXY_FRONTEND_SSL_VERSION("proxy-frontend-ssl-version", "TLSv1.2,TLSv1.3", String.class, true),
+    
+    /**
+     * Proxy frontend SSL cipher.
+     */
+    PROXY_FRONTEND_SSL_CIPHER("proxy-frontend-ssl-cipher", "", String.class, true);
     
     private final String key;
     

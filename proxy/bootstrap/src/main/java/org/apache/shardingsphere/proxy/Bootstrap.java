@@ -26,6 +26,7 @@ import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.proxy.frontend.CDCServer;
 import org.apache.shardingsphere.proxy.frontend.ShardingSphereProxy;
+import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 import org.apache.shardingsphere.proxy.initializer.BootstrapInitializer;
 
 import java.io.IOException;
@@ -54,6 +55,7 @@ public final class Bootstrap {
         new BootstrapInitializer().init(yamlConfig, port, bootstrapArgs.isForce());
         Optional.ofNullable((Integer) yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey()))
                 .ifPresent(cdcPort -> new CDCServer(addresses, cdcPort).start());
+        ProxySSLContext.init();
         ShardingSphereProxy shardingSphereProxy = new ShardingSphereProxy();
         bootstrapArgs.getSocketPath().ifPresent(shardingSphereProxy::start);
         shardingSphereProxy.start(port, addresses);
