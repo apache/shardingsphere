@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.config.pojo.algorithm;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
@@ -28,8 +26,6 @@ import java.util.Properties;
 /**
  * Algorithm configuration for YAML.
  */
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 public final class YamlAlgorithmConfiguration implements YamlConfiguration {
