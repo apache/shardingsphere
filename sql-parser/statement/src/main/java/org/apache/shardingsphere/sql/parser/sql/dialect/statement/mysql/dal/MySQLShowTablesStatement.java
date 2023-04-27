@@ -36,6 +36,8 @@ public final class MySQLShowTablesStatement extends AbstractSQLStatement impleme
     
     private ShowFilterSegment filter;
     
+    private Boolean hasFull;
+    
     /**
      * Get from schema segment.
      * 
@@ -52,5 +54,14 @@ public final class MySQLShowTablesStatement extends AbstractSQLStatement impleme
      */
     public Optional<ShowFilterSegment> getFilter() {
         return Optional.ofNullable(filter);
+    }
+    
+    /**
+     * Get full.
+     *
+     * @return has full
+     */
+    public Optional<Boolean> getHasFull() {
+        return Optional.ofNullable(hasFull);
     }
 }
