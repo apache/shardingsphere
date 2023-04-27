@@ -17,28 +17,19 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process.model.yaml;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
  * Execute process unit for YAML.
  */
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
-public final class YamlExecuteProcessUnit {
+public final class YamlExecuteProcessUnit implements YamlConfiguration {
     
     private String unitID;
     
-    private volatile ExecuteProcessStatusEnum processStatus;
-    
-    public YamlExecuteProcessUnit(final ExecuteProcessUnit executeProcessUnit) {
-        unitID = executeProcessUnit.getUnitID();
-        processStatus = executeProcessUnit.getProcessStatus();
-    }
+    private ExecuteProcessStatusEnum processStatus;
 }
