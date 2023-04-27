@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.swapper.YamlExecuteProcessContextSwapper;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -36,13 +37,14 @@ public final class BatchYamlExecuteProcessContext {
     private Collection<YamlExecuteProcessContext> contexts;
     
     public BatchYamlExecuteProcessContext(final Collection<ExecuteProcessContext> processContexts) {
-        this.contexts = getYamlProcessContexts(processContexts);
+        contexts = getYamlProcessContexts(processContexts);
     }
     
     private Collection<YamlExecuteProcessContext> getYamlProcessContexts(final Collection<ExecuteProcessContext> processContexts) {
+        YamlExecuteProcessContextSwapper yamlExecuteProcessContextSwapper = new YamlExecuteProcessContextSwapper();
         Collection<YamlExecuteProcessContext> result = new LinkedList<>();
         for (ExecuteProcessContext each : processContexts) {
-            result.add(new YamlExecuteProcessContext(each));
+            result.add(yamlExecuteProcessContextSwapper.swapToYamlConfiguration(each));
         }
         return result;
     }
