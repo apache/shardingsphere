@@ -18,3 +18,4 @@
 org.apache.shardingsphere.driver.jdbc.core.driver.spi.AbsolutePathDriverURLProvider
 org.apache.shardingsphere.driver.jdbc.core.driver.spi.ClasspathDriverURLProvider
 org.apache.shardingsphere.driver.jdbc.core.driver.spi.ApolloDriverURLProvider
+org.apache.shardingsphere.driver.jdbc.core.driver.spi.NacosDriverURLProvider
