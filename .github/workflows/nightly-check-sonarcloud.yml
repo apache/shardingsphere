@@ -18,7 +18,7 @@
 name: Nightly Check - SonarCloud
 on:
   schedule:
-    - cron: '0 */2 * * *'  # every two hours
+    - cron: '0 */1 * * *'  # every two hours
   workflow_dispatch:
 
 concurrency:
@@ -54,11 +54,9 @@ jobs:
           key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.REPOSITORY_NAME }}-maven-third-party-
-      - name: Build dependencies
-        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
       - name: Build and analyze
         env:
           MAVEN_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-        run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=apache_shardingsphere -Dmaven.javadoc.skip=true -B -Drat.skip=true -Djacoco.skip=true -Dmaven.test.skip=true
+        run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=apache_shardingsphere -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipTests
