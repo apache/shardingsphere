@@ -29,7 +29,7 @@ public final class MySQLDefaultSessionVariableHandler extends DefaultSessionVari
     }
     
     @Override
-    protected boolean isNeedHandel(final String variableName) {
+    protected boolean isNeedHandle(final String variableName) {
         return variableName.startsWith("@");
     }
 }
