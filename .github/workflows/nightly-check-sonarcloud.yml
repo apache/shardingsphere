@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Check - SonarCloud
+name: Nightly Check - SonarCloud
 on:
   schedule:
     - cron: '0 17 */1 * *'  # once a day. UTC time
@@ -47,11 +47,10 @@ jobs:
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Build dependencies
-        run: ./mvnw -B clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
+          path: ~/.m2/repository
+          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ env.REPOSITORY_NAME }}-maven-third-party-
       - name: Build and analyze
         env:
           MAVEN_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
