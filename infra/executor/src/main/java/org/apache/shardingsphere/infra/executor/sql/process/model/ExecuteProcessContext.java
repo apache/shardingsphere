@@ -56,8 +56,7 @@ public final class ExecuteProcessContext {
     
     private final boolean proxyContext;
     
-    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus status,
-                                 final boolean isProxyContext) {
+    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus status, final boolean isProxyContext) {
         this.executionID = executionGroupContext.getReportContext().getExecutionID();
         this.sql = sql;
         this.databaseName = executionGroupContext.getReportContext().getDatabaseName();
