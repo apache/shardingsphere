@@ -74,6 +74,7 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
         ShardingSphereTable accountTableMetaData = mock(ShardingSphereTable.class);
         when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
         when(accountTableMetaData.getIndexes()).thenReturn(Collections.singletonList(new ShardingSphereIndex("status_idx_exist")));
+        when(accountTableMetaData.containsIndex("status_idx_exist")).thenReturn(true);
         when(accountTableMetaData.getPrimaryKeyColumns()).thenReturn(Collections.singletonList("account_id"));
         when(result.containsTable("t_account")).thenReturn(true);
         when(result.getTable("t_account")).thenReturn(accountTableMetaData);
