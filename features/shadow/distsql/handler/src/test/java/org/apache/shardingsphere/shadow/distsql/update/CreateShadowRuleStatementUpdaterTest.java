@@ -21,8 +21,6 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleExc
 import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.MissingRequiredStorageUnitsException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -91,7 +89,7 @@ class CreateShadowRuleStatementUpdaterTest {
     @Test
     void assertExecuteWithDuplicateLogicResource() {
         DataSourceContainedRule dataSourceContainedRule = mock(DataSourceContainedRule.class);
-        when(dataSourceContainedRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("duplicate_ds", Collections.singleton(new DataSourceRoleInfo("ds_0", DataSourceRole.PRIMARY))));
+        when(dataSourceContainedRule.getDataSourceMapper()).thenReturn(Collections.singletonMap("duplicate_ds", Collections.singleton("ds_0")));
         when(database.getRuleMetaData().findRules(DataSourceContainedRule.class)).thenReturn(Collections.singleton(dataSourceContainedRule));
         ShadowRuleSegment ruleSegment = new ShadowRuleSegment("duplicate_ds", null, null, null);
         assertThrows(InvalidRuleConfigurationException.class, () -> updater.checkSQLStatement(database, new CreateShadowRuleStatement(false, Collections.singleton(ruleSegment)), null));
