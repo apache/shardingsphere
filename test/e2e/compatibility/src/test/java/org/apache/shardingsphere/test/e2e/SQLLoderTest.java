@@ -30,6 +30,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,7 @@ public class SQLLoderTest {
         Map<String, FileSummary> sqlCaseFileSummaries = loadSQLCaseFileSummaries(URI.create(CASE_URL)).stream().collect(Collectors.toMap(FileSummary::getFileName, v -> v, (k, v) -> v));
         Map<String, FileSummary> resultFileSummaries = loadSQLCaseFileSummaries(URI.create(RESULT_URL)).stream().collect(Collectors.toMap(FileSummary::getFileName, v -> v, (k, v) -> v));
         for (Entry<String, FileSummary> entry : sqlCaseFileSummaries.entrySet()) {
+            Map<String, String> caseResultMap = new HashMap<>();
             String fileName = entry.getKey();
             if (!fileName.equals("alias")) {
                 continue;
@@ -80,10 +82,9 @@ public class SQLLoderTest {
                     completedSQL = new StringBuilder();
                 }
             }
-            StringBuilder stringBuilder = new StringBuilder();
             try {
                 for (String each : statements) {
-                    stringBuilder.append(each).append("\n");
+                    StringBuilder stringBuilder = new StringBuilder();
                     try (Statement statement = con.createStatement()) {
                         boolean result = false;
                         try {
@@ -93,20 +94,29 @@ public class SQLLoderTest {
                             // System.out.println(ex.getMessage());
                         }
                         if (!result) {
+                            caseResultMap.put(each, "");
                             continue;
                         }
                         ResultSet resultSet = statement.getResultSet();
-                        stringBuilder = buildCaseOutPut(stringBuilder, resultSet);
+                        buildCaseOutPut(stringBuilder, resultSet);
+                        caseResultMap.put(each, stringBuilder.toString());
                     }
                 }
             } catch (SQLException ex) {
-                System.out.println(fileName);
-                System.out.println(ex.getMessage());
+                //System.out.println(fileName);
+                // System.out.println(ex.getMessage());
             }
-            System.out.println(stringBuilder.toString());
-            // String resultFileContent = resultFileSummaries.containsKey(fileName) ? loadContent(URI.create(resultFileSummaries.get(fileName).getAccessURI())) : "";
+            String resultFileContent = resultFileSummaries.containsKey(fileName) ? loadContent(URI.create(resultFileSummaries.get(fileName).getAccessURI())) : "";
+            if (resultFileContent.isEmpty()) {
+                continue;
+            }
+            Map<String, String> exceptMap = parseResultMap(resultFileContent);
             
         }
+    }
+    
+    private static Map<String, String> parseResultMap(final String resultFileContent) {
+        
     }
     
     private Collection<Void> createTestParameters(final String sqlCaseFileContent, final String resultFileContent) {
