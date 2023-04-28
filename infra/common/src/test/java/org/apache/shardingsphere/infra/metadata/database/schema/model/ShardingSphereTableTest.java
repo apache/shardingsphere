@@ -37,7 +37,7 @@ class ShardingSphereTableTest {
     }
     
     @Test
-    void putColumn() {
+    void assertPutColumn() {
         ShardingSphereColumn column1 = new ShardingSphereColumn("foo_column_1", Types.INTEGER, true, true, false, true, false);
         ShardingSphereColumn column2 = new ShardingSphereColumn("foo_column_2", Types.INTEGER, false, true, false, true, false);
         shardingSphereTable.putColumn(column1);
@@ -48,7 +48,7 @@ class ShardingSphereTableTest {
     }
     
     @Test
-    void getColumn() {
+    void assertGetColumn() {
         ShardingSphereColumn column = new ShardingSphereColumn("foo_column", Types.INTEGER, true, true, false, true, false);
         shardingSphereTable.putColumn(column);
         assertThat(shardingSphereTable.getColumn("foo_column"), is(column));
@@ -57,7 +57,7 @@ class ShardingSphereTableTest {
     }
     
     @Test
-    void getColumns() {
+    void assertGetColumns() {
         ShardingSphereColumn column1 = new ShardingSphereColumn("foo_column_1", Types.INTEGER, true, true, false, true, false);
         ShardingSphereColumn column2 = new ShardingSphereColumn("foo_column_2", Types.INTEGER, false, true, false, true, false);
         shardingSphereTable.putColumn(column1);
@@ -67,7 +67,7 @@ class ShardingSphereTableTest {
     }
     
     @Test
-    void containsColumn() {
+    void assertContainsColumn() {
         ShardingSphereColumn column = new ShardingSphereColumn("foo_column", Types.INTEGER, true, true, false, true, false);
         shardingSphereTable.putColumn(column);
         assertTrue(shardingSphereTable.containsColumn("foo_column"));
@@ -75,7 +75,7 @@ class ShardingSphereTableTest {
     }
     
     @Test
-    void putIndex() {
+    void assertPutIndex() {
         ShardingSphereIndex index1 = new ShardingSphereIndex("foo_index_1");
         ShardingSphereIndex index2 = new ShardingSphereIndex("foo_index_2");
         shardingSphereTable.putIndex(index1);
@@ -87,7 +87,7 @@ class ShardingSphereTableTest {
     }
     
     @Test
-    void getIndex() {
+    void assertGetIndex() {
         ShardingSphereIndex index = new ShardingSphereIndex("foo_index");
         shardingSphereTable.putIndex(index);
         assertThat(shardingSphereTable.getIndex("foo_index"), is(index));
@@ -96,7 +96,7 @@ class ShardingSphereTableTest {
     }
     
     @Test
-    void removeIndex() {
+    void assertRemoveIndex() {
         ShardingSphereIndex index1 = new ShardingSphereIndex("foo_index_1");
         ShardingSphereIndex index2 = new ShardingSphereIndex("foo_index_2");
         shardingSphereTable.putIndex(index1);
@@ -109,7 +109,7 @@ class ShardingSphereTableTest {
     }
     
     @Test
-    void getIndexes() {
+    void assertGetIndexes() {
         ShardingSphereIndex index1 = new ShardingSphereIndex("foo_index_1");
         ShardingSphereIndex index2 = new ShardingSphereIndex("foo_index_2");
         shardingSphereTable.putIndex(index1);
@@ -119,7 +119,7 @@ class ShardingSphereTableTest {
     }
     
     @Test
-    void containsIndex() {
+    void assertContainsIndex() {
         ShardingSphereIndex index1 = new ShardingSphereIndex("foo_index_1");
         ShardingSphereIndex index2 = new ShardingSphereIndex("foo_index_2");
         shardingSphereTable.putIndex(index1);
@@ -131,7 +131,7 @@ class ShardingSphereTableTest {
     }
     
     @Test
-    void getConstraints() {
+    void assertGetConstraints() {
         ShardingSphereConstraint constraint = new ShardingSphereConstraint("t_order_foreign_key", "t_user");
         ShardingSphereTable table = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.singletonList(constraint));
         assertThat(table.getConstraints(), hasItems(constraint));
