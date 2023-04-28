@@ -297,7 +297,7 @@ public final class ProjectionEngine {
         Collection<Projection> result = new LinkedList<>();
         for (String each : usingColumnNames) {
             for (Projection projection : actualProjections) {
-                if (each.equals(projection.getColumnLabel().toLowerCase())) {
+                if (each.equalsIgnoreCase(projection.getColumnLabel())) {
                     result.add(projection);
                     break;
                 }
