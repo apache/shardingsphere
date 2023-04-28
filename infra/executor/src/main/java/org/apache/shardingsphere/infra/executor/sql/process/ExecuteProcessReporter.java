@@ -37,7 +37,7 @@ public final class ExecuteProcessReporter {
      * @param executionGroupContext execution group context
      */
     public void reportConnect(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("", executionGroupContext);
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(executionGroupContext);
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
     }
     
@@ -49,7 +49,6 @@ public final class ExecuteProcessReporter {
      */
     public void reportExecute(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext);
-        executeProcessContext.switchExecuting();
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
         ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), executeProcessContext.getProcessStatements());
     }

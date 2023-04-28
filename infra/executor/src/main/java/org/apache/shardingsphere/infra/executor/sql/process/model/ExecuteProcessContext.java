@@ -54,6 +54,18 @@ public final class ExecuteProcessContext {
     
     private volatile boolean executing;
     
+    public ExecuteProcessContext(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        executionID = executionGroupContext.getReportContext().getExecutionID();
+        databaseName = executionGroupContext.getReportContext().getDatabaseName();
+        Grantee grantee = executionGroupContext.getReportContext().getGrantee();
+        username = null == grantee ? null : grantee.getUsername();
+        hostname = null == grantee ? null : grantee.getHostname();
+        sql = "";
+        startMillis = System.currentTimeMillis();
+        executing = false;
+        addProcessUnitsAndStatements(executionGroupContext);
+    }
+    
     public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         executionID = executionGroupContext.getReportContext().getExecutionID();
         databaseName = executionGroupContext.getReportContext().getDatabaseName();
@@ -62,7 +74,7 @@ public final class ExecuteProcessContext {
         hostname = null == grantee ? null : grantee.getHostname();
         this.sql = sql;
         startMillis = System.currentTimeMillis();
-        executing = false;
+        executing = true;
         addProcessUnitsAndStatements(executionGroupContext);
     }
     
@@ -76,13 +88,6 @@ public final class ExecuteProcessContext {
                 }
             }
         }
-    }
-    
-    /**
-     * Switch executing.
-     */
-    public void switchExecuting() {
-        executing = true;
     }
     
     /**

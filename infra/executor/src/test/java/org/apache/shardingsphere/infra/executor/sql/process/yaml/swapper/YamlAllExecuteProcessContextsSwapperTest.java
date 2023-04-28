@@ -31,9 +31,9 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlAllExecuteProcessContextsSwapperTest {
     
@@ -56,7 +56,7 @@ class YamlAllExecuteProcessContextsSwapperTest {
         assertThat(actual.getCompletedUnitCount(), is(0));
         assertThat(actual.getTotalUnitCount(), is(0));
         assertThat(actual.getStartTimeMillis(), lessThanOrEqualTo(System.currentTimeMillis()));
-        assertFalse(actual.isExecuting());
+        assertTrue(actual.isExecuting());
     }
     
     @Test
