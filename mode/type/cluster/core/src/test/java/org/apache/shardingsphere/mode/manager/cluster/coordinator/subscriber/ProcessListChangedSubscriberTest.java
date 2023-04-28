@@ -127,7 +127,7 @@ class ProcessListChangedSubscriberTest {
         subscriber.triggerShowProcessList(new ShowProcessListTriggerEvent(instanceId, processListId));
         ClusterPersistRepository repository = ((RegistryCenter) Plugins.getMemberAccessor().get(ProcessListChangedSubscriber.class.getDeclaredField("registryCenter"), subscriber)).getRepository();
         verify(repository).persist("/execution_nodes/foo_process_id/" + instanceId,
-                "contexts:" + System.lineSeparator() + "- startTimeMillis: 0" + System.lineSeparator());
+                "contexts:" + System.lineSeparator() + "- completedUnitCount: 0\n  startTimeMillis: 0\n  totalUnitCount: 0" + System.lineSeparator());
         verify(repository).delete("/nodes/compute_nodes/process_trigger/" + instanceId + ":foo_process_id");
     }
     
