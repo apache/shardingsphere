@@ -15,21 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.external.loader.summary;
+package org.apache.shardingsphere.test.result;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
- * Assertable file summary.
+ * SQL parse result reporter creator.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AssertableFileSummary {
+public interface SQLParseResultReporterCreator extends TypedSPI {
     
-    private final String fileName;
-    
-    private final String sqlCaseFileAccessURL;
-    
-    private final String resultFileAccessURL;
+    /**
+     * Create SQL parse result reporter.
+     * 
+     * @param databaseType database type
+     * @param resultPath result path
+     * @return created SQL parse result reporter
+     */
+    SQLParseResultReporter create(String databaseType, String resultPath);
 }

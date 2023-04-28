@@ -15,25 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.external.result;
+package org.apache.shardingsphere.test.loader;
 
-import java.io.IOException;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
- * SQL parse result reporter.
+ * External SQL case test settings.
  */
-public interface SQLParseResultReporter extends AutoCloseable {
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ExternalCaseSettings {
     
     /**
-     * Print result.
+     * Get to be tested database types.
      * 
-     * @param sqlCaseId SQL case ID
-     * @param databaseType database type
-     * @param sql SQL
-     * @param isSuccess whether success
+     * @return to be tested database types
      */
-    void printResult(String sqlCaseId, String databaseType, boolean isSuccess, String sql);
+    String value();
     
-    @Override
-    void close() throws IOException;
+    /**
+     * Get test case URL.
+     * 
+     * @return test case URL
+     */
+    String caseURL();
+    
+    /**
+     * Get test case result URL.
+     * 
+     * @return test case result URL
+     */
+    String resultURL();
+    
+    /**
+     * Report type.
+     * 
+     * @return get report type
+     */
+    String reportType() default "CSV";
 }

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.external.result.type.csv;
+package org.apache.shardingsphere.test.result.type.csv;
 
-import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporter;
-import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporterCreator;
+import org.apache.shardingsphere.test.result.SQLParseResultReporter;
+import org.apache.shardingsphere.test.result.SQLParseResultReporterCreator;
 
 /**
  * SQL parse result reporter creator for CSV.
@@ -26,8 +26,8 @@ import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResu
 public final class CsvSQLParseResultReporterCreator implements SQLParseResultReporterCreator {
     
     @Override
-    public SQLParseResultReporter create(final String databaseType) {
-        return new CsvSQLParseResultReporter(databaseType);
+    public SQLParseResultReporter create(final String databaseType, final String resultPath) {
+        return new CsvSQLParseResultReporter(databaseType, resultPath);
     }
     
     @Override

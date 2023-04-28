@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.external.loader.summary;
+package org.apache.shardingsphere.test.result;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
 
 /**
- * File summary.
+ * SQL parse result reporter.
  */
-@RequiredArgsConstructor
-@Getter
-public final class FileSummary {
+public interface SQLParseResultReporter extends AutoCloseable {
     
-    private final String fileName;
+    /**
+     * Print result.
+     * 
+     * @param sqlCaseId SQL case ID
+     * @param databaseType database type
+     * @param sql SQL
+     * @param isSuccess whether success
+     */
+    void printResult(String sqlCaseId, String databaseType, boolean isSuccess, String sql);
     
-    private final String accessURI;
+    @Override
+    void close() throws IOException;
 }
