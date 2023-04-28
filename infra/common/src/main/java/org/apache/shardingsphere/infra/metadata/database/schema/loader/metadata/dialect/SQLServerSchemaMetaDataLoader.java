@@ -112,9 +112,9 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
         if (versionContainsHiddenColumn(databaseMetaData)) {
             stringBuilder.append("is_hidden AS IS_HIDDEN,");
         }
-        String isHidden = stringBuilder.toString();
-        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, isHidden)
-                : String.format(TABLE_META_DATA_SQL_IN_TABLES, isHidden, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+        String hiddenFlag = stringBuilder.toString();
+        return tables.isEmpty() ? String.format(TABLE_META_DATA_SQL, hiddenFlag)
+                : String.format(TABLE_META_DATA_SQL_IN_TABLES, hiddenFlag, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     private boolean versionContainsHiddenColumn(final DatabaseMetaData databaseMetaData) throws SQLException {

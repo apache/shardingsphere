@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.group;
 
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -45,5 +43,5 @@ public interface ReadwriteSplittingGroup {
      *
      * @return all data sources
      */
-    Collection<DataSourceRoleInfo> getAllDataSources();
+    Collection<String> getAllDataSources();
 }

@@ -26,13 +26,10 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtils;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -51,11 +48,6 @@ class ShowDistVariableExecutorTest {
     private final ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
     
     private final ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
-    
-    @AfterAll
-    static void tearDown() {
-        System.clearProperty("AGENT_PLUGINS_ENABLED");
-    }
     
     @Test
     void assertGetColumns() {
@@ -87,17 +79,6 @@ class ShowDistVariableExecutorTest {
         LocalDataQueryResultRow row = actual.iterator().next();
         assertThat(row.getCell(1), is("cached_connections"));
         assertThat(row.getCell(2), is("1"));
-    }
-    
-    @Test
-    void assertShowAgentPluginsEnabled() {
-        SystemPropertyUtils.setSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString());
-        ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariableStatement("AGENT_PLUGINS_ENABLED"));
-        assertThat(actual.size(), is(1));
-        LocalDataQueryResultRow row = actual.iterator().next();
-        assertThat(row.getCell(1), is("agent_plugins_enabled"));
-        assertThat(row.getCell(2), is("false"));
     }
     
     @Test

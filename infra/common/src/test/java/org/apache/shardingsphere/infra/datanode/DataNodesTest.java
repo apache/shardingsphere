@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -28,8 +26,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -39,6 +37,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class DataNodesTest {
+    
+    private static final Map<String, Collection<String>> READ_WRITE_SPLITTING_DATASOURCE_MAP = new HashMap<>();
+    
+    static {
+        READ_WRITE_SPLITTING_DATASOURCE_MAP.putIfAbsent("readwrite_ds", Arrays.asList("primary_ds", "replica_ds_0", "replica_ds_1"));
+    }
     
     @Test
     void assertGetDataNodesForShardingTableWithoutDataNodeContainedRule() {
@@ -131,10 +135,7 @@ class DataNodesTest {
     
     private ShardingSphereRule mockDataSourceContainedRule() {
         DataSourceContainedRule result = mock(FixtureRule.class);
-        Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = new LinkedHashMap<>();
-        dataSourceMapper.put("readwrite_ds", Arrays.asList(new DataSourceRoleInfo("primary_ds", DataSourceRole.PRIMARY),
-                new DataSourceRoleInfo("replica_ds_0", DataSourceRole.MEMBER), new DataSourceRoleInfo("replica_ds_1", DataSourceRole.MEMBER)));
-        when(result.getDataSourceMapper()).thenReturn(dataSourceMapper);
+        when(result.getDataSourceMapper()).thenReturn(READ_WRITE_SPLITTING_DATASOURCE_MAP);
         return result;
     }
     
