@@ -18,9 +18,8 @@
 <dataset>
     <metadata>
         <column name="Tables_in_empty_rules" />
-        <column name="Table_type" />
     </metadata>
-    <row values="t_single_table| BASE TABLE" />
-    <row values="t_user| BASE TABLE" />
-    <row values="t_user_item| BASE TABLE" />
+    <row values="t_single_table" />
+    <row values="t_user" />
+    <row values="t_user_item" />
 </dataset>
