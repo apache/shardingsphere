@@ -32,9 +32,9 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -81,9 +81,9 @@ class ShardingSphereDataCollectorTest {
         when(schema.getTable("test_table")).thenReturn(table);
         when(schema.containsTable("test_table")).thenReturn(true);
         when(table.getName()).thenReturn("test_table");
-        Map<String, ShardingSphereColumn> columns = new LinkedHashMap<>();
-        columns.put("column1", new ShardingSphereColumn("column1", Types.INTEGER, false, false, false, true, false));
-        columns.put("column2", new ShardingSphereColumn("column2", Types.INTEGER, false, false, false, true, false));
+        Collection<ShardingSphereColumn> columns = new LinkedList<>();
+        columns.add(new ShardingSphereColumn("column1", Types.INTEGER, false, false, false, true, false));
+        columns.add(new ShardingSphereColumn("column2", Types.INTEGER, false, false, false, true, false));
         when(table.getColumns()).thenReturn(columns);
         return result;
     }

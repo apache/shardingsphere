@@ -83,7 +83,8 @@ class YamlSchemaSwapperTest {
         assertThat(actualSchema.getAllTableNames(), is(Collections.singleton("t_order")));
         ShardingSphereTable actualTable = actualSchema.getTable("t_order");
         assertColumn(actualTable);
-        assertThat(actualTable.getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(actualTable.getIndexes().size(), is(1));
+        assertThat(actualTable.getIndexes().iterator().next().getName(), is("PRIMARY"));
         assertThat(actualSchema.getAllColumnNames("t_order").size(), is(2));
         assertTrue(actualSchema.containsColumn("t_order", "id"));
         assertTrue(actualSchema.containsColumn("t_order", "name"));
@@ -91,8 +92,8 @@ class YamlSchemaSwapperTest {
     
     private void assertColumn(final ShardingSphereTable table) {
         assertThat(table.getColumns().size(), is(2));
-        assertThat(table.getColumns().get("id"), is(new ShardingSphereColumn("id", 0, true, false, false, true, false)));
-        assertThat(table.getColumns().get("name"), is(new ShardingSphereColumn("name", 10, false, true, true, false, true)));
+        assertThat(table.getColumn("id"), is(new ShardingSphereColumn("id", 0, true, false, false, true, false)));
+        assertThat(table.getColumn("name"), is(new ShardingSphereColumn("name", 10, false, true, true, false, true)));
     }
     
     @Test

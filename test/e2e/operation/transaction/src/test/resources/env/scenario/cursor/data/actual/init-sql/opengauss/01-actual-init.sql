@@ -47,8 +47,8 @@ CREATE TABLE "t_order_item_0" ("item_id" INT PRIMARY KEY, "order_id" int NOT NUL
 CREATE TABLE "t_order_item_1" ("item_id" INT PRIMARY KEY, "order_id" int NOT NULL, "user_id" int NOT NULL, "status" varchar(50) DEFAULT NULL);
 CREATE OR REPLACE VIEW t_order_view_0 AS SELECT * FROM t_order_0;
 CREATE OR REPLACE VIEW t_order_view_1 AS SELECT * FROM t_order_1;
-CREATE TABLE "account_0"("ID" BIGINT, "BALANCE" FLOAT, "TRANSACTION_ID" INT);
-CREATE TABLE "account_1"("ID" BIGINT, "BALANCE" FLOAT, "TRANSACTION_ID" INT);
+CREATE TABLE "account_0"("id" BIGINT, "balance" FLOAT, "transaction_id" INT);
+CREATE TABLE "account_1"("id" BIGINT, "balance" FLOAT, "transaction_id" INT);
 CREATE TABLE "t_address" ("address_id" INT PRIMARY KEY, "code" VARCHAR(36) DEFAULT NULL, "address" VARCHAR(36) DEFAULT NULL, "city_id" INT, "province_id" INT, "country_id" INT);
 CREATE TABLE "t_country" ("country_id" INT PRIMARY KEY, "country_name" VARCHAR, "continent_name" VARCHAR, "creation_date" DATE NOT NULL);
 CREATE TABLE "t_province" ("province_id" INT PRIMARY KEY, "country_id" INT, "province_name" VARCHAR, "creation_date" DATE NOT NULL);
@@ -86,8 +86,8 @@ CREATE TABLE "t_order_item_0" ("item_id" INT PRIMARY KEY, "order_id" int NOT NUL
 CREATE TABLE "t_order_item_1" ("item_id" INT PRIMARY KEY, "order_id" int NOT NULL, "user_id" int NOT NULL, "status" varchar(50) DEFAULT NULL);
 CREATE OR REPLACE VIEW t_order_view_0 AS SELECT * FROM t_order_0;
 CREATE OR REPLACE VIEW t_order_view_1 AS SELECT * FROM t_order_1;
-CREATE TABLE "account_0"("ID" BIGINT, "BALANCE" FLOAT, "TRANSACTION_ID" INT);
-CREATE TABLE "account_1"("ID" BIGINT, "BALANCE" FLOAT, "TRANSACTION_ID" INT);
+CREATE TABLE "account_0"("id" BIGINT, "balance" FLOAT, "transaction_id" INT);
+CREATE TABLE "account_1"("id" BIGINT, "balance" FLOAT, "transaction_id" INT);
 CREATE TABLE "t_address" ("address_id" INT PRIMARY KEY, "code" VARCHAR(36) DEFAULT NULL, "address" VARCHAR(36) DEFAULT NULL, "city_id" INT, "province_id" INT, "country_id" INT);
 CREATE TABLE "t_country" ("country_id" INT PRIMARY KEY, "country_name" VARCHAR, "continent_name" VARCHAR, "creation_date" DATE NOT NULL);
 CREATE TABLE "t_province" ("province_id" INT PRIMARY KEY, "country_id" INT, "province_name" VARCHAR, "creation_date" DATE NOT NULL);

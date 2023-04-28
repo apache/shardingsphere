@@ -24,8 +24,8 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.sharding.exception.metadata.IndexNotExistedException;
 import org.apache.shardingsphere.sharding.exception.connection.ShardingDDLRouteException;
+import org.apache.shardingsphere.sharding.exception.metadata.IndexNotExistedException;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
@@ -71,7 +71,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
                 ShardingSphereSchema schema = each.getOwner().map(optional -> optional.getIdentifier().getValue())
                         .map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
                 logicTableName =
-                        schema.getAllTableNames().stream().filter(tableName -> schema.getTable(tableName).getIndexes().containsKey(each.getIndexName().getIdentifier().getValue())).findFirst();
+                        schema.getAllTableNames().stream().filter(tableName -> schema.getTable(tableName).containsIndex(each.getIndexName().getIdentifier().getValue())).findFirst();
                 logicTableName.ifPresent(optional -> validateDropIndexRouteUnit(shardingRule, routeContext, indexSegments, optional));
             }
         }
