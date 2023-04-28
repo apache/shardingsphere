@@ -38,7 +38,7 @@ public final class YamlExecuteProcessContextSwapper implements YamlConfiguration
         result.setTotalUnitCount(data.getProcessUnits().size());
         result.setCompletedUnitCount(Long.valueOf(data.getProcessUnits().values().stream().filter(ExecuteProcessUnit::isCompleted).count()).intValue());
         result.setStartTimeMillis(data.getStartMillis());
-        result.setProcessStatus(data.getStatus());
+        result.setExecuting(data.isExecuting());
         return result;
     }
     

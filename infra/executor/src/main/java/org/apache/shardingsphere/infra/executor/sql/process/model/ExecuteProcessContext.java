@@ -52,17 +52,17 @@ public final class ExecuteProcessContext {
     
     private long startMillis;
     
-    private ExecuteProcessStatus status;
+    private volatile boolean executing;
     
-    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus status) {
+    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         executionID = executionGroupContext.getReportContext().getExecutionID();
         databaseName = executionGroupContext.getReportContext().getDatabaseName();
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
         username = null == grantee ? null : grantee.getUsername();
         hostname = null == grantee ? null : grantee.getHostname();
         this.sql = sql;
-        this.status = status;
         startMillis = System.currentTimeMillis();
+        executing = false;
         addProcessUnitsAndStatements(executionGroupContext);
     }
     
@@ -79,11 +79,18 @@ public final class ExecuteProcessContext {
     }
     
     /**
+     * Switch executing.
+     */
+    public void switchExecuting() {
+        executing = true;
+    }
+    
+    /**
      * Reset.
      */
     public void reset() {
         sql = "";
         startMillis = System.currentTimeMillis();
-        status = ExecuteProcessStatus.SLEEP;
+        executing = false;
     }
 }
