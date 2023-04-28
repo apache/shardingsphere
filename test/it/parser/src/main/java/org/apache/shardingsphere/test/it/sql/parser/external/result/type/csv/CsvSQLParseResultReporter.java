@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.result.type.csv;
+package org.apache.shardingsphere.test.it.sql.parser.external.result.type.csv;
 
 import lombok.SneakyThrows;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.shardingsphere.test.it.sql.parser.result.SQLParseResultReporter;
+import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporter;
 
 import java.io.File;
 import java.io.IOException;

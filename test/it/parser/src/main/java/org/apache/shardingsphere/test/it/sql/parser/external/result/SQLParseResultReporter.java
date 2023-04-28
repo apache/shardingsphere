@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.result.type.csv;
+package org.apache.shardingsphere.test.it.sql.parser.external.result;
 
-import org.apache.shardingsphere.test.it.sql.parser.result.SQLParseResultReporter;
-import org.apache.shardingsphere.test.it.sql.parser.result.SQLParseResultReporterCreator;
+import java.io.IOException;
 
 /**
- * SQL parse result reporter creator for CSV.
+ * SQL parse result reporter.
  */
-public final class CsvSQLParseResultReporterCreator implements SQLParseResultReporterCreator {
+public interface SQLParseResultReporter extends AutoCloseable {
+    
+    /**
+     * Print result.
+     * 
+     * @param sqlCaseId SQL case ID
+     * @param databaseType database type
+     * @param sql SQL
+     * @param isSuccess whether success
+     */
+    void printResult(String sqlCaseId, String databaseType, boolean isSuccess, String sql);
     
     @Override
-    public SQLParseResultReporter create(final String databaseType, final String resultPath) {
-        return new CsvSQLParseResultReporter(databaseType, resultPath);
-    }
-    
-    @Override
-    public String getType() {
-        return "CSV";
-    }
+    void close() throws IOException;
 }

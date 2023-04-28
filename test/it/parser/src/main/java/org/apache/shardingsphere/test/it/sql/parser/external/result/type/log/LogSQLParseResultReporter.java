@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.result;
+package org.apache.shardingsphere.test.it.sql.parser.external.result.type.log;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporter;
 
 /**
- * SQL parse result reporter creator.
+ * SQL parse result reporter for log.
  */
-public interface SQLParseResultReporterCreator extends TypedSPI {
+@Slf4j
+public final class LogSQLParseResultReporter implements SQLParseResultReporter {
     
-    /**
-     * Create SQL parse result reporter.
-     * 
-     * @param databaseType database type
-     * @param resultPath result path
-     * @return created SQL parse result reporter
-     */
-    SQLParseResultReporter create(String databaseType, String resultPath);
+    @Override
+    public void printResult(final String sqlCaseId, final String databaseType, final boolean isSuccess, final String sql) {
+        if (!isSuccess) {
+            log.warn("SQL parse failed. SQL Case ID is: {}, database type is: {}, SQL is: {}", sqlCaseId, databaseType, sql);
+        }
+    }
+    
+    @Override
+    public void close() {
+    }
 }

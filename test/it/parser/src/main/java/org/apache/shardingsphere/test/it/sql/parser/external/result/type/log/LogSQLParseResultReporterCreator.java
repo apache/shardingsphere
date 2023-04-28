@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.result;
+package org.apache.shardingsphere.test.it.sql.parser.external.result.type.log;
 
-import java.io.IOException;
+import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporter;
+import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporterCreator;
 
 /**
- * SQL parse result reporter.
+ * SQL parse result reporter creator for log.
  */
-public interface SQLParseResultReporter extends AutoCloseable {
-    
-    /**
-     * Print result.
-     * 
-     * @param sqlCaseId SQL case ID
-     * @param databaseType database type
-     * @param sql SQL
-     * @param isSuccess whether success
-     */
-    void printResult(String sqlCaseId, String databaseType, boolean isSuccess, String sql);
+public final class LogSQLParseResultReporterCreator implements SQLParseResultReporterCreator {
     
     @Override
-    void close() throws IOException;
+    public SQLParseResultReporter create(final String databaseType, final String resultPath) {
+        return new LogSQLParseResultReporter();
+    }
+    
+    @Override
+    public String getType() {
+        return "LOG";
+    }
 }
