@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.shadow.distsql.query;
 
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -73,9 +71,9 @@ class CountShadowRuleExecutorTest {
     
     private ShadowRule mockShadowRule() {
         ShadowRule result = mock(ShadowRule.class);
-        Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = new LinkedHashMap<>();
-        dataSourceMapper.put("shadow-data-source-0", Arrays.asList(new DataSourceRoleInfo("ds", DataSourceRole.PRODUCTION), new DataSourceRoleInfo("ds_shadow", DataSourceRole.SHADOW)));
-        dataSourceMapper.put("shadow-data-source-1", Arrays.asList(new DataSourceRoleInfo("ds1", DataSourceRole.PRODUCTION), new DataSourceRoleInfo("ds1_shadow", DataSourceRole.SHADOW)));
+        Map<String, Collection<String>> dataSourceMapper = new LinkedHashMap<>();
+        dataSourceMapper.put("shadow-data-source-0", Arrays.asList("ds", "ds_shadow"));
+        dataSourceMapper.put("shadow-data-source-1", Arrays.asList("ds1", "ds1_shadow"));
         when(result.getDataSourceMapper()).thenReturn(dataSourceMapper);
         return result;
     }

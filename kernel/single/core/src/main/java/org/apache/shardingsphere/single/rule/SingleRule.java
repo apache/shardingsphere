@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -92,10 +91,10 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     
     private Map<String, DataSource> getAggregateDataSourceMap(final Map<String, DataSource> dataSourceMap, final DataSourceContainedRule builtRule) {
         Map<String, DataSource> result = new LinkedHashMap<>();
-        for (Entry<String, Collection<DataSourceRoleInfo>> entry : builtRule.getDataSourceMapper().entrySet()) {
-            for (DataSourceRoleInfo each : entry.getValue()) {
-                if (dataSourceMap.containsKey(each.getName())) {
-                    result.putIfAbsent(entry.getKey(), dataSourceMap.remove(each.getName()));
+        for (Entry<String, Collection<String>> entry : builtRule.getDataSourceMapper().entrySet()) {
+            for (String each : entry.getValue()) {
+                if (dataSourceMap.containsKey(each)) {
+                    result.putIfAbsent(entry.getKey(), dataSourceMap.remove(each));
                 }
             }
         }
