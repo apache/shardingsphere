@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.result;
+package org.apache.shardingsphere.test.it.sql.parser.result.type.log;
 
-import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.it.sql.parser.result.SQLParseResultReporter;
 
 /**
- * SQL parse result reporter.
+ * SQL parse result reporter for log.
  */
-public interface SQLParseResultReporter extends AutoCloseable {
-    
-    /**
-     * Print result.
-     * 
-     * @param sqlCaseId SQL case ID
-     * @param databaseType database type
-     * @param sql SQL
-     * @param isSuccess whether success
-     */
-    void printResult(String sqlCaseId, String databaseType, boolean isSuccess, String sql);
+@Slf4j
+public final class LogSQLParseResultReporter implements SQLParseResultReporter {
     
     @Override
-    void close() throws IOException;
+    public void printResult(final String sqlCaseId, final String databaseType, final boolean isSuccess, final String sql) {
+        if (!isSuccess) {
+            log.warn("SQL parse failed. SQL Case ID is: {}, database type is: {}, SQL is: {}", sqlCaseId, databaseType, sql);
+        }
+    }
+    
+    @Override
+    public void close() {
+    }
 }

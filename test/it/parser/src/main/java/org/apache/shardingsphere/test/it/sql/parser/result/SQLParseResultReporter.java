@@ -15,21 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.result;
+package org.apache.shardingsphere.test.it.sql.parser.result;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import java.io.IOException;
 
 /**
- * SQL parse result reporter creator.
+ * SQL parse result reporter.
  */
-public interface SQLParseResultReporterCreator extends TypedSPI {
+public interface SQLParseResultReporter extends AutoCloseable {
     
     /**
-     * Create SQL parse result reporter.
+     * Print result.
      * 
+     * @param sqlCaseId SQL case ID
      * @param databaseType database type
-     * @param resultPath result path
-     * @return created SQL parse result reporter
+     * @param sql SQL
+     * @param isSuccess whether success
      */
-    SQLParseResultReporter create(String databaseType, String resultPath);
+    void printResult(String sqlCaseId, String databaseType, boolean isSuccess, String sql);
+    
+    @Override
+    void close() throws IOException;
 }

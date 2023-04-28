@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.result.type.log;
+package org.apache.shardingsphere.test.it.sql.parser.result;
 
-import org.apache.shardingsphere.test.result.SQLParseResultReporter;
-import org.apache.shardingsphere.test.result.SQLParseResultReporterCreator;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
- * SQL parse result reporter creator for log.
+ * SQL parse result reporter creator.
  */
-public final class LogSQLParseResultReporterCreator implements SQLParseResultReporterCreator {
+public interface SQLParseResultReporterCreator extends TypedSPI {
     
-    @Override
-    public SQLParseResultReporter create(final String databaseType, final String resultPath) {
-        return new LogSQLParseResultReporter();
-    }
-    
-    @Override
-    public String getType() {
-        return "LOG";
-    }
+    /**
+     * Create SQL parse result reporter.
+     * 
+     * @param databaseType database type
+     * @param resultPath result path
+     * @return created SQL parse result reporter
+     */
+    SQLParseResultReporter create(String databaseType, String resultPath);
 }

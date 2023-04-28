@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.result.type.csv;
+package org.apache.shardingsphere.test.it.sql.parser.result.type.log;
 
-import org.apache.shardingsphere.test.result.SQLParseResultReporter;
-import org.apache.shardingsphere.test.result.SQLParseResultReporterCreator;
+import org.apache.shardingsphere.test.it.sql.parser.result.SQLParseResultReporter;
+import org.apache.shardingsphere.test.it.sql.parser.result.SQLParseResultReporterCreator;
 
 /**
- * SQL parse result reporter creator for CSV.
+ * SQL parse result reporter creator for log.
  */
-public final class CsvSQLParseResultReporterCreator implements SQLParseResultReporterCreator {
+public final class LogSQLParseResultReporterCreator implements SQLParseResultReporterCreator {
     
     @Override
     public SQLParseResultReporter create(final String databaseType, final String resultPath) {
-        return new CsvSQLParseResultReporter(databaseType, resultPath);
+        return new LogSQLParseResultReporter();
     }
     
     @Override
     public String getType() {
-        return "CSV";
+        return "LOG";
     }
 }

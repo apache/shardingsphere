@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.result.type.log;
+package org.apache.shardingsphere.test.it.sql.parser.result.type.csv;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.test.result.SQLParseResultReporter;
+import org.apache.shardingsphere.test.it.sql.parser.result.SQLParseResultReporter;
+import org.apache.shardingsphere.test.it.sql.parser.result.SQLParseResultReporterCreator;
 
 /**
- * SQL parse result reporter for log.
+ * SQL parse result reporter creator for CSV.
  */
-@Slf4j
-public final class LogSQLParseResultReporter implements SQLParseResultReporter {
+public final class CsvSQLParseResultReporterCreator implements SQLParseResultReporterCreator {
     
     @Override
-    public void printResult(final String sqlCaseId, final String databaseType, final boolean isSuccess, final String sql) {
-        if (!isSuccess) {
-            log.warn("SQL parse failed. SQL Case ID is: {}, database type is: {}, SQL is: {}", sqlCaseId, databaseType, sql);
-        }
+    public SQLParseResultReporter create(final String databaseType, final String resultPath) {
+        return new CsvSQLParseResultReporter(databaseType, resultPath);
     }
     
     @Override
-    public void close() {
+    public String getType() {
+        return "CSV";
     }
 }
