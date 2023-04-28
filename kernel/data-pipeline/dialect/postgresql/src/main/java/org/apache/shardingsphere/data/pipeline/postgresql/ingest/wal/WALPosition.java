@@ -32,11 +32,6 @@ public final class WALPosition implements IngestPosition<WALPosition> {
     private final BaseLogSequenceNumber logSequenceNumber;
     
     @Override
-    public int compareTo(final WALPosition position) {
-        return null == position ? 1 : Long.compare(logSequenceNumber.asLong(), position.logSequenceNumber.asLong());
-    }
-    
-    @Override
     public String toString() {
         return String.valueOf(logSequenceNumber.asLong());
     }

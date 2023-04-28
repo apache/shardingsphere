@@ -41,9 +41,4 @@ public final class NoUniqueKeyPosition extends PrimaryKeyPosition<Void> implemen
     protected char getType() {
         return 'n';
     }
-    
-    @Override
-    public int compareTo(final NoUniqueKeyPosition position) {
-        return 0;
-    }
 }

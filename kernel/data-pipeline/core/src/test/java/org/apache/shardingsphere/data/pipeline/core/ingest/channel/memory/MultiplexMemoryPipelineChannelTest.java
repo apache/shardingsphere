@@ -113,10 +113,5 @@ class MultiplexMemoryPipelineChannelTest {
     private static final class IntPosition implements IngestPosition<IntPosition> {
         
         private final int id;
-        
-        @Override
-        public int compareTo(final IntPosition position) {
-            return id - position.id;
-        }
     }
 }
