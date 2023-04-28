@@ -73,7 +73,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         List<RawQueryResultColumnMetaData> columnNames = new LinkedList<>();
         String tableColumnName = String.format("Tables_in_%s", databaseName);
         columnNames.add(new RawQueryResultColumnMetaData("", tableColumnName, tableColumnName, Types.VARCHAR, "VARCHAR", 255, 0));
-        if (showTablesStatement.getHasFull().isPresent()) {
+        if (showTablesStatement.isContainsFull()) {
             columnNames.add(new RawQueryResultColumnMetaData("", "Table_type", "Table_type", Types.VARCHAR, "VARCHAR", 20, 0));
         }
         return new RawQueryResultMetaData(columnNames);
@@ -86,7 +86,7 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         List<MemoryQueryResultDataRow> rows = getAllTableNames(databaseName).stream().map(each -> {
             List<Object> rowValues = new LinkedList<>();
             rowValues.add(each);
-            if (showTablesStatement.getHasFull().isPresent()) {
+            if (showTablesStatement.isContainsFull()) {
                 rowValues.add(TABLE_TYPE);
             }
             return new MemoryQueryResultDataRow(rowValues);
