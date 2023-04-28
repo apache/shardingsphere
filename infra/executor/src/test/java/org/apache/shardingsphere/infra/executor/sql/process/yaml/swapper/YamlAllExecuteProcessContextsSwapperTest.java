@@ -41,7 +41,7 @@ class YamlAllExecuteProcessContextsSwapperTest {
     void assertSwapToYamlConfiguration() {
         ExecutionGroupReportContext reportContext = new ExecutionGroupReportContext("foo_db", new Grantee("root", "localhost"));
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("SELECT 1", executionGroupContext, ExecuteProcessStatus.START, true);
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("SELECT 1", executionGroupContext, ExecuteProcessStatus.START);
         YamlAllExecuteProcessContexts actual = new YamlAllExecuteProcessContextsSwapper().swapToYamlConfiguration(Collections.singleton(executeProcessContext));
         assertThat(actual.getContexts().size(), is(1));
         assertYamlExecuteProcessContext(actual.getContexts().iterator().next());

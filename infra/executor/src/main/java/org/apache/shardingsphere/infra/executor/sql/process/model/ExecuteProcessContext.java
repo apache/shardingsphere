@@ -44,25 +44,22 @@ public final class ExecuteProcessContext {
     
     private final String hostname;
     
-    private final boolean proxyContext;
-    
     private final Map<String, ExecuteProcessUnit> processUnits = new HashMap<>();
     
     private final Collection<Statement> processStatements = new LinkedList<>();
     
     private String sql;
     
-    private ExecuteProcessStatus status;
-    
     private long startMillis;
     
-    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus status, final boolean isProxyContext) {
+    private ExecuteProcessStatus status;
+    
+    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus status) {
         executionID = executionGroupContext.getReportContext().getExecutionID();
         databaseName = executionGroupContext.getReportContext().getDatabaseName();
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
         username = null == grantee ? null : grantee.getUsername();
         hostname = null == grantee ? null : grantee.getHostname();
-        proxyContext = isProxyContext;
         this.sql = sql;
         this.status = status;
         startMillis = System.currentTimeMillis();
