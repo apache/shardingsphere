@@ -82,7 +82,7 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
             if (dataNodeOptional.isPresent() && containsIfNotExists) {
                 String dataSourceName = dataNodeOptional.map(DataNode::getDataSourceName).orElse(null);
                 routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
-            } else if (dataNodeOptional.isPresent() && !containsIfNotExists) {
+            } else if (dataNodeOptional.isPresent()) {
                 throw new TableExistsException(table.getTableName());
             } else {
                 String dataSourceName = rule.assignNewDataSourceName();

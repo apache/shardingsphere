@@ -33,7 +33,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlExecuteProcessContextSwapperTest {
     
@@ -48,7 +47,8 @@ class YamlExecuteProcessContextSwapperTest {
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getHostname(), is("localhost"));
         assertThat(actual.getSql(), is("SELECT 1"));
-        assertTrue(actual.getUnitStatuses().isEmpty());
+        assertThat(actual.getCompletedUnitCount(), is(0));
+        assertThat(actual.getTotalUnitCount(), is(0));
         assertThat(actual.getStartTimeMillis(), lessThanOrEqualTo(System.currentTimeMillis()));
         assertThat(actual.getProcessStatus(), is(ExecuteProcessStatus.START));
     }

@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import lombok.SneakyThrows;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 import org.apache.shardingsphere.distsql.handler.exception.DistSQLException;
-import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
@@ -44,6 +42,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AbstractT
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.AutoTableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRuleSegment;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingTableRuleStatement;
+import org.apache.shardingsphere.sharding.exception.strategy.InvalidShardingStrategyConfigurationException;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.SQLParserFactory;
@@ -292,7 +291,7 @@ class CreateShardingTableRuleStatementUpdaterTest {
         ShardingDistSQLStatementParserFacade facade = new ShardingDistSQLStatementParserFacade();
         ParseASTNode parseASTNode = (ParseASTNode) SQLParserFactory.newInstance(sql, facade.getLexerClass(), facade.getParserClass()).parse();
         SQLVisitor visitor = TypedSPILoader.getService(FeaturedDistSQLStatementParserFacade.class, facade.getType()).getVisitorClass().getDeclaredConstructor().newInstance();
-        return (DistSQLStatement) ((ParseTreeVisitor) visitor).visit(parseASTNode.getRootNode());
+        return (DistSQLStatement) visitor.visit(parseASTNode.getRootNode());
     }
     
     private static class MockDataSourceContainedRule implements DataSourceContainedRule {
