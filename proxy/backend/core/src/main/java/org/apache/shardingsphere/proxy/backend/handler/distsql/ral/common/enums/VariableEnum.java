@@ -24,8 +24,6 @@ import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableExce
  */
 public enum VariableEnum {
     
-    AGENT_PLUGINS_ENABLED,
-    
     CACHED_CONNECTIONS,
     
     TRANSACTION_TYPE;
