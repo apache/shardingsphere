@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
@@ -100,9 +98,8 @@ class ReadwriteSplittingRuleTest {
     @Test
     void assertGetDataSourceMapper() {
         ReadwriteSplittingRule readwriteSplittingRule = createReadwriteSplittingRule();
-        Map<String, Collection<DataSourceRoleInfo>> actual = readwriteSplittingRule.getDataSourceMapper();
-        Map<String, Collection<DataSourceRoleInfo>> expected = Collections.singletonMap("readwrite", Arrays.asList(new DataSourceRoleInfo("write_ds", DataSourceRole.PRIMARY),
-                new DataSourceRoleInfo("read_ds_0", DataSourceRole.MEMBER), new DataSourceRoleInfo("read_ds_1", DataSourceRole.MEMBER)));
+        Map<String, Collection<String>> actual = readwriteSplittingRule.getDataSourceMapper();
+        Map<String, Collection<String>> expected = Collections.singletonMap("readwrite", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"));
         assertThat(actual, is(expected));
     }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.datanode;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -60,13 +59,13 @@ public final class DataNodeUtils {
      * @param dataSources dataSource map
      * @return data node collection
      */
-    public static Collection<DataNode> buildDataNode(final DataNode dataNode, final Map<String, Collection<DataSourceRoleInfo>> dataSources) {
+    public static Collection<DataNode> buildDataNode(final DataNode dataNode, final Map<String, Collection<String>> dataSources) {
         if (!dataSources.containsKey(dataNode.getDataSourceName())) {
             return Collections.singletonList(dataNode);
         }
         Collection<DataNode> result = new LinkedList<>();
-        for (DataSourceRoleInfo each : dataSources.get(dataNode.getDataSourceName())) {
-            result.add(new DataNode(each.getName(), dataNode.getTableName()));
+        for (String each : dataSources.get(dataNode.getDataSourceName())) {
+            result.add(new DataNode(each, dataNode.getTableName()));
         }
         return result;
     }
