@@ -122,7 +122,7 @@ class DataSourceImporterTest {
         verify(preparedStatement).setObject(1, 20);
         verify(preparedStatement).setObject(2, "UPDATE");
         verify(preparedStatement).setObject(3, 1);
-        verify(preparedStatement).setObject(4, 20);
+        verify(preparedStatement).setObject(4, 10);
         verify(preparedStatement).executeUpdate();
     }
     
@@ -137,7 +137,7 @@ class DataSourceImporterTest {
         inOrder.verify(preparedStatement).setObject(2, 10);
         inOrder.verify(preparedStatement).setObject(3, "UPDATE");
         inOrder.verify(preparedStatement).setObject(4, 1);
-        inOrder.verify(preparedStatement).setObject(5, 10);
+        inOrder.verify(preparedStatement).setObject(5, 0);
         inOrder.verify(preparedStatement).executeUpdate();
     }
     

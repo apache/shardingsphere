@@ -95,7 +95,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     
     @Override
     protected void runBlocking() {
-        int batchSize = importerConfig.getBatchSize() * 2;
+        int batchSize = importerConfig.getBatchSize();
         while (isRunning()) {
             List<Record> records = channel.fetchRecords(batchSize, 3, TimeUnit.SECONDS);
             if (null != records && !records.isEmpty()) {
@@ -246,8 +246,14 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
             }
             for (int i = 0; i < conditionColumns.size(); i++) {
                 Column keyColumn = conditionColumns.get(i);
-                preparedStatement.setObject(updatedColumns.size() + i + 1, keyColumn.isUniqueKey() && keyColumn.isUpdated() ? keyColumn.getOldValue() : keyColumn.getValue());
+                // TODO There to be compatible with PostgreSQL before value is null except primary key and unsupported updating sharding value now.
+                if (shardingColumns.contains(keyColumn.getName()) && keyColumn.getOldValue() == null) {
+                    preparedStatement.setObject(updatedColumns.size() + i + 1, keyColumn.getValue());
+                    continue;
+                }
+                preparedStatement.setObject(updatedColumns.size() + i + 1, keyColumn.getOldValue());
             }
+            // TODO if table without unique key the conditionColumns before values is null, so update will fail at PostgreSQL
             int updateCount = preparedStatement.executeUpdate();
             if (1 != updateCount) {
                 log.warn("executeUpdate failed, updateCount={}, updateSql={}, updatedColumns={}, conditionColumns={}", updateCount, updateSql, updatedColumns, conditionColumns);
@@ -276,7 +282,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
             }
             int[] counts = preparedStatement.executeBatch();
             if (IntStream.of(counts).anyMatch(value -> 1 != value)) {
-                log.warn("batchDelete failed, counts={}, sql={}", Arrays.toString(counts), deleteSQL);
+                log.warn("batchDelete failed, counts={}, sql={}, conditionColumns={}", Arrays.toString(counts), deleteSQL, conditionColumns);
             }
         } finally {
             batchDeleteStatement = null;
