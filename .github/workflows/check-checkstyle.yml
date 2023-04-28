@@ -51,30 +51,13 @@ env:
 
 jobs:
   empty:
-    name: Check - CheckStyle and License
+    name: Check - CheckStyle and License / Check - CheckStyle
     runs-on: ubuntu-latest
     steps:
-      - run: echo 1
-#
-#  check-checkstyle:
-#    name: Check - CheckStyle
-#    runs-on: ubuntu-latest
-#    timeout-minutes: 10
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: actions/cache@v3
-#        with:
-#          path: ~/.m2/repository
-#          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
-#          restore-keys: |
-#            ${{ env.REPOSITORY_NAME }}-maven-third-party-
-#      - name: Run CheckStyle
-#        run: ./mvnw checkstyle:check -T1C
-#
-#  check-license:
-#    name: Check - License
-#    timeout-minutes: 10
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: apache/skywalking-eyes@v0.4.0
+      - run: echo "block temporary"
+
+  empty2:
+    name: Check - CheckStyle and License / Check - License
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "block temporary"
