@@ -76,6 +76,14 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     
     private PreparedStatement statement;
     
+    static {
+        try {
+            Class.forName(DRIVER_NAME);
+        } catch (final ClassNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
     @Override
     public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData data, final JDBCExecutor jdbcExecutor) {
         this.databaseName = databaseName;
@@ -89,8 +97,7 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     
     @Override
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                  final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) throws SQLException, ClassNotFoundException {
-        Class.forName(DRIVER_NAME);
+                                  final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) throws SQLException {
         connection = createConnection(prepareEngine, callback, federationContext);
         statement = connection.prepareStatement(SQLUtils.trimSemicolon(federationContext.getQueryContext().getSql()));
         setParameters(statement, federationContext.getQueryContext().getParameters());

@@ -54,10 +54,9 @@ public interface SQLFederationExecutor extends TypedSPI, AutoCloseable {
      * @param federationContext federation context
      * @return result set
      * @throws SQLException SQL exception
-     * @throws ClassNotFoundException class not found exception
      */
     ResultSet executeQuery(DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                           JDBCExecutorCallback<? extends ExecuteResult> callback, SQLFederationExecutorContext federationContext) throws SQLException, ClassNotFoundException;
+                           JDBCExecutorCallback<? extends ExecuteResult> callback, SQLFederationExecutorContext federationContext) throws SQLException;
     
     /**
      * Get result set.
