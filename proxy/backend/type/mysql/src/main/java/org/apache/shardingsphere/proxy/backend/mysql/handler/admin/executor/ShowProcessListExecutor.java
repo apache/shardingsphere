@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlAllExecuteProcessContexts;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlAllExecuteProcessContexts;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
