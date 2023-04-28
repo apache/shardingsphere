@@ -47,7 +47,6 @@ github:
   protected_branches:
     master:
       required_status_checks:
-        strict: true
         contexts:
           - Check - CheckStyle and License / Check - CheckStyle
           - Check - CheckStyle and License / Check - License
