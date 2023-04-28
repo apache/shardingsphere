@@ -230,9 +230,9 @@ class MySQLComStmtPrepareExecutorTest {
                 .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
         when(result.getMetaDataContexts().getMetaData().getDatabase(connectionSession.getDatabaseName()).getProtocolType()).thenReturn(new MySQLDatabaseType());
         ShardingSphereTable table = new ShardingSphereTable();
-        table.getColumns().put("id", new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true));
-        table.getColumns().put("name", new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false));
-        table.getColumns().put("age", new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true));
+        table.putColumn(new ShardingSphereColumn("id", Types.BIGINT, true, false, false, false, true));
+        table.putColumn(new ShardingSphereColumn("name", Types.VARCHAR, false, false, false, false, false));
+        table.putColumn(new ShardingSphereColumn("age", Types.SMALLINT, false, false, false, false, true));
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("user", table);
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", new MySQLDatabaseType(), new ShardingSphereResourceMetaData("foo_db", Collections.emptyMap()),

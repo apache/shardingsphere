@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterIndexS
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.AlterIndexStatementHandler;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 /**
@@ -53,9 +52,9 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
             ShardingSphereTable table = database.getSchema(actualSchemaName).getTable(logicTableName.get());
             Preconditions.checkNotNull(table, "Can not get the table '%s' meta data!", logicTableName.get());
             ShardingSphereTable newTable = newShardingSphereTable(table);
-            newTable.getIndexes().remove(indexName);
+            newTable.removeIndex(indexName);
             String renameIndexName = renameIndex.get().getIndexName().getIdentifier().getValue();
-            newTable.getIndexes().put(renameIndexName, new ShardingSphereIndex(renameIndexName));
+            newTable.putIndex(new ShardingSphereIndex(renameIndexName));
             AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), actualSchemaName);
             alterSchemaMetaDataPOJO.getAlteredTables().add(newTable);
             modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
@@ -63,12 +62,11 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
     }
     
     private Optional<String> findLogicTableName(final ShardingSphereSchema schema, final String indexName) {
-        return schema.getAllTableNames().stream().filter(each -> schema.getTable(each).getIndexes().containsKey(indexName)).findFirst();
+        return schema.getAllTableNames().stream().filter(each -> schema.getTable(each).containsIndex(indexName)).findFirst();
     }
     
     private ShardingSphereTable newShardingSphereTable(final ShardingSphereTable table) {
-        ShardingSphereTable result = new ShardingSphereTable(table.getName(), new LinkedHashMap<>(table.getColumns()),
-                new LinkedHashMap<>(table.getIndexes()), new LinkedHashMap<>(table.getConstraints()));
+        ShardingSphereTable result = new ShardingSphereTable(table.getName(), table.getColumns(), table.getIndexes(), table.getConstraints());
         result.getColumnNames().addAll(table.getColumnNames());
         result.getVisibleColumns().addAll(table.getVisibleColumns());
         result.getPrimaryKeyColumns().addAll(table.getPrimaryKeyColumns());
