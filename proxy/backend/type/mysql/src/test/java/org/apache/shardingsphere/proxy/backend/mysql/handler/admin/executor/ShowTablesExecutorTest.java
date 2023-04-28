@@ -88,7 +88,7 @@ class ShowTablesExecutorTest {
     
     @Test
     void assertShowTablesExecutorWithFull() throws SQLException {
-        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        MySQLShowTablesStatement showTablesStatement = mock(MySQLShowTablesStatement.class);
         when(showTablesStatement.getHasFull()).thenReturn(Optional.of(Boolean.TRUE));
         ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, DatabaseTypeEngine.getDatabaseType("MySQL"));
         Map<String, ShardingSphereDatabase> databases = getDatabases();
