@@ -28,17 +28,17 @@ public final class ExecuteProcessUnit {
     
     private final String unitID;
     
-    private volatile boolean isCompleted;
+    private volatile boolean completed;
     
     public ExecuteProcessUnit(final ExecutionUnit executionUnit) {
         this.unitID = String.valueOf(executionUnit.hashCode());
-        isCompleted = false;
+        completed = false;
     }
     
     /**
      * Switch to complete.
      */
     public void switchComplete() {
-        isCompleted = true;
+        completed = true;
     }
 }
