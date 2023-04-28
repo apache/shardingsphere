@@ -61,9 +61,9 @@ public final class ExecuteProcessReporter {
      * @param executionUnit execution unit
      */
     public void reportComplete(final String executionID, final SQLExecutionUnit executionUnit) {
-        ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), ExecuteProcessStatus.DONE);
+        ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit());
         ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setStatus(ExecuteProcessStatus.DONE));
+        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(ExecuteProcessUnit::switchComplete);
     }
     
     /**

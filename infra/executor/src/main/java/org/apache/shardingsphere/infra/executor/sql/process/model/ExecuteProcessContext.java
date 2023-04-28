@@ -63,13 +63,13 @@ public final class ExecuteProcessContext {
         this.sql = sql;
         this.status = status;
         startMillis = System.currentTimeMillis();
-        addProcessUnitsAndStatements(executionGroupContext, status);
+        addProcessUnitsAndStatements(executionGroupContext);
     }
     
-    private void addProcessUnitsAndStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus processStatus) {
+    private void addProcessUnitsAndStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (SQLExecutionUnit executionUnit : each.getInputs()) {
-                ExecuteProcessUnit processUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), processStatus);
+                ExecuteProcessUnit processUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit());
                 processUnits.put(processUnit.getUnitID(), processUnit);
                 if (executionUnit instanceof JDBCExecutionUnit) {
                     processStatements.add(((JDBCExecutionUnit) executionUnit).getStorageResource());
