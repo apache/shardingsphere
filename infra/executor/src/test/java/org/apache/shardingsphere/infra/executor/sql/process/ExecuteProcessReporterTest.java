@@ -52,9 +52,9 @@ class ExecuteProcessReporterTest {
     }
     
     @Test
-    void assertReport() {
+    void assertReportExecute() {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
-        new ExecuteProcessReporter().report(new QueryContext(null, null, null), executionGroupContext, ExecuteProcessStatus.START);
+        new ExecuteProcessReporter().reportExecute(new QueryContext(null, null, null), executionGroupContext);
         verify(showProcessListManager).putProcessContext(eq(executionGroupContext.getReportContext().getExecutionID()), any());
     }
     

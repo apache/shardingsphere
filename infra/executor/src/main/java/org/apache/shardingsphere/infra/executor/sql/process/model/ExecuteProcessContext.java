@@ -52,9 +52,9 @@ public final class ExecuteProcessContext {
     
     private String sql;
     
-    private ExecuteProcessStatus status;
-    
     private long startMillis;
+    
+    private ExecuteProcessStatus status;
     
     public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus status, final boolean isProxyContext) {
         executionID = executionGroupContext.getReportContext().getExecutionID();

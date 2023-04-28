@@ -32,27 +32,25 @@ import java.util.Optional;
 public final class ExecuteProcessReporter {
     
     /**
-     * Report this connection for proxy.
+     * Report connect for proxy.
      *
      * @param executionGroupContext execution group context
      */
-    public void report(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+    public void reportConnect(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("", executionGroupContext, ExecuteProcessStatus.SLEEP, true);
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
     }
     
     /**
-     * Report the summary of this task.
+     * Report execute.
      *
      * @param queryContext query context
      * @param executionGroupContext execution group context
-     * @param processStatus process status
      */
-    public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
-                       final ExecuteProcessStatus processStatus) {
+    public void reportExecute(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         ExecuteProcessContext originExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionGroupContext.getReportContext().getExecutionID());
         boolean isProxyContext = null != originExecuteProcessContext && originExecuteProcessContext.isProxyContext();
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, processStatus, isProxyContext);
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, ExecuteProcessStatus.START, isProxyContext);
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
         ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), executeProcessContext.getProcessStatements());
     }

@@ -46,7 +46,7 @@ public final class ExecuteProcessEngine {
      */
     public String initializeConnection(final Grantee grantee, final String databaseName) {
         ExecutionGroupContext<SQLExecutionUnit> executionGroupContext = createExecutionGroupContext(grantee, databaseName);
-        reporter.report(executionGroupContext);
+        reporter.reportConnect(executionGroupContext);
         return executionGroupContext.getReportContext().getExecutionID();
     }
     
@@ -72,7 +72,7 @@ public final class ExecuteProcessEngine {
     public void initializeExecution(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
             ExecuteIDContext.set(executionGroupContext.getReportContext().getExecutionID());
-            reporter.report(queryContext, executionGroupContext, ExecuteProcessStatus.START);
+            reporter.reportExecute(queryContext, executionGroupContext);
         }
     }
     
