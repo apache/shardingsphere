@@ -93,22 +93,22 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     
-    private static MemoryQueryResultDataRow getMemoryQueryResultDataRow(final YamlExecuteProcessContext processContext) {
+    private static MemoryQueryResultDataRow getMemoryQueryResultDataRow(final YamlExecuteProcessContext yamlExecuteProcessContext) {
         List<Object> rowValues = new ArrayList<>(8);
-        rowValues.add(processContext.getExecutionID());
-        rowValues.add(processContext.getUsername());
-        rowValues.add(processContext.getHostname());
-        rowValues.add(processContext.getDatabaseName());
-        rowValues.add(ExecuteProcessStatus.SLEEP == processContext.getProcessStatus() ? "Sleep" : "Execute");
-        rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - processContext.getStartTimeMillis()));
+        rowValues.add(yamlExecuteProcessContext.getExecutionID());
+        rowValues.add(yamlExecuteProcessContext.getUsername());
+        rowValues.add(yamlExecuteProcessContext.getHostname());
+        rowValues.add(yamlExecuteProcessContext.getDatabaseName());
+        rowValues.add(ExecuteProcessStatus.SLEEP == yamlExecuteProcessContext.getProcessStatus() ? "Sleep" : "Execute");
+        rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - yamlExecuteProcessContext.getStartTimeMillis()));
         String sql = null;
-        if (ExecuteProcessStatus.SLEEP == processContext.getProcessStatus()) {
+        if (ExecuteProcessStatus.SLEEP == yamlExecuteProcessContext.getProcessStatus()) {
             rowValues.add("");
         } else {
-            int processDoneCount = processContext.getUnitStatuses().stream().map(each -> ExecuteProcessStatus.DONE == each.getProcessStatus() ? 1 : 0).reduce(0, Integer::sum);
+            int processDoneCount = yamlExecuteProcessContext.getCompletedUnitCount();
             String statePrefix = "Executing ";
-            rowValues.add(statePrefix + processDoneCount + "/" + processContext.getUnitStatuses().size());
-            sql = processContext.getSql();
+            rowValues.add(statePrefix + processDoneCount + "/" + yamlExecuteProcessContext.getTotalUnitCount());
+            sql = yamlExecuteProcessContext.getSql();
         }
         if (null != sql && sql.length() > 100) {
             sql = sql.substring(0, 100);

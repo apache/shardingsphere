@@ -18,17 +18,14 @@
 package org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper;
 
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-
-import java.util.stream.Collectors;
 
 /**
  * YAML execute process context swapper.
  */
 public final class YamlExecuteProcessContextSwapper implements YamlConfigurationSwapper<YamlExecuteProcessContext, ExecuteProcessContext> {
-    
-    private final YamlExecuteProcessUnitSwapper yamlExecuteProcessUnitSwapper = new YamlExecuteProcessUnitSwapper();
     
     @Override
     public YamlExecuteProcessContext swapToYamlConfiguration(final ExecuteProcessContext data) {
@@ -38,7 +35,8 @@ public final class YamlExecuteProcessContextSwapper implements YamlConfiguration
         result.setUsername(data.getUsername());
         result.setHostname(data.getHostname());
         result.setSql(data.getSql());
-        result.setUnitStatuses(data.getProcessUnits().values().stream().map(yamlExecuteProcessUnitSwapper::swapToYamlConfiguration).collect(Collectors.toList()));
+        result.setTotalUnitCount(data.getProcessUnits().size());
+        result.setCompletedUnitCount(Long.valueOf(data.getProcessUnits().values().stream().filter(each -> ExecuteProcessStatus.DONE == each.getStatus()).count()).intValue());
         result.setStartTimeMillis(data.getStartMillis());
         result.setProcessStatus(data.getStatus());
         return result;

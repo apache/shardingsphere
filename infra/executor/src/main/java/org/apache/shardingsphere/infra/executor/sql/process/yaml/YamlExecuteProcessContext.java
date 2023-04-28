@@ -22,8 +22,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-import java.util.Collection;
-
 /**
  * Execute process context for YAML.
  */
@@ -41,7 +39,9 @@ public final class YamlExecuteProcessContext implements YamlConfiguration {
     
     private String sql;
     
-    private Collection<YamlExecuteProcessUnit> unitStatuses;
+    private int totalUnitCount;
+    
+    private int completedUnitCount;
     
     private Long startTimeMillis;
     

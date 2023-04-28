@@ -29,7 +29,5 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlExecuteProcessUnit implements YamlConfiguration {
     
-    private String unitID;
-    
     private ExecuteProcessStatus processStatus;
 }
