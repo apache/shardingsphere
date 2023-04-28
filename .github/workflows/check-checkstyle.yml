@@ -51,7 +51,13 @@ env:
 
 jobs:
   empty:
-    name: Check - CheckStyle and License
+    name: Check - CheckStyle and License / Check - CheckStyle
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "block temporary"
+
+  empty2:
+    name: Check - CheckStyle and License / Check - License
     runs-on: ubuntu-latest
     steps:
       - run: echo "block temporary"
