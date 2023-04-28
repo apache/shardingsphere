@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupRepor
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,7 +71,7 @@ class ExecuteProcessReporterTest {
         SQLExecutionUnit sqlExecutionUnit = mock(SQLExecutionUnit.class);
         when(sqlExecutionUnit.getExecutionUnit()).thenReturn(mock(ExecutionUnit.class));
         when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ExecuteProcessContext.class));
-        new ExecuteProcessReporter().report("foo_id", sqlExecutionUnit, ExecuteProcessStatus.DONE);
+        new ExecuteProcessReporter().reportComplete("foo_id", sqlExecutionUnit);
         verify(showProcessListManager).getProcessContext("foo_id");
     }
     

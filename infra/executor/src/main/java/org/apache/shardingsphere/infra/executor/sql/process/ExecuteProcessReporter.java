@@ -33,7 +33,7 @@ import java.util.Optional;
 public final class ExecuteProcessReporter {
     
     /**
-     * Report connect for proxy.
+     * Report connect.
      *
      * @param executionGroupContext execution group context
      */
@@ -55,16 +55,15 @@ public final class ExecuteProcessReporter {
     }
     
     /**
-     * Report a unit of this task.
+     * Report complete execution unit.
      *
      * @param executionID execution ID
      * @param executionUnit execution unit
-     * @param processStatus process status
      */
-    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessStatus processStatus) {
-        ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), processStatus);
+    public void reportComplete(final String executionID, final SQLExecutionUnit executionUnit) {
+        ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), ExecuteProcessStatus.DONE);
         ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setStatus(executeProcessUnit.getStatus()));
+        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setStatus(ExecuteProcessStatus.DONE));
     }
     
     /**
