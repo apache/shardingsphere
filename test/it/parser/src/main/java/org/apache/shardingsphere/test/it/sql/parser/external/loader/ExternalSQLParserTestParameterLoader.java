@@ -35,6 +35,15 @@ public final class ExternalSQLParserTestParameterLoader extends AbstractTestPara
         super(loadStrategy);
     }
     
+    /**
+     * create external sql parser test parameters.
+     * @param sqlCaseFileName sql case file name
+     * @param sqlCaseFileContent sql case file content
+     * @param resultFileContent result file content
+     * @param databaseType database type
+     * @param reportType report type
+     * @return
+     */
     public Collection<ExternalSQLParserTestParameter> createTestParameters(final String sqlCaseFileName,
                                                                            final String sqlCaseFileContent, final String resultFileContent, final String databaseType, final String reportType) {
         Collection<ExternalSQLParserTestParameter> result = new LinkedList<>();
