@@ -40,9 +40,4 @@ public final class StringPrimaryKeyPosition extends PrimaryKeyPosition<String> i
     protected char getType() {
         return 's';
     }
-    
-    @Override
-    public int compareTo(final StringPrimaryKeyPosition position) {
-        return null == position ? 1 : beginValue.compareTo(position.getBeginValue());
-    }
 }

@@ -1,0 +1,155 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: threads
+columns:
+  thread_id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: THREAD_ID
+    primaryKey: false
+    unsigned: true
+    visible: true
+  name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TYPE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  processlist_id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PROCESSLIST_ID
+    primaryKey: false
+    unsigned: true
+    visible: true
+  processlist_user:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PROCESSLIST_USER
+    primaryKey: false
+    unsigned: false
+    visible: true
+  processlist_host:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PROCESSLIST_HOST
+    primaryKey: false
+    unsigned: false
+    visible: true
+  processlist_db:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PROCESSLIST_DB
+    primaryKey: false
+    unsigned: false
+    visible: true
+  processlist_command:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PROCESSLIST_COMMAND
+    primaryKey: false
+    unsigned: false
+    visible: true
+  processlist_time:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PROCESSLIST_TIME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  processlist_state:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PROCESSLIST_STATE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  processlist_info:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: PROCESSLIST_INFO
+    primaryKey: false
+    unsigned: false
+    visible: true
+  parent_thread_id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PARENT_THREAD_ID
+    primaryKey: false
+    unsigned: true
+    visible: true
+  role:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ROLE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  instrumented:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: INSTRUMENTED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  history:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: HISTORY
+    primaryKey: false
+    unsigned: false
+    visible: true
+  connection_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: CONNECTION_TYPE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  thread_os_id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: THREAD_OS_ID
+    primaryKey: false
+    unsigned: true
+    visible: true

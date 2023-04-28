@@ -688,4 +688,32 @@
     <test-case sql="SELECT * FROM performance_schema.table_handles" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_performance_schema_table_handles.xml" />
     </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.table_io_waits_summary_by_index_usage" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_table_io_waits_summary_by_index_usage.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.table_io_waits_summary_by_table" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_table_io_waits_summary_by_table.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.table_lock_waits_summary_by_table" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_table_lock_waits_summary_by_table.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.threads" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_threads.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.user_variables_by_thread" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_user_variables_by_thread.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.users" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_users.xml" />
+    </test-case>
+    
+    <test-case sql="SELECT * FROM performance_schema.variables_by_thread" db-types="MySQL" scenario-types="db">
+        <assertion expected-data-file="select_mysql_performance_schema_variables_by_thread.xml" />
+    </test-case>
 </integration-test-cases>

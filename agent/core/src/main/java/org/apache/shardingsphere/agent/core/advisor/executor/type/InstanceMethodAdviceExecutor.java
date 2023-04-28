@@ -63,7 +63,7 @@ public final class InstanceMethodAdviceExecutor implements AdviceExecutor {
     @RuntimeType
     @SneakyThrows
     public Object advice(@This final TargetAdviceObject target, @Origin final Method method, @AllArguments final Object[] args, @SuperCall final Callable<?> callable) {
-        boolean adviceEnabled = PluginContext.isPluginEnabled();
+        boolean adviceEnabled = PluginContext.getInstance().isPluginEnabled();
         if (adviceEnabled) {
             adviceBefore(target, method, args);
         }

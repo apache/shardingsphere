@@ -58,9 +58,10 @@ class TableMetaDataPersistServiceTest {
         when(repository.getDirectly("/metadata/foo_db/schemas/foo_schema/tables/t_order")).thenReturn(readYAML());
         Map<String, ShardingSphereTable> tables = tableMetaDataPersistService.load("foo_db", "foo_schema");
         assertThat(tables.size(), is(1));
-        assertThat(tables.get("t_order").getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(tables.get("t_order").getIndexes().size(), is(1));
+        assertThat(tables.get("t_order").getIndexes().iterator().next().getName(), is("PRIMARY"));
         assertThat(tables.get("t_order").getColumns().size(), is(1));
-        assertThat(tables.get("t_order").getColumns().keySet(), is(Collections.singleton("id")));
+        assertThat(tables.get("t_order").getColumns().iterator().next().getName(), is("id"));
     }
     
     @Test

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDa
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 
 /**
  * Schema refresher for create index statement.
@@ -46,15 +45,14 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
         }
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         ShardingSphereTable table = newShardingSphereTable(database.getSchema(schemaName).getTable(tableName));
-        table.getIndexes().put(indexName, new ShardingSphereIndex(indexName));
+        table.putIndex(new ShardingSphereIndex(indexName));
         AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), schemaName);
         alterSchemaMetaDataPOJO.getAlteredTables().add(table);
         modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
     }
     
     private ShardingSphereTable newShardingSphereTable(final ShardingSphereTable table) {
-        ShardingSphereTable result = new ShardingSphereTable(table.getName(), new LinkedHashMap<>(table.getColumns()),
-                new LinkedHashMap<>(table.getIndexes()), new LinkedHashMap<>(table.getConstraints()));
+        ShardingSphereTable result = new ShardingSphereTable(table.getName(), table.getColumns(), table.getIndexes(), table.getConstraints());
         result.getColumnNames().addAll(table.getColumnNames());
         result.getVisibleColumns().addAll(table.getVisibleColumns());
         result.getPrimaryKeyColumns().addAll(table.getPrimaryKeyColumns());

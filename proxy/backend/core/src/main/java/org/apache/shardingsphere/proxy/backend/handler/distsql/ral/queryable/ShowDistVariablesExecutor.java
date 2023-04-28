@@ -28,7 +28,6 @@ import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,8 +53,6 @@ public final class ShowDistVariablesExecutor implements ConnectionSessionRequire
         result.addAll(TemporaryConfigurationPropertyKey.getKeyNames().stream()
                 .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), metaData.getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.valueOf(each)).toString()))
                 .collect(Collectors.toList()));
-        result.add(new LocalDataQueryResultRow(
-                VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtils.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
         result.add(new LocalDataQueryResultRow(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), connectionSession.getBackendConnection().getConnectionSize()));
         result.add(new LocalDataQueryResultRow(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), connectionSession.getTransactionStatus().getTransactionType().name()));
         addLoggingPropsRows(metaData, result);

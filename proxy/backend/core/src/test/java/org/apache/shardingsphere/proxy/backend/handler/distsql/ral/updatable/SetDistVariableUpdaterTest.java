@@ -29,20 +29,17 @@ import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.standalone.StandaloneModeContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
-import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtils;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -60,11 +57,6 @@ class SetDistVariableUpdaterTest {
     @Mock
     private ConnectionSession connectionSession;
     
-    @AfterAll
-    static void tearDown() {
-        System.clearProperty("AGENT_PLUGINS_ENABLED");
-    }
-    
     @Test
     void assertExecuteWithTransactionType() {
         SetDistVariableStatement statement = new SetDistVariableStatement("transaction_type", "local");
@@ -72,15 +64,6 @@ class SetDistVariableUpdaterTest {
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
         updater.executeUpdate(connectionSession, statement);
         assertThat(connectionSession.getTransactionStatus().getTransactionType().name(), is(TransactionType.LOCAL.name()));
-    }
-    
-    @Test
-    void assertExecuteWithAgent() {
-        SetDistVariableStatement statement = new SetDistVariableStatement("AGENT_PLUGINS_ENABLED", Boolean.FALSE.toString());
-        SetDistVariableUpdater updater = new SetDistVariableUpdater();
-        updater.executeUpdate(connectionSession, statement);
-        String actualValue = SystemPropertyUtils.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
-        assertThat(actualValue, is(Boolean.FALSE.toString()));
     }
     
     @Test

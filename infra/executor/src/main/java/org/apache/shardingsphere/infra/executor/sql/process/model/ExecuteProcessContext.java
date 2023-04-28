@@ -44,32 +44,32 @@ public final class ExecuteProcessContext {
     
     private final String hostname;
     
-    private String sql;
+    private final boolean proxyContext;
     
     private final Map<String, ExecuteProcessUnit> processUnits = new HashMap<>();
     
     private final Collection<Statement> processStatements = new LinkedList<>();
     
-    private long startTimeMillis = System.currentTimeMillis();
+    private String sql;
     
-    private ExecuteProcessStatusEnum processStatus;
+    private ExecuteProcessStatus status;
     
-    private final boolean proxyContext;
+    private long startMillis;
     
-    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatusEnum processStatus,
-                                 final boolean isProxyContext) {
-        this.executionID = executionGroupContext.getReportContext().getExecutionID();
-        this.sql = sql;
-        this.databaseName = executionGroupContext.getReportContext().getDatabaseName();
+    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus status, final boolean isProxyContext) {
+        executionID = executionGroupContext.getReportContext().getExecutionID();
+        databaseName = executionGroupContext.getReportContext().getDatabaseName();
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
-        this.username = null != grantee ? grantee.getUsername() : null;
-        this.hostname = null != grantee ? grantee.getHostname() : null;
-        this.processStatus = processStatus;
-        addProcessUnitsAndStatements(executionGroupContext, processStatus);
+        username = null == grantee ? null : grantee.getUsername();
+        hostname = null == grantee ? null : grantee.getHostname();
         proxyContext = isProxyContext;
+        this.sql = sql;
+        this.status = status;
+        startMillis = System.currentTimeMillis();
+        addProcessUnitsAndStatements(executionGroupContext, status);
     }
     
-    private void addProcessUnitsAndStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatusEnum processStatus) {
+    private void addProcessUnitsAndStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus processStatus) {
         for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (SQLExecutionUnit executionUnit : each.getInputs()) {
                 ExecuteProcessUnit processUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), processStatus);
@@ -82,12 +82,11 @@ public final class ExecuteProcessContext {
     }
     
     /**
-     * Reset execute process context to sleep.
+     * Reset.
      */
-    public void resetExecuteProcessContextToSleep() {
-        this.sql = "";
-        this.startTimeMillis = System.currentTimeMillis();
-        this.processStatus = ExecuteProcessStatusEnum.SLEEP;
+    public void reset() {
+        sql = "";
+        startMillis = System.currentTimeMillis();
+        status = ExecuteProcessStatus.SLEEP;
     }
-    
 }

@@ -82,11 +82,11 @@ public final class ProcessRegistrySubscriber {
                 .collect(Collectors.toList());
     }
     
-    private void sendShowProcessList(final String processListId) {
-        List<String> childrenKeys = repository.getChildrenKeys(ProcessNode.getProcessListIdPath(processListId));
+    private void sendShowProcessList(final String showProcessListId) {
+        List<String> childrenKeys = repository.getChildrenKeys(ProcessNode.getProcessListIdPath(showProcessListId));
         Collection<String> batchProcessContexts = new LinkedList<>();
         for (String each : childrenKeys) {
-            batchProcessContexts.add(repository.getDirectly(ProcessNode.getProcessListInstancePath(processListId, each)));
+            batchProcessContexts.add(repository.getDirectly(ProcessNode.getProcessListInstancePath(showProcessListId, each)));
         }
         eventBusContext.post(new ShowProcessListResponseEvent(batchProcessContexts));
     }

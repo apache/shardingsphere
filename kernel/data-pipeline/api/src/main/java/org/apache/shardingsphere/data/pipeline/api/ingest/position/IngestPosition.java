@@ -22,5 +22,5 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.position;
  * 
  * @param <T> type of position
  */
-public interface IngestPosition<T> extends Comparable<T> {
+public interface IngestPosition<T> {
 }

@@ -133,6 +133,7 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
     private void setNullToAllFields(final Object orderId) {
         if (databaseType instanceof MySQLDatabaseType) {
             String sql = SQLBuilderUtils.buildUpdateSQL(ignoreShardingColumns(MYSQL_COLUMN_NAMES), orderTableName, "null");
+            log.info("update sql: {}", sql);
             DataSourceExecuteUtils.execute(dataSource, sql, new Object[]{orderId});
         }
     }
