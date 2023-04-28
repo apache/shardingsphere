@@ -143,13 +143,13 @@ class ProjectionsTokenGeneratorTest {
         when(oldColumnOrderByItemSegment.getColumn().getIdentifier()).thenReturn(mock(IdentifierValue.class));
         DerivedProjection result = mock(DerivedProjection.class);
         when(result.getAlias()).thenReturn(Optional.of(TEST_DERIVED_PROJECTION_ALIAS));
-        when(result.getDerivedProjection()).thenReturn(oldColumnOrderByItemSegment);
+        when(result.getDerivedProjectionSegment()).thenReturn(oldColumnOrderByItemSegment);
         return result;
     }
     
     private DerivedProjection getOtherDerivedProjection() {
         DerivedProjection result = mock(DerivedProjection.class);
-        when(result.getDerivedProjection()).thenReturn(null);
+        when(result.getDerivedProjectionSegment()).thenReturn(null);
         when(result.getAlias()).thenReturn(Optional.of(TEST_OTHER_DERIVED_PROJECTION_ALIAS));
         when(result.getExpression()).thenReturn(TEST_OTHER_DERIVED_PROJECTION_EXPRESSION);
         return result;

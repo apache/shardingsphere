@@ -78,14 +78,15 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
         if (sqlStatement instanceof CreateTableStatement) {
             QualifiedTable table = singleTableNames.iterator().next();
             Optional<DataNode> dataNodeOptional = rule.findSingleTableDataNode(table.getSchemaName(), table.getTableName());
-            if (!dataNodeOptional.isPresent()) {
-                String dataSourceName = rule.assignNewDataSourceName();
-                routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
-            } else if (CreateTableStatementHandler.ifNotExists((CreateTableStatement) sqlStatement)) {
+            boolean containsIfNotExists = CreateTableStatementHandler.ifNotExists((CreateTableStatement) sqlStatement);
+            if (dataNodeOptional.isPresent() && containsIfNotExists) {
                 String dataSourceName = dataNodeOptional.map(DataNode::getDataSourceName).orElse(null);
                 routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
-            } else {
+            } else if (dataNodeOptional.isPresent() && !containsIfNotExists) {
                 throw new TableExistsException(table.getTableName());
+            } else {
+                String dataSourceName = rule.assignNewDataSourceName();
+                routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
             }
         } else if (sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement || rule.isAllTablesInSameDataSource(routeContext, singleTableNames)) {
             fillRouteContext(rule, routeContext, rule.getSingleTableNames(singleTableNames));
