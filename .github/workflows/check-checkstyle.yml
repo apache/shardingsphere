@@ -50,6 +50,11 @@ env:
   REPOSITORY_NAME: shardingsphere
 
 jobs:
+  empty:
+    name: Check - CheckStyle and License
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 1
   check-checkstyle:
     name: Check - CheckStyle
     runs-on: ubuntu-latest
