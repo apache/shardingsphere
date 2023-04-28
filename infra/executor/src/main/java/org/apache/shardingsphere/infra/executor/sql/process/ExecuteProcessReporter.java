@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionU
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 import java.util.Optional;
 
@@ -37,7 +38,7 @@ public final class ExecuteProcessReporter {
      * @param executionGroupContext execution group context
      */
     public void reportConnect(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("", executionGroupContext, ExecuteProcessStatus.SLEEP, true);
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("", executionGroupContext, ExecuteProcessStatus.SLEEP);
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
     }
     
@@ -48,9 +49,7 @@ public final class ExecuteProcessReporter {
      * @param executionGroupContext execution group context
      */
     public void reportExecute(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        ExecuteProcessContext originExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionGroupContext.getReportContext().getExecutionID());
-        boolean isProxyContext = null != originExecuteProcessContext && originExecuteProcessContext.isProxyContext();
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, ExecuteProcessStatus.START, isProxyContext);
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, ExecuteProcessStatus.START);
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
         ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), executeProcessContext.getProcessStatements());
     }
@@ -75,14 +74,12 @@ public final class ExecuteProcessReporter {
      */
     public void reset(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessStatement(executionID);
-        ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        if (null == executeProcessContext) {
+        ExecuteProcessContext context = ShowProcessListManager.getInstance().getProcessContext(executionID);
+        if (null == context) {
             return;
         }
-        if (executeProcessContext.isProxyContext()) {
-            executeProcessContext.reset();
-        } else {
-            ShowProcessListManager.getInstance().removeProcessContext(executionID);
+        for (ExecuteProcessReporterCleaner each : ShardingSphereServiceLoader.getServiceInstances(ExecuteProcessReporterCleaner.class)) {
+            each.reset(context);
         }
     }
     
