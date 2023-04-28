@@ -54,15 +54,26 @@ public final class SSLUtils {
         Security.addProvider(new BouncyCastleProvider());
     }
     
+    /**
+     * Generate a 4096 RSA key pair.
+     *
+     * @return RSA key pair
+     */
     @SneakyThrows({NoSuchProviderException.class, NoSuchAlgorithmException.class})
-    static KeyPair generateRSAKeyPair() {
+    public static KeyPair generateRSAKeyPair() {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA", BouncyCastleProvider.PROVIDER_NAME);
         keyPairGenerator.initialize(4096, new SecureRandom());
         return keyPairGenerator.generateKeyPair();
     }
     
+    /**
+     * Generate a self-signed X.509 certificate with provided key pair.
+     *
+     * @param keyPair key pair
+     * @return self-signed X.509 certificate
+     */
     @SneakyThrows({OperatorCreationException.class, CertificateException.class})
-    static X509Certificate generateSelfSignedX509Certificate(final KeyPair keyPair) {
+    public static X509Certificate generateSelfSignedX509Certificate(final KeyPair keyPair) {
         long now = System.currentTimeMillis();
         Date startDate = new Date(now - TimeUnit.DAYS.toMillis(1));
         X500Name dnName = new X500NameBuilder(BCStyle.INSTANCE)
