@@ -42,7 +42,6 @@ class ShardingSphereTableTest {
         ShardingSphereColumn column2 = new ShardingSphereColumn("foo_column_2", Types.INTEGER, false, true, false, true, false);
         shardingSphereTable.putColumn(column1);
         shardingSphereTable.putColumn(column2);
-        
         assertThat(shardingSphereTable.getColumn("foo_column_1"), is(column1));
         assertThat(shardingSphereTable.getColumn("foo_column_2"), is(column2));
         assertThat(shardingSphereTable.getColumns(), hasSize(2));
@@ -52,7 +51,6 @@ class ShardingSphereTableTest {
     void getColumn() {
         ShardingSphereColumn column = new ShardingSphereColumn("foo_column", Types.INTEGER, true, true, false, true, false);
         shardingSphereTable.putColumn(column);
-        
         assertThat(shardingSphereTable.getColumn("foo_column"), is(column));
         assertThat(shardingSphereTable.getColumn("FOO_COLUMN"), is(column));
         assertNull(shardingSphereTable.getColumn("invalid"));
@@ -62,10 +60,8 @@ class ShardingSphereTableTest {
     void getColumns() {
         ShardingSphereColumn column1 = new ShardingSphereColumn("foo_column_1", Types.INTEGER, true, true, false, true, false);
         ShardingSphereColumn column2 = new ShardingSphereColumn("foo_column_2", Types.INTEGER, false, true, false, true, false);
-        
         shardingSphereTable.putColumn(column1);
         shardingSphereTable.putColumn(column2);
-        
         assertThat(shardingSphereTable.getColumns(), hasItems(column1, column2));
         assertThat(shardingSphereTable.getColumns(), hasSize(2));
     }
@@ -74,7 +70,6 @@ class ShardingSphereTableTest {
     void containsColumn() {
         ShardingSphereColumn column = new ShardingSphereColumn("foo_column", Types.INTEGER, true, true, false, true, false);
         shardingSphereTable.putColumn(column);
-        
         assertTrue(shardingSphereTable.containsColumn("foo_column"));
         assertFalse(shardingSphereTable.containsColumn("invalid"));
     }
@@ -85,7 +80,6 @@ class ShardingSphereTableTest {
         ShardingSphereIndex index2 = new ShardingSphereIndex("foo_index_2");
         shardingSphereTable.putIndex(index1);
         shardingSphereTable.putIndex(index2);
-        
         assertThat(shardingSphereTable.getIndex("foo_index_1"), is(index1));
         assertThat(shardingSphereTable.getIndex("foo_index_2"), is(index2));
         assertNull(shardingSphereTable.getIndex("invalid"));
@@ -96,7 +90,6 @@ class ShardingSphereTableTest {
     void getIndex() {
         ShardingSphereIndex index = new ShardingSphereIndex("foo_index");
         shardingSphereTable.putIndex(index);
-        
         assertThat(shardingSphereTable.getIndex("foo_index"), is(index));
         assertThat(shardingSphereTable.getIndex("FOO_INDEX"), is(index));
         assertNull(shardingSphereTable.getIndex("invalid"));
@@ -108,10 +101,8 @@ class ShardingSphereTableTest {
         ShardingSphereIndex index2 = new ShardingSphereIndex("foo_index_2");
         shardingSphereTable.putIndex(index1);
         shardingSphereTable.putIndex(index2);
-        
         shardingSphereTable.removeIndex("foo_index_1");
         assertNull(shardingSphereTable.getIndex("foo_index_1"));
-        
         shardingSphereTable.removeIndex("invalid");
         assertThat(shardingSphereTable.getIndex("foo_index_2"), is(index2));
         assertThat(shardingSphereTable.getIndexes(), hasSize(1));
@@ -123,7 +114,6 @@ class ShardingSphereTableTest {
         ShardingSphereIndex index2 = new ShardingSphereIndex("foo_index_2");
         shardingSphereTable.putIndex(index1);
         shardingSphereTable.putIndex(index2);
-        
         assertThat(shardingSphereTable.getIndexes(), hasItems(index1, index2));
         assertThat(shardingSphereTable.getIndexes(), hasSize(2));
     }
@@ -144,7 +134,6 @@ class ShardingSphereTableTest {
     void getConstraints() {
         ShardingSphereConstraint constraint = new ShardingSphereConstraint("t_order_foreign_key", "t_user");
         ShardingSphereTable table = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.singletonList(constraint));
-        
         assertThat(table.getConstraints(), hasItems(constraint));
         assertThat(table.getConstraints(), hasSize(1));
     }
