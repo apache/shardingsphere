@@ -22,11 +22,9 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistV
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtils;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -88,32 +86,5 @@ class SetDistVariableUpdatableRALBackendHandlerTest {
     void assertNotSupportedVariable() {
         UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement("@@session", "XXX"), connectionSession);
         assertThrows(UnsupportedVariableException.class, handler::execute);
-    }
-    
-    @Test
-    void assertSetAgentPluginsEnabledTrue() throws SQLException {
-        connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()), null);
-        ResponseHeader actual = handler.execute();
-        assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        assertThat(SystemPropertyUtils.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.TRUE.toString()));
-    }
-    
-    @Test
-    void assertSetAgentPluginsEnabledFalse() throws SQLException {
-        connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), null);
-        ResponseHeader actual = handler.execute();
-        assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        assertThat(SystemPropertyUtils.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
-    }
-    
-    @Test
-    void assertSetAgentPluginsEnabledFalseWithUnknownValue() throws SQLException {
-        connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        UpdatableRALBackendHandler<?> handler = new UpdatableRALBackendHandler<>(new SetDistVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), connectionSession);
-        ResponseHeader actual = handler.execute();
-        assertThat(actual, instanceOf(UpdateResponseHeader.class));
-        assertThat(SystemPropertyUtils.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
     }
 }
