@@ -15,21 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.process.model.yaml;
+package org.apache.shardingsphere.infra.executor.sql.process.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
- * All execute process contexts for YAML.
+ * Execute process context for YAML.
  */
 @Getter
 @Setter
-public final class YamlAllExecuteProcessContexts implements YamlConfiguration {
+public final class YamlExecuteProcessContext implements YamlConfiguration {
     
-    private Collection<YamlExecuteProcessContext> contexts = new LinkedList<>();
+    private String executionID;
+    
+    private String databaseName;
+    
+    private String username;
+    
+    private String hostname;
+    
+    private String sql;
+    
+    private Collection<YamlExecuteProcessUnit> unitStatuses;
+    
+    private Long startTimeMillis;
+    
+    private ExecuteProcessStatus processStatus;
 }
