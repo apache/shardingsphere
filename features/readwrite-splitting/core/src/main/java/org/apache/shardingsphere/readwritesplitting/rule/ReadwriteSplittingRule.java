@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -70,13 +69,12 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     
     private final InstanceContext instanceContext;
     
-    public ReadwriteSplittingRule(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig,
-                                  final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
+    public ReadwriteSplittingRule(final String databaseName, final ReadwriteSplittingRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
         this.databaseName = databaseName;
         this.instanceContext = instanceContext;
         configuration = ruleConfig;
         loadBalancers = createLoadBalancers(ruleConfig);
-        dataSourceRules = createDataSourceRules(ruleConfig, builtRules);
+        dataSourceRules = createDataSourceRules(ruleConfig);
     }
     
     private Map<String, ReadQueryLoadBalanceAlgorithm> createLoadBalancers(final ReadwriteSplittingRuleConfiguration ruleConfig) {
@@ -90,15 +88,15 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
         return result;
     }
     
-    private Map<String, ReadwriteSplittingDataSourceRule> createDataSourceRules(final ReadwriteSplittingRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> builtRules) {
+    private Map<String, ReadwriteSplittingDataSourceRule> createDataSourceRules(final ReadwriteSplittingRuleConfiguration ruleConfig) {
         Map<String, ReadwriteSplittingDataSourceRule> result = new HashMap<>(ruleConfig.getDataSources().size(), 1);
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
-            result.putAll(createDataSourceRules(each, builtRules));
+            result.putAll(createDataSourceRules(each));
         }
         return result;
     }
     
-    private Map<String, ReadwriteSplittingDataSourceRule> createDataSourceRules(final ReadwriteSplittingDataSourceRuleConfiguration config, final Collection<ShardingSphereRule> builtRules) {
+    private Map<String, ReadwriteSplittingDataSourceRule> createDataSourceRules(final ReadwriteSplittingDataSourceRuleConfiguration config) {
         ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = loadBalancers.getOrDefault(
                 config.getName() + "." + config.getLoadBalancerName(), TypedSPILoader.getService(ReadQueryLoadBalanceAlgorithm.class, null));
         return createStaticDataSourceRules(config, loadBalanceAlgorithm);

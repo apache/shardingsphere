@@ -141,7 +141,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Proxy frontend SSL cipher.
      */
-    PROXY_FRONTEND_SSL_CIPHER("proxy-frontend-ssl-cipher", "", String.class, true);
+    PROXY_FRONTEND_SSL_CIPHER("proxy-frontend-ssl-cipher", "", String.class, true),
+    
+    /**
+     * Agent plugins enabled.
+     */
+    AGENT_PLUGINS_ENABLED("agent-plugins-enabled", String.valueOf(Boolean.TRUE), boolean.class, false);
     
     private final String key;
     

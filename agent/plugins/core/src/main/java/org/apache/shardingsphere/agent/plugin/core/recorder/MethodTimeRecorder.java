@@ -68,5 +68,8 @@ public final class MethodTimeRecorder {
     
     private void clean(final String key) {
         CURRENT_RECORDER.get().remove(key);
+        if (CURRENT_RECORDER.get().isEmpty()) {
+            CURRENT_RECORDER.remove();
+        }
     }
 }

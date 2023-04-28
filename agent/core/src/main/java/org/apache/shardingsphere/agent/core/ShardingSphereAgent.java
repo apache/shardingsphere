@@ -25,6 +25,7 @@ import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfiguration;
 import org.apache.shardingsphere.agent.core.advisor.config.AdvisorConfigurationLoader;
 import org.apache.shardingsphere.agent.core.builder.AgentBuilderFactory;
 import org.apache.shardingsphere.agent.core.path.AgentPath;
+import org.apache.shardingsphere.agent.core.plugin.PluginContext;
 import org.apache.shardingsphere.agent.core.plugin.config.PluginConfigurationLoader;
 import org.apache.shardingsphere.agent.core.plugin.jar.PluginJarLoader;
 
@@ -53,6 +54,7 @@ public final class ShardingSphereAgent {
         Map<String, PluginConfiguration> pluginConfigs = PluginConfigurationLoader.load(rootPath);
         Collection<JarFile> pluginJars = PluginJarLoader.load(rootPath);
         boolean isEnhancedForProxy = isEnhancedForProxy();
+        PluginContext.getInstance().setEnhancedForProxy(isEnhancedForProxy);
         Map<String, AdvisorConfiguration> advisorConfigs = AdvisorConfigurationLoader.load(pluginJars, pluginConfigs.keySet());
         AgentBuilderFactory.create(pluginConfigs, pluginJars, advisorConfigs, isEnhancedForProxy).installOn(instrumentation);
     }

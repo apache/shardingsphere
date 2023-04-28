@@ -96,4 +96,10 @@ public interface ShardingSphereTransactionManager extends AutoCloseable {
     default boolean containsProviderType(String providerType) {
         return true;
     }
+    
+    /**
+     * Close transaction manager.
+     */
+    @Override
+    void close();
 }

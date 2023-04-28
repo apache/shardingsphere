@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.process.model.yaml;
+package org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlExecuteProcessUnit;
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
- * Execute process unit for YAML.
+ * YAML execute process unit swapper.
  */
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-public final class YamlExecuteProcessUnit {
+public final class YamlExecuteProcessUnitSwapper implements YamlConfigurationSwapper<YamlExecuteProcessUnit, ExecuteProcessUnit> {
     
-    private String unitID;
+    @Override
+    public YamlExecuteProcessUnit swapToYamlConfiguration(final ExecuteProcessUnit data) {
+        YamlExecuteProcessUnit result = new YamlExecuteProcessUnit();
+        result.setUnitID(data.getUnitID());
+        result.setProcessStatus(data.getStatus());
+        return result;
+    }
     
-    private volatile ExecuteProcessStatusEnum processStatus;
-    
-    public YamlExecuteProcessUnit(final ExecuteProcessUnit executeProcessUnit) {
-        unitID = executeProcessUnit.getUnitID();
-        processStatus = executeProcessUnit.getProcessStatus();
+    @Override
+    public ExecuteProcessUnit swapToObject(final YamlExecuteProcessUnit yamlConfig) {
+        throw new UnsupportedOperationException("YamlExecuteProcessUnitSwapper.swapToObject");
     }
 }

@@ -84,7 +84,7 @@ public final class PostgreSQLDataRowPacket implements PostgreSQLIdentifierPacket
             payload.writeInt4(dataBytes.length);
             payload.writeBytes(dataBytes);
         } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
+            throw new IllegalStateException(ex);
         }
     }
     

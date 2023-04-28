@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 
 import java.util.Optional;
@@ -37,7 +37,7 @@ public final class ExecuteProcessReporter {
      * @param executionGroupContext execution group context
      */
     public void report(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("", executionGroupContext, ExecuteProcessStatusEnum.SLEEP, true);
+        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("", executionGroupContext, ExecuteProcessStatus.SLEEP, true);
         ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
     }
     
@@ -49,7 +49,7 @@ public final class ExecuteProcessReporter {
      * @param processStatus process status
      */
     public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
-                       final ExecuteProcessStatusEnum processStatus) {
+                       final ExecuteProcessStatus processStatus) {
         ExecuteProcessContext originExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionGroupContext.getReportContext().getExecutionID());
         boolean isProxyContext = null != originExecuteProcessContext && originExecuteProcessContext.isProxyContext();
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, processStatus, isProxyContext);
@@ -64,36 +64,36 @@ public final class ExecuteProcessReporter {
      * @param executionUnit execution unit
      * @param processStatus process status
      */
-    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessStatusEnum processStatus) {
+    public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessStatus processStatus) {
         ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), processStatus);
         ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setProcessStatus(executeProcessUnit.getProcessStatus()));
+        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(optional -> optional.setStatus(executeProcessUnit.getStatus()));
     }
     
     /**
-     * Report clean the task.
+     * Reset report.
      *
      * @param executionID execution ID
      */
-    public void reportClean(final String executionID) {
+    public void reset(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessStatement(executionID);
         ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
         if (null == executeProcessContext) {
             return;
         }
         if (executeProcessContext.isProxyContext()) {
-            executeProcessContext.resetExecuteProcessContextToSleep();
+            executeProcessContext.reset();
         } else {
             ShowProcessListManager.getInstance().removeProcessContext(executionID);
         }
     }
     
     /**
-     * Report remove process context.
+     * Remove process context.
      *
      * @param executionID execution ID
      */
-    public void reportRemove(final String executionID) {
+    public void remove(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessStatement(executionID);
         ShowProcessListManager.getInstance().removeProcessContext(executionID);
     }
