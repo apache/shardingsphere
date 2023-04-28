@@ -70,11 +70,8 @@ class ShowProcessListExecutorTest {
                 + "  databaseName: sharding_db\n"
                 + "  username: sharding\n"
                 + "  hostname: 127.0.0.1\n"
-                + "  unitStatuses:\n"
-                + "  - processStatus: START\n"
-                + "    unitID: unitID1\n"
-                + "  - processStatus: DONE\n"
-                + "    unitID: unitID2\n";
+                + "  totalUnitCount: 2\n"
+                + "  completedUnitCount: 1\n";
         Plugins.getMemberAccessor().set(showProcessListExecutor.getClass().getDeclaredField("batchProcessContexts"), showProcessListExecutor, Collections.singleton(executionNodeValue));
     }
 }
