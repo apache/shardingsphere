@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 /**
  * Test parameter loader.
+ * 
  * @param <T> type of test parameter
  */
 @RequiredArgsConstructor
@@ -66,8 +67,9 @@ public abstract class AbstractTestParameterLoader<T> {
     
     /**
      * Create test parameters.
-     * @param sqlCaseFileName sql case file name
-     * @param sqlCaseFileContent sql case file content
+     * 
+     * @param sqlCaseFileName SQL case file name
+     * @param sqlCaseFileContent SQL case file content
      * @param resultFileContent result file content
      * @param databaseType database type
      * @param reportType report type
