@@ -49,8 +49,9 @@ public abstract class ExternalSQLParserIT {
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertParseSQL(final String sqlCaseId, final String databaseType, final String sql, final String reportType) throws IOException {
         boolean isSuccess = true;
-        try (SQLParseResultReporter resultReporter = TypedSPILoader.getService(SQLParseResultReporterCreator.class, reportType)
-                .create(databaseType, SQLParserExternalITEnvironment.getInstance().getResultPath())) {
+        try (
+                SQLParseResultReporter resultReporter = TypedSPILoader.getService(SQLParseResultReporterCreator.class, reportType)
+                        .create(databaseType, SQLParserExternalITEnvironment.getInstance().getResultPath())) {
             try {
                 ParseASTNode parseASTNode = new SQLParserEngine(databaseType, new CacheOption(128, 1024L)).parse(sql, false);
                 new SQLStatementVisitorEngine(databaseType, true).visit(parseASTNode);
