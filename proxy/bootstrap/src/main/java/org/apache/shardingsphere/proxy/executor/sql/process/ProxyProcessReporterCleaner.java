@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.process;
+package org.apache.shardingsphere.proxy.executor.sql.process;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessReporterCleaner;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
 
 /**
- * Kill process list id request event.
+ * Execute process reporter cleaner for proxy.
  */
-@RequiredArgsConstructor
-@Getter
-public final class KillProcessListIdRequestEvent {
+public final class ProxyProcessReporterCleaner implements ProcessReporterCleaner {
     
-    private final String processListId;
+    @Override
+    public void reset(final ProcessContext context) {
+        context.reset();
+    }
 }

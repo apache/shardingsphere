@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListSimpleLock;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
 
 import java.sql.Statement;
 import java.util.Collection;
@@ -38,7 +38,7 @@ public final class ShowProcessListManager {
     private static final ShowProcessListManager INSTANCE = new ShowProcessListManager();
     
     @Getter
-    private final Map<String, ExecuteProcessContext> processContexts = new ConcurrentHashMap<>();
+    private final Map<String, ProcessContext> processContexts = new ConcurrentHashMap<>();
     
     @Getter
     private final Map<String, Collection<Statement>> processStatements = new ConcurrentHashMap<>();
@@ -61,7 +61,7 @@ public final class ShowProcessListManager {
      * @param executionId execution id
      * @param processContext process context
      */
-    public void putProcessContext(final String executionId, final ExecuteProcessContext processContext) {
+    public void putProcessContext(final String executionId, final ProcessContext processContext) {
         processContexts.put(executionId, processContext);
     }
     
@@ -84,7 +84,7 @@ public final class ShowProcessListManager {
      * @param executionId execution id
      * @return execute process context
      */
-    public ExecuteProcessContext getProcessContext(final String executionId) {
+    public ProcessContext getProcessContext(final String executionId) {
         return processContexts.get(executionId);
     }
     
@@ -121,7 +121,7 @@ public final class ShowProcessListManager {
      * 
      * @return collection execute process context
      */
-    public Collection<ExecuteProcessContext> getAllProcessContext() {
+    public Collection<ProcessContext> getAllProcessContext() {
         return processContexts.values();
     }
 }

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorEx
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.callback.RawSQLExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
-import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -54,14 +54,14 @@ public final class RawExecutor {
      */
     public List<ExecuteResult> execute(final ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext,
                                        final QueryContext queryContext, final RawSQLExecutorCallback callback) throws SQLException {
-        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
+        ProcessEngine processEngine = new ProcessEngine();
         try {
-            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
+            processEngine.initializeExecution(executionGroupContext, queryContext);
             // TODO Load query header for first query
             List<ExecuteResult> results = execute(executionGroupContext, (RawSQLExecutorCallback) null, callback);
             return results.isEmpty() || Objects.isNull(results.get(0)) ? Collections.singletonList(new UpdateResult(0, 0L)) : results;
         } finally {
-            executeProcessEngine.cleanExecution();
+            processEngine.cleanExecution();
         }
     }
     

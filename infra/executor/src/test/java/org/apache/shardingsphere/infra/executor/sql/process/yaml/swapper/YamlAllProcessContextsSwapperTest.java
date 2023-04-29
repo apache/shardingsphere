@@ -20,9 +20,9 @@ package org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlAllExecuteProcessContexts;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessListContexts;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessContext;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.junit.jupiter.api.Test;
 
@@ -35,19 +35,19 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class YamlAllExecuteProcessContextsSwapperTest {
+class YamlAllProcessContextsSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
         ExecutionGroupReportContext reportContext = new ExecutionGroupReportContext("foo_db", new Grantee("root", "localhost"));
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("SELECT 1", executionGroupContext);
-        YamlAllExecuteProcessContexts actual = new YamlAllExecuteProcessContextsSwapper().swapToYamlConfiguration(Collections.singleton(executeProcessContext));
+        ProcessContext processContext = new ProcessContext("SELECT 1", executionGroupContext);
+        YamlProcessListContexts actual = new YamlProcessListContextsSwapper().swapToYamlConfiguration(Collections.singleton(processContext));
         assertThat(actual.getContexts().size(), is(1));
-        assertYamlExecuteProcessContext(actual.getContexts().iterator().next());
+        assertYamlProcessContext(actual.getContexts().iterator().next());
     }
     
-    private static void assertYamlExecuteProcessContext(final YamlExecuteProcessContext actual) {
+    private static void assertYamlProcessContext(final YamlProcessContext actual) {
         assertNotNull(actual.getExecutionID());
         assertThat(actual.getDatabaseName(), is("foo_db"));
         assertThat(actual.getUsername(), is("root"));
@@ -61,6 +61,6 @@ class YamlAllExecuteProcessContextsSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        assertThrows(UnsupportedOperationException.class, () -> new YamlAllExecuteProcessContextsSwapper().swapToObject(new YamlAllExecuteProcessContexts()));
+        assertThrows(UnsupportedOperationException.class, () -> new YamlProcessListContextsSwapper().swapToObject(new YamlProcessListContexts()));
     }
 }

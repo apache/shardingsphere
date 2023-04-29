@@ -15,34 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.process.yaml;
+package org.apache.shardingsphere.infra.executor.sql.process;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 /**
- * Execute process context for YAML.
+ * Process reporter cleaner.
  */
-@Getter
-@Setter
-public final class YamlExecuteProcessContext implements YamlConfiguration {
+@SingletonSPI
+public interface ProcessReporterCleaner {
     
-    private String executionID;
-    
-    private String databaseName;
-    
-    private String username;
-    
-    private String hostname;
-    
-    private String sql;
-    
-    private int totalUnitCount;
-    
-    private int completedUnitCount;
-    
-    private Long startTimeMillis;
-    
-    private boolean executing;
+    /**
+     * Reset reporter.
+     * 
+     * @param context execute process context
+     */
+    void reset(ProcessContext context);
 }

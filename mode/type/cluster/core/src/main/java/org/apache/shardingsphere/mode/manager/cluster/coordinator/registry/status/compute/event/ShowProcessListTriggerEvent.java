@@ -30,5 +30,5 @@ public final class ShowProcessListTriggerEvent implements GovernanceEvent {
     
     private final String instanceId;
     
-    private final String processListId;
+    private final String processId;
 }

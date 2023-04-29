@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.executor.sql.process;
+package org.apache.shardingsphere.driver.executor.sql.process;
 
-import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessReporterCleaner;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessReporterCleaner;
+import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
 
 /**
- * Execute process reporter cleaner for proxy.
+ * Execute process reporter cleaner for driver.
  */
-public final class ProxyExecuteProcessReporterCleaner implements ExecuteProcessReporterCleaner {
+public final class DriverProcessReporterCleaner implements ProcessReporterCleaner {
     
     @Override
-    public void reset(final ExecuteProcessContext context) {
-        context.reset();
+    public void reset(final ProcessContext context) {
+        ShowProcessListManager.getInstance().removeProcessContext(context.getProcessID());
     }
 }

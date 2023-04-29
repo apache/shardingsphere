@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteIDContext;
-import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
@@ -46,9 +46,9 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
     public Collection<ExecuteResult> execute(final Collection<RawSQLExecutionUnit> inputs, final boolean isTrunkThread) throws SQLException {
         Collection<ExecuteResult> result = callbacks.iterator().next().execute(inputs, isTrunkThread);
         if (!ExecuteIDContext.isEmpty()) {
-            ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
+            ProcessEngine processEngine = new ProcessEngine();
             for (RawSQLExecutionUnit each : inputs) {
-                executeProcessEngine.finishExecution(each);
+                processEngine.finishExecution(each);
             }
         }
         return result;

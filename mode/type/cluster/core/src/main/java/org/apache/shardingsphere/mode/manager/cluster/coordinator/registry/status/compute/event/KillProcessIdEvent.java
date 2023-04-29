@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.process.yaml;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * All execute process contexts for YAML.
+ * Kill process id event.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlAllExecuteProcessContexts implements YamlConfiguration {
+public final class KillProcessIdEvent implements GovernanceEvent {
     
-    private Collection<YamlExecuteProcessContext> contexts = new LinkedList<>();
+    private final String instanceId;
+    
+    private final String processId;
 }

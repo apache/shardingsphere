@@ -31,12 +31,12 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /**
- * Execute process context.
+ * Process context.
  */
 @Getter
-public final class ExecuteProcessContext {
+public final class ProcessContext {
     
-    private final String executionID;
+    private final String processID;
     
     private final String databaseName;
     
@@ -54,27 +54,23 @@ public final class ExecuteProcessContext {
     
     private volatile boolean executing;
     
-    public ExecuteProcessContext(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        executionID = executionGroupContext.getReportContext().getExecutionID();
-        databaseName = executionGroupContext.getReportContext().getDatabaseName();
-        Grantee grantee = executionGroupContext.getReportContext().getGrantee();
-        username = null == grantee ? null : grantee.getUsername();
-        hostname = null == grantee ? null : grantee.getHostname();
-        sql = "";
-        startMillis = System.currentTimeMillis();
-        executing = false;
-        addProcessUnitsAndStatements(executionGroupContext);
+    public ProcessContext(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        this("", executionGroupContext, false);
     }
     
-    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        executionID = executionGroupContext.getReportContext().getExecutionID();
+    public ProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        this(sql, executionGroupContext, true);
+    }
+    
+    private ProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean executing) {
+        processID = executionGroupContext.getReportContext().getExecutionID();
         databaseName = executionGroupContext.getReportContext().getDatabaseName();
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
         username = null == grantee ? null : grantee.getUsername();
         hostname = null == grantee ? null : grantee.getHostname();
         this.sql = sql;
         startMillis = System.currentTimeMillis();
-        executing = true;
+        this.executing = executing;
         addProcessUnitsAndStatements(executionGroupContext);
     }
     

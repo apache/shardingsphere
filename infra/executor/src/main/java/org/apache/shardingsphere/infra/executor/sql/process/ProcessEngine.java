@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -27,14 +26,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
-import java.util.Collections;
-
 /**
- * Execute process engine.
+ * Process engine.
  */
-public final class ExecuteProcessEngine {
+public final class ProcessEngine {
     
-    private final ExecuteProcessReporter reporter = new ExecuteProcessReporter();
+    private final ProcessReporter reporter = new ProcessReporter();
     
     /**
      * Initialize connection.
@@ -44,13 +41,7 @@ public final class ExecuteProcessEngine {
      * @return execution ID
      */
     public String initializeConnection(final Grantee grantee, final String databaseName) {
-        ExecutionGroupContext<SQLExecutionUnit> executionGroupContext = createExecutionGroupContext(grantee, databaseName);
-        reporter.reportConnect(executionGroupContext);
-        return executionGroupContext.getReportContext().getExecutionID();
-    }
-    
-    private ExecutionGroupContext<SQLExecutionUnit> createExecutionGroupContext(final Grantee grantee, final String databaseName) {
-        return new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
+        return reporter.reportConnect(grantee, databaseName);
     }
     
     /**

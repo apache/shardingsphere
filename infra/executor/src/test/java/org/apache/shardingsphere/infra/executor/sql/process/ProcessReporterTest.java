@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupConte
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ShowProcessListManager.class)
-class ExecuteProcessReporterTest {
+class ProcessReporterTest {
     
     @Mock
     private ShowProcessListManager showProcessListManager;
@@ -53,7 +53,7 @@ class ExecuteProcessReporterTest {
     @Test
     void assertReportExecute() {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
-        new ExecuteProcessReporter().reportExecute(new QueryContext(null, null, null), executionGroupContext);
+        new ProcessReporter().reportExecute(new QueryContext(null, null, null), executionGroupContext);
         verify(showProcessListManager).putProcessContext(eq(executionGroupContext.getReportContext().getExecutionID()), any());
     }
     
@@ -70,15 +70,15 @@ class ExecuteProcessReporterTest {
     void assertReportUnit() {
         SQLExecutionUnit sqlExecutionUnit = mock(SQLExecutionUnit.class);
         when(sqlExecutionUnit.getExecutionUnit()).thenReturn(mock(ExecutionUnit.class));
-        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ExecuteProcessContext.class));
-        new ExecuteProcessReporter().reportComplete("foo_id", sqlExecutionUnit);
+        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
+        new ProcessReporter().reportComplete("foo_id", sqlExecutionUnit);
         verify(showProcessListManager).getProcessContext("foo_id");
     }
     
     @Test
     void assertReportClean() {
-        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ExecuteProcessContext.class));
-        new ExecuteProcessReporter().reset("foo_id");
+        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
+        new ProcessReporter().reset("foo_id");
         verify(showProcessListManager).removeProcessStatement("foo_id");
     }
 }

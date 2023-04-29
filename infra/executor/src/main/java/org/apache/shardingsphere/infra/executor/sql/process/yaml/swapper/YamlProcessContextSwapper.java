@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper;
 
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessContext;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
- * YAML execute process context swapper.
+ * YAML process context swapper.
  */
-public final class YamlExecuteProcessContextSwapper implements YamlConfigurationSwapper<YamlExecuteProcessContext, ExecuteProcessContext> {
+public final class YamlProcessContextSwapper implements YamlConfigurationSwapper<YamlProcessContext, ProcessContext> {
     
     @Override
-    public YamlExecuteProcessContext swapToYamlConfiguration(final ExecuteProcessContext data) {
-        YamlExecuteProcessContext result = new YamlExecuteProcessContext();
-        result.setExecutionID(data.getExecutionID());
+    public YamlProcessContext swapToYamlConfiguration(final ProcessContext data) {
+        YamlProcessContext result = new YamlProcessContext();
+        result.setExecutionID(data.getProcessID());
         result.setDatabaseName(data.getDatabaseName());
         result.setUsername(data.getUsername());
         result.setHostname(data.getHostname());
@@ -43,7 +43,7 @@ public final class YamlExecuteProcessContextSwapper implements YamlConfiguration
     }
     
     @Override
-    public ExecuteProcessContext swapToObject(final YamlExecuteProcessContext yamlConfig) {
-        throw new UnsupportedOperationException("YamlExecuteProcessContextSwapper.swapToObject");
+    public ProcessContext swapToObject(final YamlProcessContext yamlConfig) {
+        throw new UnsupportedOperationException("YamlProcessContextSwapper.swapToObject");
     }
 }
