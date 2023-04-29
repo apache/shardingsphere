@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.it.mysql.external;
 
-
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserIT;
 import org.apache.shardingsphere.test.loader.ExternalCaseSettings;
 
