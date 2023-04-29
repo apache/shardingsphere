@@ -71,7 +71,8 @@ class ShowProcessListExecutorTest {
                 + "  username: sharding\n"
                 + "  hostname: 127.0.0.1\n"
                 + "  totalUnitCount: 2\n"
-                + "  completedUnitCount: 1\n";
+                + "  completedUnitCount: 1\n"
+                + "  executing: true\n";
         Plugins.getMemberAccessor().set(showProcessListExecutor.getClass().getDeclaredField("batchProcessContexts"), showProcessListExecutor, Collections.singleton(executionNodeValue));
     }
 }

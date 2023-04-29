@@ -52,24 +52,36 @@ public final class ExecuteProcessContext {
     
     private long startMillis;
     
-    private ExecuteProcessStatus status;
+    private volatile boolean executing;
     
-    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus status) {
+    public ExecuteProcessContext(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        executionID = executionGroupContext.getReportContext().getExecutionID();
+        databaseName = executionGroupContext.getReportContext().getDatabaseName();
+        Grantee grantee = executionGroupContext.getReportContext().getGrantee();
+        username = null == grantee ? null : grantee.getUsername();
+        hostname = null == grantee ? null : grantee.getHostname();
+        sql = "";
+        startMillis = System.currentTimeMillis();
+        executing = false;
+        addProcessUnitsAndStatements(executionGroupContext);
+    }
+    
+    public ExecuteProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         executionID = executionGroupContext.getReportContext().getExecutionID();
         databaseName = executionGroupContext.getReportContext().getDatabaseName();
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
         username = null == grantee ? null : grantee.getUsername();
         hostname = null == grantee ? null : grantee.getHostname();
         this.sql = sql;
-        this.status = status;
         startMillis = System.currentTimeMillis();
-        addProcessUnitsAndStatements(executionGroupContext, status);
+        executing = true;
+        addProcessUnitsAndStatements(executionGroupContext);
     }
     
-    private void addProcessUnitsAndStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ExecuteProcessStatus processStatus) {
+    private void addProcessUnitsAndStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (SQLExecutionUnit executionUnit : each.getInputs()) {
-                ExecuteProcessUnit processUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), processStatus);
+                ExecuteProcessUnit processUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit());
                 processUnits.put(processUnit.getUnitID(), processUnit);
                 if (executionUnit instanceof JDBCExecutionUnit) {
                     processStatements.add(((JDBCExecutionUnit) executionUnit).getStorageResource());
@@ -84,6 +96,6 @@ public final class ExecuteProcessContext {
     public void reset() {
         sql = "";
         startMillis = System.currentTimeMillis();
-        status = ExecuteProcessStatus.SLEEP;
+        executing = false;
     }
 }

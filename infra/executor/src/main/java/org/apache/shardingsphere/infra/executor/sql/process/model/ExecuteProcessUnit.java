@@ -18,22 +18,27 @@
 package org.apache.shardingsphere.infra.executor.sql.process.model;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 
 /**
  * Execute process unit.
  */
 @Getter
-@Setter
 public final class ExecuteProcessUnit {
     
     private final String unitID;
     
-    private volatile ExecuteProcessStatus status;
+    private volatile boolean completed;
     
-    public ExecuteProcessUnit(final ExecutionUnit executionUnit, final ExecuteProcessStatus status) {
+    public ExecuteProcessUnit(final ExecutionUnit executionUnit) {
         this.unitID = String.valueOf(executionUnit.hashCode());
-        this.status = status;
+        completed = false;
+    }
+    
+    /**
+     * Switch to complete.
+     */
+    public void switchComplete() {
+        completed = true;
     }
 }

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.executor.sql.process.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
@@ -45,5 +44,5 @@ public final class YamlExecuteProcessContext implements YamlConfiguration {
     
     private Long startTimeMillis;
     
-    private ExecuteProcessStatus processStatus;
+    private boolean executing;
 }

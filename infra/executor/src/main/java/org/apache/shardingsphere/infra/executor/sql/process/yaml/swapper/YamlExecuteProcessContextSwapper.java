@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper;
 
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
@@ -36,9 +36,9 @@ public final class YamlExecuteProcessContextSwapper implements YamlConfiguration
         result.setHostname(data.getHostname());
         result.setSql(data.getSql());
         result.setTotalUnitCount(data.getProcessUnits().size());
-        result.setCompletedUnitCount(Long.valueOf(data.getProcessUnits().values().stream().filter(each -> ExecuteProcessStatus.DONE == each.getStatus()).count()).intValue());
+        result.setCompletedUnitCount(Long.valueOf(data.getProcessUnits().values().stream().filter(ExecuteProcessUnit::isCompleted).count()).intValue());
         result.setStartTimeMillis(data.getStartMillis());
-        result.setProcessStatus(data.getStatus());
+        result.setExecuting(data.isExecuting());
         return result;
     }
     

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatus;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlAllExecuteProcessContexts;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -99,10 +98,10 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         rowValues.add(yamlExecuteProcessContext.getUsername());
         rowValues.add(yamlExecuteProcessContext.getHostname());
         rowValues.add(yamlExecuteProcessContext.getDatabaseName());
-        rowValues.add(ExecuteProcessStatus.SLEEP == yamlExecuteProcessContext.getProcessStatus() ? "Sleep" : "Execute");
+        rowValues.add(yamlExecuteProcessContext.isExecuting() ? "Execute" : "Sleep");
         rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - yamlExecuteProcessContext.getStartTimeMillis()));
         String sql = null;
-        if (ExecuteProcessStatus.SLEEP == yamlExecuteProcessContext.getProcessStatus()) {
+        if (!yamlExecuteProcessContext.isExecuting()) {
             rowValues.add("");
         } else {
             int processDoneCount = yamlExecuteProcessContext.getCompletedUnitCount();
@@ -118,7 +117,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
     }
     
     private QueryResultMetaData createQueryResultMetaData() {
-        List<RawQueryResultColumnMetaData> columns = new ArrayList<>();
+        List<RawQueryResultColumnMetaData> columns = new ArrayList<>(8);
         columns.add(new RawQueryResultColumnMetaData("", "Id", "Id", Types.VARCHAR, "VARCHAR", 20, 0));
         columns.add(new RawQueryResultColumnMetaData("", "User", "User", Types.VARCHAR, "VARCHAR", 20, 0));
         columns.add(new RawQueryResultColumnMetaData("", "Host", "Host", Types.VARCHAR, "VARCHAR", 64, 0));
