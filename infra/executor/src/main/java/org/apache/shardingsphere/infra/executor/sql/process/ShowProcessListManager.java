@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListSimpleLock;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
 
 import java.sql.Statement;
 import java.util.Collection;

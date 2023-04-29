@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessListContexts;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessContext;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
