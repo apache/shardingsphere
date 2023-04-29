@@ -42,7 +42,7 @@ public final class ExternalSQLParserTestParameterLoader extends AbstractTestPara
      * @param resultFileContent result file content
      * @param databaseType database type
      * @param reportType report type
-     * @return
+     * @return external sql parser test parameters
      */
     public Collection<ExternalSQLParserTestParameter> createTestParameters(final String sqlCaseFileName,
                                                                            final String sqlCaseFileContent, final String resultFileContent, final String databaseType, final String reportType) {
