@@ -68,14 +68,12 @@ public final class ProcessEngine {
     
     /**
      * Finish execution.
-     *
-     * @param executionUnit execution unit
      */
-    public void finishExecution(final SQLExecutionUnit executionUnit) {
+    public void finishExecution() {
         if (ExecuteIDContext.isEmpty()) {
             return;
         }
-        reporter.reportComplete(ExecuteIDContext.get(), executionUnit);
+        reporter.reportComplete(ExecuteIDContext.get());
     }
     
     /**

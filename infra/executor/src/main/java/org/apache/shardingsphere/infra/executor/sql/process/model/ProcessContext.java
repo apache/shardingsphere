@@ -26,9 +26,8 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 
 import java.sql.Statement;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Process context.
@@ -44,9 +43,11 @@ public final class ProcessContext {
     
     private final String hostname;
     
-    private final Map<String, ExecuteProcessUnit> processUnits = new HashMap<>();
+    private final int totalUnitCount;
     
-    private final Collection<Statement> processStatements = new LinkedList<>();
+    private final Collection<Statement> processStatements;
+    
+    private final AtomicInteger completedUnitCount;
     
     private String sql;
     
@@ -68,22 +69,40 @@ public final class ProcessContext {
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
         username = null == grantee ? null : grantee.getUsername();
         hostname = null == grantee ? null : grantee.getHostname();
+        totalUnitCount = executionGroupContext.getInputGroups().stream().mapToInt(each -> each.getInputs().size()).sum();
+        processStatements = getProcessStatements(executionGroupContext);
+        completedUnitCount = new AtomicInteger(0);
         this.sql = sql;
         startMillis = System.currentTimeMillis();
         this.executing = executing;
-        addProcessUnitsAndStatements(executionGroupContext);
     }
     
-    private void addProcessUnitsAndStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+    private Collection<Statement> getProcessStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+        Collection<Statement> result = new LinkedList<>();
         for (ExecutionGroup<? extends SQLExecutionUnit> each : executionGroupContext.getInputGroups()) {
             for (SQLExecutionUnit executionUnit : each.getInputs()) {
-                ExecuteProcessUnit processUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit());
-                processUnits.put(processUnit.getUnitID(), processUnit);
                 if (executionUnit instanceof JDBCExecutionUnit) {
-                    processStatements.add(((JDBCExecutionUnit) executionUnit).getStorageResource());
+                    result.add(((JDBCExecutionUnit) executionUnit).getStorageResource());
                 }
             }
         }
+        return result;
+    }
+    
+    /**
+     * Complete one execute unit.
+     */
+    public void completeOne() {
+        completedUnitCount.incrementAndGet();
+    }
+    
+    /**
+     * Get completed unit count.
+     * 
+     * @return completed unit count
+     */
+    public int getCompletedUnitCount() {
+        return completedUnitCount.get();
     }
     
     /**

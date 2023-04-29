@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -68,10 +67,8 @@ class ProcessReporterTest {
     
     @Test
     void assertReportUnit() {
-        SQLExecutionUnit sqlExecutionUnit = mock(SQLExecutionUnit.class);
-        when(sqlExecutionUnit.getExecutionUnit()).thenReturn(mock(ExecutionUnit.class));
         when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
-        new ProcessReporter().reportComplete("foo_id", sqlExecutionUnit);
+        new ProcessReporter().reportComplete("foo_id");
         verify(showProcessListManager).getProcessContext("foo_id");
     }
     

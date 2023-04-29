@@ -22,12 +22,10 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupConte
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Process report.
@@ -64,12 +62,9 @@ public final class ProcessReporter {
      * Report complete execution unit.
      *
      * @param executionID execution ID
-     * @param executionUnit execution unit
      */
-    public void reportComplete(final String executionID, final SQLExecutionUnit executionUnit) {
-        ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit());
-        ProcessContext processContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        Optional.ofNullable(processContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(ExecuteProcessUnit::switchComplete);
+    public void reportComplete(final String executionID) {
+        ShowProcessListManager.getInstance().getProcessContext(executionID).completeOne();
     }
     
     /**
