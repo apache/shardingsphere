@@ -47,8 +47,8 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
         Collection<ExecuteResult> result = callbacks.iterator().next().execute(inputs, isTrunkThread);
         if (!ExecuteIDContext.isEmpty()) {
             ProcessEngine processEngine = new ProcessEngine();
-            for (RawSQLExecutionUnit each : inputs) {
-                processEngine.finishExecution(each);
+            for (int i = 0; i < inputs.size(); i++) {
+                processEngine.finishExecution();
             }
         }
         return result;

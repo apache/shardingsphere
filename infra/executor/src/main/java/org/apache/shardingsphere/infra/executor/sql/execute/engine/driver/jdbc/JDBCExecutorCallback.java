@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
@@ -85,7 +84,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
             sqlExecutionHook.start(jdbcExecutionUnit.getExecutionUnit().getDataSourceName(), sqlUnit.getSql(), sqlUnit.getParameters(), dataSourceMetaData, isTrunkThread);
             T result = executeSQL(sqlUnit.getSql(), jdbcExecutionUnit.getStorageResource(), jdbcExecutionUnit.getConnectionMode(), storageType);
             sqlExecutionHook.finishSuccess();
-            finishReport(jdbcExecutionUnit);
+            new ProcessEngine().finishExecution();
             return result;
         } catch (final SQLException ex) {
             if (!storageType.equals(protocolType)) {
@@ -108,10 +107,6 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
         DataSourceMetaData result = storageType.getDataSourceMetaData(url, databaseMetaData.getUserName());
         CACHED_DATASOURCE_METADATA.put(url, result);
         return result;
-    }
-    
-    private void finishReport(final SQLExecutionUnit executionUnit) {
-        new ProcessEngine().finishExecution(executionUnit);
     }
     
     protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode, DatabaseType storageType) throws SQLException;
