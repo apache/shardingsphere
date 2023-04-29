@@ -100,9 +100,9 @@ class ProcessListChangedSubscriberTest {
     
     @Test
     void assertCompleteUnitShowProcessList() {
-        String processListId = "foo_process_id";
+        String processId = "foo_process_id";
         ShowProcessListSimpleLock lock = new ShowProcessListSimpleLock();
-        ShowProcessListManager.getInstance().getLocks().put(processListId, lock);
+        ShowProcessListManager.getInstance().getLocks().put(processId, lock);
         long startTime = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         executorService.submit(() -> {
@@ -110,21 +110,21 @@ class ProcessListChangedSubscriberTest {
                 Thread.sleep(50L);
             } catch (final InterruptedException ignored) {
             }
-            subscriber.completeUnitShowProcessList(new ShowProcessListUnitCompleteEvent(processListId));
+            subscriber.completeUnitShowProcessList(new ShowProcessListUnitCompleteEvent(processId));
         });
         lockAndAwaitDefaultTime(lock);
         long currentTime = System.currentTimeMillis();
         assertTrue(currentTime >= startTime + 50L);
         assertTrue(currentTime <= startTime + 5000L);
-        ShowProcessListManager.getInstance().getLocks().remove(processListId);
+        ShowProcessListManager.getInstance().getLocks().remove(processId);
     }
     
     @Test
     void assertTriggerShowProcessList() throws ReflectiveOperationException {
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         ShowProcessListManager.getInstance().putProcessContext("foo_execution_id", mock(ProcessContext.class));
-        String processListId = "foo_process_id";
-        subscriber.triggerShowProcessList(new ShowProcessListTriggerEvent(instanceId, processListId));
+        String processId = "foo_process_id";
+        subscriber.triggerShowProcessList(new ShowProcessListTriggerEvent(instanceId, processId));
         ClusterPersistRepository repository = ((RegistryCenter) Plugins.getMemberAccessor().get(ProcessListChangedSubscriber.class.getDeclaredField("registryCenter"), subscriber)).getRepository();
         verify(repository).persist("/execution_nodes/foo_process_id/" + instanceId,
                 "contexts:" + System.lineSeparator() + "- completedUnitCount: 0\n  executing: false\n  startTimeMillis: 0\n  totalUnitCount: 0" + System.lineSeparator());
@@ -132,7 +132,7 @@ class ProcessListChangedSubscriberTest {
     }
     
     @Test
-    void assertKillProcessListId() throws SQLException, ReflectiveOperationException {
+    void assertKillProcessId() throws SQLException, ReflectiveOperationException {
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         String processId = "foo_process_id";
         subscriber.killProcessId(new KillProcessIdEvent(instanceId, processId));

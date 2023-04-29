@@ -28,7 +28,7 @@ import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessListIdUnitCompleteEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessIdUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 
@@ -97,20 +97,20 @@ public final class ProcessListChangedSubscriber {
      */
     @Subscribe
     public synchronized void completeUnitShowProcessList(final ShowProcessListUnitCompleteEvent event) {
-        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessListId());
+        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessId());
         if (null != simpleLock) {
             simpleLock.doNotify();
         }
     }
     
     /**
-     * Complete unit kill process list id.
+     * Complete unit kill process id.
      *
-     * @param event kill process list id unit complete event
+     * @param event kill process id unit complete event
      */
     @Subscribe
-    public synchronized void completeUnitKillProcessListId(final KillProcessListIdUnitCompleteEvent event) {
-        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessListId());
+    public synchronized void completeUnitKillProcessId(final KillProcessIdUnitCompleteEvent event) {
+        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessId());
         if (null != simpleLock) {
             simpleLock.doNotify();
         }

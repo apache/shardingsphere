@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Kill process list id unit complete event.
+ * Kill process id unit complete event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class KillProcessListIdUnitCompleteEvent implements GovernanceEvent {
+public final class KillProcessIdUnitCompleteEvent implements GovernanceEvent {
     
-    private final String processListId;
+    private final String processId;
 }

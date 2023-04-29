@@ -39,7 +39,7 @@ public final class KillProcessExecutor implements DatabaseAdminExecutor {
      */
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        String processlistId = killStatement.getProcesslistId();
-        ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(new KillProcessIdRequestEvent(processlistId));
+        String processId = killStatement.getProcessId();
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(new KillProcessIdRequestEvent(processId));
     }
 }

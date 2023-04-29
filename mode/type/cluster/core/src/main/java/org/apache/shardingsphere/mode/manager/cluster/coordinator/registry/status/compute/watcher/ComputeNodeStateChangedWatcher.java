@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessListIdUnitCompleteEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessIdUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
@@ -83,7 +83,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
             return createShowProcessListTriggerEvent(event);
         }
         if (event.getKey().startsWith(ComputeNode.getProcessKillNodePatch())) {
-            return createKillProcessListIdEvent(event);
+            return createKillProcessIdEvent(event);
         }
         return Optional.empty();
     }
@@ -126,8 +126,8 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         return Pattern.compile(ComputeNode.getProcessTriggerNodePatch() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
     }
     
-    private Optional<GovernanceEvent> createKillProcessListIdEvent(final DataChangedEvent event) {
-        Matcher matcher = getKillProcessListIdMatcher(event);
+    private Optional<GovernanceEvent> createKillProcessIdEvent(final DataChangedEvent event) {
+        Matcher matcher = getKillProcessIdMatcher(event);
         if (!matcher.find()) {
             return Optional.empty();
         }
@@ -135,12 +135,12 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
             return Optional.of(new KillProcessIdEvent(matcher.group(1), matcher.group(2)));
         }
         if (Type.DELETED == event.getType()) {
-            return Optional.of(new KillProcessListIdUnitCompleteEvent(matcher.group(2)));
+            return Optional.of(new KillProcessIdUnitCompleteEvent(matcher.group(2)));
         }
         return Optional.empty();
     }
     
-    private static Matcher getKillProcessListIdMatcher(final DataChangedEvent event) {
+    private static Matcher getKillProcessIdMatcher(final DataChangedEvent event) {
         Pattern pattern = Pattern.compile(ComputeNode.getProcessKillNodePatch() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE);
         return pattern.matcher(event.getKey());
     }

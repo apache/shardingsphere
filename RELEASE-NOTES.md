@@ -278,7 +278,7 @@
 ### New Feature
 
 1. Support SQL audit for sharding feature
-1. Support MySQL show processlist and kill process list id feature
+1. Support MySQL show processlist and kill process id feature
 1. Scaling: Add dedicated DistSQL for data migration
 1. Scaling: Basic support migrate data to heterogeneous database
 1. DistSQL: New syntax `CREATE MIGRATION PROCESS CONFIGURATION`
