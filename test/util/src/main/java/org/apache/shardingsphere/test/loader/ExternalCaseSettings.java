@@ -15,21 +15,44 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.external.loader.summary;
+package org.apache.shardingsphere.test.loader;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
- * Assertable file summary.
+ * External SQL case test settings.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AssertableFileSummary {
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ExternalCaseSettings {
     
-    private final String fileName;
+    /**
+     * Get to be tested database types.
+     * 
+     * @return to be tested database types
+     */
+    String value();
     
-    private final String sqlCaseFileAccessURL;
+    /**
+     * Get test case URL.
+     * 
+     * @return test case URL
+     */
+    String caseURL();
     
-    private final String resultFileAccessURL;
+    /**
+     * Get test case result URL.
+     * 
+     * @return test case result URL
+     */
+    String resultURL();
+    
+    /**
+     * Report type.
+     * 
+     * @return get report type
+     */
+    String reportType() default "CSV";
 }

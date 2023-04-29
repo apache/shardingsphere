@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.external.loader.summary;
+package org.apache.shardingsphere.test.loader.summary;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

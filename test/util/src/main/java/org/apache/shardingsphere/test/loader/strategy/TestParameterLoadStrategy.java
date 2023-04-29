@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.external.loader.strategy;
+package org.apache.shardingsphere.test.loader.strategy;
 
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.summary.FileSummary;
+import org.apache.shardingsphere.test.loader.summary.FileSummary;
 
 import java.net.URI;
 import java.util.Collection;
