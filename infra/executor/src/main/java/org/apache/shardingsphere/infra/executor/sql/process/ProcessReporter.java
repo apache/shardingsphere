@@ -61,9 +61,10 @@ public final class ProcessReporter {
      * Report complete execution unit.
      *
      * @param executionID execution ID
+     * @param completedExecutionUnitCount completed execution unit count
      */
-    public void reportComplete(final String executionID) {
-        ShowProcessListManager.getInstance().getProcessContext(executionID).completeOne();
+    public void reportComplete(final String executionID, final int completedExecutionUnitCount) {
+        ShowProcessListManager.getInstance().getProcessContext(executionID).completeExecutionUnits(completedExecutionUnitCount);
     }
     
     /**

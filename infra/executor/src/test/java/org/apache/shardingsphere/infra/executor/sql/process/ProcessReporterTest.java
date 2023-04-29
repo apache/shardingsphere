@@ -67,7 +67,7 @@ class ProcessReporterTest {
     @Test
     void assertReportUnit() {
         when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
-        new ProcessReporter().reportComplete("foo_id");
+        new ProcessReporter().reportComplete("foo_id", 1);
         verify(showProcessListManager).getProcessContext("foo_id");
     }
     

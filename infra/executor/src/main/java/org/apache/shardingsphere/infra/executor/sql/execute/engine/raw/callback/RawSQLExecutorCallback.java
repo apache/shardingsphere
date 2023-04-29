@@ -46,10 +46,7 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
     public Collection<ExecuteResult> execute(final Collection<RawSQLExecutionUnit> inputs, final boolean isTrunkThread) throws SQLException {
         Collection<ExecuteResult> result = callbacks.iterator().next().execute(inputs, isTrunkThread);
         if (!ExecuteIDContext.isEmpty()) {
-            ProcessEngine processEngine = new ProcessEngine();
-            for (int i = 0; i < inputs.size(); i++) {
-                processEngine.finishExecution();
-            }
+            new ProcessEngine().finishExecution(inputs.size());
         }
         return result;
     }
