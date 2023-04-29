@@ -17,29 +17,29 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper;
 
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlAllExecuteProcessContexts;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessListContexts;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * YAML all execute process contexts swapper.
+ * YAML process list contexts swapper.
  */
-public final class YamlAllExecuteProcessContextsSwapper implements YamlConfigurationSwapper<YamlAllExecuteProcessContexts, Collection<ExecuteProcessContext>> {
+public final class YamlProcessListContextsSwapper implements YamlConfigurationSwapper<YamlProcessListContexts, Collection<ProcessContext>> {
     
-    private final YamlExecuteProcessContextSwapper yamlExecuteProcessContextSwapper = new YamlExecuteProcessContextSwapper();
+    private final YamlProcessContextSwapper yamlProcessContextSwapper = new YamlProcessContextSwapper();
     
     @Override
-    public YamlAllExecuteProcessContexts swapToYamlConfiguration(final Collection<ExecuteProcessContext> data) {
-        YamlAllExecuteProcessContexts result = new YamlAllExecuteProcessContexts();
-        result.setContexts(data.stream().map(yamlExecuteProcessContextSwapper::swapToYamlConfiguration).collect(Collectors.toList()));
+    public YamlProcessListContexts swapToYamlConfiguration(final Collection<ProcessContext> data) {
+        YamlProcessListContexts result = new YamlProcessListContexts();
+        result.setContexts(data.stream().map(yamlProcessContextSwapper::swapToYamlConfiguration).collect(Collectors.toList()));
         return result;
     }
     
     @Override
-    public Collection<ExecuteProcessContext> swapToObject(final YamlAllExecuteProcessContexts yamlConfig) {
-        throw new UnsupportedOperationException("YamlAllExecuteProcessContextsSwapper.swapToObject");
+    public Collection<ProcessContext> swapToObject(final YamlProcessListContexts yamlConfig) {
+        throw new UnsupportedOperationException("YamlProcessListContextsSwapper.swapToObject");
     }
 }

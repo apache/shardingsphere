@@ -19,26 +19,33 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
+import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**
- * Execute process report.
+ * Process report.
  */
-public final class ExecuteProcessReporter {
+public final class ProcessReporter {
     
     /**
      * Report connect.
      *
-     * @param executionGroupContext execution group context
+     * @param grantee grantee
+     * @param databaseName databaseName
+     * @return execution ID
      */
-    public void reportConnect(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(executionGroupContext);
-        ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
+    public String reportConnect(final Grantee grantee, final String databaseName) {
+        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
+        ProcessContext processContext = new ProcessContext(executionGroupContext);
+        ShowProcessListManager.getInstance().putProcessContext(processContext.getProcessID(), processContext);
+        return executionGroupContext.getReportContext().getExecutionID();
     }
     
     /**
@@ -48,9 +55,9 @@ public final class ExecuteProcessReporter {
      * @param executionGroupContext execution group context
      */
     public void reportExecute(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext);
-        ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
-        ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), executeProcessContext.getProcessStatements());
+        ProcessContext processContext = new ProcessContext(queryContext.getSql(), executionGroupContext);
+        ShowProcessListManager.getInstance().putProcessContext(processContext.getProcessID(), processContext);
+        ShowProcessListManager.getInstance().putProcessStatement(processContext.getProcessID(), processContext.getProcessStatements());
     }
     
     /**
@@ -61,8 +68,8 @@ public final class ExecuteProcessReporter {
      */
     public void reportComplete(final String executionID, final SQLExecutionUnit executionUnit) {
         ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit());
-        ExecuteProcessContext executeProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        Optional.ofNullable(executeProcessContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(ExecuteProcessUnit::switchComplete);
+        ProcessContext processContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
+        Optional.ofNullable(processContext.getProcessUnits().get(executeProcessUnit.getUnitID())).ifPresent(ExecuteProcessUnit::switchComplete);
     }
     
     /**
@@ -72,11 +79,11 @@ public final class ExecuteProcessReporter {
      */
     public void reset(final String executionID) {
         ShowProcessListManager.getInstance().removeProcessStatement(executionID);
-        ExecuteProcessContext context = ShowProcessListManager.getInstance().getProcessContext(executionID);
+        ProcessContext context = ShowProcessListManager.getInstance().getProcessContext(executionID);
         if (null == context) {
             return;
         }
-        for (ExecuteProcessReporterCleaner each : ShardingSphereServiceLoader.getServiceInstances(ExecuteProcessReporterCleaner.class)) {
+        for (ProcessReporterCleaner each : ShardingSphereServiceLoader.getServiceInstances(ProcessReporterCleaner.class)) {
             each.reset(context);
         }
     }

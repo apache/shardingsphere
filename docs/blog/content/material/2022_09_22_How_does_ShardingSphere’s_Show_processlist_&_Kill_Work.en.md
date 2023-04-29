@@ -55,9 +55,9 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     @Override
     public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
                        final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants);
-        ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
-        ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), executeProcessContext.getProcessStatements());
+        ExecuteProcessContext processContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants);
+        ShowProcessListManager.getInstance().putProcessContext(processContext.getExecutionID(), processContext);
+        ShowProcessListManager.getInstance().putProcessStatement(processContext.getExecutionID(), processContext.getProcessStatements());
     }
 }@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowProcessListManager {

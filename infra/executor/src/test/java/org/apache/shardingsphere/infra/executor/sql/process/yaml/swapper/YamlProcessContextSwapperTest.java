@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessContext;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.junit.jupiter.api.Test;
 
@@ -34,14 +34,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class YamlExecuteProcessContextSwapperTest {
+class YamlProcessContextSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
         ExecutionGroupReportContext reportContext = new ExecutionGroupReportContext("foo_db", new Grantee("root", "localhost"));
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext("SELECT 1", executionGroupContext);
-        YamlExecuteProcessContext actual = new YamlExecuteProcessContextSwapper().swapToYamlConfiguration(executeProcessContext);
+        ProcessContext processContext = new ProcessContext("SELECT 1", executionGroupContext);
+        YamlProcessContext actual = new YamlProcessContextSwapper().swapToYamlConfiguration(processContext);
         assertNotNull(actual.getExecutionID());
         assertThat(actual.getDatabaseName(), is("foo_db"));
         assertThat(actual.getUsername(), is("root"));
@@ -55,6 +55,6 @@ class YamlExecuteProcessContextSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        assertThrows(UnsupportedOperationException.class, () -> new YamlExecuteProcessContextSwapper().swapToObject(new YamlExecuteProcessContext()));
+        assertThrows(UnsupportedOperationException.class, () -> new YamlProcessContextSwapper().swapToObject(new YamlProcessContext()));
     }
 }

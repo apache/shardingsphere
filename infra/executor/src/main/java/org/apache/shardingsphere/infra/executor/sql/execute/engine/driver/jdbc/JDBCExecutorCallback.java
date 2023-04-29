@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionU
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
-import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.DatabaseMetaData;
@@ -111,7 +111,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     }
     
     private void finishReport(final SQLExecutionUnit executionUnit) {
-        new ExecuteProcessEngine().finishExecution(executionUnit);
+        new ProcessEngine().finishExecution(executionUnit);
     }
     
     protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode, DatabaseType storageType) throws SQLException;

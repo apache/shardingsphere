@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.sql.process;
+package org.apache.shardingsphere.infra.executor.sql.process.yaml;
 
-import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessReporterCleaner;
-import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Execute process reporter cleaner for driver.
+ * Process list contexts for YAML.
  */
-public final class DriverExecuteProcessReporterCleaner implements ExecuteProcessReporterCleaner {
+@Getter
+@Setter
+public final class YamlProcessListContexts implements YamlConfiguration {
     
-    @Override
-    public void reset(final ExecuteProcessContext context) {
-        ShowProcessListManager.getInstance().removeProcessContext(context.getExecutionID());
-    }
+    private Collection<YamlProcessContext> contexts = new LinkedList<>();
 }

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
@@ -69,12 +69,12 @@ public final class DriverJDBCExecutor {
      */
     public List<QueryResult> executeQuery(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                                           final QueryContext queryContext, final ExecuteQueryCallback callback) throws SQLException {
-        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
+        ProcessEngine processEngine = new ProcessEngine();
         try {
-            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
+            processEngine.initializeExecution(executionGroupContext, queryContext);
             return jdbcExecutor.execute(executionGroupContext, callback);
         } finally {
-            executeProcessEngine.cleanExecution();
+            processEngine.cleanExecution();
         }
     }
     
@@ -90,14 +90,14 @@ public final class DriverJDBCExecutor {
      */
     public int executeUpdate(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                              final QueryContext queryContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
-        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
+        ProcessEngine processEngine = new ProcessEngine();
         try {
-            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
+            processEngine.initializeExecution(executionGroupContext, queryContext);
             SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
             List<Integer> results = doExecute(executionGroupContext, sqlStatementContext, routeUnits, callback);
             return isNeedAccumulate(metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(), sqlStatementContext) ? accumulate(results) : results.get(0);
         } finally {
-            executeProcessEngine.cleanExecution();
+            processEngine.cleanExecution();
         }
     }
     
@@ -130,13 +130,13 @@ public final class DriverJDBCExecutor {
      */
     public boolean execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final QueryContext queryContext,
                            final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
-        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
+        ProcessEngine processEngine = new ProcessEngine();
         try {
-            executeProcessEngine.initializeExecution(executionGroupContext, queryContext);
+            processEngine.initializeExecution(executionGroupContext, queryContext);
             List<Boolean> results = doExecute(executionGroupContext, queryContext.getSqlStatementContext(), routeUnits, callback);
             return null != results && !results.isEmpty() && null != results.get(0) && results.get(0);
         } finally {
-            executeProcessEngine.cleanExecution();
+            processEngine.cleanExecution();
         }
     }
     
