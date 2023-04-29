@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.executor.sql.process;
 
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessReporterCleaner;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
 
 /**
  * Execute process reporter cleaner for proxy.

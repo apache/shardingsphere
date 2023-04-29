@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListSimpleLock;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;

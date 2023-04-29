@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process;
 
-import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 /**

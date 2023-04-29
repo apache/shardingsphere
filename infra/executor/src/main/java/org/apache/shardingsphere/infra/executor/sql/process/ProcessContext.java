@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.process.model;
+package org.apache.shardingsphere.infra.executor.sql.process;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;

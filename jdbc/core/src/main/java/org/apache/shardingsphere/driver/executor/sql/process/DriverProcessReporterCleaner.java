@@ -19,7 +19,7 @@ package org.apache.shardingsphere.driver.executor.sql.process;
 
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessReporterCleaner;
 import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
 
 /**
  * Execute process reporter cleaner for driver.
