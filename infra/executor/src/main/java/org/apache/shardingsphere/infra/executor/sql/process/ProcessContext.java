@@ -90,10 +90,12 @@ public final class ProcessContext {
     }
     
     /**
-     * Complete one execute unit.
+     * Complete execution units.
+     * 
+     * @param completedExecutionUnitCount completed execution unit count
      */
-    public void completeOne() {
-        completedUnitCount.incrementAndGet();
+    public void completeExecutionUnits(final int completedExecutionUnitCount) {
+        completedUnitCount.addAndGet(completedExecutionUnitCount);
     }
     
     /**
