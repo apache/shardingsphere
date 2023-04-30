@@ -28,7 +28,7 @@ public interface ProcessReporterCleaner {
     /**
      * Reset reporter.
      * 
-     * @param context execute process context
+     * @param context process context
      */
     void reset(ProcessContext context);
 }

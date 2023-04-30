@@ -32,17 +32,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * Show process list manager.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public final class ShowProcessListManager {
     
     private static final ShowProcessListManager INSTANCE = new ShowProcessListManager();
     
-    @Getter
     private final Map<String, ProcessContext> processContexts = new ConcurrentHashMap<>();
     
-    @Getter
     private final Map<String, Collection<Statement>> processStatements = new ConcurrentHashMap<>();
     
-    @Getter
     private final Map<String, ShowProcessListSimpleLock> locks = new ConcurrentHashMap<>();
     
     /**
@@ -55,72 +53,72 @@ public final class ShowProcessListManager {
     }
     
     /**
-     * Put execute process context.
+     * Put process context.
      * 
-     * @param executionId execution id
+     * @param executionID execution ID
      * @param processContext process context
      */
-    public void putProcessContext(final String executionId, final ProcessContext processContext) {
-        processContexts.put(executionId, processContext);
+    public void putProcessContext(final String executionID, final ProcessContext processContext) {
+        processContexts.put(executionID, processContext);
     }
     
     /**
      * Put process statements.
      *
-     * @param executionId execution id
+     * @param executionID execution ID
      * @param statements statements
      */
-    public void putProcessStatement(final String executionId, final Collection<Statement> statements) {
+    public void putProcessStatement(final String executionID, final Collection<Statement> statements) {
         if (statements.isEmpty()) {
             return;
         }
-        processStatements.put(executionId, statements);
+        processStatements.put(executionID, statements);
     }
     
     /**
-     * Get execute process context.
+     * Get process context.
      * 
-     * @param executionId execution id
-     * @return execute process context
+     * @param executionID execution ID
+     * @return process context
      */
-    public ProcessContext getProcessContext(final String executionId) {
-        return processContexts.get(executionId);
+    public ProcessContext getProcessContext(final String executionID) {
+        return processContexts.get(executionID);
     }
     
     /**
-     * Get execute process statement.
+     * Get process statement.
      *
-     * @param executionId execution id
+     * @param executionID execution ID
      * @return execute statements
      */
-    public Collection<Statement> getProcessStatement(final String executionId) {
-        return processStatements.getOrDefault(executionId, Collections.emptyList());
+    public Collection<Statement> getProcessStatement(final String executionID) {
+        return processStatements.getOrDefault(executionID, Collections.emptyList());
     }
     
     /**
-     * Remove execute process context.
+     * Remove process context.
      * 
-     * @param executionId execution id
+     * @param executionID execution ID
      */
-    public void removeProcessContext(final String executionId) {
-        processContexts.remove(executionId);
+    public void removeProcessContext(final String executionID) {
+        processContexts.remove(executionID);
     }
     
     /**
-     * Remove execute process statement.
+     * Remove process statement.
      *
-     * @param executionId execution id
+     * @param executionID execution ID
      */
-    public void removeProcessStatement(final String executionId) {
-        processStatements.remove(executionId);
+    public void removeProcessStatement(final String executionID) {
+        processStatements.remove(executionID);
     }
     
     /**
-     * Get all execute process context.
+     * Get all process contexts.
      * 
-     * @return collection execute process context
+     * @return all process contexts
      */
-    public Collection<ProcessContext> getAllProcessContext() {
+    public Collection<ProcessContext> getAllProcessContexts() {
         return processContexts.values();
     }
 }

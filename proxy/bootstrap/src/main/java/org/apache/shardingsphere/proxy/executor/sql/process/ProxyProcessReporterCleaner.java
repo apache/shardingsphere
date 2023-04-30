@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.ProcessReporterClean
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
 
 /**
- * Execute process reporter cleaner for proxy.
+ * Process reporter cleaner for proxy.
  */
 public final class ProxyProcessReporterCleaner implements ProcessReporterCleaner {
     
