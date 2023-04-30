@@ -27,13 +27,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class WALPositionTest {
     
     @Test
-    void assertCompareTo() {
-        WALPosition walPosition = new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)));
-        assertThat(walPosition.compareTo(null), is(1));
-        assertThat(walPosition.compareTo(new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L)))), is(0));
-    }
-    
-    @Test
     void assertToString() {
         assertThat(new WALPosition(new PostgreSQLLogSequenceNumber(LogSequenceNumber.valueOf(100L))).toString(), is("100"));
     }

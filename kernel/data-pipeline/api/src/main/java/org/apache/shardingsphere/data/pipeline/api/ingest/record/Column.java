@@ -46,6 +46,6 @@ public final class Column {
     
     @Override
     public String toString() {
-        return String.format("%s=%s", name, value);
+        return String.format("%s: oldValue=%s, value=%s", name, oldValue, value);
     }
 }

@@ -71,9 +71,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -134,9 +132,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         String logicTableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
         ShardingSphereTable table = getTableFromMetaData(connectionSession.getDatabaseName(), insertStatement, logicTableName);
         List<String> columnNamesOfInsert = getColumnNamesOfInsertStatement(insertStatement, table);
-        Map<String, ShardingSphereColumn> columnsOfTable = table.getColumns();
-        Map<String, ShardingSphereColumn> caseInsensitiveColumnsOfTable = convertToCaseInsensitiveColumnsOfTable(columnsOfTable);
-        preparedStatement.setRowDescription(returningSegment.<PostgreSQLPacket>map(returning -> describeReturning(returning, columnsOfTable, caseInsensitiveColumnsOfTable))
+        preparedStatement.setRowDescription(returningSegment.<PostgreSQLPacket>map(returning -> describeReturning(returning, table))
                 .orElseGet(PostgreSQLNoDataPacket::getInstance));
         int parameterMarkerIndex = 0;
         for (InsertValuesSegment each : insertStatement.getValues()) {
@@ -151,7 +147,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                     continue;
                 }
                 String columnName = columnNamesOfInsert.get(columnIndex);
-                ShardingSphereColumn column = columnsOfTable.getOrDefault(columnName, caseInsensitiveColumnsOfTable.get(columnName));
+                ShardingSphereColumn column = table.getColumn(columnName);
                 ShardingSpherePreconditions.checkState(null != column, () -> new ColumnNotFoundException(logicTableName, columnName));
                 preparedStatement.getParameterTypes().set(parameterMarkerIndex++, PostgreSQLColumnType.valueOfJDBCType(column.getDataType()));
             }
@@ -177,28 +173,20 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     }
     
     private static List<String> getColumnNamesOfInsertStatement(final InsertStatement insertStatement, final ShardingSphereTable table) {
-        return insertStatement.getColumns().isEmpty() ? new ArrayList<>(table.getColumns().keySet())
-                : insertStatement.getColumns().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
+        return insertStatement.getColumns().isEmpty() ? table.getColumnNames() : insertStatement.getColumns().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
     }
     
-    private Map<String, ShardingSphereColumn> convertToCaseInsensitiveColumnsOfTable(final Map<String, ShardingSphereColumn> columns) {
-        Map<String, ShardingSphereColumn> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        result.putAll(columns);
-        return result;
-    }
-    
-    private PostgreSQLRowDescriptionPacket describeReturning(final ReturningSegment returningSegment, final Map<String, ShardingSphereColumn> columnsOfTable,
-                                                             final Map<String, ShardingSphereColumn> caseInsensitiveColumnsOfTable) {
+    private PostgreSQLRowDescriptionPacket describeReturning(final ReturningSegment returningSegment, final ShardingSphereTable table) {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         for (ProjectionSegment each : returningSegment.getProjections().getProjections()) {
             if (each instanceof ShorthandProjectionSegment) {
-                columnsOfTable.values().stream().map(column -> new PostgreSQLColumnDescription(column.getName(), 0, column.getDataType(), estimateColumnLength(column.getDataType()), ""))
+                table.getColumns().stream().map(column -> new PostgreSQLColumnDescription(column.getName(), 0, column.getDataType(), estimateColumnLength(column.getDataType()), ""))
                         .forEach(result::add);
             }
             if (each instanceof ColumnProjectionSegment) {
                 ColumnProjectionSegment segment = (ColumnProjectionSegment) each;
                 String columnName = segment.getColumn().getIdentifier().getValue();
-                ShardingSphereColumn column = columnsOfTable.getOrDefault(columnName, caseInsensitiveColumnsOfTable.getOrDefault(columnName, generateDefaultColumn(segment)));
+                ShardingSphereColumn column = table.containsColumn(columnName) ? table.getColumn(columnName) : generateDefaultColumn(segment);
                 String alias = segment.getAlias().orElseGet(column::getName);
                 result.add(new PostgreSQLColumnDescription(alias, 0, column.getDataType(), estimateColumnLength(column.getDataType()), ""));
             }

@@ -23,17 +23,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class IntegerPrimaryKeyPositionTest {
-    
-    @Test
-    void assertCompareTo() {
-        IntegerPrimaryKeyPosition position1 = new IntegerPrimaryKeyPosition(1, 100);
-        IntegerPrimaryKeyPosition position2 = new IntegerPrimaryKeyPosition(101, 200);
-        assertThat(position1.compareTo(null), is(1));
-        assertTrue(position1.compareTo(position2) < 0);
-    }
     
     @Test
     void assertInit() {

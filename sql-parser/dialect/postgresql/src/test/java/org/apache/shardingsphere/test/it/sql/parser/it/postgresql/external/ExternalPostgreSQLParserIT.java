@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.test.it.sql.parser.it.postgresql.external;
 
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserIT;
-import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserITSettings;
+import org.apache.shardingsphere.test.loader.ExternalCaseSettings;
 
-@ExternalSQLParserITSettings(value = "PostgreSQL", caseURL = ExternalPostgreSQLParserIT.CASE_URL, resultURL = ExternalPostgreSQLParserIT.RESULT_URL)
+@ExternalCaseSettings(value = "PostgreSQL", caseURL = ExternalPostgreSQLParserIT.CASE_URL, resultURL = ExternalPostgreSQLParserIT.RESULT_URL)
 class ExternalPostgreSQLParserIT extends ExternalSQLParserIT {
     
     static final String CASE_URL = "https://github.com/postgres/postgres/tree/master/src/test/regress/sql";

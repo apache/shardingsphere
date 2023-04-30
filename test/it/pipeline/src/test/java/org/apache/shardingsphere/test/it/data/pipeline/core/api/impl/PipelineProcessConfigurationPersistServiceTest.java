@@ -31,8 +31,6 @@ import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContext
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.Properties;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -52,7 +50,8 @@ class PipelineProcessConfigurationPersistServiceTest {
         yamlProcessConfig.setRead(yamlReadConfig);
         YamlPipelineWriteConfiguration yamlWriteConfig = YamlPipelineWriteConfiguration.buildWithDefaultValue();
         yamlProcessConfig.setWrite(yamlWriteConfig);
-        YamlAlgorithmConfiguration yamlStreamChannel = new YamlAlgorithmConfiguration("MEMORY", new Properties());
+        YamlAlgorithmConfiguration yamlStreamChannel = new YamlAlgorithmConfiguration();
+        yamlStreamChannel.setType("MEMORY");
         yamlProcessConfig.setStreamChannel(yamlStreamChannel);
         String expectedYamlText = YamlEngine.marshal(yamlProcessConfig);
         PipelineProcessConfiguration processConfig = new YamlPipelineProcessConfigurationSwapper().swapToObject(yamlProcessConfig);

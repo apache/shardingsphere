@@ -25,22 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class BinlogPositionTest {
     
     @Test
-    void assertCompareTo() {
-        int position = 10;
-        BinlogPosition binlogPosition = new BinlogPosition("mysql-bin.000002", position);
-        assertThat(binlogPosition.compareTo(new BinlogPosition("mysql-bin.000002", position)), is(0));
-        assertThat(binlogPosition.compareTo(new BinlogPosition("mysql-bin.000001", position)), is(1));
-        assertThat(binlogPosition.compareTo(new BinlogPosition("mysql-bin.000003", position)), is(-1));
-        String fileName = "mysql-bin.000001";
-        binlogPosition = new BinlogPosition(fileName, 10);
-        assertThat(binlogPosition.compareTo(new BinlogPosition(fileName, 10)), is(0));
-        assertThat(binlogPosition.compareTo(new BinlogPosition(fileName, 9)), is(1));
-        assertThat(binlogPosition.compareTo(new BinlogPosition(fileName, 11)), is(-1));
-        assertThat(binlogPosition.compareTo(null), is(1));
-    }
-    
-    @Test
     void assertToString() {
-        assertThat(new BinlogPosition("mysql-bin.000001", 4).toString(), is("mysql-bin.000001#4"));
+        assertThat(new BinlogPosition("mysql-bin.000001", 4, 0L).toString(), is("mysql-bin.000001#4"));
     }
 }

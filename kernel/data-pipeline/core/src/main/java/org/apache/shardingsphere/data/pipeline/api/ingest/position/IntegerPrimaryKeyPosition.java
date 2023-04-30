@@ -50,9 +50,4 @@ public final class IntegerPrimaryKeyPosition extends PrimaryKeyPosition<Long> im
     protected char getType() {
         return 'i';
     }
-    
-    @Override
-    public int compareTo(final IntegerPrimaryKeyPosition position) {
-        return null == position ? 1 : Long.compare(beginValue, position.beginValue);
-    }
 }

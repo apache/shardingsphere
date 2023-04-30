@@ -131,10 +131,10 @@ public final class CommandExecutorTask implements Runnable {
     }
     
     private void processException(final Exception cause) {
-        if (!ExpectedExceptions.isExpected(cause.getClass())) {
-            log.error("Exception occur: ", cause);
-        } else if (log.isDebugEnabled()) {
+        if (ExpectedExceptions.isExpected(cause.getClass())) {
             log.debug("Exception occur: ", cause);
+        } else {
+            log.error("Exception occur: ", cause);
         }
         context.write(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(cause));
         Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket(connectionSession);

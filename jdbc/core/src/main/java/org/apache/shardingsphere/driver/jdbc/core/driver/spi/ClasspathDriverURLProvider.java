@@ -73,6 +73,6 @@ public final class ClasspathDriverURLProvider implements ShardingSphereDriverURL
                 }
             }
         }
-        throw new NullPointerException(String.format("Can not find configuration file `%s`.", resource));
+        throw new IllegalArgumentException(String.format("Can not find configuration file `%s`.", resource));
     }
 }

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowStorageUnitsStatement;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -39,7 +38,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -128,8 +126,11 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     }
     
     private Collection<String> getInUsedResourceNames(final DataSourceContainedRule rule) {
-        return rule.getDataSourceMapper().values().stream().flatMap(Collection::stream)
-                .map(DataSourceRoleInfo::getName).collect(Collectors.toCollection(LinkedHashSet::new));
+        Set<String> result = new HashSet<>();
+        for (Collection<String> each : rule.getDataSourceMapper().values()) {
+            result.addAll(each);
+        }
+        return result;
     }
     
     private Collection<String> getInUsedResourceNames(final DataNodeContainedRule rule) {

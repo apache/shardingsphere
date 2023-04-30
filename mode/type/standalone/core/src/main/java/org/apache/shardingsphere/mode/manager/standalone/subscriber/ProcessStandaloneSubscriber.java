@@ -20,16 +20,16 @@ package org.apache.shardingsphere.mode.manager.standalone.subscriber;
 import com.google.common.eventbus.Subscribe;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessListContexts;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListContextsSwapper;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.process.KillProcessListIdRequestEvent;
+import org.apache.shardingsphere.mode.event.process.KillProcessIdRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListResponseEvent;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -40,6 +40,8 @@ import java.util.Collections;
 public final class ProcessStandaloneSubscriber {
     
     private final EventBusContext eventBusContext;
+    
+    private final YamlProcessListContextsSwapper swapper = new YamlProcessListContextsSwapper();
     
     public ProcessStandaloneSubscriber(final EventBusContext eventBusContext) {
         this.eventBusContext = eventBusContext;
@@ -53,21 +55,19 @@ public final class ProcessStandaloneSubscriber {
      */
     @Subscribe
     public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
-        BatchYamlExecuteProcessContext batchYamlExecuteProcessContext = new BatchYamlExecuteProcessContext(new ArrayList<>(ShowProcessListManager.getInstance().getProcessContexts().values()));
-        eventBusContext.post(new ShowProcessListResponseEvent(batchYamlExecuteProcessContext.getContexts().isEmpty()
-                ? Collections.emptyList()
-                : Collections.singletonList(YamlEngine.marshal(batchYamlExecuteProcessContext))));
+        YamlProcessListContexts yamlContexts = swapper.swapToYamlConfiguration(ShowProcessListManager.getInstance().getAllProcessContexts());
+        eventBusContext.post(new ShowProcessListResponseEvent(yamlContexts.getContexts().isEmpty() ? Collections.emptyList() : Collections.singleton(YamlEngine.marshal(yamlContexts))));
     }
     
     /**
-     * Kill process list id.
+     * Kill process id.
      *
-     * @param event kill process list id request event.
+     * @param event kill process id request event.
      */
     @Subscribe
     @SneakyThrows(SQLException.class)
-    public void killProcessListId(final KillProcessListIdRequestEvent event) {
-        Collection<Statement> statements = ShowProcessListManager.getInstance().getProcessStatement(event.getProcessListId());
+    public void killProcessId(final KillProcessIdRequestEvent event) {
+        Collection<Statement> statements = ShowProcessListManager.getInstance().getProcessStatement(event.getProcessId());
         for (Statement statement : statements) {
             statement.cancel();
         }

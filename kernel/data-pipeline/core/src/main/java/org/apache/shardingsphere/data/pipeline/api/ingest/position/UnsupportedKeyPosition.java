@@ -41,9 +41,4 @@ public final class UnsupportedKeyPosition extends PrimaryKeyPosition<Void> imple
     protected char getType() {
         return 'u';
     }
-    
-    @Override
-    public int compareTo(final UnsupportedKeyPosition position) {
-        return 0;
-    }
 }

@@ -30,5 +30,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 @Setter
 public final class MySQLKillStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
-    private String processlistId;
+    private String processId;
 }

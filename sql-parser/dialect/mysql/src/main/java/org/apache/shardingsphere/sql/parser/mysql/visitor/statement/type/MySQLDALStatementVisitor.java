@@ -470,7 +470,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
     @Override
     public ASTNode visitKill(final KillContext ctx) {
         MySQLKillStatement result = new MySQLKillStatement();
-        result.setProcesslistId(ctx.IDENTIFIER_().getText());
+        result.setProcessId(ctx.IDENTIFIER_().getText());
         return result;
     }
     
