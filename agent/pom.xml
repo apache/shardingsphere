@@ -45,6 +45,12 @@
                 <artifactId>byte-buddy</artifactId>
                 <version>${bytebuddy.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-test-util</artifactId>
+                <version>${project.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     
@@ -62,6 +68,10 @@
                     <artifactId>checker-qual</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-util</artifactId>
         </dependency>
     </dependencies>
     

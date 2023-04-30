@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropIndexSta
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 /**
@@ -51,7 +50,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
             }
             AlterSchemaMetaDataPOJO alterSchemaMetaDataPOJO = new AlterSchemaMetaDataPOJO(database.getName(), actualSchemaName);
             ShardingSphereTable table = newShardingSphereTable(database.getSchema(actualSchemaName).getTable(logicTableName.get()));
-            table.getIndexes().remove(each.getIndexName().getIdentifier().getValue());
+            table.removeIndex(each.getIndexName().getIdentifier().getValue());
             alterSchemaMetaDataPOJO.getAlteredTables().add(table);
             modeContextManager.alterSchemaMetaData(alterSchemaMetaDataPOJO);
         }
@@ -67,8 +66,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     }
     
     private ShardingSphereTable newShardingSphereTable(final ShardingSphereTable table) {
-        ShardingSphereTable result = new ShardingSphereTable(table.getName(), new LinkedHashMap<>(table.getColumns()),
-                new LinkedHashMap<>(table.getIndexes()), new LinkedHashMap<>(table.getConstraints()));
+        ShardingSphereTable result = new ShardingSphereTable(table.getName(), table.getColumns(), table.getIndexes(), table.getConstraints());
         result.getColumnNames().addAll(table.getColumnNames());
         result.getVisibleColumns().addAll(table.getVisibleColumns());
         result.getPrimaryKeyColumns().addAll(table.getPrimaryKeyColumns());

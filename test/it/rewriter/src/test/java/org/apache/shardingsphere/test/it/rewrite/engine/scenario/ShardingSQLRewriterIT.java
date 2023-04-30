@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -73,7 +73,8 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
         when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_detail"));
         ShardingSphereTable accountTableMetaData = mock(ShardingSphereTable.class);
         when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
-        when(accountTableMetaData.getIndexes()).thenReturn(Collections.singletonMap("status_idx_exist", new ShardingSphereIndex("status_idx_exist")));
+        when(accountTableMetaData.getIndexes()).thenReturn(Collections.singletonList(new ShardingSphereIndex("status_idx_exist")));
+        when(accountTableMetaData.containsIndex("status_idx_exist")).thenReturn(true);
         when(accountTableMetaData.getPrimaryKeyColumns()).thenReturn(Collections.singletonList("account_id"));
         when(result.containsTable("t_account")).thenReturn(true);
         when(result.getTable("t_account")).thenReturn(accountTableMetaData);
@@ -88,11 +89,11 @@ class ShardingSQLRewriterIT extends SQLRewriterIT {
         return Collections.singletonMap(schemaName, result);
     }
     
-    private Map<String, ShardingSphereColumn> createColumnMetaDataMap() {
-        Map<String, ShardingSphereColumn> result = new LinkedHashMap<>(3, 1);
-        result.put("account_id", new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false));
-        result.put("amount", mock(ShardingSphereColumn.class));
-        result.put("status", mock(ShardingSphereColumn.class));
+    private Collection<ShardingSphereColumn> createColumnMetaDataMap() {
+        Collection<ShardingSphereColumn> result = new LinkedList<>();
+        result.add(new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true, false));
+        result.add(mock(ShardingSphereColumn.class));
+        result.add(mock(ShardingSphereColumn.class));
         return result;
     }
     

@@ -18,32 +18,42 @@
 package org.apache.shardingsphere.test.e2e.cases.value;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * SQL value.
  */
-@Getter
+@Slf4j
 public final class SQLValue {
     
+    @Getter
     private final Object value;
     
+    @Getter
     private final int index;
     
-    public SQLValue(final String value, final String type, final int index) throws ParseException {
+    private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    
+    private final DateTimeFormatter timestampFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+    
+    public SQLValue(final String value, final String type, final int index) {
         this.value = null == type ? value : getValue(value, type);
         this.index = index;
     }
     
-    private Object getValue(final String value, final String type) throws ParseException {
+    private Object getValue(final String value, final String type) {
         if (type.startsWith("enum#") || type.startsWith("cast#")) {
             return value;
         }
@@ -75,11 +85,11 @@ public final class SQLValue {
                 return Boolean.parseBoolean(value);
             case "Date":
             case "datetime":
-                return new Date(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(value).getTime());
+                return Date.valueOf(LocalDate.parse(value, dateFormatter));
             case "time":
-                return new Time(new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).parse(value).getTime());
+                return Time.valueOf(LocalTime.parse(value, timeFormatter));
             case "timestamp":
-                return new Timestamp(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).parse(value).getTime());
+                return Timestamp.valueOf(LocalDateTime.parse(value, timestampFormatter));
             case "bytes":
                 return value.getBytes(StandardCharsets.UTF_8);
             default:
@@ -93,13 +103,13 @@ public final class SQLValue {
             return formatString((String) value);
         }
         if (value instanceof Date) {
-            return formatString(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(value));
+            return formatString(dateFormatter.format(((Date) value).toLocalDate()));
         }
         if (value instanceof Time) {
-            return formatString(new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(value));
+            return formatString(timeFormatter.format(((Time) value).toLocalTime()));
         }
         if (value instanceof Timestamp) {
-            return formatString(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(value));
+            return formatString(timestampFormatter.format(((Timestamp) value).toLocalDateTime()));
         }
         if (value instanceof byte[]) {
             return formatString(new String((byte[]) value, StandardCharsets.UTF_8));

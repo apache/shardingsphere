@@ -21,9 +21,9 @@ import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
-import org.apache.shardingsphere.test.e2e.engine.composer.E2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseArgumentsProvider;
 import org.apache.shardingsphere.test.e2e.engine.arg.E2ETestCaseSettings;
+import org.apache.shardingsphere.test.e2e.engine.composer.E2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.engine.composer.SingleE2EContainerComposer;
 import org.apache.shardingsphere.test.e2e.framework.param.array.E2ETestParameterFactory;
 import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestParameter;
@@ -37,8 +37,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,10 +49,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @E2ETestCaseSettings(SQLCommandType.DAL)
 class DALE2EIT {
     
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException {
+    void assertExecute(final AssertionTestParameter testParam) throws SQLException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
@@ -63,7 +64,7 @@ class DALE2EIT {
         }
     }
     
-    private void assertExecute(final SingleE2EContainerComposer containerComposer) throws SQLException, ParseException {
+    private void assertExecute(final SingleE2EContainerComposer containerComposer) throws SQLException {
         try (Connection connection = containerComposer.getTargetDataSource().getConnection()) {
             try (Statement statement = connection.createStatement()) {
                 statement.execute(containerComposer.getSQL());
@@ -119,7 +120,7 @@ class DALE2EIT {
     
     private void assertRow(final ResultSet actual, final ResultSetMetaData actualMetaData, final DataSetRow expected) throws SQLException {
         int columnIndex = 1;
-        for (String each : expected.splitValues(",")) {
+        for (String each : expected.splitValues(", ")) {
             String columnLabel = actualMetaData.getColumnLabel(columnIndex);
             if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
                 assertDateValue(actual, columnIndex, columnLabel, each);
@@ -134,9 +135,8 @@ class DALE2EIT {
         if (E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
             return;
         }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        assertThat(dateFormat.format(actual.getDate(columnIndex)), is(expected));
-        assertThat(dateFormat.format(actual.getDate(columnLabel)), is(expected));
+        assertThat(dateTimeFormatter.format(actual.getDate(columnIndex).toLocalDate()), is(expected));
+        assertThat(dateTimeFormatter.format(actual.getDate(columnLabel).toLocalDate()), is(expected));
     }
     
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {

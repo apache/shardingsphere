@@ -29,6 +29,7 @@ import com.google.protobuf.Message;
 import com.google.protobuf.StringValue;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -67,6 +68,7 @@ public final class ColumnValueConvertUtils {
      * @throws RuntimeException runtime exception
      */
     @SuppressWarnings("deprecation")
+    @SneakyThrows(SQLException.class)
     public static Message convertToProtobufMessage(final Object object) {
         if (null == object) {
             return Empty.getDefaultInstance();
@@ -142,21 +144,11 @@ public final class ColumnValueConvertUtils {
         }
         if (object instanceof Clob) {
             Clob clob = (Clob) object;
-            try {
-                return StringValue.of(clob.getSubString(1, (int) clob.length()));
-            } catch (final SQLException ex) {
-                log.error("get clob length failed", ex);
-                throw new RuntimeException(ex);
-            }
+            return StringValue.of(clob.getSubString(1, (int) clob.length()));
         }
         if (object instanceof Blob) {
             Blob blob = (Blob) object;
-            try {
-                return BytesValue.of(ByteString.copyFrom(blob.getBytes(1, (int) blob.length())));
-            } catch (final SQLException ex) {
-                log.error("get blob bytes failed", ex);
-                throw new RuntimeException(ex);
-            }
+            return BytesValue.of(ByteString.copyFrom(blob.getBytes(1, (int) blob.length())));
         }
         return StringValue.newBuilder().setValue(object.toString()).build();
     }

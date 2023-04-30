@@ -21,9 +21,4 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.position;
  * Finished inventory position.
  */
 public final class FinishedPosition implements IngestPosition<FinishedPosition> {
-    
-    @Override
-    public int compareTo(final FinishedPosition position) {
-        return 0;
-    }
 }

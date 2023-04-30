@@ -26,7 +26,7 @@ import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResu
 public final class LogSQLParseResultReporterCreator implements SQLParseResultReporterCreator {
     
     @Override
-    public SQLParseResultReporter create(final String databaseType) {
+    public SQLParseResultReporter create(final String databaseType, final String resultPath) {
         return new LogSQLParseResultReporter();
     }
     

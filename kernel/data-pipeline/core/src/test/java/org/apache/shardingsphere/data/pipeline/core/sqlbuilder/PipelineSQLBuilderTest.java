@@ -91,7 +91,7 @@ class PipelineSQLBuilderTest {
     void assertBuildUpdateSQLWithShardingColumns() {
         DataRecord dataRecord = mockDataRecord("t2");
         String actual = pipelineSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
-        assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ? and sc = ?"));
+        assertThat(actual, is("UPDATE t2 SET c1 = ?,c2 = ?,c3 = ? WHERE id = ? AND sc = ?"));
     }
     
     @Test
@@ -104,7 +104,7 @@ class PipelineSQLBuilderTest {
     void assertBuildDeleteSQLWithConditionColumns() {
         DataRecord dataRecord = mockDataRecord("t3");
         String actual = pipelineSQLBuilder.buildDeleteSQL(null, dataRecord, mockConditionColumns(dataRecord));
-        assertThat(actual, is("DELETE FROM t3 WHERE id = ? and sc = ?"));
+        assertThat(actual, is("DELETE FROM t3 WHERE id = ? AND sc = ?"));
     }
     
     private Collection<Column> mockConditionColumns(final DataRecord dataRecord) {
@@ -119,6 +119,28 @@ class PipelineSQLBuilderTest {
         result.addColumn(new Column("c1", "", true, false));
         result.addColumn(new Column("c2", "", true, false));
         result.addColumn(new Column("c3", "", true, false));
+        return result;
+    }
+    
+    @Test
+    void assertBuildDeleteSQLWithoutUniqueKey() {
+        String actual = pipelineSQLBuilder.buildDeleteSQL(null, mockDataRecordWithoutUniqueKey("t_order"),
+                RecordUtils.extractConditionColumns(mockDataRecordWithoutUniqueKey("t_order"), Collections.emptySet()));
+        assertThat(actual, is("DELETE FROM t_order WHERE id = ? AND name = ?"));
+    }
+    
+    @Test
+    void assertBuildUpdateSQLWithoutShardingColumns() {
+        DataRecord dataRecord = mockDataRecordWithoutUniqueKey("t_order");
+        String actual = pipelineSQLBuilder.buildUpdateSQL(null, dataRecord, mockConditionColumns(dataRecord));
+        assertThat(actual, is("UPDATE t_order SET name = ? WHERE id = ? AND name = ?"));
+    }
+    
+    private DataRecord mockDataRecordWithoutUniqueKey(final String tableName) {
+        DataRecord result = new DataRecord(new PlaceholderPosition(), 4);
+        result.setTableName(tableName);
+        result.addColumn(new Column("id", "", false, false));
+        result.addColumn(new Column("name", "", true, false));
         return result;
     }
 }

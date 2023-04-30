@@ -38,7 +38,7 @@ class ConfigurationPropertiesTest {
         assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
         assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(20));
-        assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_META_DATA_ENABLED));
+        assertTrue((Boolean) actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
         assertThat(actual.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE), is("ORIGINAL"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE), is("PostgreSQL"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(20));
@@ -58,7 +58,7 @@ class ConfigurationPropertiesTest {
                 new Property(ConfigurationPropertyKey.SQL_SIMPLE.getKey(), Boolean.TRUE.toString()),
                 new Property(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), "20"),
                 new Property(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), "20"),
-                new Property(ConfigurationPropertyKey.CHECK_TABLE_META_DATA_ENABLED.getKey(), Boolean.TRUE.toString()),
+                new Property(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED.getKey(), Boolean.TRUE.toString()),
                 new Property(ConfigurationPropertyKey.SQL_FEDERATION_TYPE.getKey(), "ORIGINAL"),
                 new Property(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "PostgreSQL"),
                 new Property(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD.getKey(), "20"),
@@ -79,7 +79,7 @@ class ConfigurationPropertiesTest {
         assertFalse((Boolean) actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
         assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(0));
         assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(1));
-        assertFalse((Boolean) actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_META_DATA_ENABLED));
+        assertFalse((Boolean) actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
         assertThat(actual.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE), is("NONE"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE), is(""));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(128));

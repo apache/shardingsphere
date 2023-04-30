@@ -62,8 +62,9 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
         ShardingSpherePreconditions.checkState(sql.isPresent(), () -> new UnsupportedCRC32DataConsistencyCalculateAlgorithmException(param.getDatabaseType()));
         try (
                 Connection connection = param.getDataSource().getConnection();
-                PreparedStatement preparedStatement = setCurrentStatement(connection.prepareStatement(sql.get()));
+                PreparedStatement preparedStatement = connection.prepareStatement(sql.get());
                 ResultSet resultSet = preparedStatement.executeQuery()) {
+            setCurrentStatement(preparedStatement);
             resultSet.next();
             long crc32 = resultSet.getLong(1);
             int recordsCount = resultSet.getInt(2);

@@ -38,7 +38,7 @@ public final class ShardingMetaDataReviseEntry implements MetaDataReviseEntry<Sh
     
     @Override
     public Optional<? extends SchemaTableAggregationReviser<ShardingRule>> getSchemaTableAggregationReviser(final ConfigurationProperties props) {
-        return Optional.of(new ShardingSchemaTableAggregationReviser(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_META_DATA_ENABLED)));
+        return Optional.of(new ShardingSchemaTableAggregationReviser(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)));
     }
     
     @Override

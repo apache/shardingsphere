@@ -52,8 +52,11 @@ class DefaultMySQLSessionVariableHandlerTest {
             ReplayedSessionVariablesProvider variablesProvider = mock(ReplayedSessionVariablesProvider.class);
             when(variablesProvider.getVariables()).thenReturn(Collections.singleton("sql_mode"));
             typedSPILoader.when(() -> TypedSPILoader.findService(ReplayedSessionVariablesProvider.class, "MySQL")).thenReturn(Optional.of(variablesProvider));
-            new MySQLDefaultSessionVariableHandler().handle(connectionSession, "sql_mode", "''");
+            final MySQLDefaultSessionVariableHandler defaultSessionVariableHandler = new MySQLDefaultSessionVariableHandler();
+            defaultSessionVariableHandler.handle(connectionSession, "sql_mode", "''");
             verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("sql_mode", "''");
+            defaultSessionVariableHandler.handle(connectionSession, "@variable_name", "'variable_value'");
+            verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("@variable_name", "'variable_value'");
         }
     }
 }

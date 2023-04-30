@@ -41,8 +41,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -64,7 +63,9 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer {
     
     private final DataSetEnvironmentManager dataSetEnvironmentManager;
     
-    public BatchE2EContainerComposer(final CaseTestParameter testParam) throws JAXBException, IOException, SQLException, ParseException {
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    
+    public BatchE2EContainerComposer(final CaseTestParameter testParam) throws JAXBException, IOException, SQLException {
         super(testParam);
         databaseType = testParam.getDatabaseType();
         for (IntegrationTestCaseAssertion each : testParam.getTestCaseContext().getTestCase().getAssertions()) {
@@ -158,7 +159,7 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer {
             for (String expected : expectedDatSetRows.get(count).splitValues(", ")) {
                 if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
                     if (!E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
-                        assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actual.getDate(columnIndex)), is(expected));
+                        assertThat(dateTimeFormatter.format(actual.getDate(columnIndex).toLocalDate()), is(expected));
                     }
                 } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
                         && ("PostgreSQL".equals(databaseType.getType()) || "openGauss".equals(databaseType.getType()))) {

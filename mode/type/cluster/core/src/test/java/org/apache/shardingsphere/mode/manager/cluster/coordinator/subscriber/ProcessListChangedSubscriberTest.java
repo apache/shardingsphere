@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListSimpleLock;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -34,7 +34,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessListIdEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -100,9 +100,9 @@ class ProcessListChangedSubscriberTest {
     
     @Test
     void assertCompleteUnitShowProcessList() {
-        String processListId = "foo_process_id";
-        ShowProcessListSimpleLock lock = new ShowProcessListSimpleLock();
-        ShowProcessListManager.getInstance().getLocks().put(processListId, lock);
+        String processId = "foo_process_id";
+        ShowProcessListLock lock = new ShowProcessListLock();
+        ShowProcessListManager.getInstance().getLocks().put(processId, lock);
         long startTime = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         executorService.submit(() -> {
@@ -110,37 +110,37 @@ class ProcessListChangedSubscriberTest {
                 Thread.sleep(50L);
             } catch (final InterruptedException ignored) {
             }
-            subscriber.completeUnitShowProcessList(new ShowProcessListUnitCompleteEvent(processListId));
+            subscriber.completeUnitShowProcessList(new ShowProcessListUnitCompleteEvent(processId));
         });
         lockAndAwaitDefaultTime(lock);
         long currentTime = System.currentTimeMillis();
         assertTrue(currentTime >= startTime + 50L);
         assertTrue(currentTime <= startTime + 5000L);
-        ShowProcessListManager.getInstance().getLocks().remove(processListId);
+        ShowProcessListManager.getInstance().getLocks().remove(processId);
     }
     
     @Test
     void assertTriggerShowProcessList() throws ReflectiveOperationException {
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
-        ShowProcessListManager.getInstance().putProcessContext("foo_execution_id", mock(ExecuteProcessContext.class));
-        String processListId = "foo_process_id";
-        subscriber.triggerShowProcessList(new ShowProcessListTriggerEvent(instanceId, processListId));
+        ShowProcessListManager.getInstance().putProcessContext("foo_execution_id", mock(ProcessContext.class));
+        String processId = "foo_process_id";
+        subscriber.triggerShowProcessList(new ShowProcessListTriggerEvent(instanceId, processId));
         ClusterPersistRepository repository = ((RegistryCenter) Plugins.getMemberAccessor().get(ProcessListChangedSubscriber.class.getDeclaredField("registryCenter"), subscriber)).getRepository();
         verify(repository).persist("/execution_nodes/foo_process_id/" + instanceId,
-                "contexts:" + System.lineSeparator() + "- startTimeMillis: 0" + System.lineSeparator());
+                "contexts:" + System.lineSeparator() + "- completedUnitCount: 0\n  executing: false\n  startTimeMillis: 0\n  totalUnitCount: 0" + System.lineSeparator());
         verify(repository).delete("/nodes/compute_nodes/process_trigger/" + instanceId + ":foo_process_id");
     }
     
     @Test
-    void assertKillProcessListId() throws SQLException, ReflectiveOperationException {
+    void assertKillProcessId() throws SQLException, ReflectiveOperationException {
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         String processId = "foo_process_id";
-        subscriber.killProcessListId(new KillProcessListIdEvent(instanceId, processId));
+        subscriber.killProcessId(new KillProcessIdEvent(instanceId, processId));
         ClusterPersistRepository repository = ((RegistryCenter) Plugins.getMemberAccessor().get(ProcessListChangedSubscriber.class.getDeclaredField("registryCenter"), subscriber)).getRepository();
         verify(repository).delete("/nodes/compute_nodes/process_kill/" + instanceId + ":foo_process_id");
     }
     
-    private void lockAndAwaitDefaultTime(final ShowProcessListSimpleLock lock) {
+    private void lockAndAwaitDefaultTime(final ShowProcessListLock lock) {
         lock.lock();
         try {
             lock.awaitDefaultTime();

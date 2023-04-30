@@ -203,6 +203,8 @@ class SQLNodeConverterEngineIT {
             result.add("select_with_spatial_function");
             result.add("select_from_dual");
             result.add("select_substring");
+            result.add("select_where_with_bit_expr_with_plus_interval");
+            result.add("select_where_with_bit_expr_with_minus_interval");
             return result;
         }
         // CHECKSTYLE:ON

@@ -32,6 +32,7 @@ import io.netty.util.concurrent.Promise;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.BinlogSyncChannelAlreadyClosedException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.GlobalTableMapEventMapping;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
@@ -247,11 +248,11 @@ public final class MySQLClient {
                 return (T) response;
             }
             if (response instanceof MySQLErrPacket) {
-                throw new RuntimeException(((MySQLErrPacket) response).getErrorMessage());
+                throw new PipelineInternalException(((MySQLErrPacket) response).getErrorMessage());
             }
-            throw new RuntimeException("unexpected response type");
+            throw new PipelineInternalException("unexpected response type");
         } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
-            throw new RuntimeException(ex);
+            throw new PipelineInternalException(ex);
         }
     }
     

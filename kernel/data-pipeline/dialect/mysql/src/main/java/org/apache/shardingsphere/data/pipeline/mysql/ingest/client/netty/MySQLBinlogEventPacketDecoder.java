@@ -22,6 +22,7 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogContext;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractRowsEvent;
@@ -119,7 +120,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
             int errorNo = payload.readInt2();
             payload.skipReserved(1);
             String sqlState = payload.readStringFix(5);
-            throw new RuntimeException(String.format("Decode binlog event failed, errorCode: %d, sqlState: %s, errorMessage: %s", errorNo, sqlState, payload.readStringEOF()));
+            throw new PipelineInternalException(String.format("Decode binlog event failed, errorCode: %d, sqlState: %s, errorMessage: %s", errorNo, sqlState, payload.readStringEOF()));
         }
         if (0 != statusCode && log.isDebugEnabled()) {
             log.debug("Illegal binlog status code {}, remaining packet \n{}", statusCode, readRemainPacket(payload));

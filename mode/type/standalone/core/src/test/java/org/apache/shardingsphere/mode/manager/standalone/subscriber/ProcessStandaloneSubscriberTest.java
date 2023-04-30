@@ -38,6 +38,6 @@ class ProcessStandaloneSubscriberTest {
         ShowProcessListManager showProcessListManager = mock(ShowProcessListManager.class);
         when(ShowProcessListManager.getInstance()).thenReturn(showProcessListManager);
         new ProcessStandaloneSubscriber(new EventBusContext()).loadShowProcessListData(mock(ShowProcessListRequestEvent.class));
-        verify(showProcessListManager).getProcessContexts();
+        verify(showProcessListManager).getAllProcessContexts();
     }
 }

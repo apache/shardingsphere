@@ -60,7 +60,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
-import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -175,12 +175,12 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     
     private AbstractEnumerable<Object> executeScalarEnumerable(final DatabaseType databaseType, final QueryContext queryContext,
                                                                final ShardingSphereDatabase database, final ExecutionContext context) {
-        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
+        ProcessEngine processEngine = new ProcessEngine();
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext =
                     prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits(), new ExecutionGroupReportContext(database.getName()));
             setParameters(executionGroupContext.getInputGroups());
-            executeProcessEngine.initializeExecution(executionGroupContext, context.getQueryContext());
+            processEngine.initializeExecution(executionGroupContext, context.getQueryContext());
             List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
             MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
             MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
@@ -189,7 +189,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         } finally {
-            executeProcessEngine.cleanExecution();
+            processEngine.cleanExecution();
         }
     }
     
@@ -235,12 +235,12 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
     }
     
     private AbstractEnumerable<Object[]> execute(final DatabaseType databaseType, final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext context) {
-        ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
+        ProcessEngine processEngine = new ProcessEngine();
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext =
                     prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits(), new ExecutionGroupReportContext(database.getName()));
             setParameters(executionGroupContext.getInputGroups());
-            executeProcessEngine.initializeExecution(executionGroupContext, context.getQueryContext());
+            processEngine.initializeExecution(executionGroupContext, context.getQueryContext());
             List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
             MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
             MergedResult mergedResult = mergeEngine.merge(queryResults, queryContext.getSqlStatementContext());
@@ -249,7 +249,7 @@ public final class TranslatableTableScanExecutor implements TableScanExecutor {
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         } finally {
-            executeProcessEngine.cleanExecution();
+            processEngine.cleanExecution();
         }
     }
     

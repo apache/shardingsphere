@@ -224,7 +224,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         Collection<ShardingSphereRule> rules = database.getRuleMetaData().getRules();
         readwriteSplittingRuleConfigImportChecker.check(database, readwriteSplittingRuleConfig);
         allRuleConfigs.add(readwriteSplittingRuleConfig);
-        rules.add(new ReadwriteSplittingRule(database.getName(), readwriteSplittingRuleConfig, rules, instanceContext));
+        rules.add(new ReadwriteSplittingRule(database.getName(), readwriteSplittingRuleConfig, instanceContext));
     }
     
     private void addEncryptRuleConfiguration(final EncryptRuleConfiguration encryptRuleConfig, final Collection<RuleConfiguration> allRuleConfigs, final ShardingSphereDatabase database) {

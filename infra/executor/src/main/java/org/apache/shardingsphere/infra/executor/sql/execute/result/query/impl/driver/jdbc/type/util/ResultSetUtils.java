@@ -62,10 +62,10 @@ public final class ResultSetUtils {
             return value;
         }
         if (value instanceof LocalDateTime) {
-            return convertLocalDateTimeValue(value, convertType);
+            return convertLocalDateTimeValue((LocalDateTime) value, convertType);
         }
         if (value instanceof Timestamp) {
-            return convertTimestampValue(value, convertType);
+            return convertTimestampValue((Timestamp) value, convertType);
         }
         if (URL.class.equals(convertType)) {
             return convertURL(value);
@@ -74,10 +74,10 @@ public final class ResultSetUtils {
             return convertNumberValue(value, convertType);
         }
         if (value instanceof Date) {
-            return convertDateValue(value, convertType);
+            return convertDateValue((Date) value, convertType);
         }
         if (value instanceof byte[]) {
-            return convertByteArrayValue(value, convertType);
+            return convertByteArrayValue((byte[]) value, convertType);
         }
         if (boolean.class.equals(convertType)) {
             return convertBooleanValue(value);
@@ -134,10 +134,9 @@ public final class ResultSetUtils {
         return value;
     }
     
-    private static Object convertLocalDateTimeValue(final Object value, final Class<?> convertType) {
-        LocalDateTime localDateTime = (LocalDateTime) value;
+    private static Object convertLocalDateTimeValue(final LocalDateTime value, final Class<?> convertType) {
         if (Timestamp.class.equals(convertType)) {
-            return Timestamp.valueOf(localDateTime);
+            return Timestamp.valueOf(value);
         }
         if (String.class.equals(convertType)) {
             return value.toString();
@@ -145,19 +144,18 @@ public final class ResultSetUtils {
         return value;
     }
     
-    private static Object convertTimestampValue(final Object value, final Class<?> convertType) {
-        Timestamp timestamp = (Timestamp) value;
+    private static Object convertTimestampValue(final Timestamp value, final Class<?> convertType) {
         if (LocalDateTime.class.equals(convertType)) {
-            return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            return value.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         }
         if (LocalDate.class.equals(convertType)) {
-            return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            return value.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         }
         if (LocalTime.class.equals(convertType)) {
-            return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+            return value.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
         }
         if (OffsetDateTime.class.equals(convertType)) {
-            return timestamp.toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime();
+            return value.toInstant().atZone(ZoneId.systemDefault()).toOffsetDateTime();
         }
         if (String.class.equals(convertType)) {
             return value.toString();
@@ -220,33 +218,31 @@ public final class ResultSetUtils {
         }
     }
     
-    private static Object convertDateValue(final Object value, final Class<?> convertType) {
-        Date date = (Date) value;
+    private static Object convertDateValue(final Date value, final Class<?> convertType) {
         switch (convertType.getName()) {
             case "java.sql.Date":
-                return new java.sql.Date(date.getTime());
+                return new java.sql.Date(value.getTime());
             case "java.sql.Time":
-                return new Time(date.getTime());
+                return new Time(value.getTime());
             case "java.sql.Timestamp":
-                return new Timestamp(date.getTime());
+                return new Timestamp(value.getTime());
             case "java.lang.String":
-                return date.toString();
+                return value.toString();
             default:
                 throw new UnsupportedDataTypeConversionException(convertType, value);
         }
     }
     
-    private static Object convertByteArrayValue(final Object value, final Class<?> convertType) {
-        byte[] bytesValue = (byte[]) value;
-        switch (bytesValue.length) {
+    private static Object convertByteArrayValue(final byte[] value, final Class<?> convertType) {
+        switch (value.length) {
             case 1:
-                return convertNumberValue(bytesValue[0], convertType);
+                return convertNumberValue(value[0], convertType);
             case Shorts.BYTES:
-                return convertNumberValue(Shorts.fromByteArray(bytesValue), convertType);
+                return convertNumberValue(Shorts.fromByteArray(value), convertType);
             case Ints.BYTES:
-                return convertNumberValue(Ints.fromByteArray(bytesValue), convertType);
+                return convertNumberValue(Ints.fromByteArray(value), convertType);
             case Longs.BYTES:
-                return convertNumberValue(Longs.fromByteArray(bytesValue), convertType);
+                return convertNumberValue(Longs.fromByteArray(value), convertType);
             default:
                 return value;
         }

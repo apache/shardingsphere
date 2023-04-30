@@ -37,7 +37,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.core.connector.SocketSinkImpo
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -83,12 +82,7 @@ public final class SocketSinkImporter extends AbstractLifecycleExecutor implemen
             List<Record> records = channel.fetchRecords(batchSize, 500, TimeUnit.MILLISECONDS);
             if (null != records && !records.isEmpty()) {
                 List<Record> recordList = records.stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
-                try {
-                    processDataRecords(recordList);
-                } catch (final SQLException ex) {
-                    log.error("process data records failed", ex);
-                    throw new RuntimeException(ex);
-                }
+                processDataRecords(recordList);
                 if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
                     break;
                 }
@@ -96,7 +90,7 @@ public final class SocketSinkImporter extends AbstractLifecycleExecutor implemen
         }
     }
     
-    private void processDataRecords(final List<Record> recordList) throws SQLException {
+    private void processDataRecords(final List<Record> recordList) {
         if (null == recordList || recordList.isEmpty()) {
             return;
         }

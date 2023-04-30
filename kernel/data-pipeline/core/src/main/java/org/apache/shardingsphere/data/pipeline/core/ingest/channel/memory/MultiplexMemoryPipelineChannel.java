@@ -58,7 +58,7 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
         } else if (PlaceholderRecord.class.equals(record.getClass())) {
             pushRecord(record, 0);
         } else {
-            throw new RuntimeException("Not Support Record Type");
+            throw new UnsupportedOperationException("Unsupported record type: " + record.getClass().getName());
         }
     }
     

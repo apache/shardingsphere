@@ -1354,13 +1354,20 @@
         <values>
             <value>
                 <assignment-value>
-                    <parameter-marker-expression parameter-index="0" start-index="96" stop-index="96" />
                     <function function-name="date_add" text="date_add(now(),interval ? second)" literal-text="date_add(now(),interval 1 second)" start-index="61" stop-index="93" literal-start-index="61" literal-stop-index="93">
                         <parameter>
                             <function function-name="now" text="now()" start-index="70" stop-index="74" />
                         </parameter>
                         <parameter>
-                            <expression-projection literal-text="interval 1 second" text="interval ? second" start-index="76" stop-index="92" />
+                            <function function-name="interval" text="interval" start-index="76" stop-index="83" >
+                                <parameter>
+                                    <parameter-marker-expression parameter-index="0" start-index="85" stop-index="85" />
+                                    <literal-expression value="1" start-index="85" stop-index="85" />
+                                </parameter>
+                                <parameter>
+                                    <literal-expression value="second" start-index="87" stop-index="92" />
+                                </parameter>
+                            </function>
                         </parameter>
                     </function>
                 </assignment-value>

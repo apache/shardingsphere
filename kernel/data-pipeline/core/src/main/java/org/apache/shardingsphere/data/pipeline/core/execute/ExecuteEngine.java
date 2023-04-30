@@ -19,7 +19,9 @@ package org.apache.shardingsphere.data.pipeline.core.execute;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.executor.LifecycleExecutor;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 
 import java.util.Collection;
@@ -29,6 +31,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.BiConsumer;
 
 /**
  * Executor engine.
@@ -88,34 +91,29 @@ public final class ExecuteEngine {
      *
      * @param futures futures
      * @param executeCallback execute callback on all the futures
-     * @throws RuntimeException runtime exception
+     * @throws PipelineInternalException if there's underlying execution exception
      */
+    @SneakyThrows(InterruptedException.class)
     public static void trigger(final Collection<CompletableFuture<?>> futures, final ExecuteCallback executeCallback) {
         BlockingQueue<CompletableFuture<?>> futureQueue = new LinkedBlockingQueue<>();
         for (CompletableFuture<?> each : futures) {
-            each.whenComplete((unused, throwable) -> {
-                try {
+            each.whenComplete(new BiConsumer<Object, Throwable>() {
+                
+                @SneakyThrows(InterruptedException.class)
+                @Override
+                public void accept(final Object unused, final Throwable throwable) {
                     futureQueue.put(each);
-                } catch (final InterruptedException ex) {
-                    throw new RuntimeException(ex);
                 }
             });
         }
         for (int i = 1, count = futures.size(); i <= count; i++) {
-            CompletableFuture<?> future;
-            try {
-                future = futureQueue.take();
-            } catch (final InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
+            CompletableFuture<?> future = futureQueue.take();
             try {
                 future.get();
-            } catch (final InterruptedException ex) {
-                throw new RuntimeException(ex);
             } catch (final ExecutionException ex) {
                 Throwable cause = ex.getCause();
                 executeCallback.onFailure(null != cause ? cause : ex);
-                throw new RuntimeException(ex);
+                throw new PipelineInternalException(ex);
             }
         }
         executeCallback.onSuccess();

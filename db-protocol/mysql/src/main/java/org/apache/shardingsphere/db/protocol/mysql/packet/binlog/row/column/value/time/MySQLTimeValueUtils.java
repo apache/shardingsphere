@@ -20,8 +20,6 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.val
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.text.SimpleDateFormat;
-
 /**
  * Time value utility class of MySQL.
  */
@@ -35,15 +33,4 @@ public final class MySQLTimeValueUtils {
     public static final String YEAR_OF_ZERO = "0000";
     
     public static final String DATETIME_OF_ZERO = "0000-00-00 00:00:00";
-    
-    private static final ThreadLocal<SimpleDateFormat> TIMESTAMP_FORMAT = ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
-    
-    /**
-     * Get simple date format for current thread.
-     *
-     * @return simple date format
-     */
-    public static SimpleDateFormat getSimpleDateFormat() {
-        return TIMESTAMP_FORMAT.get();
-    }
 }

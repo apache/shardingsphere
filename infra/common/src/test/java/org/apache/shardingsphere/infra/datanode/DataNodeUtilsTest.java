@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRole;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -49,9 +47,7 @@ class DataNodeUtilsTest {
     @Test
     void assertBuildDataNodeWithSameDataSource() {
         DataNode dataNode = new DataNode("readwrite_ds.t_order");
-        Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = Collections.singletonMap("readwrite_ds",
-                Arrays.asList(new DataSourceRoleInfo("ds_0", DataSourceRole.PRIMARY), new DataSourceRoleInfo("shadow_ds_0", DataSourceRole.MEMBER)));
-        Collection<DataNode> dataNodes = DataNodeUtils.buildDataNode(dataNode, dataSourceMapper);
+        Collection<DataNode> dataNodes = DataNodeUtils.buildDataNode(dataNode, Collections.singletonMap("readwrite_ds", Arrays.asList("ds_0", "shadow_ds_0")));
         assertThat(dataNodes.size(), is(2));
         Iterator<DataNode> iterator = dataNodes.iterator();
         assertThat(iterator.next().getDataSourceName(), is("ds_0"));
@@ -61,9 +57,7 @@ class DataNodeUtilsTest {
     @Test
     void assertBuildDataNodeWithoutSameDataSource() {
         DataNode dataNode = new DataNode("read_ds.t_order");
-        Map<String, Collection<DataSourceRoleInfo>> dataSourceMapper = Collections.singletonMap("readwrite_ds",
-                Arrays.asList(new DataSourceRoleInfo("ds_0", DataSourceRole.PRIMARY), new DataSourceRoleInfo("shadow_ds_0", DataSourceRole.MEMBER)));
-        Collection<DataNode> dataNodes = DataNodeUtils.buildDataNode(dataNode, dataSourceMapper);
+        Collection<DataNode> dataNodes = DataNodeUtils.buildDataNode(dataNode, Collections.singletonMap("readwrite_ds", Arrays.asList("ds_0", "shadow_ds_0")));
         assertThat(dataNodes.size(), is(1));
         assertThat(dataNodes.iterator().next().getDataSourceName(), is("read_ds"));
     }

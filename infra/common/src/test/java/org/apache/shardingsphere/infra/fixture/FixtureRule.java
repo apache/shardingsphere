@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.fixture;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.mapper.DataSourceRoleInfo;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 
@@ -36,7 +35,7 @@ public final class FixtureRule implements DatabaseRule, DataSourceContainedRule 
     }
     
     @Override
-    public Map<String, Collection<DataSourceRoleInfo>> getDataSourceMapper() {
+    public Map<String, Collection<String>> getDataSourceMapper() {
         return Collections.emptyMap();
     }
     

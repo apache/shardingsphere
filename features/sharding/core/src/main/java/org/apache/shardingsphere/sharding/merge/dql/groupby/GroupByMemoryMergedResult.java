@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryMergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -133,10 +132,9 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         for (SimpleTableSegment each : selectStatementContext.getAllTables()) {
             String tableName = each.getTableName().getIdentifier().getValue();
             ShardingSphereTable table = schema.getTable(tableName);
-            Map<String, ShardingSphereColumn> columns = table.getColumns();
             String columnName = queryResult.getMetaData().getColumnName(columnIndex);
-            if (columns.containsKey(columnName)) {
-                return columns.get(columnName).isCaseSensitive();
+            if (table.containsColumn(columnName)) {
+                return table.getColumn(columnName).isCaseSensitive();
             }
         }
         return false;

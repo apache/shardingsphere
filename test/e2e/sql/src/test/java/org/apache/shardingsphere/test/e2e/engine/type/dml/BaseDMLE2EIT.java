@@ -42,8 +42,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +54,8 @@ public abstract class BaseDMLE2EIT {
     
     private static final String DATA_COLUMN_DELIMITER = ", ";
     
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    
     private DataSetEnvironmentManager dataSetEnvironmentManager;
     
     /**
@@ -63,11 +64,10 @@ public abstract class BaseDMLE2EIT {
      * @param testParam test parameter
      * @param containerComposer container composer
      * @throws SQLException SQL exception
-     * @throws ParseException parse exception
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      */
-    public final void init(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, ParseException, IOException, JAXBException {
+    public final void init(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, IOException, JAXBException {
         dataSetEnvironmentManager = new DataSetEnvironmentManager(
                 new ScenarioDataPath(testParam.getScenario()).getDataSetFile(Type.ACTUAL), containerComposer.getActualDataSourceMap());
         dataSetEnvironmentManager.fillData();
@@ -138,7 +138,7 @@ public abstract class BaseDMLE2EIT {
     private void assertValue(final AssertionTestParameter testParam, final ResultSet actual, final int columnIndex, final String expected) throws SQLException {
         if (Types.DATE == actual.getMetaData().getColumnType(columnIndex)) {
             if (!E2EContainerComposer.NOT_VERIFY_FLAG.equals(expected)) {
-                assertThat(new SimpleDateFormat("yyyy-MM-dd").format(actual.getDate(columnIndex)), is(expected));
+                assertThat(dateTimeFormatter.format(actual.getDate(columnIndex).toLocalDate()), is(expected));
             }
         } else if (Types.CHAR == actual.getMetaData().getColumnType(columnIndex)
                 && ("PostgreSQL".equals(testParam.getDatabaseType().getType()) || "openGauss".equals(testParam.getDatabaseType().getType()))) {

@@ -35,7 +35,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -45,7 +44,7 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+    void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
@@ -62,13 +61,13 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
         }
     }
     
-    private int executeUpdateForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private int executeUpdateForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             return statement.executeUpdate(containerComposer.getSQL());
         }
     }
     
-    private int executeUpdateForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private int executeUpdateForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(containerComposer.getSQL())) {
             for (SQLValue each : containerComposer.getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());
@@ -80,7 +79,7 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    void assertExecute(final AssertionTestParameter testParam) throws SQLException, ParseException, JAXBException, IOException {
+    void assertExecute(final AssertionTestParameter testParam) throws SQLException, JAXBException, IOException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
@@ -97,14 +96,14 @@ class GeneralDMLE2EIT extends BaseDMLE2EIT {
         }
     }
     
-    private int executeForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private int executeForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             assertFalse(statement.execute(containerComposer.getSQL()), "Not a DML statement.");
             return statement.getUpdateCount();
         }
     }
     
-    private int executeForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private int executeForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(containerComposer.getSQL())) {
             for (SQLValue each : containerComposer.getAssertion().getSQLValues()) {
                 preparedStatement.setObject(each.getIndex(), each.getValue());

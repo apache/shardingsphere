@@ -58,9 +58,9 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     MAX_CONNECTIONS_SIZE_PER_QUERY("max-connections-size-per-query", String.valueOf(1), int.class, false),
     
     /**
-     * Whether validate table meta data consistency when application startup or updated.
+     * Whether validate table metadata consistency when application startup or updated.
      */
-    CHECK_TABLE_META_DATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
+    CHECK_TABLE_METADATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * SQL federation type.
@@ -116,7 +116,37 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * CDC server port.
      */
-    CDC_SERVER_PORT("cdc-server-port", "33071", int.class, true);
+    CDC_SERVER_PORT("cdc-server-port", "33071", int.class, true),
+    
+    /**
+     * Proxy frontend SSL enabled.
+     */
+    PROXY_FRONTEND_SSL_ENABLED("proxy-frontend-ssl-enabled", String.valueOf(Boolean.FALSE), boolean.class, true),
+    
+    /**
+     * Proxy frontend SSL certificate file.
+     */
+    PROXY_FRONTEND_SSL_CERT_FILE("proxy-frontend-ssl-cert-file", "", String.class, true),
+    
+    /**
+     * Proxy frontend SSL private key file.
+     */
+    PROXY_FRONTEND_SSL_KEY_FILE("proxy-frontend-ssl-key-file", "", String.class, true),
+    
+    /**
+     * Proxy frontend SSL protocol version.
+     */
+    PROXY_FRONTEND_SSL_VERSION("proxy-frontend-ssl-version", "TLSv1.2,TLSv1.3", String.class, true),
+    
+    /**
+     * Proxy frontend SSL cipher.
+     */
+    PROXY_FRONTEND_SSL_CIPHER("proxy-frontend-ssl-cipher", "", String.class, true),
+    
+    /**
+     * Agent plugins enabled.
+     */
+    AGENT_PLUGINS_ENABLED("agent-plugins-enabled", String.valueOf(Boolean.TRUE), boolean.class, false);
     
     private final String key;
     

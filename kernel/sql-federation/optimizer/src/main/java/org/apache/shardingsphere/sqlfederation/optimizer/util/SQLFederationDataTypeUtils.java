@@ -47,7 +47,7 @@ public final class SQLFederationDataTypeUtils {
      */
     public static RelDataType createRelDataType(final ShardingSphereTable table, final DatabaseType protocolType, final RelDataTypeFactory typeFactory) {
         Builder fieldInfoBuilder = typeFactory.builder();
-        for (ShardingSphereColumn each : table.getColumns().values()) {
+        for (ShardingSphereColumn each : table.getColumns()) {
             fieldInfoBuilder.add(each.getName(), getRelDataType(protocolType, each, typeFactory));
         }
         return fieldInfoBuilder.build();

@@ -29,11 +29,6 @@ class CircuitBreakerDataSourceTest {
     private final CircuitBreakerDataSource dataSource = new CircuitBreakerDataSource();
     
     @Test
-    void assertClose() {
-        dataSource.close();
-    }
-    
-    @Test
     void assertGetConnection() {
         assertThat(dataSource.getConnection(), instanceOf(CircuitBreakerConnection.class));
         assertThat(dataSource.getConnection("", ""), instanceOf(CircuitBreakerConnection.class));

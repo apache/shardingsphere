@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -64,7 +65,11 @@ public final class RecordUtils {
                 result.add(each);
             }
         }
-        return result;
+        Optional<Column> uniqueKeyColumn = dataRecord.getColumns().stream().filter(Column::isUniqueKey).findFirst();
+        if (uniqueKeyColumn.isPresent()) {
+            return result;
+        }
+        return dataRecord.getColumns();
     }
     
     /**
@@ -84,11 +89,11 @@ public final class RecordUtils {
     }
     
     /**
-    * Get last normal record.
-    *
-    * @param records records
-    * @return last normal record.
-    */
+     * Get last normal record.
+     *
+     * @param records records
+     * @return last normal record.
+     */
     public static Record getLastNormalRecord(final List<Record> records) {
         for (int index = records.size() - 1; index >= 0; index--) {
             Record record = records.get(index);

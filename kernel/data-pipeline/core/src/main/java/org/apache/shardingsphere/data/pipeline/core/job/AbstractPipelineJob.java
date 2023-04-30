@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContex
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.listener.PipelineElasticJobListener;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
@@ -78,7 +79,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             processFailed(jobItemContext, ex);
-            throw new RuntimeException(ex);
+            throw new PipelineInternalException(ex);
         }
     }
     

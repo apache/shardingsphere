@@ -22,6 +22,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.concurrent.Promise;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.PasswordEncryption;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ServerInfo;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ServerVersion;
@@ -96,7 +97,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
         }
         MySQLErrPacket error = (MySQLErrPacket) msg;
         ctx.channel().close();
-        throw new RuntimeException(error.getErrorMessage());
+        throw new PipelineInternalException(error.getErrorMessage());
     }
     
     private byte[] getAuthPluginResponse(final MySQLAuthSwitchRequestPacket authSwitchRequest) throws NoSuchAlgorithmException {

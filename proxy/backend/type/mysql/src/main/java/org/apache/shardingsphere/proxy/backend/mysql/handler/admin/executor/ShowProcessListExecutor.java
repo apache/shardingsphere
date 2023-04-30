@@ -25,9 +25,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessStatusEnum;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessListContexts;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -85,30 +84,30 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         if (null == batchProcessContexts || batchProcessContexts.isEmpty()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        Collection<YamlExecuteProcessContext> processContexts = new LinkedList<>();
+        Collection<YamlProcessContext> processContexts = new LinkedList<>();
         for (String each : batchProcessContexts) {
-            processContexts.addAll(YamlEngine.unmarshal(each, BatchYamlExecuteProcessContext.class).getContexts());
+            processContexts.addAll(YamlEngine.unmarshal(each, YamlProcessListContexts.class).getContexts());
         }
         List<MemoryQueryResultDataRow> rows = processContexts.stream().map(ShowProcessListExecutor::getMemoryQueryResultDataRow).collect(Collectors.toList());
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     
-    private static MemoryQueryResultDataRow getMemoryQueryResultDataRow(final YamlExecuteProcessContext processContext) {
+    private static MemoryQueryResultDataRow getMemoryQueryResultDataRow(final YamlProcessContext yamlProcessContext) {
         List<Object> rowValues = new ArrayList<>(8);
-        rowValues.add(processContext.getExecutionID());
-        rowValues.add(processContext.getUsername());
-        rowValues.add(processContext.getHostname());
-        rowValues.add(processContext.getDatabaseName());
-        rowValues.add(ExecuteProcessStatusEnum.SLEEP == processContext.getProcessStatus() ? "Sleep" : "Execute");
-        rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - processContext.getStartTimeMillis()));
+        rowValues.add(yamlProcessContext.getExecutionID());
+        rowValues.add(yamlProcessContext.getUsername());
+        rowValues.add(yamlProcessContext.getHostname());
+        rowValues.add(yamlProcessContext.getDatabaseName());
+        rowValues.add(yamlProcessContext.isExecuting() ? "Execute" : "Sleep");
+        rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - yamlProcessContext.getStartTimeMillis()));
         String sql = null;
-        if (ExecuteProcessStatusEnum.SLEEP == processContext.getProcessStatus()) {
+        if (!yamlProcessContext.isExecuting()) {
             rowValues.add("");
         } else {
-            int processDoneCount = processContext.getUnitStatuses().stream().map(each -> ExecuteProcessStatusEnum.DONE == each.getProcessStatus() ? 1 : 0).reduce(0, Integer::sum);
+            int processDoneCount = yamlProcessContext.getCompletedUnitCount();
             String statePrefix = "Executing ";
-            rowValues.add(statePrefix + processDoneCount + "/" + processContext.getUnitStatuses().size());
-            sql = processContext.getSql();
+            rowValues.add(statePrefix + processDoneCount + "/" + yamlProcessContext.getTotalUnitCount());
+            sql = yamlProcessContext.getSql();
         }
         if (null != sql && sql.length() > 100) {
             sql = sql.substring(0, 100);
@@ -118,7 +117,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
     }
     
     private QueryResultMetaData createQueryResultMetaData() {
-        List<RawQueryResultColumnMetaData> columns = new ArrayList<>();
+        List<RawQueryResultColumnMetaData> columns = new ArrayList<>(8);
         columns.add(new RawQueryResultColumnMetaData("", "Id", "Id", Types.VARCHAR, "VARCHAR", 20, 0));
         columns.add(new RawQueryResultColumnMetaData("", "User", "User", Types.VARCHAR, "VARCHAR", 20, 0));
         columns.add(new RawQueryResultColumnMetaData("", "Host", "Host", Types.VARCHAR, "VARCHAR", 64, 0));

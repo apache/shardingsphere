@@ -55,7 +55,7 @@ class XAShardingSphereTransactionManagerTest {
     }
     
     @AfterEach
-    void tearDown() throws Exception {
+    void tearDown() {
         xaTransactionManager.close();
     }
     

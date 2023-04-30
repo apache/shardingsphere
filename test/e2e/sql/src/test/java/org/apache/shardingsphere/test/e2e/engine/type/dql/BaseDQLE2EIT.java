@@ -35,7 +35,6 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -62,11 +61,10 @@ public abstract class BaseDQLE2EIT {
      * @param testParam test parameter
      * @param containerComposer container composer
      * @throws SQLException SQL exception
-     * @throws ParseException parse exception
      * @throws IOException IO exception
      * @throws JAXBException JAXB exception
      */
-    public final void init(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, ParseException, IOException, JAXBException {
+    public final void init(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, IOException, JAXBException {
         fillDataOnlyOnce(testParam, containerComposer);
         expectedDataSource = null == containerComposer.getAssertion().getExpectedDataSourceName() || 1 == containerComposer.getExpectedDataSourceMap().size()
                 ? containerComposer.getExpectedDataSourceMap().values().iterator().next()
@@ -74,7 +72,7 @@ public abstract class BaseDQLE2EIT {
         useXMLAsExpectedDataset = null != containerComposer.getAssertion().getExpectedDataFile();
     }
     
-    private void fillDataOnlyOnce(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, ParseException, IOException, JAXBException {
+    private void fillDataOnlyOnce(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException, IOException, JAXBException {
         String cacheKey = testParam.getKey() + "-" + System.identityHashCode(containerComposer.getActualDataSourceMap());
         if (!FILLED_SUITES.contains(cacheKey)) {
             synchronized (FILLED_SUITES) {

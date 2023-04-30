@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.it.sql.parser.external.result.type.csv;
 import lombok.SneakyThrows;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.shardingsphere.test.it.sql.parser.external.env.SQLParserExternalITEnvironment;
 import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporter;
 
 import java.io.File;
@@ -37,8 +36,8 @@ public final class CsvSQLParseResultReporter implements SQLParseResultReporter {
     private final CSVPrinter printer;
     
     @SneakyThrows(IOException.class)
-    public CsvSQLParseResultReporter(final String databaseType) {
-        File csvFile = new File(SQLParserExternalITEnvironment.getInstance().getResultPath() + databaseType + "-result.csv");
+    public CsvSQLParseResultReporter(final String databaseType, final String resultPath) {
+        File csvFile = new File(resultPath + databaseType + "-result.csv");
         printHeader(csvFile);
         printer = new CSVPrinter(Files.newBufferedWriter(Paths.get(csvFile.toURI()), StandardOpenOption.APPEND), CSVFormat.DEFAULT.builder().setSkipHeaderRecord(true).build());
     }

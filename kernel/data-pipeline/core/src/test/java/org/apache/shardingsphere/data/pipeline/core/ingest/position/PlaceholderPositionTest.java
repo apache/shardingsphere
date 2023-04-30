@@ -26,13 +26,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class PlaceholderPositionTest {
     
     @Test
-    void assertCompareTo() {
-        PlaceholderPosition position1 = new PlaceholderPosition();
-        PlaceholderPosition position2 = new PlaceholderPosition();
-        assertThat(position1.compareTo(position2), is(1));
-    }
-    
-    @Test
     void assertToString() {
         assertThat(new PlaceholderPosition().toString(), is(""));
     }

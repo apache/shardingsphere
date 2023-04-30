@@ -65,9 +65,12 @@ public final class PipelineProcessConfigurationUtils {
             yamlConfig.getWrite().fillInNullFieldsWithDefaultValue();
         }
         if (null == yamlConfig.getStreamChannel()) {
+            YamlAlgorithmConfiguration yamlAlgorithmConfig = new YamlAlgorithmConfiguration();
+            yamlAlgorithmConfig.setType("MEMORY");
             Properties props = new Properties();
             props.setProperty("block-queue-size", "10000");
-            yamlConfig.setStreamChannel(new YamlAlgorithmConfiguration("MEMORY", props));
+            yamlAlgorithmConfig.setProps(props);
+            yamlConfig.setStreamChannel(yamlAlgorithmConfig);
         }
     }
 }

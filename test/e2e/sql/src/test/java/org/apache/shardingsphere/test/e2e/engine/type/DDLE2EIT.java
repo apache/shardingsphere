@@ -41,7 +41,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -60,7 +59,7 @@ class DDLE2EIT {
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
-    void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException, ParseException {
+    void assertExecuteUpdate(final AssertionTestParameter testParam) throws SQLException {
         // TODO make sure test case can not be null
         if (null == testParam.getTestCaseContext()) {
             return;
@@ -79,14 +78,14 @@ class DDLE2EIT {
         }
     }
     
-    private void executeUpdateForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private void executeUpdateForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             assertFalse(statement.executeUpdate(containerComposer.getSQL()) > 0, "Not a DDL statement.");
         }
         waitCompleted();
     }
     
-    private void executeUpdateForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private void executeUpdateForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(containerComposer.getSQL())) {
             assertFalse(preparedStatement.executeUpdate() > 0, "Not a DDL statement.");
         }
@@ -115,14 +114,14 @@ class DDLE2EIT {
         }
     }
     
-    private void executeForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private void executeForStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             assertFalse(statement.execute(containerComposer.getSQL()), "Not a DDL statement.");
         }
         waitCompleted();
     }
     
-    private void executeForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException, ParseException {
+    private void executeForPreparedStatement(final SingleE2EContainerComposer containerComposer, final Connection connection) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(containerComposer.getSQL())) {
             assertFalse(preparedStatement.execute(), "Not a DDL statement.");
         }

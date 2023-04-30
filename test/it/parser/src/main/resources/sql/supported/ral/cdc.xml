@@ -19,4 +19,6 @@
 <sql-cases>
     <sql-case id="show-streaming-list" value="SHOW STREAMING LIST;" db-types="ShardingSphere"/>
     <sql-case id="show-streaming-status" value="SHOW STREAMING STATUS 123;" db-types="ShardingSphere"/>
+    <sql-case id="rollback-streaming" value="ROLLBACK STREAMING 123;" db-types="ShardingSphere"/>
+    <sql-case id="commit-streaming" value="COMMIT STREAMING 123;" db-types="ShardingSphere"/>
 </sql-cases>

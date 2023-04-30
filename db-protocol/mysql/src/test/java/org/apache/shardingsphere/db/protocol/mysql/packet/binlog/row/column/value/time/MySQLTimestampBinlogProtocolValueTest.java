@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Timestamp;
+import java.time.format.DateTimeFormatter;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,9 +42,10 @@ class MySQLTimestampBinlogProtocolValueTest {
     
     @Test
     void assertRead() {
-        int currentSeconds = Long.valueOf(System.currentTimeMillis() / 1000).intValue();
+        int currentSeconds = Long.valueOf(System.currentTimeMillis() / 1000L).intValue();
         when(payload.readInt4()).thenReturn(currentSeconds);
-        assertThat(new MySQLTimestampBinlogProtocolValue().read(columnDef, payload), is(MySQLTimeValueUtils.getSimpleDateFormat().format(new Timestamp(currentSeconds * 1000L))));
+        assertThat(new MySQLTimestampBinlogProtocolValue().read(columnDef, payload),
+                is(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(new Timestamp(currentSeconds * 1000L).toLocalDateTime())));
     }
     
     @Test
