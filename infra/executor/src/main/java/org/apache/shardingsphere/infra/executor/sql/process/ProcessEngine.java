@@ -38,7 +38,7 @@ public final class ProcessEngine {
      *
      * @param grantee grantee
      * @param databaseName database name
-     * @return execution ID
+     * @return process ID
      */
     public String initializeConnection(final Grantee grantee, final String databaseName) {
         return reporter.reportConnect(grantee, databaseName);
@@ -61,7 +61,7 @@ public final class ProcessEngine {
      */
     public void initializeExecution(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
-            ExecuteIDContext.set(executionGroupContext.getReportContext().getExecutionID());
+            ExecuteIDContext.set(executionGroupContext.getReportContext().getProcessID());
             reporter.reportExecute(queryContext, executionGroupContext);
         }
     }

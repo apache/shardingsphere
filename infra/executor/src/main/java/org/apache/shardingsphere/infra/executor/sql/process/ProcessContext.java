@@ -64,7 +64,7 @@ public final class ProcessContext {
     }
     
     private ProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean executing) {
-        processID = executionGroupContext.getReportContext().getExecutionID();
+        processID = executionGroupContext.getReportContext().getProcessID();
         databaseName = executionGroupContext.getReportContext().getDatabaseName();
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
         username = null == grantee ? null : grantee.getUsername();

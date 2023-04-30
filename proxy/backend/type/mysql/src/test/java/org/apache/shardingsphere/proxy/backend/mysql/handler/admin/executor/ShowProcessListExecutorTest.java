@@ -64,7 +64,7 @@ class ShowProcessListExecutorTest {
     
     private void setupBatchProcessContexts(final ShowProcessListExecutor showProcessListExecutor) throws ReflectiveOperationException {
         String executionNodeValue = "contexts:\n"
-                + "- executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
+                + "- processID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
                 + "  sql: alter table t_order add column a varchar(64) after order_id\n"
                 + "  startTimeMillis: 1617939785160\n"
                 + "  databaseName: sharding_db\n"

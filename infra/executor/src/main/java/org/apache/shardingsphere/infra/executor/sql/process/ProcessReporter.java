@@ -42,7 +42,7 @@ public final class ProcessReporter {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
         ProcessContext processContext = new ProcessContext(executionGroupContext);
         ShowProcessListManager.getInstance().putProcessContext(processContext.getProcessID(), processContext);
-        return executionGroupContext.getReportContext().getExecutionID();
+        return executionGroupContext.getReportContext().getProcessID();
     }
     
     /**
