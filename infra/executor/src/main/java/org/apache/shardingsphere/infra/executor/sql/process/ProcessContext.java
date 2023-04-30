@@ -49,9 +49,9 @@ public final class ProcessContext {
     
     private final AtomicInteger completedUnitCount;
     
-    private String sql;
+    private volatile String sql;
     
-    private long startMillis;
+    private volatile long startMillis;
     
     private volatile boolean idle;
     
