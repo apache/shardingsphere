@@ -57,7 +57,6 @@ public abstract class InternalSQLParserIT {
         SQLParserTestCase expected = SQL_PARSER_TEST_CASES.get(sqlCaseId);
         SQLStatementAssert.assertIs(new SQLCaseAssertContext(sqlCaseId, sql, expected.getParameters(), sqlCaseType), actual, expected);
     }
-    //select_not_in_with_single_table BOTH
     
     private SQLStatement parseSQLStatement(final String databaseType, final String sql) {
         return "ShardingSphere".equals(databaseType)
