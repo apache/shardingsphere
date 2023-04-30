@@ -32,17 +32,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * Show process list manager.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
 public final class ShowProcessListManager {
     
     private static final ShowProcessListManager INSTANCE = new ShowProcessListManager();
     
-    @Getter
     private final Map<String, ProcessContext> processContexts = new ConcurrentHashMap<>();
     
-    @Getter
     private final Map<String, Collection<Statement>> processStatements = new ConcurrentHashMap<>();
     
-    @Getter
     private final Map<String, ShowProcessListSimpleLock> locks = new ConcurrentHashMap<>();
     
     /**
