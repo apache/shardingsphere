@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListSimpleLock;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
 
 import java.sql.Statement;
 import java.util.Collection;
@@ -32,16 +32,17 @@ import java.util.concurrent.ConcurrentHashMap;
  * Show process list manager.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
 public final class ShowProcessListManager {
     
     private static final ShowProcessListManager INSTANCE = new ShowProcessListManager();
     
     private final Map<String, ProcessContext> processContexts = new ConcurrentHashMap<>();
     
+    @Getter
     private final Map<String, Collection<Statement>> processStatements = new ConcurrentHashMap<>();
     
-    private final Map<String, ShowProcessListSimpleLock> locks = new ConcurrentHashMap<>();
+    @Getter
+    private final Map<String, ShowProcessListLock> locks = new ConcurrentHashMap<>();
     
     /**
      * Get show process list manager.

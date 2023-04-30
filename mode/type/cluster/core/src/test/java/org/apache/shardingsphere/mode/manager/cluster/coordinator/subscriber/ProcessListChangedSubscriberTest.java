@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListSimpleLock;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
@@ -101,7 +101,7 @@ class ProcessListChangedSubscriberTest {
     @Test
     void assertCompleteUnitShowProcessList() {
         String processId = "foo_process_id";
-        ShowProcessListSimpleLock lock = new ShowProcessListSimpleLock();
+        ShowProcessListLock lock = new ShowProcessListLock();
         ShowProcessListManager.getInstance().getLocks().put(processId, lock);
         long startTime = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(1);
@@ -140,7 +140,7 @@ class ProcessListChangedSubscriberTest {
         verify(repository).delete("/nodes/compute_nodes/process_kill/" + instanceId + ":foo_process_id");
     }
     
-    private void lockAndAwaitDefaultTime(final ShowProcessListSimpleLock lock) {
+    private void lockAndAwaitDefaultTime(final ShowProcessListLock lock) {
         lock.lock();
         try {
             lock.awaitDefaultTime();

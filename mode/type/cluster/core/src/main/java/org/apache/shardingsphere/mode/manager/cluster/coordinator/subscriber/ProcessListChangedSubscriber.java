@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListSimpleLock;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListContextsSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -97,9 +97,9 @@ public final class ProcessListChangedSubscriber {
      */
     @Subscribe
     public synchronized void completeUnitShowProcessList(final ShowProcessListUnitCompleteEvent event) {
-        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessId());
-        if (null != simpleLock) {
-            simpleLock.doNotify();
+        ShowProcessListLock lock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessId());
+        if (null != lock) {
+            lock.doNotify();
         }
     }
     
@@ -110,9 +110,9 @@ public final class ProcessListChangedSubscriber {
      */
     @Subscribe
     public synchronized void completeUnitKillProcessId(final KillProcessIdUnitCompleteEvent event) {
-        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessId());
-        if (null != simpleLock) {
-            simpleLock.doNotify();
+        ShowProcessListLock lock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessId());
+        if (null != lock) {
+            lock.doNotify();
         }
     }
 }
