@@ -9,6 +9,8 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Highly reusable, no duplicated codes or configurations.
  - Delete codes out of use in time.
 
+
+
 ## Contributor Covenant Submitting of Conduct
 
  - Make sure Maven build process success. Run `mvn -T 1C clean install` or `./mvnw -T 1C clean install` command in shell to start Maven build process. On which directory to run Maven build process, there are 2 alternatives, we could select one of them: 1) if we're not familiar with Apache ShardingSphere, then we could run it on project root directory, 2) if we know which modules will be affected by the changes, then we could run it on these modules to save build time.
