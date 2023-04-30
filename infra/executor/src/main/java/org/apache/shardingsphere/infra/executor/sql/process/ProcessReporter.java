@@ -54,7 +54,6 @@ public final class ProcessReporter {
     public void reportExecute(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         ProcessContext processContext = new ProcessContext(queryContext.getSql(), executionGroupContext);
         ShowProcessListManager.getInstance().putProcessContext(processContext.getId(), processContext);
-        ShowProcessListManager.getInstance().putProcessStatement(processContext.getId(), processContext.getProcessStatements());
     }
     
     /**
@@ -72,7 +71,6 @@ public final class ProcessReporter {
      * @param processID process ID
      */
     public void reset(final String processID) {
-        ShowProcessListManager.getInstance().removeProcessStatement(processID);
         ProcessContext context = ShowProcessListManager.getInstance().getProcessContext(processID);
         if (null == context) {
             return;
@@ -88,7 +86,6 @@ public final class ProcessReporter {
      * @param processID process ID
      */
     public void remove(final String processID) {
-        ShowProcessListManager.getInstance().removeProcessStatement(processID);
         ShowProcessListManager.getInstance().removeProcessContext(processID);
     }
 }

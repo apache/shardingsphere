@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Kill process id request event.
+ * Kill process request event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class KillProcessIdRequestEvent {
+public final class KillProcessRequestEvent {
     
-    private final String processId;
+    private final String id;
 }

@@ -22,9 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
 
-import java.sql.Statement;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,9 +35,6 @@ public final class ShowProcessListManager {
     private static final ShowProcessListManager INSTANCE = new ShowProcessListManager();
     
     private final Map<String, ProcessContext> processContexts = new ConcurrentHashMap<>();
-    
-    @Getter
-    private final Map<String, Collection<Statement>> processStatements = new ConcurrentHashMap<>();
     
     @Getter
     private final Map<String, ShowProcessListLock> locks = new ConcurrentHashMap<>();
@@ -64,19 +59,6 @@ public final class ShowProcessListManager {
     }
     
     /**
-     * Put process statements.
-     *
-     * @param processID process ID
-     * @param statements statements
-     */
-    public void putProcessStatement(final String processID, final Collection<Statement> statements) {
-        if (statements.isEmpty()) {
-            return;
-        }
-        processStatements.put(processID, statements);
-    }
-    
-    /**
      * Get process context.
      * 
      * @param processID process ID
@@ -87,31 +69,12 @@ public final class ShowProcessListManager {
     }
     
     /**
-     * Get process statement.
-     *
-     * @param processID process ID
-     * @return execute statements
-     */
-    public Collection<Statement> getProcessStatement(final String processID) {
-        return processStatements.getOrDefault(processID, Collections.emptyList());
-    }
-    
-    /**
      * Remove process context.
      * 
      * @param processID process ID
      */
     public void removeProcessContext(final String processID) {
         processContexts.remove(processID);
-    }
-    
-    /**
-     * Remove process statement.
-     *
-     * @param processID process ID
-     */
-    public void removeProcessStatement(final String processID) {
-        processStatements.remove(processID);
     }
     
     /**

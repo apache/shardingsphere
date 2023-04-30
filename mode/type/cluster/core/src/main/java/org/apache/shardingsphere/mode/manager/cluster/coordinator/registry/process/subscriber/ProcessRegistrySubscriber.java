@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessList
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
-import org.apache.shardingsphere.mode.event.process.KillProcessIdRequestEvent;
+import org.apache.shardingsphere.mode.event.process.KillProcessRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
@@ -96,8 +96,8 @@ public final class ProcessRegistrySubscriber {
      * @param event get children request event.
      */
     @Subscribe
-    public void killProcessId(final KillProcessIdRequestEvent event) {
-        String processId = event.getProcessId();
+    public void killProcessId(final KillProcessRequestEvent event) {
+        String processId = event.getId();
         boolean killProcessIdIsComplete = false;
         Collection<String> processKillPaths = getProcessKillPaths(processId);
         try {

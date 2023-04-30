@@ -75,6 +75,5 @@ class ProcessReporterTest {
     void assertReportClean() {
         when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
         new ProcessReporter().reset("foo_id");
-        verify(showProcessListManager).removeProcessStatement("foo_id");
     }
 }
