@@ -25,9 +25,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Show process list simple lock.
+ * Show process list lock.
  */
-public final class ShowProcessListSimpleLock {
+public final class ShowProcessListLock {
     
     private static final long DEFAULT_TIMEOUT_MILLISECONDS = 5000L;
     

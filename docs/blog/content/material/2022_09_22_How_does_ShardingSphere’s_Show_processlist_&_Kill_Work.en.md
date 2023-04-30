@@ -330,9 +330,9 @@ public final class ClusterContextManagerCoordinator {
     
     @Subscribe
     public synchronized void completeUnitShowProcessList(final ShowProcessListUnitCompleteEvent event) {
-        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessId());
-        if (null != simpleLock) {
-            simpleLock.doNotify();
+        ShowProcessListLock lock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessId());
+        if (null != lock) {
+            lock.doNotify();
         }
     }
 }
@@ -349,9 +349,9 @@ public final class ClusterContextManagerCoordinator {
     
     @Subscribe
     public synchronized void completeUnitShowProcessList(final ShowProcessListUnitCompleteEvent event) {
-        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessId());
-        if (null != simpleLock) {
-            simpleLock.doNotify();
+        ShowProcessListLock lock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessId());
+        if (null != lock) {
+            lock.doNotify();
         }
     }
 }

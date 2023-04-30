@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proc
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListSimpleLock;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
@@ -117,18 +117,18 @@ public final class ProcessRegistrySubscriber {
     }
     
     private boolean waitAllNodeDataReady(final String processId, final Collection<String> paths) {
-        ShowProcessListSimpleLock simpleLock = new ShowProcessListSimpleLock();
-        ShowProcessListManager.getInstance().getLocks().put(processId, simpleLock);
-        simpleLock.lock();
+        ShowProcessListLock lock = new ShowProcessListLock();
+        ShowProcessListManager.getInstance().getLocks().put(processId, lock);
+        lock.lock();
         try {
             while (!isReady(paths)) {
-                if (!simpleLock.awaitDefaultTime()) {
+                if (!lock.awaitDefaultTime()) {
                     return false;
                 }
             }
             return true;
         } finally {
-            simpleLock.unlock();
+            lock.unlock();
             ShowProcessListManager.getInstance().getLocks().remove(processId);
         }
     }
