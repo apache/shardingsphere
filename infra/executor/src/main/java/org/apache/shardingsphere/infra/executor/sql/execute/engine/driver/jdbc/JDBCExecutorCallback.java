@@ -56,6 +56,8 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     private final boolean isExceptionThrown;
     
+    private final ProcessEngine processEngine = new ProcessEngine();
+    
     @Override
     public final Collection<T> execute(final Collection<JDBCExecutionUnit> executionUnits, final boolean isTrunkThread) throws SQLException {
         // TODO It is better to judge whether need sane result before execute, can avoid exception thrown
@@ -84,7 +86,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
             sqlExecutionHook.start(jdbcExecutionUnit.getExecutionUnit().getDataSourceName(), sqlUnit.getSql(), sqlUnit.getParameters(), dataSourceMetaData, isTrunkThread);
             T result = executeSQL(sqlUnit.getSql(), jdbcExecutionUnit.getStorageResource(), jdbcExecutionUnit.getConnectionMode(), storageType);
             sqlExecutionHook.finishSuccess();
-            new ProcessEngine().finishExecution();
+            processEngine.finishExecution();
             return result;
         } catch (final SQLException ex) {
             if (!storageType.equals(protocolType)) {

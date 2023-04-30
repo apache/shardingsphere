@@ -36,6 +36,8 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
     @SuppressWarnings("rawtypes")
     private final Collection<RawExecutorCallback> callbacks;
     
+    private final ProcessEngine processEngine = new ProcessEngine();
+    
     public RawSQLExecutorCallback() {
         callbacks = ShardingSphereServiceLoader.getServiceInstances(RawExecutorCallback.class);
         Preconditions.checkState(!callbacks.isEmpty(), "No raw executor callback implementation found.");
@@ -47,7 +49,7 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
         Collection<ExecuteResult> result = callbacks.iterator().next().execute(inputs, isTrunkThread);
         if (!ExecuteIDContext.isEmpty()) {
             for (int i = 0; i < inputs.size(); i++) {
-                new ProcessEngine().finishExecution();
+                processEngine.finishExecution();
             }
         }
         return result;

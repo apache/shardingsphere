@@ -43,6 +43,8 @@ public final class RawExecutor {
     
     private final ConnectionContext connectionContext;
     
+    private final ProcessEngine processEngine = new ProcessEngine();
+    
     /**
      * Execute.
      *
@@ -54,7 +56,6 @@ public final class RawExecutor {
      */
     public List<ExecuteResult> execute(final ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext,
                                        final QueryContext queryContext, final RawSQLExecutorCallback callback) throws SQLException {
-        ProcessEngine processEngine = new ProcessEngine();
         try {
             processEngine.initializeExecution(executionGroupContext, queryContext);
             // TODO Load query header for first query
