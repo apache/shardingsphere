@@ -60,20 +60,20 @@ public final class ProcessReporter {
     /**
      * Report complete execution unit.
      *
-     * @param executionID execution ID
+     * @param processID process ID
      */
-    public void reportComplete(final String executionID) {
-        ShowProcessListManager.getInstance().getProcessContext(executionID).completeExecutionUnit();
+    public void reportComplete(final String processID) {
+        ShowProcessListManager.getInstance().getProcessContext(processID).completeExecutionUnit();
     }
     
     /**
      * Reset report.
      *
-     * @param executionID execution ID
+     * @param processID process ID
      */
-    public void reset(final String executionID) {
-        ShowProcessListManager.getInstance().removeProcessStatement(executionID);
-        ProcessContext context = ShowProcessListManager.getInstance().getProcessContext(executionID);
+    public void reset(final String processID) {
+        ShowProcessListManager.getInstance().removeProcessStatement(processID);
+        ProcessContext context = ShowProcessListManager.getInstance().getProcessContext(processID);
         if (null == context) {
             return;
         }
@@ -85,10 +85,10 @@ public final class ProcessReporter {
     /**
      * Remove process context.
      *
-     * @param executionID execution ID
+     * @param processID process ID
      */
-    public void remove(final String executionID) {
-        ShowProcessListManager.getInstance().removeProcessStatement(executionID);
-        ShowProcessListManager.getInstance().removeProcessContext(executionID);
+    public void remove(final String processID) {
+        ShowProcessListManager.getInstance().removeProcessStatement(processID);
+        ShowProcessListManager.getInstance().removeProcessContext(processID);
     }
 }

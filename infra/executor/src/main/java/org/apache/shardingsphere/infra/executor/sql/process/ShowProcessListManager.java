@@ -56,62 +56,62 @@ public final class ShowProcessListManager {
     /**
      * Put process context.
      * 
-     * @param executionID execution ID
+     * @param processID process ID
      * @param processContext process context
      */
-    public void putProcessContext(final String executionID, final ProcessContext processContext) {
-        processContexts.put(executionID, processContext);
+    public void putProcessContext(final String processID, final ProcessContext processContext) {
+        processContexts.put(processID, processContext);
     }
     
     /**
      * Put process statements.
      *
-     * @param executionID execution ID
+     * @param processID process ID
      * @param statements statements
      */
-    public void putProcessStatement(final String executionID, final Collection<Statement> statements) {
+    public void putProcessStatement(final String processID, final Collection<Statement> statements) {
         if (statements.isEmpty()) {
             return;
         }
-        processStatements.put(executionID, statements);
+        processStatements.put(processID, statements);
     }
     
     /**
      * Get process context.
      * 
-     * @param executionID execution ID
+     * @param processID process ID
      * @return process context
      */
-    public ProcessContext getProcessContext(final String executionID) {
-        return processContexts.get(executionID);
+    public ProcessContext getProcessContext(final String processID) {
+        return processContexts.get(processID);
     }
     
     /**
      * Get process statement.
      *
-     * @param executionID execution ID
+     * @param processID process ID
      * @return execute statements
      */
-    public Collection<Statement> getProcessStatement(final String executionID) {
-        return processStatements.getOrDefault(executionID, Collections.emptyList());
+    public Collection<Statement> getProcessStatement(final String processID) {
+        return processStatements.getOrDefault(processID, Collections.emptyList());
     }
     
     /**
      * Remove process context.
      * 
-     * @param executionID execution ID
+     * @param processID process ID
      */
-    public void removeProcessContext(final String executionID) {
-        processContexts.remove(executionID);
+    public void removeProcessContext(final String processID) {
+        processContexts.remove(processID);
     }
     
     /**
      * Remove process statement.
      *
-     * @param executionID execution ID
+     * @param processID process ID
      */
-    public void removeProcessStatement(final String executionID) {
-        processStatements.remove(executionID);
+    public void removeProcessStatement(final String processID) {
+        processStatements.remove(processID);
     }
     
     /**

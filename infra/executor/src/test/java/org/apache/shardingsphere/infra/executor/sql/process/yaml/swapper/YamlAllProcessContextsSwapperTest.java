@@ -48,7 +48,7 @@ class YamlAllProcessContextsSwapperTest {
     }
     
     private static void assertYamlProcessContext(final YamlProcessContext actual) {
-        assertNotNull(actual.getExecutionID());
+        assertNotNull(actual.getProcessID());
         assertThat(actual.getDatabaseName(), is("foo_db"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getHostname(), is("localhost"));

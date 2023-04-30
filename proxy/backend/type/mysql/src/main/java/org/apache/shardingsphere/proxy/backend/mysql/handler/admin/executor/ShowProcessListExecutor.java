@@ -94,7 +94,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
     
     private static MemoryQueryResultDataRow getMemoryQueryResultDataRow(final YamlProcessContext yamlProcessContext) {
         List<Object> rowValues = new ArrayList<>(8);
-        rowValues.add(yamlProcessContext.getExecutionID());
+        rowValues.add(yamlProcessContext.getProcessID());
         rowValues.add(yamlProcessContext.getUsername());
         rowValues.add(yamlProcessContext.getHostname());
         rowValues.add(yamlProcessContext.getDatabaseName());

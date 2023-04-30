@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlProcessContext implements YamlConfiguration {
     
-    private String executionID;
+    private String processID;
     
     private String databaseName;
     

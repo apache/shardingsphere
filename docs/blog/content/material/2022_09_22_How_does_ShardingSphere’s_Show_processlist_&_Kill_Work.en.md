@@ -74,11 +74,11 @@ public final class ShowProcessListManager {
         return INSTANCE;
     }
     
-    public void putProcessContext(final String executionId, final ExecuteProcessContext processContext) {
+    public void putProcessContext(final String processID, final ExecuteProcessContext processContext) {
         processContexts.put(executionId, processContext);
     }
     
-    public void putProcessStatement(final String executionId, final Collection<Statement> statements) {
+    public void putProcessStatement(final String processID, final Collection<Statement> statements) {
         if (statements.isEmpty()) {
             return;
         }

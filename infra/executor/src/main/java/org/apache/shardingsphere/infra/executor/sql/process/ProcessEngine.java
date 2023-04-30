@@ -47,10 +47,10 @@ public final class ProcessEngine {
     /**
      * Finish connection.
      *
-     * @param executionID execution ID
+     * @param processID process ID
      */
-    public void finishConnection(final String executionID) {
-        reporter.remove(executionID);
+    public void finishConnection(final String processID) {
+        reporter.remove(processID);
     }
     
     /**
