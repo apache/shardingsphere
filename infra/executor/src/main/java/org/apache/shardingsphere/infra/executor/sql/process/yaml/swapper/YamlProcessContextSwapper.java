@@ -29,7 +29,7 @@ public final class YamlProcessContextSwapper implements YamlConfigurationSwapper
     @Override
     public YamlProcessContext swapToYamlConfiguration(final ProcessContext data) {
         YamlProcessContext result = new YamlProcessContext();
-        result.setProcessID(data.getProcessID());
+        result.setProcessID(data.getId());
         result.setDatabaseName(data.getDatabaseName());
         result.setUsername(data.getUsername());
         result.setHostname(data.getHostname());

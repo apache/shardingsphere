@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 public final class ProcessContext {
     
-    private final String processID;
+    private final String id;
     
     private final String databaseName;
     
@@ -64,7 +64,7 @@ public final class ProcessContext {
     }
     
     private ProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean executing) {
-        processID = executionGroupContext.getReportContext().getProcessID();
+        id = executionGroupContext.getReportContext().getProcessID();
         databaseName = executionGroupContext.getReportContext().getDatabaseName();
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
         username = null == grantee ? null : grantee.getUsername();

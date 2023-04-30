@@ -41,7 +41,7 @@ public final class ProcessReporter {
     public String reportConnect(final Grantee grantee, final String databaseName) {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
         ProcessContext processContext = new ProcessContext(executionGroupContext);
-        ShowProcessListManager.getInstance().putProcessContext(processContext.getProcessID(), processContext);
+        ShowProcessListManager.getInstance().putProcessContext(processContext.getId(), processContext);
         return executionGroupContext.getReportContext().getProcessID();
     }
     
@@ -53,8 +53,8 @@ public final class ProcessReporter {
      */
     public void reportExecute(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         ProcessContext processContext = new ProcessContext(queryContext.getSql(), executionGroupContext);
-        ShowProcessListManager.getInstance().putProcessContext(processContext.getProcessID(), processContext);
-        ShowProcessListManager.getInstance().putProcessStatement(processContext.getProcessID(), processContext.getProcessStatements());
+        ShowProcessListManager.getInstance().putProcessContext(processContext.getId(), processContext);
+        ShowProcessListManager.getInstance().putProcessStatement(processContext.getId(), processContext.getProcessStatements());
     }
     
     /**
