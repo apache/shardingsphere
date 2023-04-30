@@ -46,5 +46,6 @@ public final class Bootstrap {
         parameter.setSchemaTables(Collections.singletonList(SchemaTable.newBuilder().setTable("t_order").build()));
         CDCClient cdcClient = new CDCClient(parameter, records -> log.info("records: {}", records));
         cdcClient.start();
+        
     }
 }
