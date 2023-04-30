@@ -68,14 +68,12 @@ public final class ProcessEngine {
     
     /**
      * Finish execution.
-     * 
-     * @param completedExecutionUnitCount completed execution unit count
      */
-    public void finishExecution(final int completedExecutionUnitCount) {
+    public void finishExecution() {
         if (ExecuteIDContext.isEmpty()) {
             return;
         }
-        reporter.reportComplete(ExecuteIDContext.get(), completedExecutionUnitCount);
+        reporter.reportComplete(ExecuteIDContext.get());
     }
     
     /**
