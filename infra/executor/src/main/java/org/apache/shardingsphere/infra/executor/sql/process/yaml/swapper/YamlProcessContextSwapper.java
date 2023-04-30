@@ -37,7 +37,7 @@ public final class YamlProcessContextSwapper implements YamlConfigurationSwapper
         result.setTotalUnitCount(data.getTotalUnitCount());
         result.setCompletedUnitCount(data.getCompletedUnitCount());
         result.setStartTimeMillis(data.getStartMillis());
-        result.setExecuting(data.isExecuting());
+        result.setIdle(data.isIdle());
         return result;
     }
     

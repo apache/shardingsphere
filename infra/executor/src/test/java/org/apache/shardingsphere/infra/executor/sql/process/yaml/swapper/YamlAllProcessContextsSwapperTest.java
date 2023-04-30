@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupConte
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessListContexts;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessListContexts;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.junit.jupiter.api.Test;
 
@@ -31,9 +31,9 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlAllProcessContextsSwapperTest {
     
@@ -56,7 +56,7 @@ class YamlAllProcessContextsSwapperTest {
         assertThat(actual.getCompletedUnitCount(), is(0));
         assertThat(actual.getTotalUnitCount(), is(0));
         assertThat(actual.getStartTimeMillis(), lessThanOrEqualTo(System.currentTimeMillis()));
-        assertTrue(actual.isExecuting());
+        assertFalse(actual.isIdle());
     }
     
     @Test

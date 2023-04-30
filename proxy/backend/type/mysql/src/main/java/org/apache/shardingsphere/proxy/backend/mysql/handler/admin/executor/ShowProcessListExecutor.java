@@ -98,10 +98,10 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         rowValues.add(yamlProcessContext.getUsername());
         rowValues.add(yamlProcessContext.getHostname());
         rowValues.add(yamlProcessContext.getDatabaseName());
-        rowValues.add(yamlProcessContext.isExecuting() ? "Execute" : "Sleep");
+        rowValues.add(yamlProcessContext.isIdle() ? "Sleep" : "Execute");
         rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - yamlProcessContext.getStartTimeMillis()));
         String sql = null;
-        if (!yamlProcessContext.isExecuting()) {
+        if (yamlProcessContext.isIdle()) {
             rowValues.add("");
         } else {
             int processDoneCount = yamlProcessContext.getCompletedUnitCount();

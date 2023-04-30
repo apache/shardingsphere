@@ -44,5 +44,5 @@ public final class YamlProcessContext implements YamlConfiguration {
     
     private Long startTimeMillis;
     
-    private boolean executing;
+    private boolean idle;
 }

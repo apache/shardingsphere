@@ -53,17 +53,17 @@ public final class ProcessContext {
     
     private long startMillis;
     
-    private volatile boolean executing;
+    private volatile boolean idle;
     
     public ProcessContext(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        this("", executionGroupContext, false);
+        this("", executionGroupContext, true);
     }
     
     public ProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
-        this(sql, executionGroupContext, true);
+        this(sql, executionGroupContext, false);
     }
     
-    private ProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean executing) {
+    private ProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean idle) {
         id = executionGroupContext.getReportContext().getProcessID();
         databaseName = executionGroupContext.getReportContext().getDatabaseName();
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
@@ -74,7 +74,7 @@ public final class ProcessContext {
         completedUnitCount = new AtomicInteger(0);
         this.sql = sql;
         startMillis = System.currentTimeMillis();
-        this.executing = executing;
+        this.idle = idle;
     }
     
     private Collection<Statement> getProcessStatements(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
@@ -111,6 +111,6 @@ public final class ProcessContext {
     public void reset() {
         sql = "";
         startMillis = System.currentTimeMillis();
-        executing = false;
+        idle = true;
     }
 }
