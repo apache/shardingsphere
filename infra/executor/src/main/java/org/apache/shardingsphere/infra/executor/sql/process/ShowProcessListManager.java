@@ -79,7 +79,7 @@ public final class ShowProcessListManager {
      * Get process context.
      * 
      * @param executionID execution ID
-     * @return execute process context
+     * @return process context
      */
     public ProcessContext getProcessContext(final String executionID) {
         return processContexts.get(executionID);

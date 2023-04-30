@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManag
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
 
 /**
- * Execute process reporter cleaner for driver.
+ * Process reporter cleaner for driver.
  */
 public final class DriverProcessReporterCleaner implements ProcessReporterCleaner {
     
