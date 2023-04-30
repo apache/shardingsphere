@@ -64,7 +64,7 @@ public final class ProcessListChangedSubscriber {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
-        Collection<ProcessContext> processContexts = ShowProcessListManager.getInstance().getAllProcessContext();
+        Collection<ProcessContext> processContexts = ShowProcessListManager.getInstance().getAllProcessContexts();
         if (!processContexts.isEmpty()) {
             registryCenter.getRepository().persist(
                     ProcessNode.getProcessListInstancePath(event.getProcessId(), event.getInstanceId()), YamlEngine.marshal(swapper.swapToYamlConfiguration(processContexts)));
