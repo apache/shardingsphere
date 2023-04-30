@@ -63,6 +63,9 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
         register(SqlStdOperatorTable.LIKE);
         register(SqlStdOperatorTable.NOT_LIKE);
         register(SqlStdOperatorTable.PERCENT_REMAINDER);
+        register(SqlStdOperatorTable.IS_NULL);
+        register(SqlStdOperatorTable.IS_NOT_NULL);
+        register(SqlStdOperatorTable.ALL_GT);
     }
     
     private static void register(final SqlOperator sqlOperator) {
@@ -86,10 +89,12 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     
     private List<SqlNode> convertSqlNodes(final BinaryOperationExpression segment) {
         SqlNode left = new ExpressionConverter().convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
-        SqlNode right = new ExpressionConverter().convert(segment.getRight()).orElseThrow(IllegalStateException::new);
         List<SqlNode> result = new LinkedList<>();
         result.add(left);
-        result.addAll(right instanceof SqlNodeList ? ((SqlNodeList) right).getList() : Collections.singletonList(right));
+        if (segment.getRight() != null) {
+            SqlNode right = new ExpressionConverter().convert(segment.getRight()).orElseThrow(IllegalStateException::new);
+            result.addAll(right instanceof SqlNodeList ? ((SqlNodeList) right).getList() : Collections.singletonList(right));
+        }
         return result;
     }
     

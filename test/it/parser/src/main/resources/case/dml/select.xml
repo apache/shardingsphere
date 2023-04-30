@@ -285,10 +285,7 @@
                             <left>
                                 <column name="item_id" start-index="33" stop-index="39" />
                             </left>
-                            <operator>IS</operator>
-                            <right>
-                                <literal-expression value="NOT NULL" start-index="44" stop-index="51" />
-                            </right>
+                            <operator>IS NOT NULL</operator>
                         </binary-operation-expression>
                         <common-expression text="item_id IS NOT NULL" start-index="33" stop-index="51" />
                     </left>
@@ -336,11 +333,7 @@
                             <left>
                                 <column name="item_id" start-index="33" stop-index="39" />
                             </left>
-                            <operator>IS</operator>
-                            <right>
-                                <!-- TODO: literal value should be 'NOT NULL' -->
-                                <literal-expression value="NOT NULL" start-index="44" stop-index="51" />
-                            </right>
+                            <operator>IS NOT NULL</operator>
                         </binary-operation-expression>
                         <common-expression text="item_id IS NOT NULL" start-index="33" stop-index="51" />
                     </left>

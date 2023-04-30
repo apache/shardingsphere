@@ -421,6 +421,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public final ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
         if (null != ctx.IS()) {
             // TODO optimize operatorToken
+            String operator = "IS";
             String rightText = "";
             if (null != ctx.NOT()) {
                 rightText = rightText.concat(ctx.start.getInputStream().getText(new Interval(ctx.NOT().getSymbol().getStartIndex(),
@@ -429,6 +430,10 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             Token operatorToken = null;
             if (null != ctx.NULL()) {
                 operatorToken = ctx.NULL().getSymbol();
+                operator = "IS NULL";
+            }
+            if (null != ctx.NULL() && null != ctx.NOT()) {
+                operator = "IS NOT NULL";
             }
             if (null != ctx.TRUE()) {
                 operatorToken = ctx.TRUE().getSymbol();
@@ -441,7 +446,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 2, ctx.stop.getStopIndex(), rightText);
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
             ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
-            String operator = "IS";
+            if (null != ctx.NULL()) {
+                right = null;
+            }
             return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
         }
         if (null != ctx.comparisonOperator() || null != ctx.SAFE_EQ_()) {
@@ -474,12 +481,17 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     private ASTNode createCompareSegment(final BooleanPrimaryContext ctx) {
         ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
         ExpressionSegment right;
+        String operator;
+        if (null != ctx.ALL()) {
+            operator = null != ctx.SAFE_EQ_() ? ctx.SAFE_EQ_().getText() : ctx.comparisonOperator().getText() + " ALL";
+        } else {
+            operator = null != ctx.SAFE_EQ_() ? ctx.SAFE_EQ_().getText() : ctx.comparisonOperator().getText();
+        }
         if (null != ctx.predicate()) {
             right = (ExpressionSegment) visit(ctx.predicate());
         } else {
             right = new SubqueryExpressionSegment(new SubquerySegment(ctx.subquery().start.getStartIndex(), ctx.subquery().stop.getStopIndex(), (MySQLSelectStatement) visit(ctx.subquery())));
         }
-        String operator = null != ctx.SAFE_EQ_() ? ctx.SAFE_EQ_().getText() : ctx.comparisonOperator().getText();
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }

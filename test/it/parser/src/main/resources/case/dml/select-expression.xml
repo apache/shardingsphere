@@ -643,10 +643,7 @@
                             <owner name="t_order" start-index="28" stop-index="34" />
                         </column>
                     </left>
-                    <operator>IS</operator>
-                    <right>
-                        <literal-expression value="NULL" start-index="46" stop-index="49" />
-                    </right>
+                    <operator>IS NULL</operator>
                 </binary-operation-expression>
             </expr>
         </where>
@@ -667,10 +664,7 @@
                             <owner name="t_order" start-index="28" stop-index="34" />
                         </column>
                     </left>
-                    <operator>IS</operator>
-                    <right>
-                        <literal-expression value="NOT NULL" start-index="46" stop-index="53" />
-                    </right>
+                    <operator>IS NOT NULL</operator>
                 </binary-operation-expression>
             </expr>
         </where>
@@ -743,7 +737,7 @@
                             <owner name="t_order" start-index="28" stop-index="34" />
                         </column>
                     </left>
-                    <operator>&gt;</operator>
+                    <operator>> ALL</operator>
                     <right>
                         <subquery start-index="49" stop-index="98">
                             <select>
