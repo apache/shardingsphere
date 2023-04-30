@@ -77,6 +77,8 @@ public final class EncryptConditionEngine {
         SUPPORTED_COMPARE_OPERATOR.add("<=");
         SUPPORTED_COMPARE_OPERATOR.add("IS");
         SUPPORTED_COMPARE_OPERATOR.add("LIKE");
+        SUPPORTED_COMPARE_OPERATOR.add("IS NULL");
+        SUPPORTED_COMPARE_OPERATOR.add("IS NOT NULL");
     }
     
     /**

@@ -91,7 +91,7 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
         SqlNode left = new ExpressionConverter().convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
         List<SqlNode> result = new LinkedList<>();
         result.add(left);
-        if (segment.getRight() != null) {
+        if (null != segment.getRight()) {
             SqlNode right = new ExpressionConverter().convert(segment.getRight()).orElseThrow(IllegalStateException::new);
             result.addAll(right instanceof SqlNodeList ? ((SqlNodeList) right).getList() : Collections.singletonList(right));
         }
