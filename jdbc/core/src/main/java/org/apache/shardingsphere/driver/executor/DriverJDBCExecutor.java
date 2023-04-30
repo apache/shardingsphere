@@ -50,6 +50,8 @@ public final class DriverJDBCExecutor {
     
     private final MetaDataRefreshEngine metaDataRefreshEngine;
     
+    private final ProcessEngine processEngine = new ProcessEngine();
+    
     public DriverJDBCExecutor(final String databaseName, final ContextManager contextManager, final JDBCExecutor jdbcExecutor) {
         this.databaseName = databaseName;
         this.jdbcExecutor = jdbcExecutor;
@@ -69,7 +71,6 @@ public final class DriverJDBCExecutor {
      */
     public List<QueryResult> executeQuery(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                                           final QueryContext queryContext, final ExecuteQueryCallback callback) throws SQLException {
-        ProcessEngine processEngine = new ProcessEngine();
         try {
             processEngine.initializeExecution(executionGroupContext, queryContext);
             return jdbcExecutor.execute(executionGroupContext, callback);
@@ -90,7 +91,6 @@ public final class DriverJDBCExecutor {
      */
     public int executeUpdate(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                              final QueryContext queryContext, final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Integer> callback) throws SQLException {
-        ProcessEngine processEngine = new ProcessEngine();
         try {
             processEngine.initializeExecution(executionGroupContext, queryContext);
             SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
@@ -130,7 +130,6 @@ public final class DriverJDBCExecutor {
      */
     public boolean execute(final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext, final QueryContext queryContext,
                            final Collection<RouteUnit> routeUnits, final JDBCExecutorCallback<Boolean> callback) throws SQLException {
-        ProcessEngine processEngine = new ProcessEngine();
         try {
             processEngine.initializeExecution(executionGroupContext, queryContext);
             List<Boolean> results = doExecute(executionGroupContext, queryContext.getSqlStatementContext(), routeUnits, callback);

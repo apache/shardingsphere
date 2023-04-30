@@ -51,6 +51,8 @@ public final class ProxyJDBCExecutor {
     
     private final JDBCExecutor jdbcExecutor;
     
+    private final ProcessEngine processEngine = new ProcessEngine();
+    
     /**
      * Execute.
      * 
@@ -63,7 +65,6 @@ public final class ProxyJDBCExecutor {
      */
     public List<ExecuteResult> execute(final QueryContext queryContext, final ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext,
                                        final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
-        ProcessEngine processEngine = new ProcessEngine();
         try {
             MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());

@@ -116,6 +116,8 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     
     private final ShardingSphereData data;
     
+    private final ProcessEngine processEngine = new ProcessEngine();
+    
     @Override
     public Enumerable<Object> executeScalar(final ShardingSphereTable table, final ScanNodeExecutorContext scanContext) {
         return new AbstractEnumerable<Object>() {
@@ -149,7 +151,6 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
     }
     
     private AbstractEnumerable<Object[]> execute(final DatabaseType databaseType, final QueryContext queryContext, final ShardingSphereDatabase database, final ExecutionContext context) {
-        ProcessEngine processEngine = new ProcessEngine();
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext =
                     prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits(), new ExecutionGroupReportContext(database.getName()));
