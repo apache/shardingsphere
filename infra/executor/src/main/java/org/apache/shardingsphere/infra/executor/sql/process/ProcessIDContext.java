@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProcessIDContext {
     
-    private static final TransmittableThreadLocal<String> EXECUTE_ID = new TransmittableThreadLocal<>();
+    private static final TransmittableThreadLocal<String> PROCESS_ID = new TransmittableThreadLocal<>();
     
     /**
      * Judge whether execute ID is empty or not.
@@ -35,7 +35,7 @@ public final class ProcessIDContext {
      * @return whether execute ID is empty or not
      */
     public static boolean isEmpty() {
-        return null == EXECUTE_ID.get();
+        return null == PROCESS_ID.get();
     }
     
     /**
@@ -44,7 +44,7 @@ public final class ProcessIDContext {
      * @return execute ID
      */
     public static String get() {
-        return EXECUTE_ID.get();
+        return PROCESS_ID.get();
     }
     
     /**
@@ -53,13 +53,13 @@ public final class ProcessIDContext {
      * @param executeId execute ID
      */
     public static void set(final String executeId) {
-        EXECUTE_ID.set(executeId);
+        PROCESS_ID.set(executeId);
     }
     
     /**
      * Remove execute ID.
      */
     public static void remove() {
-        EXECUTE_ID.remove();
+        PROCESS_ID.remove();
     }
 }
