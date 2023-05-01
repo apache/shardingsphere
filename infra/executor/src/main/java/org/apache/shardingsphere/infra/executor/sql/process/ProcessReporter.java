@@ -36,7 +36,7 @@ public final class ProcessReporter {
      *
      * @param grantee grantee
      * @param databaseName databaseName
-     * @return execution ID
+     * @return process ID
      */
     public String reportConnect(final Grantee grantee, final String databaseName) {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
