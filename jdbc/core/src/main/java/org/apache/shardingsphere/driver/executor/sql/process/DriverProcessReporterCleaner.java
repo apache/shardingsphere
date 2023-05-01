@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.driver.executor.sql.process;
 
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessReporterCleaner;
-import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
 
 /**
@@ -28,6 +28,6 @@ public final class DriverProcessReporterCleaner implements ProcessReporterCleane
     
     @Override
     public void reset(final ProcessContext context) {
-        ShowProcessListManager.getInstance().removeProcessContext(context.getId());
+        ProcessRegistry.getInstance().removeProcessContext(context.getId());
     }
 }

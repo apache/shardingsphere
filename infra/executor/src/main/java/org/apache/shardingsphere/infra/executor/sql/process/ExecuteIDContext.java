@@ -22,7 +22,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Execute id context.
+ * Execute ID context.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExecuteIDContext {
@@ -30,34 +30,34 @@ public final class ExecuteIDContext {
     private static final TransmittableThreadLocal<String> EXECUTE_ID = new TransmittableThreadLocal<>();
     
     /**
-     * Judge whether execute id is empty or not.
+     * Judge whether execute ID is empty or not.
      *
-     * @return whether execute id is empty or not
+     * @return whether execute ID is empty or not
      */
     public static boolean isEmpty() {
         return null == EXECUTE_ID.get();
     }
     
     /**
-     * Get execute id.
+     * Get execute ID.
      *
-     * @return execute id
+     * @return execute ID
      */
     public static String get() {
         return EXECUTE_ID.get();
     }
     
     /**
-     * Set execute id.
+     * Set execute ID.
      *
-     * @param executeId execute id
+     * @param executeId execute ID
      */
     public static void set(final String executeId) {
         EXECUTE_ID.set(executeId);
     }
     
     /**
-     * Remove execute id.
+     * Remove execute ID.
      */
     public static void remove() {
         EXECUTE_ID.remove();

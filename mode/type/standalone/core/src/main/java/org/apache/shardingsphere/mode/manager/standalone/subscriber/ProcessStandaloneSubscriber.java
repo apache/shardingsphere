@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.standalone.subscriber;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessListContexts;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListContextsSwapper;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -54,7 +54,7 @@ public final class ProcessStandaloneSubscriber {
      */
     @Subscribe
     public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
-        YamlProcessListContexts yamlContexts = swapper.swapToYamlConfiguration(ShowProcessListManager.getInstance().getAllProcessContexts());
+        YamlProcessListContexts yamlContexts = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().getAllProcessContexts());
         eventBusContext.post(new ShowProcessListResponseEvent(yamlContexts.getContexts().isEmpty() ? Collections.emptyList() : Collections.singleton(YamlEngine.marshal(yamlContexts))));
     }
     
@@ -66,7 +66,7 @@ public final class ProcessStandaloneSubscriber {
      */
     @Subscribe
     public void killProcess(final KillProcessRequestEvent event) throws SQLException {
-        ProcessContext processContext = ShowProcessListManager.getInstance().getProcessContext(event.getId());
+        ProcessContext processContext = ProcessRegistry.getInstance().getProcessContext(event.getId());
         if (null == processContext) {
             return;
         }

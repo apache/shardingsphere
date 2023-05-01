@@ -41,7 +41,7 @@ public final class ProcessReporter {
     public String reportConnect(final Grantee grantee, final String databaseName) {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
         ProcessContext processContext = new ProcessContext(executionGroupContext);
-        ShowProcessListManager.getInstance().putProcessContext(processContext.getId(), processContext);
+        ProcessRegistry.getInstance().putProcessContext(processContext.getId(), processContext);
         return executionGroupContext.getReportContext().getProcessID();
     }
     
@@ -53,7 +53,7 @@ public final class ProcessReporter {
      */
     public void reportExecute(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         ProcessContext processContext = new ProcessContext(queryContext.getSql(), executionGroupContext);
-        ShowProcessListManager.getInstance().putProcessContext(processContext.getId(), processContext);
+        ProcessRegistry.getInstance().putProcessContext(processContext.getId(), processContext);
     }
     
     /**
@@ -62,7 +62,7 @@ public final class ProcessReporter {
      * @param processID process ID
      */
     public void reportComplete(final String processID) {
-        ShowProcessListManager.getInstance().getProcessContext(processID).completeExecutionUnit();
+        ProcessRegistry.getInstance().getProcessContext(processID).completeExecutionUnit();
     }
     
     /**
@@ -71,7 +71,7 @@ public final class ProcessReporter {
      * @param processID process ID
      */
     public void reset(final String processID) {
-        ProcessContext context = ShowProcessListManager.getInstance().getProcessContext(processID);
+        ProcessContext context = ProcessRegistry.getInstance().getProcessContext(processID);
         if (null == context) {
             return;
         }
@@ -86,6 +86,6 @@ public final class ProcessReporter {
      * @param processID process ID
      */
     public void remove(final String processID) {
-        ShowProcessListManager.getInstance().removeProcessContext(processID);
+        ProcessRegistry.getInstance().removeProcessContext(processID);
     }
 }
