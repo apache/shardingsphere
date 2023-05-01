@@ -19,72 +19,85 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+
+import java.util.Collections;
 
 /**
  * Process engine.
  */
 public final class ProcessEngine {
     
-    private final ProcessReporter reporter = new ProcessReporter();
-    
     /**
-     * Initialize connection.
+     * Connect.
      *
      * @param grantee grantee
      * @param databaseName database name
      * @return process ID
      */
-    public String initializeConnection(final Grantee grantee, final String databaseName) {
-        return reporter.reportConnect(grantee, databaseName);
+    public String connect(final Grantee grantee, final String databaseName) {
+        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
+        ProcessContext processContext = new ProcessContext(executionGroupContext);
+        ProcessRegistry.getInstance().putProcessContext(processContext.getId(), processContext);
+        return executionGroupContext.getReportContext().getProcessID();
     }
     
     /**
-     * Finish connection.
+     * Disconnect.
      *
      * @param processID process ID
      */
-    public void finishConnection(final String processID) {
-        reporter.remove(processID);
+    public void disconnect(final String processID) {
+        ProcessRegistry.getInstance().removeProcessContext(processID);
+        
     }
     
     /**
-     * Initialize execution.
+     * Execute SQL.
      *
      * @param executionGroupContext execution group context
      * @param queryContext query context
      */
-    public void initializeExecution(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
+    public void executeSQL(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
-            ExecuteIDContext.set(executionGroupContext.getReportContext().getProcessID());
-            reporter.reportExecute(queryContext, executionGroupContext);
+            ProcessIDContext.set(executionGroupContext.getReportContext().getProcessID());
+            ProcessContext processContext = new ProcessContext(queryContext.getSql(), executionGroupContext);
+            ProcessRegistry.getInstance().putProcessContext(processContext.getId(), processContext);
         }
     }
     
     /**
-     * Finish execution.
+     * Complete SQL unit execution.
      */
-    public void finishExecution() {
-        if (ExecuteIDContext.isEmpty()) {
+    public void completeSQLUnitExecution() {
+        if (ProcessIDContext.isEmpty()) {
             return;
         }
-        reporter.reportComplete(ExecuteIDContext.get());
+        ProcessRegistry.getInstance().getProcessContext(ProcessIDContext.get()).completeExecutionUnit();
     }
     
     /**
-     * Clean execution.
+     * Complete SQL execution.
      */
-    public void cleanExecution() {
-        if (ExecuteIDContext.isEmpty()) {
+    public void completeSQLExecution() {
+        if (ProcessIDContext.isEmpty()) {
             return;
         }
-        reporter.reset(ExecuteIDContext.get());
-        ExecuteIDContext.remove();
+        ProcessContext context = ProcessRegistry.getInstance().getProcessContext(ProcessIDContext.get());
+        if (null == context) {
+            return;
+        }
+        for (ProcessReporterCleaner each : ShardingSphereServiceLoader.getServiceInstances(ProcessReporterCleaner.class)) {
+            each.reset(context);
+        }
+        ProcessIDContext.remove();
     }
     
     private boolean isMySQLDDLOrDMLStatement(final SQLStatement sqlStatement) {

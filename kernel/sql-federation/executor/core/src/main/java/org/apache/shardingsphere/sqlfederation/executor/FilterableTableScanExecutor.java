@@ -155,7 +155,7 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext =
                     prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits(), new ExecutionGroupReportContext(database.getName()));
             setParameters(executionGroupContext.getInputGroups());
-            processEngine.initializeExecution(executionGroupContext, context.getQueryContext());
+            processEngine.executeSQL(executionGroupContext, context.getQueryContext());
             List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
             // TODO need to get session context
             MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new ConnectionContext());
@@ -165,7 +165,7 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
         } catch (final SQLException ex) {
             throw new SQLWrapperException(ex);
         } finally {
-            processEngine.cleanExecution();
+            processEngine.completeSQLExecution();
         }
     }
     
