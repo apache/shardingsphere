@@ -27,12 +27,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Show process list manager.
+ * Process registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShowProcessListManager {
+public final class ProcessRegistry {
     
-    private static final ShowProcessListManager INSTANCE = new ShowProcessListManager();
+    private static final ProcessRegistry INSTANCE = new ProcessRegistry();
     
     private final Map<String, ProcessContext> processContexts = new ConcurrentHashMap<>();
     
@@ -44,7 +44,7 @@ public final class ShowProcessListManager {
      *
      * @return show process list manager
      */
-    public static ShowProcessListManager getInstance() {
+    public static ProcessRegistry getInstance() {
         return INSTANCE;
     }
     

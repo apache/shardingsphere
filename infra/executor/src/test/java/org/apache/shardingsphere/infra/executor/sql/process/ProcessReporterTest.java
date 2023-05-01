@@ -37,22 +37,22 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ShowProcessListManager.class)
+@StaticMockSettings(ProcessRegistry.class)
 class ProcessReporterTest {
     
     @Mock
-    private ShowProcessListManager showProcessListManager;
+    private ProcessRegistry processRegistry;
     
     @BeforeEach
     void setUp() {
-        when(ShowProcessListManager.getInstance()).thenReturn(showProcessListManager);
+        when(ProcessRegistry.getInstance()).thenReturn(processRegistry);
     }
     
     @Test
     void assertReportExecute() {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
         new ProcessReporter().reportExecute(new QueryContext(null, null, null), executionGroupContext);
-        verify(showProcessListManager).putProcessContext(eq(executionGroupContext.getReportContext().getProcessID()), any());
+        verify(processRegistry).putProcessContext(eq(executionGroupContext.getReportContext().getProcessID()), any());
     }
     
     @SuppressWarnings("unchecked")
@@ -66,14 +66,14 @@ class ProcessReporterTest {
     
     @Test
     void assertReportUnit() {
-        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
+        when(processRegistry.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
         new ProcessReporter().reportComplete("foo_id");
-        verify(showProcessListManager).getProcessContext("foo_id");
+        verify(processRegistry).getProcessContext("foo_id");
     }
     
     @Test
     void assertReportClean() {
-        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
+        when(processRegistry.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
         new ProcessReporter().reset("foo_id");
     }
 }
