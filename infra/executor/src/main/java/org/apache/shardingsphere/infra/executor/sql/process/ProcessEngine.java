@@ -36,13 +36,13 @@ import java.util.Collections;
 public final class ProcessEngine {
     
     /**
-     * Initialize connection.
+     * Connect.
      *
      * @param grantee grantee
      * @param databaseName database name
      * @return process ID
      */
-    public String initializeConnection(final Grantee grantee, final String databaseName) {
+    public String connect(final Grantee grantee, final String databaseName) {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
         ProcessContext processContext = new ProcessContext(executionGroupContext);
         ProcessRegistry.getInstance().putProcessContext(processContext.getId(), processContext);
@@ -50,22 +50,22 @@ public final class ProcessEngine {
     }
     
     /**
-     * Finish connection.
+     * Disconnect.
      *
      * @param processID process ID
      */
-    public void finishConnection(final String processID) {
+    public void disconnect(final String processID) {
         ProcessRegistry.getInstance().removeProcessContext(processID);
         
     }
     
     /**
-     * Initialize execution.
+     * Execute SQL.
      *
      * @param executionGroupContext execution group context
      * @param queryContext query context
      */
-    public void initializeExecution(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
+    public void executeSQL(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
             ExecuteIDContext.set(executionGroupContext.getReportContext().getProcessID());
             ProcessContext processContext = new ProcessContext(queryContext.getSql(), executionGroupContext);
@@ -74,9 +74,9 @@ public final class ProcessEngine {
     }
     
     /**
-     * Finish execution.
+     * Complete SQL unit execution.
      */
-    public void finishExecution() {
+    public void completeSQLUnitExecution() {
         if (ExecuteIDContext.isEmpty()) {
             return;
         }
@@ -84,9 +84,9 @@ public final class ProcessEngine {
     }
     
     /**
-     * Clean execution.
+     * Complete SQL execution.
      */
-    public void cleanExecution() {
+    public void completeSQLExecution() {
         if (ExecuteIDContext.isEmpty()) {
             return;
         }

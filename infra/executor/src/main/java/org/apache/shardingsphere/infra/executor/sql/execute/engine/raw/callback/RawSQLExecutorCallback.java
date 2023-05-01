@@ -49,7 +49,7 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
         Collection<ExecuteResult> result = callbacks.iterator().next().execute(inputs, isTrunkThread);
         if (!ExecuteIDContext.isEmpty()) {
             for (int i = 0; i < inputs.size(); i++) {
-                processEngine.finishExecution();
+                processEngine.completeSQLUnitExecution();
             }
         }
         return result;
