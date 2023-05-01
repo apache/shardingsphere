@@ -22,9 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
 
-import java.sql.Statement;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,9 +35,6 @@ public final class ShowProcessListManager {
     private static final ShowProcessListManager INSTANCE = new ShowProcessListManager();
     
     private final Map<String, ProcessContext> processContexts = new ConcurrentHashMap<>();
-    
-    @Getter
-    private final Map<String, Collection<Statement>> processStatements = new ConcurrentHashMap<>();
     
     @Getter
     private final Map<String, ShowProcessListLock> locks = new ConcurrentHashMap<>();
@@ -56,62 +51,30 @@ public final class ShowProcessListManager {
     /**
      * Put process context.
      * 
-     * @param executionID execution ID
+     * @param processID process ID
      * @param processContext process context
      */
-    public void putProcessContext(final String executionID, final ProcessContext processContext) {
-        processContexts.put(executionID, processContext);
-    }
-    
-    /**
-     * Put process statements.
-     *
-     * @param executionID execution ID
-     * @param statements statements
-     */
-    public void putProcessStatement(final String executionID, final Collection<Statement> statements) {
-        if (statements.isEmpty()) {
-            return;
-        }
-        processStatements.put(executionID, statements);
+    public void putProcessContext(final String processID, final ProcessContext processContext) {
+        processContexts.put(processID, processContext);
     }
     
     /**
      * Get process context.
      * 
-     * @param executionID execution ID
+     * @param processID process ID
      * @return process context
      */
-    public ProcessContext getProcessContext(final String executionID) {
-        return processContexts.get(executionID);
-    }
-    
-    /**
-     * Get process statement.
-     *
-     * @param executionID execution ID
-     * @return execute statements
-     */
-    public Collection<Statement> getProcessStatement(final String executionID) {
-        return processStatements.getOrDefault(executionID, Collections.emptyList());
+    public ProcessContext getProcessContext(final String processID) {
+        return processContexts.get(processID);
     }
     
     /**
      * Remove process context.
      * 
-     * @param executionID execution ID
+     * @param processID process ID
      */
-    public void removeProcessContext(final String executionID) {
-        processContexts.remove(executionID);
-    }
-    
-    /**
-     * Remove process statement.
-     *
-     * @param executionID execution ID
-     */
-    public void removeProcessStatement(final String executionID) {
-        processStatements.remove(executionID);
+    public void removeProcessContext(final String processID) {
+        processContexts.remove(processID);
     }
     
     /**

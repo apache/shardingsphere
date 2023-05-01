@@ -28,6 +28,6 @@ public final class DriverProcessReporterCleaner implements ProcessReporterCleane
     
     @Override
     public void reset(final ProcessContext context) {
-        ShowProcessListManager.getInstance().removeProcessContext(context.getProcessID());
+        ShowProcessListManager.getInstance().removeProcessContext(context.getId());
     }
 }

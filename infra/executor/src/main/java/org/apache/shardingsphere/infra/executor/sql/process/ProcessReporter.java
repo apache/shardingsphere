@@ -36,13 +36,13 @@ public final class ProcessReporter {
      *
      * @param grantee grantee
      * @param databaseName databaseName
-     * @return execution ID
+     * @return process ID
      */
     public String reportConnect(final Grantee grantee, final String databaseName) {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
         ProcessContext processContext = new ProcessContext(executionGroupContext);
-        ShowProcessListManager.getInstance().putProcessContext(processContext.getProcessID(), processContext);
-        return executionGroupContext.getReportContext().getExecutionID();
+        ShowProcessListManager.getInstance().putProcessContext(processContext.getId(), processContext);
+        return executionGroupContext.getReportContext().getProcessID();
     }
     
     /**
@@ -53,27 +53,25 @@ public final class ProcessReporter {
      */
     public void reportExecute(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         ProcessContext processContext = new ProcessContext(queryContext.getSql(), executionGroupContext);
-        ShowProcessListManager.getInstance().putProcessContext(processContext.getProcessID(), processContext);
-        ShowProcessListManager.getInstance().putProcessStatement(processContext.getProcessID(), processContext.getProcessStatements());
+        ShowProcessListManager.getInstance().putProcessContext(processContext.getId(), processContext);
     }
     
     /**
      * Report complete execution unit.
      *
-     * @param executionID execution ID
+     * @param processID process ID
      */
-    public void reportComplete(final String executionID) {
-        ShowProcessListManager.getInstance().getProcessContext(executionID).completeExecutionUnit();
+    public void reportComplete(final String processID) {
+        ShowProcessListManager.getInstance().getProcessContext(processID).completeExecutionUnit();
     }
     
     /**
      * Reset report.
      *
-     * @param executionID execution ID
+     * @param processID process ID
      */
-    public void reset(final String executionID) {
-        ShowProcessListManager.getInstance().removeProcessStatement(executionID);
-        ProcessContext context = ShowProcessListManager.getInstance().getProcessContext(executionID);
+    public void reset(final String processID) {
+        ProcessContext context = ShowProcessListManager.getInstance().getProcessContext(processID);
         if (null == context) {
             return;
         }
@@ -85,10 +83,9 @@ public final class ProcessReporter {
     /**
      * Remove process context.
      *
-     * @param executionID execution ID
+     * @param processID process ID
      */
-    public void remove(final String executionID) {
-        ShowProcessListManager.getInstance().removeProcessStatement(executionID);
-        ShowProcessListManager.getInstance().removeProcessContext(executionID);
+    public void remove(final String processID) {
+        ShowProcessListManager.getInstance().removeProcessContext(processID);
     }
 }

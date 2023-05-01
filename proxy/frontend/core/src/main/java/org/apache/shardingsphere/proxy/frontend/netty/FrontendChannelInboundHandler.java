@@ -82,7 +82,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
             if (authResult.isFinished()) {
                 connectionSession.setGrantee(new Grantee(authResult.getUsername(), authResult.getHostname()));
                 connectionSession.setCurrentDatabase(authResult.getDatabase());
-                connectionSession.setExecutionId(processEngine.initializeConnection(connectionSession.getGrantee(), connectionSession.getDatabaseName()));
+                connectionSession.setProcessId(processEngine.initializeConnection(connectionSession.getGrantee(), connectionSession.getDatabaseName()));
             }
             return authResult.isFinished();
             // CHECKSTYLE:OFF
@@ -108,7 +108,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     private void closeAllResources() {
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionSession.getConnectionId());
         connectionSession.getBackendConnection().closeAllResources();
-        Optional.ofNullable(connectionSession.getExecutionId()).ifPresent(processEngine::finishConnection);
+        Optional.ofNullable(connectionSession.getProcessId()).ifPresent(processEngine::finishConnection);
         databaseProtocolFrontendEngine.release(connectionSession);
     }
     

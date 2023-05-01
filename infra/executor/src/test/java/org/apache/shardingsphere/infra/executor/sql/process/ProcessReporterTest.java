@@ -52,14 +52,14 @@ class ProcessReporterTest {
     void assertReportExecute() {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
         new ProcessReporter().reportExecute(new QueryContext(null, null, null), executionGroupContext);
-        verify(showProcessListManager).putProcessContext(eq(executionGroupContext.getReportContext().getExecutionID()), any());
+        verify(showProcessListManager).putProcessContext(eq(executionGroupContext.getReportContext().getProcessID()), any());
     }
     
     @SuppressWarnings("unchecked")
     private ExecutionGroupContext<? extends SQLExecutionUnit> mockExecutionGroupContext() {
         ExecutionGroupContext<? extends SQLExecutionUnit> result = mock(ExecutionGroupContext.class);
         ExecutionGroupReportContext reportContext = mock(ExecutionGroupReportContext.class);
-        when(reportContext.getExecutionID()).thenReturn(UUID.randomUUID().toString());
+        when(reportContext.getProcessID()).thenReturn(UUID.randomUUID().toString());
         when(result.getReportContext()).thenReturn(reportContext);
         return result;
     }
@@ -75,6 +75,5 @@ class ProcessReporterTest {
     void assertReportClean() {
         when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
         new ProcessReporter().reset("foo_id");
-        verify(showProcessListManager).removeProcessStatement("foo_id");
     }
 }
