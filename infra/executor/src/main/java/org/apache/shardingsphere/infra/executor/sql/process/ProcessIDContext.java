@@ -21,6 +21,7 @@ import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+// TODO should remove the class, process ID should same with connection ID
 /**
  * Process ID context.
  */
