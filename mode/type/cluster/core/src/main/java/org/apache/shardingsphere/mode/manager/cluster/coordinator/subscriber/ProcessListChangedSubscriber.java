@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListContextsSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
@@ -64,7 +64,7 @@ public final class ProcessListChangedSubscriber {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
-        Collection<ProcessContext> processContexts = ShowProcessListManager.getInstance().getAllProcessContexts();
+        Collection<ProcessContext> processContexts = ProcessRegistry.getInstance().getAllProcessContexts();
         if (!processContexts.isEmpty()) {
             registryCenter.getRepository().persist(
                     ProcessNode.getProcessListInstancePath(event.getProcessId(), event.getInstanceId()), YamlEngine.marshal(swapper.swapToYamlConfiguration(processContexts)));
@@ -83,9 +83,11 @@ public final class ProcessListChangedSubscriber {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
-        Collection<Statement> statements = ShowProcessListManager.getInstance().getProcessStatement(event.getProcessId());
-        for (Statement statement : statements) {
-            statement.cancel();
+        ProcessContext processContext = ProcessRegistry.getInstance().getProcessContext(event.getProcessId());
+        if (null != processContext) {
+            for (Statement each : processContext.getProcessStatements()) {
+                each.cancel();
+            }
         }
         registryCenter.getRepository().delete(ComputeNode.getProcessKillInstanceIdNodePath(event.getInstanceId(), event.getProcessId()));
     }
@@ -97,7 +99,7 @@ public final class ProcessListChangedSubscriber {
      */
     @Subscribe
     public synchronized void completeUnitShowProcessList(final ShowProcessListUnitCompleteEvent event) {
-        ShowProcessListLock lock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessId());
+        ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getProcessId());
         if (null != lock) {
             lock.doNotify();
         }
@@ -110,7 +112,7 @@ public final class ProcessListChangedSubscriber {
      */
     @Subscribe
     public synchronized void completeUnitKillProcessId(final KillProcessIdUnitCompleteEvent event) {
-        ShowProcessListLock lock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessId());
+        ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getProcessId());
         if (null != lock) {
             lock.doNotify();
         }

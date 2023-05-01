@@ -26,42 +26,42 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ExecuteIDContextTest {
+class ProcessIDContextTest {
     
     @AfterEach
     void tearDown() {
-        ExecuteIDContext.remove();
+        ProcessIDContext.remove();
     }
     
     @Test
     void assertIsEmpty() {
-        assertTrue(ExecuteIDContext.isEmpty());
-        ExecuteIDContext.set("123e4567e89b12d3a456426655440000");
-        assertFalse(ExecuteIDContext.isEmpty());
+        assertTrue(ProcessIDContext.isEmpty());
+        ProcessIDContext.set("123e4567e89b12d3a456426655440000");
+        assertFalse(ProcessIDContext.isEmpty());
     }
     
     @Test
     void assertGet() {
-        assertNull(ExecuteIDContext.get());
-        ExecuteIDContext.set("123e4567e89b12d3a456426655440000");
-        assertThat(ExecuteIDContext.get(), is("123e4567e89b12d3a456426655440000"));
+        assertNull(ProcessIDContext.get());
+        ProcessIDContext.set("123e4567e89b12d3a456426655440000");
+        assertThat(ProcessIDContext.get(), is("123e4567e89b12d3a456426655440000"));
     }
     
     @Test
     void assertSet() {
-        assertNull(ExecuteIDContext.get());
-        ExecuteIDContext.set("123e4567e89b12d3a456426655440000");
-        assertThat(ExecuteIDContext.get(), is("123e4567e89b12d3a456426655440000"));
-        ExecuteIDContext.set("123e4567e89b12d3a456426655440001");
-        assertThat(ExecuteIDContext.get(), is("123e4567e89b12d3a456426655440001"));
+        assertNull(ProcessIDContext.get());
+        ProcessIDContext.set("123e4567e89b12d3a456426655440000");
+        assertThat(ProcessIDContext.get(), is("123e4567e89b12d3a456426655440000"));
+        ProcessIDContext.set("123e4567e89b12d3a456426655440001");
+        assertThat(ProcessIDContext.get(), is("123e4567e89b12d3a456426655440001"));
     }
     
     @Test
     void assertRemove() {
-        assertNull(ExecuteIDContext.get());
-        ExecuteIDContext.set("123e4567e89b12d3a456426655440000");
-        assertThat(ExecuteIDContext.get(), is("123e4567e89b12d3a456426655440000"));
-        ExecuteIDContext.remove();
-        assertNull(ExecuteIDContext.get());
+        assertNull(ProcessIDContext.get());
+        ProcessIDContext.set("123e4567e89b12d3a456426655440000");
+        assertThat(ProcessIDContext.get(), is("123e4567e89b12d3a456426655440000"));
+        ProcessIDContext.remove();
+        assertNull(ProcessIDContext.get());
     }
 }

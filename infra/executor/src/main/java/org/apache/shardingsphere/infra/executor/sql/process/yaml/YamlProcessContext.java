@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlProcessContext implements YamlConfiguration {
     
-    private String executionID;
+    private String processID;
     
     private String databaseName;
     
@@ -44,5 +44,5 @@ public final class YamlProcessContext implements YamlConfiguration {
     
     private Long startTimeMillis;
     
-    private boolean executing;
+    private boolean idle;
 }

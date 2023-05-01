@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
-import org.apache.shardingsphere.mode.event.process.KillProcessIdRequestEvent;
+import org.apache.shardingsphere.mode.event.process.KillProcessRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
@@ -96,8 +96,8 @@ public final class ProcessRegistrySubscriber {
      * @param event get children request event.
      */
     @Subscribe
-    public void killProcessId(final KillProcessIdRequestEvent event) {
-        String processId = event.getProcessId();
+    public void killProcessId(final KillProcessRequestEvent event) {
+        String processId = event.getId();
         boolean killProcessIdIsComplete = false;
         Collection<String> processKillPaths = getProcessKillPaths(processId);
         try {
@@ -118,7 +118,7 @@ public final class ProcessRegistrySubscriber {
     
     private boolean waitAllNodeDataReady(final String processId, final Collection<String> paths) {
         ShowProcessListLock lock = new ShowProcessListLock();
-        ShowProcessListManager.getInstance().getLocks().put(processId, lock);
+        ProcessRegistry.getInstance().getLocks().put(processId, lock);
         lock.lock();
         try {
             while (!isReady(paths)) {
@@ -129,7 +129,7 @@ public final class ProcessRegistrySubscriber {
             return true;
         } finally {
             lock.unlock();
-            ShowProcessListManager.getInstance().getLocks().remove(processId);
+            ProcessRegistry.getInstance().getLocks().remove(processId);
         }
     }
     

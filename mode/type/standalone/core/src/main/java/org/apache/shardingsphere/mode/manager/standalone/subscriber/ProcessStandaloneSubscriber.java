@@ -18,19 +18,18 @@
 package org.apache.shardingsphere.mode.manager.standalone.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessListContexts;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListContextsSwapper;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.process.KillProcessIdRequestEvent;
+import org.apache.shardingsphere.mode.event.process.KillProcessRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListResponseEvent;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -55,21 +54,24 @@ public final class ProcessStandaloneSubscriber {
      */
     @Subscribe
     public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
-        YamlProcessListContexts yamlContexts = swapper.swapToYamlConfiguration(ShowProcessListManager.getInstance().getAllProcessContexts());
+        YamlProcessListContexts yamlContexts = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().getAllProcessContexts());
         eventBusContext.post(new ShowProcessListResponseEvent(yamlContexts.getContexts().isEmpty() ? Collections.emptyList() : Collections.singleton(YamlEngine.marshal(yamlContexts))));
     }
     
     /**
-     * Kill process id.
+     * Kill process.
      *
-     * @param event kill process id request event.
+     * @param event kill process request event.
+     * @throws SQLException SQL exception
      */
     @Subscribe
-    @SneakyThrows(SQLException.class)
-    public void killProcessId(final KillProcessIdRequestEvent event) {
-        Collection<Statement> statements = ShowProcessListManager.getInstance().getProcessStatement(event.getProcessId());
-        for (Statement statement : statements) {
-            statement.cancel();
+    public void killProcess(final KillProcessRequestEvent event) throws SQLException {
+        ProcessContext processContext = ProcessRegistry.getInstance().getProcessContext(event.getId());
+        if (null == processContext) {
+            return;
+        }
+        for (Statement each : processContext.getProcessStatements()) {
+            each.cancel();
         }
     }
 }

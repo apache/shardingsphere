@@ -18,9 +18,15 @@
 package org.apache.shardingsphere.infra.executor.sql.process;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.SetAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -37,44 +44,46 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ShowProcessListManager.class)
-class ProcessReporterTest {
+@StaticMockSettings(ProcessRegistry.class)
+class ProcessEngineTest {
     
     @Mock
-    private ShowProcessListManager showProcessListManager;
+    private ProcessRegistry processRegistry;
     
     @BeforeEach
     void setUp() {
-        when(ShowProcessListManager.getInstance()).thenReturn(showProcessListManager);
+        when(ProcessRegistry.getInstance()).thenReturn(processRegistry);
     }
     
     @Test
-    void assertReportExecute() {
+    void assertExecuteSQL() {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
-        new ProcessReporter().reportExecute(new QueryContext(null, null, null), executionGroupContext);
-        verify(showProcessListManager).putProcessContext(eq(executionGroupContext.getReportContext().getExecutionID()), any());
+        new ProcessEngine().executeSQL(executionGroupContext, new QueryContext(new UpdateStatementContext(getSQLStatement()), null, null));
+        verify(processRegistry).putProcessContext(eq(executionGroupContext.getReportContext().getProcessID()), any());
     }
     
     @SuppressWarnings("unchecked")
     private ExecutionGroupContext<? extends SQLExecutionUnit> mockExecutionGroupContext() {
         ExecutionGroupContext<? extends SQLExecutionUnit> result = mock(ExecutionGroupContext.class);
         ExecutionGroupReportContext reportContext = mock(ExecutionGroupReportContext.class);
-        when(reportContext.getExecutionID()).thenReturn(UUID.randomUUID().toString());
+        when(reportContext.getProcessID()).thenReturn(UUID.randomUUID().toString());
         when(result.getReportContext()).thenReturn(reportContext);
         return result;
     }
     
-    @Test
-    void assertReportUnit() {
-        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
-        new ProcessReporter().reportComplete("foo_id");
-        verify(showProcessListManager).getProcessContext("foo_id");
+    private MySQLUpdateStatement getSQLStatement() {
+        MySQLUpdateStatement result = new MySQLUpdateStatement();
+        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
+        result.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
+        return result;
     }
     
     @Test
-    void assertReportClean() {
-        when(showProcessListManager.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
-        new ProcessReporter().reset("foo_id");
-        verify(showProcessListManager).removeProcessStatement("foo_id");
+    void assertCompleteSQLUnitExecution() {
+        ProcessIDContext.set("foo_id");
+        when(processRegistry.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
+        new ProcessEngine().completeSQLUnitExecution();
+        verify(processRegistry).getProcessContext("foo_id");
+        ProcessIDContext.remove();
     }
 }

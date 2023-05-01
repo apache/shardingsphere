@@ -70,7 +70,7 @@ public final class ProxyJDBCExecutor {
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
             DatabaseType protocolType = database.getProtocolType();
             Map<String, DatabaseType> storageTypes = database.getResourceMetaData().getStorageTypes();
-            processEngine.initializeExecution(executionGroupContext, queryContext);
+            processEngine.executeSQL(executionGroupContext, queryContext);
             SQLStatementContext<?> context = queryContext.getSqlStatementContext();
             return jdbcExecutor.execute(executionGroupContext,
                     ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, storageTypes, context.getSqlStatement(), databaseConnector, isReturnGeneratedKeys, isExceptionThrown,
@@ -78,7 +78,7 @@ public final class ProxyJDBCExecutor {
                     ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, storageTypes, context.getSqlStatement(), databaseConnector, isReturnGeneratedKeys, isExceptionThrown,
                             false));
         } finally {
-            processEngine.cleanExecution();
+            processEngine.completeSQLExecution();
         }
     }
 }

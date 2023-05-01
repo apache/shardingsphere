@@ -71,7 +71,7 @@ public final class ConnectionSession {
     
     private final RequiredSessionVariableRecorder requiredSessionVariableRecorder = new RequiredSessionVariableRecorder();
     
-    private volatile String executionId;
+    private volatile String processId;
     
     private QueryContext queryContext;
     
