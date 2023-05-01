@@ -22,10 +22,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Execute ID context.
+ * Process ID context.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecuteIDContext {
+public final class ProcessIDContext {
     
     private static final TransmittableThreadLocal<String> EXECUTE_ID = new TransmittableThreadLocal<>();
     

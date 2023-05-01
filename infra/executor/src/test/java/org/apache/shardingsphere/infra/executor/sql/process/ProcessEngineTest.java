@@ -80,10 +80,10 @@ class ProcessEngineTest {
     
     @Test
     void assertCompleteSQLUnitExecution() {
-        ExecuteIDContext.set("foo_id");
+        ProcessIDContext.set("foo_id");
         when(processRegistry.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
         new ProcessEngine().completeSQLUnitExecution();
         verify(processRegistry).getProcessContext("foo_id");
-        ExecuteIDContext.remove();
+        ProcessIDContext.remove();
     }
 }

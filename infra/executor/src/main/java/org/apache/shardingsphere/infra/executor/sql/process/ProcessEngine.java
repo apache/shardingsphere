@@ -67,7 +67,7 @@ public final class ProcessEngine {
      */
     public void executeSQL(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
-            ExecuteIDContext.set(executionGroupContext.getReportContext().getProcessID());
+            ProcessIDContext.set(executionGroupContext.getReportContext().getProcessID());
             ProcessContext processContext = new ProcessContext(queryContext.getSql(), executionGroupContext);
             ProcessRegistry.getInstance().putProcessContext(processContext.getId(), processContext);
         }
@@ -77,27 +77,27 @@ public final class ProcessEngine {
      * Complete SQL unit execution.
      */
     public void completeSQLUnitExecution() {
-        if (ExecuteIDContext.isEmpty()) {
+        if (ProcessIDContext.isEmpty()) {
             return;
         }
-        ProcessRegistry.getInstance().getProcessContext(ExecuteIDContext.get()).completeExecutionUnit();
+        ProcessRegistry.getInstance().getProcessContext(ProcessIDContext.get()).completeExecutionUnit();
     }
     
     /**
      * Complete SQL execution.
      */
     public void completeSQLExecution() {
-        if (ExecuteIDContext.isEmpty()) {
+        if (ProcessIDContext.isEmpty()) {
             return;
         }
-        ProcessContext context = ProcessRegistry.getInstance().getProcessContext(ExecuteIDContext.get());
+        ProcessContext context = ProcessRegistry.getInstance().getProcessContext(ProcessIDContext.get());
         if (null == context) {
             return;
         }
         for (ProcessReporterCleaner each : ShardingSphereServiceLoader.getServiceInstances(ProcessReporterCleaner.class)) {
             each.reset(context);
         }
-        ExecuteIDContext.remove();
+        ProcessIDContext.remove();
     }
     
     private boolean isMySQLDDLOrDMLStatement(final SQLStatement sqlStatement) {
