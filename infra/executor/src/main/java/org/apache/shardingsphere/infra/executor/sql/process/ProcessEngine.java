@@ -19,19 +19,21 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
+import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
+import java.util.Collections;
+
 /**
  * Process engine.
  */
 public final class ProcessEngine {
-    
-    private final ProcessReporter reporter = new ProcessReporter();
     
     /**
      * Initialize connection.
@@ -41,7 +43,10 @@ public final class ProcessEngine {
      * @return process ID
      */
     public String initializeConnection(final Grantee grantee, final String databaseName) {
-        return reporter.reportConnect(grantee, databaseName);
+        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
+        ProcessContext processContext = new ProcessContext(executionGroupContext);
+        ProcessRegistry.getInstance().putProcessContext(processContext.getId(), processContext);
+        return executionGroupContext.getReportContext().getProcessID();
     }
     
     /**
@@ -50,7 +55,8 @@ public final class ProcessEngine {
      * @param processID process ID
      */
     public void finishConnection(final String processID) {
-        reporter.remove(processID);
+        ProcessRegistry.getInstance().removeProcessContext(processID);
+        
     }
     
     /**
@@ -62,7 +68,8 @@ public final class ProcessEngine {
     public void initializeExecution(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
             ExecuteIDContext.set(executionGroupContext.getReportContext().getProcessID());
-            reporter.reportExecute(queryContext, executionGroupContext);
+            ProcessContext processContext = new ProcessContext(queryContext.getSql(), executionGroupContext);
+            ProcessRegistry.getInstance().putProcessContext(processContext.getId(), processContext);
         }
     }
     
@@ -73,7 +80,7 @@ public final class ProcessEngine {
         if (ExecuteIDContext.isEmpty()) {
             return;
         }
-        reporter.reportComplete(ExecuteIDContext.get());
+        ProcessRegistry.getInstance().getProcessContext(ExecuteIDContext.get()).completeExecutionUnit();
     }
     
     /**
@@ -83,7 +90,13 @@ public final class ProcessEngine {
         if (ExecuteIDContext.isEmpty()) {
             return;
         }
-        reporter.reset(ExecuteIDContext.get());
+        ProcessContext context = ProcessRegistry.getInstance().getProcessContext(ExecuteIDContext.get());
+        if (null == context) {
+            return;
+        }
+        for (ProcessReporterCleaner each : ShardingSphereServiceLoader.getServiceInstances(ProcessReporterCleaner.class)) {
+            each.reset(context);
+        }
         ExecuteIDContext.remove();
     }
     
