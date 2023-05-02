@@ -35,6 +35,7 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessUnitCompleteEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -99,27 +100,6 @@ class ProcessListChangedSubscriberTest {
     }
     
     @Test
-    void assertCompleteShowProcessUnit() {
-        String processId = "foo_process_id";
-        ShowProcessListLock lock = new ShowProcessListLock();
-        ProcessRegistry.getInstance().getLocks().put(processId, lock);
-        long startTime = System.currentTimeMillis();
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
-        executorService.submit(() -> {
-            try {
-                Thread.sleep(50L);
-            } catch (final InterruptedException ignored) {
-            }
-            subscriber.completeShowProcessUnit(new ShowProcessUnitCompleteEvent(processId));
-        });
-        lockAndAwaitDefaultTime(lock);
-        long currentTime = System.currentTimeMillis();
-        assertTrue(currentTime >= startTime + 50L);
-        assertTrue(currentTime <= startTime + 5000L);
-        ProcessRegistry.getInstance().getLocks().remove(processId);
-    }
-    
-    @Test
     void assertTriggerShowProcessList() throws ReflectiveOperationException {
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         ProcessRegistry.getInstance().putProcessContext("foo_execution_id", mock(ProcessContext.class));
@@ -138,6 +118,48 @@ class ProcessListChangedSubscriberTest {
         subscriber.killProcess(new KillProcessEvent(instanceId, processId));
         ClusterPersistRepository repository = ((RegistryCenter) Plugins.getMemberAccessor().get(ProcessListChangedSubscriber.class.getDeclaredField("registryCenter"), subscriber)).getRepository();
         verify(repository).delete("/nodes/compute_nodes/process_kill/" + instanceId + ":foo_process_id");
+    }
+    
+    @Test
+    void assertCompleteShowProcessUnit() {
+        String processId = "foo_process_id";
+        ShowProcessListLock lock = new ShowProcessListLock();
+        ProcessRegistry.getInstance().getLocks().put(processId, lock);
+        long startMillis = System.currentTimeMillis();
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        executorService.submit(() -> {
+            try {
+                Thread.sleep(50L);
+            } catch (final InterruptedException ignored) {
+            }
+            subscriber.completeShowProcessUnit(new ShowProcessUnitCompleteEvent(processId));
+        });
+        lockAndAwaitDefaultTime(lock);
+        long currentTime = System.currentTimeMillis();
+        assertTrue(currentTime >= startMillis + 50L);
+        assertTrue(currentTime <= startMillis + 5000L);
+        ProcessRegistry.getInstance().getLocks().remove(processId);
+    }
+    
+    @Test
+    void assertCompleteKillProcessUnit() {
+        String processId = "foo_process_id";
+        ShowProcessListLock lock = new ShowProcessListLock();
+        ProcessRegistry.getInstance().getLocks().put(processId, lock);
+        long startMillis = System.currentTimeMillis();
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        executorService.submit(() -> {
+            try {
+                Thread.sleep(50L);
+            } catch (final InterruptedException ignored) {
+            }
+            subscriber.completeKillProcessUnit(new KillProcessUnitCompleteEvent(processId));
+        });
+        lockAndAwaitDefaultTime(lock);
+        long currentTime = System.currentTimeMillis();
+        assertTrue(currentTime >= startMillis + 50L);
+        assertTrue(currentTime <= startMillis + 5000L);
+        ProcessRegistry.getInstance().getLocks().remove(processId);
     }
     
     private void lockAndAwaitDefaultTime(final ShowProcessListLock lock) {
