@@ -31,13 +31,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProcessRegistry.class)
-class ProcessStandaloneSubscriberTest {
+class StandaloneProcessListSubscriberTest {
     
     @Test
-    void assertLoadShowProcessListData() {
+    void assertPostShowProcessListData() {
         ProcessRegistry processRegistry = mock(ProcessRegistry.class);
         when(ProcessRegistry.getInstance()).thenReturn(processRegistry);
-        new ProcessStandaloneSubscriber(new EventBusContext()).loadShowProcessListData(mock(ShowProcessListRequestEvent.class));
+        new StandaloneProcessListSubscriber(new EventBusContext()).postShowProcessListData(mock(ShowProcessListRequestEvent.class));
         verify(processRegistry).getAllProcessContexts();
     }
 }

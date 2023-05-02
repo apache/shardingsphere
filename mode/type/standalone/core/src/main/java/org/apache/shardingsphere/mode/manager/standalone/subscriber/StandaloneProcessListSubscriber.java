@@ -33,27 +33,27 @@ import java.sql.Statement;
 import java.util.Collections;
 
 /**
- * Process standalone subscriber.
+ * Standalone processlist subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class ProcessStandaloneSubscriber {
+public final class StandaloneProcessListSubscriber {
     
     private final EventBusContext eventBusContext;
     
     private final YamlProcessListContextsSwapper swapper = new YamlProcessListContextsSwapper();
     
-    public ProcessStandaloneSubscriber(final EventBusContext eventBusContext) {
+    public StandaloneProcessListSubscriber(final EventBusContext eventBusContext) {
         this.eventBusContext = eventBusContext;
         eventBusContext.register(this);
     }
     
     /**
-     * Load show process list data.
+     * Post show process list data.
      *
-     * @param event get children request event
+     * @param event show process list request event
      */
     @Subscribe
-    public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
+    public void postShowProcessListData(final ShowProcessListRequestEvent event) {
         YamlProcessListContexts yamlContexts = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().getAllProcessContexts());
         eventBusContext.post(new ShowProcessListResponseEvent(Collections.singleton(YamlEngine.marshal(yamlContexts))));
     }

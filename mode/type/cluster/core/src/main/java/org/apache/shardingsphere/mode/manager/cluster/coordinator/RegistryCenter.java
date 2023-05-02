@@ -35,7 +35,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.subscriber.ComputeNodeStatusSubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber.StorageNodeStatusSubscriber;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessRegistrySubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ClusterProcessListSubscriber;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.lock.holder.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.lock.impl.props.DefaultLockTypedProperties;
@@ -99,7 +99,7 @@ public final class RegistryCenter {
         new ComputeNodeStatusSubscriber(this, repository);
         new ClusterStatusSubscriber(repository, eventBusContext);
         new StorageNodeStatusSubscriber(repository, eventBusContext);
-        new ProcessRegistrySubscriber(repository, eventBusContext);
+        new ClusterProcessListSubscriber(repository, eventBusContext);
         new ShardingSphereSchemaDataRegistrySubscriber(repository, globalLockPersistService, eventBusContext);
     }
     
