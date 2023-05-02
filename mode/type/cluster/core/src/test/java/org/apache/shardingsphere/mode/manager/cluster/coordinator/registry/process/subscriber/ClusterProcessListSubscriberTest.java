@@ -31,7 +31,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Collections;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -55,8 +54,7 @@ class ClusterProcessListSubscriberTest {
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.JDBC))).thenReturn(Collections.emptyList());
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
         when(repository.getDirectly(any())).thenReturn(null);
-        ShowProcessListRequestEvent showProcessListRequestEvent = mock(ShowProcessListRequestEvent.class);
-        clusterProcessListSubscriber.postShowProcessListData(showProcessListRequestEvent);
+        clusterProcessListSubscriber.postShowProcessListData(new ShowProcessListRequestEvent());
         verify(repository).persist(any(), any());
     }
 }
