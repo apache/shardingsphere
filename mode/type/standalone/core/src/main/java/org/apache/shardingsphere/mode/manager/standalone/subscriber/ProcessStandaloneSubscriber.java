@@ -50,18 +50,18 @@ public final class ProcessStandaloneSubscriber {
     /**
      * Load show process list data.
      *
-     * @param event get children request event.
+     * @param event get children request event
      */
     @Subscribe
     public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
         YamlProcessListContexts yamlContexts = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().getAllProcessContexts());
-        eventBusContext.post(new ShowProcessListResponseEvent(yamlContexts.getContexts().isEmpty() ? Collections.emptyList() : Collections.singleton(YamlEngine.marshal(yamlContexts))));
+        eventBusContext.post(new ShowProcessListResponseEvent(Collections.singleton(YamlEngine.marshal(yamlContexts))));
     }
     
     /**
      * Kill process.
      *
-     * @param event kill process request event.
+     * @param event kill process request event
      * @throws SQLException SQL exception
      */
     @Subscribe
