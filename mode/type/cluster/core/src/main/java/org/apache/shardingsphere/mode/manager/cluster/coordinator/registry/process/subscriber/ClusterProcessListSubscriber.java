@@ -91,12 +91,12 @@ public final class ClusterProcessListSubscriber {
     }
     
     /**
-     * Kill process id.
+     * Kill process.
      *
-     * @param event get children request event.
+     * @param event kill process request event
      */
     @Subscribe
-    public void killProcessId(final KillProcessRequestEvent event) {
+    public void killProcess(final KillProcessRequestEvent event) {
         String processId = event.getId();
         boolean killProcessIdIsComplete = false;
         Collection<String> processKillPaths = getProcessKillPaths(processId);
