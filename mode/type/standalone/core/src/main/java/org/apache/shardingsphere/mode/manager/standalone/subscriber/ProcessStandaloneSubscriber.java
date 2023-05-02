@@ -48,12 +48,12 @@ public final class ProcessStandaloneSubscriber {
     }
     
     /**
-     * Load show process list data.
+     * Post show process list data.
      *
-     * @param event get children request event
+     * @param event show process list request event
      */
     @Subscribe
-    public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
+    public void postShowProcessListData(final ShowProcessListRequestEvent event) {
         YamlProcessListContexts yamlContexts = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().getAllProcessContexts());
         eventBusContext.post(new ShowProcessListResponseEvent(Collections.singleton(YamlEngine.marshal(yamlContexts))));
     }
