@@ -128,7 +128,6 @@ class ShardingSphereTableTest {
         ShardingSphereIndex index2 = new ShardingSphereIndex("foo_index_2");
         shardingSphereTable.putIndex(index1);
         shardingSphereTable.putIndex(index2);
-        
         assertTrue(shardingSphereTable.containsIndex("foo_index_1"));
         assertTrue(shardingSphereTable.containsIndex("foo_index_2"));
         assertFalse(shardingSphereTable.containsIndex("invalid"));
