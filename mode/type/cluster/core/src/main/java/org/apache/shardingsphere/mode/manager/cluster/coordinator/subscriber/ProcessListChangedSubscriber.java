@@ -55,12 +55,12 @@ public final class ProcessListChangedSubscriber {
     }
     
     /**
-     * Trigger show process list.
+     * Report local processes.
      *
      * @param event show process list trigger event
      */
     @Subscribe
-    public synchronized void triggerShowProcessList(final ShowProcessListTriggerEvent event) {
+    public synchronized void reportLocalProcesses(final ShowProcessListTriggerEvent event) {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
