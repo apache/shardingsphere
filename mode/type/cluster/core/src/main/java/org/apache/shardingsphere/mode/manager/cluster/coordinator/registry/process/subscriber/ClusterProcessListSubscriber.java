@@ -27,6 +27,7 @@ import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
 import org.apache.shardingsphere.mode.event.process.KillProcessRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListResponseEvent;
+import org.apache.shardingsphere.mode.process.ProcessListSubscriber;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
@@ -39,7 +40,7 @@ import java.util.stream.Stream;
  * Cluster processlist subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class ClusterProcessListSubscriber {
+public final class ClusterProcessListSubscriber implements ProcessListSubscriber {
     
     private final PersistRepository repository;
     
@@ -51,11 +52,7 @@ public final class ClusterProcessListSubscriber {
         eventBusContext.register(this);
     }
     
-    /**
-     * Post show process list data.
-     *
-     * @param event show process list request event
-     */
+    @Override
     @Subscribe
     public void postShowProcessListData(final ShowProcessListRequestEvent event) {
         String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
@@ -85,11 +82,7 @@ public final class ClusterProcessListSubscriber {
                 .collect(Collectors.toList());
     }
     
-    /**
-     * Kill process.
-     *
-     * @param event kill process request event
-     */
+    @Override
     @Subscribe
     public void killProcess(final KillProcessRequestEvent event) {
         String processId = event.getId();
