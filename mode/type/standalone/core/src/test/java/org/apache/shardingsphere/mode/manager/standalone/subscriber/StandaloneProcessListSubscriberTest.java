@@ -37,7 +37,7 @@ class StandaloneProcessListSubscriberTest {
     void assertPostShowProcessListData() {
         ProcessRegistry processRegistry = mock(ProcessRegistry.class);
         when(ProcessRegistry.getInstance()).thenReturn(processRegistry);
-        new StandaloneProcessListSubscriber(new EventBusContext()).postShowProcessListData(mock(ShowProcessListRequestEvent.class));
+        new StandaloneProcessListSubscriber(new EventBusContext()).postShowProcessListData(new ShowProcessListRequestEvent());
         verify(processRegistry).getAllProcessContexts();
     }
 }

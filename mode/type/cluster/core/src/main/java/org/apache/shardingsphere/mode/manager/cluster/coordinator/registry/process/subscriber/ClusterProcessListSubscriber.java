@@ -23,15 +23,14 @@ import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessList
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
 import org.apache.shardingsphere.mode.event.process.KillProcessRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListResponseEvent;
-import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
+import org.apache.shardingsphere.mode.process.ProcessListSubscriber;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -41,7 +40,7 @@ import java.util.stream.Stream;
  * Cluster processlist subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class ClusterProcessListSubscriber {
+public final class ClusterProcessListSubscriber implements ProcessListSubscriber {
     
     private final PersistRepository repository;
     
@@ -53,20 +52,16 @@ public final class ClusterProcessListSubscriber {
         eventBusContext.register(this);
     }
     
-    /**
-     * Load show process list data.
-     *
-     * @param event get children request event.
-     */
+    @Override
     @Subscribe
-    public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
+    public void postShowProcessListData(final ShowProcessListRequestEvent event) {
         String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
         boolean triggerIsComplete = false;
         Collection<String> triggerPaths = getTriggerPaths(processId);
         try {
             triggerPaths.forEach(each -> repository.persist(each, ""));
             triggerIsComplete = waitAllNodeDataReady(processId, triggerPaths);
-            sendShowProcessList(processId);
+            postShowProcessListData(processId);
         } finally {
             repository.delete(ProcessNode.getProcessIdPath(processId));
             if (!triggerIsComplete) {
@@ -75,26 +70,19 @@ public final class ClusterProcessListSubscriber {
         }
     }
     
+    private void postShowProcessListData(final String processId) {
+        Collection<String> yamlProcessListContexts = repository.getChildrenKeys(ProcessNode.getProcessIdPath(processId)).stream()
+                .map(each -> repository.getDirectly(ProcessNode.getProcessListInstancePath(processId, each))).collect(Collectors.toList());
+        eventBusContext.post(new ShowProcessListResponseEvent(yamlProcessListContexts));
+    }
+    
     private Collection<String> getTriggerPaths(final String processId) {
         return Stream.of(InstanceType.values())
                 .flatMap(each -> repository.getChildrenKeys(ComputeNode.getOnlineNodePath(each)).stream().map(onlinePath -> ComputeNode.getProcessTriggerInstanceIdNodePath(onlinePath, processId)))
                 .collect(Collectors.toList());
     }
     
-    private void sendShowProcessList(final String processId) {
-        List<String> childrenKeys = repository.getChildrenKeys(ProcessNode.getProcessIdPath(processId));
-        Collection<String> batchProcessContexts = new LinkedList<>();
-        for (String each : childrenKeys) {
-            batchProcessContexts.add(repository.getDirectly(ProcessNode.getProcessListInstancePath(processId, each)));
-        }
-        eventBusContext.post(new ShowProcessListResponseEvent(batchProcessContexts));
-    }
-    
-    /**
-     * Kill process.
-     *
-     * @param event kill process request event
-     */
+    @Override
     @Subscribe
     public void killProcess(final KillProcessRequestEvent event) {
         String processId = event.getId();

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.process.KillProcessRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListResponseEvent;
+import org.apache.shardingsphere.mode.process.ProcessListSubscriber;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -36,7 +37,7 @@ import java.util.Collections;
  * Standalone processlist subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class StandaloneProcessListSubscriber {
+public final class StandaloneProcessListSubscriber implements ProcessListSubscriber {
     
     private final EventBusContext eventBusContext;
     
@@ -47,23 +48,14 @@ public final class StandaloneProcessListSubscriber {
         eventBusContext.register(this);
     }
     
-    /**
-     * Post show process list data.
-     *
-     * @param event show process list request event
-     */
+    @Override
     @Subscribe
     public void postShowProcessListData(final ShowProcessListRequestEvent event) {
-        YamlProcessListContexts yamlContexts = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().getAllProcessContexts());
-        eventBusContext.post(new ShowProcessListResponseEvent(Collections.singleton(YamlEngine.marshal(yamlContexts))));
+        YamlProcessListContexts yamlProcessListContexts = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().getAllProcessContexts());
+        eventBusContext.post(new ShowProcessListResponseEvent(Collections.singleton(YamlEngine.marshal(yamlProcessListContexts))));
     }
     
-    /**
-     * Kill process.
-     *
-     * @param event kill process request event
-     * @throws SQLException SQL exception
-     */
+    @Override
     @Subscribe
     public void killProcess(final KillProcessRequestEvent event) throws SQLException {
         ProcessContext processContext = ProcessRegistry.getInstance().getProcessContext(event.getId());
