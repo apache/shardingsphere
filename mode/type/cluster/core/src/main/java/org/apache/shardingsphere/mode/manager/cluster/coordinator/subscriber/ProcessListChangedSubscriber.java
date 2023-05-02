@@ -27,10 +27,10 @@ import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessIdUnitCompleteEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessUnitCompleteEvent;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -55,12 +55,12 @@ public final class ProcessListChangedSubscriber {
     }
     
     /**
-     * Trigger show process list.
+     * Report local processes.
      *
      * @param event show process list trigger event
      */
     @Subscribe
-    public synchronized void triggerShowProcessList(final ShowProcessListTriggerEvent event) {
+    public synchronized void reportLocalProcesses(final ShowProcessListTriggerEvent event) {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
@@ -73,13 +73,13 @@ public final class ProcessListChangedSubscriber {
     }
     
     /**
-     * Kill process id.
+     * Kill process.
      *
      * @param event kill process id event
      * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void killProcessId(final KillProcessIdEvent event) throws SQLException {
+    public synchronized void killProcess(final KillProcessEvent event) throws SQLException {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
@@ -93,12 +93,12 @@ public final class ProcessListChangedSubscriber {
     }
     
     /**
-     * Complete unit show process list.
+     * Complete show process unit.
      *
-     * @param event show process list unit complete event
+     * @param event show process unit complete event
      */
     @Subscribe
-    public synchronized void completeUnitShowProcessList(final ShowProcessListUnitCompleteEvent event) {
+    public synchronized void completeShowProcessUnit(final ShowProcessUnitCompleteEvent event) {
         ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getProcessId());
         if (null != lock) {
             lock.doNotify();
@@ -106,12 +106,12 @@ public final class ProcessListChangedSubscriber {
     }
     
     /**
-     * Complete unit kill process id.
+     * Complete to kill process unit.
      *
-     * @param event kill process id unit complete event
+     * @param event kill process unit complete event
      */
     @Subscribe
-    public synchronized void completeUnitKillProcessId(final KillProcessIdUnitCompleteEvent event) {
+    public synchronized void completeKillProcessUnit(final KillProcessUnitCompleteEvent event) {
         ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getProcessId());
         if (null != lock) {
             lock.doNotify();
