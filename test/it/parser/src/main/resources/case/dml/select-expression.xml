@@ -2288,4 +2288,28 @@
             <simple-table name="DUAL" start-index="44" stop-index="47" />
         </from>
     </select>
+
+    <select sql-case-id="select_between_expression">
+        <projections start-index="7" stop-index="44">
+            <expression-projection text="item_id BETWEEN 1 AND order_id" start-index="7" stop-index="36">
+                <expr>
+                    <between-expression start-index="7" stop-index="36">
+                        <left>
+                            <column start-index="7" stop-index="13" name="item_id" />
+                        </left>
+                        <between-expr>
+                            <literal-expression start-index="23" stop-index="23" value="1" />
+                        </between-expr>
+                        <and-expr>
+                            <column start-index="29" stop-index="36" name="order_id" />
+                        </and-expr>
+                    </between-expression>
+                </expr>
+            </expression-projection>
+            <column-projection start-index="39" stop-index="44" name="status" />
+        </projections>
+        <from>
+            <simple-table name="t_order_item" start-index="51" stop-index="62" />
+        </from>
+    </select>
 </sql-parser-test-cases>
