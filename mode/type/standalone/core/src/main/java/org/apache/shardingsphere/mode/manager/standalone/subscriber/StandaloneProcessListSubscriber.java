@@ -33,16 +33,16 @@ import java.sql.Statement;
 import java.util.Collections;
 
 /**
- * Process standalone subscriber.
+ * Standalone processlist subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class ProcessStandaloneSubscriber {
+public final class StandaloneProcessListSubscriber {
     
     private final EventBusContext eventBusContext;
     
     private final YamlProcessListContextsSwapper swapper = new YamlProcessListContextsSwapper();
     
-    public ProcessStandaloneSubscriber(final EventBusContext eventBusContext) {
+    public StandaloneProcessListSubscriber(final EventBusContext eventBusContext) {
         this.eventBusContext = eventBusContext;
         eventBusContext.register(this);
     }
