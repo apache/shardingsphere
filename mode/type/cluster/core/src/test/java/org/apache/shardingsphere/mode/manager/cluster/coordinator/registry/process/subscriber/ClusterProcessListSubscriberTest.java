@@ -56,7 +56,7 @@ class ClusterProcessListSubscriberTest {
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
         when(repository.getDirectly(any())).thenReturn(null);
         ShowProcessListRequestEvent showProcessListRequestEvent = mock(ShowProcessListRequestEvent.class);
-        clusterProcessListSubscriber.loadShowProcessListData(showProcessListRequestEvent);
+        clusterProcessListSubscriber.postShowProcessListData(showProcessListRequestEvent);
         verify(repository).persist(any(), any());
     }
 }

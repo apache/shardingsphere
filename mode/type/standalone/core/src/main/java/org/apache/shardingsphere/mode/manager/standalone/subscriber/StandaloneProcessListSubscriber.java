@@ -54,8 +54,8 @@ public final class StandaloneProcessListSubscriber {
      */
     @Subscribe
     public void postShowProcessListData(final ShowProcessListRequestEvent event) {
-        YamlProcessListContexts yamlContexts = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().getAllProcessContexts());
-        eventBusContext.post(new ShowProcessListResponseEvent(Collections.singleton(YamlEngine.marshal(yamlContexts))));
+        YamlProcessListContexts yamlProcessListContexts = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().getAllProcessContexts());
+        eventBusContext.post(new ShowProcessListResponseEvent(Collections.singleton(YamlEngine.marshal(yamlProcessListContexts))));
     }
     
     /**
