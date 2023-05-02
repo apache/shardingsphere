@@ -38,16 +38,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Process registry subscriber.
+ * Cluster processlist subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class ProcessRegistrySubscriber {
+public final class ClusterProcessListSubscriber {
     
     private final PersistRepository repository;
     
     private final EventBusContext eventBusContext;
     
-    public ProcessRegistrySubscriber(final PersistRepository repository, final EventBusContext eventBusContext) {
+    public ClusterProcessListSubscriber(final PersistRepository repository, final EventBusContext eventBusContext) {
         this.repository = repository;
         this.eventBusContext = eventBusContext;
         eventBusContext.register(this);

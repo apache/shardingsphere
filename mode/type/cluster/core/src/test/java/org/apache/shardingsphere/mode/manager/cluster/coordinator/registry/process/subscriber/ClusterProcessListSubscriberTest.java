@@ -36,18 +36,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ProcessRegistrySubscriberTest {
+class ClusterProcessListSubscriberTest {
     
     @Mock
     private ClusterPersistRepository repository;
     
     private final EventBusContext eventBusContext = new EventBusContext();
     
-    private ProcessRegistrySubscriber processRegistrySubscriber;
+    private ClusterProcessListSubscriber clusterProcessListSubscriber;
     
     @BeforeEach
     void setUp() {
-        processRegistrySubscriber = new ProcessRegistrySubscriber(repository, eventBusContext);
+        clusterProcessListSubscriber = new ClusterProcessListSubscriber(repository, eventBusContext);
     }
     
     @Test
@@ -56,7 +56,7 @@ class ProcessRegistrySubscriberTest {
         when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
         when(repository.getDirectly(any())).thenReturn(null);
         ShowProcessListRequestEvent showProcessListRequestEvent = mock(ShowProcessListRequestEvent.class);
-        processRegistrySubscriber.loadShowProcessListData(showProcessListRequestEvent);
+        clusterProcessListSubscriber.loadShowProcessListData(showProcessListRequestEvent);
         verify(repository).persist(any(), any());
     }
 }
