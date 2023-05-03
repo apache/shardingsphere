@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupConte
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
@@ -90,13 +89,13 @@ public final class ProcessEngine {
         if (ProcessIDContext.isEmpty()) {
             return;
         }
-        ProcessContext context = ProcessRegistry.getInstance().getProcessContext(ProcessIDContext.get());
-        if (null == context) {
+        ProcessContext processContext = ProcessRegistry.getInstance().getProcessContext(ProcessIDContext.get());
+        if (null == processContext) {
             return;
         }
-        for (ProcessReporterCleaner each : ShardingSphereServiceLoader.getServiceInstances(ProcessReporterCleaner.class)) {
-            each.reset(context);
-        }
+        ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
+                Collections.emptyList(), new ExecutionGroupReportContext(processContext.getDatabaseName(), new Grantee(processContext.getUsername(), processContext.getHostname())));
+        ProcessRegistry.getInstance().putProcessContext(ProcessIDContext.get(), new ProcessContext(executionGroupContext));
         ProcessIDContext.remove();
     }
     
