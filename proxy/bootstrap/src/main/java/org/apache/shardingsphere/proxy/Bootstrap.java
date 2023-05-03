@@ -39,8 +39,15 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Bootstrap {
-
-    public static void main( String[] args) throws IOException, SQLException {
+    
+    /**
+     * Main entrance.
+     *
+     * @param args startup arguments
+     * @throws IOException IO exception
+     * @throws SQLException SQL exception
+     */
+    public static void main(final String[] args) throws IOException, SQLException {
         BootstrapArguments bootstrapArgs = new BootstrapArguments(args);
         YamlProxyConfiguration yamlConfig = ProxyConfigurationLoader.load(bootstrapArgs.getConfigurationPath());
         int port = bootstrapArgs.getPort().orElseGet(() -> new ConfigurationProperties(yamlConfig.getServerConfiguration().getProps()).getValue(ConfigurationPropertyKey.PROXY_DEFAULT_PORT));
@@ -49,11 +56,9 @@ public final class Bootstrap {
         Optional.ofNullable((Integer) yamlConfig.getServerConfiguration().getProps().get(ConfigurationPropertyKey.CDC_SERVER_PORT.getKey()))
                 .ifPresent(cdcPort -> new CDCServer(addresses, cdcPort).start());
         ProxySSLContext.init();
+        ProxySSLContext.init();
         ShardingSphereProxy shardingSphereProxy = new ShardingSphereProxy();
         bootstrapArgs.getSocketPath().ifPresent(shardingSphereProxy::start);
         shardingSphereProxy.start(port, addresses);
-        
-        
-        
     }
 }
