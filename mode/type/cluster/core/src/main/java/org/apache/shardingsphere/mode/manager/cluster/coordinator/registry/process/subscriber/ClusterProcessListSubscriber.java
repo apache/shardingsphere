@@ -55,30 +55,30 @@ public final class ClusterProcessListSubscriber implements ProcessListSubscriber
     @Override
     @Subscribe
     public void postShowProcessListData(final ShowProcessListRequestEvent event) {
-        String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
-        boolean triggerIsComplete = false;
-        Collection<String> triggerPaths = getTriggerPaths(processId);
+        String taskId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
+        boolean isTriggerCompleted = false;
+        Collection<String> triggerPaths = getTriggerPaths(taskId);
         try {
             triggerPaths.forEach(each -> repository.persist(each, ""));
-            triggerIsComplete = waitAllNodeDataReady(processId, triggerPaths);
-            postShowProcessListData(processId);
+            isTriggerCompleted = waitAllNodeDataReady(taskId, triggerPaths);
+            postShowProcessListData(taskId);
         } finally {
-            repository.delete(ProcessNode.getProcessIdPath(processId));
-            if (!triggerIsComplete) {
+            repository.delete(ProcessNode.getProcessIdPath(taskId));
+            if (!isTriggerCompleted) {
                 triggerPaths.forEach(repository::delete);
             }
         }
     }
     
-    private void postShowProcessListData(final String processId) {
-        Collection<String> yamlProcessListContexts = repository.getChildrenKeys(ProcessNode.getProcessIdPath(processId)).stream()
-                .map(each -> repository.getDirectly(ProcessNode.getProcessListInstancePath(processId, each))).collect(Collectors.toList());
+    private void postShowProcessListData(final String taskId) {
+        Collection<String> yamlProcessListContexts = repository.getChildrenKeys(ProcessNode.getProcessIdPath(taskId)).stream()
+                .map(each -> repository.getDirectly(ProcessNode.getProcessListInstancePath(taskId, each))).collect(Collectors.toList());
         eventBusContext.post(new ShowProcessListResponseEvent(yamlProcessListContexts));
     }
     
-    private Collection<String> getTriggerPaths(final String processId) {
+    private Collection<String> getTriggerPaths(final String taskId) {
         return Stream.of(InstanceType.values())
-                .flatMap(each -> repository.getChildrenKeys(ComputeNode.getOnlineNodePath(each)).stream().map(onlinePath -> ComputeNode.getProcessTriggerInstanceIdNodePath(onlinePath, processId)))
+                .flatMap(each -> repository.getChildrenKeys(ComputeNode.getOnlineNodePath(each)).stream().map(onlinePath -> ComputeNode.getProcessTriggerInstanceNodePath(onlinePath, taskId)))
                 .collect(Collectors.toList());
     }
     
