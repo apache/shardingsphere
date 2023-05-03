@@ -22,11 +22,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Show process instance complete event.
+ * Report local processes completed event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowProcessInstanceCompleteEvent implements GovernanceEvent {
+public final class ReportLocalProcessesCompletedEvent implements GovernanceEvent {
     
     private final String taskId;
 }

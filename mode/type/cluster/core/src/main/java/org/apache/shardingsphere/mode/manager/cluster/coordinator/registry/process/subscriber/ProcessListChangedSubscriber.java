@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessInstanceCompleteEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessInstanceCompleteEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 
 import java.sql.SQLException;
@@ -73,6 +73,19 @@ public final class ProcessListChangedSubscriber {
     }
     
     /**
+     * Complete to report local processes.
+     *
+     * @param event report local processes completed event
+     */
+    @Subscribe
+    public synchronized void completeToReportLocalProcesses(final ReportLocalProcessesCompletedEvent event) {
+        ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getTaskId());
+        if (null != lock) {
+            lock.doNotify();
+        }
+    }
+    
+    /**
      * Kill process.
      *
      * @param event kill process id event
@@ -93,25 +106,12 @@ public final class ProcessListChangedSubscriber {
     }
     
     /**
-     * Complete show process instance.
-     *
-     * @param event show process instance complete event
-     */
-    @Subscribe
-    public synchronized void completeShowProcessInstance(final ShowProcessInstanceCompleteEvent event) {
-        ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getTaskId());
-        if (null != lock) {
-            lock.doNotify();
-        }
-    }
-    
-    /**
      * Complete to kill process instance.
      *
      * @param event kill process instance complete event
      */
     @Subscribe
-    public synchronized void completeKillProcessInstance(final KillProcessInstanceCompleteEvent event) {
+    public synchronized void completeToKillProcessInstance(final KillProcessInstanceCompleteEvent event) {
         ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getProcessId());
         if (null != lock) {
             lock.doNotify();

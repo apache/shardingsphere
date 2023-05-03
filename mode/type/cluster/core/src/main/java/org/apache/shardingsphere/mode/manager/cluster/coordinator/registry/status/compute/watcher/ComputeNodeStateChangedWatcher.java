@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessInstanceCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessInstanceCompleteEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
@@ -117,7 +117,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
             return Optional.of(new ShowProcessListTriggerEvent(matcher.group(1), matcher.group(2)));
         }
         if (Type.DELETED == event.getType()) {
-            return Optional.of(new ShowProcessInstanceCompleteEvent(matcher.group(2)));
+            return Optional.of(new ReportLocalProcessesCompletedEvent(matcher.group(2)));
         }
         return Optional.empty();
     }
