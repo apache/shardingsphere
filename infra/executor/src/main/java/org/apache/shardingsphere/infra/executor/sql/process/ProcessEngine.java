@@ -43,8 +43,8 @@ public final class ProcessEngine {
      */
     public String connect(final Grantee grantee, final String databaseName) {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
-        ProcessContext processContext = new ProcessContext(executionGroupContext);
-        ProcessRegistry.getInstance().putProcessContext(processContext.getId(), processContext);
+        Process process = new Process(executionGroupContext);
+        ProcessRegistry.getInstance().putProcess(process.getId(), process);
         return executionGroupContext.getReportContext().getProcessID();
     }
     
@@ -54,7 +54,7 @@ public final class ProcessEngine {
      * @param processID process ID
      */
     public void disconnect(final String processID) {
-        ProcessRegistry.getInstance().removeProcessContext(processID);
+        ProcessRegistry.getInstance().removeProcess(processID);
         
     }
     
@@ -67,8 +67,8 @@ public final class ProcessEngine {
     public void executeSQL(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
             ProcessIDContext.set(executionGroupContext.getReportContext().getProcessID());
-            ProcessContext processContext = new ProcessContext(queryContext.getSql(), executionGroupContext);
-            ProcessRegistry.getInstance().putProcessContext(processContext.getId(), processContext);
+            Process process = new Process(queryContext.getSql(), executionGroupContext);
+            ProcessRegistry.getInstance().putProcess(process.getId(), process);
         }
     }
     
@@ -79,7 +79,7 @@ public final class ProcessEngine {
         if (ProcessIDContext.isEmpty()) {
             return;
         }
-        ProcessRegistry.getInstance().getProcessContext(ProcessIDContext.get()).completeExecutionUnit();
+        ProcessRegistry.getInstance().getProcess(ProcessIDContext.get()).completeExecutionUnit();
     }
     
     /**
@@ -89,13 +89,13 @@ public final class ProcessEngine {
         if (ProcessIDContext.isEmpty()) {
             return;
         }
-        ProcessContext processContext = ProcessRegistry.getInstance().getProcessContext(ProcessIDContext.get());
-        if (null == processContext) {
+        Process process = ProcessRegistry.getInstance().getProcess(ProcessIDContext.get());
+        if (null == process) {
             return;
         }
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
-                Collections.emptyList(), new ExecutionGroupReportContext(processContext.getDatabaseName(), new Grantee(processContext.getUsername(), processContext.getHostname())));
-        ProcessRegistry.getInstance().putProcessContext(ProcessIDContext.get(), new ProcessContext(executionGroupContext));
+                Collections.emptyList(), new ExecutionGroupReportContext(process.getDatabaseName(), new Grantee(process.getUsername(), process.getHostname())));
+        ProcessRegistry.getInstance().putProcess(ProcessIDContext.get(), new Process(executionGroupContext));
         ProcessIDContext.remove();
     }
     

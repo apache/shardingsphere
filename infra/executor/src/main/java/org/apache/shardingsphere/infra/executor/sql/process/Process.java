@@ -30,10 +30,10 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Process context.
+ * Process.
  */
 @Getter
-public final class ProcessContext {
+public final class Process {
     
     private final String id;
     
@@ -55,15 +55,15 @@ public final class ProcessContext {
     
     private final boolean idle;
     
-    public ProcessContext(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+    public Process(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         this("", executionGroupContext, true);
     }
     
-    public ProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+    public Process(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         this(sql, executionGroupContext, false);
     }
     
-    private ProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean idle) {
+    private Process(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean idle) {
         id = executionGroupContext.getReportContext().getProcessID();
         startMillis = System.currentTimeMillis();
         this.sql = sql;

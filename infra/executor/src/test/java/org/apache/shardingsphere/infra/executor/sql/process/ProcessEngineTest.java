@@ -59,7 +59,7 @@ class ProcessEngineTest {
     void assertExecuteSQL() {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
         new ProcessEngine().executeSQL(executionGroupContext, new QueryContext(new UpdateStatementContext(getSQLStatement()), null, null));
-        verify(processRegistry).putProcessContext(eq(executionGroupContext.getReportContext().getProcessID()), any());
+        verify(processRegistry).putProcess(eq(executionGroupContext.getReportContext().getProcessID()), any());
     }
     
     @SuppressWarnings("unchecked")
@@ -81,9 +81,9 @@ class ProcessEngineTest {
     @Test
     void assertCompleteSQLUnitExecution() {
         ProcessIDContext.set("foo_id");
-        when(processRegistry.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
+        when(processRegistry.getProcess("foo_id")).thenReturn(mock(Process.class));
         new ProcessEngine().completeSQLUnitExecution();
-        verify(processRegistry).getProcessContext("foo_id");
+        verify(processRegistry).getProcess("foo_id");
         ProcessIDContext.remove();
     }
 }

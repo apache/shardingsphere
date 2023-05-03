@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proc
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -102,18 +102,18 @@ class ProcessListChangedSubscriberTest {
     @Test
     void assertReportLocalProcesses() throws ReflectiveOperationException {
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
-        ProcessRegistry.getInstance().putProcessContext("foo_execution_id", mock(ProcessContext.class));
-        String processId = "foo_process_id";
+        ProcessRegistry.getInstance().putProcess("foo_id", mock(Process.class));
+        String processId = "foo_id";
         subscriber.reportLocalProcesses(new ShowProcessListTriggerEvent(instanceId, processId));
         ClusterPersistRepository repository = ((RegistryCenter) Plugins.getMemberAccessor().get(ProcessListChangedSubscriber.class.getDeclaredField("registryCenter"), subscriber)).getRepository();
-        verify(repository).persist("/execution_nodes/foo_process_id/" + instanceId,
-                "contexts:" + System.lineSeparator() + "- completedUnitCount: 0\n  idle: false\n  startTimeMillis: 0\n  totalUnitCount: 0" + System.lineSeparator());
-        verify(repository).delete("/nodes/compute_nodes/process_trigger/" + instanceId + ":foo_process_id");
+        verify(repository).persist("/execution_nodes/foo_id/" + instanceId,
+                "processes:" + System.lineSeparator() + "- completedUnitCount: 0\n  idle: false\n  startMillis: 0\n  totalUnitCount: 0" + System.lineSeparator());
+        verify(repository).delete("/nodes/compute_nodes/process_trigger/" + instanceId + ":foo_id");
     }
     
     @Test
     void assertCompleteToReportLocalProcesses() {
-        String taskId = "foo_process_id";
+        String taskId = "foo_id";
         ShowProcessListLock lock = new ShowProcessListLock();
         ProcessRegistry.getInstance().getLocks().put(taskId, lock);
         long startMillis = System.currentTimeMillis();
@@ -135,15 +135,15 @@ class ProcessListChangedSubscriberTest {
     @Test
     void assertKillProcess() throws SQLException, ReflectiveOperationException {
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
-        String processId = "foo_process_id";
+        String processId = "foo_id";
         subscriber.killProcess(new KillProcessEvent(instanceId, processId));
         ClusterPersistRepository repository = ((RegistryCenter) Plugins.getMemberAccessor().get(ProcessListChangedSubscriber.class.getDeclaredField("registryCenter"), subscriber)).getRepository();
-        verify(repository).delete("/nodes/compute_nodes/process_kill/" + instanceId + ":foo_process_id");
+        verify(repository).delete("/nodes/compute_nodes/process_kill/" + instanceId + ":foo_id");
     }
     
     @Test
     void assertCompleteToKillProcessInstance() {
-        String processId = "foo_process_id";
+        String processId = "foo_id";
         ShowProcessListLock lock = new ShowProcessListLock();
         ProcessRegistry.getInstance().getLocks().put(processId, lock);
         long startMillis = System.currentTimeMillis();
