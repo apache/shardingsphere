@@ -28,9 +28,9 @@ import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessUnitCompleteEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessInstanceCompleteEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessInstanceCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessUnitCompleteEvent;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -67,9 +67,9 @@ public final class ProcessListChangedSubscriber {
         Collection<ProcessContext> processContexts = ProcessRegistry.getInstance().getAllProcessContexts();
         if (!processContexts.isEmpty()) {
             registryCenter.getRepository().persist(
-                    ProcessNode.getProcessListInstancePath(event.getProcessId(), event.getInstanceId()), YamlEngine.marshal(swapper.swapToYamlConfiguration(processContexts)));
+                    ProcessNode.getProcessListInstancePath(event.getTaskId(), event.getInstanceId()), YamlEngine.marshal(swapper.swapToYamlConfiguration(processContexts)));
         }
-        registryCenter.getRepository().delete(ComputeNode.getProcessTriggerInstanceNodePath(event.getInstanceId(), event.getProcessId()));
+        registryCenter.getRepository().delete(ComputeNode.getProcessTriggerInstanceNodePath(event.getInstanceId(), event.getTaskId()));
     }
     
     /**
@@ -93,25 +93,25 @@ public final class ProcessListChangedSubscriber {
     }
     
     /**
-     * Complete show process unit.
+     * Complete show process instance.
      *
-     * @param event show process unit complete event
+     * @param event show process instance complete event
      */
     @Subscribe
-    public synchronized void completeShowProcessUnit(final ShowProcessUnitCompleteEvent event) {
-        ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getProcessId());
+    public synchronized void completeShowProcessInstance(final ShowProcessInstanceCompleteEvent event) {
+        ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getTaskId());
         if (null != lock) {
             lock.doNotify();
         }
     }
     
     /**
-     * Complete to kill process unit.
+     * Complete to kill process instance.
      *
-     * @param event kill process unit complete event
+     * @param event kill process instance complete event
      */
     @Subscribe
-    public synchronized void completeKillProcessUnit(final KillProcessUnitCompleteEvent event) {
+    public synchronized void completeKillProcessInstance(final KillProcessInstanceCompleteEvent event) {
         ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getProcessId());
         if (null != lock) {
             lock.doNotify();
