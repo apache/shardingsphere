@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node;
+package org.apache.shardingsphere.metadata.persist.node;
 
-import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
