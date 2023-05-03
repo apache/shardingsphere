@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mode.manager.standalone.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessListContexts;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListContextsSwapper;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.process.KillProcessRequestEvent;
@@ -41,7 +41,7 @@ public final class StandaloneProcessListSubscriber implements ProcessListSubscri
     
     private final EventBusContext eventBusContext;
     
-    private final YamlProcessListContextsSwapper swapper = new YamlProcessListContextsSwapper();
+    private final YamlProcessListSwapper swapper = new YamlProcessListSwapper();
     
     public StandaloneProcessListSubscriber(final EventBusContext eventBusContext) {
         this.eventBusContext = eventBusContext;
@@ -51,18 +51,18 @@ public final class StandaloneProcessListSubscriber implements ProcessListSubscri
     @Override
     @Subscribe
     public void postShowProcessListData(final ShowProcessListRequestEvent event) {
-        YamlProcessListContexts yamlProcessListContexts = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().getAllProcessContexts());
-        eventBusContext.post(new ShowProcessListResponseEvent(Collections.singleton(YamlEngine.marshal(yamlProcessListContexts))));
+        YamlProcessList yamlProcessList = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().getAllProcesses());
+        eventBusContext.post(new ShowProcessListResponseEvent(Collections.singleton(YamlEngine.marshal(yamlProcessList))));
     }
     
     @Override
     @Subscribe
     public void killProcess(final KillProcessRequestEvent event) throws SQLException {
-        ProcessContext processContext = ProcessRegistry.getInstance().getProcessContext(event.getId());
-        if (null == processContext) {
+        Process process = ProcessRegistry.getInstance().getProcess(event.getId());
+        if (null == process) {
             return;
         }
-        for (Statement each : processContext.getProcessStatements()) {
+        for (Statement each : process.getProcessStatements()) {
             each.cancel();
         }
     }

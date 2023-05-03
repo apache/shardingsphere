@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListContextsSwapper;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
@@ -46,7 +46,7 @@ public final class ProcessListChangedSubscriber {
     
     private final ContextManager contextManager;
     
-    private final YamlProcessListContextsSwapper swapper = new YamlProcessListContextsSwapper();
+    private final YamlProcessListSwapper swapper = new YamlProcessListSwapper();
     
     public ProcessListChangedSubscriber(final RegistryCenter registryCenter, final ContextManager contextManager) {
         this.registryCenter = registryCenter;
@@ -64,10 +64,10 @@ public final class ProcessListChangedSubscriber {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
-        Collection<ProcessContext> processContexts = ProcessRegistry.getInstance().getAllProcessContexts();
-        if (!processContexts.isEmpty()) {
+        Collection<Process> processes = ProcessRegistry.getInstance().getAllProcesses();
+        if (!processes.isEmpty()) {
             registryCenter.getRepository().persist(
-                    ProcessNode.getProcessListInstancePath(event.getTaskId(), event.getInstanceId()), YamlEngine.marshal(swapper.swapToYamlConfiguration(processContexts)));
+                    ProcessNode.getProcessListInstancePath(event.getTaskId(), event.getInstanceId()), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
         }
         registryCenter.getRepository().delete(ComputeNode.getProcessTriggerInstanceNodePath(event.getInstanceId(), event.getTaskId()));
     }
@@ -96,9 +96,9 @@ public final class ProcessListChangedSubscriber {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
-        ProcessContext processContext = ProcessRegistry.getInstance().getProcessContext(event.getProcessId());
-        if (null != processContext) {
-            for (Statement each : processContext.getProcessStatements()) {
+        Process process = ProcessRegistry.getInstance().getProcess(event.getProcessId());
+        if (null != process) {
+            for (Statement each : process.getProcessStatements()) {
                 each.cancel();
             }
         }

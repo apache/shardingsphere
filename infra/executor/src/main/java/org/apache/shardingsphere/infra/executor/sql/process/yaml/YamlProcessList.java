@@ -25,11 +25,11 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Process list contexts for YAML.
+ * YAML process list.
  */
 @Getter
 @Setter
-public final class YamlProcessListContexts implements YamlConfiguration {
+public final class YamlProcessList implements YamlConfiguration {
     
-    private Collection<YamlProcessContext> contexts = new LinkedList<>();
+    private Collection<YamlProcess> processes = new LinkedList<>();
 }

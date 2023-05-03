@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupReportContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcess;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.junit.jupiter.api.Test;
 
@@ -34,27 +34,27 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class YamlProcessContextSwapperTest {
+class YamlProcessSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
         ExecutionGroupReportContext reportContext = new ExecutionGroupReportContext("foo_db", new Grantee("root", "localhost"));
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
-        ProcessContext processContext = new ProcessContext("SELECT 1", executionGroupContext);
-        YamlProcessContext actual = new YamlProcessContextSwapper().swapToYamlConfiguration(processContext);
-        assertNotNull(actual.getProcessID());
+        Process process = new Process("SELECT 1", executionGroupContext);
+        YamlProcess actual = new YamlProcessSwapper().swapToYamlConfiguration(process);
+        assertNotNull(actual.getId());
+        assertThat(actual.getStartMillis(), lessThanOrEqualTo(System.currentTimeMillis()));
+        assertThat(actual.getSql(), is("SELECT 1"));
         assertThat(actual.getDatabaseName(), is("foo_db"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getHostname(), is("localhost"));
-        assertThat(actual.getSql(), is("SELECT 1"));
         assertThat(actual.getCompletedUnitCount(), is(0));
         assertThat(actual.getTotalUnitCount(), is(0));
-        assertThat(actual.getStartTimeMillis(), lessThanOrEqualTo(System.currentTimeMillis()));
         assertFalse(actual.isIdle());
     }
     
     @Test
     void assertSwapToObject() {
-        assertThrows(UnsupportedOperationException.class, () -> new YamlProcessContextSwapper().swapToObject(new YamlProcessContext()));
+        assertThrows(UnsupportedOperationException.class, () -> new YamlProcessSwapper().swapToObject(new YamlProcess()));
     }
 }

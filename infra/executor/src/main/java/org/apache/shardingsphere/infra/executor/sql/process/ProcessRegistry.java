@@ -34,7 +34,7 @@ public final class ProcessRegistry {
     
     private static final ProcessRegistry INSTANCE = new ProcessRegistry();
     
-    private final Map<String, ProcessContext> processContexts = new ConcurrentHashMap<>();
+    private final Map<String, Process> processes = new ConcurrentHashMap<>();
     
     @Getter
     private final Map<String, ShowProcessListLock> locks = new ConcurrentHashMap<>();
@@ -49,40 +49,40 @@ public final class ProcessRegistry {
     }
     
     /**
-     * Put process context.
+     * Put process.
      * 
      * @param processID process ID
-     * @param processContext process context
+     * @param process process
      */
-    public void putProcessContext(final String processID, final ProcessContext processContext) {
-        processContexts.put(processID, processContext);
+    public void putProcess(final String processID, final Process process) {
+        processes.put(processID, process);
     }
     
     /**
-     * Get process context.
+     * Get process.
      * 
      * @param processID process ID
-     * @return process context
+     * @return process
      */
-    public ProcessContext getProcessContext(final String processID) {
-        return processContexts.get(processID);
+    public Process getProcess(final String processID) {
+        return processes.get(processID);
     }
     
     /**
-     * Remove process context.
+     * Remove process.
      * 
      * @param processID process ID
      */
-    public void removeProcessContext(final String processID) {
-        processContexts.remove(processID);
+    public void removeProcess(final String processID) {
+        processes.remove(processID);
     }
     
     /**
-     * Get all process contexts.
+     * Get all process.
      * 
-     * @return all process contexts
+     * @return all processes
      */
-    public Collection<ProcessContext> getAllProcessContexts() {
-        return processContexts.values();
+    public Collection<Process> getAllProcesses() {
+        return processes.values();
     }
 }
