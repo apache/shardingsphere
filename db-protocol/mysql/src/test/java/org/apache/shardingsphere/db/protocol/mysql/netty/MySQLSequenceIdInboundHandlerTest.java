@@ -34,11 +34,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class MySQLSequenceIDInboundHandlerTest {
+class MySQLSequenceIdInboundHandlerTest {
     
     @Test
     void assertChannelReadWithFlowControl() {
-        EmbeddedChannel channel = new EmbeddedChannel(new FixtureOutboundHandler(), new ProxyFlowControlHandler(), new MySQLSequenceIDInboundHandler(), new FixtureInboundHandler());
+        EmbeddedChannel channel = new EmbeddedChannel(new FixtureOutboundHandler(), new ProxyFlowControlHandler(), new MySQLSequenceIdInboundHandler(), new FixtureInboundHandler());
         channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).set(new AtomicInteger());
         channel.writeInbound(Unpooled.wrappedBuffer(new byte[1]), Unpooled.wrappedBuffer(new byte[1]), Unpooled.wrappedBuffer(new byte[1]));
         assertThat(channel.<ByteBuf>readOutbound().readUnsignedByte(), is((short) 1));

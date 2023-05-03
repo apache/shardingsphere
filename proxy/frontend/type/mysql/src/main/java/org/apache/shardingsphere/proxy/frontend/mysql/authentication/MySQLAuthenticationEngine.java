@@ -52,7 +52,7 @@ import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticator.MySQLAuthenticatorType;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.mysql.ssl.MySQLSSLRequestHandler;
 import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 
@@ -83,7 +83,7 @@ public final class MySQLAuthenticationEngine implements AuthenticationEngine {
             context.pipeline().addFirst(MySQLSSLRequestHandler.class.getSimpleName(), new MySQLSSLRequestHandler());
         }
         context.writeAndFlush(new MySQLHandshakePacket(result, sslEnabled, authPluginData));
-        MySQLStatementIDGenerator.getInstance().registerConnection(result);
+        MySQLStatementIdGenerator.getInstance().registerConnection(result);
         return result;
     }
     

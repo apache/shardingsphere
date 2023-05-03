@@ -15,38 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.core;
+package org.apache.shardingsphere.db.protocol.mysql.netty;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 
 /**
- * Resource ID generator.
+ * Handle MySQL sequence ID before sending to downstream.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ResourceIDGenerator {
+public final class MySQLSequenceIdInboundHandler extends ChannelInboundHandlerAdapter {
     
-    private static final ResourceIDGenerator INSTANCE = new ResourceIDGenerator();
-    
-    private final AtomicInteger count = new AtomicInteger();
-    
-    /**
-     * Get instance.
-     *
-     * @return instance
-     */
-    public static ResourceIDGenerator getInstance() {
-        return INSTANCE;
-    }
-    
-    /**
-     * Next unique resource id.
-     *
-     * @return next ID
-     */
-    public String nextId() {
-        return String.format("%d-", count.incrementAndGet());
+    @Override
+    public void channelRead(final ChannelHandlerContext context, final Object msg) {
+        ByteBuf byteBuf = (ByteBuf) msg;
+        short sequenceId = byteBuf.readUnsignedByte();
+        context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get().set(sequenceId + 1);
+        context.fireChannelRead(byteBuf.readSlice(byteBuf.readableBytes()));
     }
 }

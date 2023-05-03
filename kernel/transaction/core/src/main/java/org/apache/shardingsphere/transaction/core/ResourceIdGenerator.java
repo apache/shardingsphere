@@ -17,21 +17,36 @@
 
 package org.apache.shardingsphere.transaction.core;
 
-import org.junit.jupiter.api.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import java.util.regex.Pattern;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class ResourceIDGeneratorTest {
+/**
+ * Resource ID generator.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ResourceIdGenerator {
     
-    @Test
-    void assertNextIdProperly() {
-        assertTrue(isStartWithNumber(ResourceIDGenerator.getInstance().nextId()));
+    private static final ResourceIdGenerator INSTANCE = new ResourceIdGenerator();
+    
+    private final AtomicInteger count = new AtomicInteger();
+    
+    /**
+     * Get instance.
+     *
+     * @return instance
+     */
+    public static ResourceIdGenerator getInstance() {
+        return INSTANCE;
     }
     
-    private boolean isStartWithNumber(final String resourceId) {
-        Pattern pattern = Pattern.compile("[0-9]+-.*");
-        return pattern.matcher(resourceId).matches();
+    /**
+     * Next unique resource id.
+     *
+     * @return next ID
+     */
+    public String nextId() {
+        return String.format("%d-", count.incrementAndGet());
     }
 }

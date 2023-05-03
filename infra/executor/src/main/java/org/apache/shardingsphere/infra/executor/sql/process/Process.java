@@ -64,7 +64,7 @@ public final class Process {
     }
     
     private Process(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean idle) {
-        id = executionGroupContext.getReportContext().getProcessID();
+        id = executionGroupContext.getReportContext().getProcessId();
         startMillis = System.currentTimeMillis();
         this.sql = sql;
         databaseName = executionGroupContext.getReportContext().getDatabaseName();

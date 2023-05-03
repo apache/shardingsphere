@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
  * Process ID context.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProcessIDContext {
+public final class ProcessIdContext {
     
     private static final TransmittableThreadLocal<String> PROCESS_ID = new TransmittableThreadLocal<>();
     
@@ -51,10 +51,10 @@ public final class ProcessIDContext {
     /**
      * Set process ID.
      *
-     * @param executeId process ID
+     * @param processId process ID
      */
-    public static void set(final String executeId) {
-        PROCESS_ID.set(executeId);
+    public static void set(final String processId) {
+        PROCESS_ID.set(processId);
     }
     
     /**

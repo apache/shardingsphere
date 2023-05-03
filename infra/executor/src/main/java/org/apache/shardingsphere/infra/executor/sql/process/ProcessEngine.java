@@ -45,16 +45,16 @@ public final class ProcessEngine {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
         Process process = new Process(executionGroupContext);
         ProcessRegistry.getInstance().putProcess(process.getId(), process);
-        return executionGroupContext.getReportContext().getProcessID();
+        return executionGroupContext.getReportContext().getProcessId();
     }
     
     /**
      * Disconnect.
      *
-     * @param processID process ID
+     * @param processId process ID
      */
-    public void disconnect(final String processID) {
-        ProcessRegistry.getInstance().removeProcess(processID);
+    public void disconnect(final String processId) {
+        ProcessRegistry.getInstance().removeProcess(processId);
         
     }
     
@@ -66,7 +66,7 @@ public final class ProcessEngine {
      */
     public void executeSQL(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final QueryContext queryContext) {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
-            ProcessIDContext.set(executionGroupContext.getReportContext().getProcessID());
+            ProcessIdContext.set(executionGroupContext.getReportContext().getProcessId());
             Process process = new Process(queryContext.getSql(), executionGroupContext);
             ProcessRegistry.getInstance().putProcess(process.getId(), process);
         }
@@ -76,27 +76,27 @@ public final class ProcessEngine {
      * Complete SQL unit execution.
      */
     public void completeSQLUnitExecution() {
-        if (ProcessIDContext.isEmpty()) {
+        if (ProcessIdContext.isEmpty()) {
             return;
         }
-        ProcessRegistry.getInstance().getProcess(ProcessIDContext.get()).completeExecutionUnit();
+        ProcessRegistry.getInstance().getProcess(ProcessIdContext.get()).completeExecutionUnit();
     }
     
     /**
      * Complete SQL execution.
      */
     public void completeSQLExecution() {
-        if (ProcessIDContext.isEmpty()) {
+        if (ProcessIdContext.isEmpty()) {
             return;
         }
-        Process process = ProcessRegistry.getInstance().getProcess(ProcessIDContext.get());
+        Process process = ProcessRegistry.getInstance().getProcess(ProcessIdContext.get());
         if (null == process) {
             return;
         }
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
                 Collections.emptyList(), new ExecutionGroupReportContext(process.getDatabaseName(), new Grantee(process.getUsername(), process.getHostname())));
-        ProcessRegistry.getInstance().putProcess(ProcessIDContext.get(), new Process(executionGroupContext));
-        ProcessIDContext.remove();
+        ProcessRegistry.getInstance().putProcess(ProcessIdContext.get(), new Process(executionGroupContext));
+        ProcessIdContext.remove();
     }
     
     private boolean isMySQLDDLOrDMLStatement(final SQLStatement sqlStatement) {
