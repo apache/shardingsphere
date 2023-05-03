@@ -15,24 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node;
+package org.apache.shardingsphere.mode.process;
 
-import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.mode.event.process.KillProcessRequestEvent;
+import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import java.sql.SQLException;
 
-class ProcessNodeTest {
+/**
+ * Processlist subscriber.
+ */
+public interface ProcessListSubscriber {
     
-    @Test
-    void assertGetProcessIdPath() {
-        assertThat(ProcessNode.getProcessIdPath("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"), is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"));
-    }
+    /**
+     * Post show process list data.
+     *
+     * @param event show process list request event
+     */
+    void postShowProcessListData(ShowProcessListRequestEvent event);
     
-    @Test
-    void assertGetProcessListInstancePath() {
-        assertThat(ProcessNode.getProcessListInstancePath("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30", "proxy_127.0.0.1@983481"),
-                is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30/proxy_127.0.0.1@983481"));
-    }
+    /**
+     * Kill process.
+     *
+     * @param event kill process request event
+     * @throws SQLException SQL exception
+     */
+    void killProcess(KillProcessRequestEvent event) throws SQLException;
 }

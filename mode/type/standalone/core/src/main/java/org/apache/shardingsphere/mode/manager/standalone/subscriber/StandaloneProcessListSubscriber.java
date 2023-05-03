@@ -27,43 +27,35 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.event.process.KillProcessRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListResponseEvent;
+import org.apache.shardingsphere.mode.process.ProcessListSubscriber;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 
 /**
- * Process standalone subscriber.
+ * Standalone processlist subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class ProcessStandaloneSubscriber {
+public final class StandaloneProcessListSubscriber implements ProcessListSubscriber {
     
     private final EventBusContext eventBusContext;
     
     private final YamlProcessListContextsSwapper swapper = new YamlProcessListContextsSwapper();
     
-    public ProcessStandaloneSubscriber(final EventBusContext eventBusContext) {
+    public StandaloneProcessListSubscriber(final EventBusContext eventBusContext) {
         this.eventBusContext = eventBusContext;
         eventBusContext.register(this);
     }
     
-    /**
-     * Load show process list data.
-     *
-     * @param event get children request event.
-     */
+    @Override
     @Subscribe
-    public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
-        YamlProcessListContexts yamlContexts = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().getAllProcessContexts());
-        eventBusContext.post(new ShowProcessListResponseEvent(yamlContexts.getContexts().isEmpty() ? Collections.emptyList() : Collections.singleton(YamlEngine.marshal(yamlContexts))));
+    public void postShowProcessListData(final ShowProcessListRequestEvent event) {
+        YamlProcessListContexts yamlProcessListContexts = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().getAllProcessContexts());
+        eventBusContext.post(new ShowProcessListResponseEvent(Collections.singleton(YamlEngine.marshal(yamlProcessListContexts))));
     }
     
-    /**
-     * Kill process.
-     *
-     * @param event kill process request event.
-     * @throws SQLException SQL exception
-     */
+    @Override
     @Subscribe
     public void killProcess(final KillProcessRequestEvent event) throws SQLException {
         ProcessContext processContext = ProcessRegistry.getInstance().getProcessContext(event.getId());

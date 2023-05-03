@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal;
 
+import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
@@ -35,6 +36,9 @@ public final class MySQLShowTablesStatement extends AbstractSQLStatement impleme
     private FromSchemaSegment fromSchema;
     
     private ShowFilterSegment filter;
+    
+    @Getter
+    private boolean containsFull;
     
     /**
      * Get from schema segment.

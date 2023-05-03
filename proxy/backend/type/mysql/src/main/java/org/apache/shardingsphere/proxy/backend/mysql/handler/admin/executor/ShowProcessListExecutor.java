@@ -70,7 +70,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
      */
     @Subscribe
     public void receiveProcessListData(final ShowProcessListResponseEvent event) {
-        batchProcessContexts = event.getBatchProcessContexts();
+        batchProcessContexts = event.getProcessListContexts();
     }
     
     @Override

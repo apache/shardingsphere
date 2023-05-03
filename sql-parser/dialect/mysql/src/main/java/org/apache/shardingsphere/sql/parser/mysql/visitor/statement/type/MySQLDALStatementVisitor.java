@@ -635,6 +635,7 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.showFilter()) {
             result.setFilter((ShowFilterSegment) visit(ctx.showFilter()));
         }
+        result.setContainsFull(null != ctx.FULL());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }

@@ -27,11 +27,11 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessIdUnitCompleteEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.infra.instance.ComputeNodeData;
@@ -117,7 +117,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
             return Optional.of(new ShowProcessListTriggerEvent(matcher.group(1), matcher.group(2)));
         }
         if (Type.DELETED == event.getType()) {
-            return Optional.of(new ShowProcessListUnitCompleteEvent(matcher.group(2)));
+            return Optional.of(new ShowProcessUnitCompleteEvent(matcher.group(2)));
         }
         return Optional.empty();
     }
@@ -132,10 +132,10 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
             return Optional.empty();
         }
         if (Type.ADDED == event.getType()) {
-            return Optional.of(new KillProcessIdEvent(matcher.group(1), matcher.group(2)));
+            return Optional.of(new KillProcessEvent(matcher.group(1), matcher.group(2)));
         }
         if (Type.DELETED == event.getType()) {
-            return Optional.of(new KillProcessIdUnitCompleteEvent(matcher.group(2)));
+            return Optional.of(new KillProcessUnitCompleteEvent(matcher.group(2)));
         }
         return Optional.empty();
     }
