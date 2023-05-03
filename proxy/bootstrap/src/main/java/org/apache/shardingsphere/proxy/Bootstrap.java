@@ -58,6 +58,7 @@ public final class Bootstrap {
         ProxySSLContext.init();
         ShardingSphereProxy shardingSphereProxy = new ShardingSphereProxy();
         bootstrapArgs.getSocketPath().ifPresent(shardingSphereProxy::start);
+        ProxySSLContext.init();
         shardingSphereProxy.start(port, addresses);
     }
 }
