@@ -74,7 +74,7 @@ class ShowTablesExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
         executor.execute(mockConnectionSession());
-        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         executor.getMergedResult().next();
         assertThat(executor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
         executor.getMergedResult().next();
@@ -84,6 +84,19 @@ class ShowTablesExecutorTest {
         executor.getMergedResult().next();
         assertThat(executor.getMergedResult().getValue(1, Object.class), is("t_account_detail"));
         assertFalse(executor.getMergedResult().next());
+    }
+    
+    @Test
+    void assertShowTablesExecutorWithFull() throws SQLException {
+        MySQLShowTablesStatement showTablesStatement = mock(MySQLShowTablesStatement.class);
+        when(showTablesStatement.isContainsFull()).thenReturn(true);
+        ShowTablesExecutor executor = new ShowTablesExecutor(showTablesStatement, DatabaseTypeEngine.getDatabaseType("MySQL"));
+        Map<String, ShardingSphereDatabase> databases = getDatabases();
+        ContextManager contextManager = mockContextManager(databases);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
+        executor.execute(mockConnectionSession());
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
     }
     
     @Test
@@ -98,7 +111,7 @@ class ShowTablesExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
         executor.execute(mockConnectionSession());
-        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         executor.getMergedResult().next();
         assertThat(executor.getMergedResult().getValue(1, Object.class), is("t_account"));
         executor.getMergedResult().next();
@@ -120,7 +133,7 @@ class ShowTablesExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
         executor.execute(mockConnectionSession());
-        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         executor.getMergedResult().next();
         assertThat(executor.getMergedResult().getValue(1, Object.class), is("t_account"));
         assertFalse(executor.getMergedResult().next());
@@ -138,7 +151,7 @@ class ShowTablesExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
         executor.execute(mockConnectionSession());
-        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         executor.getMergedResult().next();
         assertThat(executor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
         assertFalse(executor.getMergedResult().next());
@@ -156,7 +169,7 @@ class ShowTablesExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("db_0")).thenReturn(databases.get("db_0"));
         executor.execute(mockConnectionSession());
-        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
         executor.getMergedResult().next();
         assertThat(executor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
         assertFalse(executor.getMergedResult().next());
@@ -171,7 +184,7 @@ class ShowTablesExecutorTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         executor.execute(mockConnectionSession());
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
-        assertThat(actualMetaData.getColumnCount(), is(2));
+        assertThat(actualMetaData.getColumnCount(), is(1));
         assertThat(actualMetaData.getColumnName(1), is("Tables_in_uncompleted"));
         MergedResult actualResult = executor.getMergedResult();
         assertFalse(actualResult.next());

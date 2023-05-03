@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.shadow.exception.metadata;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.shadow.exception.ShadowSQLException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Invalid shadow algorithm operation exception.
+ * Kill process event.
  */
-public final class InvalidShadowAlgorithmOperationException extends ShadowSQLException {
+@RequiredArgsConstructor
+@Getter
+public final class KillProcessEvent implements GovernanceEvent {
     
-    private static final long serialVersionUID = -4369256549985752449L;
+    private final String instanceId;
     
-    public InvalidShadowAlgorithmOperationException(final String operationType, final String tableName) {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 3, "Column shadow algorithm `%s` operation only supports one column mapping in shadow table `%s`.", operationType, tableName);
-    }
+    private final String processId;
 }

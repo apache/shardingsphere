@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.process;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Kill process id request event.
+ * Show process unit complete event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class KillProcessIdRequestEvent {
+public final class ShowProcessUnitCompleteEvent implements GovernanceEvent {
     
     private final String processId;
 }

@@ -30,8 +30,8 @@ import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.RegularUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
@@ -73,7 +73,9 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         List<RawQueryResultColumnMetaData> columnNames = new LinkedList<>();
         String tableColumnName = String.format("Tables_in_%s", databaseName);
         columnNames.add(new RawQueryResultColumnMetaData("", tableColumnName, tableColumnName, Types.VARCHAR, "VARCHAR", 255, 0));
-        columnNames.add(new RawQueryResultColumnMetaData("", "Table_type", "Table_type", Types.VARCHAR, "VARCHAR", 20, 0));
+        if (showTablesStatement.isContainsFull()) {
+            columnNames.add(new RawQueryResultColumnMetaData("", "Table_type", "Table_type", Types.VARCHAR, "VARCHAR", 20, 0));
+        }
         return new RawQueryResultMetaData(columnNames);
     }
     
@@ -84,7 +86,9 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
         List<MemoryQueryResultDataRow> rows = getAllTableNames(databaseName).stream().map(each -> {
             List<Object> rowValues = new LinkedList<>();
             rowValues.add(each);
-            rowValues.add(TABLE_TYPE);
+            if (showTablesStatement.isContainsFull()) {
+                rowValues.add(TABLE_TYPE);
+            }
             return new MemoryQueryResultDataRow(rowValues);
         }).collect(Collectors.toList());
         return new RawMemoryQueryResult(queryResultMetaData, rows);

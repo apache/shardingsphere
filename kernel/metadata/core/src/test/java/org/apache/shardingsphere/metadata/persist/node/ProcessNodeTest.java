@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
+package org.apache.shardingsphere.metadata.persist.node;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.junit.jupiter.api.Test;
 
-/**
- * Kill process id event.
- */
-@RequiredArgsConstructor
-@Getter
-public final class KillProcessIdEvent implements GovernanceEvent {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class ProcessNodeTest {
     
-    private final String instanceId;
+    @Test
+    void assertGetProcessIdPath() {
+        assertThat(ProcessNode.getProcessIdPath("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"), is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30"));
+    }
     
-    private final String processId;
+    @Test
+    void assertGetProcessListInstancePath() {
+        assertThat(ProcessNode.getProcessListInstancePath("ae7d352a-ee1f-3cd6-8631-cd9e93b70a30", "proxy_127.0.0.1@983481"),
+                is("/execution_nodes/ae7d352a-ee1f-3cd6-8631-cd9e93b70a30/proxy_127.0.0.1@983481"));
+    }
 }

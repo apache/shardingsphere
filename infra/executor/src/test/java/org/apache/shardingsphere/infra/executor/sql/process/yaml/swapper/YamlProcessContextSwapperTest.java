@@ -30,9 +30,9 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlProcessContextSwapperTest {
     
@@ -42,7 +42,7 @@ class YamlProcessContextSwapperTest {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), reportContext);
         ProcessContext processContext = new ProcessContext("SELECT 1", executionGroupContext);
         YamlProcessContext actual = new YamlProcessContextSwapper().swapToYamlConfiguration(processContext);
-        assertNotNull(actual.getExecutionID());
+        assertNotNull(actual.getProcessID());
         assertThat(actual.getDatabaseName(), is("foo_db"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getHostname(), is("localhost"));
@@ -50,7 +50,7 @@ class YamlProcessContextSwapperTest {
         assertThat(actual.getCompletedUnitCount(), is(0));
         assertThat(actual.getTotalUnitCount(), is(0));
         assertThat(actual.getStartTimeMillis(), lessThanOrEqualTo(System.currentTimeMillis()));
-        assertTrue(actual.isExecuting());
+        assertFalse(actual.isIdle());
     }
     
     @Test

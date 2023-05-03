@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.subscriber;
 
-import org.apache.shardingsphere.infra.executor.sql.process.ShowProcessListManager;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -30,14 +30,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ShowProcessListManager.class)
-class ProcessStandaloneSubscriberTest {
+@StaticMockSettings(ProcessRegistry.class)
+class StandaloneProcessListSubscriberTest {
     
     @Test
-    void assertLoadShowProcessListData() {
-        ShowProcessListManager showProcessListManager = mock(ShowProcessListManager.class);
-        when(ShowProcessListManager.getInstance()).thenReturn(showProcessListManager);
-        new ProcessStandaloneSubscriber(new EventBusContext()).loadShowProcessListData(mock(ShowProcessListRequestEvent.class));
-        verify(showProcessListManager).getAllProcessContexts();
+    void assertPostShowProcessListData() {
+        ProcessRegistry processRegistry = mock(ProcessRegistry.class);
+        when(ProcessRegistry.getInstance()).thenReturn(processRegistry);
+        new StandaloneProcessListSubscriber(new EventBusContext()).postShowProcessListData(new ShowProcessListRequestEvent());
+        verify(processRegistry).getAllProcessContexts();
     }
 }

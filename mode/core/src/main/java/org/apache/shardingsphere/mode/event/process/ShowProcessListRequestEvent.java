@@ -17,13 +17,8 @@
 
 package org.apache.shardingsphere.mode.event.process;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 /**
  * Show process list request event.
  */
-@RequiredArgsConstructor
-@Getter
 public final class ShowProcessListRequestEvent {
 }

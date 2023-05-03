@@ -45,7 +45,7 @@ Now that you understand the functions of `Show processlist` and `Kill <processID
 
 ## 2.1 How is SQL saved and destroyed?
 
-Each SQL executed in ShardingSphere will generate an `ExecutionGroupContext` object. The object contains all the information about this SQL, among which there is an `executionID` field to ensure its uniqueness.
+Each SQL executed in ShardingSphere will generate an `ExecutionGroupContext` object. The object contains all the information about this SQL, among which there is an `processID` field to ensure its uniqueness.
 
 When ShardingSphere receives a SQL command, the `GovernanceExecuteProcessReporter# report` is called to store `ExecutionGroupContext` information into the cache of `ConcurrentHashMap `(currently only DML and DDL statements of MySQL are supported; other types of databases will be supported in later versions. Query statements are also classified into DML).
 
@@ -56,8 +56,8 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
                        final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
         ExecuteProcessContext processContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants);
-        ShowProcessListManager.getInstance().putProcessContext(processContext.getExecutionID(), processContext);
-        ShowProcessListManager.getInstance().putProcessStatement(processContext.getExecutionID(), processContext.getProcessStatements());
+        ShowProcessListManager.getInstance().putProcessContext(processContext.getProcessID(), processContext);
+        ShowProcessListManager.getInstance().putProcessStatement(processContext.getProcessID(), processContext.getProcessStatements());
     }
 }@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowProcessListManager {
@@ -74,22 +74,22 @@ public final class ShowProcessListManager {
         return INSTANCE;
     }
     
-    public void putProcessContext(final String executionId, final ExecuteProcessContext processContext) {
-        processContexts.put(executionId, processContext);
+    public void putProcessContext(final String processID, final ExecuteProcessContext processContext) {
+        processContexts.put(processID, processContext);
     }
     
-    public void putProcessStatement(final String executionId, final Collection<Statement> statements) {
+    public void putProcessStatement(final String processID, final Collection<Statement> statements) {
         if (statements.isEmpty()) {
             return;
         }
-        processStatements.put(executionId, statements);
+        processStatements.put(processID, statements);
     }
 }
 ```
 
-As shown above, the `ShowProcessListManager` class has two cache Maps, namely `processContexts` and `processStatements`. The former stores the mapping between `executionID` and `ExecuteProcessContext`.
+As shown above, the `ShowProcessListManager` class has two cache Maps, namely `processContexts` and `processStatements`. The former stores the mapping between `processID` and `ExecuteProcessContext`.
 
-The latter contains the mapping between `executionID` and `Statement objects` that may generate multiple statements after the SQL is overwritten.
+The latter contains the mapping between `processID` and `Statement objects` that may generate multiple statements after the SQL is overwritten.
 
 Every time ShardingSphere receives a SQL statement, the SQL information will be cached into the two Maps. After SQL is executed, the cache of Map will be deleted.
 
@@ -120,7 +120,7 @@ public final class ProxyJDBCExecutor {
                             true),
                     ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, databaseType, context.getSqlStatement(), databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown,
                             false));
-            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
+            ExecuteProcessEngine.finish(executionGroupContext.getProcessID(), eventBusContext);
             return result;
         } finally {
             ExecuteProcessEngine.clean();
@@ -173,7 +173,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         }
         List<MemoryQueryResultDataRow> rows = processContexts.stream().map(processContext -> {
             List<Object> rowValues = new ArrayList<>(8);
-            rowValues.add(processContext.getExecutionID());
+            rowValues.add(processContext.getProcessIDID());
             rowValues.add(processContext.getUsername());
             rowValues.add(processContext.getHostname());
             rowValues.add(processContext.getDatabaseName());

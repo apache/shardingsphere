@@ -21,45 +21,46 @@ import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+// TODO should remove the class, process ID should same with connection ID
 /**
- * Execute id context.
+ * Process ID context.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExecuteIDContext {
+public final class ProcessIDContext {
     
-    private static final TransmittableThreadLocal<String> EXECUTE_ID = new TransmittableThreadLocal<>();
+    private static final TransmittableThreadLocal<String> PROCESS_ID = new TransmittableThreadLocal<>();
     
     /**
-     * Judge whether execute id is empty or not.
+     * Judge whether process ID is empty or not.
      *
-     * @return whether execute id is empty or not
+     * @return whether process ID is empty or not
      */
     public static boolean isEmpty() {
-        return null == EXECUTE_ID.get();
+        return null == PROCESS_ID.get();
     }
     
     /**
-     * Get execute id.
+     * Get process ID.
      *
-     * @return execute id
+     * @return process ID
      */
     public static String get() {
-        return EXECUTE_ID.get();
+        return PROCESS_ID.get();
     }
     
     /**
-     * Set execute id.
+     * Set process ID.
      *
-     * @param executeId execute id
+     * @param executeId process ID
      */
     public static void set(final String executeId) {
-        EXECUTE_ID.set(executeId);
+        PROCESS_ID.set(executeId);
     }
     
     /**
-     * Remove execute id.
+     * Remove process ID.
      */
     public static void remove() {
-        EXECUTE_ID.remove();
+        PROCESS_ID.remove();
     }
 }

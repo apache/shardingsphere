@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public final class ShowProcessListLock {
     
-    private static final long DEFAULT_TIMEOUT_MILLISECONDS = 5000L;
+    private static final long TIMEOUT_MILLS = 5000L;
     
     private final Lock lock = new ReentrantLock();
     
@@ -56,7 +56,7 @@ public final class ShowProcessListLock {
      */
     @SneakyThrows(InterruptedException.class)
     public boolean awaitDefaultTime() {
-        return condition.await(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS);
+        return condition.await(TIMEOUT_MILLS, TimeUnit.MILLISECONDS);
     }
     
     /**

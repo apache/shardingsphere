@@ -95,14 +95,14 @@ public final class ComputeNode {
     }
     
     /**
-     * Get process trigger instance process id node path.
+     * Get process trigger instance node path.
      *
      * @param instanceId instance id
-     * @param processId process id
+     * @param taskId show process list task id
      * @return path of process trigger instance node path
      */
-    public static String getProcessTriggerInstanceIdNodePath(final String instanceId, final String processId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER, String.join(":", instanceId, processId));
+    public static String getProcessTriggerInstanceNodePath(final String instanceId, final String taskId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER, String.join(":", instanceId, taskId));
     }
     
     /**
