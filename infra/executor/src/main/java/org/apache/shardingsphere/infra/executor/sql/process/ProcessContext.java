@@ -37,6 +37,10 @@ public final class ProcessContext {
     
     private final String id;
     
+    private final long startMillis;
+    
+    private final String sql;
+    
     private final String databaseName;
     
     private final String username;
@@ -49,11 +53,7 @@ public final class ProcessContext {
     
     private final AtomicInteger completedUnitCount;
     
-    private volatile String sql;
-    
-    private volatile long startMillis;
-    
-    private volatile boolean idle;
+    private final boolean idle;
     
     public ProcessContext(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         this("", executionGroupContext, true);
@@ -65,6 +65,8 @@ public final class ProcessContext {
     
     private ProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean idle) {
         id = executionGroupContext.getReportContext().getProcessID();
+        startMillis = System.currentTimeMillis();
+        this.sql = sql;
         databaseName = executionGroupContext.getReportContext().getDatabaseName();
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
         username = null == grantee ? null : grantee.getUsername();
@@ -72,8 +74,6 @@ public final class ProcessContext {
         totalUnitCount = executionGroupContext.getInputGroups().stream().mapToInt(each -> each.getInputs().size()).sum();
         processStatements = getProcessStatements(executionGroupContext);
         completedUnitCount = new AtomicInteger(0);
-        this.sql = sql;
-        startMillis = System.currentTimeMillis();
         this.idle = idle;
     }
     
@@ -103,14 +103,5 @@ public final class ProcessContext {
      */
     public int getCompletedUnitCount() {
         return completedUnitCount.get();
-    }
-    
-    /**
-     * Reset.
-     */
-    public void reset() {
-        sql = "";
-        startMillis = System.currentTimeMillis();
-        idle = true;
     }
 }
