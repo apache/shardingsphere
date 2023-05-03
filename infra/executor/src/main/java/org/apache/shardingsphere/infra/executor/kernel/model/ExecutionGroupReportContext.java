@@ -35,8 +35,8 @@ public final class ExecutionGroupReportContext {
     
     private final Grantee grantee;
     
-    // TODO processID should same with connectionID
-    private final String processID;
+    // TODO processID should same with connectionId
+    private final String processId;
     
     public ExecutionGroupReportContext(final String databaseName) {
         this(databaseName, new Grantee("", ""));

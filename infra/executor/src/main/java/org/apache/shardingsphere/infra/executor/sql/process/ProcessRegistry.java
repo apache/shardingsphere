@@ -51,30 +51,30 @@ public final class ProcessRegistry {
     /**
      * Put process.
      * 
-     * @param processID process ID
+     * @param processId process ID
      * @param process process
      */
-    public void putProcess(final String processID, final Process process) {
-        processes.put(processID, process);
+    public void putProcess(final String processId, final Process process) {
+        processes.put(processId, process);
     }
     
     /**
      * Get process.
      * 
-     * @param processID process ID
+     * @param processId process ID
      * @return process
      */
-    public Process getProcess(final String processID) {
-        return processes.get(processID);
+    public Process getProcess(final String processId) {
+        return processes.get(processId);
     }
     
     /**
      * Remove process.
      * 
-     * @param processID process ID
+     * @param processId process ID
      */
-    public void removeProcess(final String processID) {
-        processes.remove(processID);
+    public void removeProcess(final String processId) {
+        processes.remove(processId);
     }
     
     /**

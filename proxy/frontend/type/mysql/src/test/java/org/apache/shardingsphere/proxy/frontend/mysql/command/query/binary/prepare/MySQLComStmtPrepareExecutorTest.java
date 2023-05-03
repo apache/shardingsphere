@@ -46,7 +46,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -105,7 +105,7 @@ class MySQLComStmtPrepareExecutorTest {
         String sql = "select name from foo_db.user where id = ?";
         when(packet.getSql()).thenReturn(sql);
         when(connectionSession.getConnectionId()).thenReturn(1);
-        MySQLStatementIDGenerator.getInstance().registerConnection(1);
+        MySQLStatementIdGenerator.getInstance().registerConnection(1);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
@@ -119,7 +119,7 @@ class MySQLComStmtPrepareExecutorTest {
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(SelectStatementContext.class));
         assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLSelectStatement.class));
-        MySQLStatementIDGenerator.getInstance().unregisterConnection(1);
+        MySQLStatementIdGenerator.getInstance().unregisterConnection(1);
     }
     
     @Test
@@ -128,7 +128,7 @@ class MySQLComStmtPrepareExecutorTest {
         when(packet.getSql()).thenReturn(sql);
         int connectionId = 2;
         when(connectionSession.getConnectionId()).thenReturn(connectionId);
-        MySQLStatementIDGenerator.getInstance().registerConnection(connectionId);
+        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
@@ -150,7 +150,7 @@ class MySQLComStmtPrepareExecutorTest {
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(SelectStatementContext.class));
         assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLSelectStatement.class));
-        MySQLStatementIDGenerator.getInstance().unregisterConnection(connectionId);
+        MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
     }
     
     @Test
@@ -160,7 +160,7 @@ class MySQLComStmtPrepareExecutorTest {
         int connectionId = 2;
         when(connectionSession.getConnectionId()).thenReturn(connectionId);
         when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
-        MySQLStatementIDGenerator.getInstance().registerConnection(connectionId);
+        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
@@ -182,7 +182,7 @@ class MySQLComStmtPrepareExecutorTest {
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(InsertStatementContext.class));
         assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLInsertStatement.class));
-        MySQLStatementIDGenerator.getInstance().unregisterConnection(connectionId);
+        MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
     }
     
     private int getColumnDefinitionFlag(final MySQLColumnDefinition41Packet packet) {
@@ -197,7 +197,7 @@ class MySQLComStmtPrepareExecutorTest {
         when(packet.getSql()).thenReturn(sql);
         when(connectionSession.getConnectionId()).thenReturn(1);
         when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
-        MySQLStatementIDGenerator.getInstance().registerConnection(1);
+        MySQLStatementIdGenerator.getInstance().registerConnection(1);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         Iterator<DatabasePacket<?>> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
@@ -211,7 +211,7 @@ class MySQLComStmtPrepareExecutorTest {
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(UpdateStatementContext.class));
         assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(MySQLUpdateStatement.class));
-        MySQLStatementIDGenerator.getInstance().unregisterConnection(1);
+        MySQLStatementIdGenerator.getInstance().unregisterConnection(1);
     }
     
     @Test

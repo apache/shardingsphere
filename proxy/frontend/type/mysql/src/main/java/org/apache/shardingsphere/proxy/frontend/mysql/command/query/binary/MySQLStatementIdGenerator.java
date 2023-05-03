@@ -28,9 +28,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Statement ID generator for MySQL.
  */
 @NoArgsConstructor(access = AccessLevel.NONE)
-public final class MySQLStatementIDGenerator {
+public final class MySQLStatementIdGenerator {
     
-    private static final MySQLStatementIDGenerator INSTANCE = new MySQLStatementIDGenerator();
+    private static final MySQLStatementIdGenerator INSTANCE = new MySQLStatementIdGenerator();
     
     private final Map<Integer, AtomicInteger> connectionRegistry = new ConcurrentHashMap<>();
     
@@ -39,7 +39,7 @@ public final class MySQLStatementIDGenerator {
      *
      * @return prepared statement registry instance
      */
-    public static MySQLStatementIDGenerator getInstance() {
+    public static MySQLStatementIdGenerator getInstance() {
         return INSTANCE;
     }
     
