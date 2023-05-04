@@ -56,11 +56,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -119,8 +120,7 @@ class ProcessListChangedSubscriberTest {
     void assertCompleteToReportLocalProcesses() {
         String taskId = "foo_id";
         long startMillis = System.currentTimeMillis();
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
-        executorService.submit(() -> {
+        Executors.newFixedThreadPool(1).submit(() -> {
             try {
                 Thread.sleep(50L);
             } catch (final InterruptedException ignored) {
@@ -128,9 +128,9 @@ class ProcessListChangedSubscriberTest {
             subscriber.completeToReportLocalProcesses(new ReportLocalProcessesCompletedEvent(taskId));
         });
         waitUntilReleaseReady(taskId);
-        long currentTime = System.currentTimeMillis();
-        assertTrue(currentTime >= startMillis + 50L);
-        assertTrue(currentTime <= startMillis + 5000L);
+        long currentMillis = System.currentTimeMillis();
+        assertThat(currentMillis, greaterThanOrEqualTo(startMillis + 50L));
+        assertThat(currentMillis, lessThanOrEqualTo(startMillis + 5000L));
     }
     
     @Test
@@ -146,8 +146,7 @@ class ProcessListChangedSubscriberTest {
     void assertCompleteToKillProcessInstance() {
         String processId = "foo_id";
         long startMillis = System.currentTimeMillis();
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
-        executorService.submit(() -> {
+        Executors.newFixedThreadPool(1).submit(() -> {
             try {
                 Thread.sleep(50L);
             } catch (final InterruptedException ignored) {
@@ -155,9 +154,9 @@ class ProcessListChangedSubscriberTest {
             subscriber.completeToKillProcessInstance(new KillProcessInstanceCompleteEvent(processId));
         });
         waitUntilReleaseReady(processId);
-        long currentTime = System.currentTimeMillis();
-        assertTrue(currentTime >= startMillis + 50L);
-        assertTrue(currentTime <= startMillis + 5000L);
+        long currentMillis = System.currentTimeMillis();
+        assertThat(currentMillis, greaterThanOrEqualTo(startMillis + 50L));
+        assertThat(currentMillis, lessThanOrEqualTo(startMillis + 5000L));
     }
     
     private static void waitUntilReleaseReady(final String lockId) {
