@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.merge.dql;
 
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
@@ -134,12 +134,5 @@ class EncryptAlgorithmMetaDataTest {
         Optional<EncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor("t_order", "id");
         assertTrue(actualEncryptor.isPresent());
         assertThat(actualEncryptor.get().getType(), is("MD5"));
-    }
-    
-    @Test
-    void assertIsQueryWithCipherColumn() {
-        when(encryptRule.isQueryWithCipherColumn("t_order", "id")).thenReturn(true);
-        EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(database, encryptRule, selectStatementContext);
-        assertTrue(encryptAlgorithmMetaData.isQueryWithCipherColumn("t_order", "id"));
     }
 }

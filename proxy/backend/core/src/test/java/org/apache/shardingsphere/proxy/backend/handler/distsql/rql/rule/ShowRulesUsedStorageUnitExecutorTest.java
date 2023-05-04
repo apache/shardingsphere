@@ -120,7 +120,7 @@ class ShowRulesUsedStorageUnitExecutorTest {
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class);
         EncryptRuleConfiguration config = mock(EncryptRuleConfiguration.class);
-        when(config.getTables()).thenReturn(Collections.singleton(new EncryptTableRuleConfiguration("encrypt_table", Collections.emptyList(), false)));
+        when(config.getTables()).thenReturn(Collections.singleton(new EncryptTableRuleConfiguration("encrypt_table", Collections.emptyList())));
         when(result.getConfiguration()).thenReturn(config);
         return result;
     }

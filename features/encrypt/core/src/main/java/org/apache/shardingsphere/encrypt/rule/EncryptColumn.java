@@ -44,11 +44,8 @@ public final class EncryptColumn {
     
     private final String likeQueryEncryptorName;
     
-    private final Boolean queryWithCipherColumn;
-    
-    public EncryptColumn(final String cipherColumn, final String assistedQueryColumn, final String likeQueryColumn, final String plainColumn,
-                         final String encryptorName, final Boolean queryWithCipherColumn) {
-        this(cipherColumn, assistedQueryColumn, plainColumn, likeQueryColumn, encryptorName, null, null, queryWithCipherColumn);
+    public EncryptColumn(final String cipherColumn, final String assistedQueryColumn, final String likeQueryColumn, final String plainColumn, final String encryptorName) {
+        this(cipherColumn, assistedQueryColumn, plainColumn, likeQueryColumn, encryptorName, null, null);
     }
     
     /**

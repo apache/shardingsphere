@@ -93,12 +93,6 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         int startIndex = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getStopIndex() + 2 : columnSegment.getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
         String logicColumn = columnSegment.getIdentifier().getValue();
-        if (!encryptRule.isQueryWithCipherColumn(tableName, logicColumn)) {
-            Optional<String> plainColumn = encryptTable.findPlainColumn(logicColumn);
-            if (plainColumn.isPresent()) {
-                return new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(plainColumn.get()));
-            }
-        }
         // TODO remove foreach loop to improve performance
         if (isColumnSegmentIncludedInLikeExpression(whereSegments, columnSegment)) {
             Optional<String> likeQueryColumn = encryptTable.findLikeQueryColumn(logicColumn);

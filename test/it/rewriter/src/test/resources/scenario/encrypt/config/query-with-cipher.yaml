@@ -96,7 +96,6 @@ rules:
           cipherColumn: cipher_amount
           plainColumn: plain_amount
           encryptorName: rewrite_normal_fixture
-      queryWithCipherColumn: false
   encryptors:
     rewrite_normal_fixture:
       type: REWRITE.NORMAL.FIXTURE

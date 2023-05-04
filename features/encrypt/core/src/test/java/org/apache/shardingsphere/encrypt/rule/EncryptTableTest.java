@@ -40,7 +40,7 @@ class EncryptTableTest {
     @BeforeEach
     void setUp() {
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
-                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "myEncryptor", null)), null));
+                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "myEncryptor"))));
     }
     
     @Test
@@ -143,23 +143,5 @@ class EncryptTableTest {
     void assertGetLogicAndCipherColumns() {
         assertThat(encryptTable.getLogicAndCipherColumns(), is(Collections.singletonMap("logicColumn", "cipherColumn")));
         assertTrue(encryptTable.getLogicAndCipherColumns().containsKey("LOGICCOLUMN"));
-    }
-    
-    @Test
-    void assertGetQueryWithCipherColumn() {
-        Optional<Boolean> actual = encryptTable.getQueryWithCipherColumn("logicColumn");
-        assertFalse(actual.isPresent());
-        
-        encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
-                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "myEncryptor", null)), true));
-        actual = encryptTable.getQueryWithCipherColumn("logicColumn");
-        assertTrue(actual.isPresent());
-        assertTrue(actual.get());
-        
-        encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
-                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "myEncryptor", false)), true));
-        actual = encryptTable.getQueryWithCipherColumn("logicColumn");
-        assertTrue(actual.isPresent());
-        assertFalse(actual.get());
     }
 }

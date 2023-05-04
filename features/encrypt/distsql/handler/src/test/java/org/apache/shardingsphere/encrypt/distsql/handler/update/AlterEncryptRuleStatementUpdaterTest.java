@@ -97,20 +97,20 @@ class AlterEncryptRuleStatementUpdaterTest {
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {
-        EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList(), null);
+        EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList());
         return new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(tableRuleConfig)), Collections.emptyMap());
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfigurationWithMultipleTableRules() {
-        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "", "user_plain", "t_encrypt_user_id_MD5", null);
-        EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig), null);
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "", "user_plain", "t_encrypt_user_id_MD5");
+        EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig));
         Map<String, AlgorithmConfiguration> encryptors = Collections.singletonMap("t_encrypt_user_id_MD5", new AlgorithmConfiguration("TEST", new Properties()));
         return new EncryptRuleConfiguration(new LinkedList<>(Arrays.asList(tableRuleConfig,
-                new EncryptTableRuleConfiguration("t_encrypt_another", Collections.singleton(columnRuleConfig), null))), encryptors, true);
+                new EncryptTableRuleConfiguration("t_encrypt_another", Collections.singleton(columnRuleConfig)))), encryptors);
     }
     
     private EncryptRuleConfiguration createToBeAlteredRuleConfiguration() {
-        EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList(), null);
+        EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.emptyList());
         return new EncryptRuleConfiguration(new LinkedList<>(Collections.singleton(tableRuleConfig)), Collections.emptyMap());
     }
 }

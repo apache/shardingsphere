@@ -114,8 +114,8 @@ class CreateEncryptRuleStatementUpdaterTest {
     
     private EncryptRuleConfiguration getCurrentRuleConfig() {
         Collection<EncryptTableRuleConfiguration> rules = new LinkedList<>();
-        rules.add(new EncryptTableRuleConfiguration("t_user", Collections.emptyList(), null));
-        rules.add(new EncryptTableRuleConfiguration("t_order", Collections.emptyList(), null));
+        rules.add(new EncryptTableRuleConfiguration("t_user", Collections.emptyList()));
+        rules.add(new EncryptTableRuleConfiguration("t_order", Collections.emptyList()));
         return new EncryptRuleConfiguration(rules, new HashMap<>());
     }
     

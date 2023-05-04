@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.impl;
 
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptCreateTableTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
@@ -105,6 +105,6 @@ class EncryptCreateTableTokenGeneratorTest {
     }
     
     private EncryptColumn mockEncryptColumn() {
-        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "like_certificate_number", "certificate_number_plain", "test", null);
+        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "like_certificate_number", "certificate_number_plain", "test");
     }
 }

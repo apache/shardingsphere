@@ -46,7 +46,7 @@ class YamlEncryptRuleConfigurationSwapperTest {
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
-        Collection<EncryptTableRuleConfiguration> tables = Collections.singletonList(new EncryptTableRuleConfiguration("tbl", Collections.emptyList(), null));
+        Collection<EncryptTableRuleConfiguration> tables = Collections.singletonList(new EncryptTableRuleConfiguration("tbl", Collections.emptyList()));
         Map<String, AlgorithmConfiguration> encryptors = Collections.singletonMap("myEncryptor", new AlgorithmConfiguration("FIXTURE", new Properties()));
         return new EncryptRuleConfiguration(tables, encryptors);
     }
