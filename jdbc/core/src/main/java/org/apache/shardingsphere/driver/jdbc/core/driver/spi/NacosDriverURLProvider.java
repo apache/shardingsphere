@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class NacosDriverURLProvider implements ShardingSphereDriverURLProvider {
+public final class NacosDriverURLProvider implements ShardingSphereDriverURLProvider {
 
     private static final String PARAM_PREFIX = "?";
     private static final String NACOS_TYPE = "nacos:";
