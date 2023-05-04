@@ -103,12 +103,12 @@ public final class ProcessListChangedSubscriber {
     }
     
     /**
-     * Complete to kill process instance.
+     * Complete to kill process.
      *
      * @param event kill process completed event
      */
     @Subscribe
-    public synchronized void completeToKillProcessInstance(final KillProcessCompletedEvent event) {
+    public synchronized void completeToKillProcess(final KillProcessCompletedEvent event) {
         ProcessOperationLockRegistry.getInstance().notify(event.getProcessId());
     }
 }

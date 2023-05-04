@@ -151,7 +151,7 @@ class ProcessListChangedSubscriberTest {
                 Thread.sleep(50L);
             } catch (final InterruptedException ignored) {
             }
-            subscriber.completeToKillProcessInstance(new KillProcessCompletedEvent(processId));
+            subscriber.completeToKillProcess(new KillProcessCompletedEvent(processId));
         });
         waitUntilReleaseReady(processId);
         long currentMillis = System.currentTimeMillis();
