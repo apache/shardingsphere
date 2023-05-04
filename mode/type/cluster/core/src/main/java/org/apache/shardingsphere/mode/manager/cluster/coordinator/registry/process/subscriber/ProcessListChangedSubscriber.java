@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proc
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessLock;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
@@ -79,7 +79,7 @@ public final class ProcessListChangedSubscriber {
      */
     @Subscribe
     public synchronized void completeToReportLocalProcesses(final ReportLocalProcessesCompletedEvent event) {
-        ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getTaskId());
+        ProcessLock lock = ProcessRegistry.getInstance().getLocks().get(event.getTaskId());
         if (null != lock) {
             lock.doNotify();
         }
@@ -112,7 +112,7 @@ public final class ProcessListChangedSubscriber {
      */
     @Subscribe
     public synchronized void completeToKillProcessInstance(final KillProcessInstanceCompleteEvent event) {
-        ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getProcessId());
+        ProcessLock lock = ProcessRegistry.getInstance().getLocks().get(event.getProcessId());
         if (null != lock) {
             lock.doNotify();
         }

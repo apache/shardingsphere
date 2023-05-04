@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proc
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessLock;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
@@ -105,7 +105,7 @@ public final class ClusterProcessListSubscriber implements ProcessListSubscriber
     }
     
     private boolean waitAllNodeDataReady(final String processId, final Collection<String> paths) {
-        ShowProcessListLock lock = new ShowProcessListLock();
+        ProcessLock lock = new ProcessLock();
         ProcessRegistry.getInstance().getLocks().put(processId, lock);
         lock.lock();
         try {

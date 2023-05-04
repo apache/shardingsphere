@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessLock;
 
 import java.util.Collection;
 import java.util.Map;
@@ -37,7 +37,7 @@ public final class ProcessRegistry {
     private final Map<String, Process> processes = new ConcurrentHashMap<>();
     
     @Getter
-    private final Map<String, ShowProcessListLock> locks = new ConcurrentHashMap<>();
+    private final Map<String, ProcessLock> locks = new ConcurrentHashMap<>();
     
     /**
      * Get process registry.
