@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.process;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
 
 import java.util.Collection;
 import java.util.Map;
@@ -34,55 +32,51 @@ public final class ProcessRegistry {
     
     private static final ProcessRegistry INSTANCE = new ProcessRegistry();
     
-    private final Map<String, ProcessContext> processContexts = new ConcurrentHashMap<>();
-    
-    @Getter
-    private final Map<String, ShowProcessListLock> locks = new ConcurrentHashMap<>();
+    private final Map<String, Process> processes = new ConcurrentHashMap<>();
     
     /**
-     * Get show process list manager.
+     * Get process registry.
      *
-     * @return show process list manager
+     * @return got instance
      */
     public static ProcessRegistry getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Put process context.
+     * Put process.
      * 
-     * @param processID process ID
-     * @param processContext process context
+     * @param process process
      */
-    public void putProcessContext(final String processID, final ProcessContext processContext) {
-        processContexts.put(processID, processContext);
+    public void add(final Process process) {
+        processes.put(process.getId(), process);
     }
     
     /**
-     * Get process context.
+     * Get process.
      * 
-     * @param processID process ID
-     * @return process context
+     * @param id process ID
+     * @return process
      */
-    public ProcessContext getProcessContext(final String processID) {
-        return processContexts.get(processID);
+    public Process get(final String id) {
+        return processes.get(id);
     }
     
     /**
-     * Remove process context.
+     * Remove process.
      * 
-     * @param processID process ID
+     * @param id process ID
      */
-    public void removeProcessContext(final String processID) {
-        processContexts.remove(processID);
+    public void remove(final String id) {
+        processes.remove(id);
     }
     
     /**
-     * Get all process contexts.
+     * List all process.
      * 
-     * @return all process contexts
+     * @return all processes
      */
-    public Collection<ProcessContext> getAllProcessContexts() {
-        return processContexts.values();
+    public Collection<Process> listAll() {
+        return processes.values();
     }
 }

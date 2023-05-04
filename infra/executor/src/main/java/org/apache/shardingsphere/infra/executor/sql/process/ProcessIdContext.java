@@ -15,38 +15,52 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.core;
+package org.apache.shardingsphere.infra.executor.sql.process;
 
+import com.alibaba.ttl.TransmittableThreadLocal;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
+// TODO should remove the class, process ID should same with connection ID
 /**
- * Resource ID generator.
+ * Process ID context.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ResourceIDGenerator {
+public final class ProcessIdContext {
     
-    private static final ResourceIDGenerator INSTANCE = new ResourceIDGenerator();
-    
-    private final AtomicInteger count = new AtomicInteger();
+    private static final TransmittableThreadLocal<String> PROCESS_ID = new TransmittableThreadLocal<>();
     
     /**
-     * Get instance.
+     * Judge whether process ID is empty or not.
      *
-     * @return instance
+     * @return whether process ID is empty or not
      */
-    public static ResourceIDGenerator getInstance() {
-        return INSTANCE;
+    public static boolean isEmpty() {
+        return null == PROCESS_ID.get();
     }
     
     /**
-     * Next unique resource id.
+     * Get process ID.
      *
-     * @return next ID
+     * @return process ID
      */
-    public String nextId() {
-        return String.format("%d-", count.incrementAndGet());
+    public static String get() {
+        return PROCESS_ID.get();
+    }
+    
+    /**
+     * Set process ID.
+     *
+     * @param processId process ID
+     */
+    public static void set(final String processId) {
+        PROCESS_ID.set(processId);
+    }
+    
+    /**
+     * Remove process ID.
+     */
+    public static void remove() {
+        PROCESS_ID.remove();
     }
 }

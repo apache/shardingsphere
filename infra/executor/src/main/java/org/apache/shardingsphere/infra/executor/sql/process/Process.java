@@ -30,12 +30,16 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Process context.
+ * Process.
  */
 @Getter
-public final class ProcessContext {
+public final class Process {
     
     private final String id;
+    
+    private final long startMillis;
+    
+    private final String sql;
     
     private final String databaseName;
     
@@ -49,22 +53,20 @@ public final class ProcessContext {
     
     private final AtomicInteger completedUnitCount;
     
-    private volatile String sql;
+    private final boolean idle;
     
-    private volatile long startMillis;
-    
-    private volatile boolean idle;
-    
-    public ProcessContext(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+    public Process(final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         this("", executionGroupContext, true);
     }
     
-    public ProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
+    public Process(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext) {
         this(sql, executionGroupContext, false);
     }
     
-    private ProcessContext(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean idle) {
-        id = executionGroupContext.getReportContext().getProcessID();
+    private Process(final String sql, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final boolean idle) {
+        id = executionGroupContext.getReportContext().getProcessId();
+        startMillis = System.currentTimeMillis();
+        this.sql = sql;
         databaseName = executionGroupContext.getReportContext().getDatabaseName();
         Grantee grantee = executionGroupContext.getReportContext().getGrantee();
         username = null == grantee ? null : grantee.getUsername();
@@ -72,8 +74,6 @@ public final class ProcessContext {
         totalUnitCount = executionGroupContext.getInputGroups().stream().mapToInt(each -> each.getInputs().size()).sum();
         processStatements = getProcessStatements(executionGroupContext);
         completedUnitCount = new AtomicInteger(0);
-        this.sql = sql;
-        startMillis = System.currentTimeMillis();
         this.idle = idle;
     }
     
@@ -103,14 +103,5 @@ public final class ProcessContext {
      */
     public int getCompletedUnitCount() {
         return completedUnitCount.get();
-    }
-    
-    /**
-     * Reset.
-     */
-    public void reset() {
-        sql = "";
-        startMillis = System.currentTimeMillis();
-        idle = true;
     }
 }

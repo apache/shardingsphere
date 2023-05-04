@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.process.yaml;
+package org.apache.shardingsphere.db.protocol.mysql.netty;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 
 /**
- * Process list contexts for YAML.
+ * Handle MySQL sequence ID before sending to downstream.
  */
-@Getter
-@Setter
-public final class YamlProcessListContexts implements YamlConfiguration {
+public final class MySQLSequenceIdInboundHandler extends ChannelInboundHandlerAdapter {
     
-    private Collection<YamlProcessContext> contexts = new LinkedList<>();
+    @Override
+    public void channelRead(final ChannelHandlerContext context, final Object msg) {
+        ByteBuf byteBuf = (ByteBuf) msg;
+        short sequenceId = byteBuf.readUnsignedByte();
+        context.channel().attr(MySQLConstants.MYSQL_SEQUENCE_ID).get().set(sequenceId + 1);
+        context.fireChannelRead(byteBuf.readSlice(byteBuf.readableBytes()));
+    }
 }

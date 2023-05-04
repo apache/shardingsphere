@@ -15,11 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.process.fixture;
+package org.apache.shardingsphere.infra.executor.sql.process.yaml;
 
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-public final class EventBusContextHolderFixture {
+/**
+ * YAML process.
+ */
+@Getter
+@Setter
+public final class YamlProcess implements YamlConfiguration {
     
-    public static final EventBusContext EVENT_BUS_CONTEXT = new EventBusContext();
+    private String id;
+    
+    private Long startMillis;
+    
+    private String sql;
+    
+    private String databaseName;
+    
+    private String username;
+    
+    private String hostname;
+    
+    private int totalUnitCount;
+    
+    private int completedUnitCount;
+    
+    private boolean idle;
 }

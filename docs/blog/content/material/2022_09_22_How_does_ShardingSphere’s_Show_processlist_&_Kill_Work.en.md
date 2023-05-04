@@ -55,9 +55,9 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     @Override
     public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
                        final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
-        ExecuteProcessContext processContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants);
-        ShowProcessListManager.getInstance().putProcessContext(processContext.getProcessID(), processContext);
-        ShowProcessListManager.getInstance().putProcessStatement(processContext.getProcessID(), processContext.getProcessStatements());
+        ExecuteProcessContext process = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants);
+        ShowProcessListManager.getInstance().putProcessContext(process.getProcessID(), process);
+        ShowProcessListManager.getInstance().putProcessStatement(process.getProcessID(), process.getProcessStatements());
     }
 }@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowProcessListManager {
@@ -65,7 +65,7 @@ public final class ShowProcessListManager {
     private static final ShowProcessListManager INSTANCE = new ShowProcessListManager();
     
     @Getter
-    private final Map<String, ExecuteProcessContext> processContexts = new ConcurrentHashMap<>();
+    private final Map<String, ExecuteProcessContext> processes = new ConcurrentHashMap<>();
     
     @Getter
     private final Map<String, Collection<Statement>> processStatements = new ConcurrentHashMap<>();
@@ -74,8 +74,8 @@ public final class ShowProcessListManager {
         return INSTANCE;
     }
     
-    public void putProcessContext(final String processID, final ExecuteProcessContext processContext) {
-        processContexts.put(processID, processContext);
+    public void putProcessContext(final String processID, final ExecuteProcessContext process) {
+        processes.put(processID, process);
     }
     
     public void putProcessStatement(final String processID, final Collection<Statement> statements) {
@@ -87,7 +87,7 @@ public final class ShowProcessListManager {
 }
 ```
 
-As shown above, the `ShowProcessListManager` class has two cache Maps, namely `processContexts` and `processStatements`. The former stores the mapping between `processID` and `ExecuteProcessContext`.
+As shown above, the `ShowProcessListManager` class has two cache Maps, namely `processes` and `processStatements`. The former stores the mapping between `processID` and `ExecuteProcessContext`.
 
 The latter contains the mapping between `processID` and `Statement objects` that may generate multiple statements after the SQL is overwritten.
 
@@ -130,7 +130,7 @@ public final class ProxyJDBCExecutor {
 
 As shown above, `ExecuteProcessEngine.initialize(queryContext, executionGroupContext, eventBusContext);` will store the SQL information in the two cache Maps. Finally, `ExecuteProcessEngine.clean();` in the code block will clear up the Map in the cache.
 
-The SQL shown in the `Show processlist` was obtained from `processContexts`. But this Map is just a local cache. If ShardingSphere is deployed in cluster mode, how does `Show processlist` obtain SQL running on other machines in the cluster? Let's see how ShardingSphere handles it.
+The SQL shown in the `Show processlist` was obtained from `processes`. But this Map is just a local cache. If ShardingSphere is deployed in cluster mode, how does `Show processlist` obtain SQL running on other machines in the cluster? Let's see how ShardingSphere handles it.
 
 ## 2.2 How does `Show processlist` work?
 
@@ -167,22 +167,22 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         if (null == batchProcessContexts || batchProcessContexts.isEmpty()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        Collection<YamlExecuteProcessContext> processContexts = new LinkedList<>();
+        Collection<YamlExecuteProcessContext> processes = new LinkedList<>();
         for (String each : batchProcessContexts) {
-            processContexts.addAll(YamlEngine.unmarshal(each, BatchYamlExecuteProcessContext.class).getContexts());
+            processes.addAll(YamlEngine.unmarshal(each, BatchYamlExecuteProcessContext.class).getContexts());
         }
-        List<MemoryQueryResultDataRow> rows = processContexts.stream().map(processContext -> {
+        List<MemoryQueryResultDataRow> rows = processes.stream().map(process -> {
             List<Object> rowValues = new ArrayList<>(8);
-            rowValues.add(processContext.getProcessIDID());
-            rowValues.add(processContext.getUsername());
-            rowValues.add(processContext.getHostname());
-            rowValues.add(processContext.getDatabaseName());
+            rowValues.add(process.getProcessIDID());
+            rowValues.add(process.getUsername());
+            rowValues.add(process.getHostname());
+            rowValues.add(process.getDatabaseName());
             rowValues.add("Execute");
-            rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - processContext.getStartTimeMillis()));
-            int processDoneCount = processContext.getUnitStatuses().stream().map(each -> ExecuteProcessConstants.EXECUTE_STATUS_DONE == each.getStatus() ? 1 : 0).reduce(0, Integer::sum);
+            rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - process.getStartTimeMillis()));
+            int processDoneCount = process.getUnitStatuses().stream().map(each -> ExecuteProcessConstants.EXECUTE_STATUS_DONE == each.getStatus() ? 1 : 0).reduce(0, Integer::sum);
             String statePrefix = "Executing ";
-            rowValues.add(statePrefix + processDoneCount + "/" + processContext.getUnitStatuses().size());
-            String sql = processContext.getSql();
+            rowValues.add(statePrefix + processDoneCount + "/" + process.getUnitStatuses().size());
+            String sql = process.getSql();
             if (null != sql && sql.length() > 100) {
                 sql = sql.substring(0, 100);
             }
@@ -311,17 +311,17 @@ public final class ClusterContextManagerCoordinator {    @Subscribe
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
-        Collection<ExecuteProcessContext> processContexts = ShowProcessListManager.getInstance().getAllProcessContext();
-        if (!processContexts.isEmpty()) {
+        Collection<ExecuteProcessContext> processes = ShowProcessListManager.getInstance().getAllProcessContext();
+        if (!processes.isEmpty()) {
             registryCenter.getRepository().persist(ProcessNode.getProcessListInstancePath(event.getProcessId(), event.getInstanceId()),
-                    YamlEngine.marshal(new BatchYamlExecuteProcessContext(processContexts)));
+                    YamlEngine.marshal(new BatchYamlExecuteProcessContext(processes)));
         }
         registryCenter.getRepository().delete(ComputeNode.getProcessTriggerInstanceIdNodePath(event.getInstanceId(), event.getProcessId()));
     }
 }
 ```
 
-`ClusterContextManagerCoordinator#triggerShowProcessList` will subscribe to `ShowProcessListTriggerEvent`, in which `processContext` data is processed by itself. `ShowProcessListManager.getInstance().getAllProcessContext()` retrieves the `processContext` that is currently running (here the data refers to the SQL information that ShardingSphere stores in the Map before each SQL execution, which is described at the beginning of the article) and transfers it to the persistence layer. If the `/nodes/compute_nodes/process_trigger/<instanceId>:<processId>` node is deleted, the processing is completed.
+`ClusterContextManagerCoordinator#triggerShowProcessList` will subscribe to `ShowProcessListTriggerEvent`, in which `process` data is processed by itself. `ShowProcessListManager.getInstance().getAllProcessContext()` retrieves the `process` that is currently running (here the data refers to the SQL information that ShardingSphere stores in the Map before each SQL execution, which is described at the beginning of the article) and transfers it to the persistence layer. If the `/nodes/compute_nodes/process_trigger/<instanceId>:<processId>` node is deleted, the processing is completed.
 
 When you delete the node, monitoring will also be triggered and `ShowProcessListUnitCompleteEvent` will be posted. This event will finally awake the pending lock.
 

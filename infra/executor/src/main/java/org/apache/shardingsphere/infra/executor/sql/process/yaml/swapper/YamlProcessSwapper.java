@@ -17,32 +17,32 @@
 
 package org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper;
 
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcess;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
 /**
- * YAML process context swapper.
+ * YAML process swapper.
  */
-public final class YamlProcessContextSwapper implements YamlConfigurationSwapper<YamlProcessContext, ProcessContext> {
+public final class YamlProcessSwapper implements YamlConfigurationSwapper<YamlProcess, Process> {
     
     @Override
-    public YamlProcessContext swapToYamlConfiguration(final ProcessContext data) {
-        YamlProcessContext result = new YamlProcessContext();
-        result.setProcessID(data.getId());
+    public YamlProcess swapToYamlConfiguration(final Process data) {
+        YamlProcess result = new YamlProcess();
+        result.setId(data.getId());
+        result.setStartMillis(data.getStartMillis());
+        result.setSql(data.getSql());
         result.setDatabaseName(data.getDatabaseName());
         result.setUsername(data.getUsername());
         result.setHostname(data.getHostname());
-        result.setSql(data.getSql());
         result.setTotalUnitCount(data.getTotalUnitCount());
         result.setCompletedUnitCount(data.getCompletedUnitCount());
-        result.setStartTimeMillis(data.getStartMillis());
         result.setIdle(data.isIdle());
         return result;
     }
     
     @Override
-    public ProcessContext swapToObject(final YamlProcessContext yamlConfig) {
-        throw new UnsupportedOperationException("YamlProcessContextSwapper.swapToObject");
+    public Process swapToObject(final YamlProcess yamlConfig) {
+        throw new UnsupportedOperationException("YamlProcessSwapper.swapToObject");
     }
 }

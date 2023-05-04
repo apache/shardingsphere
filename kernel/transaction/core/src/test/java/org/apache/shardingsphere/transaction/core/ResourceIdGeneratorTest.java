@@ -15,34 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.process.yaml;
+package org.apache.shardingsphere.transaction.core;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.junit.jupiter.api.Test;
 
-/**
- * Process context for YAML.
- */
-@Getter
-@Setter
-public final class YamlProcessContext implements YamlConfiguration {
+import java.util.regex.Pattern;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class ResourceIdGeneratorTest {
     
-    private String processID;
+    @Test
+    void assertNextIdProperly() {
+        assertTrue(isStartWithNumber(ResourceIdGenerator.getInstance().nextId()));
+    }
     
-    private String databaseName;
-    
-    private String username;
-    
-    private String hostname;
-    
-    private String sql;
-    
-    private int totalUnitCount;
-    
-    private int completedUnitCount;
-    
-    private Long startTimeMillis;
-    
-    private boolean idle;
+    private boolean isStartWithNumber(final String resourceId) {
+        Pattern pattern = Pattern.compile("[0-9]+-.*");
+        return pattern.matcher(resourceId).matches();
+    }
 }

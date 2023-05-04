@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.process;
+package org.apache.shardingsphere.infra.executor.sql.process.yaml;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
- * Process reporter cleaner.
+ * YAML process list.
  */
-@SingletonSPI
-public interface ProcessReporterCleaner {
+@Getter
+@Setter
+public final class YamlProcessList implements YamlConfiguration {
     
-    /**
-     * Reset reporter.
-     * 
-     * @param context process context
-     */
-    void reset(ProcessContext context);
+    private Collection<YamlProcess> processes = new LinkedList<>();
 }

@@ -63,16 +63,16 @@ class ShowProcessListExecutorTest {
     }
     
     private void setupBatchProcessContexts(final ShowProcessListExecutor showProcessListExecutor) throws ReflectiveOperationException {
-        String executionNodeValue = "contexts:\n"
-                + "- processID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
+        String executionNodeValue = "processes:\n"
+                + "- id: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
                 + "  sql: alter table t_order add column a varchar(64) after order_id\n"
-                + "  startTimeMillis: 1617939785160\n"
+                + "  startMillis: 1617939785160\n"
                 + "  databaseName: sharding_db\n"
                 + "  username: sharding\n"
                 + "  hostname: 127.0.0.1\n"
                 + "  totalUnitCount: 2\n"
                 + "  completedUnitCount: 1\n"
                 + "  idle: false\n";
-        Plugins.getMemberAccessor().set(showProcessListExecutor.getClass().getDeclaredField("batchProcessContexts"), showProcessListExecutor, Collections.singleton(executionNodeValue));
+        Plugins.getMemberAccessor().set(showProcessListExecutor.getClass().getDeclaredField("processes"), showProcessListExecutor, Collections.singleton(executionNodeValue));
     }
 }

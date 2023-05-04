@@ -15,18 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
+package org.apache.shardingsphere.transaction.core;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Show process unit complete event.
+ * Resource ID generator.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShowProcessUnitCompleteEvent implements GovernanceEvent {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ResourceIdGenerator {
     
-    private final String processId;
+    private static final ResourceIdGenerator INSTANCE = new ResourceIdGenerator();
+    
+    private final AtomicInteger count = new AtomicInteger();
+    
+    /**
+     * Get instance.
+     *
+     * @return instance
+     */
+    public static ResourceIdGenerator getInstance() {
+        return INSTANCE;
+    }
+    
+    /**
+     * Next unique resource id.
+     *
+     * @return next ID
+     */
+    public String nextId() {
+        return String.format("%d-", count.incrementAndGet());
+    }
 }
