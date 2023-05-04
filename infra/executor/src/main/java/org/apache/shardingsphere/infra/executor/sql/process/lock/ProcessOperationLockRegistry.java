@@ -15,68 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.process;
+package org.apache.shardingsphere.infra.executor.sql.process.lock;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Process registry.
+ * Process operation lock registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProcessRegistry {
+@Getter
+public final class ProcessOperationLockRegistry {
     
-    private static final ProcessRegistry INSTANCE = new ProcessRegistry();
+    private static final ProcessOperationLockRegistry INSTANCE = new ProcessOperationLockRegistry();
     
-    private final Map<String, Process> processes = new ConcurrentHashMap<>();
+    private final Map<String, ProcessOperationLock> locks = new ConcurrentHashMap<>();
     
     /**
      * Get process registry.
      *
      * @return got instance
      */
-    public static ProcessRegistry getInstance() {
+    public static ProcessOperationLockRegistry getInstance() {
         return INSTANCE;
-    }
-    
-    /**
-     * Put process.
-     * 
-     * @param process process
-     */
-    public void add(final Process process) {
-        processes.put(process.getId(), process);
-    }
-    
-    /**
-     * Get process.
-     * 
-     * @param id process ID
-     * @return process
-     */
-    public Process get(final String id) {
-        return processes.get(id);
-    }
-    
-    /**
-     * Remove process.
-     * 
-     * @param id process ID
-     */
-    public void remove(final String id) {
-        processes.remove(id);
-    }
-    
-    /**
-     * List all process.
-     * 
-     * @return all processes
-     */
-    public Collection<Process> listAll() {
-        return processes.values();
     }
 }
