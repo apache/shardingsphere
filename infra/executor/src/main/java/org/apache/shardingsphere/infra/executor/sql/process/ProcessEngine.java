@@ -44,7 +44,7 @@ public final class ProcessEngine {
     public String connect(final Grantee grantee, final String databaseName) {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
         Process process = new Process(executionGroupContext);
-        ProcessRegistry.getInstance().addProcess(process);
+        ProcessRegistry.getInstance().add(process);
         return executionGroupContext.getReportContext().getProcessId();
     }
     
@@ -54,7 +54,7 @@ public final class ProcessEngine {
      * @param processId process ID
      */
     public void disconnect(final String processId) {
-        ProcessRegistry.getInstance().removeProcess(processId);
+        ProcessRegistry.getInstance().remove(processId);
         
     }
     
@@ -68,7 +68,7 @@ public final class ProcessEngine {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
             ProcessIdContext.set(executionGroupContext.getReportContext().getProcessId());
             Process process = new Process(queryContext.getSql(), executionGroupContext);
-            ProcessRegistry.getInstance().addProcess(process);
+            ProcessRegistry.getInstance().add(process);
         }
     }
     
@@ -79,7 +79,7 @@ public final class ProcessEngine {
         if (ProcessIdContext.isEmpty()) {
             return;
         }
-        ProcessRegistry.getInstance().getProcess(ProcessIdContext.get()).completeExecutionUnit();
+        ProcessRegistry.getInstance().get(ProcessIdContext.get()).completeExecutionUnit();
     }
     
     /**
@@ -89,13 +89,13 @@ public final class ProcessEngine {
         if (ProcessIdContext.isEmpty()) {
             return;
         }
-        Process process = ProcessRegistry.getInstance().getProcess(ProcessIdContext.get());
+        Process process = ProcessRegistry.getInstance().get(ProcessIdContext.get());
         if (null == process) {
             return;
         }
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
                 Collections.emptyList(), new ExecutionGroupReportContext(ProcessIdContext.get(), process.getDatabaseName(), new Grantee(process.getUsername(), process.getHostname())));
-        ProcessRegistry.getInstance().addProcess(new Process(executionGroupContext));
+        ProcessRegistry.getInstance().add(new Process(executionGroupContext));
         ProcessIdContext.remove();
     }
     

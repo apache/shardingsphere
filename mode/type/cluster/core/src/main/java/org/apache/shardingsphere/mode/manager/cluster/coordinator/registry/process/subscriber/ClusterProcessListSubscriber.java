@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLock;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
@@ -56,15 +56,15 @@ public final class ClusterProcessListSubscriber implements ProcessListSubscriber
     @Subscribe
     public void postShowProcessListData(final ShowProcessListRequestEvent event) {
         String taskId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
-        boolean isTriggerCompleted = false;
-        Collection<String> triggerPaths = getTriggerPaths(taskId);
+        Collection<String> triggerPaths = getShowProcessListTriggerPaths(taskId);
+        boolean isCompleted = false;
         try {
             triggerPaths.forEach(each -> repository.persist(each, ""));
-            isTriggerCompleted = waitAllNodeDataReady(taskId, triggerPaths);
+            isCompleted = waitAllInstancesReady(taskId, triggerPaths);
             postShowProcessListData(taskId);
         } finally {
             repository.delete(ProcessNode.getProcessIdPath(taskId));
-            if (!isTriggerCompleted) {
+            if (!isCompleted) {
                 triggerPaths.forEach(repository::delete);
             }
         }
@@ -76,7 +76,7 @@ public final class ClusterProcessListSubscriber implements ProcessListSubscriber
         eventBusContext.post(new ShowProcessListResponseEvent(yamlProcessListContexts));
     }
     
-    private Collection<String> getTriggerPaths(final String taskId) {
+    private Collection<String> getShowProcessListTriggerPaths(final String taskId) {
         return Stream.of(InstanceType.values())
                 .flatMap(each -> repository.getChildrenKeys(ComputeNode.getOnlineNodePath(each)).stream().map(onlinePath -> ComputeNode.getProcessTriggerInstanceNodePath(onlinePath, taskId)))
                 .collect(Collectors.toList());
@@ -86,27 +86,27 @@ public final class ClusterProcessListSubscriber implements ProcessListSubscriber
     @Subscribe
     public void killProcess(final KillProcessRequestEvent event) {
         String processId = event.getId();
-        boolean killProcessIdIsComplete = false;
-        Collection<String> processKillPaths = getProcessKillPaths(processId);
+        Collection<String> triggerPaths = getKillProcessTriggerPaths(processId);
+        boolean isCompleted = false;
         try {
-            processKillPaths.forEach(each -> repository.persist(each, ""));
-            killProcessIdIsComplete = waitAllNodeDataReady(processId, processKillPaths);
+            triggerPaths.forEach(each -> repository.persist(each, ""));
+            isCompleted = waitAllInstancesReady(processId, triggerPaths);
         } finally {
-            if (!killProcessIdIsComplete) {
-                processKillPaths.forEach(repository::delete);
+            if (!isCompleted) {
+                triggerPaths.forEach(repository::delete);
             }
         }
     }
     
-    private Collection<String> getProcessKillPaths(final String processId) {
+    private Collection<String> getKillProcessTriggerPaths(final String processId) {
         return Stream.of(InstanceType.values())
                 .flatMap(each -> repository.getChildrenKeys(ComputeNode.getOnlineNodePath(each)).stream().map(onlinePath -> ComputeNode.getProcessKillInstanceIdNodePath(onlinePath, processId)))
                 .collect(Collectors.toList());
     }
     
-    private boolean waitAllNodeDataReady(final String processId, final Collection<String> paths) {
-        ShowProcessListLock lock = new ShowProcessListLock();
-        ProcessRegistry.getInstance().getLocks().put(processId, lock);
+    private boolean waitAllInstancesReady(final String lockId, final Collection<String> paths) {
+        ProcessOperationLock lock = new ProcessOperationLock();
+        ProcessOperationLockRegistry.getInstance().getLocks().put(lockId, lock);
         lock.lock();
         try {
             while (!isReady(paths)) {
@@ -117,7 +117,7 @@ public final class ClusterProcessListSubscriber implements ProcessListSubscriber
             return true;
         } finally {
             lock.unlock();
-            ProcessRegistry.getInstance().getLocks().remove(processId);
+            ProcessOperationLockRegistry.getInstance().getLocks().remove(lockId);
         }
     }
     

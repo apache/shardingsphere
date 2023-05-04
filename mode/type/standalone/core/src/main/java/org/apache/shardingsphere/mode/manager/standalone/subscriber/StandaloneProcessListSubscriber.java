@@ -51,14 +51,14 @@ public final class StandaloneProcessListSubscriber implements ProcessListSubscri
     @Override
     @Subscribe
     public void postShowProcessListData(final ShowProcessListRequestEvent event) {
-        YamlProcessList yamlProcessList = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().getAllProcesses());
+        YamlProcessList yamlProcessList = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().listAll());
         eventBusContext.post(new ShowProcessListResponseEvent(Collections.singleton(YamlEngine.marshal(yamlProcessList))));
     }
     
     @Override
     @Subscribe
     public void killProcess(final KillProcessRequestEvent event) throws SQLException {
-        Process process = ProcessRegistry.getInstance().getProcess(event.getId());
+        Process process = ProcessRegistry.getInstance().get(event.getId());
         if (null == process) {
             return;
         }

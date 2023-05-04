@@ -20,7 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proc
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLock;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
@@ -64,7 +65,7 @@ public final class ProcessListChangedSubscriber {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
-        Collection<Process> processes = ProcessRegistry.getInstance().getAllProcesses();
+        Collection<Process> processes = ProcessRegistry.getInstance().listAll();
         if (!processes.isEmpty()) {
             registryCenter.getRepository().persist(
                     ProcessNode.getProcessListInstancePath(event.getTaskId(), event.getInstanceId()), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
@@ -79,7 +80,7 @@ public final class ProcessListChangedSubscriber {
      */
     @Subscribe
     public synchronized void completeToReportLocalProcesses(final ReportLocalProcessesCompletedEvent event) {
-        ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getTaskId());
+        ProcessOperationLock lock = ProcessOperationLockRegistry.getInstance().getLocks().get(event.getTaskId());
         if (null != lock) {
             lock.doNotify();
         }
@@ -96,7 +97,7 @@ public final class ProcessListChangedSubscriber {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
-        Process process = ProcessRegistry.getInstance().getProcess(event.getProcessId());
+        Process process = ProcessRegistry.getInstance().get(event.getProcessId());
         if (null != process) {
             for (Statement each : process.getProcessStatements()) {
                 each.cancel();
@@ -112,7 +113,7 @@ public final class ProcessListChangedSubscriber {
      */
     @Subscribe
     public synchronized void completeToKillProcessInstance(final KillProcessInstanceCompleteEvent event) {
-        ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getProcessId());
+        ProcessOperationLock lock = ProcessOperationLockRegistry.getInstance().getLocks().get(event.getProcessId());
         if (null != lock) {
             lock.doNotify();
         }
