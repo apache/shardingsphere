@@ -101,7 +101,7 @@ ShardingSphere driver URL provider
 | jdbc:shardingsphere:classpath:<path>    | The classpath driver URL provider     | [`org.apache.shardingsphere.driver.jdbc.core.driver.spi.ClasspathDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/spi/ClasspathDriverURLProvider.java)       |
 | jdbc:shardingsphere:absolutepath:<path> | The absolute path driver URL provider | [`org.apache.shardingsphere.driver.jdbc.core.driver.spi.AbsolutePathDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/spi/AbsolutePathDriverURLProvider.java) |
 | jdbc:shardingsphere:apollo:<namespace>  | The apollo driver URL provider        | [`org.apache.shardingsphere.driver.jdbc.core.driver.spi.ApolloDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/spi/ApolloDriverURLProvider.java)             |
-
+| jdbc:shardingsphere:nacos:<param>       | The nacos driver URL provider        | [`org.apache.shardingsphere.driver.jdbc.core.driver.spi.NacosDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/spi/NacosDriverURLProvider.java)             |
 ### Notice
 
 When you use the Apollo driver url provider, you need to add the corresponding apollo pom dependency, currently available at version `1.9.0`, as follows:
@@ -113,3 +113,15 @@ When you use the Apollo driver url provider, you need to add the corresponding a
     <version>${apollo.version}</version>
 </dependency>
 ```
+
+When you use the Nacos driver url provider, you need to add the corresponding nacos pom dependency, currently available at version `1.4.2`, as follows:
+
+```xml
+<dependency>
+    <groupId>com.alibaba.nacos</groupId>
+    <artifactId>nacos-client</artifactId>
+    <version>${nacos-client.version}</version>
+</dependency>
+```
+nacos configuration example, where group, username, and password are not required parameters：
+```jdbc:shardingsphere:nacos:sharding-config.yaml?serverAddr=127.0.0.1:8848&namespace=dev&group=DEFAULT_GROUP&username=nacos&password=nacos```
