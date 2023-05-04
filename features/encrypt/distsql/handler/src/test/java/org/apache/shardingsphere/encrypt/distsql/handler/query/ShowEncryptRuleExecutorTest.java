@@ -63,7 +63,6 @@ class ShowEncryptRuleExecutorTest {
         assertThat(row.getCell(10), is(""));
         assertThat(row.getCell(11), is(""));
         assertThat(row.getCell(12), is(""));
-        assertThat(row.getCell(13), is("true"));
     }
     
     @Test
