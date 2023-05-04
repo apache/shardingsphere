@@ -38,7 +38,6 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,14 +58,14 @@ class ProcessEngineTest {
     void assertExecuteSQL() {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
         new ProcessEngine().executeSQL(executionGroupContext, new QueryContext(new UpdateStatementContext(getSQLStatement()), null, null));
-        verify(processRegistry).putProcessContext(eq(executionGroupContext.getReportContext().getProcessID()), any());
+        verify(processRegistry).add(any());
     }
     
     @SuppressWarnings("unchecked")
     private ExecutionGroupContext<? extends SQLExecutionUnit> mockExecutionGroupContext() {
         ExecutionGroupContext<? extends SQLExecutionUnit> result = mock(ExecutionGroupContext.class);
         ExecutionGroupReportContext reportContext = mock(ExecutionGroupReportContext.class);
-        when(reportContext.getProcessID()).thenReturn(UUID.randomUUID().toString());
+        when(reportContext.getProcessId()).thenReturn(UUID.randomUUID().toString());
         when(result.getReportContext()).thenReturn(reportContext);
         return result;
     }
@@ -80,10 +79,10 @@ class ProcessEngineTest {
     
     @Test
     void assertCompleteSQLUnitExecution() {
-        ProcessIDContext.set("foo_id");
-        when(processRegistry.getProcessContext("foo_id")).thenReturn(mock(ProcessContext.class));
+        ProcessIdContext.set("foo_id");
+        when(processRegistry.get("foo_id")).thenReturn(mock(Process.class));
         new ProcessEngine().completeSQLUnitExecution();
-        verify(processRegistry).getProcessContext("foo_id");
-        ProcessIDContext.remove();
+        verify(processRegistry).get("foo_id");
+        ProcessIdContext.remove();
     }
 }

@@ -15,23 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.transaction.core;
+package org.apache.shardingsphere.infra.executor.sql.process.lock;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.regex.Pattern;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class ResourceIDGeneratorTest {
+/**
+ * Process operation lock release strategy.
+ */
+@FunctionalInterface
+public interface ProcessOperationLockReleaseStrategy {
     
-    @Test
-    void assertNextIdProperly() {
-        assertTrue(isStartWithNumber(ResourceIDGenerator.getInstance().nextId()));
-    }
-    
-    private boolean isStartWithNumber(final String resourceId) {
-        Pattern pattern = Pattern.compile("[0-9]+-.*");
-        return pattern.matcher(resourceId).matches();
-    }
+    /**
+     * Judge lock is ready to release.
+     * 
+     * @return lock is ready to release or not
+     */
+    boolean isReadyToRelease();
 }

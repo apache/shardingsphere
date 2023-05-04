@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.sql.process;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
 
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessReporterCleaner;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 
 /**
- * Process reporter cleaner for driver.
+ * Report local processes completed event.
  */
-public final class DriverProcessReporterCleaner implements ProcessReporterCleaner {
+@RequiredArgsConstructor
+@Getter
+public final class ReportLocalProcessesCompletedEvent implements GovernanceEvent {
     
-    @Override
-    public void reset(final ProcessContext context) {
-        ProcessRegistry.getInstance().removeProcessContext(context.getId());
-    }
+    private final String taskId;
 }

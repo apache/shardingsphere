@@ -18,19 +18,19 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.executor.sql.process.ProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ShowProcessListLock;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListContextsSwapper;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
+import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessUnitCompleteEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessInstanceCompleteEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessUnitCompleteEvent;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -46,7 +46,7 @@ public final class ProcessListChangedSubscriber {
     
     private final ContextManager contextManager;
     
-    private final YamlProcessListContextsSwapper swapper = new YamlProcessListContextsSwapper();
+    private final YamlProcessListSwapper swapper = new YamlProcessListSwapper();
     
     public ProcessListChangedSubscriber(final RegistryCenter registryCenter, final ContextManager contextManager) {
         this.registryCenter = registryCenter;
@@ -64,12 +64,22 @@ public final class ProcessListChangedSubscriber {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
-        Collection<ProcessContext> processContexts = ProcessRegistry.getInstance().getAllProcessContexts();
-        if (!processContexts.isEmpty()) {
+        Collection<Process> processes = ProcessRegistry.getInstance().listAll();
+        if (!processes.isEmpty()) {
             registryCenter.getRepository().persist(
-                    ProcessNode.getProcessListInstancePath(event.getProcessId(), event.getInstanceId()), YamlEngine.marshal(swapper.swapToYamlConfiguration(processContexts)));
+                    ProcessNode.getProcessListInstancePath(event.getTaskId(), event.getInstanceId()), YamlEngine.marshal(swapper.swapToYamlConfiguration(processes)));
         }
-        registryCenter.getRepository().delete(ComputeNode.getProcessTriggerInstanceNodePath(event.getInstanceId(), event.getProcessId()));
+        registryCenter.getRepository().delete(ComputeNode.getProcessTriggerInstanceNodePath(event.getInstanceId(), event.getTaskId()));
+    }
+    
+    /**
+     * Complete to report local processes.
+     *
+     * @param event report local processes completed event
+     */
+    @Subscribe
+    public synchronized void completeToReportLocalProcesses(final ReportLocalProcessesCompletedEvent event) {
+        ProcessOperationLockRegistry.getInstance().notify(event.getTaskId());
     }
     
     /**
@@ -83,9 +93,9 @@ public final class ProcessListChangedSubscriber {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
-        ProcessContext processContext = ProcessRegistry.getInstance().getProcessContext(event.getProcessId());
-        if (null != processContext) {
-            for (Statement each : processContext.getProcessStatements()) {
+        Process process = ProcessRegistry.getInstance().get(event.getProcessId());
+        if (null != process) {
+            for (Statement each : process.getProcessStatements()) {
                 each.cancel();
             }
         }
@@ -93,28 +103,12 @@ public final class ProcessListChangedSubscriber {
     }
     
     /**
-     * Complete show process unit.
+     * Complete to kill process instance.
      *
-     * @param event show process unit complete event
+     * @param event kill process instance complete event
      */
     @Subscribe
-    public synchronized void completeShowProcessUnit(final ShowProcessUnitCompleteEvent event) {
-        ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getProcessId());
-        if (null != lock) {
-            lock.doNotify();
-        }
-    }
-    
-    /**
-     * Complete to kill process unit.
-     *
-     * @param event kill process unit complete event
-     */
-    @Subscribe
-    public synchronized void completeKillProcessUnit(final KillProcessUnitCompleteEvent event) {
-        ShowProcessListLock lock = ProcessRegistry.getInstance().getLocks().get(event.getProcessId());
-        if (null != lock) {
-            lock.doNotify();
-        }
+    public synchronized void completeToKillProcessInstance(final KillProcessInstanceCompleteEvent event) {
+        ProcessOperationLockRegistry.getInstance().notify(event.getProcessId());
     }
 }

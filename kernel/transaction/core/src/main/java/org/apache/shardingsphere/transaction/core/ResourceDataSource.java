@@ -43,7 +43,7 @@ public final class ResourceDataSource {
         Preconditions.checkState(2 == databaseAndDataSourceName.length, String.format("Database and data source name must be provided,`%s`.", originalName));
         this.originalName = originalName;
         this.dataSource = dataSource;
-        uniqueResourceName = ResourceIDGenerator.getInstance().nextId() + databaseAndDataSourceName[1];
+        uniqueResourceName = ResourceIdGenerator.getInstance().nextId() + databaseAndDataSourceName[1];
         ShardingSpherePreconditions.checkState(uniqueResourceName.getBytes().length <= MAX_RESOURCE_NAME_LENGTH, () -> new XAResourceNameLengthExceededException(uniqueResourceName));
     }
 }
