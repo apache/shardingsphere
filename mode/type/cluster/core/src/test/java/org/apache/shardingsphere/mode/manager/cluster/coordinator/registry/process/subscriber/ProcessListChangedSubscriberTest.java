@@ -102,12 +102,14 @@ class ProcessListChangedSubscriberTest {
     @Test
     void assertReportLocalProcesses() throws ReflectiveOperationException {
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
-        ProcessRegistry.getInstance().putProcess("foo_id", mock(Process.class));
+        Process process = mock(Process.class);
         String processId = "foo_id";
+        when(process.getId()).thenReturn(processId);
+        ProcessRegistry.getInstance().addProcess(process);
         subscriber.reportLocalProcesses(new ShowProcessListTriggerEvent(instanceId, processId));
         ClusterPersistRepository repository = ((RegistryCenter) Plugins.getMemberAccessor().get(ProcessListChangedSubscriber.class.getDeclaredField("registryCenter"), subscriber)).getRepository();
         verify(repository).persist("/execution_nodes/foo_id/" + instanceId,
-                "processes:" + System.lineSeparator() + "- completedUnitCount: 0\n  idle: false\n  startMillis: 0\n  totalUnitCount: 0" + System.lineSeparator());
+                "processes:" + System.lineSeparator() + "- completedUnitCount: 0\n  id: foo_id\n  idle: false\n  startMillis: 0\n  totalUnitCount: 0" + System.lineSeparator());
         verify(repository).delete("/nodes/compute_nodes/process_trigger/" + instanceId + ":foo_id");
     }
     

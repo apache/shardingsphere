@@ -51,11 +51,10 @@ public final class ProcessRegistry {
     /**
      * Put process.
      * 
-     * @param processId process ID
      * @param process process
      */
-    public void putProcess(final String processId, final Process process) {
-        processes.put(processId, process);
+    public void addProcess(final Process process) {
+        processes.put(process.getId(), process);
     }
     
     /**
