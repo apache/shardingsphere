@@ -20,8 +20,6 @@ package org.apache.shardingsphere.mode.manager.standalone.subscriber;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.process.ProcessSubscriber;
 import org.apache.shardingsphere.mode.process.event.KillProcessRequestEvent;
@@ -39,8 +37,6 @@ public final class StandaloneProcessSubscriber implements ProcessSubscriber {
     
     private final EventBusContext eventBusContext;
     
-    private final YamlProcessListSwapper swapper = new YamlProcessListSwapper();
-    
     public StandaloneProcessSubscriber(final EventBusContext eventBusContext) {
         this.eventBusContext = eventBusContext;
         eventBusContext.register(this);
@@ -49,8 +45,7 @@ public final class StandaloneProcessSubscriber implements ProcessSubscriber {
     @Override
     @Subscribe
     public void postShowProcessListData(final ShowProcessListRequestEvent event) {
-        YamlProcessList yamlProcessList = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().listAll());
-        eventBusContext.post(new ShowProcessListResponseEvent(yamlProcessList.getProcesses()));
+        eventBusContext.post(new ShowProcessListResponseEvent(ProcessRegistry.getInstance().listAll()));
     }
     
     @Override

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcess;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("UnstableApiUsage")
 public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor {
     
-    private Collection<YamlProcess> processes;
+    private Collection<Process> processes;
     
     @Getter
     private QueryResultMetaData queryResultMetaData;
@@ -85,7 +85,7 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     
-    private static MemoryQueryResultDataRow getMemoryQueryResultDataRow(final YamlProcess process) {
+    private static MemoryQueryResultDataRow getMemoryQueryResultDataRow(final Process process) {
         List<Object> rowValues = new ArrayList<>(8);
         rowValues.add(process.getId());
         rowValues.add(process.getUsername());
