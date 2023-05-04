@@ -118,7 +118,7 @@ ShardingSphere 驱动 URL 提供器
 | jdbc:shardingsphere:classpath:<path>    | 驱动的类路径加载器      | [`org.apache.shardingsphere.driver.jdbc.core.driver.spi.ClasspathDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/spi/ClasspathDriverURLProvider.java)       |
 | jdbc:shardingsphere:absolutepath:<path> | 驱动的绝对路径加载器     | [`org.apache.shardingsphere.driver.jdbc.core.driver.spi.AbsolutePathDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/spi/AbsolutePathDriverURLProvider.java) |
 | jdbc:shardingsphere:apollo:<namespace>  | 驱动的 Apollo 加载器 | [`org.apache.shardingsphere.driver.jdbc.core.driver.spi.ApolloDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/spi/ApolloDriverURLProvider.java)             |
-| jdbc:shardingsphere:nacos:<param>      | 驱动的 Nacos 加载器 | [`org.apache.shardingsphere.driver.jdbc.core.driver.spi.ApolloDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/spi/NacosDriverURLProvider.java)             |
+| jdbc:shardingsphere:nacos:<param>      | 驱动的 Nacos 加载器 | [`org.apache.shardingsphere.driver.jdbc.core.driver.spi.NacosDriverURLProvider`](https://github.com/apache/shardingsphere/blob/master/jdbc/core/src/main/java/org/apache/shardingsphere/driver/jdbc/core/driver/spi/NacosDriverURLProvider.java)             |
 ### 注意
 
 当您使用 Apollo 加载器时，需要添加对应的 apollo 的 pom 依赖，目前适配的版本为 `1.9.0` , 如下：
