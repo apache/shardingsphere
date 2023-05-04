@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLock;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
@@ -60,7 +59,7 @@ public final class ClusterProcessListSubscriber implements ProcessListSubscriber
         boolean isCompleted = false;
         try {
             triggerPaths.forEach(each -> repository.persist(each, ""));
-            isCompleted = waitAllInstancesReady(taskId, triggerPaths);
+            isCompleted = ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(taskId, () -> isReady(triggerPaths));
             postShowProcessListData(taskId);
         } finally {
             repository.delete(ProcessNode.getProcessIdPath(taskId));
@@ -82,6 +81,10 @@ public final class ClusterProcessListSubscriber implements ProcessListSubscriber
                 .collect(Collectors.toList());
     }
     
+    private boolean isReady(final Collection<String> paths) {
+        return paths.stream().noneMatch(each -> null != repository.getDirectly(each));
+    }
+    
     @Override
     @Subscribe
     public void killProcess(final KillProcessRequestEvent event) {
@@ -90,7 +93,7 @@ public final class ClusterProcessListSubscriber implements ProcessListSubscriber
         boolean isCompleted = false;
         try {
             triggerPaths.forEach(each -> repository.persist(each, ""));
-            isCompleted = waitAllInstancesReady(processId, triggerPaths);
+            isCompleted = ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(processId, () -> isReady(triggerPaths));
         } finally {
             if (!isCompleted) {
                 triggerPaths.forEach(repository::delete);
@@ -102,26 +105,5 @@ public final class ClusterProcessListSubscriber implements ProcessListSubscriber
         return Stream.of(InstanceType.values())
                 .flatMap(each -> repository.getChildrenKeys(ComputeNode.getOnlineNodePath(each)).stream().map(onlinePath -> ComputeNode.getProcessKillInstanceIdNodePath(onlinePath, processId)))
                 .collect(Collectors.toList());
-    }
-    
-    private boolean waitAllInstancesReady(final String lockId, final Collection<String> paths) {
-        ProcessOperationLock lock = new ProcessOperationLock();
-        ProcessOperationLockRegistry.getInstance().getLocks().put(lockId, lock);
-        lock.lock();
-        try {
-            while (!isReady(paths)) {
-                if (!lock.awaitDefaultTime()) {
-                    return false;
-                }
-            }
-            return true;
-        } finally {
-            lock.unlock();
-            ProcessOperationLockRegistry.getInstance().getLocks().remove(lockId);
-        }
-    }
-    
-    private boolean isReady(final Collection<String> paths) {
-        return paths.stream().noneMatch(each -> null != repository.getDirectly(each));
     }
 }

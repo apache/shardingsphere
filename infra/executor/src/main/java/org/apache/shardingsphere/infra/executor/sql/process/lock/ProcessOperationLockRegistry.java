@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.executor.sql.process.lock;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Map;
@@ -28,7 +27,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Process operation lock registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
 public final class ProcessOperationLockRegistry {
     
     private static final ProcessOperationLockRegistry INSTANCE = new ProcessOperationLockRegistry();
@@ -36,11 +34,47 @@ public final class ProcessOperationLockRegistry {
     private final Map<String, ProcessOperationLock> locks = new ConcurrentHashMap<>();
     
     /**
-     * Get process registry.
+     * Get process operation lock registry.
      *
      * @return got instance
      */
     public static ProcessOperationLockRegistry getInstance() {
         return INSTANCE;
+    }
+    
+    /**
+     * Wait until release ready.
+     * 
+     * @param lockId lock ID
+     * @param releaseStrategy process operation lock release strategy
+     * @return release ready or not
+     */
+    public boolean waitUntilReleaseReady(final String lockId, final ProcessOperationLockReleaseStrategy releaseStrategy) {
+        ProcessOperationLock lock = new ProcessOperationLock();
+        locks.put(lockId, lock);
+        lock.lock();
+        try {
+            while (!releaseStrategy.isReadyToRelease()) {
+                if (!lock.awaitDefaultTime()) {
+                    return false;
+                }
+            }
+            return true;
+        } finally {
+            lock.unlock();
+            locks.remove(lockId);
+        }
+    }
+    
+    /**
+     * Notify lock.
+     * 
+     * @param lockId lock ID
+     */
+    public void notify(final String lockId) {
+        ProcessOperationLock lock = locks.get(lockId);
+        if (null != lock) {
+            lock.doNotify();
+        }
     }
 }
