@@ -34,17 +34,19 @@ import java.util.Properties;
 public final class NacosDriverURLProvider implements ShardingSphereDriverURLProvider {
 
     private static final String PARAM_PREFIX = "?";
+
     private static final String NACOS_TYPE = "nacos:";
+
     private static final String SHRDING_URL_PREFIX = "jdbc:shardingsphere:";
 
     @Override
-    public boolean accept(String url) {
+    public boolean accept(final String url) {
         return StringUtils.isNotBlank(url) && url.contains(NACOS_TYPE);
     }
 
     @Override
     @SneakyThrows(NacosException.class)
-    public byte[] getContent(String url) {
+    public byte[] getContent(final String url) {
         Properties props = getNacosConfigByUrl(url);
         ConfigService configService = NacosFactory.createConfigService(props);
         String dataId = props.getProperty(Constants.DATAID);
@@ -53,7 +55,7 @@ public final class NacosDriverURLProvider implements ShardingSphereDriverURLProv
         return config.getBytes(StandardCharsets.UTF_8);
     }
 
-    private Properties getNacosConfigByUrl(String url) {
+    private Properties getNacosConfigByUrl(final String url) {
         String nacosConfig = StringUtils.removeStart(url, SHRDING_URL_PREFIX + NACOS_TYPE);
         Preconditions.checkArgument(nacosConfig.indexOf(PARAM_PREFIX) > 0, "Nacos param is required in ShardingSphere driver URL.");
         String dataId = StringUtils.substringBefore(nacosConfig, PARAM_PREFIX);
@@ -66,7 +68,15 @@ public final class NacosDriverURLProvider implements ShardingSphereDriverURLProv
         return properties;
     }
 
-    public static Map<String, String> getUrlParameters(String urlParam) {
+    /**
+     * Parse url parameters.
+     *
+     * @param urlParam 'aaa=111&bbb=222'.
+     * @return  return HashMap.
+     * @author: li.ming
+     * @date: 2023/5/4 17:34
+     */
+    public Map<String, String> getUrlParameters(final String urlParam) {
         Map<String, String> mapRequest = new HashMap<>();
         String[] arrSplit;
         if (urlParam == null) {
