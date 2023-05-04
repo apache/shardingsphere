@@ -35,10 +35,10 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessCompletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillLocalProcessCompletedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillLocalProcessEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesCompletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
@@ -47,7 +47,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
@@ -73,6 +72,8 @@ class ProcessListChangedSubscriberTest {
     
     private ContextManager contextManager;
     
+    private RegistryCenter registryCenter;
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
@@ -81,7 +82,8 @@ class ProcessListChangedSubscriberTest {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(), new ShardingSphereMetaData(createDatabases(),
                 contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties()))));
-        subscriber = new ProcessListChangedSubscriber(new RegistryCenter(mock(ClusterPersistRepository.class), new EventBusContext(), mock(ProxyInstanceMetaData.class), null), contextManager);
+        registryCenter = new RegistryCenter(mock(ClusterPersistRepository.class), new EventBusContext(), mock(ProxyInstanceMetaData.class), null);
+        subscriber = new ProcessListChangedSubscriber(registryCenter, contextManager);
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
@@ -103,14 +105,14 @@ class ProcessListChangedSubscriberTest {
     }
     
     @Test
-    void assertReportLocalProcesses() throws ReflectiveOperationException {
+    void assertReportLocalProcesses() {
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         Process process = mock(Process.class);
         String processId = "foo_id";
         when(process.getId()).thenReturn(processId);
         ProcessRegistry.getInstance().add(process);
-        subscriber.reportLocalProcesses(new ShowProcessListTriggerEvent(instanceId, processId));
-        ClusterPersistRepository repository = ((RegistryCenter) Plugins.getMemberAccessor().get(ProcessListChangedSubscriber.class.getDeclaredField("registryCenter"), subscriber)).getRepository();
+        subscriber.reportLocalProcesses(new ReportLocalProcessesEvent(instanceId, processId));
+        ClusterPersistRepository repository = registryCenter.getRepository();
         verify(repository).persist("/execution_nodes/foo_id/" + instanceId,
                 "processes:" + System.lineSeparator() + "- completedUnitCount: 0\n  id: foo_id\n  idle: false\n  startMillis: 0\n  totalUnitCount: 0" + System.lineSeparator());
         verify(repository).delete("/nodes/compute_nodes/process_trigger/" + instanceId + ":foo_id");
@@ -134,16 +136,16 @@ class ProcessListChangedSubscriberTest {
     }
     
     @Test
-    void assertKillProcess() throws SQLException, ReflectiveOperationException {
+    void assertKillLocalProcess() throws SQLException {
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         String processId = "foo_id";
-        subscriber.killProcess(new KillProcessEvent(instanceId, processId));
-        ClusterPersistRepository repository = ((RegistryCenter) Plugins.getMemberAccessor().get(ProcessListChangedSubscriber.class.getDeclaredField("registryCenter"), subscriber)).getRepository();
+        subscriber.killLocalProcess(new KillLocalProcessEvent(instanceId, processId));
+        ClusterPersistRepository repository = registryCenter.getRepository();
         verify(repository).delete("/nodes/compute_nodes/process_kill/" + instanceId + ":foo_id");
     }
     
     @Test
-    void assertCompleteToKillProcess() {
+    void assertCompleteToKillLocalProcess() {
         String processId = "foo_id";
         long startMillis = System.currentTimeMillis();
         Executors.newFixedThreadPool(1).submit(() -> {
@@ -151,7 +153,7 @@ class ProcessListChangedSubscriberTest {
                 Thread.sleep(50L);
             } catch (final InterruptedException ignored) {
             }
-            subscriber.completeToKillProcess(new KillProcessCompletedEvent(processId));
+            subscriber.completeToKillLocalProcess(new KillLocalProcessCompletedEvent(processId));
         });
         waitUntilReleaseReady(processId);
         long currentMillis = System.currentTimeMillis();

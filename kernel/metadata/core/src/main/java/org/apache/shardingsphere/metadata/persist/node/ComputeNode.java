@@ -38,9 +38,9 @@ public final class ComputeNode {
     
     private static final String LABELS_NODE = "labels";
     
-    private static final String PROCESS_TRIGGER = "process_trigger";
+    private static final String SHOW_PROCESS_LIST_TRIGGER = "process_trigger";
     
-    private static final String PROCESS_KILL = "process_kill";
+    private static final String KILL_PROCESS_TRIGGER = "process_kill";
     
     private static final String STATUS_NODE = "status";
     
@@ -77,21 +77,21 @@ public final class ComputeNode {
     }
     
     /**
-     * Get process trigger node path.
+     * Get show process list trigger node path.
      * 
-     * @return path of process trigger node path
+     * @return show process list trigger node path
      */
-    public static String getProcessTriggerNodePatch() {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER);
+    public static String getShowProcessListTriggerNodePath() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, SHOW_PROCESS_LIST_TRIGGER);
     }
     
     /**
-     * Get process kill node path.
+     * Get kill process trigger node path.
      *
-     * @return path of process kill node path
+     * @return kill process trigger node path
      */
-    public static String getProcessKillNodePatch() {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_KILL);
+    public static String getKillProcessTriggerNodePath() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, KILL_PROCESS_TRIGGER);
     }
     
     /**
@@ -102,7 +102,7 @@ public final class ComputeNode {
      * @return path of process trigger instance node path
      */
     public static String getProcessTriggerInstanceNodePath(final String instanceId, final String taskId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER, String.join(":", instanceId, taskId));
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, SHOW_PROCESS_LIST_TRIGGER, String.join(":", instanceId, taskId));
     }
     
     /**
@@ -113,7 +113,7 @@ public final class ComputeNode {
      * @return path of process kill instance id node path
      */
     public static String getProcessKillInstanceIdNodePath(final String instanceId, final String processId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_KILL, String.join(":", instanceId, processId));
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, KILL_PROCESS_TRIGGER, String.join(":", instanceId, processId));
     }
     
     /**
