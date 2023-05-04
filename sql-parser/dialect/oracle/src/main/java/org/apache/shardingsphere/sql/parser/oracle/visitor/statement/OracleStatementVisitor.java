@@ -382,6 +382,15 @@ public abstract class OracleStatementVisitor extends OracleStatementBaseVisitor<
         String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
         ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
         String operator = "IS";
+        if (null != ctx.IS()) {
+            if (null != ctx.NULL()) {
+                operator = "IS NULL";
+                right = null;
+            }
+            if (null != ctx.NULL() && null != ctx.NOT()) {
+                operator = "IS NOT NULL";
+            }
+        }
         return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
     }
     

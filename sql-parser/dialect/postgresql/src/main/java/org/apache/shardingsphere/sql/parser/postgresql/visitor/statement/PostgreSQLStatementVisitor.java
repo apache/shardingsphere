@@ -356,7 +356,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     private BinaryOperationExpression createBinaryOperationSegment(final AExprContext ctx, final String operator) {
         if ("IS".equalsIgnoreCase(operator)) {
-            ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
+            String ifOperator = operator;
             String rightText;
             ExpressionSegment right;
             if (null != ctx.IS()) {
@@ -366,7 +366,15 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
                 rightText = ctx.start.getInputStream().getText(new Interval(ctx.ISNULL().getSymbol().getStartIndex() + 2, ctx.stop.getStopIndex())).trim();
                 right = new LiteralExpressionSegment(ctx.ISNULL().getSymbol().getStartIndex() + 2, ctx.stop.getStopIndex(), rightText);
             }
-            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, "IS",
+            if (null != ctx.NULL()) {
+                ifOperator = "IS NULL";
+                right = null;
+            }
+            if (null != ctx.NULL() && null != ctx.NOT()) {
+                ifOperator = "IS NOT NULL";
+            }
+            ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));
+            return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, ifOperator,
                     ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex())));
         }
         ExpressionSegment left = (ExpressionSegment) visit(ctx.aExpr(0));

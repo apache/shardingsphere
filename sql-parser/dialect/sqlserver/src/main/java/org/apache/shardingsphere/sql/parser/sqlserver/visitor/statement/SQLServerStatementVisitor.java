@@ -368,6 +368,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @Override
     public final ASTNode visitBooleanPrimary(final BooleanPrimaryContext ctx) {
         if (null != ctx.IS()) {
+            String operator = "IS";
             String rightText = "";
             if (null != ctx.NOT()) {
                 rightText = rightText.concat(ctx.start.getInputStream().getText(new Interval(ctx.NOT().getSymbol().getStartIndex(),
@@ -376,6 +377,10 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             Token operatorToken = null;
             if (null != ctx.NULL()) {
                 operatorToken = ctx.NULL().getSymbol();
+                operator = "IS NULL";
+            }
+            if (null != ctx.NULL() && null != ctx.NOT()) {
+                operator = "IS NOT NULL";
             }
             if (null != ctx.TRUE()) {
                 operatorToken = ctx.TRUE().getSymbol();
@@ -388,7 +393,9 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             ExpressionSegment right = new LiteralExpressionSegment(ctx.IS().getSymbol().getStopIndex() + 2, ctx.stop.getStopIndex(), rightText);
             String text = ctx.start.getInputStream().getText(new Interval(ctx.start.getStartIndex(), ctx.stop.getStopIndex()));
             ExpressionSegment left = (ExpressionSegment) visit(ctx.booleanPrimary());
-            String operator = "IS";
+            if (null != ctx.NULL()) {
+                right = null;
+            }
             return new BinaryOperationExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), left, right, operator, text);
         }
         if (null != ctx.comparisonOperator() || null != ctx.SAFE_EQ_()) {

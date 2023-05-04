@@ -28,8 +28,8 @@
     <sql-case id="select_with_same_table_name_and_alias_column_with_owner" value="SELECT t_order.order_id,t_order.user_id,status FROM t_order t_order WHERE t_order.user_id = ? AND order_id = ?" db-types="MySQL,H2" />
     <sql-case id="select_not_equal_with_single_table" value="SELECT * FROM t_order_item WHERE item_id &lt;&gt; ? ORDER BY item_id" />
     <sql-case id="select_exclamation_equal_with_single_table" value="SELECT * FROM t_order_item WHERE item_id != ? ORDER BY item_id" />
-    <sql-case id="select_not_in_with_single_table" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT IN (?, ?) ORDER BY item_id" db-types="MySQL"/>
-    <sql-case id="select_not_between_with_single_table" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT BETWEEN ? AND ? ORDER BY item_id" db-types="MySQL"/>
+    <sql-case id="select_not_in_with_single_table" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT IN (?, ?) ORDER BY item_id" />
+    <sql-case id="select_not_between_with_single_table" value="SELECT * FROM t_order_item WHERE item_id IS NOT NULL AND item_id NOT BETWEEN ? AND ? ORDER BY item_id" />
     <sql-case id="select_equal_with_single_table" value="SELECT * FROM t_order WHERE user_id = ? AND order_id = ?" />
     <sql-case id="select_equal_with_single_table_and_lowercase_keyword" value="select * from t_order where user_id = ? and order_id = ?" />
     <sql-case id="select_in_with_single_table" value="SELECT * FROM t_order WHERE user_id IN (?, ?, ?) AND order_id IN (?, ?) ORDER BY user_id, order_id" />

@@ -170,10 +170,7 @@
                                     <left>
                                         <column name="manager_id" start-index="164" stop-index="173" />
                                     </left>
-                                    <operator>IS</operator>
-                                    <right>
-                                        <literal-expression value="NULL" start-index="178" stop-index="181" />
-                                    </right>
+                                    <operator>IS NULL</operator>
                                 </binary-operation-expression>
                             </expr>
                         </where>
@@ -219,10 +216,7 @@
                                     <left>
                                         <column name="manager_id" start-index="173" stop-index="182" />
                                     </left>
-                                    <operator>IS</operator>
-                                    <right>
-                                        <literal-expression value="NULL" start-index="187" stop-index="190" />
-                                    </right>
+                                    <operator>IS NULL</operator>
                                 </binary-operation-expression>
                             </expr>
                         </where>
