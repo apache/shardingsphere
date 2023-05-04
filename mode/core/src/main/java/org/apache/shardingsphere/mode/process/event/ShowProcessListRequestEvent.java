@@ -15,30 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.process;
-
-import org.apache.shardingsphere.mode.event.process.KillProcessRequestEvent;
-import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
-
-import java.sql.SQLException;
+package org.apache.shardingsphere.mode.process.event;
 
 /**
- * Processlist subscriber.
+ * Show process list request event.
  */
-public interface ProcessListSubscriber {
-    
-    /**
-     * Post show process list data.
-     *
-     * @param event show process list request event
-     */
-    void postShowProcessListData(ShowProcessListRequestEvent event);
-    
-    /**
-     * Kill process.
-     *
-     * @param event kill process request event
-     * @throws SQLException SQL exception
-     */
-    void killProcess(KillProcessRequestEvent event) throws SQLException;
+public final class ShowProcessListRequestEvent {
 }

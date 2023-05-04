@@ -143,7 +143,7 @@ class ProcessListChangedSubscriberTest {
     }
     
     @Test
-    void assertCompleteToKillProcessInstance() {
+    void assertCompleteToKillProcess() {
         String processId = "foo_id";
         long startMillis = System.currentTimeMillis();
         Executors.newFixedThreadPool(1).submit(() -> {
@@ -151,7 +151,7 @@ class ProcessListChangedSubscriberTest {
                 Thread.sleep(50L);
             } catch (final InterruptedException ignored) {
             }
-            subscriber.completeToKillProcessInstance(new KillProcessCompletedEvent(processId));
+            subscriber.completeToKillProcess(new KillProcessCompletedEvent(processId));
         });
         waitUntilReleaseReady(processId);
         long currentMillis = System.currentTimeMillis();
