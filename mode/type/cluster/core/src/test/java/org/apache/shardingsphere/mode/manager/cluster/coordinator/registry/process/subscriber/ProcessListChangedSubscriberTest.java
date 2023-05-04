@@ -143,7 +143,7 @@ class ProcessListChangedSubscriberTest {
     }
     
     @Test
-    void assertCompleteToKillProcessInstance() {
+    void assertCompleteToKillProcess() {
         String processId = "foo_id";
         long startMillis = System.currentTimeMillis();
         Executors.newFixedThreadPool(1).submit(() -> {
