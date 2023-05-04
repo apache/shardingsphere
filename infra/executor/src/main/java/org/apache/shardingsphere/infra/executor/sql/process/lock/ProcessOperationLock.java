@@ -25,9 +25,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Process lock.
+ * Process operation lock.
  */
-public final class ProcessLock {
+public final class ProcessOperationLock {
     
     private static final long TIMEOUT_MILLS = 5000L;
     

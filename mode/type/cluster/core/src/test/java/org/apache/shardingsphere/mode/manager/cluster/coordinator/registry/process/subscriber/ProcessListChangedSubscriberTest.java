@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessLock;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLock;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -116,7 +116,7 @@ class ProcessListChangedSubscriberTest {
     @Test
     void assertCompleteToReportLocalProcesses() {
         String taskId = "foo_id";
-        ProcessLock lock = new ProcessLock();
+        ProcessOperationLock lock = new ProcessOperationLock();
         ProcessRegistry.getInstance().getLocks().put(taskId, lock);
         long startMillis = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(1);
@@ -146,7 +146,7 @@ class ProcessListChangedSubscriberTest {
     @Test
     void assertCompleteToKillProcessInstance() {
         String processId = "foo_id";
-        ProcessLock lock = new ProcessLock();
+        ProcessOperationLock lock = new ProcessOperationLock();
         ProcessRegistry.getInstance().getLocks().put(processId, lock);
         long startMillis = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(1);
@@ -164,7 +164,7 @@ class ProcessListChangedSubscriberTest {
         ProcessRegistry.getInstance().getLocks().remove(processId);
     }
     
-    private void lockAndAwaitDefaultTime(final ProcessLock lock) {
+    private void lockAndAwaitDefaultTime(final ProcessOperationLock lock) {
         lock.lock();
         try {
             lock.awaitDefaultTime();
