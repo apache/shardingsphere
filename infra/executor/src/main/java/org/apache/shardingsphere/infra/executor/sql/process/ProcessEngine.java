@@ -44,7 +44,7 @@ public final class ProcessEngine {
     public String connect(final Grantee grantee, final String databaseName) {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(Collections.emptyList(), new ExecutionGroupReportContext(databaseName, grantee));
         Process process = new Process(executionGroupContext);
-        ProcessRegistry.getInstance().putProcess(process.getId(), process);
+        ProcessRegistry.getInstance().addProcess(process);
         return executionGroupContext.getReportContext().getProcessId();
     }
     
@@ -68,7 +68,7 @@ public final class ProcessEngine {
         if (isMySQLDDLOrDMLStatement(queryContext.getSqlStatementContext().getSqlStatement())) {
             ProcessIdContext.set(executionGroupContext.getReportContext().getProcessId());
             Process process = new Process(queryContext.getSql(), executionGroupContext);
-            ProcessRegistry.getInstance().putProcess(process.getId(), process);
+            ProcessRegistry.getInstance().addProcess(process);
         }
     }
     
@@ -94,8 +94,8 @@ public final class ProcessEngine {
             return;
         }
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = new ExecutionGroupContext<>(
-                Collections.emptyList(), new ExecutionGroupReportContext(process.getDatabaseName(), new Grantee(process.getUsername(), process.getHostname())));
-        ProcessRegistry.getInstance().putProcess(ProcessIdContext.get(), new Process(executionGroupContext));
+                Collections.emptyList(), new ExecutionGroupReportContext(ProcessIdContext.get(), process.getDatabaseName(), new Grantee(process.getUsername(), process.getHostname())));
+        ProcessRegistry.getInstance().addProcess(new Process(executionGroupContext));
         ProcessIdContext.remove();
     }
     
