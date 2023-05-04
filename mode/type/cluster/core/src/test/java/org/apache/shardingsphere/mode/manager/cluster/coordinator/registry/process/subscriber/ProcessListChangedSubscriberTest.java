@@ -115,7 +115,7 @@ class ProcessListChangedSubscriberTest {
         ClusterPersistRepository repository = registryCenter.getRepository();
         verify(repository).persist("/execution_nodes/foo_id/" + instanceId,
                 "processes:" + System.lineSeparator() + "- completedUnitCount: 0\n  id: foo_id\n  idle: false\n  startMillis: 0\n  totalUnitCount: 0" + System.lineSeparator());
-        verify(repository).delete("/nodes/compute_nodes/process_trigger/" + instanceId + ":foo_id");
+        verify(repository).delete("/nodes/compute_nodes/show_process_list_trigger/" + instanceId + ":foo_id");
     }
     
     @Test
@@ -141,7 +141,7 @@ class ProcessListChangedSubscriberTest {
         String processId = "foo_id";
         subscriber.killLocalProcess(new KillLocalProcessEvent(instanceId, processId));
         ClusterPersistRepository repository = registryCenter.getRepository();
-        verify(repository).delete("/nodes/compute_nodes/process_kill/" + instanceId + ":foo_id");
+        verify(repository).delete("/nodes/compute_nodes/kill_process_trigger/" + instanceId + ":foo_id");
     }
     
     @Test

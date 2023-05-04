@@ -39,15 +39,15 @@ class ComputeNodeTest {
     
     @Test
     void assertGetProcessTriggerNodePatch() {
-        assertThat(ComputeNode.getShowProcessListTriggerNodePath(), is("/nodes/compute_nodes/process_trigger"));
+        assertThat(ComputeNode.getShowProcessListTriggerNodePath(), is("/nodes/compute_nodes/show_process_list_trigger"));
     }
     
     @Test
     void assertGetProcessTriggerInstanceIdNodePath() {
         assertThat(ComputeNode.getProcessTriggerInstanceNodePath("foo_instance", "foo_process_id"),
-                is("/nodes/compute_nodes/process_trigger/foo_instance:foo_process_id"));
+                is("/nodes/compute_nodes/show_process_list_trigger/foo_instance:foo_process_id"));
         assertThat(ComputeNode.getProcessTriggerInstanceNodePath("foo_instance", "foo_process_id"),
-                is("/nodes/compute_nodes/process_trigger/foo_instance:foo_process_id"));
+                is("/nodes/compute_nodes/show_process_list_trigger/foo_instance:foo_process_id"));
     }
     
     @Test
