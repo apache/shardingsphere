@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLock;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
+import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockReleaseStrategy;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -117,8 +118,6 @@ class ProcessListChangedSubscriberTest {
     @Test
     void assertCompleteToReportLocalProcesses() {
         String taskId = "foo_id";
-        ProcessOperationLock lock = new ProcessOperationLock();
-        ProcessOperationLockRegistry.getInstance().getLocks().put(taskId, lock);
         long startMillis = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         executorService.submit(() -> {
@@ -128,11 +127,10 @@ class ProcessListChangedSubscriberTest {
             }
             subscriber.completeToReportLocalProcesses(new ReportLocalProcessesCompletedEvent(taskId));
         });
-        lockAndAwaitDefaultTime(lock);
+        waitUntilReleaseReady(taskId);
         long currentTime = System.currentTimeMillis();
         assertTrue(currentTime >= startMillis + 50L);
         assertTrue(currentTime <= startMillis + 5000L);
-        ProcessOperationLockRegistry.getInstance().getLocks().remove(taskId);
     }
     
     @Test
@@ -147,8 +145,6 @@ class ProcessListChangedSubscriberTest {
     @Test
     void assertCompleteToKillProcessInstance() {
         String processId = "foo_id";
-        ProcessOperationLock lock = new ProcessOperationLock();
-        ProcessOperationLockRegistry.getInstance().getLocks().put(processId, lock);
         long startMillis = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         executorService.submit(() -> {
@@ -158,19 +154,21 @@ class ProcessListChangedSubscriberTest {
             }
             subscriber.completeToKillProcessInstance(new KillProcessInstanceCompleteEvent(processId));
         });
-        lockAndAwaitDefaultTime(lock);
+        waitUntilReleaseReady(processId);
         long currentTime = System.currentTimeMillis();
         assertTrue(currentTime >= startMillis + 50L);
         assertTrue(currentTime <= startMillis + 5000L);
-        ProcessOperationLockRegistry.getInstance().getLocks().remove(processId);
     }
     
-    private void lockAndAwaitDefaultTime(final ProcessOperationLock lock) {
-        lock.lock();
-        try {
-            lock.awaitDefaultTime();
-        } finally {
-            lock.unlock();
-        }
+    private static void waitUntilReleaseReady(final String lockId) {
+        ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(lockId, new ProcessOperationLockReleaseStrategy() {
+            
+            private final AtomicBoolean firstTime = new AtomicBoolean(true);
+            
+            @Override
+            public boolean isReadyToRelease() {
+                return !firstTime.getAndSet(false);
+            }
+        });
     }
 }
