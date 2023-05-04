@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
+import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.exception.NacosException;
 import com.ctrip.framework.apollo.ConfigFile;
 import com.ctrip.framework.apollo.ConfigService;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.DriverURLProviderNotFoundException;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
@@ -28,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -38,7 +42,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ConfigService.class)
+@StaticMockSettings({ConfigService.class, NacosFactory.class})
 class ShardingSphereDriverURLManagerTest {
     
     private final int fooDriverConfigLength = 999;
@@ -69,5 +73,16 @@ class ShardingSphereDriverURLManagerTest {
         String url = "jdbc:shardingsphere:apollo:namespace";
         byte[] content = ShardingSphereDriverURLManager.getContent(url);
         assertThat("config content".getBytes(StandardCharsets.UTF_8), is(content));
+    }
+
+    @Test
+    @SneakyThrows(NacosException.class)
+    void assertToNacosConfigurationFile() {
+        com.alibaba.nacos.api.config.ConfigService configService = mock(com.alibaba.nacos.api.config.ConfigService.class);
+        when(NacosFactory.createConfigService(any(Properties.class))).thenReturn(configService);
+        when(configService.getConfig(anyString(), anyString(), 500)).thenReturn("nacos config content");
+        String url = "jdbc:shardingsphere:nacos:sharding-config.yaml?serverAddr=127.0.0.1:8848&namespace=dev&group=DEFAULT_GROUP&username=nacos&password=nacos";
+        byte[] content = ShardingSphereDriverURLManager.getContent(url);
+        assertThat("nacos config content".getBytes(StandardCharsets.UTF_8), is(content));
     }
 }
