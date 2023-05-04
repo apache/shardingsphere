@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proc
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
-import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
+import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,18 +35,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ClusterProcessListSubscriberTest {
+class ClusterProcessSubscriberTest {
     
     @Mock
     private ClusterPersistRepository repository;
     
     private final EventBusContext eventBusContext = new EventBusContext();
     
-    private ClusterProcessListSubscriber clusterProcessListSubscriber;
+    private ClusterProcessSubscriber clusterProcessListSubscriber;
     
     @BeforeEach
     void setUp() {
-        clusterProcessListSubscriber = new ClusterProcessListSubscriber(repository, eventBusContext);
+        clusterProcessListSubscriber = new ClusterProcessSubscriber(repository, eventBusContext);
     }
     
     @Test

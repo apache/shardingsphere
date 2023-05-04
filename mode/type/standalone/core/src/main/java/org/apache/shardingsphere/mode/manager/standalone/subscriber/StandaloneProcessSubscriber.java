@@ -24,26 +24,26 @@ import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.process.KillProcessRequestEvent;
-import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
-import org.apache.shardingsphere.mode.event.process.ShowProcessListResponseEvent;
-import org.apache.shardingsphere.mode.process.ProcessListSubscriber;
+import org.apache.shardingsphere.mode.process.event.KillProcessRequestEvent;
+import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
+import org.apache.shardingsphere.mode.process.event.ShowProcessListResponseEvent;
+import org.apache.shardingsphere.mode.process.ProcessSubscriber;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
 
 /**
- * Standalone processlist subscriber.
+ * Standalone process subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class StandaloneProcessListSubscriber implements ProcessListSubscriber {
+public final class StandaloneProcessSubscriber implements ProcessSubscriber {
     
     private final EventBusContext eventBusContext;
     
     private final YamlProcessListSwapper swapper = new YamlProcessListSwapper();
     
-    public StandaloneProcessListSubscriber(final EventBusContext eventBusContext) {
+    public StandaloneProcessSubscriber(final EventBusContext eventBusContext) {
         this.eventBusContext = eventBusContext;
         eventBusContext.register(this);
     }

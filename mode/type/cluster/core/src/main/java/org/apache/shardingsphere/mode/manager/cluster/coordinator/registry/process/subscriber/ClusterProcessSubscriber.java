@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
-import org.apache.shardingsphere.mode.event.process.KillProcessRequestEvent;
-import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
-import org.apache.shardingsphere.mode.event.process.ShowProcessListResponseEvent;
-import org.apache.shardingsphere.mode.process.ProcessListSubscriber;
+import org.apache.shardingsphere.mode.process.event.KillProcessRequestEvent;
+import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
+import org.apache.shardingsphere.mode.process.event.ShowProcessListResponseEvent;
+import org.apache.shardingsphere.mode.process.ProcessSubscriber;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import java.util.Collection;
@@ -36,16 +36,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Cluster processlist subscriber.
+ * Cluster process subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
-public final class ClusterProcessListSubscriber implements ProcessListSubscriber {
+public final class ClusterProcessSubscriber implements ProcessSubscriber {
     
     private final PersistRepository repository;
     
     private final EventBusContext eventBusContext;
     
-    public ClusterProcessListSubscriber(final PersistRepository repository, final EventBusContext eventBusContext) {
+    public ClusterProcessSubscriber(final PersistRepository repository, final EventBusContext eventBusContext) {
         this.repository = repository;
         this.eventBusContext = eventBusContext;
         eventBusContext.register(this);

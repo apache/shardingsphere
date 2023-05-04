@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.standalone.subscriber;
 
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.mode.event.process.ShowProcessListRequestEvent;
+import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -31,13 +31,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProcessRegistry.class)
-class StandaloneProcessListSubscriberTest {
+class StandaloneProcessSubscriberTest {
     
     @Test
     void assertPostShowProcessListData() {
         ProcessRegistry processRegistry = mock(ProcessRegistry.class);
         when(ProcessRegistry.getInstance()).thenReturn(processRegistry);
-        new StandaloneProcessListSubscriber(new EventBusContext()).postShowProcessListData(new ShowProcessListRequestEvent());
+        new StandaloneProcessSubscriber(new EventBusContext()).postShowProcessListData(new ShowProcessListRequestEvent());
         verify(processRegistry).listAll();
     }
 }
