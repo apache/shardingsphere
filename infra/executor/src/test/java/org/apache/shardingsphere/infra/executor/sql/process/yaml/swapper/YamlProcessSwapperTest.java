@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlProcessSwapperTest {
     
@@ -55,6 +55,29 @@ class YamlProcessSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        assertThrows(UnsupportedOperationException.class, () -> new YamlProcessSwapper().swapToObject(new YamlProcess()));
+        Process actual = new YamlProcessSwapper().swapToObject(createYamlProcess());
+        assertThat(actual.getId(), is("foo_id"));
+        assertThat(actual.getStartMillis(), is(1000L));
+        assertThat(actual.getSql(), is("SELECT 1"));
+        assertThat(actual.getDatabaseName(), is("foo_db"));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getHostname(), is("localhost"));
+        assertThat(actual.getTotalUnitCount(), is(10));
+        assertThat(actual.getCompletedUnitCount(), is(5));
+        assertTrue(actual.isIdle());
+    }
+    
+    private YamlProcess createYamlProcess() {
+        YamlProcess result = new YamlProcess();
+        result.setId("foo_id");
+        result.setStartMillis(1000L);
+        result.setSql("SELECT 1");
+        result.setDatabaseName("foo_db");
+        result.setUsername("root");
+        result.setHostname("localhost");
+        result.setTotalUnitCount(10);
+        result.setCompletedUnitCount(5);
+        result.setIdle(true);
+        return result;
     }
 }

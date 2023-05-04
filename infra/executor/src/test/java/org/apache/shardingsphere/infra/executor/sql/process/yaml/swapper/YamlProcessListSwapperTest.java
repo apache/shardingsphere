@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -33,7 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlProcessListSwapperTest {
     
@@ -47,7 +48,7 @@ class YamlProcessListSwapperTest {
         assertYamlProcessContext(actual.getProcesses().iterator().next());
     }
     
-    private static void assertYamlProcessContext(final YamlProcess actual) {
+    private void assertYamlProcessContext(final YamlProcess actual) {
         assertNotNull(actual.getId());
         assertThat(actual.getStartMillis(), lessThanOrEqualTo(System.currentTimeMillis()));
         assertThat(actual.getSql(), is("SELECT 1"));
@@ -61,6 +62,36 @@ class YamlProcessListSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        assertThrows(UnsupportedOperationException.class, () -> new YamlProcessListSwapper().swapToObject(new YamlProcessList()));
+        YamlProcessList yamlProcessList = new YamlProcessList();
+        yamlProcessList.setProcesses(Collections.singleton(createYamlProcess()));
+        Collection<Process> actual = new YamlProcessListSwapper().swapToObject(yamlProcessList);
+        assertThat(actual.size(), is(1));
+        assertProcess(actual.iterator().next());
+    }
+    
+    private YamlProcess createYamlProcess() {
+        YamlProcess result = new YamlProcess();
+        result.setId("foo_id");
+        result.setStartMillis(1000L);
+        result.setSql("SELECT 1");
+        result.setDatabaseName("foo_db");
+        result.setUsername("root");
+        result.setHostname("localhost");
+        result.setTotalUnitCount(10);
+        result.setCompletedUnitCount(5);
+        result.setIdle(true);
+        return result;
+    }
+    
+    private void assertProcess(final Process actual) {
+        assertThat(actual.getId(), is("foo_id"));
+        assertThat(actual.getStartMillis(), is(1000L));
+        assertThat(actual.getSql(), is("SELECT 1"));
+        assertThat(actual.getDatabaseName(), is("foo_db"));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getHostname(), is("localhost"));
+        assertThat(actual.getTotalUnitCount(), is(10));
+        assertThat(actual.getCompletedUnitCount(), is(5));
+        assertTrue(actual.isIdle());
     }
 }

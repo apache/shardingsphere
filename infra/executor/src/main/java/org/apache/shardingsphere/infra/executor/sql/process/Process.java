@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.process;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
@@ -32,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Process.
  */
+@RequiredArgsConstructor
 @Getter
 public final class Process {
     
