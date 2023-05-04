@@ -23,15 +23,13 @@ import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.process.ProcessSubscriber;
 import org.apache.shardingsphere.mode.process.event.KillProcessRequestEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListResponseEvent;
-import org.apache.shardingsphere.mode.process.ProcessSubscriber;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
 
 /**
  * Standalone process subscriber.
@@ -52,7 +50,7 @@ public final class StandaloneProcessSubscriber implements ProcessSubscriber {
     @Subscribe
     public void postShowProcessListData(final ShowProcessListRequestEvent event) {
         YamlProcessList yamlProcessList = swapper.swapToYamlConfiguration(ProcessRegistry.getInstance().listAll());
-        eventBusContext.post(new ShowProcessListResponseEvent(Collections.singleton(YamlEngine.marshal(yamlProcessList))));
+        eventBusContext.post(new ShowProcessListResponseEvent(yamlProcessList.getProcesses()));
     }
     
     @Override
