@@ -40,9 +40,9 @@ public final class ProcessRegistry {
     private final Map<String, ShowProcessListLock> locks = new ConcurrentHashMap<>();
     
     /**
-     * Get show process list manager.
+     * Get process registry.
      *
-     * @return show process list manager
+     * @return got instance
      */
     public static ProcessRegistry getInstance() {
         return INSTANCE;
