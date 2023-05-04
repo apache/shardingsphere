@@ -39,7 +39,7 @@ class ComputeNodeTest {
     
     @Test
     void assertGetProcessTriggerNodePatch() {
-        assertThat(ComputeNode.getProcessTriggerNodePatch(), is("/nodes/compute_nodes/process_trigger"));
+        assertThat(ComputeNode.getShowProcessListTriggerNodePath(), is("/nodes/compute_nodes/process_trigger"));
     }
     
     @Test
