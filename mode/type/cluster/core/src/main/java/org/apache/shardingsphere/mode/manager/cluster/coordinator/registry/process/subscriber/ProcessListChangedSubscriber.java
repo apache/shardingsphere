@@ -28,7 +28,6 @@ import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 
@@ -100,15 +99,6 @@ public final class ProcessListChangedSubscriber {
             }
         }
         registryCenter.getRepository().delete(ComputeNode.getProcessKillInstanceIdNodePath(event.getInstanceId(), event.getProcessId()));
-    }
-    
-    /**
-     * Complete to kill process.
-     *
-     * @param event kill process completed event
-     */
-    @Subscribe
-    public synchronized void completeToKillProcess(final KillProcessCompletedEvent event) {
         ProcessOperationLockRegistry.getInstance().notify(event.getProcessId());
     }
 }

@@ -36,7 +36,6 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -140,23 +139,6 @@ class ProcessListChangedSubscriberTest {
         subscriber.killProcess(new KillProcessEvent(instanceId, processId));
         ClusterPersistRepository repository = ((RegistryCenter) Plugins.getMemberAccessor().get(ProcessListChangedSubscriber.class.getDeclaredField("registryCenter"), subscriber)).getRepository();
         verify(repository).delete("/nodes/compute_nodes/process_kill/" + instanceId + ":foo_id");
-    }
-    
-    @Test
-    void assertCompleteToKillProcess() {
-        String processId = "foo_id";
-        long startMillis = System.currentTimeMillis();
-        Executors.newFixedThreadPool(1).submit(() -> {
-            try {
-                Thread.sleep(50L);
-            } catch (final InterruptedException ignored) {
-            }
-            subscriber.completeToKillProcess(new KillProcessCompletedEvent(processId));
-        });
-        waitUntilReleaseReady(processId);
-        long currentMillis = System.currentTimeMillis();
-        assertThat(currentMillis, greaterThanOrEqualTo(startMillis + 50L));
-        assertThat(currentMillis, lessThanOrEqualTo(startMillis + 5000L));
     }
     
     private static void waitUntilReleaseReady(final String lockId) {
