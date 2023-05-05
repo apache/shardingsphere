@@ -55,7 +55,6 @@ mysql> SHOW DIST VARIABLES;
 | sql_federation_type                   | NONE           |
 | proxy_frontend_database_protocol_type |                |
 | proxy_frontend_flush_threshold        | 128            |
-| proxy_hint_enabled                    | false          |
 | proxy_backend_query_fetch_size        | -1             |
 | proxy_frontend_executor_size          | 0              |
 | proxy_backend_executor_suitable       | OLAP           |
