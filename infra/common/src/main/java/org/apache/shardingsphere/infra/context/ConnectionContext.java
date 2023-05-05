@@ -60,26 +60,12 @@ public final class ConnectionContext implements AutoCloseable {
     }
     
     /**
-     * Get traffic instance id.
+     * Get traffic instance ID.
      *
-     * @return traffic instance id
+     * @return traffic instance ID
      */
     public Optional<String> getTrafficInstanceId() {
         return Optional.ofNullable(trafficInstanceId);
-    }
-    
-    @Override
-    public void close() {
-        clearTrafficInstance();
-        clearCursorConnectionContext();
-        clearTransactionConnectionContext();
-    }
-    
-    /**
-     * Clear traffic instance.
-     */
-    public void clearTrafficInstance() {
-        trafficInstanceId = null;
     }
     
     /**
@@ -94,5 +80,12 @@ public final class ConnectionContext implements AutoCloseable {
      */
     public void clearTransactionConnectionContext() {
         transactionContext.close();
+    }
+    
+    @Override
+    public void close() {
+        trafficInstanceId = null;
+        clearCursorConnectionContext();
+        clearTransactionConnectionContext();
     }
 }

@@ -170,9 +170,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             connectionManager.commit();
         } finally {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
-            getConnectionContext().clearTransactionConnectionContext();
-            getConnectionContext().clearTrafficInstance();
-            getConnectionContext().clearCursorConnectionContext();
+            getConnectionContext().close();
         }
     }
     
@@ -182,9 +180,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             connectionManager.rollback();
         } finally {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
-            getConnectionContext().clearTransactionConnectionContext();
-            getConnectionContext().clearTrafficInstance();
-            getConnectionContext().clearCursorConnectionContext();
+            getConnectionContext().close();
         }
     }
     
