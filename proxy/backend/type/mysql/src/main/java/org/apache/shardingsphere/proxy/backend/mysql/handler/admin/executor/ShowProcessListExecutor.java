@@ -25,11 +25,9 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.type.RawMemoryQueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcessList;
-import org.apache.shardingsphere.infra.executor.sql.process.yaml.YamlProcess;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -40,7 +38,6 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -51,7 +48,7 @@ import java.util.stream.Collectors;
 @SuppressWarnings("UnstableApiUsage")
 public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor {
     
-    private Collection<String> processes;
+    private Collection<Process> processes;
     
     @Getter
     private QueryResultMetaData queryResultMetaData;
@@ -84,30 +81,26 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         if (null == processes || processes.isEmpty()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        Collection<YamlProcess> processes = new LinkedList<>();
-        for (String each : this.processes) {
-            processes.addAll(YamlEngine.unmarshal(each, YamlProcessList.class).getProcesses());
-        }
         List<MemoryQueryResultDataRow> rows = processes.stream().map(ShowProcessListExecutor::getMemoryQueryResultDataRow).collect(Collectors.toList());
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     
-    private static MemoryQueryResultDataRow getMemoryQueryResultDataRow(final YamlProcess yamlProcess) {
+    private static MemoryQueryResultDataRow getMemoryQueryResultDataRow(final Process process) {
         List<Object> rowValues = new ArrayList<>(8);
-        rowValues.add(yamlProcess.getId());
-        rowValues.add(yamlProcess.getUsername());
-        rowValues.add(yamlProcess.getHostname());
-        rowValues.add(yamlProcess.getDatabaseName());
-        rowValues.add(yamlProcess.isIdle() ? "Sleep" : "Execute");
-        rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - yamlProcess.getStartMillis()));
+        rowValues.add(process.getId());
+        rowValues.add(process.getUsername());
+        rowValues.add(process.getHostname());
+        rowValues.add(process.getDatabaseName());
+        rowValues.add(process.isIdle() ? "Sleep" : "Execute");
+        rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - process.getStartMillis()));
         String sql = null;
-        if (yamlProcess.isIdle()) {
+        if (process.isIdle()) {
             rowValues.add("");
         } else {
-            int processDoneCount = yamlProcess.getCompletedUnitCount();
+            int processDoneCount = process.getCompletedUnitCount();
             String statePrefix = "Executing ";
-            rowValues.add(statePrefix + processDoneCount + "/" + yamlProcess.getTotalUnitCount());
-            sql = yamlProcess.getSql();
+            rowValues.add(statePrefix + processDoneCount + "/" + process.getTotalUnitCount());
+            sql = process.getSql();
         }
         if (null != sql && sql.length() > 100) {
             sql = sql.substring(0, 100);

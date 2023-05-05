@@ -38,9 +38,9 @@ public final class ComputeNode {
     
     private static final String LABELS_NODE = "labels";
     
-    private static final String SHOW_PROCESS_LIST_TRIGGER = "process_trigger";
+    private static final String SHOW_PROCESS_LIST_TRIGGER = "show_process_list_trigger";
     
-    private static final String KILL_PROCESS_TRIGGER = "process_kill";
+    private static final String KILL_PROCESS_TRIGGER = "kill_process_trigger";
     
     private static final String STATUS_NODE = "status";
     
