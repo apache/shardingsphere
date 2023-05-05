@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 /**
  * YAML job item incremental tasks progress swapper.
  */
+@Slf4j
 public final class YamlJobItemIncrementalTasksProgressSwapper {
     
     /**
@@ -59,9 +61,13 @@ public final class YamlJobItemIncrementalTasksProgressSwapper {
         if (null == yamlProgress) {
             return new JobItemIncrementalTasksProgress(null);
         }
-        IncrementalTaskProgress taskProgress = new IncrementalTaskProgress();
+        final IncrementalTaskProgress taskProgress = new IncrementalTaskProgress();
         // TODO consider to remove parameter databaseType
         PositionInitializer positionInitializer = PipelineTypedSPILoader.getDatabaseTypedService(PositionInitializer.class, databaseType);
+        log.error("===positionInitializer==" + positionInitializer);
+        log.error("===yamlProgress==" + yamlProgress);
+        log.error("===yamlProgress.getPosition()==" + yamlProgress.getPosition());
+        log.error("===positionInitializer.init(yamlProgress.getPosition())==" + positionInitializer.init(yamlProgress.getPosition()));
         taskProgress.setPosition(positionInitializer.init(yamlProgress.getPosition()));
         taskProgress.setLastEventTimestamp(yamlProgress.getLastEventTimestamp());
         taskProgress.setLatestActiveMillis(yamlProgress.getLatestActiveMillis());
