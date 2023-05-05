@@ -26,11 +26,9 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DataSourcePoolDestroyerTest {
@@ -47,11 +45,7 @@ class DataSourcePoolDestroyerTest {
             new DataSourcePoolDestroyer(dataSource).asyncDestroy();
             assertFalse(dataSource.isClosed());
         }
-        assertTimeout(Duration.ofSeconds(2L), () -> assertClose(dataSource));
-    }
-    
-    private static void assertClose(final HikariDataSource dataSource) {
-        Awaitility.await().atMost(1L, TimeUnit.MINUTES).pollInterval(10L, TimeUnit.MILLISECONDS).until(dataSource::isClosed);
+        Awaitility.await().atMost(2L, TimeUnit.SECONDS).pollInterval(10L, TimeUnit.MILLISECONDS).until(dataSource::isClosed);
         assertTrue(dataSource.isClosed());
     }
     
