@@ -19,7 +19,6 @@ Apache ShardingSphere 提供了丰富的系统配置属性，用户可通过 `se
 | max-connections-size-per-query (?)        | int       | 一次查询请求在每个数据库实例中所能使用的最大连接数。                                                                                                             | 1        | 是      |
 | check-table-metadata-enabled (?)          | boolean   | 在程序启动和更新时，是否检查分片元数据的结构一致性。                                                                                                             | false    | 是      |
 | proxy-frontend-flush-threshold (?)        | int       | 在 ShardingSphere-Proxy 中设置传输数据条数的 IO 刷新阈值。                                                                                             | 128      | 是      |
-| proxy-hint-enabled (?)                    | boolean   | 是否允许在 ShardingSphere-Proxy 中使用 Hint。使用 Hint 会将 Proxy 的线程处理模型由 IO 多路复用变更为每个请求一个独立的线程，会降低 Proxy 的吞吐量。                                    | false    | 是      |
 | proxy-backend-query-fetch-size (?)        | int       | Proxy 后端与数据库交互的每次获取数据行数（使用游标的情况下）。数值增大可能会增加 ShardingSphere Proxy 的内存使用。默认值为 -1，代表设置为 JDBC 驱动的最小值。                                      | -1       | 是      |
 | proxy-frontend-executor-size (?)          | int       | Proxy 前端 Netty 线程池线程数量，默认值 0 代表使用 Netty 默认值。                                                                                           | 0        | 否      |
 | proxy-frontend-max-connections (?)        | int       | 允许连接 Proxy 的最大客户端数量，默认值 0 代表不限制。                                                                                                       | 0        | 是      |

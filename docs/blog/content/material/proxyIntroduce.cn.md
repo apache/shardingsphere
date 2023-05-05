@@ -134,7 +134,6 @@ props: # 公用配置
  kernel-executor-size: 16  # Infinite by default.
  proxy-frontend-flush-threshold: 128  # The default value is 128.
  proxy-opentracing-enabled: false
- proxy-hint-enabled: false
  sql-show: false
  check-table-metadata-enabled: false
    # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.

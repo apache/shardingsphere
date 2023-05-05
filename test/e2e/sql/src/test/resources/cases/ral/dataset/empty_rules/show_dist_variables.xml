@@ -33,7 +33,6 @@
     <row values="proxy_frontend_executor_size| 0" />
     <row values="proxy_frontend_flush_threshold| 128" />
     <row values="proxy_frontend_max_connections| 0" />
-    <row values="proxy_hint_enabled| true" />
     <row values="proxy_instance_type| Proxy" />
     <row values="proxy_meta_data_collector_enabled| true" />
     <row values="proxy_mysql_default_version| 5.7.22" />
