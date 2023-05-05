@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.api.task.progress;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * Incremental task delay.
  */
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 public final class IncrementalTaskDelay {
