@@ -33,7 +33,12 @@ public final class YamlAppenderSwapper implements YamlConfigurationSwapper<YamlA
         if (Objects.isNull(data)) {
             return null;
         }
-        return new YamlAppenderConfiguration(data.getAppenderName(), data.getAppenderClass(), data.getPattern(), data.getFile());
+        YamlAppenderConfiguration result = new YamlAppenderConfiguration();
+        result.setAppenderName(data.getAppenderName());
+        result.setAppenderClass(data.getAppenderClass());
+        result.setPattern(data.getPattern());
+        result.setFile(data.getFile());
+        return result;
     }
     
     @Override
