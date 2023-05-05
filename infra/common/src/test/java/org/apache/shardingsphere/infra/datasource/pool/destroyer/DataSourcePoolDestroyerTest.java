@@ -21,11 +21,13 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTimeout;
@@ -48,10 +50,8 @@ class DataSourcePoolDestroyerTest {
         assertTimeout(Duration.ofSeconds(2L), () -> assertClose(dataSource));
     }
     
-    private static void assertClose(final HikariDataSource dataSource) throws InterruptedException {
-        while (!dataSource.isClosed()) {
-            Thread.sleep(10L);
-        }
+    private static void assertClose(final HikariDataSource dataSource) {
+        Awaitility.await().atMost(1L, TimeUnit.MINUTES).pollInterval(10L, TimeUnit.MILLISECONDS).until(dataSource::isClosed);
         assertTrue(dataSource.isClosed());
     }
     
