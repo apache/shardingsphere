@@ -59,8 +59,6 @@ public final class NacosDriverURLProvider implements ShardingSphereDriverURLProv
         String nacosConfig = StringUtils.removeStart(url, SHRDING_URL_PREFIX + NACOS_TYPE);
         Preconditions.checkArgument(nacosConfig.indexOf(PARAM_PREFIX) > 0, "Nacos param is required in ShardingSphere driver URL.");
         String dataId = StringUtils.substringBefore(nacosConfig, PARAM_PREFIX);
-        //'withKeyValueSeparator(java.lang.String)' is marked unstable with @Beta
-        //Map<String, String> confMap = Splitter.on("&").withKeyValueSeparator("=").split(nacosConfig);
         Map<String, String> confMap = getUrlParameters(StringUtils.substringAfter(nacosConfig, PARAM_PREFIX));
         Properties properties = new Properties();
         properties.putAll(confMap);
@@ -72,29 +70,27 @@ public final class NacosDriverURLProvider implements ShardingSphereDriverURLProv
      * Parse url parameters.
      *
      * @param urlParam 'aaa=111&bbb=222'.
-     * @return  return HashMap.
-     * @author: li.ming
-     * @date: 2023/5/4 17:34
+     * @return return HashMap.
      */
     public Map<String, String> getUrlParameters(final String urlParam) {
-        Map<String, String> mapRequest = new HashMap<>();
+        Map<String, String> result = new HashMap<>(20);
         String[] arrSplit;
         if (urlParam == null) {
-            return mapRequest;
+            return result;
         }
         arrSplit = urlParam.split("[&]");
         for (String strSplit : arrSplit) {
             String[] arrSplitEqual;
             arrSplitEqual = strSplit.split("[=]");
             if (arrSplitEqual.length > 1) {
-                mapRequest.put(arrSplitEqual[0], arrSplitEqual[1]);
+                result.put(arrSplitEqual[0], arrSplitEqual[1]);
             } else {
                 if (!"".equals(arrSplitEqual[0])) {
-                    mapRequest.put(arrSplitEqual[0], "");
+                    result.put(arrSplitEqual[0], "");
                 }
             }
         }
-        return mapRequest;
+        return result;
     }
 
 }
