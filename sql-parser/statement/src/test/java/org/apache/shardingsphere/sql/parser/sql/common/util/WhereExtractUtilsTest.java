@@ -24,6 +24,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -70,5 +73,22 @@ class WhereExtractUtilsTest {
         Collection<WhereSegment> subqueryWhereSegments = WhereExtractUtils.getSubqueryWhereSegments(selectStatement);
         WhereSegment actual = subqueryWhereSegments.iterator().next();
         assertThat(actual.getExpr(), is(subQuerySelectStatement.getWhere().get().getExpr()));
+    }
+    
+    @Test
+    void assertGetWhereSegmentsFromSubQueryJoin() {
+        JoinTableSegment joinTableSegment = new JoinTableSegment();
+        joinTableSegment.setLeft(new SimpleTableSegment(new TableNameSegment(37, 39, new IdentifierValue("t_order"))));
+        joinTableSegment.setRight(new SimpleTableSegment(new TableNameSegment(54, 56, new IdentifierValue("t_order_item"))));
+        joinTableSegment.setJoinType("INNER");
+        joinTableSegment.setCondition(new BinaryOperationExpression(63, 83, new ColumnSegment(63, 71, new IdentifierValue("order_id")),
+                new ColumnSegment(75, 83, new IdentifierValue("order_id")), "=", "oi.order_id = o.order_id"));
+        MySQLSelectStatement subQuerySelectStatement = new MySQLSelectStatement();
+        subQuerySelectStatement.setFrom(joinTableSegment);
+        MySQLSelectStatement mySQLSelectStatement = new MySQLSelectStatement();
+        mySQLSelectStatement.setFrom(new SubqueryTableSegment(new SubquerySegment(20, 84, subQuerySelectStatement)));
+        Collection<WhereSegment> subqueryWhereSegments = WhereExtractUtils.getSubqueryWhereSegments(mySQLSelectStatement);
+        WhereSegment actual = subqueryWhereSegments.iterator().next();
+        assertThat(actual.getExpr(), is(((JoinTableSegment) subQuerySelectStatement.getFrom()).getCondition()));
     }
 }
