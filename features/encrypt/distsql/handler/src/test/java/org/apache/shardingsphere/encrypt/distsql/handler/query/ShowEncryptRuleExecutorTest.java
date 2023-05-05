@@ -69,7 +69,7 @@ class ShowEncryptRuleExecutorTest {
     void assertGetColumnNames() {
         RQLExecutor<ShowEncryptRulesStatement> executor = new ShowEncryptRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(13));
+        assertThat(columns.size(), is(12));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("table"));
         assertThat(iterator.next(), is("logic_column"));
@@ -83,7 +83,6 @@ class ShowEncryptRuleExecutorTest {
         assertThat(iterator.next(), is("assisted_query_props"));
         assertThat(iterator.next(), is("like_query_type"));
         assertThat(iterator.next(), is("like_query_props"));
-        assertThat(iterator.next(), is("query_with_cipher_column"));
     }
     
     private ShardingSphereDatabase mockDatabase() {

@@ -89,7 +89,7 @@ public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRul
     public Collection<String> getColumnNames() {
         return Arrays.asList("table", "logic_column", "cipher_column", "plain_column",
                 "assisted_query_column", "like_query_column", "encryptor_type", "encryptor_props",
-                "assisted_query_type", "assisted_query_props", "like_query_type", "like_query_props", "query_with_cipher_column");
+                "assisted_query_type", "assisted_query_props", "like_query_type", "like_query_props");
     }
     
     @Override

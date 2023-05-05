@@ -19,7 +19,6 @@ Attributes:
 |---------------------------|---------------------------------------------|------------------------------------------------------------------------------------------------|-----------------|
 | tables (+)                | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rule configurations                                                              |                 |
 | encryptors (+)            | Map\<String, AlgorithmConfiguration\>       | Encrypt algorithm name and configurations                                                      |                 |
-| queryWithCipherColumn (?) | boolean                                     | Whether query with cipher column for data encrypt. User you can use plaintext to query if have | true            |
 
 ### Encrypt Table Rule Configuration
 
@@ -31,7 +30,6 @@ Attributes:
 |---------------------------|----------------------------------------------|---------------------------------------------------------------------|
 | name                      | String                                       | Table name                                                          |
 | columns (+)               | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rule configurations                                  |
-| queryWithCipherColumn (?) | boolean                                      | The current table whether query with cipher column for data encrypt |
 
 ### Encrypt Column Rule Configuration
 
@@ -49,7 +47,6 @@ Attributes:
 | encryptorName              | String     | Encrypt algorithm name                                               |
 | assistedQueryEncryptorName | String     | Assisted query encrypt algorithm name                                |
 | likeQueryEncryptorName     | String     | Like query encrypt algorithm name                                    |
-| queryWithCipherColumn (?)  | boolean    | The current column whether query with cipher column for data encrypt |
 
 ### Encrypt Algorithm Configuration
 

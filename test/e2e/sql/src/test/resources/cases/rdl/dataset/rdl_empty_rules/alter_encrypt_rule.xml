@@ -29,7 +29,6 @@
         <column name="assisted_query_props" />
         <column name="like_query_type" />
         <column name="like_query_props" />
-        <column name="query_with_cipher_column" />
     </metadata>
-    <row values="t_user| pwd| pwd_cipher| pwd_plain| | | AES| aes-key-value=123456abcd| | | | | true" />
+    <row values="t_user| pwd| pwd_cipher| pwd_plain| | | AES| aes-key-value=123456abcd| | | | " />
 </dataset>

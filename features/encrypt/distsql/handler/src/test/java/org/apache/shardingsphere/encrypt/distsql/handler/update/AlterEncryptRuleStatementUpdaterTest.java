@@ -74,8 +74,8 @@ class AlterEncryptRuleStatementUpdaterTest {
         EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
                 "int varchar(10)", null, null, null, null, new AlgorithmSegment("test", new Properties()),
                 new AlgorithmSegment("test", new Properties()),
-                new AlgorithmSegment("test", new Properties()), null);
-        EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
+                new AlgorithmSegment("test", new Properties()));
+        EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment));
         AlterEncryptRuleStatement statement = new AlterEncryptRuleStatement(Collections.singleton(ruleSegment));
         assertThrows(InvalidRuleConfigurationException.class, () -> updater.checkSQLStatement(database, statement, createCurrentRuleConfiguration()));
     }
@@ -91,8 +91,8 @@ class AlterEncryptRuleStatementUpdaterTest {
         EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
                 new AlgorithmSegment(encryptorName, new Properties()),
                 new AlgorithmSegment("test", new Properties()),
-                new AlgorithmSegment("test", new Properties()), null);
-        EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
+                new AlgorithmSegment("test", new Properties()));
+        EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment));
         return new AlterEncryptRuleStatement(Collections.singleton(ruleSegment));
     }
     

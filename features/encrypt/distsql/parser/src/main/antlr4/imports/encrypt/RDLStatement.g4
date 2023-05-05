@@ -32,7 +32,7 @@ dropEncryptRule
     ;
 
 encryptRuleDefinition
-    : tableName LP_ COLUMNS LP_ encryptColumnDefinition (COMMA_ encryptColumnDefinition)* RP_ (COMMA_ QUERY_WITH_CIPHER_COLUMN EQ_ queryWithCipherColumn)? RP_
+    : tableName LP_ COLUMNS LP_ encryptColumnDefinition (COMMA_ encryptColumnDefinition)* RP_ RP_
     ;
 
 resourceName
@@ -40,7 +40,7 @@ resourceName
     ;
 
 encryptColumnDefinition
-    : LP_ columnDefinition (COMMA_ plainColumnDefinition)? COMMA_ cipherColumnDefinition (COMMA_ assistedQueryColumnDefinition)? (COMMA_ likeQueryColumnDefinition)? COMMA_ encryptAlgorithm (COMMA_ assistedQueryAlgorithm)? (COMMA_ likeQueryAlgorithm)? (COMMA_ QUERY_WITH_CIPHER_COLUMN EQ_ queryWithCipherColumn)? RP_
+    : LP_ columnDefinition (COMMA_ plainColumnDefinition)? COMMA_ cipherColumnDefinition (COMMA_ assistedQueryColumnDefinition)? (COMMA_ likeQueryColumnDefinition)? COMMA_ encryptAlgorithm (COMMA_ assistedQueryAlgorithm)? (COMMA_ likeQueryAlgorithm)? RP_
     ;
 
 columnDefinition
@@ -97,10 +97,6 @@ assistedQueryAlgorithm
 
 likeQueryAlgorithm
     : LIKE_QUERY_ALGORITHM LP_ algorithmDefinition RP_
-    ;
-
-queryWithCipherColumn
-    : TRUE | FALSE
     ;
 
 ifExists
