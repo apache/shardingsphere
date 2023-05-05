@@ -29,7 +29,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>util</module>
         <module>common</module>
         <module>parser</module>
         <module>binder</module>
@@ -38,6 +37,7 @@
         <module>executor</module>
         <module>merge</module>
         <module>context</module>
+        <module>util</module>
         <module>util-groovy</module>
     </modules>
 </project>
