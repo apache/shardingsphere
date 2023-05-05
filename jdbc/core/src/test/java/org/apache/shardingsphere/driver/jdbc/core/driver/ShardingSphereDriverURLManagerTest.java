@@ -36,35 +36,35 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ConfigService.class, NacosFactory.class})
 class ShardingSphereDriverURLManagerTest {
-    
+
     private final int fooDriverConfigLength = 999;
-    
+
     @Test
     void assertNewConstructorWithEmptyURL() {
         assertThrows(DriverURLProviderNotFoundException.class, () -> ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:"));
     }
-    
+
     @Test
     void assertToClasspathConfigurationFile() {
         byte[] actual = ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:classpath:config/driver/foo-driver-fixture.yaml");
         assertThat(actual.length, is(fooDriverConfigLength));
     }
-    
+
     @Test
     void assertToAbsolutePathConfigurationFile() {
-        String absolutePath = Objects.requireNonNull(ShardingSphereDriverURLManagerTest.class.getClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
+        String absolutePath = Objects.requireNonNull(ShardingSphereDriverURLManagerTest.class.getClassLoader().getResource("config/driver/foo-driver-fixture" +
+                ".yaml")).getPath();
         byte[] actual = ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:absolutepath:" + absolutePath);
         assertThat(actual.length, is(fooDriverConfigLength));
     }
-    
+
     @Test
     void assertToApolloConfigurationFile() {
         ConfigFile configFile = mock(ConfigFile.class);
@@ -80,7 +80,7 @@ class ShardingSphereDriverURLManagerTest {
     void assertToNacosConfigurationFile() {
         com.alibaba.nacos.api.config.ConfigService configService = mock(com.alibaba.nacos.api.config.ConfigService.class);
         when(NacosFactory.createConfigService(any(Properties.class))).thenReturn(configService);
-        when(configService.getConfig(anyString(), anyString(), 500)).thenReturn("nacos config content");
+        when(configService.getConfig(anyString(), anyString(), anyLong())).thenReturn("nacos config content");
         String url = "jdbc:shardingsphere:nacos:sharding-config.yaml?serverAddr=127.0.0.1:8848&namespace=dev&group=DEFAULT_GROUP&username=nacos&password=nacos";
         byte[] content = ShardingSphereDriverURLManager.getContent(url);
         assertThat("nacos config content".getBytes(StandardCharsets.UTF_8), is(content));
