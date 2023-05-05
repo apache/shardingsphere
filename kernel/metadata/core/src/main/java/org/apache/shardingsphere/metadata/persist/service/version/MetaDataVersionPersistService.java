@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service;
+package org.apache.shardingsphere.metadata.persist.service.version;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Meta data version persist service.
  */
 @RequiredArgsConstructor
-public final class MetaDataVersionPersistService {
+public final class MetaDataVersionPersistService implements MetaDataVersionBasedPersistService {
     
     private final PersistRepository repository;
     

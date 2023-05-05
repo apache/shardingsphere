@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.service;
+package org.apache.shardingsphere.metadata.persist.service.database;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.metadata.database.schema.SchemaManager;
@@ -34,7 +34,7 @@ import java.util.Map;
  * Database meta data registry service.
  */
 @Getter
-public final class DatabaseMetaDataPersistService {
+public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBasedPersistService {
     
     private final PersistRepository repository;
     

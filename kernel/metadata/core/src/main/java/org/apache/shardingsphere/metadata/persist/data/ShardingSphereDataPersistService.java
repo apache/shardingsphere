@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  * ShardingSphere data persist service.
  */
 @Getter
-public final class ShardingSphereDataPersistService {
+public final class ShardingSphereDataPersistService implements ShardingSphereDataBasedPersistService {
     
     private final PersistRepository repository;
     

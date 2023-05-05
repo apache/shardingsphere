@@ -1,0 +1,126 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.metadata.persist;
+
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataBasedPersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseRuleBasedPersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalPersistService;
+import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataBasedPersistService;
+import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionBasedPersistService;
+import org.apache.shardingsphere.mode.spi.PersistRepository;
+
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Properties;
+
+/**
+ * TODO remove this after meta data refactor completed
+ * Abstract meta data persist service.
+ */
+public abstract class AbstractMetaDataPersistService {
+    
+    /**
+     * Get repository.
+     * 
+     * @return repository
+     */
+    public abstract PersistRepository getRepository();
+    
+    /**
+     * Get data source service.
+     * 
+     * @return persist service
+     */
+    public abstract DatabaseBasedPersistService<Map<String, DataSourceProperties>> getDataSourceService();
+    
+    /**
+     * Get database meta data service.
+     * 
+     * @return persist service
+     */
+    public abstract DatabaseMetaDataBasedPersistService getDatabaseMetaDataService();
+    
+    /**
+     * Get database rule persist service.
+     * 
+     * @return persist service
+     */
+    public abstract DatabaseRuleBasedPersistService<Collection<RuleConfiguration>> getDatabaseRulePersistService();
+    
+    /**
+     * Get global rule service.
+     * 
+     * @return repository
+     */
+    public abstract GlobalPersistService<Collection<RuleConfiguration>> getGlobalRuleService();
+    
+    /**
+     * Get props service.
+     * 
+     * @return persist service
+     */
+    public abstract GlobalPersistService<Properties> getPropsService();
+    
+    /**
+     * Get meta data version persist service.
+     * 
+     * @return persist service
+     */
+    public abstract MetaDataVersionBasedPersistService getMetaDataVersionPersistService();
+    
+    /**
+     * Get ShardingSphere data persist service.
+     * 
+     * @return persist service
+     */
+    public abstract ShardingSphereDataBasedPersistService getShardingSphereDataPersistService();
+    
+    /**
+     * Persist global rule configurations.
+     * 
+     * @param globalRuleConfigs global rule configurations
+     * @param props properties
+     */
+    public abstract void persistGlobalRuleConfiguration(Collection<RuleConfiguration> globalRuleConfigs, Properties props);
+    
+    /**
+     * Persist configurations.
+     * 
+     * @param databaseName database name
+     * @param databaseConfigs database configurations
+     * @param dataSources data sources
+     * @param rules rules
+     */
+    public abstract void persistConfigurations(String databaseName, DatabaseConfiguration databaseConfigs,
+                                               Map<String, DataSource> dataSources, Collection<ShardingSphereRule> rules);
+    
+    /**
+     * Get effective data sources.
+     *
+     * @param databaseName database name
+     * @param databaseConfigs database configurations
+     * @return effective data sources
+     */
+    public abstract Map<String, DataSource> getEffectiveDataSources(String databaseName, Map<String, ? extends DatabaseConfiguration> databaseConfigs);
+}

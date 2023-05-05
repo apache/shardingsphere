@@ -17,6 +17,11 @@
 
 package org.apache.shardingsphere.metadata.persist.service.config.global;
 
+import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
+
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Global persist service.
  * 
@@ -37,4 +42,14 @@ public interface GlobalPersistService<T> {
      * @return configurations
      */
     T load();
+    
+    /**
+     * TODO remove this after meta data refactor completed 
+     * Load all users.
+     *
+     * @return collection of user
+     */
+    default Collection<ShardingSphereUser> loadUsers() {
+        return Collections.emptyList();
+    }
 }
