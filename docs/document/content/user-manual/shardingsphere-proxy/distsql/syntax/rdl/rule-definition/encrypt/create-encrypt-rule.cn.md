@@ -19,7 +19,7 @@ ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
 
 encryptDefinition ::=
-  ruleName '(' 'COLUMNS' '(' columnDefinition (',' columnDefinition)*  ')' (',' 'QUERY_WITH_CIPHER_COLUMN' '=' ('TRUE' | 'FALSE'))? ')'
+  ruleName '(' 'COLUMNS' '(' columnDefinition (',' columnDefinition)*  ')' ')'
 
 columnDefinition ::=
   '(' 'NAME' '=' columnName (',' 'PLAIN' '=' plainColumnName)? ',' 'CIPHER' '=' cipherColumnName (',' 'ASSISTED_QUERY_COLUMN' '=' assistedQueryColumnName)? (',' 'LIKE_QUERY_COLUMN' '=' likeQueryColumnName)? ',' encryptAlgorithmDefinition (',' assistedQueryAlgorithmDefinition)? (',' likeQueryAlgorithmDefinition)? ')' 
@@ -85,12 +85,12 @@ CREATE ENCRYPT RULE t_encrypt (
 COLUMNS(
 (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),
 (NAME=order_id, CIPHER =order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='MD5')))
-),QUERY_WITH_CIPHER_COLUMN=true),
+)),
 t_encrypt_2 (
 COLUMNS(
 (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),
 (NAME=order_id, CIPHER=order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='MD5')))
-), QUERY_WITH_CIPHER_COLUMN=FALSE);
+));
 ```
 
 #### 使用 `ifNotExists` 子句创建数据加密规则
@@ -100,17 +100,17 @@ CREATE ENCRYPT RULE IF NOT EXISTS t_encrypt (
 COLUMNS(
 (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),
 (NAME=order_id, CIPHER =order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='MD5')))
-),QUERY_WITH_CIPHER_COLUMN=true),
+)),
 t_encrypt_2 (
 COLUMNS(
 (NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),
 (NAME=order_id, CIPHER=order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='MD5')))
-), QUERY_WITH_CIPHER_COLUMN=FALSE);
+));
 ```
 
 ### 保留字
 
-`CREATE`、`ENCRYPT`、`RULE`、`COLUMNS`、`NAME`、`CIPHER`、`PLAIN`、`ENCRYPT_ALGORITHM`、`QUERY_WITH_CIPHER_COLUMN`、`TYPE`、`TRUE`、`FALSE`
+`CREATE`、`ENCRYPT`、`RULE`、`COLUMNS`、`NAME`、`CIPHER`、`PLAIN`、`ENCRYPT_ALGORITHM`、`TYPE`、`TRUE`、`FALSE`
 
 ### 相关链接
 

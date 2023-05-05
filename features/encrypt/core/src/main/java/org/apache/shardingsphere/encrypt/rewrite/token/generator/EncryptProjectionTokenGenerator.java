@@ -167,13 +167,6 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     }
     
     private ColumnProjection generatePredicateSubqueryProjection(final String tableName, final ColumnProjection column) {
-        boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName, column.getName());
-        if (!queryWithCipherColumn) {
-            Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, column.getName());
-            if (plainColumn.isPresent()) {
-                return new ColumnProjection(column.getOwner(), plainColumn.get(), null);
-            }
-        }
         Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, column.getName());
         if (assistedQueryColumn.isPresent()) {
             return new ColumnProjection(column.getOwner(), assistedQueryColumn.get(), null);
@@ -205,11 +198,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     }
     
     private String getEncryptColumnName(final String tableName, final String logicEncryptColumnName) {
-        boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName, logicEncryptColumnName);
-        if (queryWithCipherColumn) {
-            return encryptRule.getCipherColumn(tableName, logicEncryptColumnName);
-        }
-        return encryptRule.findPlainColumn(tableName, logicEncryptColumnName).orElseGet(() -> encryptRule.getCipherColumn(tableName, logicEncryptColumnName));
+        return encryptRule.getCipherColumn(tableName, logicEncryptColumnName);
     }
     
     private ShorthandProjection getShorthandProjection(final ShorthandProjectionSegment segment, final ProjectionsContext projectionsContext) {

@@ -34,7 +34,7 @@ weight = 5
 
 #### Encrypt
 
-`ENCRYPT`, `COLUMNS`, `CIPHER`, `PLAIN`, `ENCRYPT_ALGORITHM`, `QUERY_WITH_CIPHER_COLUMN`
+`ENCRYPT`, `COLUMNS`, `CIPHER`, `PLAIN`, `ENCRYPT_ALGORITHM`
 
 #### Database Discovery
 

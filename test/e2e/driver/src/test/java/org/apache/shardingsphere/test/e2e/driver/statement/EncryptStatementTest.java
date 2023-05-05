@@ -152,21 +152,6 @@ class EncryptStatementTest extends AbstractEncryptDriverTest {
         }
     }
     
-    @Test
-    void assertSelectWithPlainColumn() throws SQLException {
-        try (Statement statement = getEncryptConnectionWithProps().createStatement()) {
-            ResultSet resultSet = statement.executeQuery(SELECT_SQL_WITH_PLAIN);
-            int count = 1;
-            List<Object> ids = Arrays.asList(1, 5);
-            while (resultSet.next()) {
-                assertThat(resultSet.getObject("id"), is(ids.get(count - 1)));
-                assertThat(resultSet.getObject("pwd"), is("plainValue"));
-                count += 1;
-            }
-            assertThat(count - 1, is(ids.size()));
-        }
-    }
-    
     private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object plain) throws SQLException {
         try (
                 Connection connection = getActualDataSources().get("encrypt").getConnection();

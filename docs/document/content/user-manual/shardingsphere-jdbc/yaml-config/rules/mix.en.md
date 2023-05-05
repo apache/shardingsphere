@@ -57,8 +57,7 @@ rules:
           assistedQueryColumn (?):  # Assisted query column name
           assistedQueryEncryptorName:  # Assisted query encrypt algorithm name
           likeQueryColumn (?):  # Like query column name
-          likeQueryEncryptorName:  # Like query encrypt algorithm name
-      queryWithCipherColumn(?): # The current table whether query with cipher column for data encrypt. 
+          likeQueryEncryptorName:  # Like query encrypt algorithm name 
 ```
 
 ## Samples
@@ -121,5 +120,4 @@ rules:
         order_id:
           cipherColumn: order_cipher
           encryptorName: md5_encryptor
-      queryWithCipherColumn: true
 ```

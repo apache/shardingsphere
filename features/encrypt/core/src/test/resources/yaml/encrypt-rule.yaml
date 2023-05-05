@@ -28,7 +28,6 @@ rules:
             assistedQueryEncryptorName: assisted_encryptor
             likeQueryColumn: like_query_username
             likeQueryEncryptorName: like_encryptor
-        queryWithCipherColumn: true
     encryptors:
       username_encryptor:
         type: AES

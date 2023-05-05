@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -82,14 +82,6 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
             }
             int startIndex = column.getOwner().isPresent() ? column.getOwner().get().getStopIndex() + 2 : column.getStartIndex();
             int stopIndex = column.getStopIndex();
-            boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(tableName, column.getIdentifier().getValue());
-            if (!queryWithCipherColumn) {
-                Optional<String> plainColumn = encryptTable.get().findPlainColumn(column.getIdentifier().getValue());
-                if (plainColumn.isPresent()) {
-                    result.add(new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(plainColumn.get())));
-                    continue;
-                }
-            }
             Optional<String> assistedQueryColumn = encryptTable.get().findAssistedQueryColumn(column.getIdentifier().getValue());
             SubstitutableColumnNameToken encryptColumnNameToken = assistedQueryColumn.map(optional -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(optional)))
                     .orElseGet(() -> new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(encryptTable.get().getCipherColumn(column.getIdentifier().getValue()))));

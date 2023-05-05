@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +34,4 @@ public final class ExpectedEncryptRule extends AbstractExpectedIdentifierSQLSegm
     
     @XmlElement(name = "column")
     private final List<ExpectedEncryptColumn> columns = new LinkedList<>();
-    
-    @XmlAttribute(name = "query-with-cipher-column")
-    private Boolean queryWithCipherColumn;
 }
