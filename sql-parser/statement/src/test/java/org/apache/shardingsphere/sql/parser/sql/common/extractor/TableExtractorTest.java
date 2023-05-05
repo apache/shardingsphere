@@ -184,7 +184,7 @@ class TableExtractorTest {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(joinTableSegment);
         tableExtractor.extractTablesFromSelect(selectStatement);
-        assertThat(tableExtractor.getJoinTableSegments().size(), is(1));
-        assertThat(tableExtractor.getJoinTableSegments().iterator().next(), is(joinTableSegment));
+        assertThat(tableExtractor.getJoinTables().size(), is(1));
+        assertThat(tableExtractor.getJoinTables().iterator().next(), is(joinTableSegment));
     }
 }
