@@ -18,22 +18,21 @@
 package org.apache.shardingsphere.infra.metadata.database.resource;
 
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingSphereResourceTest {
     
-    @SuppressWarnings("BusyWait")
     @Test
-    void assertClose() throws InterruptedException {
+    void assertClose() {
         MockedDataSource dataSource = new MockedDataSource();
         new ShardingSphereResourceMetaData("sharding_db", Collections.singletonMap("foo_ds", dataSource)).close(dataSource);
-        while (!dataSource.isClosed()) {
-            Thread.sleep(10L);
-        }
+        Awaitility.await().atMost(1L, TimeUnit.MINUTES).pollInterval(10L, TimeUnit.MILLISECONDS).until(dataSource::isClosed);
         assertTrue(dataSource.isClosed());
     }
 }

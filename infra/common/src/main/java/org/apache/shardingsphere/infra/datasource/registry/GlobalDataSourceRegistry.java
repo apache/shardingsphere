@@ -20,25 +20,23 @@ package org.apache.shardingsphere.infra.datasource.registry;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.sql.DataSource;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Global data source registry.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@Setter
 public final class GlobalDataSourceRegistry {
     
     private static final GlobalDataSourceRegistry INSTANCE = new GlobalDataSourceRegistry();
     
-    private volatile Map<String, DataSource> cachedDataSourceDataSources = new LinkedHashMap<>();
+    private final Map<String, DataSource> cachedDataSourceDataSources = new ConcurrentHashMap<>();
     
-    private volatile Map<String, String> cachedDatabaseTables = new LinkedHashMap<>();
+    private final Map<String, String> cachedDatabaseTables = new ConcurrentHashMap<>();
     
     /**
      * Get global data source.
