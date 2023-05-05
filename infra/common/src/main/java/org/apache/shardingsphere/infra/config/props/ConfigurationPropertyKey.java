@@ -124,16 +124,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_FRONTEND_SSL_ENABLED("proxy-frontend-ssl-enabled", String.valueOf(Boolean.FALSE), boolean.class, true),
     
     /**
-     * Proxy frontend SSL certificate file.
-     */
-    PROXY_FRONTEND_SSL_CERT_FILE("proxy-frontend-ssl-cert-file", "", String.class, true),
-    
-    /**
-     * Proxy frontend SSL private key file.
-     */
-    PROXY_FRONTEND_SSL_KEY_FILE("proxy-frontend-ssl-key-file", "", String.class, true),
-    
-    /**
      * Proxy frontend SSL protocol version.
      */
     PROXY_FRONTEND_SSL_VERSION("proxy-frontend-ssl-version", "TLSv1.2,TLSv1.3", String.class, true),

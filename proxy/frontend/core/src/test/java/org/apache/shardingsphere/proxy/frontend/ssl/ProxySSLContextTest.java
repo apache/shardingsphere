@@ -35,21 +35,17 @@ import org.mockito.internal.configuration.plugins.Plugins;
 
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLException;
-import java.io.File;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
@@ -70,43 +66,8 @@ class ProxySSLContextTest {
     }
     
     @Test
-    void assertInitWithIllegalConfig() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_ENABLED)).thenReturn(true);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_CERT_FILE)).thenReturn("");
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_KEY_FILE)).thenReturn("key");
-        assertThrows(IllegalArgumentException.class, ProxySSLContext::init);
-    }
-    
-    @Test
-    void assertInitWithUserProvidedCertificate() throws SSLException {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_ENABLED)).thenReturn(true);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_CERT_FILE)).thenReturn("cert");
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_KEY_FILE)).thenReturn("key");
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_VERSION))
-                .thenReturn("TLSv1.2,TLSv1.3");
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_CIPHER))
-                .thenReturn("CIPHER1,CIPHER2");
-        SslContextBuilder builder = mock(SslContextBuilder.class);
-        SslContext expectedSslContext = mock(SslContext.class);
-        when(builder.build()).thenReturn(expectedSslContext);
-        SSLEngine expectedSSLEngine = mock(SSLEngine.class);
-        when(expectedSslContext.newEngine(UnpooledByteBufAllocator.DEFAULT)).thenReturn(expectedSSLEngine);
-        try (MockedStatic<SslContextBuilder> mockedStatic = mockStatic(SslContextBuilder.class)) {
-            mockedStatic.when(() -> SslContextBuilder.forServer(any(File.class), any(File.class))).thenReturn(builder);
-            ProxySSLContext.init();
-        }
-        verify(builder).protocols("TLSv1.2", "TLSv1.3");
-        verify(builder).ciphers(Arrays.asList("CIPHER1", "CIPHER2"));
-        assertThat(getSslContext(), is(expectedSslContext));
-        assertTrue(ProxySSLContext.getInstance().isSSLEnabled());
-        assertThat(ProxySSLContext.getInstance().newSSLEngine(UnpooledByteBufAllocator.DEFAULT), is(expectedSSLEngine));
-    }
-    
-    @Test
     void assertInitWithGeneratedSelfSignedCertificate() throws SSLException {
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_ENABLED)).thenReturn(true);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_CERT_FILE)).thenReturn("");
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_KEY_FILE)).thenReturn("");
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_VERSION))
                 .thenReturn("TLSv1.2,TLSv1.3");
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_SSL_CIPHER))
