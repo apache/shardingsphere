@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.ddl.fetch;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.context.cursor.FetchGroup;
+import org.apache.shardingsphere.infra.connection.cursor.FetchGroup;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByValue;
 
 import java.util.Collection;
@@ -29,7 +28,6 @@ import java.util.LinkedList;
  * Fetch order by value group.
  */
 @Getter
-@Setter
 public final class FetchOrderByValueGroup implements FetchGroup {
     
     private final Collection<OrderByValue> orderByValues = new LinkedList<>();
