@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.api.config.process.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
  */
 @Getter
 @Setter
-@ToString
 public final class YamlPipelineProcessConfiguration implements YamlConfiguration {
     
     private YamlPipelineReadConfiguration read;

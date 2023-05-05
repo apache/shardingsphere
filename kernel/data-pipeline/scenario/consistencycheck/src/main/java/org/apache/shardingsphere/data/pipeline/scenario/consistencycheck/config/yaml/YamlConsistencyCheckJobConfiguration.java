@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 
 import java.util.Properties;
@@ -29,7 +28,6 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-@ToString
 public final class YamlConsistencyCheckJobConfiguration implements YamlPipelineJobConfiguration {
     
     private String jobId;

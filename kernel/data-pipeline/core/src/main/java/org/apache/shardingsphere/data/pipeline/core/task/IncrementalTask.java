@@ -86,13 +86,13 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
     }
     
     private IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition<?> position, final InventoryIncrementalJobItemProgress jobItemProgress) {
-        IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress();
-        incrementalTaskProgress.setPosition(position);
+        IncrementalTaskProgress result = new IncrementalTaskProgress();
+        result.setPosition(position);
         if (null != jobItemProgress && null != jobItemProgress.getIncremental()) {
             Optional.ofNullable(jobItemProgress.getIncremental().getIncrementalTaskProgress())
-                    .ifPresent(optional -> incrementalTaskProgress.setIncrementalTaskDelay(jobItemProgress.getIncremental().getIncrementalTaskProgress().getIncrementalTaskDelay()));
+                    .ifPresent(optional -> result.setIncrementalTaskDelay(jobItemProgress.getIncremental().getIncrementalTaskProgress().getIncrementalTaskDelay()));
         }
-        return incrementalTaskProgress;
+        return result;
     }
     
     private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
