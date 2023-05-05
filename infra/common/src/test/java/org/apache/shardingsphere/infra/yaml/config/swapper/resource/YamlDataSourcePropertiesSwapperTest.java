@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.yaml.config.swapper.resource;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.Test;
@@ -38,12 +37,12 @@ class YamlDataSourcePropertiesSwapperTest {
     void assertSwapToDataSources() {
         Map<String, Map<String, Object>> yamlConfig = createYamlConfig();
         Map<String, DataSource> dataSources = swapper.swapToDataSources(yamlConfig);
-        HikariDataSource actual0 = (HikariDataSource) dataSources.get("ds_0");
-        assertThat(actual0.getJdbcUrl(), is("jdbc:mock://127.0.0.1/ds_0"));
+        MockedDataSource actual0 = (MockedDataSource) dataSources.get("ds_0");
+        assertThat(actual0.getUrl(), is("jdbc:mock://127.0.0.1/ds_0"));
         assertThat(actual0.getUsername(), is("root"));
         assertThat(actual0.getPassword(), is("root"));
-        HikariDataSource actual1 = (HikariDataSource) dataSources.get("ds_1");
-        assertThat(actual1.getJdbcUrl(), is("jdbc:mock://127.0.0.1/ds_1"));
+        MockedDataSource actual1 = (MockedDataSource) dataSources.get("ds_1");
+        assertThat(actual1.getUrl(), is("jdbc:mock://127.0.0.1/ds_1"));
         assertThat(actual1.getUsername(), is("root"));
         assertThat(actual1.getPassword(), is("root"));
     }
@@ -83,9 +82,9 @@ class YamlDataSourcePropertiesSwapperTest {
     }
     
     private Map<String, Object> createPropertyMap(final String name) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1);
-        result.put("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource");
-        result.put("jdbcUrl", String.format("jdbc:mock://127.0.0.1/%s", name));
+        Map<String, Object> result = new LinkedHashMap<>(4, 1);
+        result.put("dataSourceClassName", MockedDataSource.class.getName());
+        result.put("url", String.format("jdbc:mock://127.0.0.1/%s", name));
         result.put("username", "root");
         result.put("password", "root");
         return result;
