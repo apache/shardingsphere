@@ -19,13 +19,16 @@ package org.apache.shardingsphere.data.pipeline.cdc.handler;
 
 import com.google.common.base.Strings;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelId;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.StreamDataParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
+import org.apache.shardingsphere.data.pipeline.cdc.context.job.CDCJobItemContext;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckHolder;
 import org.apache.shardingsphere.data.pipeline.cdc.core.connector.SocketSinkImporterConnector;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCExceptionWrapper;
@@ -50,6 +53,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -57,6 +61,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -143,15 +148,31 @@ public final class CDCBackendHandler {
     /**
      * Stop streaming.
      *
-     * @param jobId job id
+     * @param jobId     job id
+     * @param channelId channel id
      */
-    public void stopStreaming(final String jobId) {
+    public void stopStreaming(final String jobId, final ChannelId channelId) {
         if (Strings.isNullOrEmpty(jobId)) {
             log.warn("job id is null or empty, ignored");
             return;
         }
-        PipelineJobCenter.stop(jobId);
-        jobAPI.updateJobConfigurationDisabled(jobId, true);
+        List<Integer> shardingItems = new ArrayList<>(PipelineJobCenter.getShardingItems(jobId));
+        if (0 == shardingItems.size()) {
+            return;
+        }
+        Optional<PipelineJobItemContext> jobItemContext = PipelineJobCenter.getJobItemContext(jobId, shardingItems.get(0));
+        if (!jobItemContext.isPresent()) {
+            return;
+        }
+        CDCJobItemContext cdcJobItemContext = (CDCJobItemContext) jobItemContext.get();
+        if (cdcJobItemContext.getImporterConnector() instanceof SocketSinkImporterConnector) {
+            Channel channel = (Channel) cdcJobItemContext.getImporterConnector().getConnector();
+            if (channelId.equals(channel.id())) {
+                log.info("close CDC job, channel id: {}", channelId);
+                PipelineJobCenter.stop(jobId);
+                jobAPI.updateJobConfigurationDisabled(jobId, true);
+            }
+        }
     }
     
     /**

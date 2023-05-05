@@ -94,6 +94,7 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
     @Override
     public void channelInactive(final ChannelHandlerContext ctx) {
+        log.info("Request handler channel inactive");
         ctx.fireChannelInactive();
     }
     
