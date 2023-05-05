@@ -68,6 +68,8 @@ public final class TableExtractor {
     
     private final Collection<TableSegment> tableContext = new LinkedList<>();
     
+    private final Collection<JoinTableSegment> joinTableSegments = new LinkedList<>();
+    
     /**
      * Extract table that should be rewritten from select statement.
      *
@@ -108,8 +110,10 @@ public final class TableExtractor {
             TableExtractor tableExtractor = new TableExtractor();
             tableExtractor.extractTablesFromSelect(((SubqueryTableSegment) tableSegment).getSubquery().getSelect());
             rewriteTables.addAll(tableExtractor.rewriteTables);
+            joinTableSegments.addAll(tableExtractor.joinTableSegments);
         }
         if (tableSegment instanceof JoinTableSegment) {
+            joinTableSegments.add((JoinTableSegment) tableSegment);
             extractTablesFromJoinTableSegment((JoinTableSegment) tableSegment);
         }
         if (tableSegment instanceof DeleteMultiTableSegment) {

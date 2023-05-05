@@ -73,6 +73,7 @@ public final class WhereExtractUtils {
         Collection<WhereSegment> result = new LinkedList<>();
         for (SubquerySegment each : SubqueryExtractUtils.getSubquerySegments(selectStatement)) {
             each.getSelect().getWhere().ifPresent(result::add);
+            result.addAll(getJoinWhereSegments(each.getSelect()));
         }
         return result;
     }
