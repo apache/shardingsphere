@@ -19,3 +19,7 @@
 dataSourceName: ds_0
 sourceDatabaseType: H2
 status: PREPARING_FAILURE
+incremental:
+  lastEventTimestamp: 0
+  latestActiveMillis: 0
+  position: ''

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskDelay;
 
 /**
  * YAML job item incremental tasks progress.
@@ -30,5 +29,7 @@ public final class YamlJobItemIncrementalTasksProgress {
     
     private String position;
     
-    private IncrementalTaskDelay delay;
+    private long lastEventTimestamp;
+    
+    private long latestActiveMillis;
 }

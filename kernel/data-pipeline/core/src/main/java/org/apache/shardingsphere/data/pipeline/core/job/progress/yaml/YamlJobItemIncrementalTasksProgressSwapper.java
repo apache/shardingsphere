@@ -43,7 +43,8 @@ public final class YamlJobItemIncrementalTasksProgressSwapper {
         }
         YamlJobItemIncrementalTasksProgress result = new YamlJobItemIncrementalTasksProgress();
         result.setPosition(progress.getIncrementalTaskProgress().getPosition().toString());
-        result.setDelay(progress.getIncrementalTaskProgress().getIncrementalTaskDelay());
+        result.setLastEventTimestamp(progress.getIncrementalTaskProgress().getLastEventTimestamp());
+        result.setLatestActiveMillis(progress.getIncrementalTaskProgress().getLatestActiveMillis());
         return result;
     }
     
@@ -62,7 +63,8 @@ public final class YamlJobItemIncrementalTasksProgressSwapper {
         // TODO consider to remove parameter databaseType
         PositionInitializer positionInitializer = PipelineTypedSPILoader.getDatabaseTypedService(PositionInitializer.class, databaseType);
         taskProgress.setPosition(positionInitializer.init(yamlProgress.getPosition()));
-        taskProgress.setIncrementalTaskDelay(yamlProgress.getDelay());
+        taskProgress.setLastEventTimestamp(yamlProgress.getLastEventTimestamp());
+        taskProgress.setLatestActiveMillis(yamlProgress.getLatestActiveMillis());
         return new JobItemIncrementalTasksProgress(taskProgress);
     }
 }

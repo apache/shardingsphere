@@ -46,7 +46,6 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -88,9 +87,9 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
     private IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition<?> position, final InventoryIncrementalJobItemProgress jobItemProgress) {
         IncrementalTaskProgress result = new IncrementalTaskProgress();
         result.setPosition(position);
-        if (null != jobItemProgress && null != jobItemProgress.getIncremental()) {
-            Optional.ofNullable(jobItemProgress.getIncremental().getIncrementalTaskProgress())
-                    .ifPresent(optional -> result.setIncrementalTaskDelay(jobItemProgress.getIncremental().getIncrementalTaskProgress().getIncrementalTaskDelay()));
+        if (null != jobItemProgress && null != jobItemProgress.getIncremental() && null != jobItemProgress.getIncremental().getIncrementalTaskProgress()) {
+            result.setLastEventTimestamp(jobItemProgress.getIncremental().getIncrementalTaskProgress().getLastEventTimestamp());
+            result.setLatestActiveMillis(jobItemProgress.getIncremental().getIncrementalTaskProgress().getLatestActiveMillis());
         }
         return result;
     }
@@ -110,15 +109,15 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
             Record lastHandledRecord = records.get(records.size() - 1);
             if (!(lastHandledRecord.getPosition() instanceof PlaceholderPosition)) {
                 progress.setPosition(lastHandledRecord.getPosition());
-                progress.getIncrementalTaskDelay().setLastEventTimestamps(lastHandledRecord.getCommitTime());
+                progress.setLastEventTimestamp(lastHandledRecord.getCommitTime());
             }
-            progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
+            progress.setLatestActiveMillis(System.currentTimeMillis());
         });
     }
     
     @Override
     public Collection<CompletableFuture<?>> start() {
-        taskProgress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
+        taskProgress.setLatestActiveMillis(System.currentTimeMillis());
         Collection<CompletableFuture<?>> result = new LinkedList<>();
         result.add(incrementalExecuteEngine.submit(dumper, new JobExecuteCallback(taskId, "incremental dumper")));
         importers.forEach(each -> result.add(incrementalExecuteEngine.submit(each, new JobExecuteCallback(taskId, "importer"))));

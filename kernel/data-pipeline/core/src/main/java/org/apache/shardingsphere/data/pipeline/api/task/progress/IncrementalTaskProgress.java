@@ -30,5 +30,7 @@ public final class IncrementalTaskProgress implements TaskProgress {
     
     private volatile IngestPosition<?> position;
     
-    private IncrementalTaskDelay incrementalTaskDelay = new IncrementalTaskDelay();
+    private volatile long lastEventTimestamp;
+    
+    private volatile long latestActiveMillis;
 }

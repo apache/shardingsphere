@@ -17,9 +17,8 @@
 
 dataSourceName: ds_0
 incremental:
-  delay:
-    lastEventTimestamps: 0
-    latestActiveTimeMillis: 50
+  lastEventTimestamp: 0
+  latestActiveMillis: 50
   position: ''
 inventory:
   finished:
