@@ -15,44 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e;
+package org.apache.shardingsphere.test.e2e.container;
 
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-/**
- * External SQL parser integrate test settings.
- */
-@Inherited
-@Retention(RetentionPolicy.RUNTIME)
-public @interface ExternalCompatibilitySettings {
+public enum EnvTypeEnum {
     
-    /**
-     * Get to be tested database types.
-     * 
-     * @return to be tested database types
-     */
-    String value();
-    
-    /**
-     * Get test case URL.
-     * 
-     * @return test case URL
-     */
-    String caseURL();
-    
-    /**
-     * Get test case result URL.
-     * 
-     * @return test case result URL
-     */
-    String resultURL();
-    
-    /**
-     * Report type.
-     * 
-     * @return get report type
-     */
-    String reportType() default "CSV";
+    NONE, DOCKER, NATIVE
 }

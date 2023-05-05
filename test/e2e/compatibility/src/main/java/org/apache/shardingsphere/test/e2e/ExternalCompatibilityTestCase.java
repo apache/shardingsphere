@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.test.e2e;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.test.loader.ExternalCaseSettings;
+import org.apache.shardingsphere.test.loader.strategy.impl.GitHubTestParameterLoadStrategy;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,7 +37,7 @@ public abstract class ExternalCompatibilityTestCase {
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertTest(final String sqlCaseId, final String databaseType, final String sql, final String expectResult) throws IOException {
+    void assertTest(final String sqlCaseId, final String databaseType, final String sql, final String expect) throws IOException {
         
     }
     
@@ -43,12 +45,12 @@ public abstract class ExternalCompatibilityTestCase {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            ExternalCompatibilitySettings settings = extensionContext.getRequiredTestClass().getAnnotation(ExternalCompatibilitySettings.class);
+            ExternalCaseSettings settings = extensionContext.getRequiredTestClass().getAnnotation(ExternalCaseSettings.class);
             Preconditions.checkNotNull(settings, "Annotation ExternalSQLParserITSettings is required.");
             return getTestParameters(settings).stream().map(each -> Arguments.of(each.getSqlCaseId(), each.getDatabaseType(), each.getSql(), each.getReportType()));
         }
         
-        private Collection<ExternalCompatibilityTestParameter> getTestParameters(final ExternalCompatibilitySettings settings) {
+        private Collection<ExternalCompatibilityTestParameter> getTestParameters(final ExternalCaseSettings settings) {
             return new ExternalCompatibilityTestParameterLoader(
                     new GitHubTestParameterLoadStrategy()).load(URI.create(settings.caseURL()), URI.create(settings.resultURL()), settings.value(), settings.reportType());
         }

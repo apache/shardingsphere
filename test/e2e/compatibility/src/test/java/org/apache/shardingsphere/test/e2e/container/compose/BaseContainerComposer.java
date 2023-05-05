@@ -15,21 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e;
+package org.apache.shardingsphere.test.e2e.container.compose;
 
-import java.net.URI;
-import java.util.Collection;
+import lombok.Getter;
+import org.apache.shardingsphere.test.e2e.env.container.atomic.ITContainers;
+import org.testcontainers.lifecycle.Startable;
 
-/**
- * Test parameter load strategy.
- */
-public interface TestParameterLoadStrategy {
+@Getter
+public abstract class BaseContainerComposer implements Startable {
+    
+    private final ITContainers containers;
+    
+    public BaseContainerComposer() {
+        containers = new ITContainers("");
+    }
     
     /**
-     * Load SQL case file summaries.
-     * 
-     * @param uri URL to be loaded
-     * @return loaded SQL file summaries
+     * Get proxy jdbc url.
+     *
+     * @param databaseName database name
+     * @return proxy jdbc url
      */
-    Collection<FileSummary> loadSQLCaseFileSummaries(URI uri);
+    public abstract String getProxyJdbcUrl(String databaseName);
+    
+    @Override
+    public void start() {
+        getContainers().start();
+    }
+    
+    @Override
+    public void stop() {
+        getContainers().stop();
+    }
 }

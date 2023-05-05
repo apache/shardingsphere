@@ -17,65 +17,24 @@
 
 package org.apache.shardingsphere.test.e2e;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.test.loader.AbstractTestParameterLoader;
+import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * External SQL parser test parameter loader.
  */
-@RequiredArgsConstructor
 @Slf4j
-public final class ExternalCompatibilityTestParameterLoader {
+public final class ExternalCompatibilityTestParameterLoader extends AbstractTestParameterLoader<ExternalCompatibilityTestParameter> {
     
-    private final TestParameterLoadStrategy loadStrategy;
-    
-    /**
-     * Load SQL parser test parameters.
-     *
-     * @param sqlCaseURI SQL case URI
-     * @param resultURI result URI
-     * @param databaseType database type
-     * @param reportType report type
-     * @return loaded test parameters
-     */
-    public Collection<ExternalCompatibilityTestParameter> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
-        Collection<ExternalCompatibilityTestParameter> result = new LinkedList<>();
-        Map<String, FileSummary> sqlCaseFileSummaries = loadStrategy.loadSQLCaseFileSummaries(sqlCaseURI).stream().collect(Collectors.toMap(FileSummary::getFileName, v -> v, (k, v) -> v));
-        Map<String, FileSummary> resultFileSummaries = loadStrategy.loadSQLCaseFileSummaries(resultURI).stream().collect(Collectors.toMap(FileSummary::getFileName, v -> v, (k, v) -> v));
-        for (Entry<String, FileSummary> entry : sqlCaseFileSummaries.entrySet()) {
-            String fileName = entry.getKey();
-            String sqlCaseFileContent = loadContent(URI.create(entry.getValue().getAccessURI()));
-            String resultFileContent = resultFileSummaries.containsKey(fileName) ? loadContent(URI.create(resultFileSummaries.get(fileName).getAccessURI())) : "";
-            result.addAll(createTestParameters(fileName, sqlCaseFileContent, resultFileContent, databaseType, reportType));
-        }
-        if (result.isEmpty()) {
-            result.add(new ExternalCompatibilityTestParameter("", databaseType, "", "", reportType));
-        }
-        return result;
+    public ExternalCompatibilityTestParameterLoader(final TestParameterLoadStrategy loadStrategy) {
+        super(loadStrategy);
     }
     
-    private String loadContent(final URI uri) {
-        try (
-                InputStreamReader in = new InputStreamReader(uri.toURL().openStream());
-                BufferedReader reader = new BufferedReader(in)) {
-            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
-        } catch (final IOException ex) {
-            log.warn("Load failed, reason is: ", ex);
-            return "";
-        }
-    }
-    
-    private Collection<ExternalCompatibilityTestParameter> createTestParameters(final String sqlCaseFileName,
+    public Collection<ExternalCompatibilityTestParameter> createTestParameters(final String sqlCaseFileName,
                                                                             final String sqlCaseFileContent, final String resultFileContent, final String databaseType, final String reportType) {
         Collection<ExternalCompatibilityTestParameter> result = new LinkedList<>();
         String[] rawCaseLines = sqlCaseFileContent.split("\n");

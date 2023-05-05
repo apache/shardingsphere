@@ -33,7 +33,7 @@ public final class ExternalCompatibilityTestParameter {
     
     private final String sql;
     
-    private final String expectedResult;
+    private final String expected;
     
     private final String reportType;
 }

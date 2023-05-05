@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e;
+package org.apache.shardingsphere.test.e2e.container.compose;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
 
 /**
- * File summary.
+ * Native composed container, you need start ShardingSphere-Proxy at firstly.
  */
-@RequiredArgsConstructor
-@Getter
-public final class FileSummary {
+public final class NativeContainerComposer extends BaseContainerComposer {
     
-    private final String fileName;
+    private final DatabaseType databaseType;
     
-    private final String accessURI;
+    public NativeContainerComposer(final DatabaseType databaseType) {
+        this.databaseType = databaseType;
+    }
+    
+    @Override
+    public String getProxyJdbcUrl(final String databaseName) {
+        return DataSourceEnvironment.getURL(databaseType, "localhost", 3307, databaseName);
+    }
 }
