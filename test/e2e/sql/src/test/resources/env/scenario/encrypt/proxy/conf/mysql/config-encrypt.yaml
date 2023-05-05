@@ -44,7 +44,6 @@ rules:
     t_user:
       columns:
         user_name:
-          plainColumn: user_name_plain
           cipherColumn: user_name_cipher
           likeQueryColumn: user_name_like
           encryptorName: aes_encryptor
@@ -56,7 +55,6 @@ rules:
           cipherColumn: email_cipher
           encryptorName: aes_encryptor
         telephone:
-          plainColumn: telephone_plain
           cipherColumn: telephone_cipher
           likeQueryColumn: telephone_like
           encryptorName: aes_encryptor
@@ -64,23 +62,19 @@ rules:
     t_user_details:
       columns:
         number:
-          plainColumn: number_plain
           cipherColumn: number_cipher
           encryptorName: aes_encryptor
         number_new:
-          plainColumn: number_new_plain
           cipherColumn: number_new_cipher
           encryptorName: aes_encryptor
     t_merchant:
       columns:
         business_code:
-          plainColumn: business_code_plain
           cipherColumn: business_code_cipher
           likeQueryColumn: business_code_like
           encryptorName: aes_encryptor
           likeQueryEncryptorName: like_encryptor
         telephone:
-          plainColumn: telephone_plain
           cipherColumn: telephone_cipher
           likeQueryColumn: telephone_like
           encryptorName: aes_encryptor

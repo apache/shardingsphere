@@ -21,7 +21,6 @@ rules:
       t_user:
         columns:
           username:
-            plainColumn: username
             cipherColumn: username_cipher
             encryptorName: username_encryptor
             assistedQueryColumn: assisted_query_username

@@ -49,11 +49,9 @@ class EncryptStatementTest extends AbstractEncryptDriverTest {
     
     private static final String SELECT_SQL_WITH_STAR = "SELECT * FROM t_encrypt WHERE pwd = 'a'";
     
-    private static final String SELECT_SQL_WITH_PLAIN = "SELECT id, pwd FROM t_encrypt WHERE pwd = 'plainValue'";
-    
     private static final String SELECT_SQL_WITH_CIPHER = "SELECT id, pwd FROM t_encrypt WHERE pwd = 'plainValue'";
     
-    private static final String SELECT_SQL_TO_ASSERT = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
+    private static final String SELECT_SQL_TO_ASSERT = "SELECT id, cipher_pwd FROM t_encrypt";
     
     private static final String SHOW_COLUMNS_SQL = "SHOW columns FROM t_encrypt";
     
@@ -161,7 +159,6 @@ class EncryptStatementTest extends AbstractEncryptDriverTest {
             while (resultSet.next()) {
                 if (id == count) {
                     assertThat(resultSet.getObject("cipher_pwd"), is(pwd));
-                    assertThat(resultSet.getObject("plain_pwd"), is(plain));
                 }
                 count += 1;
             }

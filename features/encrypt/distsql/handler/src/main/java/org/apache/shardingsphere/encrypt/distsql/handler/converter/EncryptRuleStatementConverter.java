@@ -67,7 +67,7 @@ public final class EncryptRuleStatementConverter {
         String assistedQueryEncryptorName = null == columnSegment.getAssistedQueryEncryptor() ? null : getAssistedQueryEncryptorName(tableName, columnSegment.getName());
         String likeQueryEncryptorName = null == columnSegment.getLikeQueryEncryptor() ? null : getLikeQueryEncryptorName(tableName, columnSegment.getName());
         return new EncryptColumnRuleConfiguration(columnSegment.getName(), columnSegment.getCipherColumn(), columnSegment.getAssistedQueryColumn(),
-                columnSegment.getLikeQueryColumn(), columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()),
+                columnSegment.getLikeQueryColumn(), getEncryptorName(tableName, columnSegment.getName()),
                 assistedQueryEncryptorName, likeQueryEncryptorName);
     }
     

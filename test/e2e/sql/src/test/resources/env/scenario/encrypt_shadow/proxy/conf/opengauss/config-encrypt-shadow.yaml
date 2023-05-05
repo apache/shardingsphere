@@ -125,16 +125,13 @@ rules:
     t_shadow:
       columns:
         order_name:
-          plainColumn: order_name_plain
           cipherColumn: order_name_cipher
           encryptorName: aes_encryptor
     t_merchant:
       columns:
         business_code:
-          plainColumn: business_code_plain
           cipherColumn: business_code_cipher
           encryptorName: aes_encryptor
         telephone:
-          plainColumn: telephone_plain
           cipherColumn: telephone_cipher
           encryptorName: aes_encryptor

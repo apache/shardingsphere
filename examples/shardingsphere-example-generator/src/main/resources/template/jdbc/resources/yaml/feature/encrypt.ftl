@@ -24,7 +24,6 @@
           assistedQueryColumn: assisted_query_status
           assistedQueryEncryptorName: string_encryptor
         phone:
-          plainColumn: phone_plain
           cipherColumn: phone
           encryptorName: phone_encryptor
 

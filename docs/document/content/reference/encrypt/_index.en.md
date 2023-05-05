@@ -114,7 +114,6 @@ Assuming that the system needs to encrypt the `pwd` field of `t_user`, the busin
     t_user:
       columns:
         pwd:
-          plainColumn: pwd
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
           assistedQueryColumn: pwd_assisted_query

@@ -17,7 +17,6 @@ rules:
     <table_name> (+): # Encrypt table name
       columns:
         <column_name> (+): # Encrypt logic column name
-          plainColumn (?): # Plain column name
           cipherColumn: # Cipher column name
           encryptorName: # Cipher encrypt algorithm name
           assistedQueryColumn (?):  # Assisted query column name
@@ -59,7 +58,6 @@ rules:
     t_user:
       columns:
         username:
-          plainColumn: username_plain
           cipherColumn: username
           encryptorName: name_encryptor
           assistedQueryColumn: assisted_query_username

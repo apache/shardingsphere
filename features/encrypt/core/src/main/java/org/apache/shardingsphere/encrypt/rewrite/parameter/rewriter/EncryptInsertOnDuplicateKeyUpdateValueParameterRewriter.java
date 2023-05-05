@@ -70,14 +70,14 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
             if (!encryptor.isPresent()) {
                 continue;
             }
-            Object plainColumnValue = onDuplicateKeyUpdateValueContext.getValue(index);
-            if (plainColumnValue instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) plainColumnValue).getFunctionName())) {
+            Object plainValue = onDuplicateKeyUpdateValueContext.getValue(index);
+            if (plainValue instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) plainValue).getFunctionName())) {
                 return;
             }
             EncryptContext encryptContext = EncryptContextBuilder.build(databaseName, schemaName, tableName, encryptLogicColumnName);
-            Object cipherColumnValue = encryptor.get().encrypt(plainColumnValue, encryptContext);
+            Object cipherColumnValue = encryptor.get().encrypt(plainValue, encryptContext);
             groupedParamBuilder.getGenericParameterBuilder().addReplacedParameters(index, cipherColumnValue);
-            Collection<Object> addedParams = buildAddedParams(tableName, encryptLogicColumnName, plainColumnValue, encryptContext);
+            Collection<Object> addedParams = buildAddedParams(tableName, encryptLogicColumnName, plainValue, encryptContext);
             if (!addedParams.isEmpty()) {
                 if (!groupedParamBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().containsKey(index)) {
                     groupedParamBuilder.getGenericParameterBuilder().getAddedIndexAndParameters().put(index, new LinkedList<>());
@@ -88,22 +88,19 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private Collection<Object> buildAddedParams(final String tableName, final String logicColumnName, final Object plainColumnValue, final EncryptContext encryptContext) {
+    private Collection<Object> buildAddedParams(final String tableName, final String logicColumnName, final Object plainValue, final EncryptContext encryptContext) {
         Collection<Object> result = new LinkedList<>();
         Optional<EncryptAlgorithm> assistedQueryEncryptor = encryptRule.findAssistedQueryEncryptor(tableName, logicColumnName);
         if (assistedQueryEncryptor.isPresent()) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, logicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-            result.add(assistedQueryEncryptor.get().encrypt(plainColumnValue, encryptContext));
+            result.add(assistedQueryEncryptor.get().encrypt(plainValue, encryptContext));
         }
         Optional<LikeEncryptAlgorithm> likeQueryEncryptor = encryptRule.findLikeQueryEncryptor(tableName, logicColumnName);
         if (likeQueryEncryptor.isPresent()) {
             Optional<String> likeColumnName = encryptRule.findLikeQueryColumn(tableName, logicColumnName);
             Preconditions.checkArgument(likeColumnName.isPresent(), "Can not find assisted query Column Name");
-            result.add(likeQueryEncryptor.get().encrypt(plainColumnValue, encryptContext));
-        }
-        if (encryptRule.findPlainColumn(tableName, logicColumnName).isPresent()) {
-            result.add(plainColumnValue);
+            result.add(likeQueryEncryptor.get().encrypt(plainValue, encryptContext));
         }
         return result;
     }
