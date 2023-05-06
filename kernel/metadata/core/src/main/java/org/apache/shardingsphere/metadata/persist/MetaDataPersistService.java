@@ -80,6 +80,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
      * @param globalRuleConfigs global rule configurations
      * @param props properties
      */
+    @Override
     public void persistGlobalRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
         globalRuleService.persist(globalRuleConfigs);
         propsService.persist(props);
@@ -93,6 +94,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
      * @param dataSources data sources
      * @param rules rules
      */
+    @Override
     public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfigs,
                                       final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
         Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(databaseConfigs.getDataSources());
@@ -119,6 +121,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
      * @param databaseConfigs database configurations
      * @return effective data sources
      */
+    @Override
     public Map<String, DataSource> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(databaseName);
         return databaseConfigs.containsKey(databaseName)

@@ -98,6 +98,7 @@ public final class DataSourcePersistService implements DatabaseBasedPersistServi
      * @param databaseName database name
      * @param toBeAppendedDataSourcePropsMap data source properties map to be appended
      */
+    @Override
     public void append(final String databaseName, final Map<String, DataSourceProperties> toBeAppendedDataSourcePropsMap) {
         Map<String, DataSourceProperties> dataSourceConfigs = load(databaseName);
         dataSourceConfigs.putAll(toBeAppendedDataSourcePropsMap);

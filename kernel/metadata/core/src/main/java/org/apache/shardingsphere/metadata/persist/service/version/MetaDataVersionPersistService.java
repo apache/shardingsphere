@@ -38,6 +38,7 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
      * @param databaseName database name
      * @return active database version
      */
+    @Override
     public Optional<String> getActiveVersion(final String databaseName) {
         return Optional.ofNullable(repository.getDirectly(DatabaseMetaDataNode.getActiveVersionPath(databaseName)));
     }
@@ -49,6 +50,7 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
      * @param version version
      * @return is active version or not
      */
+    @Override
     public boolean isActiveVersion(final String databaseName, final String version) {
         Optional<String> actualVersion = getActiveVersion(databaseName);
         return actualVersion.isPresent() && actualVersion.get().equals(version);
@@ -60,6 +62,7 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
      * @param databaseName database name
      * @return new version
      */
+    @Override
     public Optional<String> createNewVersion(final String databaseName) {
         Optional<String> activeVersion = getActiveVersion(databaseName);
         if (!activeVersion.isPresent()) {
@@ -78,6 +81,7 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
      * @param databaseName database name
      * @param version version
      */
+    @Override
     public void persistActiveVersion(final String databaseName, final String version) {
         Optional<String> activeVersion = getActiveVersion(databaseName);
         if (activeVersion.isPresent() && !activeVersion.get().equals(version)) {
@@ -91,6 +95,7 @@ public final class MetaDataVersionPersistService implements MetaDataVersionBased
      * @param databaseName database name
      * @param version version
      */
+    @Override
     public void deleteVersion(final String databaseName, final String version) {
         repository.delete(DatabaseMetaDataNode.getDatabaseVersionPath(databaseName, version));
     }
