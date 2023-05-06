@@ -56,7 +56,7 @@ public final class ConnectionContext implements AutoCloseable {
      * @return used data source names
      */
     public Collection<String> getUsedDataSourceNames() {
-        return usedDataSourceProvider.getUsedDataSourceNames();
+        return usedDataSourceProvider.getNames();
     }
     
     /**

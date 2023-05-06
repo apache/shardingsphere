@@ -80,7 +80,7 @@ public final class ConnectionSession {
         this.attributeMap = attributeMap;
         databaseConnectionManager = new ProxyDatabaseConnectionManager(this);
         statementManager = new JDBCBackendStatement();
-        connectionContext = new ConnectionContext(databaseConnectionManager);
+        connectionContext = new ConnectionContext(databaseConnectionManager::getUsedDataSourceNames);
     }
     
     /**

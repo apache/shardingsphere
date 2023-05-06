@@ -167,7 +167,11 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         }
     }
     
-    @Override
+    /**
+     * Get used data source names.
+     * 
+     * @return used data source names
+     */
     public Collection<String> getUsedDataSourceNames() {
         Collection<String> result = new ArrayList<>(cachedConnections.size());
         String databaseName = connectionSession.getDatabaseName().toLowerCase();

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 
-import org.apache.shardingsphere.infra.connection.datasource.UsedDataSourceProvider;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 
 import java.sql.SQLException;
@@ -28,7 +27,7 @@ import java.util.List;
  * 
  * @param <C> type of database connection
  */
-public interface DatabaseConnectionManager<C> extends UsedDataSourceProvider {
+public interface DatabaseConnectionManager<C> {
     
     /**
      * Get database connections.

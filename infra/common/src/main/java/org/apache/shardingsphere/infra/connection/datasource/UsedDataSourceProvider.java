@@ -30,5 +30,5 @@ public interface UsedDataSourceProvider {
      *
      * @return used data source names
      */
-    Collection<String> getUsedDataSourceNames();
+    Collection<String> getNames();
 }
