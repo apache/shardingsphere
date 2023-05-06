@@ -16,9 +16,10 @@
 #
 
 name: Nightly Check - SonarCloud
+
 on:
   schedule:
-    - cron: '0 */1 * * *'  # every two hours
+    - cron: '0 20 */1 * *'  # once a day. UTC time
   workflow_dispatch:
 
 concurrency:
@@ -26,12 +27,14 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  REPOSITORY_NAME: shardingsphere
+  CACHE_PREFIX: shardingsphere
 
 jobs:
   build:
+    if: github.repository == 'apache/shardingsphere'
     name: Build and analyze
     runs-on: ubuntu-latest
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v3
         with:
@@ -40,7 +43,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 11
-          distribution: 'zulu'
+          distribution: 'temurin'
       - name: Cache SonarCloud packages
         uses: actions/cache@v3
         with:
@@ -51,9 +54,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ env.REPOSITORY_NAME }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          key: ${{ env.CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ env.REPOSITORY_NAME }}-maven-third-party-
+            ${{ env.CACHE_PREFIX }}-maven-third-party-
       - name: Build and analyze
         env:
           MAVEN_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
