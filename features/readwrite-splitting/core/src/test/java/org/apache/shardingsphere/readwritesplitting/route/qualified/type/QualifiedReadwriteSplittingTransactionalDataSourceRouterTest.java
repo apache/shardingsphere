@@ -41,10 +41,8 @@ public final class QualifiedReadwriteSplittingTransactionalDataSourceRouterTest 
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         TransactionConnectionContext transactionConnectionContext = mock(TransactionConnectionContext.class);
         when(connectionContext.getTransactionContext()).thenReturn(transactionConnectionContext);
-
         when(connectionContext.getTransactionContext().isInTransaction()).thenReturn(Boolean.TRUE);
         assertTrue(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext).isQualified(null, null));
-
         when(connectionContext.getTransactionContext().isInTransaction()).thenReturn(Boolean.FALSE);
         assertFalse(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext).isQualified(null, null));
     }
@@ -53,15 +51,11 @@ public final class QualifiedReadwriteSplittingTransactionalDataSourceRouterTest 
     void assertRoute() {
         ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration =
                 new ReadwriteSplittingDataSourceRuleConfiguration("test_config", "write_ds", Arrays.asList("read_ds_0", "read_ds_1"), null);
-
         ReadwriteSplittingDataSourceRule rule;
-
         rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfiguration, TransactionalReadQueryStrategy.PRIMARY, null);
         assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext()).route(rule), is("write_ds"));
-
         rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfiguration, TransactionalReadQueryStrategy.FIXED, new RoundRobinReadQueryLoadBalanceAlgorithm());
         assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext()).route(rule), is("read_ds_0"));
-
         rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfiguration, TransactionalReadQueryStrategy.DYNAMIC, new RoundRobinReadQueryLoadBalanceAlgorithm());
         assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext()).route(rule), is("read_ds_0"));
     }
