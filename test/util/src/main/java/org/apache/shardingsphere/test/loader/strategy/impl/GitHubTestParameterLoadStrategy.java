@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.loader.strategy.impl;
 
+import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
@@ -45,11 +46,12 @@ public final class GitHubTestParameterLoadStrategy implements TestParameterLoadS
             return Collections.emptyList();
         }
         Collection<FileSummary> result = new LinkedList<>();
-        List<String> fileNames = JsonPath.parse(content).read("$..name");
-        List<String> folderTypes = JsonPath.parse(content).read("$..type");
-        List<String> downloadURLs = JsonPath.parse(content).read("$..download_url");
-        List<String> htmlURLs = JsonPath.parse(content).read("$..html_url");
-        int length = JsonPath.parse(content).read("$.length()");
+        DocumentContext documentContext = JsonPath.parse(content);
+        List<String> fileNames = documentContext.read("$..name");
+        List<String> folderTypes = documentContext.read("$..type");
+        List<String> downloadURLs = documentContext.read("$..download_url");
+        List<String> htmlURLs = documentContext.read("$..html_url");
+        int length = documentContext.read("$.length()");
         for (int i = 0; i < length; i++) {
             String fileName = fileNames.get(i).split("\\.")[0];
             String folderType = folderTypes.get(i);
