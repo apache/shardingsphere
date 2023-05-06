@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.metadata.persist.AbstractMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 import org.apache.shardingsphere.mode.event.storage.DataSourceDisabledEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
@@ -123,7 +123,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdater impl
     }
     
     private Map<String, String> getDisabledResources(final ContextManager contextManager, final String databaseName) {
-        AbstractMetaDataPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
+        MetaDataBasedPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
         return getDisabledStorageNodes(databaseName, persistService).stream()
                 .collect(Collectors.toMap(QualifiedDatabase::getDataSourceName, QualifiedDatabase::getGroupName, (value1, value2) -> String.join(",", value1, value2)));
     }
@@ -185,7 +185,7 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatementUpdater impl
         });
     }
     
-    private Collection<QualifiedDatabase> getDisabledStorageNodes(final String databaseName, final AbstractMetaDataPersistService persistService) {
+    private Collection<QualifiedDatabase> getDisabledStorageNodes(final String databaseName, final MetaDataBasedPersistService persistService) {
         Map<String, StorageNodeDataSource> storageNodes = new StorageNodeStatusService((ClusterPersistRepository) persistService.getRepository()).loadStorageNodes();
         return storageNodes.entrySet().stream().filter(each -> DataSourceState.DISABLED == each.getValue().getStatus())
                 .map(each -> new QualifiedDatabase(each.getKey())).filter(each -> databaseName.equalsIgnoreCase(each.getDatabaseName())).collect(Collectors.toList());
