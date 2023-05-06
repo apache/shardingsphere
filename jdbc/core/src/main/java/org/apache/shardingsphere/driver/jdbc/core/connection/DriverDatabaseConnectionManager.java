@@ -87,7 +87,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         dataSourceMap.putAll(getTrafficDataSourceMap(databaseName, contextManager));
         physicalDataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
         connectionTransaction = createConnectionTransaction(databaseName, contextManager);
-        connectionContext = new ConnectionContext(this::getDataSourceNamesOfCachedConnections);
+        connectionContext = new ConnectionContext(this);
     }
     
     private Map<String, DataSource> getTrafficDataSourceMap(final String databaseName, final ContextManager contextManager) {
@@ -371,7 +371,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     }
     
     @Override
-    public Collection<String> getDataSourceNamesOfCachedConnections() {
+    public Collection<String> getUsedDataSourceNames() {
         return cachedConnections.keySet();
     }
     
