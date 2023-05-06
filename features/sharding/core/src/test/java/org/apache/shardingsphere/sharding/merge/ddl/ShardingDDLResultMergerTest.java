@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementConte
 import org.apache.shardingsphere.infra.binder.statement.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.connection.ConnectionContext;
-import org.apache.shardingsphere.infra.connection.cursor.CursorConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.cursor.CursorConnectionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;

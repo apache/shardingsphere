@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.connector;
 
 import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.connection.ConnectionContext;
-import org.apache.shardingsphere.infra.connection.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;

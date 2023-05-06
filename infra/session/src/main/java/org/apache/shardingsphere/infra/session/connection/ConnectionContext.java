@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.connection;
+package org.apache.shardingsphere.infra.session.connection;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.connection.cursor.CursorConnectionContext;
-import org.apache.shardingsphere.infra.connection.datasource.UsedDataSourceProvider;
-import org.apache.shardingsphere.infra.connection.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.cursor.CursorConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.datasource.UsedDataSourceProvider;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 
 import java.util.Collection;
 import java.util.Collections;

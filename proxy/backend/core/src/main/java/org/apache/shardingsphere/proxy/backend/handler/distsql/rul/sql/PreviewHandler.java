@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.PreviewStatement;
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
@@ -108,7 +108,8 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         ShardingSpherePreconditions.checkState(database.isComplete(), () -> new RuleNotExistedException(getConnectionSession().getDatabaseName()));
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
         SQLFederationDeciderContext deciderContext = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props)
-                .decide(queryContext, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()));
+                .decide(queryContext.getSqlStatementContext(), queryContext.getParameters(),
+                        metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()));
         Collection<ExecutionUnit> executionUnits = deciderContext.isUseSQLFederation() ? getFederationExecutionUnits(queryContext, databaseName, metaDataContexts)
                 : kernelProcessor.generateExecutionContext(queryContext, database, globalRuleMetaData, props, getConnectionSession().getConnectionContext()).getExecutionUnits();
         return executionUnits.stream().map(this::buildRow).collect(Collectors.toList());

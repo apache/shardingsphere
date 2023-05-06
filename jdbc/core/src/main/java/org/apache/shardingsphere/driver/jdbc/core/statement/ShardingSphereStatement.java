@@ -32,7 +32,7 @@ import org.apache.shardingsphere.driver.jdbc.core.resultset.GeneratedKeysResultS
 import org.apache.shardingsphere.driver.jdbc.core.resultset.ShardingSphereResultSet;
 import org.apache.shardingsphere.driver.jdbc.exception.syntax.EmptySQLException;
 import org.apache.shardingsphere.driver.jdbc.exception.transaction.JDBCTransactionAcrossDatabasesException;
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.decider.engine.SQLFederationDeciderEngine;
@@ -201,7 +201,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     private static SQLFederationDeciderContext decide(final QueryContext queryContext,
                                                       final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props, final ShardingSphereDatabase database) {
         SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props);
-        return deciderEngine.decide(queryContext, globalRuleMetaData, database);
+        return deciderEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, database);
     }
     
     private Optional<String> getInstanceIdAndSet(final QueryContext queryContext) {

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder;
+package org.apache.shardingsphere.infra.session.query;
 
 import lombok.AccessLevel;
 import lombok.Getter;

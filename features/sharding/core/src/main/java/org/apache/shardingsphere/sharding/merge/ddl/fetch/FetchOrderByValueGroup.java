@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.merge.ddl.fetch;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.connection.cursor.FetchGroup;
+import org.apache.shardingsphere.infra.session.connection.cursor.FetchGroup;
 import org.apache.shardingsphere.sharding.merge.dql.orderby.OrderByValue;
 
 import java.util.Collection;

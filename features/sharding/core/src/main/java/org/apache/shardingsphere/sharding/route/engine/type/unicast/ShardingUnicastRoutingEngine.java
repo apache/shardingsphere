@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.AlterViewStatementCo
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateViewStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.DropViewStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
-import org.apache.shardingsphere.infra.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;

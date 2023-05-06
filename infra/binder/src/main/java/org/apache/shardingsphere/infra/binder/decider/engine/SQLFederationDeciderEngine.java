@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.decider.engine;
 
-import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -52,15 +52,16 @@ public final class SQLFederationDeciderEngine {
     /**
      * Decide.
      * 
-     * @param queryContext query context
+     * @param sqlStatementContext SQL statement context
+     * @param parameters SQL parameters
      * @param globalRuleMetaData global rule meta data
      * @param database ShardingSphere database
      * @return SQL federation decider context
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public SQLFederationDeciderContext decide(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
+    public SQLFederationDeciderContext decide(final SQLStatementContext<?> sqlStatementContext,
+                                              final List<Object> parameters, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         SQLFederationDeciderContext result = new SQLFederationDeciderContext();
-        SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         // TODO move this logic to SQLFederationDecider implement class when we remove sql federation type
         if (isSelectStatementContainsSystemSchema(sqlStatementContext, database)) {
             result.setUseSQLFederation(true);
@@ -72,7 +73,7 @@ public final class SQLFederationDeciderEngine {
         }
         for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
             if (!result.isUseSQLFederation()) {
-                entry.getValue().decide(result, queryContext, globalRuleMetaData, database, entry.getKey(), props);
+                entry.getValue().decide(result, sqlStatementContext, parameters, globalRuleMetaData, database, entry.getKey(), props);
             }
         }
         return result;
