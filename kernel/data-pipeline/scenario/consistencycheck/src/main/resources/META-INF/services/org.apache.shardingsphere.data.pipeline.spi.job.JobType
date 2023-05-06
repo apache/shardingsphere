@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType
+org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType
