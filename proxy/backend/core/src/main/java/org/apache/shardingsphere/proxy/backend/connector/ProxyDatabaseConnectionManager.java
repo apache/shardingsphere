@@ -23,7 +23,7 @@ import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorConnectionManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ConnectionPostProcessor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.connection.ResourceLock;
@@ -47,11 +47,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Backend connection.
+ * Database connection manager of ShardingSphere-Proxy.
  */
 @RequiredArgsConstructor
 @Getter
-public final class BackendConnection implements ExecutorConnectionManager<Connection> {
+public final class ProxyDatabaseConnectionManager implements DatabaseConnectionManager<Connection> {
     
     private final ConnectionSession connectionSession;
     

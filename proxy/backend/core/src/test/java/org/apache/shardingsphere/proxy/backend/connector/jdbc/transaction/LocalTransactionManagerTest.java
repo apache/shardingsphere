@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +46,7 @@ class LocalTransactionManagerTest {
     private ConnectionSession connectionSession;
     
     @Mock
-    private BackendConnection backendConnection;
+    private ProxyDatabaseConnectionManager databaseConnectionManager;
     
     @Mock
     private TransactionStatus transactionStatus;
@@ -59,10 +59,10 @@ class LocalTransactionManagerTest {
     @BeforeEach
     void setUp() {
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
-        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
-        when(backendConnection.getCachedConnections()).thenReturn(setCachedConnections());
+        when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
+        when(databaseConnectionManager.getCachedConnections()).thenReturn(setCachedConnections());
         when(transactionStatus.isInTransaction()).thenReturn(true);
-        localTransactionManager = new LocalTransactionManager(backendConnection);
+        localTransactionManager = new LocalTransactionManager(databaseConnectionManager);
     }
     
     private Multimap<String, Connection> setCachedConnections() {
@@ -76,7 +76,7 @@ class LocalTransactionManagerTest {
     @Test
     void assertBegin() {
         localTransactionManager.begin();
-        verify(backendConnection).getConnectionPostProcessors();
+        verify(databaseConnectionManager).getConnectionPostProcessors();
     }
     
     @Test

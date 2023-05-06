@@ -24,19 +24,19 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Executor connection manager.
+ * Database connection manager.
  * 
- * @param <C> type of resource connection
+ * @param <C> type of database connection
  */
-public interface ExecutorConnectionManager<C> {
+public interface DatabaseConnectionManager<C> {
     
     /**
-     * Get connections.
+     * Get database connections.
      *
      * @param dataSourceName data source name
      * @param connectionSize connection size
      * @param connectionMode connection mode
-     * @return connections
+     * @return database connections
      * @throws SQLException SQL exception
      */
     List<C> getConnections(String dataSourceName, int connectionSize, ConnectionMode connectionMode) throws SQLException;

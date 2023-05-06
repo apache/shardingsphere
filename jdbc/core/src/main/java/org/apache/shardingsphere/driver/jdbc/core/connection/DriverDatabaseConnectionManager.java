@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.exception.OverallConnectionNotEnoughException;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorConnectionManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
@@ -60,9 +60,9 @@ import java.util.Optional;
 import java.util.Random;
 
 /**
- * Connection manager.
+ * Database connection manager of ShardingSphere-JDBC.
  */
-public final class ConnectionManager implements ExecutorConnectionManager<Connection>, AutoCloseable {
+public final class DriverDatabaseConnectionManager implements DatabaseConnectionManager<Connection>, AutoCloseable {
     
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
@@ -82,7 +82,7 @@ public final class ConnectionManager implements ExecutorConnectionManager<Connec
     @Getter
     private final ConnectionContext connectionContext;
     
-    public ConnectionManager(final String databaseName, final ContextManager contextManager) {
+    public DriverDatabaseConnectionManager(final String databaseName, final ContextManager contextManager) {
         dataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
         dataSourceMap.putAll(getTrafficDataSourceMap(databaseName, contextManager));
         physicalDataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));

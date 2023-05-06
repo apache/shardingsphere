@@ -24,10 +24,10 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorConnectionManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
@@ -61,7 +61,7 @@ public final class ConnectionSession {
     
     private TransactionIsolationLevel isolationLevel;
     
-    private final BackendConnection backendConnection;
+    private final ProxyDatabaseConnectionManager databaseConnectionManager;
     
     private final ExecutorStatementManager statementManager;
     
@@ -79,9 +79,9 @@ public final class ConnectionSession {
         this.protocolType = protocolType;
         transactionStatus = new TransactionStatus(initialTransactionType);
         this.attributeMap = attributeMap;
-        backendConnection = new BackendConnection(this);
+        databaseConnectionManager = new ProxyDatabaseConnectionManager(this);
         statementManager = new JDBCBackendStatement();
-        connectionContext = new ConnectionContext(((ExecutorConnectionManager<?>) backendConnection)::getDataSourceNamesOfCachedConnections);
+        connectionContext = new ConnectionContext(((DatabaseConnectionManager<?>) databaseConnectionManager)::getDataSourceNamesOfCachedConnections);
     }
     
     /**

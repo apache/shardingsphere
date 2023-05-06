@@ -101,7 +101,7 @@ public final class ShowDistVariableExecutor implements ConnectionSessionRequired
         VariableEnum variable = VariableEnum.getValueOf(variableName);
         switch (variable) {
             case CACHED_CONNECTIONS:
-                int connectionSize = connectionSession.getBackendConnection().getConnectionSize();
+                int connectionSize = connectionSession.getDatabaseConnectionManager().getConnectionSize();
                 return String.valueOf(connectionSize);
             case TRANSACTION_TYPE:
                 TransactionType transactionType = connectionSession.getTransactionStatus().getTransactionType();

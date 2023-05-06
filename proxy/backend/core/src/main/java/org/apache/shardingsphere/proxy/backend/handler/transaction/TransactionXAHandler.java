@@ -52,7 +52,7 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
         this.tclStatement = (XAStatement) sqlStatementContext.getSqlStatement();
         this.connectionSession = connectionSession;
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList());
-        backendHandler = DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getBackendConnection(), false);
+        backendHandler = DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
     }
     
     @Override

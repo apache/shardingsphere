@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.admin;
 
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
@@ -50,8 +50,8 @@ class MySQLComResetConnectionExecutorTest {
     @Test
     void assertExecute() throws SQLException {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        BackendConnection backendConnection = mock(BackendConnection.class);
-        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         int statementId = 1;

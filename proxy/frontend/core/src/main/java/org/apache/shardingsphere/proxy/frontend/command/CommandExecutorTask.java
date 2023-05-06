@@ -88,7 +88,7 @@ public final class CommandExecutorTask implements Runnable {
             connectionSession.clearQueryContext();
             Collection<SQLException> exceptions = Collections.emptyList();
             try {
-                connectionSession.getBackendConnection().closeExecutionResources();
+                connectionSession.getDatabaseConnectionManager().closeExecutionResources();
             } catch (final BackendConnectionException ex) {
                 exceptions = ex.getExceptions().stream().filter(SQLException.class::isInstance).map(SQLException.class::cast).collect(Collectors.toList());
             }
@@ -119,7 +119,7 @@ public final class CommandExecutorTask implements Runnable {
             }
             responsePackets.forEach(context::write);
             if (commandExecutor instanceof QueryCommandExecutor) {
-                commandExecuteEngine.writeQueryData(context, connectionSession.getBackendConnection(), (QueryCommandExecutor) commandExecutor, responsePackets.size());
+                commandExecuteEngine.writeQueryData(context, connectionSession.getDatabaseConnectionManager(), (QueryCommandExecutor) commandExecutor, responsePackets.size());
             }
             return true;
         } catch (final SQLException | ShardingSphereSQLException | SQLDialectException ex) {

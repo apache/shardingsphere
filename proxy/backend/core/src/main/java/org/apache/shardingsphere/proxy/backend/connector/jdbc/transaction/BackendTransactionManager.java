@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import org.apache.shardingsphere.infra.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
@@ -40,7 +40,7 @@ import java.util.LinkedList;
  */
 public final class BackendTransactionManager implements TransactionManager {
     
-    private final BackendConnection connection;
+    private final ProxyDatabaseConnectionManager connection;
     
     private final TransactionType transactionType;
     
@@ -50,10 +50,10 @@ public final class BackendTransactionManager implements TransactionManager {
     
     private final Collection<TransactionHook> transactionHooks;
     
-    public BackendTransactionManager(final BackendConnection backendConnection) {
-        connection = backendConnection;
+    public BackendTransactionManager(final ProxyDatabaseConnectionManager databaseConnectionManager) {
+        connection = databaseConnectionManager;
         transactionType = connection.getConnectionSession().getTransactionStatus().getTransactionType();
-        localTransactionManager = new LocalTransactionManager(backendConnection);
+        localTransactionManager = new LocalTransactionManager(databaseConnectionManager);
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         ShardingSphereTransactionManagerEngine engine = transactionRule.getResource();
         shardingSphereTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);

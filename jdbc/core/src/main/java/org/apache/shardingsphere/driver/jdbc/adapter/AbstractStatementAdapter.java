@@ -193,10 +193,10 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final MetaDataContexts metaDataContexts) {
-        if (connection.getConnectionManager().getConnectionTransaction().isInTransaction()) {
+        if (connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction()) {
             DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
             if (databaseType instanceof SchemaSupportedDatabaseType) {
-                connection.getConnectionManager().getConnectionTransaction().setRollbackOnly(true);
+                connection.getDatabaseConnectionManager().getConnectionTransaction().setRollbackOnly(true);
             }
         }
     }

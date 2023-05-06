@@ -45,15 +45,15 @@ public final class DatabaseConnectorFactory {
      * Create new instance of {@link DatabaseConnector}.
      *
      * @param queryContext query context
-     * @param backendConnection backend connection
+     * @param databaseConnectionManager database connection manager
      * @param preferPreparedStatement use prepared statement as possible
      * @return created instance
      */
-    public DatabaseConnector newInstance(final QueryContext queryContext, final BackendConnection backendConnection, final boolean preferPreparedStatement) {
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
+    public DatabaseConnector newInstance(final QueryContext queryContext, final ProxyDatabaseConnectionManager databaseConnectionManager, final boolean preferPreparedStatement) {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseConnectionManager.getConnectionSession().getDatabaseName());
         String driverType = preferPreparedStatement || !queryContext.getParameters().isEmpty() ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
-        DatabaseConnector result = new DatabaseConnector(driverType, database, queryContext, backendConnection);
-        backendConnection.add(result);
+        DatabaseConnector result = new DatabaseConnector(driverType, database, queryContext, databaseConnectionManager);
+        databaseConnectionManager.add(result);
         return result;
     }
 }

@@ -39,15 +39,15 @@ final class MockConnectionUtils {
     /**
      * Mock set cached connections.
      *
-     * @param backendConnection backend connection
+     * @param databaseConnectionManager database connection manager
      * @param dataSourceName datasource name
      * @param connectionSize connection size
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    static void setCachedConnections(final BackendConnection backendConnection, final String dataSourceName, final int connectionSize) {
+    static void setCachedConnections(final ProxyDatabaseConnectionManager databaseConnectionManager, final String dataSourceName, final int connectionSize) {
         Multimap<String, Connection> cachedConnections = HashMultimap.create();
-        cachedConnections.putAll(backendConnection.getConnectionSession().getDatabaseName() + "." + dataSourceName, mockNewConnections(connectionSize));
-        Plugins.getMemberAccessor().set(backendConnection.getClass().getDeclaredField("cachedConnections"), backendConnection, cachedConnections);
+        cachedConnections.putAll(databaseConnectionManager.getConnectionSession().getDatabaseName() + "." + dataSourceName, mockNewConnections(connectionSize));
+        Plugins.getMemberAccessor().set(databaseConnectionManager.getClass().getDeclaredField("cachedConnections"), databaseConnectionManager, cachedConnections);
     }
     
     /**
