@@ -148,21 +148,7 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
                     addLikeQueryColumn(insertValueToken, encryptRule.findLikeQueryEncryptor(tableName, columnName).get(), columnIndex, encryptContext, insertValueContext, originalValue, indexDelta);
                     indexDelta++;
                 }
-                if (encryptRule.findPlainColumn(tableName, columnName).isPresent()) {
-                    addPlainColumn(insertValueToken, columnIndex, encryptContext, insertValueContext, originalValue, indexDelta);
-                }
             }
-        }
-    }
-    
-    private void addPlainColumn(final InsertValue insertValueToken, final int columnIndex,
-                                final EncryptContext encryptContext, final InsertValueContext insertValueContext,
-                                final Object originalValue, final int indexDelta) {
-        if (encryptRule.findPlainColumn(encryptContext.getTableName(), encryptContext.getColumnName()).isPresent()) {
-            DerivedSimpleExpressionSegment derivedExpressionSegment = isAddLiteralExpressionSegment(insertValueContext, columnIndex)
-                    ? new DerivedLiteralExpressionSegment(originalValue)
-                    : new DerivedParameterMarkerExpressionSegment(getParameterIndexCount(insertValueToken));
-            insertValueToken.getValues().add(columnIndex + indexDelta, derivedExpressionSegment);
         }
     }
     

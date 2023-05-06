@@ -19,7 +19,7 @@ encryptDefinition ::=
   ruleName '(' 'COLUMNS' '(' columnDefinition (',' columnDefinition)*  ')' ')'
 
 columnDefinition ::=
-  '(' 'NAME' '=' columnName (',' 'PLAIN' '=' plainColumnName)? ',' 'CIPHER' '=' cipherColumnName (',' 'ASSISTED_QUERY_COLUMN' '=' assistedQueryColumnName)? (',' 'LIKE_QUERY_COLUMN' '=' likeQueryColumnName)? ',' encryptAlgorithmDefinition (',' assistedQueryAlgorithmDefinition)? (',' likeQueryAlgorithmDefinition)? ')' 
+  '(' 'NAME' '=' columnName ',' 'CIPHER' '=' cipherColumnName (',' 'ASSISTED_QUERY_COLUMN' '=' assistedQueryColumnName)? (',' 'LIKE_QUERY_COLUMN' '=' likeQueryColumnName)? ',' encryptAlgorithmDefinition (',' assistedQueryAlgorithmDefinition)? (',' likeQueryAlgorithmDefinition)? ')' 
 
 encryptAlgorithmDefinition ::=
   'ENCRYPT_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType (',' propertiesDefinition)? ')'
@@ -37,9 +37,6 @@ tableName ::=
   identifier
 
 columnName ::=
-  identifier
-
-plainColumnName ::=
   identifier
 
 cipherColumnName ::=
@@ -78,7 +75,7 @@ value ::=
 ```sql
 ALTER ENCRYPT RULE t_encrypt (
 COLUMNS(
-(NAME=user_id,PLAIN=user_plain,CIPHER=user_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),
+(NAME=user_id,CIPHER=user_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),
 (NAME=order_id,CIPHER=order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='MD5')))
 ));
 ```

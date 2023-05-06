@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptAssistedQueryColumnNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLikeQueryColumnNotFoundException;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -123,9 +123,6 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
             Optional<String> likeColumnName = encryptRule.findLikeQueryColumn(encryptContext.getTableName(), encryptContext.getColumnName());
             ShardingSpherePreconditions.checkState(likeColumnName.isPresent(), EncryptLikeQueryColumnNotFoundException::new);
             addedParams.add(likeEncryptor.encrypt(originalValue, encryptContext));
-        }
-        if (encryptRule.findPlainColumn(encryptContext.getTableName(), encryptContext.getColumnName()).isPresent()) {
-            addedParams.add(originalValue);
         }
         if (!addedParams.isEmpty()) {
             if (!paramBuilder.getAddedIndexAndParameters().containsKey(paramIndex)) {

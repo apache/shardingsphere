@@ -200,7 +200,7 @@
     
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule">
         <rule name="t_encrypt">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+            <column name="user_id" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -213,7 +213,7 @@
 
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-assisted-query-column">
         <rule name="t_encrypt">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" assisted-query-column="assisted_column">
+            <column name="user_id" cipher-column="user_cipher" assisted-query-column="assisted_column">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -227,7 +227,7 @@
     
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-like-query-column">
         <rule name="t_encrypt">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" like-query-column="like_column">
+            <column name="user_id" cipher-column="user_cipher" like-query-column="like_column">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -241,7 +241,7 @@
     
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-query-with-cipher-column">
         <rule name="t_encrypt" query-with-cipher-column="false">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+            <column name="user_id" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>

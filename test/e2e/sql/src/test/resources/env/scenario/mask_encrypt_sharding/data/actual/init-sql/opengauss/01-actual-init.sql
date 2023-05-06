@@ -41,58 +41,58 @@ GRANT ALL PRIVILEGES ON DATABASE mask_encrypt_ds_9 TO test_user;
 
 DROP TABLE IF EXISTS t_user;
 
-CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, user_name_plain VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, telephone_plain CHAR(11) NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, creation_date DATE NOT NULL);
 
 \c mask_encrypt_ds_1
 
 DROP TABLE IF EXISTS t_user;
 
-CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, user_name_plain VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, telephone_plain CHAR(11) NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, creation_date DATE NOT NULL);
 
 \c mask_encrypt_ds_2
 
 DROP TABLE IF EXISTS t_user;
 
-CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, user_name_plain VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, telephone_plain CHAR(11) NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, creation_date DATE NOT NULL);
 
 \c mask_encrypt_ds_3
 
 DROP TABLE IF EXISTS t_user;
 
-CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, user_name_plain VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, telephone_plain CHAR(11) NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, creation_date DATE NOT NULL);
 
 \c mask_encrypt_ds_4
 
 DROP TABLE IF EXISTS t_user;
 
-CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, user_name_plain VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, telephone_plain CHAR(11) NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, creation_date DATE NOT NULL);
 
 \c mask_encrypt_ds_5
 
 DROP TABLE IF EXISTS t_user;
 
-CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, user_name_plain VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, telephone_plain CHAR(11) NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, creation_date DATE NOT NULL);
 
 \c mask_encrypt_ds_6
 
 DROP TABLE IF EXISTS t_user;
 
-CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, user_name_plain VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, telephone_plain CHAR(11) NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, creation_date DATE NOT NULL);
 
 \c mask_encrypt_ds_7
 
 DROP TABLE IF EXISTS t_user;
 
-CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, user_name_plain VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, telephone_plain CHAR(11) NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, creation_date DATE NOT NULL);
 
 \c mask_encrypt_ds_8
 
 DROP TABLE IF EXISTS t_user;
 
-CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, user_name_plain VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, telephone_plain CHAR(11) NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, creation_date DATE NOT NULL);
 
 \c mask_encrypt_ds_9
 
 DROP TABLE IF EXISTS t_user;
 
-CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, user_name_plain VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, telephone_plain CHAR(11) NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, creation_date DATE NOT NULL);

@@ -33,7 +33,7 @@
     
     <test-case sql="CREATE INDEX t_user_details_index ON t_user_details (user_id)"  scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="create_index.xml">
-            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
+            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
             <destroy-sql sql="DROP TABLE t_user_details" />
         </assertion>
     </test-case>
@@ -54,7 +54,7 @@
     
     <test-case sql="CREATE UNIQUE INDEX t_user_details_index ON t_user_details (user_id)" scenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
         <assertion expected-data-file="create_unique_index.xml">
-            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
+            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
             <destroy-sql sql="DROP TABLE t_user_details" />
         </assertion>
     </test-case>

@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.merge.dql;
 
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,14 +53,6 @@ class EncryptMergedResultTest {
     void assertGetValueWithoutEncryptContext() throws SQLException {
         when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
         when(metaData.findEncryptContext(1)).thenReturn(Optional.empty());
-        assertThat(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class), is("VALUE"));
-    }
-    
-    @Test
-    void assertGetValueWithQueryWithPlainColumn() throws SQLException {
-        when(mergedResult.getValue(1, String.class)).thenReturn("VALUE");
-        EncryptContext encryptContext = EncryptContextBuilder.build(DefaultDatabase.LOGIC_NAME, DefaultDatabase.LOGIC_NAME, "t_encrypt", "order_id");
-        when(metaData.findEncryptContext(1)).thenReturn(Optional.of(encryptContext));
         assertThat(new EncryptMergedResult(metaData, mergedResult).getValue(1, String.class), is("VALUE"));
     }
     

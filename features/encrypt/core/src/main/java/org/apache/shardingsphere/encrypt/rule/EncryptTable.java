@@ -42,7 +42,7 @@ public final class EncryptTable {
     private Map<String, EncryptColumn> createEncryptColumns(final EncryptTableRuleConfiguration config) {
         Map<String, EncryptColumn> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
-            EncryptColumn encryptColumn = new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(),
+            EncryptColumn encryptColumn = new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(),
                     each.getLikeQueryColumn(), each.getEncryptorName(), each.getAssistedQueryEncryptorName(), each.getLikeQueryEncryptorName());
             result.put(each.getLogicColumn(), encryptColumn);
         }
@@ -102,22 +102,6 @@ public final class EncryptTable {
             }
         }
         throw new EncryptLogicColumnNotFoundException(cipherColumn);
-    }
-    
-    /**
-     * Get logic column by plain column.
-     *
-     * @param plainColumn plain column
-     * @return logic column
-     * @throws EncryptLogicColumnNotFoundException encrypt logic column not found exception
-     */
-    public String getLogicColumnByPlainColumn(final String plainColumn) {
-        for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
-            if (entry.getValue().getPlainColumn().isPresent() && entry.getValue().getPlainColumn().get().equals(plainColumn)) {
-                return entry.getKey();
-            }
-        }
-        throw new EncryptLogicColumnNotFoundException(plainColumn);
     }
     
     /**
@@ -188,31 +172,6 @@ public final class EncryptTable {
      */
     public Optional<String> findLikeQueryColumn(final String logicColumn) {
         return columns.containsKey(logicColumn) ? columns.get(logicColumn).getLikeQueryColumn() : Optional.empty();
-    }
-    
-    /**
-     * Get plain columns.
-     *
-     * @return plain columns
-     */
-    public Collection<String> getPlainColumns() {
-        Collection<String> result = new LinkedList<>();
-        for (EncryptColumn each : columns.values()) {
-            if (each.getPlainColumn().isPresent()) {
-                result.add(each.getPlainColumn().get());
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Find plain column.
-     *
-     * @param logicColumn logic column name
-     * @return plain column
-     */
-    public Optional<String> findPlainColumn(final String logicColumn) {
-        return columns.containsKey(logicColumn) ? columns.get(logicColumn).getPlainColumn() : Optional.empty();
     }
     
     /**

@@ -20,7 +20,6 @@
         <column name="order_id" type="long" />
         <column name="user_id" type="int" />
         <column name="order_name_cipher" type="varchar" />
-        <column name="order_name_plain" type="varchar" />
         <column name="type_char" type="char" />
         <column name="type_boolean" type="boolean" />
         <column name="type_smallint" type="smallint" />
@@ -30,7 +29,7 @@
         <column name="type_time" type="time" />
         <column name="type_timestamp" type="timestamp" />
     </metadata>
-    <row data-node="db.t_shadow" values="1, 1, C4J8SHnvFT1FDZ3vF2ELDA==, pro_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
-    <row data-node="db.t_shadow" values="2, 1, C4J8SHnvFT1FDZ3vF2ELDA==, pro_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
-    <row data-node="db.t_shadow" values="3, 1, C4J8SHnvFT1FDZ3vF2ELDA==, pro_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="db.t_shadow" values="1, 1, C4J8SHnvFT1FDZ3vF2ELDA==, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="db.t_shadow" values="2, 1, C4J8SHnvFT1FDZ3vF2ELDA==, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="db.t_shadow" values="3, 1, C4J8SHnvFT1FDZ3vF2ELDA==, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
 </dataset>

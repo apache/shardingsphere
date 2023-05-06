@@ -43,7 +43,6 @@ Attributes:
 | cipherColumn               | String     | Cipher column name                                                   |
 | assistedQueryColumn (?)    | String     | Assisted query column name                                           |
 | likeQueryColumn (?)        | String     | Like query column name                                               |
-| plainColumn (?)            | String     | Plain column name                                                    |
 | encryptorName              | String     | Encrypt algorithm name                                               |
 | assistedQueryEncryptorName | String     | Assisted query encrypt algorithm name                                |
 | likeQueryEncryptorName     | String     | Like query encrypt algorithm name                                    |

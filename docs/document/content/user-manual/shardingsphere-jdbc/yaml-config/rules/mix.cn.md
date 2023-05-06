@@ -50,7 +50,6 @@ rules:
     <table_name>: # 加密表名称
       columns:
         <column_name> (+): # 加密列名称
-          plainColumn (?): # 原文列名称
           cipherColumn: # 密文列名称
           encryptorName: # 密文列加密算法名称
           assistedQueryColumn (?):  # 查询辅助列名称
@@ -109,7 +108,6 @@ rules:
     t_encrypt:
       columns:
         user_id:
-          plainColumn: user_plain
           cipherColumn: user_cipher
           encryptorName: aes_encryptor
           assistedQueryColumn: assisted_query_user

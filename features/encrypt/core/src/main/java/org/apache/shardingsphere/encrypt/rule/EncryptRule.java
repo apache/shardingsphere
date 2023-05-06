@@ -266,27 +266,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
         return result;
     }
     
-    /**
-     * Find plain column.
-     *
-     * @param logicTable logic table name
-     * @param logicColumn logic column name
-     * @return plain column
-     */
-    public Optional<String> findPlainColumn(final String logicTable, final String logicColumn) {
-        Optional<String> originColumnName = findOriginColumnName(logicTable, logicColumn);
-        return originColumnName.isPresent() && tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findPlainColumn(originColumnName.get()) : Optional.empty();
-    }
-    
-    private Optional<String> findOriginColumnName(final String logicTable, final String logicColumn) {
-        for (String each : tables.get(logicTable.toLowerCase()).getLogicColumns()) {
-            if (logicColumn.equalsIgnoreCase(each)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
-    }
-    
     @Override
     public Collection<String> getTables() {
         return tables.keySet();

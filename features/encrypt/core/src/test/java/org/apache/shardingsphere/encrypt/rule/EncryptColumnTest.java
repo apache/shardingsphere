@@ -25,16 +25,11 @@ class EncryptColumnTest {
     
     @Test
     void assertGetAssistedQueryColumn() {
-        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "encryptorName").getAssistedQueryColumn().isPresent());
+        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "likeQueryColumn", "encryptorName").getAssistedQueryColumn().isPresent());
     }
     
     @Test
     void assertGetLikeQueryColumn() {
-        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "encryptorName").getLikeQueryColumn().isPresent());
-    }
-    
-    @Test
-    void assertGetPlainColumn() {
-        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "encryptorName").getPlainColumn().isPresent());
+        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "likeQueryColumn", "encryptorName").getLikeQueryColumn().isPresent());
     }
 }

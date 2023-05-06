@@ -44,7 +44,6 @@ class EncryptRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     private void assertColumns(final YamlEncryptRuleConfiguration actual) {
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getTables().get("t_user").getColumns().size(), is(1));
-        assertThat(actual.getTables().get("t_user").getColumns().get("username").getPlainColumn(), is("username"));
         assertThat(actual.getTables().get("t_user").getColumns().get("username").getCipherColumn(), is("username_cipher"));
         assertThat(actual.getTables().get("t_user").getColumns().get("username").getEncryptorName(), is("username_encryptor"));
         assertThat(actual.getTables().get("t_user").getColumns().get("username").getAssistedQueryColumn(), is("assisted_query_username"));

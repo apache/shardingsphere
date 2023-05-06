@@ -144,7 +144,6 @@ rules:
     t_user:
       columns:
         user_name:
-          plainColumn: user_name_plain
           cipherColumn: user_name_cipher
           encryptorName: aes_encryptor
         password:
@@ -154,7 +153,6 @@ rules:
           cipherColumn: email_cipher
           encryptorName: aes_encryptor
         telephone:
-          plainColumn: telephone_plain
           cipherColumn: telephone_cipher
           encryptorName: aes_encryptor
 - !SHARDING

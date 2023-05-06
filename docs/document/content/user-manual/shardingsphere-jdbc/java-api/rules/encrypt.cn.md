@@ -43,7 +43,6 @@ weight = 4
 | cipherColumn               | String  | 密文列名称         |
 | assistedQueryColumn (?)    | String  | 查询辅助列名称       |
 | likeQueryColumn (?)        | String  | 模糊查询列名称       |
-| plainColumn (?)            | String  | 原文列名称         |
 | encryptorName              | String  | 密文列加密算法名称     |
 | assistedQueryEncryptorName | String  | 查询辅助列加密算法名称   |
 | likeQueryEncryptorName     | String  | 模糊查询列加密算法名称   |

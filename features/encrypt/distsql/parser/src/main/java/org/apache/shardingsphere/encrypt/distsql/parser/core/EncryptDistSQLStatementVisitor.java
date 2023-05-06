@@ -86,12 +86,10 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     public ASTNode visitEncryptColumnDefinition(final EncryptColumnDefinitionContext ctx) {
         return new EncryptColumnSegment(getIdentifierValue(ctx.columnDefinition().columnName()),
                 getIdentifierValue(ctx.cipherColumnDefinition().cipherColumnName()),
-                null == ctx.plainColumnDefinition() ? null : getIdentifierValue(ctx.plainColumnDefinition().plainColumnName()),
                 null == ctx.assistedQueryColumnDefinition() ? null : getIdentifierValue(ctx.assistedQueryColumnDefinition().assistedQueryColumnName()),
                 null == ctx.likeQueryColumnDefinition() ? null : getIdentifierValue(ctx.likeQueryColumnDefinition().likeQueryColumnName()),
                 getIdentifierValue(ctx.columnDefinition().dataType()),
                 getIdentifierValue(ctx.cipherColumnDefinition().dataType()),
-                null == ctx.plainColumnDefinition() ? null : getIdentifierValue(ctx.plainColumnDefinition().dataType()),
                 null == ctx.assistedQueryColumnDefinition() ? null : getIdentifierValue(ctx.assistedQueryColumnDefinition().dataType()),
                 null == ctx.likeQueryColumnDefinition() ? null : getIdentifierValue(ctx.likeQueryColumnDefinition().dataType()),
                 null == ctx.encryptAlgorithm() ? null : (AlgorithmSegment) visit(ctx.encryptAlgorithm().algorithmDefinition()),

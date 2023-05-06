@@ -30,7 +30,6 @@ public final class YamlEncryptColumnRuleConfigurationSwapper implements YamlConf
     public YamlEncryptColumnRuleConfiguration swapToYamlConfiguration(final EncryptColumnRuleConfiguration data) {
         YamlEncryptColumnRuleConfiguration result = new YamlEncryptColumnRuleConfiguration();
         result.setLogicColumn(data.getLogicColumn());
-        result.setPlainColumn(data.getPlainColumn());
         result.setLikeQueryColumn(data.getLikeQueryColumn());
         result.setCipherColumn(data.getCipherColumn());
         result.setAssistedQueryColumn(data.getAssistedQueryColumn());
@@ -43,7 +42,7 @@ public final class YamlEncryptColumnRuleConfigurationSwapper implements YamlConf
     @Override
     public EncryptColumnRuleConfiguration swapToObject(final YamlEncryptColumnRuleConfiguration yamlConfig) {
         return new EncryptColumnRuleConfiguration(
-                yamlConfig.getLogicColumn(), yamlConfig.getCipherColumn(), yamlConfig.getAssistedQueryColumn(), yamlConfig.getLikeQueryColumn(), yamlConfig.getPlainColumn(),
+                yamlConfig.getLogicColumn(), yamlConfig.getCipherColumn(), yamlConfig.getAssistedQueryColumn(), yamlConfig.getLikeQueryColumn(),
                 yamlConfig.getEncryptorName(), yamlConfig.getAssistedQueryEncryptorName(), yamlConfig.getLikeQueryEncryptorName());
     }
 }

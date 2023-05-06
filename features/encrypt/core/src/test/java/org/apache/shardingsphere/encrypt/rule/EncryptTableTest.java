@@ -40,7 +40,7 @@ class EncryptTableTest {
     @BeforeEach
     void setUp() {
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
-                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "myEncryptor"))));
+                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "likeQueryColumn", "myEncryptor"))));
     }
     
     @Test
@@ -66,16 +66,6 @@ class EncryptTableTest {
     @Test
     void assertGetLogicColumnByCipherColumnWhenNotFind() {
         assertThrows(EncryptLogicColumnNotFoundException.class, () -> encryptTable.getLogicColumnByCipherColumn("invalidColumn"));
-    }
-    
-    @Test
-    void assertGetLogicColumnByPlainColumn() {
-        assertNotNull(encryptTable.getLogicColumnByPlainColumn("plainColumn"));
-    }
-    
-    @Test
-    void assertGetLogicColumnByPlainColumnWhenNotFind() {
-        assertThrows(EncryptLogicColumnNotFoundException.class, () -> encryptTable.getLogicColumnByPlainColumn("invalidColumn"));
     }
     
     @Test
@@ -120,23 +110,6 @@ class EncryptTableTest {
     @Test
     void assertNotFindLikeQueryColumn() {
         assertFalse(encryptTable.findAssistedQueryColumn("notExistLikeQueryColumn").isPresent());
-    }
-    
-    @Test
-    void assertGetPlainColumns() {
-        assertThat(encryptTable.getPlainColumns(), is(Collections.singletonList("plainColumn")));
-    }
-    
-    @Test
-    void assertFindPlainColumn() {
-        Optional<String> actual = encryptTable.findPlainColumn("logicColumn");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is("plainColumn"));
-    }
-    
-    @Test
-    void assertNotFindPlainColumn() {
-        assertFalse(encryptTable.findPlainColumn("notExistLogicColumn").isPresent());
     }
     
     @Test

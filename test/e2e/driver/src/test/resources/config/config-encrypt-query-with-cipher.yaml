@@ -23,7 +23,6 @@ rules:
     t_encrypt:
       columns:
         pwd:
-          plainColumn: plain_pwd
           cipherColumn: cipher_pwd
           encryptorName: jdbc_encryptor_fixture
     t_query_encrypt:
@@ -36,11 +35,9 @@ rules:
     t_encrypt_contains_column:
       columns:
         plain_pwd:
-          plainColumn: plain_pwd
           cipherColumn: cipher_pwd
           encryptorName: jdbc_encryptor_fixture
         plain_pwd2:
-          plainColumn: plain_pwd2
           cipherColumn: cipher_pwd2
           encryptorName: jdbc_encryptor_fixture
   encryptors:

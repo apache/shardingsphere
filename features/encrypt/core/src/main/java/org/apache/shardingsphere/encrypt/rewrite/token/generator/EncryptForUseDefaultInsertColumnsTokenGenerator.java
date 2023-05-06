@@ -104,16 +104,9 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
                     addLikeQueryColumn(result, encryptTable, columnName, columnIndex);
                     columnIndex++;
                 }
-                if (encryptTable.findPlainColumn(columnName).isPresent()) {
-                    addPlainColumn(result, encryptTable, columnName, columnIndex);
-                }
             }
         }
         return result;
-    }
-    
-    private void addPlainColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {
-        encryptTable.findPlainColumn(columnName).ifPresent(optional -> columnNames.add(columnIndex + 1, optional));
     }
     
     private void addAssistedQueryColumn(final List<String> columnNames, final EncryptTable encryptTable, final String columnName, final int columnIndex) {

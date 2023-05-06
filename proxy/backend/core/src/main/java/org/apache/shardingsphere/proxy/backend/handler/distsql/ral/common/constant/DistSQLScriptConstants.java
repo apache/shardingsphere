@@ -169,8 +169,6 @@ public final class DistSQLScriptConstants {
     
     public static final String ENCRYPT_COLUMN = "(NAME=%s, %s, %s)";
     
-    public static final String PLAIN = "PLAIN=%s";
-    
     public static final String CIPHER = "CIPHER=%s";
     
     public static final String ASSISTED_QUERY_COLUMN = "ASSISTED_QUERY_COLUMN=%s";
