@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -75,7 +75,7 @@ import static org.mockito.Mockito.when;
 class PostgreSQLBatchedStatementsExecutorTest {
     
     @Mock
-    private BackendConnection backendConnection;
+    private ProxyDatabaseConnectionManager databaseConnectionManager;
     
     @Mock
     private JDBCBackendStatement backendStatement;
@@ -84,7 +84,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
     void assertExecuteBatch() throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:postgresql://127.0.0.1/db");
-        when(backendConnection.getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        when(databaseConnectionManager.getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.getConnection()).thenReturn(connection);
         when(preparedStatement.executeBatch()).thenReturn(new int[]{1, 1, 1});
@@ -136,7 +136,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
     private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
         when(result.getDatabaseName()).thenReturn("db");
-        when(result.getBackendConnection()).thenReturn(backendConnection);
+        when(result.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         when(result.getStatementManager()).thenReturn(backendStatement);
         when(result.getConnectionContext()).thenReturn(new ConnectionContext());
         return result;

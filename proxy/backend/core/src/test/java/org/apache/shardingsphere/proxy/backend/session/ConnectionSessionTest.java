@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction.BackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
@@ -55,14 +55,14 @@ import static org.mockito.Mockito.when;
 class ConnectionSessionTest {
     
     @Mock
-    private BackendConnection backendConnection;
+    private ProxyDatabaseConnectionManager databaseConnectionManager;
     
     private ConnectionSession connectionSession;
     
     @BeforeEach
     void setup() {
         connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, null);
-        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
+        when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
     }
     
     @Test
@@ -76,7 +76,7 @@ class ConnectionSessionTest {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        new BackendTransactionManager(backendConnection).begin();
+        new BackendTransactionManager(databaseConnectionManager).begin();
         assertThrows(SwitchTypeInTransactionException.class, () -> connectionSession.getTransactionStatus().setTransactionType(TransactionType.XA));
     }
     
@@ -85,7 +85,7 @@ class ConnectionSessionTest {
         connectionSession.setCurrentDatabase("db");
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        new BackendTransactionManager(backendConnection).begin();
+        new BackendTransactionManager(databaseConnectionManager).begin();
         connectionSession.setCurrentDatabase("newDB");
         assertThat(connectionSession.getDefaultDatabaseName(), is("newDB"));
     }

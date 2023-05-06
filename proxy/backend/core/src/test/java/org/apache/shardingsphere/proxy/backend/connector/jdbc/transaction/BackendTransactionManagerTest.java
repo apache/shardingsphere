@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
@@ -58,7 +58,7 @@ class BackendTransactionManagerTest {
     private ConnectionSession connectionSession;
     
     @Mock
-    private BackendConnection backendConnection;
+    private ProxyDatabaseConnectionManager databaseConnectionManager;
     
     @Mock
     private TransactionStatus transactionStatus;
@@ -74,7 +74,7 @@ class BackendTransactionManagerTest {
     @BeforeEach
     void setUp() {
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
-        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
+        when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         TransactionConnectionContext context = new TransactionConnectionContext();
@@ -88,8 +88,8 @@ class BackendTransactionManagerTest {
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.begin();
         verify(transactionStatus).setInTransaction(true);
-        verify(backendConnection).closeHandlers(true);
-        verify(backendConnection).closeConnections(false);
+        verify(databaseConnectionManager).closeHandlers(true);
+        verify(databaseConnectionManager).closeConnections(false);
         verify(localTransactionManager).begin();
     }
     
@@ -100,7 +100,7 @@ class BackendTransactionManagerTest {
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.begin();
         verify(transactionStatus, times(0)).setInTransaction(true);
-        verify(backendConnection, times(0)).closeConnections(false);
+        verify(databaseConnectionManager, times(0)).closeConnections(false);
         verify(shardingSphereTransactionManager).begin();
     }
     
@@ -169,7 +169,7 @@ class BackendTransactionManagerTest {
     private void newBackendTransactionManager(final TransactionType transactionType, final boolean inTransaction) {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(transactionType);
         when(transactionStatus.isInTransaction()).thenReturn(inTransaction);
-        backendTransactionManager = new BackendTransactionManager(backendConnection);
+        backendTransactionManager = new BackendTransactionManager(databaseConnectionManager);
         setLocalTransactionManager();
         setTransactionHooks();
     }

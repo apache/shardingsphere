@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -85,7 +85,7 @@ class UnicastDatabaseBackendHandlerTest {
     @BeforeEach
     void setUp() throws SQLException {
         when(connectionSession.getDefaultDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
-        when(connectionSession.getBackendConnection()).thenReturn(mock(BackendConnection.class));
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(mock(ProxyDatabaseConnectionManager.class));
         mockDatabaseConnector(new UpdateResponseHeader(mock(SQLStatement.class)));
         unicastDatabaseBackendHandler = new UnicastDatabaseBackendHandler(new QueryContext(mock(SQLStatementContext.class), EXECUTE_SQL, Collections.emptyList()), connectionSession);
         setBackendHandlerFactory(unicastDatabaseBackendHandler);
@@ -93,7 +93,7 @@ class UnicastDatabaseBackendHandlerTest {
     
     private void mockDatabaseConnector(final ResponseHeader responseHeader) throws SQLException {
         when(databaseConnector.execute()).thenReturn(responseHeader);
-        when(databaseConnectorFactory.newInstance(any(QueryContext.class), any(BackendConnection.class), eq(false))).thenReturn(databaseConnector);
+        when(databaseConnectorFactory.newInstance(any(QueryContext.class), any(ProxyDatabaseConnectionManager.class), eq(false))).thenReturn(databaseConnector);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

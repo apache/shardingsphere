@@ -48,9 +48,9 @@ public final class DriverExecutor implements AutoCloseable {
     public DriverExecutor(final ShardingSphereConnection connection) {
         MetaDataContexts metaDataContexts = connection.getContextManager().getMetaDataContexts();
         ExecutorEngine executorEngine = connection.getContextManager().getExecutorEngine();
-        JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, connection.getConnectionManager().getConnectionContext());
+        JDBCExecutor jdbcExecutor = new JDBCExecutor(executorEngine, connection.getDatabaseConnectionManager().getConnectionContext());
         regularExecutor = new DriverJDBCExecutor(connection.getDatabaseName(), connection.getContextManager(), jdbcExecutor);
-        rawExecutor = new RawExecutor(executorEngine, connection.getConnectionManager().getConnectionContext());
+        rawExecutor = new RawExecutor(executorEngine, connection.getDatabaseConnectionManager().getConnectionContext());
         DatabaseType protocolType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(protocolType, connection.getDatabaseName());
         SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.MySQLSetVariableAdminExecutor;
@@ -57,9 +57,9 @@ class MySQLSetVariableAdminExecutorTest {
         MySQLSetVariableAdminExecutor executor = new MySQLSetVariableAdminExecutor(setStatement);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getDatabaseName()).thenReturn("foo_db");
-        BackendConnection backendConnection = mock(BackendConnection.class);
-        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
-        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         try (MockedConstruction<DatabaseConnector> mockConstruction = mockConstruction(DatabaseConnector.class)) {

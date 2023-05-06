@@ -39,7 +39,7 @@ public final class MySQLComResetConnectionExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        new BackendTransactionManager(connectionSession.getBackendConnection()).rollback();
+        new BackendTransactionManager(connectionSession.getDatabaseConnectionManager()).rollback();
         connectionSession.setAutoCommit(true);
         connectionSession.setDefaultIsolationLevel(null);
         connectionSession.setIsolationLevel(null);

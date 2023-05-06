@@ -93,7 +93,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     
     public MySQLMultiStatementsHandler(final ConnectionSession connectionSession, final SQLStatement sqlStatementSample, final String sql) {
         jdbcExecutor = new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext());
-        connectionSession.getBackendConnection().handleAutoCommit();
+        connectionSession.getDatabaseConnectionManager().handleAutoCommit();
         this.connectionSession = connectionSession;
         this.sqlStatementSample = sqlStatementSample;
         Pattern pattern = sqlStatementSample instanceof UpdateStatement ? MULTI_UPDATE_STATEMENTS : MULTI_DELETE_STATEMENTS;
@@ -138,7 +138,7 @@ public final class MySQLMultiStatementsHandler implements ProxyBackendHandler {
     public ResponseHeader execute() throws SQLException {
         Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, metaDataContexts.getMetaData().getProps()
-                .<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), connectionSession.getBackendConnection(),
+                .<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), connectionSession.getDatabaseConnectionManager(),
                 (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(false), rules,
                 metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageTypes());
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), samplingExecutionUnit(),

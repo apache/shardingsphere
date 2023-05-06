@@ -34,7 +34,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -95,12 +95,12 @@ class MySQLComStmtExecuteExecutorTest {
     private ConnectionSession connectionSession;
     
     @Mock
-    private BackendConnection backendConnection;
+    private ProxyDatabaseConnectionManager databaseConnectionManager;
     
     @BeforeEach
     void setUp() {
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get()).thenReturn(MySQLCharacterSet.UTF8MB4_GENERAL_CI);
-        when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         SQLStatementContext<?> selectStatementContext = prepareSelectStatementContext();
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1))
                 .thenReturn(new MySQLServerPreparedStatement("SELECT * FROM tbl WHERE id = ?", selectStatementContext, Collections.emptyList()));

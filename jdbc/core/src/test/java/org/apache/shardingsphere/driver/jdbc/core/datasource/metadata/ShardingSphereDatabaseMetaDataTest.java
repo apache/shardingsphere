@@ -91,8 +91,8 @@ class ShardingSphereDatabaseMetaDataTest {
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(resultSet.getMetaData()).thenReturn(mock(ResultSetMetaData.class));
-        when(shardingSphereConnection.getConnectionManager().getRandomPhysicalDataSourceName()).thenReturn(DATA_SOURCE_NAME);
-        when(shardingSphereConnection.getConnectionManager().getRandomConnection()).thenReturn(connection);
+        when(shardingSphereConnection.getDatabaseConnectionManager().getRandomPhysicalDataSourceName()).thenReturn(DATA_SOURCE_NAME);
+        when(shardingSphereConnection.getDatabaseConnectionManager().getRandomConnection()).thenReturn(connection);
         when(shardingSphereConnection.getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
         when(shardingSphereConnection.getContextManager().getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(dataSourceMap);
         when(shardingSphereConnection.getDatabaseName()).thenReturn(DefaultDatabase.LOGIC_NAME);

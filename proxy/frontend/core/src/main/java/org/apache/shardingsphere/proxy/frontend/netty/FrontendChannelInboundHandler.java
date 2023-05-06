@@ -107,7 +107,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     private void closeAllResources() {
         ConnectionThreadExecutorGroup.getInstance().unregisterAndAwaitTermination(connectionSession.getConnectionId());
-        connectionSession.getBackendConnection().closeAllResources();
+        connectionSession.getDatabaseConnectionManager().closeAllResources();
         Optional.ofNullable(connectionSession.getProcessId()).ifPresent(processEngine::disconnect);
         databaseProtocolFrontendEngine.release(connectionSession);
     }
@@ -115,7 +115,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     @Override
     public void channelWritabilityChanged(final ChannelHandlerContext context) {
         if (context.channel().isWritable()) {
-            connectionSession.getBackendConnection().getResourceLock().doNotify();
+            connectionSession.getDatabaseConnectionManager().getResourceLock().doNotify();
         }
     }
 }

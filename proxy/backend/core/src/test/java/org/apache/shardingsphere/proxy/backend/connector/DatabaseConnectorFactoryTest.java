@@ -48,8 +48,8 @@ class DatabaseConnectorFactoryTest {
     
     @Test
     void assertNewDatabaseConnectorWithoutParameter() {
-        BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
-        when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("foo_db");
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class, RETURNS_DEEP_STUBS);
+        when(databaseConnectionManager.getConnectionSession().getDatabaseName()).thenReturn("foo_db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         QueryContext queryContext = new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList());
@@ -57,21 +57,21 @@ class DatabaseConnectorFactoryTest {
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
-        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(queryContext, backendConnection, false);
+        DatabaseConnector engine = DatabaseConnectorFactory.getInstance().newInstance(queryContext, databaseConnectionManager, false);
         assertThat(engine, instanceOf(DatabaseConnector.class));
     }
     
     @Test
     void assertNewDatabaseConnectorWithParameters() {
-        BackendConnection backendConnection = mock(BackendConnection.class, RETURNS_DEEP_STUBS);
-        when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("foo_db");
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class, RETURNS_DEEP_STUBS);
+        when(databaseConnectionManager.getConnectionSession().getDatabaseName()).thenReturn("foo_db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         ShardingSphereDatabase database = mockDatabase();
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getDatabase("foo_db")).thenReturn(database);
-        assertThat(DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false),
+        assertThat(DatabaseConnectorFactory.getInstance().newInstance(new QueryContext(sqlStatementContext, "schemaName", Collections.emptyList()), databaseConnectionManager, false),
                 instanceOf(DatabaseConnector.class));
     }
     

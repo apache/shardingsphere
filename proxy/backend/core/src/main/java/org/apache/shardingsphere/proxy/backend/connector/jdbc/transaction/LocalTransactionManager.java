@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 
 import java.sql.Connection;
@@ -33,13 +33,13 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public final class LocalTransactionManager {
     
-    private final BackendConnection connection;
+    private final ProxyDatabaseConnectionManager databaseConnectionManager;
     
     /**
      * Begin transaction.
      */
     public void begin() {
-        connection.getConnectionPostProcessors().add(target -> target.setAutoCommit(false));
+        databaseConnectionManager.getConnectionPostProcessors().add(target -> target.setAutoCommit(false));
     }
     
     /**
@@ -49,7 +49,7 @@ public final class LocalTransactionManager {
      */
     public void commit() throws SQLException {
         Collection<SQLException> exceptions = new LinkedList<>();
-        if (connection.getConnectionSession().getTransactionStatus().isRollbackOnly()) {
+        if (databaseConnectionManager.getConnectionSession().getTransactionStatus().isRollbackOnly()) {
             exceptions.addAll(rollbackConnections());
         } else {
             exceptions.addAll(commitConnections());
@@ -59,7 +59,7 @@ public final class LocalTransactionManager {
     
     private Collection<SQLException> commitConnections() {
         Collection<SQLException> result = new LinkedList<>();
-        for (Connection each : connection.getCachedConnections().values()) {
+        for (Connection each : databaseConnectionManager.getCachedConnections().values()) {
             try {
                 each.commit();
             } catch (final SQLException ex) {
@@ -77,7 +77,7 @@ public final class LocalTransactionManager {
      * @throws SQLException SQL exception
      */
     public void rollback() throws SQLException {
-        if (connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
+        if (databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction()) {
             Collection<SQLException> exceptions = new LinkedList<>(rollbackConnections());
             throwSQLExceptionIfNecessary(exceptions);
         }
@@ -85,7 +85,7 @@ public final class LocalTransactionManager {
     
     private Collection<SQLException> rollbackConnections() {
         Collection<SQLException> result = new LinkedList<>();
-        for (Connection each : connection.getCachedConnections().values()) {
+        for (Connection each : databaseConnectionManager.getCachedConnections().values()) {
             try {
                 each.rollback();
             } catch (final SQLException ex) {

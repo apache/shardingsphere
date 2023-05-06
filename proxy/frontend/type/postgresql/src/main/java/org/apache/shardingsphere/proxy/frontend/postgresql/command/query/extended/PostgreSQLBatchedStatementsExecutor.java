@@ -140,7 +140,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
      * @throws SQLException SQL exception
      */
     public int executeBatch() throws SQLException {
-        connectionSession.getBackendConnection().handleAutoCommit();
+        connectionSession.getDatabaseConnectionManager().handleAutoCommit();
         addBatchedParametersToPreparedStatements();
         return executeBatchedPreparedStatements();
     }
@@ -149,7 +149,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
         Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(JDBCDriverType.PREPARED_STATEMENT,
                 metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
-                connectionSession.getBackendConnection(), (JDBCBackendStatement) connectionSession.getStatementManager(),
+                connectionSession.getDatabaseConnectionManager(), (JDBCBackendStatement) connectionSession.getStatementManager(),
                 new StatementOption(false), rules, metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResourceMetaData().getStorageTypes());
         executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), executionUnitParams.keySet(),
                 new ExecutionGroupReportContext(connectionSession.getProcessId(), connectionSession.getDatabaseName(), connectionSession.getGrantee()));

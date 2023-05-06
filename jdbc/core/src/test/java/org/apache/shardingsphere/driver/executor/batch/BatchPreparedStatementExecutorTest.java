@@ -88,12 +88,12 @@ class BatchPreparedStatementExecutorTest {
     private SQLStatementContext<?> sqlStatementContext;
     
     @BeforeEach
-    void setUp() throws SQLException {
+    void setUp() {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
         TransactionTypeHolder.set(TransactionType.LOCAL);
         ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(), mock(JDBCContext.class));
         executor = new BatchPreparedStatementExecutor(
-                connection.getContextManager().getMetaDataContexts(), new JDBCExecutor(executorEngine, connection.getConnectionManager().getConnectionContext()), "foo_db");
+                connection.getContextManager().getMetaDataContexts(), new JDBCExecutor(executorEngine, connection.getDatabaseConnectionManager().getConnectionContext()), "foo_db");
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
     }
     
