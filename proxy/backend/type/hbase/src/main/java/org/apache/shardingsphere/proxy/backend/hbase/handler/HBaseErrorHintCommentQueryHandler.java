@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.handler;
 
-import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
+
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
@@ -30,43 +30,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Backend handler for error hint.
+ * Backend handler for error hint for HBase.
  */
-@Getter
-public final class ErrorHintCommentQueryHandler implements HBaseBackendHandler {
+public final class HBaseErrorHintCommentQueryHandler implements HBaseBackendHandler {
     
-    private final String hintComment;
+    private static final Collection<String> COLUMN_NAMES = Arrays.asList("ID", "Hint", "Status");
+    
+    private final List<HBaseErrorHintCommentQueryRowData> rowDataList;
     
     private int currentIndex;
     
-    private final String[][] result;
-    
-    public ErrorHintCommentQueryHandler(final String hintComment) {
-        this.hintComment = hintComment;
-        this.currentIndex = 0;
-        int index = 1;
-        this.result = new String[][]{{String.valueOf(index++), "HBase", "supported", "", ""}, {String.valueOf(index), StringUtils.strip(hintComment, "* "), "unsupported", "/", "/"}};
+    public HBaseErrorHintCommentQueryHandler(final String hintComment) {
+        rowDataList = Arrays.asList(new HBaseErrorHintCommentQueryRowData(1, "HBase", true), new HBaseErrorHintCommentQueryRowData(2, StringUtils.strip(hintComment, "* "), false));
+        currentIndex = 0;
     }
     
     @Override
     public ResponseHeader execute() {
-        List<QueryHeader> queryHeaders = getColumnNames().stream().map(each -> new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(
-                Collectors.toList());
+        List<QueryHeader> queryHeaders = COLUMN_NAMES.stream().map(each -> new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
         return new QueryResponseHeader(queryHeaders);
-    }
-    
-    private Collection<String> getColumnNames() {
-        return Arrays.asList("ID", "Hint", "Status", "Author", "Email");
     }
     
     @Override
     public boolean next() {
-        currentIndex += 1;
-        return currentIndex <= result.length;
+        currentIndex++;
+        return currentIndex <= rowDataList.size();
     }
     
     @Override
     public Collection<Object> getRowDataObjects() {
-        return Arrays.asList(result[currentIndex - 1]);
+        return rowDataList.get(currentIndex - 1).toList();
     }
 }
