@@ -23,8 +23,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessListChangedSubscriber;
 
 /**
- * TODO remove this after meta data refactor completed
- * Context manager subscriber facade.
+ * TODO replace the old implementation after meta data refactor completed
+ * New context manager subscriber facade.
  */
 public final class NewContextManagerSubscriberFacade {
     

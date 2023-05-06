@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.yaml.data.pojo.YamlShardingSphereRowData;
 import java.util.Collection;
 
 /**
- * TODO remove this after meta data refactor completed
+ * TODO replace the old implementation after meta data refactor completed
  * Schema meta data persist service.
  */
 public interface TableRowDataBasedPersistService {

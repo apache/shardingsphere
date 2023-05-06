@@ -33,8 +33,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * TODO remove this after meta data refactor completed
- * Internal meta data factory.
+ * TODO replace the old implementation after meta data refactor completed
+ * New internal meta data factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NewInternalMetaDataFactory {

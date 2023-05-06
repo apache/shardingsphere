@@ -41,8 +41,8 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * TODO remove this after meta data refactor completed
- * Configuration changed subscriber.
+ * TODO replace the old implementation after meta data refactor completed
+ * New configuration changed subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
 public final class NewConfigurationChangedSubscriber {

@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * TODO remove this after meta data refactor completed
+ * TODO replace the old implementation after meta data refactor completed
  * ShardingSphere data based registry service.
  */
 public interface ShardingSphereDataBasedPersistService {

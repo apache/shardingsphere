@@ -50,8 +50,8 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * TODO remove this after meta data refactor completed
- * Meta data contexts factory.
+ * TODO replace the old implementation after meta data refactor completed
+ * New meta data contexts factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NewMetaDataContextsFactory {

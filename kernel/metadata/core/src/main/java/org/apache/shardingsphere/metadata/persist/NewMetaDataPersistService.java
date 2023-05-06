@@ -42,8 +42,8 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * TODO remove this after meta data refactor completed
- * Meta data persist service.
+ * TODO replace the old implementation after meta data refactor completed
+ * New meta data persist service.
  */
 @Getter
 public final class NewMetaDataPersistService implements AbstractMetaDataPersistService {

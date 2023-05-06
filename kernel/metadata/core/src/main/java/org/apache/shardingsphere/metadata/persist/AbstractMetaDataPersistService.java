@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * TODO remove this after meta data refactor completed
+ * TODO replace the old implementation after meta data refactor completed
  * Abstract meta data persist service.
  */
 public interface AbstractMetaDataPersistService {

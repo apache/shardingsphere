@@ -40,8 +40,8 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import java.sql.SQLException;
 
 /**
- * TODO remove this after meta data refactor completed
- * Cluster context manager builder.
+ * TODO replace the old implementation after meta data refactor completed
+ * New cluster context manager builder.
  */
 public final class NewClusterContextManagerBuilder implements ContextManagerBuilder {
     

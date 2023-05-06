@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * TODO remove this after meta data refactor completed
+ * TODO replace the old implementation after meta data refactor completed
  * Database meta data based registry service.
  */
 public interface DatabaseMetaDataBasedPersistService {

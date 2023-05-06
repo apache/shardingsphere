@@ -31,8 +31,8 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * TODO remove this after meta data refactor completed
- * Meta data factory.
+ * TODO replace the old implementation after meta data refactor completed
+ * New meta data factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NewMetaDataFactory {

@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlPersistRepos
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 
 /**
- * TODO remove this after meta data refactor completed
- * Cluster YAML persist repository configuration swapper.
+ * TODO replace the old implementation after meta data refactor completed
+ * New cluster YAML persist repository configuration swapper.
  */
 public final class NewClusterYamlPersistRepositoryConfigurationSwapper implements YamlPersistRepositoryConfigurationSwapper<ClusterPersistRepositoryConfiguration> {
     
