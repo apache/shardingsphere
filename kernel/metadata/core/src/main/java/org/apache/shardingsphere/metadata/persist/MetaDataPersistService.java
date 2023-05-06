@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.DatabaseMetaDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.MetaDataVersionPersistService;
+import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourcePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService;
@@ -45,7 +45,7 @@ import java.util.Properties;
  * Meta data persist service.
  */
 @Getter
-public final class MetaDataPersistService {
+public final class MetaDataPersistService implements MetaDataBasedPersistService {
     
     private final PersistRepository repository;
     

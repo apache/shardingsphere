@@ -460,15 +460,8 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
     
     private String getColumns(final EncryptColumnRuleConfiguration ruleConfig) {
         StringBuilder result = new StringBuilder();
-        String plainColumnName = ruleConfig.getPlainColumn();
         String cipherColumnName = ruleConfig.getCipherColumn();
-        if (null != plainColumnName) {
-            result.append(String.format(DistSQLScriptConstants.PLAIN, plainColumnName));
-        }
         if (null != cipherColumnName) {
-            if (null != plainColumnName) {
-                result.append(DistSQLScriptConstants.COMMA).append(' ');
-            }
             result.append(String.format(DistSQLScriptConstants.CIPHER, cipherColumnName));
         }
         if (null != ruleConfig.getAssistedQueryColumn()) {

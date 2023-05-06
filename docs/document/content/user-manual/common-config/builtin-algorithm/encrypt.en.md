@@ -92,7 +92,6 @@ rules:
     t_user:
       columns:
         username:
-          plainColumn: username_plain
           cipherColumn: username
           encryptorName: name_encryptor
           likeQueryColumn: name_like

@@ -34,7 +34,7 @@ import java.util.Collection;
  * ShardingSphere table row data persist service.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereTableRowDataPersistService {
+public final class ShardingSphereTableRowDataPersistService implements TableRowDataBasedPersistService {
     
     private final PersistRepository repository;
     

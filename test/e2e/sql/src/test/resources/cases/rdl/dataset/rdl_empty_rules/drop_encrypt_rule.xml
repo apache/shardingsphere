@@ -20,7 +20,6 @@
         <column name="table" />
         <column name="logic_column" />
         <column name="cipher_column" />
-        <column name="plain_column" />
         <column name="assisted_query_column" />
         <column name="like_query_column" />
         <column name="encryptor_type" />

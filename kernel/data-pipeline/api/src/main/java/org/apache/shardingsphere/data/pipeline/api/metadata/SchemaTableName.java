@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.data.pipeline.api.metadata;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-
-import java.util.Objects;
 
 /**
  * Schema name and table name.
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 @ToString
 public class SchemaTableName {
     
@@ -37,21 +37,4 @@ public class SchemaTableName {
     
     @NonNull
     private final TableName tableName;
-    
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (null == o || getClass() != o.getClass()) {
-            return false;
-        }
-        final SchemaTableName that = (SchemaTableName) o;
-        return schemaName.equals(that.schemaName) && tableName.equals(that.tableName);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(schemaName, tableName);
-    }
 }

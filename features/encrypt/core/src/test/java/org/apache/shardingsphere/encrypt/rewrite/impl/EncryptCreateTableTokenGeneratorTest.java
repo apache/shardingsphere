@@ -59,7 +59,7 @@ class EncryptCreateTableTokenGeneratorTest {
     @Test
     void assertGenerateSQLTokens() {
         Collection<SQLToken> sqlTokens = generator.generateSQLTokens(buildCreateTableStatementContext());
-        assertThat(sqlTokens.size(), is(5));
+        assertThat(sqlTokens.size(), is(4));
         Iterator<SQLToken> iterator = sqlTokens.iterator();
         assertThat(iterator.next(), instanceOf(RemoveToken.class));
         SubstitutableColumnNameToken cipherToken = (SubstitutableColumnNameToken) iterator.next();
@@ -74,10 +74,6 @@ class EncryptCreateTableTokenGeneratorTest {
         assertThat(likeToken.toString(mock(RouteUnit.class)), is(", like_certificate_number"));
         assertThat(likeToken.getStartIndex(), is(79));
         assertThat(likeToken.getStopIndex(), is(42));
-        SubstitutableColumnNameToken plainToken = (SubstitutableColumnNameToken) iterator.next();
-        assertThat(plainToken.toString(mock(RouteUnit.class)), is(", certificate_number_plain"));
-        assertThat(plainToken.getStartIndex(), is(79));
-        assertThat(plainToken.getStopIndex(), is(42));
     }
     
     private CreateTableStatementContext buildCreateTableStatementContext() {
@@ -97,7 +93,6 @@ class EncryptCreateTableTokenGeneratorTest {
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         EncryptColumn column = mockEncryptColumn();
         when(result.getCipherColumn("t_encrypt", "certificate_number")).thenReturn(column.getCipherColumn());
-        when(result.findPlainColumn("t_encrypt", "certificate_number")).thenReturn(column.getPlainColumn());
         when(result.findAssistedQueryColumn("t_encrypt", "certificate_number")).thenReturn(column.getAssistedQueryColumn());
         when(result.findLikeQueryColumn("t_encrypt", "certificate_number")).thenReturn(column.getLikeQueryColumn());
         when(encryptTable.findEncryptColumn("certificate_number")).thenReturn(Optional.of(column));
@@ -105,6 +100,6 @@ class EncryptCreateTableTokenGeneratorTest {
     }
     
     private EncryptColumn mockEncryptColumn() {
-        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "like_certificate_number", "certificate_number_plain", "test");
+        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "like_certificate_number", "test");
     }
 }

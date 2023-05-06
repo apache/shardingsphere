@@ -18,4 +18,4 @@
 DROP SCHEMA mask_encrypt;
 CREATE SCHEMA mask_encrypt;
 
-CREATE TABLE mask_encrypt.t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, user_name_plain VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, telephone_plain CHAR(11) NOT NULL, creation_date DATE NOT NULL);
+CREATE TABLE mask_encrypt.t_user (user_id INT PRIMARY KEY, user_name_cipher VARCHAR(50) NOT NULL, password_cipher VARCHAR(50) NOT NULL, email_cipher VARCHAR(50) NOT NULL, telephone_cipher CHAR(50) NOT NULL, creation_date DATE NOT NULL);

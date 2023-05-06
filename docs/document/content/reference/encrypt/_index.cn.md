@@ -124,7 +124,6 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
     t_user:
       columns:
         pwd:
-          plainColumn: pwd
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
           assistedQueryColumn: pwd_assisted_query

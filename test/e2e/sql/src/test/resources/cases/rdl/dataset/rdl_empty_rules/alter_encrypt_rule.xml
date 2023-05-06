@@ -20,7 +20,6 @@
         <column name="table" />
         <column name="logic_column" />
         <column name="cipher_column" />
-        <column name="plain_column" />
         <column name="assisted_query_column" />
         <column name="like_query_column" />
         <column name="encryptor_type" />
@@ -30,5 +29,5 @@
         <column name="like_query_type" />
         <column name="like_query_props" />
     </metadata>
-    <row values="t_user| pwd| pwd_cipher| pwd_plain| | | AES| aes-key-value=123456abcd| | | | " />
+    <row values="t_user| pwd| pwd_cipher| | | AES| aes-key-value=123456abcd| | | | " />
 </dataset>

@@ -53,7 +53,6 @@ rules:
     t_encrypt:
       columns:
         user_id:
-          plainColumn: user_plain
           cipherColumn: user_cipher
           encryptorName: aes_encryptor
           assistedQueryColumn: user_assisted

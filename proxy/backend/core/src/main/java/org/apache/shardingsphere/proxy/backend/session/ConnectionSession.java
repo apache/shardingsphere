@@ -24,7 +24,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.CacheableExecutorConnectionManager;
+import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
@@ -81,7 +81,7 @@ public final class ConnectionSession {
         this.attributeMap = attributeMap;
         backendConnection = new BackendConnection(this);
         statementManager = new JDBCBackendStatement();
-        connectionContext = new ConnectionContext(((CacheableExecutorConnectionManager<?>) backendConnection)::getDataSourceNamesOfCachedConnections);
+        connectionContext = new ConnectionContext(((ExecutorConnectionManager<?>) backendConnection)::getDataSourceNamesOfCachedConnections);
     }
     
     /**

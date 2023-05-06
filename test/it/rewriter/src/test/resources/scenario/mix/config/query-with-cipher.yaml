@@ -84,24 +84,20 @@ rules:
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
-          plainColumn: plain_password
           encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
         amount:
           cipherColumn: cipher_amount
-          plainColumn: plain_amount
           encryptorName: rewrite_normal_fixture
     t_account_detail:
       columns:
         password:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
-          plainColumn: plain_password
           encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
         amount:
           cipherColumn: cipher_amount
-          plainColumn: plain_amount
           encryptorName: rewrite_normal_fixture
   encryptors:
     rewrite_normal_fixture:

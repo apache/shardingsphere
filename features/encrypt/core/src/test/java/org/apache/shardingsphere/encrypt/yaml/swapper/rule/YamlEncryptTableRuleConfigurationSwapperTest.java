@@ -38,9 +38,9 @@ class YamlEncryptTableRuleConfigurationSwapperTest {
     @Test
     void assertSwapToYamlConfiguration() {
         Collection<EncryptColumnRuleConfiguration> encryptColumnRuleConfigs = Arrays.asList(
-                new EncryptColumnRuleConfiguration("encrypt_column_1", "encrypt_cipher_1", "", "", "", "test_encryptor_1"),
-                new EncryptColumnRuleConfiguration("encrypt_column_2", "encrypt_cipher_2", "", "", "", "test_encryptor_2"),
-                new EncryptColumnRuleConfiguration("encrypt_column_3", "encrypt_cipher_3", "", "", "", "test_encryptor_3"));
+                new EncryptColumnRuleConfiguration("encrypt_column_1", "encrypt_cipher_1", "", "", "test_encryptor_1"),
+                new EncryptColumnRuleConfiguration("encrypt_column_2", "encrypt_cipher_2", "", "", "test_encryptor_2"),
+                new EncryptColumnRuleConfiguration("encrypt_column_3", "encrypt_cipher_3", "", "", "test_encryptor_3"));
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("test_table", encryptColumnRuleConfigs);
         YamlEncryptTableRuleConfiguration actualYamlEncryptTableRuleConfig = swapper.swapToYamlConfiguration(encryptTableRuleConfig);
         assertThat(actualYamlEncryptTableRuleConfig.getName(), is("test_table"));
@@ -64,7 +64,6 @@ class YamlEncryptTableRuleConfigurationSwapperTest {
         encryptColumnRuleConfig.setCipherColumn("encrypt_cipher");
         encryptColumnRuleConfig.setAssistedQueryColumn("encrypt_assisted");
         encryptColumnRuleConfig.setLikeQueryColumn("encrypt_like");
-        encryptColumnRuleConfig.setPlainColumn("encrypt_plain");
         encryptColumnRuleConfig.setEncryptorName("test_encryptor");
         Map<String, YamlEncryptColumnRuleConfiguration> columns = new LinkedHashMap<>(1);
         columns.put("test_column", encryptColumnRuleConfig);
@@ -80,7 +79,6 @@ class YamlEncryptTableRuleConfigurationSwapperTest {
         assertThat(actualEncryptColumnRuleConfig.getCipherColumn(), is("encrypt_cipher"));
         assertThat(actualEncryptColumnRuleConfig.getAssistedQueryColumn(), is("encrypt_assisted"));
         assertThat(actualEncryptColumnRuleConfig.getLikeQueryColumn(), is("encrypt_like"));
-        assertThat(actualEncryptColumnRuleConfig.getPlainColumn(), is("encrypt_plain"));
         assertThat(actualEncryptColumnRuleConfig.getEncryptorName(), is("test_encryptor"));
     }
 }

@@ -17,39 +17,23 @@
 
 package org.apache.shardingsphere.migration.distsql.statement.pojo;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-
-import java.util.Objects;
 
 /**
  * Source target entry.
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode(of = {"source", "targetTableName"})
 public final class SourceTargetEntry {
     
+    // TODO Remove targetDatabaseName, or keep it but rebuild it
     private final String targetDatabaseName;
     
     private final DataNode source;
     
     private final String targetTableName;
-    
-    @Override
-    public boolean equals(final Object object) {
-        if (this == object) {
-            return true;
-        }
-        if (null == object || getClass() != object.getClass()) {
-            return false;
-        }
-        final SourceTargetEntry that = (SourceTargetEntry) object;
-        return source.equals(that.source) && targetTableName.equals(that.targetTableName);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(source, targetTableName);
-    }
 }

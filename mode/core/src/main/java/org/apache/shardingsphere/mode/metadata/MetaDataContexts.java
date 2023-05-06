@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.data.ShardingSphereTableData;
 import org.apache.shardingsphere.infra.metadata.data.builder.ShardingSphereDataBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
 
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -38,13 +38,13 @@ import java.util.Optional;
 @Getter
 public final class MetaDataContexts implements AutoCloseable {
     
-    private final MetaDataPersistService persistService;
+    private final MetaDataBasedPersistService persistService;
     
     private final ShardingSphereMetaData metaData;
     
     private final ShardingSphereData shardingSphereData;
     
-    public MetaDataContexts(final MetaDataPersistService persistService, final ShardingSphereMetaData metaData) {
+    public MetaDataContexts(final MetaDataBasedPersistService persistService, final ShardingSphereMetaData metaData) {
         this.persistService = persistService;
         this.metaData = metaData;
         this.shardingSphereData = initShardingSphereData(metaData);

@@ -15,18 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.type;
+package org.apache.shardingsphere.proxy.backend.hbase.handler;
 
-import org.apache.shardingsphere.data.pipeline.api.job.type.AbstractJobType;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
- * Consistency check job type.
+ * Error hint comment query row data for HBase.
  */
-public final class ConsistencyCheckJobType extends AbstractJobType {
+@RequiredArgsConstructor
+public final class HBaseErrorHintCommentQueryRowData {
     
-    public static final String TYPE_CODE = "02";
+    private final int id;
     
-    public ConsistencyCheckJobType() {
-        super("CONSISTENCY_CHECK", TYPE_CODE);
+    private final String hint;
+    
+    private final boolean supported;
+    
+    /**
+     * List row data.
+     * 
+     * @return listed row data
+     */
+    public Collection<Object> toList() {
+        return Arrays.asList(String.valueOf(id), hint, supported ? "supported" : "unsupported");
     }
 }

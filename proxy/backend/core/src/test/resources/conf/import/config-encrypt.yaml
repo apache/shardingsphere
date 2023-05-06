@@ -50,7 +50,6 @@ rules:
       t_encrypt:
         columns:
           user_id:
-            plainColumn: user_plain
             cipherColumn: user_cipher
             encryptorName: aes_encryptor
           order_id:

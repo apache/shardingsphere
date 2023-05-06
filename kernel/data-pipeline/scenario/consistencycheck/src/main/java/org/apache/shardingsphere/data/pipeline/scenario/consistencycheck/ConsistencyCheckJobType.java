@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
+package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
-import java.util.Collection;
+import org.apache.shardingsphere.data.pipeline.api.job.type.AbstractJobType;
 
 /**
- * Executor connection manager which is able to cache connections.
- *
- * @param <C> type of resource connection
+ * Consistency check job type.
  */
-public interface CacheableExecutorConnectionManager<C> extends ExecutorConnectionManager<C> {
+public final class ConsistencyCheckJobType extends AbstractJobType {
     
-    /**
-     * Get data source names of cached connections.
-     *
-     * @return data source names of cached connections
-     */
-    Collection<String> getDataSourceNamesOfCachedConnections();
+    public static final String TYPE_CODE = "02";
+    
+    public ConsistencyCheckJobType() {
+        super("CONSISTENCY_CHECK", TYPE_CODE);
+    }
 }

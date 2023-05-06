@@ -180,8 +180,6 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         result.add(distinctOwner(new ColumnProjection(column.getOwner(), encryptRule.getCipherColumn(tableName, column.getName()), null), shorthand));
         Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, column.getName());
         assistedQueryColumn.ifPresent(optional -> result.add(new ColumnProjection(column.getOwner(), optional, null)));
-        Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, column.getName());
-        plainColumn.ifPresent(optional -> result.add(new ColumnProjection(column.getOwner(), optional, null)));
         return result;
     }
     
