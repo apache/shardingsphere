@@ -42,13 +42,15 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * Meta data persist service.
+ * TODO replace the old implementation after meta data refactor completed
+ * New meta data persist service.
  */
 @Getter
-public final class MetaDataPersistService implements MetaDataBasedPersistService {
+public final class NewMetaDataPersistService implements MetaDataBasedPersistService {
     
     private final PersistRepository repository;
     
+    // TODO replace all service to new persist service
     private final DataSourcePersistService dataSourceService;
     
     private final DatabaseMetaDataPersistService databaseMetaDataService;
@@ -63,7 +65,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     
     private final ShardingSphereDataPersistService shardingSphereDataPersistService;
     
-    public MetaDataPersistService(final PersistRepository repository) {
+    public NewMetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
         databaseMetaDataService = new DatabaseMetaDataPersistService(repository);

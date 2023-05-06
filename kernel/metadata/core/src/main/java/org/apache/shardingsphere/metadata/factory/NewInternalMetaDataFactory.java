@@ -26,17 +26,18 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
-import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
+import org.apache.shardingsphere.metadata.persist.NewMetaDataPersistService;
 
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Internal meta data factory.
+ * TODO replace the old implementation after meta data refactor completed
+ * New internal meta data factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InternalMetaDataFactory {
+public final class NewInternalMetaDataFactory {
     
     /**
      * Create database meta data for governance center.
@@ -48,7 +49,7 @@ public final class InternalMetaDataFactory {
      * @param instanceContext instance context
      * @return database meta data
      */
-    public static ShardingSphereDatabase create(final String databaseName, final MetaDataBasedPersistService persistService, final DatabaseConfiguration databaseConfig,
+    public static ShardingSphereDatabase create(final String databaseName, final NewMetaDataPersistService persistService, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final InstanceContext instanceContext) {
         return ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(databaseName, databaseConfig, props), databaseConfig,
                 DatabaseRulesBuilder.build(databaseName, databaseConfig, instanceContext), persistService.getDatabaseMetaDataService().loadSchemas(databaseName));
@@ -63,12 +64,12 @@ public final class InternalMetaDataFactory {
      * @param instanceContext instance context
      * @return databases
      */
-    public static Map<String, ShardingSphereDatabase> create(final MetaDataBasedPersistService persistService, final Map<String, DatabaseConfiguration> databaseConfigMap,
+    public static Map<String, ShardingSphereDatabase> create(final NewMetaDataPersistService persistService, final Map<String, DatabaseConfiguration> databaseConfigMap,
                                                              final ConfigurationProperties props, final InstanceContext instanceContext) {
         return createDatabases(persistService, databaseConfigMap, DatabaseTypeEngine.getProtocolType(databaseConfigMap, props), props, instanceContext);
     }
     
-    private static Map<String, ShardingSphereDatabase> createDatabases(final MetaDataBasedPersistService persistService, final Map<String, DatabaseConfiguration> databaseConfigMap,
+    private static Map<String, ShardingSphereDatabase> createDatabases(final NewMetaDataPersistService persistService, final Map<String, DatabaseConfiguration> databaseConfigMap,
                                                                        final DatabaseType protocolType, final ConfigurationProperties props, final InstanceContext instanceContext) {
         Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databaseConfigMap.size(), 1);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
