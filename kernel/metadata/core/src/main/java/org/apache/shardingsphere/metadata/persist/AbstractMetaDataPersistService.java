@@ -38,63 +38,63 @@ import java.util.Properties;
  * TODO remove this after meta data refactor completed
  * Abstract meta data persist service.
  */
-public abstract class AbstractMetaDataPersistService {
+public interface AbstractMetaDataPersistService {
     
     /**
      * Get repository.
      * 
      * @return repository
      */
-    public abstract PersistRepository getRepository();
+    PersistRepository getRepository();
     
     /**
      * Get data source service.
      * 
      * @return persist service
      */
-    public abstract DatabaseBasedPersistService<Map<String, DataSourceProperties>> getDataSourceService();
+    DatabaseBasedPersistService<Map<String, DataSourceProperties>> getDataSourceService();
     
     /**
      * Get database meta data service.
      * 
      * @return persist service
      */
-    public abstract DatabaseMetaDataBasedPersistService getDatabaseMetaDataService();
+    DatabaseMetaDataBasedPersistService getDatabaseMetaDataService();
     
     /**
      * Get database rule persist service.
      * 
      * @return persist service
      */
-    public abstract DatabaseRuleBasedPersistService<Collection<RuleConfiguration>> getDatabaseRulePersistService();
+    DatabaseRuleBasedPersistService<Collection<RuleConfiguration>> getDatabaseRulePersistService();
     
     /**
      * Get global rule service.
      * 
      * @return repository
      */
-    public abstract GlobalPersistService<Collection<RuleConfiguration>> getGlobalRuleService();
+    GlobalPersistService<Collection<RuleConfiguration>> getGlobalRuleService();
     
     /**
      * Get props service.
      * 
      * @return persist service
      */
-    public abstract GlobalPersistService<Properties> getPropsService();
+    GlobalPersistService<Properties> getPropsService();
     
     /**
      * Get meta data version persist service.
      * 
      * @return persist service
      */
-    public abstract MetaDataVersionBasedPersistService getMetaDataVersionPersistService();
+    MetaDataVersionBasedPersistService getMetaDataVersionPersistService();
     
     /**
      * Get ShardingSphere data persist service.
      * 
      * @return persist service
      */
-    public abstract ShardingSphereDataBasedPersistService getShardingSphereDataPersistService();
+    ShardingSphereDataBasedPersistService getShardingSphereDataPersistService();
     
     /**
      * Persist global rule configurations.
@@ -102,7 +102,7 @@ public abstract class AbstractMetaDataPersistService {
      * @param globalRuleConfigs global rule configurations
      * @param props properties
      */
-    public abstract void persistGlobalRuleConfiguration(Collection<RuleConfiguration> globalRuleConfigs, Properties props);
+    void persistGlobalRuleConfiguration(Collection<RuleConfiguration> globalRuleConfigs, Properties props);
     
     /**
      * Persist configurations.
@@ -112,8 +112,7 @@ public abstract class AbstractMetaDataPersistService {
      * @param dataSources data sources
      * @param rules rules
      */
-    public abstract void persistConfigurations(String databaseName, DatabaseConfiguration databaseConfigs,
-                                               Map<String, DataSource> dataSources, Collection<ShardingSphereRule> rules);
+    void persistConfigurations(String databaseName, DatabaseConfiguration databaseConfigs,  Map<String, DataSource> dataSources, Collection<ShardingSphereRule> rules);
     
     /**
      * Get effective data sources.
@@ -122,5 +121,5 @@ public abstract class AbstractMetaDataPersistService {
      * @param databaseConfigs database configurations
      * @return effective data sources
      */
-    public abstract Map<String, DataSource> getEffectiveDataSources(String databaseName, Map<String, ? extends DatabaseConfiguration> databaseConfigs);
+    Map<String, DataSource> getEffectiveDataSources(String databaseName, Map<String, ? extends DatabaseConfiguration> databaseConfigs);
 }

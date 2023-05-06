@@ -45,7 +45,7 @@ import java.util.Properties;
  * Meta data persist service.
  */
 @Getter
-public final class MetaDataPersistService extends AbstractMetaDataPersistService {
+public final class MetaDataPersistService implements AbstractMetaDataPersistService {
     
     private final PersistRepository repository;
     
