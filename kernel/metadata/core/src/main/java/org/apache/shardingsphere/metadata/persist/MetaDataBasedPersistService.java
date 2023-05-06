@@ -112,7 +112,7 @@ public interface MetaDataBasedPersistService {
      * @param dataSources data sources
      * @param rules rules
      */
-    void persistConfigurations(String databaseName, DatabaseConfiguration databaseConfigs,  Map<String, DataSource> dataSources, Collection<ShardingSphereRule> rules);
+    void persistConfigurations(String databaseName, DatabaseConfiguration databaseConfigs, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> rules);
     
     /**
      * Get effective data sources.
