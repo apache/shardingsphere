@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.yaml.job;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.config.job.yaml.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 
@@ -32,7 +31,6 @@ import java.util.Map;
  */
 @Getter
 @Setter
-@ToString(exclude = {"sources", "target"})
 public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfiguration {
     
     private String jobId;

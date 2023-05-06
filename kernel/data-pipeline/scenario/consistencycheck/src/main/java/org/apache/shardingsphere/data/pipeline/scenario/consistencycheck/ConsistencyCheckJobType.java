@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.type;
+package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck;
 
 import org.apache.shardingsphere.data.pipeline.api.job.type.AbstractJobType;
 
