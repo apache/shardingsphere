@@ -18,18 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.api.task.progress;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 
 /**
  * Incremental task progress.
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
-@ToString
 public final class IncrementalTaskProgress implements TaskProgress {
     
     private volatile IngestPosition<?> position;

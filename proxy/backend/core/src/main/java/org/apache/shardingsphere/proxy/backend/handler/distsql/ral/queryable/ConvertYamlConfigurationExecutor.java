@@ -434,9 +434,8 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
         Iterator<EncryptTableRuleConfiguration> iterator = ruleConfig.getTables().iterator();
         while (iterator.hasNext()) {
             EncryptTableRuleConfiguration tableRuleConfig = iterator.next();
-            boolean queryWithCipher = null == tableRuleConfig.getQueryWithCipherColumn() || tableRuleConfig.getQueryWithCipherColumn();
             stringBuilder.append(String.format(DistSQLScriptConstants.ENCRYPT, tableRuleConfig.getName(),
-                    getEncryptColumns(tableRuleConfig.getColumns(), ruleConfig.getEncryptors(), ruleConfig.getLikeEncryptors()), queryWithCipher));
+                    getEncryptColumns(tableRuleConfig.getColumns(), ruleConfig.getEncryptors(), ruleConfig.getLikeEncryptors())));
             if (iterator.hasNext()) {
                 stringBuilder.append(DistSQLScriptConstants.COMMA).append(System.lineSeparator());
             }

@@ -75,7 +75,6 @@ Solution description: after selecting the appropriate encryption algorithm, such
      encryptorName: aes_encryptor
      assistedQueryColumn: pwd_assisted_query
      assistedQueryEncryptorName: pwd_assisted_query_cipher
-     queryWithCipherColumn: true
 ```
 
 With the above configuration, Apache ShardingSphere only needs to convert `logicColumn`, `cipherColumn`, and `assistedQueryColumn`. 
@@ -120,7 +119,6 @@ Assuming that the system needs to encrypt the `pwd` field of `t_user`, the busin
           encryptorName: aes_encryptor
           assistedQueryColumn: pwd_assisted_query
           assistedQueryEncryptorName: pwd_assisted_query_cipher
-          queryWithCipherColumn: false
 ```
 
 According to the above encryption rules, we need to add a field called `pwd_cipher`, namely `cipherColumn`, in the `t_user` table, which is used to store ciphertext data.
@@ -178,7 +176,6 @@ The existence of the `logicColumn` means that users write SQL for this virtual c
           encryptorName: aes_encryptor
           assistedQueryColumn: pwd_assisted_query
           assistedQueryEncryptorName: pwd_assisted_query_cipher
-          queryWithCipherColumn: true
 ```
 
 The processing flow is as follows:

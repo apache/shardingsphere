@@ -39,7 +39,6 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -84,12 +83,10 @@ public final class EncryptPredicateRightValueTokenGenerator
     private SQLToken generateSQLToken(final String schemaName, final EncryptCondition encryptCondition) {
         List<Object> originalValues = encryptCondition.getValues(parameters);
         int startIndex = encryptCondition.getStartIndex();
-        boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
-        return queryWithCipherColumn ? generateSQLTokenForQueryWithCipherColumn(schemaName, encryptCondition, originalValues, startIndex)
-                : generateSQLTokenForQueryWithoutCipherColumn(schemaName, encryptCondition, originalValues, startIndex);
+        return generateSQLToken(schemaName, encryptCondition, originalValues, startIndex);
     }
     
-    private SQLToken generateSQLTokenForQueryWithCipherColumn(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
+    private SQLToken generateSQLToken(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
         int stopIndex = encryptCondition.getStopIndex();
         Map<Integer, Object> indexValues = getPositionValues(encryptCondition.getPositionValueMap().keySet(), getEncryptedValues(schemaName, encryptCondition, originalValues));
         Collection<Integer> parameterMarkerIndexes = encryptCondition.getPositionIndexMap().keySet();
@@ -112,25 +109,6 @@ public final class EncryptPredicateRightValueTokenGenerator
         return assistedQueryColumn.isPresent()
                 ? encryptRule.getEncryptAssistedQueryValues(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues)
                 : encryptRule.getEncryptValues(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
-    }
-    
-    private SQLToken generateSQLTokenForQueryWithoutCipherColumn(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
-        int stopIndex = encryptCondition.getStopIndex();
-        Map<Integer, Object> indexValues = new HashMap<>();
-        Optional<String> plainColumn = encryptRule.findPlainColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
-        if (plainColumn.isPresent()) {
-            indexValues.putAll(getPositionValues(encryptCondition.getPositionValueMap().keySet(), originalValues));
-        } else {
-            indexValues.putAll(getPositionValues(encryptCondition.getPositionValueMap().keySet(), getEncryptedValues(schemaName, encryptCondition, originalValues)));
-        }
-        Collection<Integer> parameterMarkerIndexes = encryptCondition.getPositionIndexMap().keySet();
-        if (encryptCondition instanceof EncryptBinaryCondition && ((EncryptBinaryCondition) encryptCondition).getExpressionSegment() instanceof FunctionSegment) {
-            return new EncryptPredicateFunctionRightValueToken(startIndex, stopIndex,
-                    ((FunctionSegment) ((EncryptBinaryCondition) encryptCondition).getExpressionSegment()).getFunctionName(), indexValues, parameterMarkerIndexes);
-        }
-        return encryptCondition instanceof EncryptInCondition
-                ? new EncryptPredicateInRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes)
-                : new EncryptPredicateEqualRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes);
     }
     
     private Map<Integer, Object> getPositionValues(final Collection<Integer> valuePositions, final List<Object> encryptValues) {

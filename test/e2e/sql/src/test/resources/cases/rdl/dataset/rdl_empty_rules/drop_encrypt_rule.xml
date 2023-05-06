@@ -29,6 +29,5 @@
         <column name="assisted_query_props" />
         <column name="like_query_type" />
         <column name="like_query_props" />
-        <column name="query_with_cipher_column" />
     </metadata>
 </dataset>

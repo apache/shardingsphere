@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proc
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.executor.sql.process.ProcessRegistry;
-import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLock;
 import org.apache.shardingsphere.infra.executor.sql.process.lock.ProcessOperationLockRegistry;
 import org.apache.shardingsphere.infra.executor.sql.process.yaml.swapper.YamlProcessListSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -28,10 +27,10 @@ import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.metadata.persist.node.ProcessNode;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillProcessInstanceCompleteEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillLocalProcessEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.KillLocalProcessCompletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesCompletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ReportLocalProcessesEvent;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -61,7 +60,7 @@ public final class ProcessListChangedSubscriber {
      * @param event show process list trigger event
      */
     @Subscribe
-    public void reportLocalProcesses(final ShowProcessListTriggerEvent event) {
+    public void reportLocalProcesses(final ReportLocalProcessesEvent event) {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
@@ -80,20 +79,17 @@ public final class ProcessListChangedSubscriber {
      */
     @Subscribe
     public synchronized void completeToReportLocalProcesses(final ReportLocalProcessesCompletedEvent event) {
-        ProcessOperationLock lock = ProcessOperationLockRegistry.getInstance().getLocks().get(event.getTaskId());
-        if (null != lock) {
-            lock.doNotify();
-        }
+        ProcessOperationLockRegistry.getInstance().notify(event.getTaskId());
     }
     
     /**
-     * Kill process.
+     * Kill local process.
      *
-     * @param event kill process id event
+     * @param event kill local process event
      * @throws SQLException SQL exception
      */
     @Subscribe
-    public synchronized void killProcess(final KillProcessEvent event) throws SQLException {
+    public synchronized void killLocalProcess(final KillLocalProcessEvent event) throws SQLException {
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
@@ -107,15 +103,12 @@ public final class ProcessListChangedSubscriber {
     }
     
     /**
-     * Complete to kill process instance.
+     * Complete to kill local process.
      *
-     * @param event kill process instance complete event
+     * @param event kill local process completed event
      */
     @Subscribe
-    public synchronized void completeToKillProcessInstance(final KillProcessInstanceCompleteEvent event) {
-        ProcessOperationLock lock = ProcessOperationLockRegistry.getInstance().getLocks().get(event.getProcessId());
-        if (null != lock) {
-            lock.doNotify();
-        }
+    public synchronized void completeToKillLocalProcess(final KillLocalProcessCompletedEvent event) {
+        ProcessOperationLockRegistry.getInstance().notify(event.getProcessId());
     }
 }

@@ -33,7 +33,13 @@ public final class YamlLoggerSwapper implements YamlConfigurationSwapper<YamlLog
         if (Objects.isNull(data)) {
             return null;
         }
-        return new YamlLoggerConfiguration(data.getLoggerName(), data.getLevel(), data.getAdditivity(), data.getAppenderName(), data.getProps());
+        YamlLoggerConfiguration result = new YamlLoggerConfiguration();
+        result.setLoggerName(data.getLoggerName());
+        result.setLevel(data.getLevel());
+        result.setAdditivity(data.getAdditivity());
+        result.setAppenderName(data.getAppenderName());
+        result.setProps(data.getProps());
+        return result;
     }
     
     @Override

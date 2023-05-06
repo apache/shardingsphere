@@ -40,6 +40,6 @@ public final class YamlProcessListSwapper implements YamlConfigurationSwapper<Ya
     
     @Override
     public Collection<Process> swapToObject(final YamlProcessList yamlConfig) {
-        throw new UnsupportedOperationException("YamlProcessListSwapper.swapToObject");
+        return yamlConfig.getProcesses().stream().map(yamlProcessSwapper::swapToObject).collect(Collectors.toList());
     }
 }

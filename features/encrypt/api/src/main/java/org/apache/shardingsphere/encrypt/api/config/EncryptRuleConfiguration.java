@@ -41,18 +41,7 @@ public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration
     
     private final Map<String, AlgorithmConfiguration> likeEncryptors;
     
-    private final boolean queryWithCipherColumn;
-    
     public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> encryptors) {
-        this(tables, encryptors, Collections.emptyMap(), true);
-    }
-    
-    public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> encryptors, final boolean queryWithCipherColumn) {
-        this(tables, encryptors, Collections.emptyMap(), queryWithCipherColumn);
-    }
-    
-    public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables,
-                                    final Map<String, AlgorithmConfiguration> encryptors, final Map<String, AlgorithmConfiguration> likeEncryptors) {
-        this(tables, encryptors, likeEncryptors, true);
+        this(tables, encryptors, Collections.emptyMap());
     }
 }

@@ -63,14 +63,13 @@ class ShowEncryptRuleExecutorTest {
         assertThat(row.getCell(10), is(""));
         assertThat(row.getCell(11), is(""));
         assertThat(row.getCell(12), is(""));
-        assertThat(row.getCell(13), is("true"));
     }
     
     @Test
     void assertGetColumnNames() {
         RQLExecutor<ShowEncryptRulesStatement> executor = new ShowEncryptRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(13));
+        assertThat(columns.size(), is(12));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("table"));
         assertThat(iterator.next(), is("logic_column"));
@@ -84,7 +83,6 @@ class ShowEncryptRuleExecutorTest {
         assertThat(iterator.next(), is("assisted_query_props"));
         assertThat(iterator.next(), is("like_query_type"));
         assertThat(iterator.next(), is("like_query_props"));
-        assertThat(iterator.next(), is("query_with_cipher_column"));
     }
     
     private ShardingSphereDatabase mockDatabase() {
@@ -96,8 +94,8 @@ class ShowEncryptRuleExecutorTest {
     }
     
     private RuleConfiguration getRuleConfiguration() {
-        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", "user_assisted", "user_like", "user_plain", "test", null);
-        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(encryptColumnRuleConfig), null);
+        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", "user_assisted", "user_like", "user_plain", "test");
+        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(encryptColumnRuleConfig));
         AlgorithmConfiguration shardingSphereAlgorithmConfig = new AlgorithmConfiguration("md5", new Properties());
         return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), Collections.singletonMap("test", shardingSphereAlgorithmConfig));
     }

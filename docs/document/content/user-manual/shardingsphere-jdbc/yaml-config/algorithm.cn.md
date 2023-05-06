@@ -51,17 +51,6 @@ shadowAlgorithms:
       xxx: xxx
 ```
 
-## 高可用
-
-```yaml
-discoveryTypes:
-  # discoveryTypeName 由用户指定，需要和数据库发现规则中的 discoveryTypeName 属性一致
-  <discoveryTypeName>:
-    type: xxx
-    props:
-      xxx: xxx
-```
-
 ## 脱敏算法
 
 ```yaml

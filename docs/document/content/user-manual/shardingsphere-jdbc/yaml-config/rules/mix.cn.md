@@ -57,7 +57,6 @@ rules:
           assistedQueryEncryptorName:  # 查询辅助列加密算法名称
           likeQueryColumn (?):  # 模糊查询列名称
           likeQueryEncryptorName:  # 模糊查询列加密算法名称
-      queryWithCipherColumn(?): # 该表是否使用加密列进行查询
 ```
 
 ## 配置示例
@@ -120,5 +119,4 @@ rules:
         order_id:
           cipherColumn: order_cipher
           encryptorName: md5_encryptor
-      queryWithCipherColumn: true
 ```

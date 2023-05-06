@@ -17,48 +17,34 @@
 
 package org.apache.shardingsphere.infra.datasource.pool.destroyer;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
-import org.apache.shardingsphere.test.fixture.jdbc.MockedDriver;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class DataSourcePoolDestroyerTest {
     
     @Test
-    void assertAsyncDestroyWithoutAutoCloseable() {
-        new DataSourcePoolDestroyer(new MockedDataSource()).asyncDestroy();
+    void assertAsyncDestroyWithoutAutoCloseableDataSource() {
+        new DataSourcePoolDestroyer(mock(DataSource.class)).asyncDestroy();
     }
     
     @Test
-    void assertAsyncDestroyHikariDataSource() throws SQLException {
-        HikariDataSource dataSource = createHikariDataSource();
+    void assertAsyncDestroyWithAutoCloseableDataSource() throws SQLException {
+        MockedDataSource dataSource = new MockedDataSource();
         try (Connection ignored = dataSource.getConnection()) {
             new DataSourcePoolDestroyer(dataSource).asyncDestroy();
             assertFalse(dataSource.isClosed());
         }
-        assertTimeout(Duration.ofSeconds(2L), () -> assertClose(dataSource));
-    }
-    
-    private static void assertClose(final HikariDataSource dataSource) throws InterruptedException {
-        while (!dataSource.isClosed()) {
-            Thread.sleep(10L);
-        }
+        Awaitility.await().atMost(1L, TimeUnit.SECONDS).pollInterval(10L, TimeUnit.MILLISECONDS).until(dataSource::isClosed);
         assertTrue(dataSource.isClosed());
-    }
-    
-    private HikariDataSource createHikariDataSource() {
-        HikariConfig config = new HikariConfig();
-        config.setDriverClassName(MockedDriver.class.getName());
-        config.setJdbcUrl("mock:jdbc");
-        return new HikariDataSource(config);
     }
 }

@@ -243,7 +243,7 @@ It contains five steps and steps 2 & 3 are the focus.
 
 ### 2.2.1 Step 2: the cluster obtains the data implementation
 
-In this step, an empty string will be written to the node `/nodes/compute_nodes/process_trigger/<instanceId>:<processId>`, which will trigger ShardingSphere's monitoring logic.
+In this step, an empty string will be written to the node `/nodes/compute_nodes/show_process_list_trigger/<instanceId>:<processId>`, which will trigger ShardingSphere's monitoring logic.
 
 When ShardingSphere is started, the persistence layer will `watch` to monitor a series of path changes, such as the addition, deletion, and modification operations of the path `/nodes/compute_nodes`.
 
@@ -321,7 +321,7 @@ public final class ClusterContextManagerCoordinator {    @Subscribe
 }
 ```
 
-`ClusterContextManagerCoordinator#triggerShowProcessList` will subscribe to `ShowProcessListTriggerEvent`, in which `process` data is processed by itself. `ShowProcessListManager.getInstance().getAllProcessContext()` retrieves the `process` that is currently running (here the data refers to the SQL information that ShardingSphere stores in the Map before each SQL execution, which is described at the beginning of the article) and transfers it to the persistence layer. If the `/nodes/compute_nodes/process_trigger/<instanceId>:<processId>` node is deleted, the processing is completed.
+`ClusterContextManagerCoordinator#triggerShowProcessList` will subscribe to `ShowProcessListTriggerEvent`, in which `process` data is processed by itself. `ShowProcessListManager.getInstance().getAllProcessContext()` retrieves the `process` that is currently running (here the data refers to the SQL information that ShardingSphere stores in the Map before each SQL execution, which is described at the beginning of the article) and transfers it to the persistence layer. If the `/nodes/compute_nodes/show_process_list_trigger/<instanceId>:<processId>` node is deleted, the processing is completed.
 
 When you delete the node, monitoring will also be triggered and `ShowProcessListUnitCompleteEvent` will be posted. This event will finally awake the pending lock.
 

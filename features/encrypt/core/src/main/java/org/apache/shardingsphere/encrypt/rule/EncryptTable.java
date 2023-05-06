@@ -35,18 +35,15 @@ public final class EncryptTable {
     
     private final Map<String, EncryptColumn> columns;
     
-    private final Boolean queryWithCipherColumn;
-    
     public EncryptTable(final EncryptTableRuleConfiguration config) {
         columns = createEncryptColumns(config);
-        queryWithCipherColumn = config.getQueryWithCipherColumn();
     }
     
     private Map<String, EncryptColumn> createEncryptColumns(final EncryptTableRuleConfiguration config) {
         Map<String, EncryptColumn> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
             EncryptColumn encryptColumn = new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(),
-                    each.getLikeQueryColumn(), each.getEncryptorName(), each.getAssistedQueryEncryptorName(), each.getLikeQueryEncryptorName(), each.getQueryWithCipherColumn());
+                    each.getLikeQueryColumn(), each.getEncryptorName(), each.getAssistedQueryEncryptorName(), each.getLikeQueryEncryptorName());
             result.put(each.getLogicColumn(), encryptColumn);
         }
         return result;
@@ -229,16 +226,6 @@ public final class EncryptTable {
             result.put(entry.getKey(), entry.getValue().getCipherColumn());
         }
         return result;
-    }
-    
-    /**
-     * Get query with cipher column.
-     *
-     * @param logicColumn logic column
-     * @return query with cipher column
-     */
-    public Optional<Boolean> getQueryWithCipherColumn(final String logicColumn) {
-        return Optional.ofNullable(findEncryptColumn(logicColumn).map(EncryptColumn::getQueryWithCipherColumn).orElse(queryWithCipherColumn));
     }
     
     /**
