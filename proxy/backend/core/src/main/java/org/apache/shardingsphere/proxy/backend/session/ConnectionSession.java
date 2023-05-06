@@ -24,7 +24,6 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DatabaseConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
@@ -81,7 +80,7 @@ public final class ConnectionSession {
         this.attributeMap = attributeMap;
         databaseConnectionManager = new ProxyDatabaseConnectionManager(this);
         statementManager = new JDBCBackendStatement();
-        connectionContext = new ConnectionContext(((DatabaseConnectionManager<?>) databaseConnectionManager)::getDataSourceNamesOfCachedConnections);
+        connectionContext = new ConnectionContext(databaseConnectionManager::getUsedDataSourceNames);
     }
     
     /**

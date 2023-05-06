@@ -87,7 +87,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
         dataSourceMap.putAll(getTrafficDataSourceMap(databaseName, contextManager));
         physicalDataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
         connectionTransaction = createConnectionTransaction(databaseName, contextManager);
-        connectionContext = new ConnectionContext(this::getDataSourceNamesOfCachedConnections);
+        connectionContext = new ConnectionContext(cachedConnections::keySet);
     }
     
     private Map<String, DataSource> getTrafficDataSourceMap(final String databaseName, final ContextManager contextManager) {
@@ -368,11 +368,6 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
     
     private boolean isRawJdbcDataSource(final String dataSourceName) {
         return physicalDataSourceMap.containsKey(dataSourceName);
-    }
-    
-    @Override
-    public Collection<String> getDataSourceNamesOfCachedConnections() {
-        return cachedConnections.keySet();
     }
     
     @Override

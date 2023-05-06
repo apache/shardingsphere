@@ -20,7 +20,6 @@ package org.apache.shardingsphere.infra.executor.sql.prepare.driver;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -40,11 +39,4 @@ public interface DatabaseConnectionManager<C> {
      * @throws SQLException SQL exception
      */
     List<C> getConnections(String dataSourceName, int connectionSize, ConnectionMode connectionMode) throws SQLException;
-    
-    /**
-     * Get data source names of cached connections.
-     *
-     * @return data source names of cached connections
-     */
-    Collection<String> getDataSourceNamesOfCachedConnections();
 }

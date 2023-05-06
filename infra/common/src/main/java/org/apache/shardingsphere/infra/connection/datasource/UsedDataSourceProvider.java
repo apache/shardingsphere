@@ -20,14 +20,15 @@ package org.apache.shardingsphere.infra.connection.datasource;
 import java.util.Collection;
 
 /**
- * Preferred data source provider.
+ * Used data source provider.
  */
-public interface PreferredDataSourceProvider {
+@FunctionalInterface
+public interface UsedDataSourceProvider {
     
     /**
-     * Get preferred data source names.
+     * Get used data source names.
      *
-     * @return preferred data source names
+     * @return used data source names
      */
-    Collection<String> getPreferredDataSourceNames();
+    Collection<String> getNames();
 }

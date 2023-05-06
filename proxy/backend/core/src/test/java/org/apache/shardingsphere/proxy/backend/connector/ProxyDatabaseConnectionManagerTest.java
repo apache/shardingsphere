@@ -422,7 +422,7 @@ class ProxyDatabaseConnectionManagerTest {
         databaseConnectionManager.getCachedConnections().put(connectionSession.getDatabaseName() + ".ds_0", null);
         databaseConnectionManager.getCachedConnections().put(connectionSession.getDatabaseName() + ".ds_1", null);
         databaseConnectionManager.getCachedConnections().put(connectionSession.getDatabaseName() + ".ds_2", null);
-        List<String> actual = new ArrayList<>(databaseConnectionManager.getDataSourceNamesOfCachedConnections());
+        List<String> actual = new ArrayList<>(databaseConnectionManager.getUsedDataSourceNames());
         Collections.sort(actual);
         assertThat(actual, is(Arrays.asList("ds_0", "ds_1", "ds_2")));
     }
