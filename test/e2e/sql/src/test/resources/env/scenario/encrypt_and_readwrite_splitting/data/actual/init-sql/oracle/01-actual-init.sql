@@ -21,7 +21,7 @@ DROP SCHEMA encrypt_read_ds;
 CREATE SCHEMA encrypt_write_ds;
 CREATE SCHEMA encrypt_read_ds;
 
-CREATE TABLE encrypt_write_ds.t_user (user_id INT NOT NULL, address_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE encrypt_write_ds.t_user (user_id INT NOT NULL, address_id INT NOT NULL, pwd_cipher VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE encrypt_write_ds.t_user_item (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE encrypt_write_ds.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
 CREATE TABLE encrypt_write_ds.t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -34,7 +34,7 @@ CREATE TABLE encrypt_write_ds.t_user_info (user_id INT NOT NULL, information VAR
 CREATE TABLE encrypt_write_ds.t_merchant (merchant_id INT PRIMARY KEY, country_id SMALLINT NOT NULL, merchant_name VARCHAR(50) NOT NULL, business_code VARCHAR(50) NOT NULL, telephone CHAR(11) NOT NULL, creation_date DATE NOT NULL);
 CREATE INDEX user_index_t_user ON encrypt_write_ds.t_user (user_id);
 
-CREATE TABLE encrypt_read_ds.t_user (user_id INT NOT NULL, address_id INT NOT NULL, pwd_plain VARCHAR(45) NULL, pwd_cipher VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
+CREATE TABLE encrypt_read_ds.t_user (user_id INT NOT NULL, address_id INT NOT NULL, pwd_cipher VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
 CREATE TABLE encrypt_read_ds.t_user_item (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
 CREATE TABLE encrypt_read_ds.t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
 CREATE TABLE encrypt_read_ds.t_order_federate (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
