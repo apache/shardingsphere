@@ -15,24 +15,37 @@
 # limitations under the License.
 #
 
-name: Nightly Check - SonarCloud
+name: Nightly - Check
 
 on:
   schedule:
     - cron: '0 20 */1 * *'  # once a day. UTC time
   workflow_dispatch:
 
-concurrency:
-  group: ${{ github.event_name }}-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 env:
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true
   CACHE_PREFIX: shardingsphere
 
 jobs:
-  build:
+  check-spotbugs:
     if: github.repository == 'apache/shardingsphere'
-    name: Build and analyze
+    name: Check - SpotBugs
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ env.CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ env.CACHE_PREFIX }}-maven-third-party-
+      - name: Run SpotBugs
+        run: ./mvnw clean install spotbugs:check -T1C
+  
+  check-and-report-sonarcloud:
+    if: github.repository == 'apache/shardingsphere'
+    name: Check and report sonarcloud
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
