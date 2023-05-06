@@ -17,19 +17,22 @@
 
 package org.apache.shardingsphere.infra.binder.decider.fixture.decider;
 
-import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.decider.fixture.rule.SQLFederationDeciderRuleNotMatchFixture;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 
+import java.util.List;
+
 public final class SQLFederationDeciderNotMatchFixture implements SQLFederationDecider<SQLFederationDeciderRuleNotMatchFixture> {
     
     @Override
-    public void decide(final SQLFederationDeciderContext deciderContext, final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData,
-                       final ShardingSphereDatabase database, final SQLFederationDeciderRuleNotMatchFixture rule, final ConfigurationProperties props) {
+    public void decide(final SQLFederationDeciderContext deciderContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,
+                       final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database,
+                       final SQLFederationDeciderRuleNotMatchFixture rule, final ConfigurationProperties props) {
     }
     
     @Override

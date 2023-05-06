@@ -15,20 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.connection.datasource;
+package org.apache.shardingsphere.infra.session.connection.transaction;
 
-import java.util.Collection;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Used data source provider.
+ * Transaction connection context.
  */
-@FunctionalInterface
-public interface UsedDataSourceProvider {
+@Getter
+@Setter
+public final class TransactionConnectionContext implements AutoCloseable {
     
-    /**
-     * Get used data source names.
-     *
-     * @return used data source names
-     */
-    Collection<String> getNames();
+    private volatile boolean inTransaction;
+    
+    private volatile long beginMills;
+    
+    private volatile String readWriteSplitReplicaRoute;
+    
+    @Override
+    public void close() {
+        inTransaction = false;
+        beginMills = 0L;
+        readWriteSplitReplicaRoute = null;
+    }
 }

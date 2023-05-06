@@ -15,10 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.connection.cursor;
+package org.apache.shardingsphere.infra.session.connection.datasource;
+
+import java.util.Collection;
 
 /**
- * Cursor definition.
+ * Used data source provider.
  */
-public interface CursorDefinition {
+@FunctionalInterface
+public interface UsedDataSourceProvider {
+    
+    /**
+     * Get used data source names.
+     *
+     * @return used data source names
+     */
+    Collection<String> getNames();
 }

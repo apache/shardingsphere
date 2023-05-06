@@ -32,6 +32,7 @@
         <module>common</module>
         <module>parser</module>
         <module>binder</module>
+        <module>session</module>
         <module>route</module>
         <module>rewrite</module>
         <module>executor</module>

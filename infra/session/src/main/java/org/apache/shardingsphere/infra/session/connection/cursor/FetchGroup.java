@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.connection.cursor;
+package org.apache.shardingsphere.infra.session.connection.cursor;
 
 /**
  * Fetch group.

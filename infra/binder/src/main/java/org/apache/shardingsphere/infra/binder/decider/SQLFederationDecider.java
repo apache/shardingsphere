@@ -17,13 +17,15 @@
 
 package org.apache.shardingsphere.infra.binder.decider;
 
-import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;
+
+import java.util.List;
 
 /**
  * SQL federation decider.
@@ -36,12 +38,13 @@ public interface SQLFederationDecider<T extends ShardingSphereRule> extends Orde
      * Judge whether to use sql federation engine.
      *
      * @param deciderContext decider context
-     * @param queryContext query context
+     * @param sqlStatementContext SQL statement context
+     * @param parameters parameters
      * @param globalRuleMetaData global rule meta data
      * @param database database
      * @param rule rule
      * @param props props
      */
-    void decide(SQLFederationDeciderContext deciderContext,
-                QueryContext queryContext, ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, ConfigurationProperties props);
+    void decide(SQLFederationDeciderContext deciderContext, SQLStatementContext<?> sqlStatementContext, List<Object> parameters,
+                ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, ConfigurationProperties props);
 }
