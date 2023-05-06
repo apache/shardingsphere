@@ -58,6 +58,7 @@ public final class GlobalRulePersistService implements GlobalPersistService<Coll
      * 
      * @return collection of user
      */
+    @Override
     public Collection<ShardingSphereUser> loadUsers() {
         Optional<AuthorityRuleConfiguration> authorityRuleConfig = load().stream().filter(each -> each instanceof AuthorityRuleConfiguration)
                 .map(each -> (AuthorityRuleConfiguration) each).findFirst();

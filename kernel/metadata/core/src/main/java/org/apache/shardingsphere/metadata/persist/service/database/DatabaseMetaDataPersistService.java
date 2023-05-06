@@ -53,6 +53,7 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
      * 
      * @param databaseName database name
      */
+    @Override
     public void addDatabase(final String databaseName) {
         repository.persist(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), "");
     }
@@ -62,6 +63,7 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
      *
      * @param databaseName database name to be deleted
      */
+    @Override
     public void dropDatabase(final String databaseName) {
         repository.delete(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
     }
@@ -71,6 +73,7 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
      *
      * @return all database names
      */
+    @Override
     public Collection<String> loadAllDatabaseNames() {
         return repository.getChildrenKeys(DatabaseMetaDataNode.getMetaDataNodePath());
     }
@@ -81,6 +84,7 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
      * @param databaseName database name
      * @param schemaName schema name
      */
+    @Override
     public void addSchema(final String databaseName, final String schemaName) {
         repository.persist(DatabaseMetaDataNode.getMetaDataTablesPath(databaseName, schemaName), "");
     }
@@ -91,6 +95,7 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
      * @param databaseName database name
      * @param schemaName schema name
      */
+    @Override
     public void dropSchema(final String databaseName, final String schemaName) {
         repository.delete(DatabaseMetaDataNode.getMetaDataSchemaPath(databaseName, schemaName));
     }
@@ -102,6 +107,7 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
      * @param schemaName schema name
      * @param schema schema meta data
      */
+    @Override
     public void compareAndPersist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
             addSchema(databaseName, schemaName);
@@ -118,6 +124,7 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
      * @param schemaName schema name
      * @param schema schema meta data
      */
+    @Override
     public void persist(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         if (schema.getTables().isEmpty() && schema.getViews().isEmpty()) {
             addSchema(databaseName, schemaName);
@@ -132,6 +139,7 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
      * @param schemaName schema name
      * @param schema schema meta data
      */
+    @Override
     public void delete(final String databaseName, final String schemaName, final ShardingSphereSchema schema) {
         schema.getTables().forEach((key, value) -> tableMetaDataPersistService.delete(databaseName, schemaName, key));
     }
@@ -142,6 +150,7 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
      * @param databaseName database name
      * @return schema meta data
      */
+    @Override
     public Map<String, ShardingSphereSchema> loadSchemas(final String databaseName) {
         Collection<String> schemaNames = loadAllSchemaNames(databaseName);
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(schemaNames.size(), 1);

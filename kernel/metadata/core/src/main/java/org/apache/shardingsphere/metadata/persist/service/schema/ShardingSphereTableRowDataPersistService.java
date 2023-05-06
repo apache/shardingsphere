@@ -46,6 +46,7 @@ public final class ShardingSphereTableRowDataPersistService implements TableRowD
      * @param tableName table name
      * @param rows rows
      */
+    @Override
     public void persist(final String databaseName, final String schemaName, final String tableName, final Collection<YamlShardingSphereRowData> rows) {
         if (rows.isEmpty()) {
             persistTable(databaseName, schemaName, tableName);
@@ -65,6 +66,7 @@ public final class ShardingSphereTableRowDataPersistService implements TableRowD
      * @param tableName table name
      * @param rows rows
      */
+    @Override
     public void delete(final String databaseName, final String schemaName, final String tableName, final Collection<YamlShardingSphereRowData> rows) {
         rows.forEach(each -> repository.delete(ShardingSphereDataNode.getTableRowPath(databaseName, schemaName, tableName.toLowerCase(), each.getUniqueKey())));
     }
@@ -78,6 +80,7 @@ public final class ShardingSphereTableRowDataPersistService implements TableRowD
      * @param table table
      * @return ShardingSphere table data
      */
+    @Override
     public ShardingSphereTableData load(final String databaseName, final String schemaName, final String tableName, final ShardingSphereTable table) {
         ShardingSphereTableData result = new ShardingSphereTableData(tableName);
         YamlShardingSphereRowDataSwapper swapper = new YamlShardingSphereRowDataSwapper(new ArrayList<>(table.getColumns()));
