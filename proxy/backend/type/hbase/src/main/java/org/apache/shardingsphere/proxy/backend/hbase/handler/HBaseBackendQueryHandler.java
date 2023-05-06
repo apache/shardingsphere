@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.handler;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
 import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
  * Backend handler for HBase.
  */
 @RequiredArgsConstructor
-@Getter
 public final class HBaseBackendQueryHandler implements HBaseBackendHandler {
     
     private final SQLStatement sqlStatement;

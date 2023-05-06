@@ -15,23 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.hbase.result;
+package org.apache.shardingsphere.proxy.backend.hbase.handler;
 
-import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
- * HBase backend handler.
+ * Error hint comment query row data for HBase.
  */
-public interface HBaseBackendHandler extends ProxyBackendHandler {
+@RequiredArgsConstructor
+public final class HBaseErrorHintCommentQueryRowData {
+    
+    private final int id;
+    
+    private final String hint;
+    
+    private final boolean supported;
     
     /**
-     * Get row data objects.
-     *
-     * @return row data
+     * List row data.
+     * 
+     * @return listed row data
      */
-    default Collection<Object> getRowDataObjects() {
-        return Collections.emptyList();
+    public Collection<Object> toList() {
+        return Arrays.asList(String.valueOf(id), hint, supported ? "supported" : "unsupported");
     }
 }
