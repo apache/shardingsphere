@@ -286,8 +286,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private static SQLFederationDeciderContext decide(final QueryContext queryContext,
                                                       final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props, final ShardingSphereDatabase database) {
-        SQLFederationDecideEngine deciderEngine = new SQLFederationDecideEngine(database.getRuleMetaData().getRules(), props);
-        return deciderEngine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, database);
+        return new SQLFederationDecideEngine(database.getRuleMetaData().getRules(), props).decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), globalRuleMetaData, database);
     }
     
     private JDBCExecutionUnit createTrafficExecutionUnit(final String trafficInstanceId, final QueryContext queryContext) throws SQLException {
