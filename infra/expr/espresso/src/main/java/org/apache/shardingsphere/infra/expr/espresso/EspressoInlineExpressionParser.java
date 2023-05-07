@@ -33,28 +33,27 @@ import java.util.Objects;
  * Espresso inline expression parser.
  */
 public final class EspressoInlineExpressionParser implements JVMInlineExpressionParser {
-    
-    private static final Context POLYGLOT;
-    
+
+    private static final String JAVA_HOME;
+
+    private static final String JAVA_CLASSPATH;
+
     static {
         // TODO https://github.com/oracle/graal/issues/4555 not yet closed
-        String javaHome = System.getenv("JAVA_HOME");
-        ShardingSpherePreconditions.checkNotNull(javaHome, () -> new RuntimeException("Failed to determine the system's environment variable JAVA_HOME!"));
+        JAVA_HOME = System.getenv("JAVA_HOME");
+        ShardingSpherePreconditions.checkNotNull(JAVA_HOME, () -> new RuntimeException("Failed to determine the system's environment variable JAVA_HOME!"));
         URL resource = Objects.requireNonNull(EspressoInlineExpressionParser.class.getClassLoader().getResource("espresso-need-libs"));
         String dir = resource.getPath();
-        String javaClasspath = String.join(":", dir + "/groovy.jar", dir + "/guava.jar", dir + "/shardingsphere-infra-expr-hotsopt.jar");
-        POLYGLOT = Context.newBuilder().allowAllAccess(true)
-                .option("java.Properties.org.graalvm.home", javaHome)
-                .option("java.MultiThreaded", Boolean.TRUE.toString())
-                .option("java.Classpath", javaClasspath)
-                .build();
+        JAVA_CLASSPATH = String.join(":", dir + "/groovy.jar", dir + "/guava.jar", dir + "/shardingsphere-infra-expr-hotsopt.jar");
     }
     
     @Override
     public String handlePlaceHolder(final String inlineExpression) {
-        return POLYGLOT.getBindings("java")
-                .getMember("org.apache.shardingsphere.infra.expr.hotsopt.HotspotInlineExpressionParser")
-                .invokeMember("handlePlaceHolder", inlineExpression).asString();
+        try (Context context = getContext()) {
+            return context.getBindings("java")
+                    .getMember("org.apache.shardingsphere.infra.expr.hotsopt.HotspotInlineExpressionParser")
+                    .invokeMember("handlePlaceHolder", inlineExpression).asString();
+        }
     }
     
     @Override
@@ -76,8 +75,18 @@ public final class EspressoInlineExpressionParser implements JVMInlineExpression
     }
     
     private Value getInlineExpressionParser() {
-        return POLYGLOT.getBindings("java")
-                .getMember("org.apache.shardingsphere.infra.expr.hotsopt.HotspotInlineExpressionParser")
-                .newInstance();
+        try (Context context = getContext()) {
+            return context.getBindings("java")
+                    .getMember("org.apache.shardingsphere.infra.expr.hotsopt.HotspotInlineExpressionParser")
+                    .newInstance();
+        }
+    }
+
+    private Context getContext() {
+        return Context.newBuilder().allowAllAccess(true)
+                .option("java.Properties.org.graalvm.home", JAVA_HOME)
+                .option("java.MultiThreaded", Boolean.TRUE.toString())
+                .option("java.Classpath", JAVA_CLASSPATH)
+                .build();
     }
 }
