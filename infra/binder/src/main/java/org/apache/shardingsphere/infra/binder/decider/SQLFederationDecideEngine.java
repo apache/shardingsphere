@@ -40,11 +40,11 @@ public final class SQLFederationDecideEngine {
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, SQLFederationDecider> deciders;
     
-    private final ConfigurationProperties props;
+    private final boolean isFederationDisabled;
     
     public SQLFederationDecideEngine(final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) {
         deciders = OrderedSPILoader.getServices(SQLFederationDecider.class, rules);
-        this.props = props;
+        isFederationDisabled = "NONE".equals(props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE));
     }
     
     /**
@@ -60,17 +60,18 @@ public final class SQLFederationDecideEngine {
     public SQLFederationDeciderContext decide(final SQLStatementContext<?> sqlStatementContext,
                                               final List<Object> parameters, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         SQLFederationDeciderContext result = new SQLFederationDeciderContext();
-        // TODO move this logic to SQLFederationDecider implement class when we remove sql federation type
+        // TODO BEGIN: move this logic to SQLFederationDecider implement class when we remove sql federation type
         if (isQuerySystemSchema(sqlStatementContext, database)) {
             result.setUseSQLFederation(true);
             return result;
         }
-        if (!(sqlStatementContext instanceof SelectStatementContext) || "NONE".equals(props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE))) {
+        // TODO END
+        if (isFederationDisabled || !(sqlStatementContext instanceof SelectStatementContext)) {
             return result;
         }
         for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
             if (!result.isUseSQLFederation()) {
-                entry.getValue().decide(result, (SelectStatementContext) sqlStatementContext, parameters, globalRuleMetaData, database, entry.getKey(), props);
+                entry.getValue().decide(result, (SelectStatementContext) sqlStatementContext, parameters, globalRuleMetaData, database, entry.getKey());
             }
         }
         return result;
