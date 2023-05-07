@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.decider;
 
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
-import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
+import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -39,26 +39,26 @@ import java.util.List;
 public final class ShardingSQLFederationDecider implements SQLFederationDecider<ShardingRule> {
     
     @Override
-    public void decide(final SQLFederationDeciderContext deciderContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,
+    public void decide(final SQLFederationDeciderContext deciderContext, final SelectStatementContext selectStatementContext, final List<Object> parameters,
                        final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule, final ConfigurationProperties props) {
-        SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
-        Collection<String> tableNames = rule.getShardingLogicTableNames(select.getTablesContext().getTableNames());
+        Collection<String> tableNames = rule.getShardingLogicTableNames(selectStatementContext.getTablesContext().getTableNames());
         if (tableNames.isEmpty()) {
             return;
         }
         addTableDataNodes(deciderContext, rule, tableNames);
-        ShardingConditions shardingConditions = getMergedShardingConditions(sqlStatementContext, parameters, globalRuleMetaData, database, rule);
+        ShardingConditions shardingConditions = getMergedShardingConditions(selectStatementContext, parameters, globalRuleMetaData, database, rule);
         if (shardingConditions.isNeedMerge() && shardingConditions.isSameShardingCondition()) {
             return;
         }
-        if (select.isContainsSubquery() || select.isContainsHaving() || select.isContainsCombine() || select.isContainsPartialDistinctAggregation()) {
+        if (selectStatementContext.isContainsSubquery() || selectStatementContext.isContainsHaving()
+                || selectStatementContext.isContainsCombine() || selectStatementContext.isContainsPartialDistinctAggregation()) {
             deciderContext.setUseSQLFederation(true);
             return;
         }
-        if (!select.isContainsJoinQuery() || rule.isAllTablesInSameDataSource(tableNames)) {
+        if (!selectStatementContext.isContainsJoinQuery() || rule.isAllTablesInSameDataSource(tableNames)) {
             return;
         }
-        boolean allBindingTables = tableNames.size() > 1 && rule.isAllBindingTables(database, select, tableNames);
+        boolean allBindingTables = tableNames.size() > 1 && rule.isAllBindingTables(database, selectStatementContext, tableNames);
         deciderContext.setUseSQLFederation(tableNames.size() > 1 && !allBindingTables);
     }
     

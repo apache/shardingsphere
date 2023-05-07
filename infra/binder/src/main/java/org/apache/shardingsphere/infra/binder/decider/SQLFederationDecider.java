@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.binder.decider;
 
-import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;
 
 import java.util.List;
@@ -32,19 +32,20 @@ import java.util.List;
  * 
  * @param <T> type of rule
  */
+@SingletonSPI
 public interface SQLFederationDecider<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
      * Judge whether to use sql federation engine.
      *
      * @param deciderContext decider context
-     * @param sqlStatementContext SQL statement context
+     * @param selectStatementContext select statement context
      * @param parameters parameters
      * @param globalRuleMetaData global rule meta data
      * @param database database
      * @param rule rule
      * @param props props
      */
-    void decide(SQLFederationDeciderContext deciderContext, SQLStatementContext<?> sqlStatementContext, List<Object> parameters,
+    void decide(SQLFederationDeciderContext deciderContext, SelectStatementContext selectStatementContext, List<Object> parameters,
                 ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, ConfigurationProperties props);
 }

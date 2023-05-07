@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import java.util.Collection;
 
 /**
- * System schema utility class.
+ * System schema utility.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SystemSchemaUtils {
@@ -34,7 +34,7 @@ public final class SystemSchemaUtils {
     /**
      * Judge whether SQL statement contains system schema or not.
      *
-     * @param databaseType databaseType
+     * @param databaseType database type
      * @param schemaNames schema names
      * @param database database
      * @return whether SQL statement contains system schema or not
