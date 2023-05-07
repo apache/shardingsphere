@@ -85,7 +85,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
         return false;
     }
     
-    private boolean isAllTablesInSameDataSource(final Collection<DataNode> dataNodes, final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
+    private boolean isAllTablesInSameDataSource(final Collection<DataNode> includedDataNodes, final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
         if (!rule.isSingleTablesInSameDataSource(singleTableNames)) {
             return false;
         }
@@ -94,7 +94,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
         if (!dataNode.isPresent()) {
             return true;
         }
-        for (DataNode each : dataNodes) {
+        for (DataNode each : includedDataNodes) {
             if (!each.getDataSourceName().equalsIgnoreCase(dataNode.get().getDataSourceName())) {
                 return false;
             }
@@ -102,9 +102,9 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
         return true;
     }
     
-    private void addTableDataNodes(final Collection<DataNode> dataNodes, final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
+    private void addTableDataNodes(final Collection<DataNode> includedDataNodes, final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
         for (QualifiedTable each : singleTableNames) {
-            rule.findSingleTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(dataNodes::add);
+            rule.findSingleTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(includedDataNodes::add);
         }
     }
     

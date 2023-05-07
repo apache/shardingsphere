@@ -59,9 +59,9 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         return tableNames.size() <= 1 || !rule.isAllBindingTables(database, selectStatementContext, tableNames);
     }
     
-    private void addTableDataNodes(final Collection<DataNode> dataNodes, final ShardingRule rule, final Collection<String> tableNames) {
+    private void addTableDataNodes(final Collection<DataNode> includedDataNodes, final ShardingRule rule, final Collection<String> tableNames) {
         for (String each : tableNames) {
-            rule.findTableRule(each).ifPresent(optional -> dataNodes.addAll(optional.getActualDataNodes()));
+            rule.findTableRule(each).ifPresent(optional -> includedDataNodes.addAll(optional.getActualDataNodes()));
         }
     }
     
