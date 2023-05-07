@@ -80,7 +80,7 @@ class DatabaseBackendHandlerFactoryTest {
         assertThat(actual, instanceOf(DatabaseConnector.class));
     }
     
-    private static SQLStatementContext<SQLStatement> mockSQLStatementContext() {
+    private SQLStatementContext<SQLStatement> mockSQLStatementContext() {
         SQLStatementContext<SQLStatement> result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(SQLStatement.class));
         when(result.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
@@ -97,7 +97,7 @@ class DatabaseBackendHandlerFactoryTest {
         return result;
     }
     
-    private static ConnectionSession mockConnectionSession() {
+    private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
         when(result.getDatabaseName()).thenReturn("foo_db");
         when(result.getDatabaseConnectionManager()).thenReturn(mock(ProxyDatabaseConnectionManager.class));

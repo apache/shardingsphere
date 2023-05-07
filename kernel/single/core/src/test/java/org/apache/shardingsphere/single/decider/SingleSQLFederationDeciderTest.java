@@ -114,7 +114,7 @@ class SingleSQLFederationDeciderTest {
         assertTrue(actual.isUseSQLFederation());
     }
     
-    private static SingleRule createSingleRule(final Collection<QualifiedTable> qualifiedTables) {
+    private SingleRule createSingleRule(final Collection<QualifiedTable> qualifiedTables) {
         SingleRule result = mock(SingleRule.class);
         when(result.getSingleTableNames(any())).thenReturn(qualifiedTables);
         when(result.findSingleTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order")).thenReturn(Optional.of(new DataNode("ds_0", "t_order")));
@@ -122,13 +122,13 @@ class SingleSQLFederationDeciderTest {
         return result;
     }
     
-    private static SelectStatementContext createStatementContext() {
+    private SelectStatementContext createStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         return result;
     }
     
-    private static ShardingSphereDatabase createDatabase() {
+    private ShardingSphereDatabase createDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(result.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));

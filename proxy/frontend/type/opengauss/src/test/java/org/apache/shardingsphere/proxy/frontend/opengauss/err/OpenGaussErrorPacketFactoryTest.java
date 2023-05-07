@@ -83,7 +83,7 @@ class OpenGaussErrorPacketFactoryTest {
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private static Map<Character, String> getFieldsInPacket(final OpenGaussErrorResponsePacket packet) {
+    private Map<Character, String> getFieldsInPacket(final OpenGaussErrorResponsePacket packet) {
         return (Map<Character, String>) Plugins.getMemberAccessor().get(OpenGaussErrorResponsePacket.class.getDeclaredField("fields"), packet);
     }
 }

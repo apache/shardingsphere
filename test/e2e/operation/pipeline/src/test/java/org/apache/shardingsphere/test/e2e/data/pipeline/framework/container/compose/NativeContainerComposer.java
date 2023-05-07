@@ -82,7 +82,7 @@ public final class NativeContainerComposer extends BaseContainerComposer {
         }
     }
     
-    private static List<String> getFirstColumnValueFromResult(final ResultSet resultSet) throws SQLException {
+    private List<String> getFirstColumnValueFromResult(final ResultSet resultSet) throws SQLException {
         List<String> result = new LinkedList<>();
         while (resultSet.next()) {
             result.add(resultSet.getString(1));

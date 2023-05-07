@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sharding.cache.route;
 
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.cache.api.ShardingCacheRuleConfiguration;
 import org.apache.shardingsphere.sharding.cache.checker.ShardingRouteCacheableCheckResult;
 import org.apache.shardingsphere.sharding.cache.checker.ShardingRouteCacheableChecker;
@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sharding.cache.route.cache.ShardingRouteCacheKe
 import org.apache.shardingsphere.sharding.cache.route.cache.ShardingRouteCacheValue;
 import org.apache.shardingsphere.sharding.cache.rule.ShardingCacheRule;
 import org.apache.shardingsphere.sharding.route.engine.ShardingSQLRouter;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -88,7 +87,7 @@ class CachedShardingSQLRouterTest {
         assertRouteContextIsEmpty(actual);
     }
     
-    private static void assertRouteContextIsEmpty(final RouteContext actual) {
+    private void assertRouteContextIsEmpty(final RouteContext actual) {
         assertTrue(actual.getRouteUnits().isEmpty());
         assertTrue(actual.getOriginalDataNodes().isEmpty());
         assertTrue(actual.getRouteStageContexts().isEmpty());
@@ -169,6 +168,6 @@ class CachedShardingSQLRouterTest {
     
     @Test
     void assertGetTypeClass() {
-        assertThat(new CachedShardingSQLRouter().getTypeClass(), CoreMatchers.<Class<ShardingCacheRule>>is(ShardingCacheRule.class));
+        assertThat(new CachedShardingSQLRouter().getTypeClass(), is(ShardingCacheRule.class));
     }
 }

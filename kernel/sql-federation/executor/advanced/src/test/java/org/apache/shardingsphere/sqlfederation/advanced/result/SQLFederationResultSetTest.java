@@ -71,7 +71,7 @@ class SQLFederationResultSetTest {
         federationResultSet = new SQLFederationResultSet(enumerator, mock(ShardingSphereSchema.class), mock(FilterableSchema.class), createSelectStatementContext(), mock(RelDataType.class));
     }
     
-    private static SelectStatementContext createSelectStatementContext() {
+    private SelectStatementContext createSelectStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         List<Projection> projections = Arrays.asList(new ColumnProjection("o", "order_id", null), new ColumnProjection("o", "user_id", null), new ColumnProjection("o", "status", null),
                 new ColumnProjection("i", "item_id", null));

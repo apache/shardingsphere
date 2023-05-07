@@ -77,7 +77,7 @@ public final class PipelineContextKey {
         return instanceType == that.instanceType && Objects.equals(filterDatabaseName(this), filterDatabaseName(that));
     }
     
-    private static String filterDatabaseName(final PipelineContextKey contextKey) {
+    private String filterDatabaseName(final PipelineContextKey contextKey) {
         return contextKey.getInstanceType() == InstanceType.PROXY ? "" : contextKey.getDatabaseName();
     }
     

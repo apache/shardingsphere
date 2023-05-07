@@ -81,11 +81,11 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         if (null == processes || processes.isEmpty()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        List<MemoryQueryResultDataRow> rows = processes.stream().map(ShowProcessListExecutor::getMemoryQueryResultDataRow).collect(Collectors.toList());
+        List<MemoryQueryResultDataRow> rows = processes.stream().map(this::getMemoryQueryResultDataRow).collect(Collectors.toList());
         return new RawMemoryQueryResult(queryResultMetaData, rows);
     }
     
-    private static MemoryQueryResultDataRow getMemoryQueryResultDataRow(final Process process) {
+    private MemoryQueryResultDataRow getMemoryQueryResultDataRow(final Process process) {
         List<Object> rowValues = new ArrayList<>(8);
         rowValues.add(process.getId());
         rowValues.add(process.getUsername());

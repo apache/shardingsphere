@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.external.loader;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserTestParameter;
 import org.apache.shardingsphere.test.loader.AbstractTestParameterLoader;
 import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
@@ -28,7 +27,6 @@ import java.util.LinkedList;
 /**
  * External SQL parser test parameter loader.
  */
-@Slf4j
 public final class ExternalSQLParserTestParameterLoader extends AbstractTestParameterLoader<ExternalSQLParserTestParameter> {
     
     public ExternalSQLParserTestParameterLoader(final TestParameterLoadStrategy loadStrategy) {
@@ -73,22 +71,22 @@ public final class ExternalSQLParserTestParameterLoader extends AbstractTestPara
         return result;
     }
     
-    private static boolean isInProcedure(final boolean inProcedure, final String statementLines) {
+    private boolean isInProcedure(final boolean inProcedure, final String statementLines) {
         if (statementLines.contains("{") && statementLines.contains("}")) {
             return inProcedure;
         }
         return (statementLines.contains("{") || statementLines.contains("}") || statementLines.contains("$$")) != inProcedure;
     }
     
-    private static String getStatement(final String completedSQL, final String rawSQLLine, final boolean inProcedure) {
+    private String getStatement(final String completedSQL, final String rawSQLLine, final boolean inProcedure) {
         return (rawSQLLine.isEmpty() || isComment(rawSQLLine)) && !inProcedure ? "" : completedSQL + rawSQLLine + " ";
     }
     
-    private static boolean isComment(final String statement) {
+    private boolean isComment(final String statement) {
         return statement.startsWith("#") || statement.startsWith("/") || statement.startsWith("--") || statement.startsWith(":") || statement.startsWith("\\");
     }
     
-    private static int searchInResultContent(final int resultIndex, final String[] resultLines, final String completedSQL, final int statementLines) {
+    private int searchInResultContent(final int resultIndex, final String[] resultLines, final String completedSQL, final int statementLines) {
         int index = resultIndex;
         while (index < resultLines.length && !completedSQL.startsWith(resultLines[index].trim())) {
             index++;

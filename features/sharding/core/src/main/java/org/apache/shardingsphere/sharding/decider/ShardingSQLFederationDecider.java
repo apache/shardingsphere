@@ -61,14 +61,14 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         deciderContext.setUseSQLFederation(tableNames.size() > 1 && !allBindingTables);
     }
     
-    private static void addTableDataNodes(final SQLFederationDeciderContext deciderContext, final ShardingRule rule, final Collection<String> tableNames) {
+    private void addTableDataNodes(final SQLFederationDeciderContext deciderContext, final ShardingRule rule, final Collection<String> tableNames) {
         for (String each : tableNames) {
             rule.findTableRule(each).ifPresent(optional -> deciderContext.getDataNodes().addAll(optional.getActualDataNodes()));
         }
     }
     
-    private static ShardingConditions getMergedShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,
-                                                                  final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule) {
+    private ShardingConditions getMergedShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,
+                                                           final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule) {
         List<ShardingCondition> shardingConditions = new ShardingConditionEngine(
                 globalRuleMetaData, database, rule).createShardingConditions(sqlStatementContext, parameters);
         ShardingConditions result = new ShardingConditions(shardingConditions, sqlStatementContext, rule);

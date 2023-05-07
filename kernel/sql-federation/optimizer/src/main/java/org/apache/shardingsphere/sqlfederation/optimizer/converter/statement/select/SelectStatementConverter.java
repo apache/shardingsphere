@@ -60,7 +60,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         return orderBy.isEmpty() ? sqlCombine : new SqlOrderBy(SqlParserPos.ZERO, sqlCombine, orderBy, null, null);
     }
     
-    private static SqlSelect convertSelect(final SelectStatement selectStatement) {
+    private SqlSelect convertSelect(final SelectStatement selectStatement) {
         SqlNodeList distinct = new DistinctConverter().convert(selectStatement.getProjections()).orElse(null);
         SqlNodeList projection = new ProjectionsConverter().convert(selectStatement.getProjections()).orElseThrow(IllegalStateException::new);
         SqlNode from = new TableConverter().convert(selectStatement.getFrom()).orElse(null);

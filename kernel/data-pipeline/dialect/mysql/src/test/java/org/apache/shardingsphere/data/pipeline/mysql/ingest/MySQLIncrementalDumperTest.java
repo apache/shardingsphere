@@ -116,11 +116,11 @@ class MySQLIncrementalDumperTest {
         }
     }
     
-    private static Map<String, PipelineColumnMetaData> mockOrderColumnsMetaDataMap() {
+    private Map<String, PipelineColumnMetaData> mockOrderColumnsMetaDataMap() {
         return mockOrderColumnsMetaDataList().stream().collect(Collectors.toMap(PipelineColumnMetaData::getName, Function.identity()));
     }
     
-    private static List<PipelineColumnMetaData> mockOrderColumnsMetaDataList() {
+    private List<PipelineColumnMetaData> mockOrderColumnsMetaDataList() {
         List<PipelineColumnMetaData> result = new LinkedList<>();
         result.add(new PipelineColumnMetaData(1, "order_id", Types.INTEGER, "INT", false, true, true));
         result.add(new PipelineColumnMetaData(1, "user_id", Types.INTEGER, "INT", false, false, false));

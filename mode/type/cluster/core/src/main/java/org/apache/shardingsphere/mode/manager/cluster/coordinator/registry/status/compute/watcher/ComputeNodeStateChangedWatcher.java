@@ -122,7 +122,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         return Optional.empty();
     }
     
-    private static Matcher getShowProcessListTriggerMatcher(final DataChangedEvent event) {
+    private Matcher getShowProcessListTriggerMatcher(final DataChangedEvent event) {
         return Pattern.compile(ComputeNode.getShowProcessListTriggerNodePath() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
     }
     
@@ -140,7 +140,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         return Optional.empty();
     }
     
-    private static Matcher getKillProcessTriggerMatcher(final DataChangedEvent event) {
+    private Matcher getKillProcessTriggerMatcher(final DataChangedEvent event) {
         Pattern pattern = Pattern.compile(ComputeNode.getKillProcessTriggerNodePath() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE);
         return pattern.matcher(event.getKey());
     }

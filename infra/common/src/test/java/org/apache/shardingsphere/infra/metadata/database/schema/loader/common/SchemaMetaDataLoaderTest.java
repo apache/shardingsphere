@@ -91,7 +91,7 @@ class SchemaMetaDataLoaderTest {
         assertThat(SchemaMetaDataLoader.loadSchemaTableNames(DefaultDatabase.LOGIC_NAME, new MySQLDatabaseType(), dataSource), is(schemaTableNames));
     }
     
-    private static Map<String, Collection<String>> createSchemaTableNames() {
+    private Map<String, Collection<String>> createSchemaTableNames() {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         result.put("public", Collections.singletonList("tbl"));
         result.put("schema_1", Collections.emptyList());

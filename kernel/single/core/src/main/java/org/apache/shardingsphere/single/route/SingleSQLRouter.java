@@ -92,8 +92,8 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
         return result;
     }
     
-    private static Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext,
-                                                                  final ShardingSphereDatabase database, final SingleRule rule, final RouteContext routeContext) {
+    private Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext,
+                                                           final ShardingSphereDatabase database, final SingleRule rule, final RouteContext routeContext) {
         DatabaseType databaseType = sqlStatementContext.getDatabaseType();
         Collection<QualifiedTable> result = getQualifiedTables(database, databaseType, sqlStatementContext.getTablesContext().getTables());
         if (result.isEmpty() && sqlStatementContext instanceof IndexAvailable) {
@@ -102,7 +102,7 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
         return routeContext.getRouteUnits().isEmpty() && sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? result : rule.getSingleTableNames(result);
     }
     
-    private static Collection<QualifiedTable> getQualifiedTables(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<SimpleTableSegment> tableSegments) {
+    private Collection<QualifiedTable> getQualifiedTables(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<SimpleTableSegment> tableSegments) {
         Collection<QualifiedTable> result = new LinkedList<>();
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, database.getName());
         for (SimpleTableSegment each : tableSegments) {
@@ -112,8 +112,8 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
         return result;
     }
     
-    private static void validateSameDataSource(final SQLStatementContext<?> sqlStatementContext, final SingleRule rule,
-                                               final ConfigurationProperties props, final Collection<QualifiedTable> singleTableNames, final RouteContext routeContext) {
+    private void validateSameDataSource(final SQLStatementContext<?> sqlStatementContext, final SingleRule rule,
+                                        final ConfigurationProperties props, final Collection<QualifiedTable> singleTableNames, final RouteContext routeContext) {
         String sqlFederationType = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
         boolean allTablesInSameDataSource = "NONE".equals(sqlFederationType)
                 ? rule.isAllTablesInSameDataSource(routeContext, singleTableNames)
