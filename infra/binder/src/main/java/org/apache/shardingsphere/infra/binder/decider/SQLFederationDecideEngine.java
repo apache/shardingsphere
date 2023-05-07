@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -69,9 +69,9 @@ public final class SQLFederationDecideEngine {
         if (isFederationDisabled || !(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
         }
-        Collection<DataNode> dataNodes = new LinkedHashSet<>();
+        Collection<DataNode> includedDataNodes = new HashSet<>();
         for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
-            boolean isUseSQLFederation = entry.getValue().decide(dataNodes, (SelectStatementContext) sqlStatementContext, parameters, globalRuleMetaData, database, entry.getKey());
+            boolean isUseSQLFederation = entry.getValue().decide((SelectStatementContext) sqlStatementContext, parameters, globalRuleMetaData, database, entry.getKey(), includedDataNodes);
             if (isUseSQLFederation) {
                 return true;
             }

@@ -39,14 +39,14 @@ public interface SQLFederationDecider<T extends ShardingSphereRule> extends Orde
     /**
      * Judge whether to use SQL federation.
      *
-     * @param includedDataNodes included data nodes
      * @param selectStatementContext select statement context
      * @param parameters parameters
      * @param globalRuleMetaData global rule meta data
      * @param database database
      * @param rule rule
+     * @param includedDataNodes included data nodes
      * @return use SQL federation or not
      */
-    boolean decide(Collection<DataNode> includedDataNodes, SelectStatementContext selectStatementContext,
-                   List<Object> parameters, ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule);
+    boolean decide(SelectStatementContext selectStatementContext, List<Object> parameters,
+                   ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, Collection<DataNode> includedDataNodes);
 }

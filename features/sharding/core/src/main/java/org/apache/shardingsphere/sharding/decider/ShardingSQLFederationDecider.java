@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.engine.Sharding
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -38,13 +39,13 @@ import java.util.List;
 public final class ShardingSQLFederationDecider implements SQLFederationDecider<ShardingRule> {
     
     @Override
-    public boolean decide(final Collection<DataNode> includedDataNodes, final SelectStatementContext selectStatementContext, final List<Object> parameters,
-                          final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule) {
+    public boolean decide(final SelectStatementContext selectStatementContext, final List<Object> parameters,
+                          final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule, final Collection<DataNode> includedDataNodes) {
         Collection<String> tableNames = rule.getShardingLogicTableNames(selectStatementContext.getTablesContext().getTableNames());
         if (tableNames.isEmpty()) {
             return false;
         }
-        addTableDataNodes(includedDataNodes, rule, tableNames);
+        includedDataNodes.addAll(getTableDataNodes(rule, tableNames));
         ShardingConditions shardingConditions = getMergedShardingConditions(selectStatementContext, parameters, globalRuleMetaData, database, rule);
         if (shardingConditions.isNeedMerge() && shardingConditions.isSameShardingCondition()) {
             return false;
@@ -59,10 +60,12 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         return tableNames.size() <= 1 || !rule.isAllBindingTables(database, selectStatementContext, tableNames);
     }
     
-    private void addTableDataNodes(final Collection<DataNode> includedDataNodes, final ShardingRule rule, final Collection<String> tableNames) {
+    private Collection<DataNode> getTableDataNodes(final ShardingRule rule, final Collection<String> tableNames) {
+        Collection<DataNode> result = new HashSet<>();
         for (String each : tableNames) {
-            rule.findTableRule(each).ifPresent(optional -> includedDataNodes.addAll(optional.getActualDataNodes()));
+            rule.findTableRule(each).ifPresent(optional -> result.addAll(optional.getActualDataNodes()));
         }
+        return result;
     }
     
     private ShardingConditions getMergedShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,

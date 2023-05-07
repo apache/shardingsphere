@@ -30,8 +30,8 @@ import java.util.List;
 public final class SQLFederationDeciderMatchFixture implements SQLFederationDecider<SQLFederationDeciderRuleMatchFixture> {
     
     @Override
-    public boolean decide(final Collection<DataNode> includedDataNodes, final SelectStatementContext selectStatementContext, final List<Object> parameters,
-                          final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SQLFederationDeciderRuleMatchFixture rule) {
+    public boolean decide(final SelectStatementContext selectStatementContext, final List<Object> parameters, final ShardingSphereRuleMetaData globalRuleMetaData,
+                          final ShardingSphereDatabase database, final SQLFederationDeciderRuleMatchFixture rule, final Collection<DataNode> includedDataNodes) {
         return true;
     }
     

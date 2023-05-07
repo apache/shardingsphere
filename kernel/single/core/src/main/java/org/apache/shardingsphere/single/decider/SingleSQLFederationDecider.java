@@ -33,6 +33,7 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -43,8 +44,8 @@ import java.util.Optional;
 public final class SingleSQLFederationDecider implements SQLFederationDecider<SingleRule> {
     
     @Override
-    public boolean decide(final Collection<DataNode> includedDataNodes, final SelectStatementContext selectStatementContext, final List<Object> parameters,
-                          final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule) {
+    public boolean decide(final SelectStatementContext selectStatementContext, final List<Object> parameters,
+                          final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule, final Collection<DataNode> includedDataNodes) {
         Collection<QualifiedTable> singleTableNames = getSingleTableNames(selectStatementContext, database, rule);
         if (singleTableNames.isEmpty()) {
             return false;
@@ -53,7 +54,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
             return true;
         }
         boolean isAllTablesInSameDataSource = isAllTablesInSameDataSource(includedDataNodes, rule, singleTableNames);
-        addTableDataNodes(includedDataNodes, rule, singleTableNames);
+        includedDataNodes.addAll(getTableDataNodes(rule, singleTableNames));
         return !isAllTablesInSameDataSource;
     }
     
@@ -102,10 +103,12 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
         return true;
     }
     
-    private void addTableDataNodes(final Collection<DataNode> includedDataNodes, final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
+    private Collection<DataNode> getTableDataNodes(final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
+        Collection<DataNode> result = new HashSet<>();
         for (QualifiedTable each : singleTableNames) {
-            rule.findSingleTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(includedDataNodes::add);
+            rule.findSingleTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(result::add);
         }
+        return result;
     }
     
     @Override
