@@ -48,33 +48,32 @@ public final class SQLFederationDecideEngine {
     }
     
     /**
-     * Decide.
+     * Decide use SQL federation or not.
      * 
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
-     * @param globalRuleMetaData global rule meta data
      * @param database ShardingSphere database
-     * @return SQL federation decider context
+     * @param globalRuleMetaData global rule meta data
+     * @return use SQL federation or not
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public SQLFederationDeciderContext decide(final SQLStatementContext<?> sqlStatementContext,
-                                              final List<Object> parameters, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
-        SQLFederationDeciderContext result = new SQLFederationDeciderContext();
+    public boolean decide(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,
+                          final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData) {
         // TODO BEGIN: move this logic to SQLFederationDecider implement class when we remove sql federation type
         if (isQuerySystemSchema(sqlStatementContext, database)) {
-            result.setUseSQLFederation(true);
-            return result;
+            return true;
         }
         // TODO END
         if (isFederationDisabled || !(sqlStatementContext instanceof SelectStatementContext)) {
-            return result;
+            return false;
         }
+        SQLFederationDeciderContext context = new SQLFederationDeciderContext();
         for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
-            if (!result.isUseSQLFederation()) {
-                entry.getValue().decide(result, (SelectStatementContext) sqlStatementContext, parameters, globalRuleMetaData, database, entry.getKey());
+            if (!context.isUseSQLFederation()) {
+                entry.getValue().decide(context, (SelectStatementContext) sqlStatementContext, parameters, globalRuleMetaData, database, entry.getKey());
             }
         }
-        return result;
+        return context.isUseSQLFederation();
     }
     
     private boolean isQuerySystemSchema(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) {

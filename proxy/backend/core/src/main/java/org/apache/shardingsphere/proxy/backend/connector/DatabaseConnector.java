@@ -19,9 +19,7 @@ package org.apache.shardingsphere.proxy.backend.connector;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
-import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecideEngine;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -52,6 +50,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchem
 import org.apache.shardingsphere.infra.rule.identifier.type.ColumnContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -198,9 +197,8 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     @Override
     public ResponseHeader execute() throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        SQLFederationDeciderContext deciderContext = new SQLFederationDecideEngine(database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps())
-                .decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), database);
-        if (deciderContext.isUseSQLFederation()) {
+        if (new SQLFederationDecideEngine(database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps())
+                .decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), database, metaDataContexts.getMetaData().getGlobalRuleMetaData())) {
             prepareFederationExecutor();
             ResultSet resultSet = doExecuteFederation(queryContext, metaDataContexts);
             return processExecuteFederation(resultSet, metaDataContexts);

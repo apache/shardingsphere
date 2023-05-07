@@ -58,13 +58,13 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
         addTableDataNodes(deciderContext, rule, singleTableNames);
     }
     
-    private static void addTableDataNodes(final SQLFederationDeciderContext deciderContext, final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
+    private void addTableDataNodes(final SQLFederationDeciderContext deciderContext, final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
         for (QualifiedTable each : singleTableNames) {
             rule.findSingleTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(optional -> deciderContext.getDataNodes().add(optional));
         }
     }
     
-    private static boolean isAllTablesInSameDataSource(final SQLFederationDeciderContext deciderContext, final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
+    private boolean isAllTablesInSameDataSource(final SQLFederationDeciderContext deciderContext, final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
         if (!rule.isSingleTablesInSameDataSource(singleTableNames)) {
             return false;
         }
@@ -81,7 +81,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
         return true;
     }
     
-    private static Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext,
+    private Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext,
                                                                   final ShardingSphereDatabase database, final SingleRule rule) {
         DatabaseType databaseType = sqlStatementContext.getDatabaseType();
         Collection<QualifiedTable> result = getQualifiedTables(database, databaseType, sqlStatementContext.getTablesContext().getTables());
@@ -91,7 +91,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
         return rule.getSingleTableNames(result);
     }
     
-    private static Collection<QualifiedTable> getQualifiedTables(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<SimpleTableSegment> tableSegments) {
+    private Collection<QualifiedTable> getQualifiedTables(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<SimpleTableSegment> tableSegments) {
         Collection<QualifiedTable> result = new LinkedList<>();
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, database.getName());
         for (SimpleTableSegment each : tableSegments) {

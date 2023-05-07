@@ -22,10 +22,8 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.dialect.exception.syntax.database.NoDatabaseSelectedException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.PreviewStatement;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
-import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecideEngine;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
@@ -49,6 +47,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -107,10 +106,8 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(getConnectionSession().getDatabaseName());
         ShardingSpherePreconditions.checkState(database.isComplete(), () -> new RuleNotExistedException(getConnectionSession().getDatabaseName()));
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
-        SQLFederationDeciderContext deciderContext = new SQLFederationDecideEngine(database.getRuleMetaData().getRules(), props)
-                .decide(queryContext.getSqlStatementContext(), queryContext.getParameters(),
-                        metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()));
-        Collection<ExecutionUnit> executionUnits = deciderContext.isUseSQLFederation() ? getFederationExecutionUnits(queryContext, databaseName, metaDataContexts)
+        Collection<ExecutionUnit> executionUnits = isUseFederation(queryContext, database, metaDataContexts, props)
+                ? getFederationExecutionUnits(queryContext, databaseName, metaDataContexts)
                 : kernelProcessor.generateExecutionContext(queryContext, database, globalRuleMetaData, props, getConnectionSession().getConnectionContext()).getExecutionUnits();
         return executionUnits.stream().map(this::buildRow).collect(Collectors.toList());
     }
@@ -123,6 +120,12 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         CursorStatementContext cursorStatementContext = (CursorStatementContext) getConnectionSession().getConnectionContext().getCursorContext().getCursorDefinitions().get(cursorName);
         Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
         ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(cursorStatementContext);
+    }
+    
+    private boolean isUseFederation(final QueryContext queryContext, final ShardingSphereDatabase database, final MetaDataContexts metaDataContexts, final ConfigurationProperties props) {
+        SQLFederationDecideEngine engine = new SQLFederationDecideEngine(database.getRuleMetaData().getRules(), props);
+        return engine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(),
+                metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()), metaDataContexts.getMetaData().getGlobalRuleMetaData());
     }
     
     private LocalDataQueryResultRow buildRow(final ExecutionUnit unit) {
