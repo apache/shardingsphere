@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.dialect.SQLExceptionTransformEngine;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
-import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
-import org.apache.shardingsphere.infra.binder.decider.engine.SQLFederationDeciderEngine;
+import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderContext;
+import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecideEngine;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContext;
@@ -198,9 +198,8 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     @Override
     public ResponseHeader execute() throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        SQLFederationDeciderContext deciderContext = new SQLFederationDeciderEngine(
-                database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps()).decide(queryContext.getSqlStatementContext(), queryContext.getParameters(),
-                        metaDataContexts.getMetaData().getGlobalRuleMetaData(), database);
+        SQLFederationDeciderContext deciderContext = new SQLFederationDecideEngine(database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps())
+                .decide(queryContext.getSqlStatementContext(), queryContext.getParameters(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), database);
         if (deciderContext.isUseSQLFederation()) {
             prepareFederationExecutor();
             ResultSet resultSet = doExecuteFederation(queryContext, metaDataContexts);

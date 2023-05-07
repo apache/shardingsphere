@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.decider.engine;
+package org.apache.shardingsphere.infra.binder.decider;
 
-import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
-import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -35,18 +33,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * SQL federation decider engine.
+ * SQL federation decide engine.
  */
-public final class SQLFederationDeciderEngine {
-    
-    private final ConfigurationProperties props;
+public final class SQLFederationDecideEngine {
     
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, SQLFederationDecider> deciders;
     
-    public SQLFederationDeciderEngine(final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) {
-        this.props = props;
+    private final ConfigurationProperties props;
+    
+    public SQLFederationDecideEngine(final Collection<ShardingSphereRule> rules, final ConfigurationProperties props) {
         deciders = OrderedSPILoader.getServices(SQLFederationDecider.class, rules);
+        this.props = props;
     }
     
     /**
@@ -63,23 +61,22 @@ public final class SQLFederationDeciderEngine {
                                               final List<Object> parameters, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         SQLFederationDeciderContext result = new SQLFederationDeciderContext();
         // TODO move this logic to SQLFederationDecider implement class when we remove sql federation type
-        if (isSelectStatementContainsSystemSchema(sqlStatementContext, database)) {
+        if (isQuerySystemSchema(sqlStatementContext, database)) {
             result.setUseSQLFederation(true);
             return result;
         }
-        String sqlFederationType = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
-        if ("NONE".equals(sqlFederationType) || !(sqlStatementContext instanceof SelectStatementContext)) {
+        if (!(sqlStatementContext instanceof SelectStatementContext) || "NONE".equals(props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE))) {
             return result;
         }
         for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
             if (!result.isUseSQLFederation()) {
-                entry.getValue().decide(result, sqlStatementContext, parameters, globalRuleMetaData, database, entry.getKey(), props);
+                entry.getValue().decide(result, (SelectStatementContext) sqlStatementContext, parameters, globalRuleMetaData, database, entry.getKey(), props);
             }
         }
         return result;
     }
     
-    private boolean isSelectStatementContainsSystemSchema(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) {
+    private boolean isQuerySystemSchema(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) {
         return sqlStatementContext instanceof SelectStatementContext
                 && SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
     }

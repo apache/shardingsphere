@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.infra.binder.decider.engine;
 
-import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
+import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecideEngine;
+import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.decider.fixture.rule.SQLFederationDeciderRuleMatchFixture;
 import org.apache.shardingsphere.infra.binder.decider.fixture.rule.SQLFederationDeciderRuleNotMatchFixture;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
@@ -46,71 +47,71 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class SQLFederationDeciderEngineTest {
+class SQLFederationDecideEngineTest {
     
     @Test
     void assertDecideWhenSelectStatementContainsSystemSchema() {
-        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        SQLFederationDecideEngine engine = new SQLFederationDecideEngine(Collections.emptyList(), new ConfigurationProperties(new Properties()));
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.singletonList("information_schema"));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
-        SQLFederationDeciderContext actual = deciderEngine.decide(sqlStatementContext, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), database);
+        SQLFederationDeciderContext actual = engine.decide(sqlStatementContext, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), database);
         assertTrue(actual.isUseSQLFederation());
     }
     
     @Test
     void assertDecideWhenNotConfigSqlFederationEnabled() {
         Collection<ShardingSphereRule> rules = Collections.singletonList(new SQLFederationDeciderRuleMatchFixture());
-        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(rules, new ConfigurationProperties(new Properties()));
+        SQLFederationDecideEngine engine = new SQLFederationDecideEngine(rules, new ConfigurationProperties(new Properties()));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(rules), Collections.emptyMap());
-        SQLFederationDeciderContext actual = deciderEngine.decide(mock(CommonSQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), database);
+        SQLFederationDeciderContext actual = engine.decide(mock(CommonSQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), database);
         assertFalse(actual.isUseSQLFederation());
     }
     
     @Test
     void assertDecideWhenExecuteNotSelectStatement() {
         Collection<ShardingSphereRule> rules = Collections.singletonList(new SQLFederationDeciderRuleMatchFixture());
-        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(rules,
+        SQLFederationDecideEngine engine = new SQLFederationDecideEngine(rules,
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_FEDERATION_TYPE.getKey(), "ORIGINAL"))));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(rules), Collections.emptyMap());
-        SQLFederationDeciderContext actual = deciderEngine.decide(mock(CommonSQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), database);
+        SQLFederationDeciderContext actual = engine.decide(mock(CommonSQLStatementContext.class), Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), database);
         assertFalse(actual.isUseSQLFederation());
     }
     
     @Test
     void assertDecideWhenConfigSingleMatchedRule() {
         Collection<ShardingSphereRule> rules = Collections.singletonList(new SQLFederationDeciderRuleMatchFixture());
-        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(rules,
+        SQLFederationDecideEngine engine = new SQLFederationDecideEngine(rules,
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_FEDERATION_TYPE.getKey(), "ORIGINAL"))));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(rules), Collections.emptyMap());
-        SQLFederationDeciderContext actual = deciderEngine.decide(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS), Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), database);
+        SQLFederationDeciderContext actual = engine.decide(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS), Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), database);
         assertTrue(actual.isUseSQLFederation());
     }
     
     @Test
     void assertDecideWhenConfigSingleNotMatchedRule() {
         Collection<ShardingSphereRule> rules = Collections.singletonList(new SQLFederationDeciderRuleNotMatchFixture());
-        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(rules,
+        SQLFederationDecideEngine engine = new SQLFederationDecideEngine(rules,
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_FEDERATION_TYPE.getKey(), "ORIGINAL"))));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(rules), Collections.emptyMap());
-        SQLFederationDeciderContext actual = deciderEngine.decide(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS), Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), database);
+        SQLFederationDeciderContext actual = engine.decide(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS), Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), database);
         assertFalse(actual.isUseSQLFederation());
     }
     
     @Test
     void assertDecideWhenConfigMultiRule() {
         Collection<ShardingSphereRule> rules = Arrays.asList(new SQLFederationDeciderRuleNotMatchFixture(), new SQLFederationDeciderRuleMatchFixture());
-        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(rules,
+        SQLFederationDecideEngine engine = new SQLFederationDecideEngine(rules,
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.SQL_FEDERATION_TYPE.getKey(), "ORIGINAL"))));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResourceMetaData.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(rules), Collections.emptyMap());
-        SQLFederationDeciderContext actual = deciderEngine.decide(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS), Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), database);
+        SQLFederationDeciderContext actual = engine.decide(mock(SelectStatementContext.class, RETURNS_DEEP_STUBS), Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), database);
         assertTrue(actual.isUseSQLFederation());
     }
 }

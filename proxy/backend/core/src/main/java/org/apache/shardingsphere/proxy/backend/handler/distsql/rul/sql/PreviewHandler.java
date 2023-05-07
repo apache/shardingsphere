@@ -25,8 +25,8 @@ import org.apache.shardingsphere.distsql.parser.statement.rul.sql.PreviewStateme
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
-import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
-import org.apache.shardingsphere.infra.binder.decider.engine.SQLFederationDeciderEngine;
+import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderContext;
+import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecideEngine;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
@@ -107,7 +107,7 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(getConnectionSession().getDatabaseName());
         ShardingSpherePreconditions.checkState(database.isComplete(), () -> new RuleNotExistedException(getConnectionSession().getDatabaseName()));
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
-        SQLFederationDeciderContext deciderContext = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props)
+        SQLFederationDeciderContext deciderContext = new SQLFederationDecideEngine(database.getRuleMetaData().getRules(), props)
                 .decide(queryContext.getSqlStatementContext(), queryContext.getParameters(),
                         metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()));
         Collection<ExecutionUnit> executionUnits = deciderContext.isUseSQLFederation() ? getFederationExecutionUnits(queryContext, databaseName, metaDataContexts)

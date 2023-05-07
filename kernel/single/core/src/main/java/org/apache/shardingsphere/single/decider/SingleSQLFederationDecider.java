@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.single.decider;
 
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
-import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
+import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
@@ -45,10 +45,9 @@ import java.util.Optional;
 public final class SingleSQLFederationDecider implements SQLFederationDecider<SingleRule> {
     
     @Override
-    public void decide(final SQLFederationDeciderContext deciderContext, final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,
+    public void decide(final SQLFederationDeciderContext deciderContext, final SelectStatementContext selectStatementContext, final List<Object> parameters,
                        final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule, final ConfigurationProperties props) {
-        SelectStatementContext select = (SelectStatementContext) sqlStatementContext;
-        Collection<QualifiedTable> singleTableNames = getSingleTableNames(select, database, rule);
+        Collection<QualifiedTable> singleTableNames = getSingleTableNames(selectStatementContext, database, rule);
         if (singleTableNames.isEmpty()) {
             return;
         }

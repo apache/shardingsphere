@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.decider.context;
+package org.apache.shardingsphere.infra.binder.decider;
 
 import lombok.Getter;
 import lombok.Setter;
