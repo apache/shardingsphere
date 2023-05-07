@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.Exportabl
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParser;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceDeletedEvent;

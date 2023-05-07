@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParser;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;

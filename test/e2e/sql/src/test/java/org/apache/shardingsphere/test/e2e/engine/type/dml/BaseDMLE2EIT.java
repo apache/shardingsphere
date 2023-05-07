@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.engine.type.dml;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParser;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
