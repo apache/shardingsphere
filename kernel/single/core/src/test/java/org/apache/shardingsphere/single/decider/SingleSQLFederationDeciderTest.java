@@ -19,7 +19,6 @@ package org.apache.shardingsphere.single.decider;
 
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -34,7 +33,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -53,7 +51,7 @@ class SingleSQLFederationDeciderTest {
         SelectStatementContext select = createStatementContext();
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
         federationDecider.decide(actual, select, Collections.emptyList(),
-                mock(ShardingSphereRuleMetaData.class), createDatabase(), mock(SingleRule.class), new ConfigurationProperties(new Properties()));
+                mock(ShardingSphereRuleMetaData.class), createDatabase(), mock(SingleRule.class));
         assertTrue(actual.getDataNodes().isEmpty());
         assertFalse(actual.isUseSQLFederation());
     }
@@ -67,7 +65,7 @@ class SingleSQLFederationDeciderTest {
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
         SingleSQLFederationDecider federationDecider = new SingleSQLFederationDecider();
         federationDecider.decide(actual, select, Collections.emptyList(),
-                mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, new ConfigurationProperties(new Properties()));
+                mock(ShardingSphereRuleMetaData.class), createDatabase(), rule);
         assertThat(actual.getDataNodes().size(), is(2));
         assertFalse(actual.isUseSQLFederation());
     }
@@ -81,7 +79,7 @@ class SingleSQLFederationDeciderTest {
         SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
         SingleSQLFederationDecider federationDecider = new SingleSQLFederationDecider();
         federationDecider.decide(actual, select, Collections.emptyList(),
-                mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, new ConfigurationProperties(new Properties()));
+                mock(ShardingSphereRuleMetaData.class), createDatabase(), rule);
         assertThat(actual.getDataNodes().size(), is(2));
         assertTrue(actual.isUseSQLFederation());
     }
@@ -96,7 +94,7 @@ class SingleSQLFederationDeciderTest {
         actual.getDataNodes().add(new DataNode("ds_0", "t_user"));
         SingleSQLFederationDecider federationDecider = new SingleSQLFederationDecider();
         federationDecider.decide(actual, select, Collections.emptyList(),
-                mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, new ConfigurationProperties(new Properties()));
+                mock(ShardingSphereRuleMetaData.class), createDatabase(), rule);
         assertThat(actual.getDataNodes().size(), is(3));
         assertFalse(actual.isUseSQLFederation());
     }
@@ -111,7 +109,7 @@ class SingleSQLFederationDeciderTest {
         actual.getDataNodes().add(new DataNode("ds_1", "t_user"));
         SingleSQLFederationDecider federationDecider = new SingleSQLFederationDecider();
         federationDecider.decide(actual, select, Collections.emptyList(),
-                mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, new ConfigurationProperties(new Properties()));
+                mock(ShardingSphereRuleMetaData.class), createDatabase(), rule);
         assertThat(actual.getDataNodes().size(), is(3));
         assertTrue(actual.isUseSQLFederation());
     }

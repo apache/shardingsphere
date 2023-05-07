@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
@@ -40,7 +39,7 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
     
     @Override
     public void decide(final SQLFederationDeciderContext deciderContext, final SelectStatementContext selectStatementContext, final List<Object> parameters,
-                       final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule, final ConfigurationProperties props) {
+                       final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule) {
         Collection<String> tableNames = rule.getShardingLogicTableNames(selectStatementContext.getTablesContext().getTableNames());
         if (tableNames.isEmpty()) {
             return;

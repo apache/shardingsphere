@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.decider;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -44,8 +43,7 @@ public interface SQLFederationDecider<T extends ShardingSphereRule> extends Orde
      * @param globalRuleMetaData global rule meta data
      * @param database database
      * @param rule rule
-     * @param props props
      */
-    void decide(SQLFederationDeciderContext deciderContext, SelectStatementContext selectStatementContext, List<Object> parameters,
-                ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, ConfigurationProperties props);
+    void decide(SQLFederationDeciderContext deciderContext, SelectStatementContext selectStatementContext,
+                List<Object> parameters, ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule);
 }
