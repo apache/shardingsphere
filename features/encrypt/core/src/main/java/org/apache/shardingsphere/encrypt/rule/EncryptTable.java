@@ -35,18 +35,15 @@ public final class EncryptTable {
     
     private final Map<String, EncryptColumn> columns;
     
-    private final Boolean queryWithCipherColumn;
-    
     public EncryptTable(final EncryptTableRuleConfiguration config) {
         columns = createEncryptColumns(config);
-        queryWithCipherColumn = config.getQueryWithCipherColumn();
     }
     
     private Map<String, EncryptColumn> createEncryptColumns(final EncryptTableRuleConfiguration config) {
         Map<String, EncryptColumn> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (EncryptColumnRuleConfiguration each : config.getColumns()) {
-            EncryptColumn encryptColumn = new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(), each.getPlainColumn(),
-                    each.getLikeQueryColumn(), each.getEncryptorName(), each.getAssistedQueryEncryptorName(), each.getLikeQueryEncryptorName(), each.getQueryWithCipherColumn());
+            EncryptColumn encryptColumn = new EncryptColumn(each.getCipherColumn(), each.getAssistedQueryColumn(),
+                    each.getLikeQueryColumn(), each.getEncryptorName(), each.getAssistedQueryEncryptorName(), each.getLikeQueryEncryptorName());
             result.put(each.getLogicColumn(), encryptColumn);
         }
         return result;
@@ -105,22 +102,6 @@ public final class EncryptTable {
             }
         }
         throw new EncryptLogicColumnNotFoundException(cipherColumn);
-    }
-    
-    /**
-     * Get logic column by plain column.
-     *
-     * @param plainColumn plain column
-     * @return logic column
-     * @throws EncryptLogicColumnNotFoundException encrypt logic column not found exception
-     */
-    public String getLogicColumnByPlainColumn(final String plainColumn) {
-        for (Entry<String, EncryptColumn> entry : columns.entrySet()) {
-            if (entry.getValue().getPlainColumn().isPresent() && entry.getValue().getPlainColumn().get().equals(plainColumn)) {
-                return entry.getKey();
-            }
-        }
-        throw new EncryptLogicColumnNotFoundException(plainColumn);
     }
     
     /**
@@ -194,31 +175,6 @@ public final class EncryptTable {
     }
     
     /**
-     * Get plain columns.
-     *
-     * @return plain columns
-     */
-    public Collection<String> getPlainColumns() {
-        Collection<String> result = new LinkedList<>();
-        for (EncryptColumn each : columns.values()) {
-            if (each.getPlainColumn().isPresent()) {
-                result.add(each.getPlainColumn().get());
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Find plain column.
-     *
-     * @param logicColumn logic column name
-     * @return plain column
-     */
-    public Optional<String> findPlainColumn(final String logicColumn) {
-        return columns.containsKey(logicColumn) ? columns.get(logicColumn).getPlainColumn() : Optional.empty();
-    }
-    
-    /**
      * Get logic and cipher columns.
      *
      * @return logic and cipher columns
@@ -229,16 +185,6 @@ public final class EncryptTable {
             result.put(entry.getKey(), entry.getValue().getCipherColumn());
         }
         return result;
-    }
-    
-    /**
-     * Get query with cipher column.
-     *
-     * @param logicColumn logic column
-     * @return query with cipher column
-     */
-    public Optional<Boolean> getQueryWithCipherColumn(final String logicColumn) {
-        return Optional.ofNullable(findEncryptColumn(logicColumn).map(EncryptColumn::getQueryWithCipherColumn).orElse(queryWithCipherColumn));
     }
     
     /**

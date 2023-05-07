@@ -86,7 +86,6 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
           encryptorName: aes_encryptor
           assistedQueryColumn: pwd_assisted_query
           assistedQueryEncryptorName: pwd_assisted_query_cipher
-          queryWithCipherColumn: true
 ```
 
 使用这套配置， Apache ShardingSphere 只需将 logicColumn 和 cipherColumn，assistedQueryColumn 进行转换，底层数据表不存储明文，只存储了密文，这也是安全审计部分的要求所在。
@@ -125,12 +124,10 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
     t_user:
       columns:
         pwd:
-          plainColumn: pwd
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
           assistedQueryColumn: pwd_assisted_query
           assistedQueryEncryptorName: pwd_assisted_query_cipher
-          queryWithCipherColumn: false
 ```
 
 依据上述加密规则可知，首先需要在数据库表 `t_user` 里新增一个字段叫做 `pwd_cipher`，即 cipherColumn，用于存放密文数据，同时我们把 plainColumn 设置为 `pwd`，用于存放明文数据，而把 logicColumn 也设置为 `pwd`。
@@ -185,7 +182,6 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
           encryptorName: aes_encryptor
           assistedQueryColumn: pwd_assisted_query
           assistedQueryEncryptorName: pwd_assisted_query_cipher
-          queryWithCipherColumn: true
 ```
 
 其处理流程如下：

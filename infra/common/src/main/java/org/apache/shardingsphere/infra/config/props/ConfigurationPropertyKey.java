@@ -73,14 +73,9 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE("proxy-frontend-database-protocol-type", "", String.class, false),
     
     /**
-     * Flush threshold for every records from databases for ShardingSphere-Proxy.
+     * Flush threshold for every record from databases for ShardingSphere-Proxy.
      */
     PROXY_FRONTEND_FLUSH_THRESHOLD("proxy-frontend-flush-threshold", String.valueOf(128), int.class, false),
-    
-    /**
-     * Whether enable hint for ShardingSphere-Proxy.
-     */
-    PROXY_HINT_ENABLED("proxy-hint-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
@@ -122,16 +117,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Proxy frontend SSL enabled.
      */
     PROXY_FRONTEND_SSL_ENABLED("proxy-frontend-ssl-enabled", String.valueOf(Boolean.FALSE), boolean.class, true),
-    
-    /**
-     * Proxy frontend SSL certificate file.
-     */
-    PROXY_FRONTEND_SSL_CERT_FILE("proxy-frontend-ssl-cert-file", "", String.class, true),
-    
-    /**
-     * Proxy frontend SSL private key file.
-     */
-    PROXY_FRONTEND_SSL_KEY_FILE("proxy-frontend-ssl-key-file", "", String.class, true),
     
     /**
      * Proxy frontend SSL protocol version.

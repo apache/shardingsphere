@@ -21,14 +21,12 @@ rules:
       t_user:
         columns:
           username:
-            plainColumn: username
             cipherColumn: username_cipher
             encryptorName: username_encryptor
             assistedQueryColumn: assisted_query_username
             assistedQueryEncryptorName: assisted_encryptor
             likeQueryColumn: like_query_username
             likeQueryEncryptorName: like_encryptor
-        queryWithCipherColumn: true
     encryptors:
       username_encryptor:
         type: AES

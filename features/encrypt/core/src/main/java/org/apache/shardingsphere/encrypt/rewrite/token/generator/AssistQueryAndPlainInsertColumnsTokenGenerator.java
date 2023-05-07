@@ -64,7 +64,6 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator implements Col
         List<String> result = new LinkedList<>();
         encryptTable.findAssistedQueryColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
         encryptTable.findLikeQueryColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
-        encryptTable.findPlainColumn(columnSegment.getIdentifier().getValue()).ifPresent(result::add);
         return result;
     }
 }

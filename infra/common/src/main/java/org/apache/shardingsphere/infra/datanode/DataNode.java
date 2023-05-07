@@ -64,8 +64,21 @@ public final class DataNode {
         tableName = segments.get(isIncludeInstance ? 2 : 1);
     }
     
-    private static boolean isValidDataNode(final String dataNodeStr, final Integer tier) {
+    private boolean isValidDataNode(final String dataNodeStr, final Integer tier) {
         return dataNodeStr.contains(DELIMITER) && tier == Splitter.on(DELIMITER).omitEmptyStrings().splitToList(dataNodeStr).size();
+    }
+    
+    private boolean isActualDataNodesIncludedDataSourceInstance(final String actualDataNodes) {
+        return isValidDataNode(actualDataNodes, 3);
+    }
+    
+    /**
+     * Format data node as string.
+     *
+     * @return formatted data node
+     */
+    public String format() {
+        return dataSourceName + DELIMITER + tableName;
     }
     
     @Override
@@ -85,24 +98,5 @@ public final class DataNode {
     @Override
     public int hashCode() {
         return Objects.hashCode(dataSourceName.toUpperCase(), tableName.toUpperCase(), null == schemaName ? null : schemaName.toUpperCase());
-    }
-    
-    /**
-     * Format data node as string.
-     *
-     * @return formatted data node
-     */
-    public String format() {
-        return dataSourceName + DELIMITER + tableName;
-    }
-    
-    /**
-     * Is Actual data nodes three tier structure.
-     *
-     * @param actualDataNodes data source map
-     * @return boolean
-     */
-    public static boolean isActualDataNodesIncludedDataSourceInstance(final String actualDataNodes) {
-        return isValidDataNode(actualDataNodes, 3);
     }
 }

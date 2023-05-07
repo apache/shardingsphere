@@ -26,8 +26,8 @@ import java.util.Properties;
 /**
  * ShardingSphere logger.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class ShardingSphereLogger {
     
     private final String loggerName;

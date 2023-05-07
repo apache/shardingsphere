@@ -98,7 +98,7 @@ public final class E2ETestEnvironment {
     private boolean waitForProxyEnvironmentReady(final Properties props) {
         log.info("Proxy with agent environment initializing ...");
         try {
-            Awaitility.await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> isProxyReady(props));
+            Awaitility.await().atMost(2L, TimeUnit.MINUTES).pollInterval(5L, TimeUnit.SECONDS).until(() -> isProxyReady(props));
         } catch (final ConditionTimeoutException ignored) {
             log.info("Proxy with agent environment initialization failed ...");
             return false;
@@ -136,7 +136,7 @@ public final class E2ETestEnvironment {
     private boolean waitForJdbcEnvironmentReady() {
         log.info("Jdbc project with agent environment initializing ...");
         try {
-            Awaitility.await().atMost(2, TimeUnit.MINUTES).pollInterval(5, TimeUnit.SECONDS).until(() -> isJdbcReady(props));
+            Awaitility.await().atMost(2L, TimeUnit.MINUTES).pollInterval(5L, TimeUnit.SECONDS).until(() -> isJdbcReady(props));
         } catch (final ConditionTimeoutException ignored) {
             log.info("Jdbc project with agent environment initialization failed ...");
             return false;

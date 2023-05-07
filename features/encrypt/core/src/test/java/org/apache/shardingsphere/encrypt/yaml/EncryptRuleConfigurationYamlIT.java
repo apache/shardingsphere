@@ -23,7 +23,6 @@ import org.apache.shardingsphere.test.it.yaml.YamlRuleConfigurationIT;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
@@ -38,7 +37,6 @@ class EncryptRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     
     private void assertEncryptRule(final YamlEncryptRuleConfiguration actual) {
         assertColumns(actual);
-        assertQueryColumn(actual);
         assertEncryptAlgorithm(actual);
         assertLikeEncryptAlgorithm(actual);
     }
@@ -46,17 +44,12 @@ class EncryptRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     private void assertColumns(final YamlEncryptRuleConfiguration actual) {
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getTables().get("t_user").getColumns().size(), is(1));
-        assertThat(actual.getTables().get("t_user").getColumns().get("username").getPlainColumn(), is("username"));
         assertThat(actual.getTables().get("t_user").getColumns().get("username").getCipherColumn(), is("username_cipher"));
         assertThat(actual.getTables().get("t_user").getColumns().get("username").getEncryptorName(), is("username_encryptor"));
         assertThat(actual.getTables().get("t_user").getColumns().get("username").getAssistedQueryColumn(), is("assisted_query_username"));
         assertThat(actual.getTables().get("t_user").getColumns().get("username").getAssistedQueryEncryptorName(), is("assisted_encryptor"));
         assertThat(actual.getTables().get("t_user").getColumns().get("username").getLikeQueryColumn(), is("like_query_username"));
         assertThat(actual.getTables().get("t_user").getColumns().get("username").getLikeQueryEncryptorName(), is("like_encryptor"));
-    }
-    
-    private void assertQueryColumn(final YamlEncryptRuleConfiguration actual) {
-        assertTrue(actual.isQueryWithCipherColumn());
     }
     
     private void assertEncryptAlgorithm(final YamlEncryptRuleConfiguration actual) {

@@ -1720,7 +1720,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         return JoinType.COMMA.name();
     }
     
-    private static String getNaturalJoinType(final NaturalJoinTypeContext ctx) {
+    private String getNaturalJoinType(final NaturalJoinTypeContext ctx) {
         if (null != ctx.LEFT()) {
             return JoinType.LEFT.name();
         } else if (null != ctx.RIGHT()) {

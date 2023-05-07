@@ -31,7 +31,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
@@ -77,29 +77,31 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     
     @Override
     public void writeQueryData(final ChannelHandlerContext context,
-                               final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
+                               final ProxyDatabaseConnectionManager databaseConnectionManager, final QueryCommandExecutor queryCommandExecutor, final int headerPackagesCount) throws SQLException {
         if (ResponseType.QUERY == queryCommandExecutor.getResponseType() && !context.channel().isActive()) {
             context.write(new PostgreSQLCommandCompletePacket(PostgreSQLCommand.SELECT.name(), 0));
             return;
         }
-        processSimpleQuery(context, backendConnection, queryCommandExecutor);
+        processSimpleQuery(context, databaseConnectionManager, queryCommandExecutor);
     }
     
-    private void processSimpleQuery(final ChannelHandlerContext context, final BackendConnection backendConnection, final QueryCommandExecutor queryExecutor) throws SQLException {
+    private void processSimpleQuery(final ChannelHandlerContext context, final ProxyDatabaseConnectionManager databaseConnectionManager,
+                                    final QueryCommandExecutor queryExecutor) throws SQLException {
         if (ResponseType.UPDATE == queryExecutor.getResponseType()) {
-            context.write(backendConnection.getConnectionSession().getTransactionStatus().isInTransaction() ? PostgreSQLReadyForQueryPacket.IN_TRANSACTION
+            context.write(databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction() ? PostgreSQLReadyForQueryPacket.IN_TRANSACTION
                     : PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
             return;
         }
-        long dataRows = writeDataPackets(context, backendConnection, queryExecutor);
+        long dataRows = writeDataPackets(context, databaseConnectionManager, queryExecutor);
         if (ResponseType.QUERY == queryExecutor.getResponseType()) {
             context.write(new PostgreSQLCommandCompletePacket(PostgreSQLCommand.SELECT.name(), dataRows));
         }
-        context.write(backendConnection.getConnectionSession().getTransactionStatus().isInTransaction() ? PostgreSQLReadyForQueryPacket.IN_TRANSACTION
+        context.write(databaseConnectionManager.getConnectionSession().getTransactionStatus().isInTransaction() ? PostgreSQLReadyForQueryPacket.IN_TRANSACTION
                 : PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
     }
     
-    private long writeDataPackets(final ChannelHandlerContext context, final BackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor) throws SQLException {
+    private long writeDataPackets(final ChannelHandlerContext context, final ProxyDatabaseConnectionManager databaseConnectionManager,
+                                  final QueryCommandExecutor queryCommandExecutor) throws SQLException {
         long dataRows = 0;
         int flushCount = 0;
         int proxyFrontendFlushThreshold = ProxyContext.getInstance()
@@ -108,7 +110,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
             flushCount++;
             while (!context.channel().isWritable() && context.channel().isActive()) {
                 context.flush();
-                backendConnection.getResourceLock().doAwait();
+                databaseConnectionManager.getResourceLock().doAwait();
             }
             DatabasePacket<?> resultValue = queryCommandExecutor.getQueryRowPacket();
             context.write(resultValue);

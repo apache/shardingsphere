@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
@@ -76,7 +76,6 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
         result.add(getCipherColumnToken(tableName, columnName, column, columnStopIndex));
         getAssistedQueryColumnToken(tableName, columnName, column, columnStopIndex, lastColumn).ifPresent(result::add);
         getLikeQueryColumnToken(tableName, columnName, column, columnStopIndex, lastColumn).ifPresent(result::add);
-        getPlainColumnToken(tableName, columnName, column, columnStopIndex, lastColumn).ifPresent(result::add);
         return result;
     }
     
@@ -94,12 +93,6 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
                                                                  final int stopIndex, final boolean lastColumn) {
         Optional<String> likeQueryColumn = encryptRule.findLikeQueryColumn(tableName, columnName);
         return likeQueryColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(optional), lastColumn));
-    }
-    
-    private Optional<? extends SQLToken> getPlainColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment column,
-                                                             final int stopIndex, final boolean lastColumn) {
-        Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, columnName);
-        return plainColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(optional), lastColumn));
     }
     
     private Collection<ColumnProjection> getColumnProjections(final String columnName) {

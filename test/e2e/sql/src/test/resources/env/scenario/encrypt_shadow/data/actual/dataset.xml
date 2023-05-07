@@ -20,7 +20,6 @@
         <column name="order_id" type="long" />
         <column name="user_id" type="int" />
         <column name="order_name_cipher" type="varchar" />
-        <column name="order_name_plain" type="varchar" />
         <column name="type_char" type="char" />
         <column name="type_boolean" type="boolean" />
         <column name="type_smallint" type="smallint" />
@@ -38,11 +37,11 @@
         <column name="telephone" type="varchar" />
         <column name="creation_date" type="datetime" />
     </metadata>
-    <row data-node="db.t_shadow" values="1, 1, C4J8SHnvFT1FDZ3vF2ELDA==, pro_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
-    <row data-node="db.t_shadow" values="2, 1, C4J8SHnvFT1FDZ3vF2ELDA==, pro_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
-    <row data-node="db.t_shadow" values="3, 1, C4J8SHnvFT1FDZ3vF2ELDA==, pro_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
-    <row data-node="db.t_shadow" values="4, 1, C4J8SHnvFT1FDZ3vF2ELDA==, pro_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
-    <row data-node="db.t_shadow" values="5, 1, C4J8SHnvFT1FDZ3vF2ELDA==, pro_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="db.t_shadow" values="1, 1, C4J8SHnvFT1FDZ3vF2ELDA==, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="db.t_shadow" values="2, 1, C4J8SHnvFT1FDZ3vF2ELDA==, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="db.t_shadow" values="3, 1, C4J8SHnvFT1FDZ3vF2ELDA==, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="db.t_shadow" values="4, 1, C4J8SHnvFT1FDZ3vF2ELDA==, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="db.t_shadow" values="5, 1, C4J8SHnvFT1FDZ3vF2ELDA==, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
     <row data-node="db.t_merchant" values="1, 86, tencent, 86000001, 86100000001, 2017-08-08" />
     <row data-node="db.t_merchant" values="2, 86, haier, 86000002, 86100000002, 2017-08-08" />
     <row data-node="db.t_merchant" values="3, 86, huawei, 86000003, 86100000003, 2017-08-08" />
@@ -63,11 +62,11 @@
     <row data-node="db.t_merchant" values="18, 1, intel, 01000018, 01100000018, 2017-08-08" />
     <row data-node="db.t_merchant" values="19, 1, hp, 01000019, 01100000019, 2017-08-08" />
     <row data-node="db.t_merchant" values="20, 1, tesla, 01000020, 01100000020, 2017-08-08" />
-    <row data-node="encrypt_shadow_db.t_shadow" values="1, 0, OuQCPda97jMdDtibdBO6Jg==, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
-    <row data-node="encrypt_shadow_db.t_shadow" values="2, 0, OuQCPda97jMdDtibdBO6Jg==, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
-    <row data-node="encrypt_shadow_db.t_shadow" values="3, 0, OuQCPda97jMdDtibdBO6Jg==, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
-    <row data-node="encrypt_shadow_db.t_shadow" values="4, 0, OuQCPda97jMdDtibdBO6Jg==, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
-    <row data-node="encrypt_shadow_db.t_shadow" values="5, 0, OuQCPda97jMdDtibdBO6Jg==, shadow_order, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="encrypt_shadow_db.t_shadow" values="1, 0, OuQCPda97jMdDtibdBO6Jg==, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="encrypt_shadow_db.t_shadow" values="2, 0, OuQCPda97jMdDtibdBO6Jg==, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="encrypt_shadow_db.t_shadow" values="3, 0, OuQCPda97jMdDtibdBO6Jg==, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="encrypt_shadow_db.t_shadow" values="4, 0, OuQCPda97jMdDtibdBO6Jg==, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
+    <row data-node="encrypt_shadow_db.t_shadow" values="5, 0, OuQCPda97jMdDtibdBO6Jg==, S, true, 5, summer, 10.00, 2017-08-08, 18:30:30, 2017-08-08 18:30:30.0" />
     <row data-node="encrypt_shadow_db.t_merchant" values="1, 86, tencent, 86000001, 86100000001, 2017-08-08" />
     <row data-node="encrypt_shadow_db.t_merchant" values="2, 86, haier, 86000002, 86100000002, 2017-08-08" />
     <row data-node="encrypt_shadow_db.t_merchant" values="3, 86, huawei, 86000003, 86100000003, 2017-08-08" />

@@ -42,11 +42,11 @@ public final class DriverDataSourceCache {
         if (dataSourceMap.containsKey(url)) {
             return dataSourceMap.get(url);
         }
-        return dataSourceMap.computeIfAbsent(url, DriverDataSourceCache::createDataSource);
+        return dataSourceMap.computeIfAbsent(url, this::createDataSource);
     }
     
     @SuppressWarnings("unchecked")
-    private static <T extends Throwable> DataSource createDataSource(final String url) throws T {
+    private <T extends Throwable> DataSource createDataSource(final String url) throws T {
         try {
             return YamlShardingSphereDataSourceFactory.createDataSource(ShardingSphereDriverURLManager.getContent(url));
         } catch (final IOException ex) {

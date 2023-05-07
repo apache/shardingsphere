@@ -21,12 +21,12 @@ import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.exception.syntax.UnsupportedEncryptSQLException;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
+import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptFunctionAssignmentToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptLiteralAssignmentToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptParameterAssignmentToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -109,7 +109,6 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         addCipherColumn(tableName, columnName, result);
         addAssistedQueryColumn(tableName, columnName, result);
         addLikeQueryColumn(tableName, columnName, result);
-        addPlainColumn(tableName, columnName, result);
         return result;
     }
     
@@ -118,7 +117,6 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         addCipherAssignment(schemaName, tableName, assignmentSegment, result);
         addAssistedQueryAssignment(schemaName, tableName, assignmentSegment, result);
         addLikeAssignment(schemaName, tableName, assignmentSegment, result);
-        addPlainAssignment(tableName, assignmentSegment, result);
         return result;
     }
     
@@ -151,13 +149,6 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         } else if (likeQueryColumn.isPresent() != valueLikeQueryColumn.isPresent()) {
             throw new UnsupportedEncryptSQLException(String.format("%s=VALUES(%s)", column, valueColumn));
         }
-        Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, column);
-        Optional<String> valuePlainColumn = encryptRule.findPlainColumn(tableName, valueColumn);
-        if (plainColumn.isPresent() && valuePlainColumn.isPresent()) {
-            result.addAssignment(plainColumn.get(), "VALUES(" + valuePlainColumn.get() + ")");
-        } else if (plainColumn.isPresent() != valuePlainColumn.isPresent()) {
-            throw new UnsupportedEncryptSQLException(String.format("%s=VALUES(%s)", column, valueColumn));
-        }
         if (result.getAssignment().isEmpty()) {
             throw new UnsupportedEncryptSQLException(String.format("%s=VALUES(%s)", column, valueColumn));
         }
@@ -174,10 +165,6 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
     
     private void addLikeQueryColumn(final String tableName, final String columnName, final EncryptParameterAssignmentToken token) {
         encryptRule.findLikeQueryColumn(tableName, columnName).ifPresent(token::addColumnName);
-    }
-    
-    private void addPlainColumn(final String tableName, final String columnName, final EncryptParameterAssignmentToken token) {
-        encryptRule.findPlainColumn(tableName, columnName).ifPresent(token::addColumnName);
     }
     
     private void addCipherAssignment(final String schemaName, final String tableName, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
@@ -205,10 +192,5 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
                     .iterator().next();
             token.addAssignment(optional, likeValue);
         });
-    }
-    
-    private void addPlainAssignment(final String tableName, final AssignmentSegment assignmentSegment, final EncryptLiteralAssignmentToken token) {
-        Object originalValue = ((LiteralExpressionSegment) assignmentSegment.getValue()).getLiterals();
-        encryptRule.findPlainColumn(tableName, assignmentSegment.getColumns().get(0).getIdentifier().getValue()).ifPresent(optional -> token.addAssignment(optional, originalValue));
     }
 }

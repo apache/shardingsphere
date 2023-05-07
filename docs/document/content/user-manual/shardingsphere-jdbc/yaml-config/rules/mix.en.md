@@ -51,14 +51,12 @@ rules:
     <table_name>: # Encryption table name
       columns:
         <column_name> (+): # Encrypt logic column name
-          plainColumn (?): # Plain column name
           cipherColumn: # Cipher column name
           encryptorName: # Cipher encrypt algorithm name
           assistedQueryColumn (?):  # Assisted query column name
           assistedQueryEncryptorName:  # Assisted query encrypt algorithm name
           likeQueryColumn (?):  # Like query column name
-          likeQueryEncryptorName:  # Like query encrypt algorithm name
-      queryWithCipherColumn(?): # The current table whether query with cipher column for data encrypt. 
+          likeQueryEncryptorName:  # Like query encrypt algorithm name 
 ```
 
 ## Samples
@@ -111,7 +109,6 @@ rules:
     t_encrypt:
       columns:
         user_id:
-          plainColumn: user_plain
           cipherColumn: user_cipher
           encryptorName: aes_encryptor
           assistedQueryColumn: assisted_query_user
@@ -121,5 +118,4 @@ rules:
         order_id:
           cipherColumn: order_cipher
           encryptorName: md5_encryptor
-      queryWithCipherColumn: true
 ```

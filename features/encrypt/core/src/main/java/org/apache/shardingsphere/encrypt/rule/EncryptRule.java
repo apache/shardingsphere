@@ -24,8 +24,8 @@ import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptAssistedQueryEncryptorNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptEncryptorNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLikeQueryEncryptorNotFoundException;
-import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ColumnContainedRule;
@@ -57,14 +57,11 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
     
     private final Map<String, EncryptTable> tables = new LinkedHashMap<>();
     
-    private final boolean queryWithCipherColumn;
-    
     public EncryptRule(final EncryptRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         ruleConfig.getEncryptors().forEach((key, value) -> encryptors.put(key, TypedSPILoader.getService(EncryptAlgorithm.class, value.getType(), value.getProps())));
         ruleConfig.getLikeEncryptors().forEach((key, value) -> likeEncryptors.put(key, TypedSPILoader.getService(LikeEncryptAlgorithm.class, value.getType(), value.getProps())));
         ruleConfig.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each)));
-        queryWithCipherColumn = ruleConfig.isQueryWithCipherColumn();
     }
     
     /**
@@ -267,38 +264,6 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
             result.add(null == each ? null : encryptor.encrypt(each, encryptContext));
         }
         return result;
-    }
-    
-    /**
-     * Find plain column.
-     *
-     * @param logicTable logic table name
-     * @param logicColumn logic column name
-     * @return plain column
-     */
-    public Optional<String> findPlainColumn(final String logicTable, final String logicColumn) {
-        Optional<String> originColumnName = findOriginColumnName(logicTable, logicColumn);
-        return originColumnName.isPresent() && tables.containsKey(logicTable.toLowerCase()) ? tables.get(logicTable.toLowerCase()).findPlainColumn(originColumnName.get()) : Optional.empty();
-    }
-    
-    /**
-     * Judge whether column is query with cipher column or not.
-     *
-     * @param logicTable logic table name
-     * @param logicColumn logic column name
-     * @return query with cipher column or not
-     */
-    public boolean isQueryWithCipherColumn(final String logicTable, final String logicColumn) {
-        return findEncryptTable(logicTable).flatMap(encryptTable -> encryptTable.getQueryWithCipherColumn(logicColumn)).orElse(queryWithCipherColumn);
-    }
-    
-    private Optional<String> findOriginColumnName(final String logicTable, final String logicColumn) {
-        for (String each : tables.get(logicTable.toLowerCase()).getLogicColumns()) {
-            if (logicColumn.equalsIgnoreCase(each)) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
     }
     
     @Override

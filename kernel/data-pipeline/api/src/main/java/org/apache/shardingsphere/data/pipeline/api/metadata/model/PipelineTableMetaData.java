@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.metadata.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
@@ -27,13 +28,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
  * Pipeline table meta data.
  */
 @Slf4j
+@EqualsAndHashCode(of = "name")
 @ToString
 public final class PipelineTableMetaData {
     
@@ -85,21 +86,5 @@ public final class PipelineTableMetaData {
             log.warn("Can not get column meta data for column name '{}', columnNames={}", columnName, columnNames);
         }
         return result;
-    }
-    
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (null == o || getClass() != o.getClass()) {
-            return false;
-        }
-        return name.equals(((PipelineTableMetaData) o).name);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
     }
 }

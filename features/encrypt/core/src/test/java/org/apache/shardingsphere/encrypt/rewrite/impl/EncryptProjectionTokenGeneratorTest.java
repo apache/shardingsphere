@@ -67,11 +67,9 @@ class EncryptProjectionTokenGeneratorTest {
         EncryptTable encryptTable2 = mock(EncryptTable.class);
         when(encryptTable1.getLogicColumns()).thenReturn(Collections.singletonList("mobile"));
         when(encryptTable2.getLogicColumns()).thenReturn(Collections.singletonList("mobile"));
-        when(result.findPlainColumn("doctor", "mobile")).thenReturn(Optional.of("mobile"));
-        when(result.findPlainColumn("doctor1", "mobile")).thenReturn(Optional.of("Mobile"));
         when(result.findEncryptTable("doctor")).thenReturn(Optional.of(encryptTable1));
         when(result.findEncryptTable("doctor1")).thenReturn(Optional.of(encryptTable2));
-        EncryptColumn column = new EncryptColumn("mobile", null, null, "mobile", null, null);
+        EncryptColumn column = new EncryptColumn("mobile", null, null, null);
         when(result.findEncryptColumn("doctor", "mobile")).thenReturn(Optional.of(column));
         return result;
     }

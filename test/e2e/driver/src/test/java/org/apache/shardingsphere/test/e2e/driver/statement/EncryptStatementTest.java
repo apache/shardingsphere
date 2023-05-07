@@ -49,11 +49,9 @@ class EncryptStatementTest extends AbstractEncryptDriverTest {
     
     private static final String SELECT_SQL_WITH_STAR = "SELECT * FROM t_encrypt WHERE pwd = 'a'";
     
-    private static final String SELECT_SQL_WITH_PLAIN = "SELECT id, pwd FROM t_encrypt WHERE pwd = 'plainValue'";
-    
     private static final String SELECT_SQL_WITH_CIPHER = "SELECT id, pwd FROM t_encrypt WHERE pwd = 'plainValue'";
     
-    private static final String SELECT_SQL_TO_ASSERT = "SELECT id, cipher_pwd, plain_pwd FROM t_encrypt";
+    private static final String SELECT_SQL_TO_ASSERT = "SELECT id, cipher_pwd FROM t_encrypt";
     
     private static final String SHOW_COLUMNS_SQL = "SHOW columns FROM t_encrypt";
     
@@ -152,21 +150,6 @@ class EncryptStatementTest extends AbstractEncryptDriverTest {
         }
     }
     
-    @Test
-    void assertSelectWithPlainColumn() throws SQLException {
-        try (Statement statement = getEncryptConnectionWithProps().createStatement()) {
-            ResultSet resultSet = statement.executeQuery(SELECT_SQL_WITH_PLAIN);
-            int count = 1;
-            List<Object> ids = Arrays.asList(1, 5);
-            while (resultSet.next()) {
-                assertThat(resultSet.getObject("id"), is(ids.get(count - 1)));
-                assertThat(resultSet.getObject("pwd"), is("plainValue"));
-                count += 1;
-            }
-            assertThat(count - 1, is(ids.size()));
-        }
-    }
-    
     private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object plain) throws SQLException {
         try (
                 Connection connection = getActualDataSources().get("encrypt").getConnection();
@@ -176,7 +159,6 @@ class EncryptStatementTest extends AbstractEncryptDriverTest {
             while (resultSet.next()) {
                 if (id == count) {
                     assertThat(resultSet.getObject("cipher_pwd"), is(pwd));
-                    assertThat(resultSet.getObject("plain_pwd"), is(plain));
                 }
                 count += 1;
             }

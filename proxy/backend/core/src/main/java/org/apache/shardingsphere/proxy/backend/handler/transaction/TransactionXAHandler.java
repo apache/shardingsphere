@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.transaction;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
@@ -52,7 +52,7 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
         this.tclStatement = (XAStatement) sqlStatementContext.getSqlStatement();
         this.connectionSession = connectionSession;
         QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList());
-        backendHandler = DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getBackendConnection(), false);
+        backendHandler = DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
     }
     
     @Override

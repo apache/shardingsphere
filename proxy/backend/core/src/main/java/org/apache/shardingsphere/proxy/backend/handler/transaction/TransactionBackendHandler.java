@@ -60,7 +60,7 @@ public final class TransactionBackendHandler implements ProxyBackendHandler {
         this.tclStatement = tclStatement;
         this.operationType = operationType;
         this.connectionSession = connectionSession;
-        backendTransactionManager = new BackendTransactionManager(connectionSession.getBackendConnection());
+        backendTransactionManager = new BackendTransactionManager(connectionSession.getDatabaseConnectionManager());
     }
     
     @Override

@@ -59,9 +59,9 @@ READ_STORAGE_UNITS(ds_4,ds_5)
 
 CREATE ENCRYPT RULE t_encrypt (
 COLUMNS(
-(NAME=user_id, PLAIN=user_plain, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, LIKE_QUERY_COLUMN=user_like, ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc'))), ASSISTED_QUERY_ALGORITHM(TYPE(NAME='md5')), LIKE_QUERY_ALGORITHM(TYPE(NAME='char_digest_like'))),
+(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, LIKE_QUERY_COLUMN=user_like, ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc'))), ASSISTED_QUERY_ALGORITHM(TYPE(NAME='md5')), LIKE_QUERY_ALGORITHM(TYPE(NAME='char_digest_like'))),
 (NAME=order_id, CIPHER=order_cipher, ENCRYPT_ALGORITHM(TYPE(NAME='md5')))
-),QUERY_WITH_CIPHER_COLUMN=true);
+));
 
 CREATE SHARDING TABLE RULE t_order (
 DATANODES('replica_ds_${0..1}.t_order_${0..1}'),

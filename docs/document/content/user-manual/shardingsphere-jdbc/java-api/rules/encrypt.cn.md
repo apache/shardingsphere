@@ -19,7 +19,6 @@ weight = 4
 |---------------------------|---------------------------------------------|-----------------------------------|-------|
 | tables (+)                | Collection\<EncryptTableRuleConfiguration\> | 加密表规则配置                           |       |
 | encryptors (+)            | Map\<String, AlgorithmConfiguration\>       | 加解密算法名称和配置                        |       |
-| queryWithCipherColumn (?) | boolean                                     | 是否使用加密列进行查询。在有原文列的情况下，可以使用原文列进行查询 | true  |
 
 ### 加密表规则配置
 
@@ -31,7 +30,6 @@ weight = 4
 |---------------------------|----------------------------------------------|---------------|
 | name                      | String                                       | 表名称           |
 | columns (+)               | Collection\<EncryptColumnRuleConfiguration\> | 加密列规则配置列表     |
-| queryWithCipherColumn (?) | boolean                                      | 该表是否使用加密列进行查询 |
 
 ### 加密列规则配置
 
@@ -45,11 +43,9 @@ weight = 4
 | cipherColumn               | String  | 密文列名称         |
 | assistedQueryColumn (?)    | String  | 查询辅助列名称       |
 | likeQueryColumn (?)        | String  | 模糊查询列名称       |
-| plainColumn (?)            | String  | 原文列名称         |
 | encryptorName              | String  | 密文列加密算法名称     |
 | assistedQueryEncryptorName | String  | 查询辅助列加密算法名称   |
 | likeQueryEncryptorName     | String  | 模糊查询列加密算法名称   |
-| queryWithCipherColumn (?)  | boolean | 该列是否使用加密列进行查询 |
 
 ### 加解密算法配置
 

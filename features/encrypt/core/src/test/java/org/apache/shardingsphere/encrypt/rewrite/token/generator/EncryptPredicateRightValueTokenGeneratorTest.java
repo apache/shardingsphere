@@ -57,7 +57,7 @@ class EncryptPredicateRightValueTokenGeneratorTest {
         generator.setEncryptConditions(getEncryptConditions(updateStatementContext));
         Collection<SQLToken> sqlTokens = generator.generateSQLTokens(updateStatementContext);
         assertThat(sqlTokens.size(), is(1));
-        assertThat(sqlTokens.iterator().next().toString(), is("'123456'"));
+        assertThat(sqlTokens.iterator().next().toString(), is("'assistedEncryptValue'"));
     }
     
     private Collection<EncryptCondition> getEncryptConditions(final UpdateStatementContext updateStatementContext) {

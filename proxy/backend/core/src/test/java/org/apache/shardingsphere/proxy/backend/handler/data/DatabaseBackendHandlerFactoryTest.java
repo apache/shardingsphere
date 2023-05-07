@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.data;
 
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
@@ -80,7 +80,7 @@ class DatabaseBackendHandlerFactoryTest {
         assertThat(actual, instanceOf(DatabaseConnector.class));
     }
     
-    private static SQLStatementContext<SQLStatement> mockSQLStatementContext() {
+    private SQLStatementContext<SQLStatement> mockSQLStatementContext() {
         SQLStatementContext<SQLStatement> result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(SQLStatement.class));
         when(result.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
@@ -97,11 +97,11 @@ class DatabaseBackendHandlerFactoryTest {
         return result;
     }
     
-    private static ConnectionSession mockConnectionSession() {
+    private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
         when(result.getDatabaseName()).thenReturn("foo_db");
-        when(result.getBackendConnection()).thenReturn(mock(BackendConnection.class));
-        when(result.getBackendConnection().getConnectionSession()).thenReturn(result);
+        when(result.getDatabaseConnectionManager()).thenReturn(mock(ProxyDatabaseConnectionManager.class));
+        when(result.getDatabaseConnectionManager().getConnectionSession()).thenReturn(result);
         return result;
     }
 }

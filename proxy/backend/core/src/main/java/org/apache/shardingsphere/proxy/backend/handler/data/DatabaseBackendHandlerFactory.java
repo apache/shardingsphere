@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.data;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactory;
 import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
@@ -57,6 +57,6 @@ public final class DatabaseBackendHandlerFactory {
         if (sqlStatement instanceof DALStatement || sqlStatement instanceof SelectStatement && null == ((SelectStatement) sqlStatement).getFrom()) {
             return new UnicastDatabaseBackendHandler(queryContext, connectionSession);
         }
-        return DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getBackendConnection(), preferPreparedStatement);
+        return DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), preferPreparedStatement);
     }
 }

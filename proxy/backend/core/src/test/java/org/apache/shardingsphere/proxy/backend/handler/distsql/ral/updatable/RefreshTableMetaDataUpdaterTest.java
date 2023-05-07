@@ -93,7 +93,7 @@ class RefreshTableMetaDataUpdaterTest {
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
     }
     
-    private static ConnectionSession mockConnectionSession(final String databaseName) {
+    private ConnectionSession mockConnectionSession(final String databaseName) {
         ConnectionSession result = mock(ConnectionSession.class);
         when(result.getDatabaseName()).thenReturn(databaseName);
         return result;

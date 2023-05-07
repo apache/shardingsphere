@@ -68,7 +68,6 @@
 #  max-connections-size-per-query: 1
 #  kernel-executor-size: 16  # Infinite by default.
 #  proxy-frontend-flush-threshold: 128  # The default value is 128.
-#  proxy-hint-enabled: false
 #  # sql-show is the same as props in logger ShardingSphere-SQL, and its priority is lower than logging rule
 #  sql-show: false
 #  check-table-metadata-enabled: false
@@ -83,8 +82,5 @@
 #  proxy-netty-backlog: 1024 # Proxy netty backlog.
 #  cdc-server-port: 33071 # CDC server port
 #  proxy-frontend-ssl-enabled: false
-#    # When certificate and private key files not set, Proxy will generate a temporary RSA key pair and a self-signed X.509 certificate.
-#  proxy-frontend-ssl-cert-file: ''
-#  proxy-frontend-ssl-key-file: ''
 #  proxy-frontend-ssl-cipher: ''
 #  proxy-frontend-ssl-version: TLSv1.2,TLSv1.3

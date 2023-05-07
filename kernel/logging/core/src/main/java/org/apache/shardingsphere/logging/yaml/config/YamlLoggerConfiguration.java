@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.logging.yaml.config;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
@@ -30,8 +28,6 @@ import java.util.Properties;
  */
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public final class YamlLoggerConfiguration implements YamlConfiguration {
     
     private String loggerName;

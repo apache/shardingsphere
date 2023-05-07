@@ -108,7 +108,7 @@ public final class DataSourceReflection {
         return result;
     }
     
-    private static String getGetterFieldName(final Method method, final String methodPrefix) {
+    private String getGetterFieldName(final Method method, final String methodPrefix) {
         return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, method.getName().substring(methodPrefix.length()));
     }
     

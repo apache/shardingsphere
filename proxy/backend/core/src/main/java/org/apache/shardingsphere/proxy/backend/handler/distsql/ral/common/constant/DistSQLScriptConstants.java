@@ -165,12 +165,9 @@ public final class DistSQLScriptConstants {
             + System.lineSeparator()
             + "%s"
             + System.lineSeparator()
-            + "),"
-            + "QUERY_WITH_CIPHER_COLUMN=%s)";
+            + "))";
     
     public static final String ENCRYPT_COLUMN = "(NAME=%s, %s, %s)";
-    
-    public static final String PLAIN = "PLAIN=%s";
     
     public static final String CIPHER = "CIPHER=%s";
     

@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.data.pipeline.api.metadata.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-
-import java.util.Objects;
 
 /**
  * Column meta data.
  */
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode(of = "name")
 @ToString
 public final class PipelineColumnMetaData implements Comparable<PipelineColumnMetaData> {
     
@@ -46,23 +46,6 @@ public final class PipelineColumnMetaData implements Comparable<PipelineColumnMe
     private final boolean primaryKey;
     
     private final boolean uniqueKey;
-    
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (null == o || getClass() != o.getClass()) {
-            return false;
-        }
-        final PipelineColumnMetaData that = (PipelineColumnMetaData) o;
-        return name.equals(that.name);
-    }
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
-    }
     
     @Override
     public int compareTo(final PipelineColumnMetaData o) {

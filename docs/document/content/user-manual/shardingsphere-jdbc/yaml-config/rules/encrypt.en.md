@@ -17,14 +17,12 @@ rules:
     <table_name> (+): # Encrypt table name
       columns:
         <column_name> (+): # Encrypt logic column name
-          plainColumn (?): # Plain column name
           cipherColumn: # Cipher column name
           encryptorName: # Cipher encrypt algorithm name
           assistedQueryColumn (?):  # Assisted query column name
           assistedQueryEncryptorName:  # Assisted query encrypt algorithm name
           likeQueryColumn (?):  # Like query column name
-          likeQueryEncryptorName:  # Like query encrypt algorithm name
-      queryWithCipherColumn(?): # The current table whether query with cipher column for data encrypt. 
+          likeQueryEncryptorName:  # Like query encrypt algorithm name 
     
   # Encrypt algorithm configuration
   encryptors:
@@ -32,8 +30,6 @@ rules:
       type: # Encrypt algorithm type
       props: # Encrypt algorithm properties
         # ...
-
-  queryWithCipherColumn: # Whether query with cipher column for data encrypt. User you can use plaintext to query if have
 ```
 
 Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/common-config/builtin-algorithm/encrypt) for more details about type of algorithm.
@@ -62,7 +58,6 @@ rules:
     t_user:
       columns:
         username:
-          plainColumn: username_plain
           cipherColumn: username
           encryptorName: name_encryptor
           assistedQueryColumn: assisted_query_username
@@ -74,7 +69,6 @@ rules:
           encryptorName: pwd_encryptor
           assistedQueryColumn: assisted_query_pwd
           assistedQueryEncryptorName: assisted_encryptor
-      queryWithCipherColumn: true
   encryptors:
     name_encryptor:
       type: AES

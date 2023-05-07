@@ -1185,14 +1185,14 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         return JoinType.COMMA.name();
     }
     
-    private static String getOutJoinType(final OuterJoinTypeContext ctx) {
+    private String getOutJoinType(final OuterJoinTypeContext ctx) {
         if (null != ctx.FULL()) {
             return JoinType.FULL.name();
         }
         return null != ctx.LEFT() ? JoinType.LEFT.name() : JoinType.RIGHT.name();
     }
     
-    private static String getNaturalJoinType(final NaturalJoinTypeContext ctx) {
+    private String getNaturalJoinType(final NaturalJoinTypeContext ctx) {
         if (null != ctx.INNER()) {
             return JoinType.INNER.name();
         }

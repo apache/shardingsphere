@@ -26,8 +26,8 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.DatabaseMetaDataPersistService;
-import org.apache.shardingsphere.metadata.persist.service.MetaDataVersionPersistService;
+import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourcePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService;
@@ -45,7 +45,7 @@ import java.util.Properties;
  * Meta data persist service.
  */
 @Getter
-public final class MetaDataPersistService {
+public final class MetaDataPersistService implements MetaDataBasedPersistService {
     
     private final PersistRepository repository;
     
@@ -80,6 +80,7 @@ public final class MetaDataPersistService {
      * @param globalRuleConfigs global rule configurations
      * @param props properties
      */
+    @Override
     public void persistGlobalRuleConfiguration(final Collection<RuleConfiguration> globalRuleConfigs, final Properties props) {
         globalRuleService.persist(globalRuleConfigs);
         propsService.persist(props);
@@ -93,6 +94,7 @@ public final class MetaDataPersistService {
      * @param dataSources data sources
      * @param rules rules
      */
+    @Override
     public void persistConfigurations(final String databaseName, final DatabaseConfiguration databaseConfigs,
                                       final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> rules) {
         Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(databaseConfigs.getDataSources());
@@ -119,6 +121,7 @@ public final class MetaDataPersistService {
      * @param databaseConfigs database configurations
      * @return effective data sources
      */
+    @Override
     public Map<String, DataSource> getEffectiveDataSources(final String databaseName, final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         Map<String, DataSourceProperties> persistedDataPropsMap = dataSourceService.load(databaseName);
         return databaseConfigs.containsKey(databaseName)

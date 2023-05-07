@@ -53,13 +53,12 @@ public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRul
     
     private Collection<LocalDataQueryResultRow> buildData(final EncryptRuleConfiguration ruleConfig, final ShowEncryptRulesStatement sqlStatement) {
         return ruleConfig.getTables().stream().filter(each -> Objects.isNull(sqlStatement.getTableName()) || each.getName().equals(sqlStatement.getTableName()))
-                .map(each -> buildColumnData(each, ruleConfig.getEncryptors(),
-                        ruleConfig.getLikeEncryptors(), ruleConfig.isQueryWithCipherColumn()))
+                .map(each -> buildColumnData(each, ruleConfig.getEncryptors(), ruleConfig.getLikeEncryptors()))
                 .flatMap(Collection::stream).collect(Collectors.toList());
     }
     
     private Collection<LocalDataQueryResultRow> buildColumnData(final EncryptTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> encryptors,
-                                                                final Map<String, AlgorithmConfiguration> likeEncryptors, final boolean queryWithCipherColumn) {
+                                                                final Map<String, AlgorithmConfiguration> likeEncryptors) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (EncryptColumnRuleConfiguration each : tableRuleConfig.getColumns()) {
             AlgorithmConfiguration encryptorAlgorithmConfig = encryptors.get(each.getEncryptorName());
@@ -69,7 +68,6 @@ public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRul
                     tableRuleConfig.getName(),
                     each.getLogicColumn(),
                     each.getCipherColumn(),
-                    nullToEmptyString(each.getPlainColumn()),
                     nullToEmptyString(each.getAssistedQueryColumn()),
                     nullToEmptyString(each.getLikeQueryColumn()),
                     encryptorAlgorithmConfig.getType(),
@@ -77,8 +75,7 @@ public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRul
                     Objects.isNull(assistedQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : assistedQueryEncryptorAlgorithmConfig.getType(),
                     Objects.isNull(assistedQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : PropertiesConverter.convert(assistedQueryEncryptorAlgorithmConfig.getProps()),
                     Objects.isNull(likeQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : likeQueryEncryptorAlgorithmConfig.getType(),
-                    Objects.isNull(likeQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : PropertiesConverter.convert(likeQueryEncryptorAlgorithmConfig.getProps()),
-                    isQueryWithCipherColumn(queryWithCipherColumn, tableRuleConfig, each).toString())));
+                    Objects.isNull(likeQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : PropertiesConverter.convert(likeQueryEncryptorAlgorithmConfig.getProps()))));
         }
         return result;
     }
@@ -87,21 +84,11 @@ public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRul
         return null == obj ? "" : obj;
     }
     
-    private Boolean isQueryWithCipherColumn(final boolean queryWithCipherColumn, final EncryptTableRuleConfiguration tableRuleConfig, final EncryptColumnRuleConfiguration columnRuleConfig) {
-        if (Objects.nonNull(columnRuleConfig.getQueryWithCipherColumn())) {
-            return columnRuleConfig.getQueryWithCipherColumn();
-        }
-        if (Objects.nonNull(tableRuleConfig.getQueryWithCipherColumn())) {
-            return tableRuleConfig.getQueryWithCipherColumn();
-        }
-        return queryWithCipherColumn;
-    }
-    
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("table", "logic_column", "cipher_column", "plain_column",
+        return Arrays.asList("table", "logic_column", "cipher_column",
                 "assisted_query_column", "like_query_column", "encryptor_type", "encryptor_props",
-                "assisted_query_type", "assisted_query_props", "like_query_type", "like_query_props", "query_with_cipher_column");
+                "assisted_query_type", "assisted_query_props", "like_query_type", "like_query_props");
     }
     
     @Override

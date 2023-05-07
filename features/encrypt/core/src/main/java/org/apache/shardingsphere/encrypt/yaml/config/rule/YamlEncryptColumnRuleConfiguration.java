@@ -36,13 +36,9 @@ public final class YamlEncryptColumnRuleConfiguration implements YamlConfigurati
     
     private String likeQueryColumn;
     
-    private String plainColumn;
-    
     private String encryptorName;
     
     private String assistedQueryEncryptorName;
     
     private String likeQueryEncryptorName;
-    
-    private Boolean queryWithCipherColumn;
 }

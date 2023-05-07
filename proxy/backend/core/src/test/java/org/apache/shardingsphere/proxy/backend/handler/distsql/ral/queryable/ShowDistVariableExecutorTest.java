@@ -72,7 +72,7 @@ class ShowDistVariableExecutorTest {
     
     @Test
     void assertShowCachedConnections() {
-        when(connectionSession.getBackendConnection().getConnectionSize()).thenReturn(1);
+        when(connectionSession.getDatabaseConnectionManager().getConnectionSize()).thenReturn(1);
         ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariableStatement("CACHED_CONNECTIONS"));
         assertThat(actual.size(), is(1));

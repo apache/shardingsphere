@@ -364,7 +364,7 @@
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule">
         <rule name="t_encrypt">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+            <column name="user_id" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -377,7 +377,7 @@
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule-if-not-exists" if-not-exists="true">
         <rule name="t_encrypt">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+            <column name="user_id" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -390,7 +390,7 @@
 
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-quota">
         <rule name="encrypt">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+            <column name="user_id" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -403,7 +403,7 @@
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-assisted-query-column">
         <rule name="t_encrypt">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" assisted-query-column="assisted_column">
+            <column name="user_id" cipher-column="user_cipher" assisted-query-column="assisted_column">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -417,7 +417,7 @@
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-like-query-column">
         <rule name="t_encrypt">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" like-query-column="like_column">
+            <column name="user_id" cipher-column="user_cipher" like-query-column="like_column">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -431,7 +431,7 @@
     
     <create-encrypt-rule sql-case-id="create-encrypt-rule-with-query-with-cipher-column">
         <rule name="encrypt" query-with-cipher-column="false">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+            <column name="user_id" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>
@@ -630,7 +630,7 @@
 
     <create-encrypt-rule sql-case-id="create-encrypt-rule-without-quote-on-build-in-algorithm-type-name">
         <rule name="t_encrypt" query-with-cipher-column="true">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
+            <column name="user_id" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <property key="aes-key-value" value="123456abc" />
                 </encryptor>

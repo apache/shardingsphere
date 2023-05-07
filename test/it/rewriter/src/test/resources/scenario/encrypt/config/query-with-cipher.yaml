@@ -50,7 +50,6 @@ rules:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
           likeQueryColumn: like_query_certificate_number
-          plainColumn: plain_certificate_number
           encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
           likeQueryEncryptorName: rewrite_like_query_fixture
@@ -58,7 +57,6 @@ rules:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
           likeQueryColumn: like_query_password
-          plainColumn: plain_password
           encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
           likeQueryEncryptorName: rewrite_like_query_fixture
@@ -66,13 +64,11 @@ rules:
           cipherColumn: password_new_cipher
           assistedQueryColumn: password_new_assisted
           likeQueryColumn: password_new_like
-          plainColumn: password_new_plain
           encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
           likeQueryEncryptorName: rewrite_like_query_fixture
         amount:
           cipherColumn: cipher_amount
-          plainColumn: plain_amount
           encryptorName: rewrite_normal_fixture
     t_account_detail:
       columns:
@@ -80,7 +76,6 @@ rules:
           cipherColumn: cipher_certificate_number
           assistedQueryColumn: assisted_query_certificate_number
           likeQueryColumn: like_query_certificate_number
-          plainColumn: plain_certificate_number
           encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
           likeQueryEncryptorName: rewrite_like_query_fixture
@@ -88,15 +83,12 @@ rules:
           cipherColumn: cipher_password
           assistedQueryColumn: assisted_query_password
           likeQueryColumn: like_query_password
-          plainColumn: plain_password
           encryptorName: rewrite_normal_fixture
           assistedQueryEncryptorName: rewrite_assisted_query_fixture
           likeQueryEncryptorName: rewrite_like_query_fixture
         amount:
           cipherColumn: cipher_amount
-          plainColumn: plain_amount
           encryptorName: rewrite_normal_fixture
-      queryWithCipherColumn: false
   encryptors:
     rewrite_normal_fixture:
       type: REWRITE.NORMAL.FIXTURE

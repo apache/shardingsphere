@@ -34,5 +34,4 @@ public interface HBaseBackendHandler extends ProxyBackendHandler {
     default Collection<Object> getRowDataObjects() {
         return Collections.emptyList();
     }
-    
 }

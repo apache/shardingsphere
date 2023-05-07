@@ -62,17 +62,14 @@ class EncryptMetaDataReviseEngineTest {
         when(result.findEncryptTable(TABLE_NAME)).thenReturn(Optional.of(encryptTable));
         when(encryptTable.getAssistedQueryColumns()).thenReturn(Collections.emptyList());
         when(encryptTable.getLikeQueryColumns()).thenReturn(Collections.singletonList("pwd_like"));
-        when(encryptTable.getPlainColumns()).thenReturn(Collections.singleton("pwd_plain"));
         when(encryptTable.isCipherColumn("pwd_cipher")).thenReturn(true);
         when(encryptTable.getLogicColumnByCipherColumn("pwd_cipher")).thenReturn("pwd");
-        when(encryptTable.getLogicColumnByPlainColumn("pwd_plain")).thenReturn("pwd");
         return result;
     }
     
     private TableMetaData createTableMetaData() {
         Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false),
                 new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false),
-                new ColumnMetaData("pwd_plain", Types.VARCHAR, false, false, true, true, false),
                 new ColumnMetaData("pwd_like", Types.VARCHAR, false, false, true, true, false));
         return new TableMetaData(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList());
     }

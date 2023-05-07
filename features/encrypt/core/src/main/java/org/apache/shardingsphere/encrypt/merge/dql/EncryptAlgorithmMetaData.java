@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
@@ -56,17 +56,6 @@ public final class EncryptAlgorithmMetaData {
      */
     public Optional<EncryptAlgorithm> findEncryptor(final String tableName, final String columnName) {
         return encryptRule.findEncryptor(tableName, columnName);
-    }
-    
-    /**
-     * Judge whether column is support QueryWithCipherColumn or not.
-     *
-     * @param tableName table name
-     * @param columnName column name
-     * @return whether column is support QueryWithCipherColumn or not
-     */
-    public boolean isQueryWithCipherColumn(final String tableName, final String columnName) {
-        return encryptRule.isQueryWithCipherColumn(tableName, columnName);
     }
     
     /**

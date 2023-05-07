@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Shorthan
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
@@ -169,5 +171,20 @@ class TableExtractorTest {
         tableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
         result.setFrom(tableSegment);
         return result;
+    }
+    
+    @Test
+    void assertExtractJoinTableSegmentsFromSelect() {
+        JoinTableSegment joinTableSegment = new JoinTableSegment();
+        joinTableSegment.setLeft(new SimpleTableSegment(new TableNameSegment(16, 22, new IdentifierValue("t_order"))));
+        joinTableSegment.setRight(new SimpleTableSegment(new TableNameSegment(37, 48, new IdentifierValue("t_order_item"))));
+        joinTableSegment.setJoinType("INNER");
+        joinTableSegment.setCondition(new BinaryOperationExpression(56, 79, new ColumnSegment(56, 65, new IdentifierValue("order_id")),
+                new ColumnSegment(69, 79, new IdentifierValue("order_id")), "=", "oi.order_id = o.order_id"));
+        MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        selectStatement.setFrom(joinTableSegment);
+        tableExtractor.extractTablesFromSelect(selectStatement);
+        assertThat(tableExtractor.getJoinTables().size(), is(1));
+        assertThat(tableExtractor.getJoinTables().iterator().next(), is(joinTableSegment));
     }
 }

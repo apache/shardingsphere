@@ -165,7 +165,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
         assertThrows(SnowflakeClockMoveBackException.class, () -> batchGenerate(algorithm));
     }
     
-    private static void batchGenerate(final KeyGenerateAlgorithm algorithm) {
+    private void batchGenerate(final KeyGenerateAlgorithm algorithm) {
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
             algorithm.generateKey();
         }

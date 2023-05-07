@@ -92,7 +92,7 @@ class PostgreSQLWALDumperTest {
         walDumper = new PostgreSQLWALDumper(dumperConfig, position, channel, new StandardPipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig())));
     }
     
-    private static void createTable(final String jdbcUrl, final String username, final String password) {
+    private void createTable(final String jdbcUrl, final String username, final String password) {
         String sql = "CREATE TABLE t_order_0 (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id))";
         try (
                 Connection connection = DriverManager.getConnection(jdbcUrl, username, password);

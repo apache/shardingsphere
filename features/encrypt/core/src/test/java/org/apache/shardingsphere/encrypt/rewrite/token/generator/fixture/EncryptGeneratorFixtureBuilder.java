@@ -76,11 +76,11 @@ public final class EncryptGeneratorFixtureBuilder {
      */
     public static EncryptRule createEncryptRule() {
         EncryptColumnRuleConfiguration pwdColumnConfig =
-                new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_like", "pwd_plain", "test_encryptor", "test_encryptor", "like_encryptor", false);
+                new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_like", "test_encryptor", "test_encryptor", "like_encryptor");
         Map<String, AlgorithmConfiguration> encryptors = Collections.singletonMap("test_encryptor", new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties()));
         Map<String, AlgorithmConfiguration> likeEncryptors = Collections.singletonMap("like_encryptor", new AlgorithmConfiguration("CORE.QUERY_LIKE.FIXTURE", new Properties()));
         return new EncryptRule(
-                new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration("t_user", Collections.singletonList(pwdColumnConfig), null)), encryptors, likeEncryptors));
+                new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration("t_user", Collections.singletonList(pwdColumnConfig))), encryptors, likeEncryptors));
     }
     
     /**

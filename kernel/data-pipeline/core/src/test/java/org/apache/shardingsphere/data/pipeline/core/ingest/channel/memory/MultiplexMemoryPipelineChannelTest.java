@@ -84,7 +84,7 @@ class MultiplexMemoryPipelineChannelTest {
         }
     }
     
-    private static void fetch(final MultiplexMemoryPipelineChannel memoryChannel, final CountDownLatch countDownLatch) {
+    private void fetch(final MultiplexMemoryPipelineChannel memoryChannel, final CountDownLatch countDownLatch) {
         int maxLoopCount = 10;
         for (int j = 1; j <= maxLoopCount; j++) {
             List<Record> records = memoryChannel.fetchRecords(100, 1, TimeUnit.SECONDS);

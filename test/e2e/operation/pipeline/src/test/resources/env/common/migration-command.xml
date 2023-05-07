@@ -59,8 +59,7 @@
     
     <create-target-order-table-encrypt-rule>
         CREATE ENCRYPT RULE t_order (
-        COLUMNS((NAME=status, CIPHER=status,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))))),
-        QUERY_WITH_CIPHER_COLUMN=true)
+        COLUMNS((NAME=status, CIPHER=status,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc'))))))
     </create-target-order-table-encrypt-rule>
     
     <create-target-order-table-rule>

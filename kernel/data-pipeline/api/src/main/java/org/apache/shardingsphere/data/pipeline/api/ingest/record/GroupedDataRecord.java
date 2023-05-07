@@ -19,13 +19,11 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.record;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Getter
-@ToString
 public final class GroupedDataRecord {
     
     private final String tableName;

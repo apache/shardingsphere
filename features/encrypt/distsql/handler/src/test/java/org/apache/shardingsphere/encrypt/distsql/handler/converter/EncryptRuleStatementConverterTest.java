@@ -35,19 +35,18 @@ class EncryptRuleStatementConverterTest {
     
     @Test
     void assertCovert() {
-        EncryptRuleConfiguration actual = EncryptRuleStatementConverter.convert(Collections.singleton(new EncryptRuleSegment("t_encrypt", createColumns(), null)));
+        EncryptRuleConfiguration actual = EncryptRuleStatementConverter.convert(Collections.singleton(new EncryptRuleSegment("t_encrypt", createColumns())));
         assertThat(actual.getTables().iterator().next().getName(), is("t_encrypt"));
         assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getLogicColumn(), is("user_id"));
         assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getCipherColumn(), is("user_cipher"));
-        assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getPlainColumn(), is("user_plain"));
         assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getAssistedQueryColumn(), is("assisted_column"));
         assertThat(actual.getTables().iterator().next().getColumns().iterator().next().getEncryptorName(), is("t_encrypt_user_id"));
     }
     
     private Collection<EncryptColumnSegment> createColumns() {
-        return Collections.singleton(new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", "like_column",
+        return Collections.singleton(new EncryptColumnSegment("user_id", "user_cipher", "assisted_column", "like_column",
                 new AlgorithmSegment("MD5", PropertiesBuilder.build(new Property("MD5-key", "MD5-value"))),
                 new AlgorithmSegment("MD5", PropertiesBuilder.build(new Property("MD5-key", "MD5-value"))),
-                new AlgorithmSegment("CHAR_DIGEST_LIKE", PropertiesBuilder.build(new Property("MD5-key", "MD5-value"))), null));
+                new AlgorithmSegment("CHAR_DIGEST_LIKE", PropertiesBuilder.build(new Property("MD5-key", "MD5-value")))));
     }
 }
