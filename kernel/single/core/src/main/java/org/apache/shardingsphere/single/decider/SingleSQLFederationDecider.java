@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.single.decider;
 
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
-import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
@@ -44,45 +43,21 @@ import java.util.Optional;
 public final class SingleSQLFederationDecider implements SQLFederationDecider<SingleRule> {
     
     @Override
-    public void decide(final SQLFederationDeciderContext deciderContext, final SelectStatementContext selectStatementContext, final List<Object> parameters,
-                       final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule) {
+    public boolean decide(final Collection<DataNode> includedDataNodes, final SelectStatementContext selectStatementContext, final List<Object> parameters,
+                          final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule) {
         Collection<QualifiedTable> singleTableNames = getSingleTableNames(selectStatementContext, database, rule);
         if (singleTableNames.isEmpty()) {
-            return;
-        }
-        if (containsView(database, singleTableNames)) {
-            deciderContext.setUseSQLFederation(true);
-            return;
-        }
-        deciderContext.setUseSQLFederation(!isAllTablesInSameDataSource(deciderContext, rule, singleTableNames));
-        addTableDataNodes(deciderContext, rule, singleTableNames);
-    }
-    
-    private void addTableDataNodes(final SQLFederationDeciderContext deciderContext, final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
-        for (QualifiedTable each : singleTableNames) {
-            rule.findSingleTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(optional -> deciderContext.getDataNodes().add(optional));
-        }
-    }
-    
-    private boolean isAllTablesInSameDataSource(final SQLFederationDeciderContext deciderContext, final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
-        if (!rule.isSingleTablesInSameDataSource(singleTableNames)) {
             return false;
         }
-        QualifiedTable sampleTable = singleTableNames.iterator().next();
-        Optional<DataNode> dataNode = rule.findSingleTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
-        if (!dataNode.isPresent()) {
+        if (containsView(database, singleTableNames)) {
             return true;
         }
-        for (DataNode each : deciderContext.getDataNodes()) {
-            if (!each.getDataSourceName().equalsIgnoreCase(dataNode.get().getDataSourceName())) {
-                return false;
-            }
-        }
-        return true;
+        boolean isAllTablesInSameDataSource = isAllTablesInSameDataSource(includedDataNodes, rule, singleTableNames);
+        addTableDataNodes(includedDataNodes, rule, singleTableNames);
+        return !isAllTablesInSameDataSource;
     }
     
-    private Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext,
-                                                           final ShardingSphereDatabase database, final SingleRule rule) {
+    private Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database, final SingleRule rule) {
         DatabaseType databaseType = sqlStatementContext.getDatabaseType();
         Collection<QualifiedTable> result = getQualifiedTables(database, databaseType, sqlStatementContext.getTablesContext().getTables());
         if (result.isEmpty() && sqlStatementContext instanceof IndexAvailable) {
@@ -108,6 +83,29 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
             }
         }
         return false;
+    }
+    
+    private boolean isAllTablesInSameDataSource(final Collection<DataNode> dataNodes, final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
+        if (!rule.isSingleTablesInSameDataSource(singleTableNames)) {
+            return false;
+        }
+        QualifiedTable sampleTable = singleTableNames.iterator().next();
+        Optional<DataNode> dataNode = rule.findSingleTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
+        if (!dataNode.isPresent()) {
+            return true;
+        }
+        for (DataNode each : dataNodes) {
+            if (!each.getDataSourceName().equalsIgnoreCase(dataNode.get().getDataSourceName())) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private void addTableDataNodes(final Collection<DataNode> dataNodes, final SingleRule rule, final Collection<QualifiedTable> singleTableNames) {
+        for (QualifiedTable each : singleTableNames) {
+            rule.findSingleTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(dataNodes::add);
+        }
     }
     
     @Override

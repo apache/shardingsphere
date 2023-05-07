@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.decider;
 
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
-import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
@@ -38,32 +38,30 @@ import java.util.List;
 public final class ShardingSQLFederationDecider implements SQLFederationDecider<ShardingRule> {
     
     @Override
-    public void decide(final SQLFederationDeciderContext deciderContext, final SelectStatementContext selectStatementContext, final List<Object> parameters,
-                       final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule) {
+    public boolean decide(final Collection<DataNode> includedDataNodes, final SelectStatementContext selectStatementContext, final List<Object> parameters,
+                          final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule) {
         Collection<String> tableNames = rule.getShardingLogicTableNames(selectStatementContext.getTablesContext().getTableNames());
         if (tableNames.isEmpty()) {
-            return;
+            return false;
         }
-        addTableDataNodes(deciderContext, rule, tableNames);
+        addTableDataNodes(includedDataNodes, rule, tableNames);
         ShardingConditions shardingConditions = getMergedShardingConditions(selectStatementContext, parameters, globalRuleMetaData, database, rule);
         if (shardingConditions.isNeedMerge() && shardingConditions.isSameShardingCondition()) {
-            return;
+            return false;
         }
         if (selectStatementContext.isContainsSubquery() || selectStatementContext.isContainsHaving()
                 || selectStatementContext.isContainsCombine() || selectStatementContext.isContainsPartialDistinctAggregation()) {
-            deciderContext.setUseSQLFederation(true);
-            return;
+            return true;
         }
         if (!selectStatementContext.isContainsJoinQuery() || rule.isAllTablesInSameDataSource(tableNames)) {
-            return;
+            return false;
         }
-        boolean allBindingTables = tableNames.size() > 1 && rule.isAllBindingTables(database, selectStatementContext, tableNames);
-        deciderContext.setUseSQLFederation(tableNames.size() > 1 && !allBindingTables);
+        return tableNames.size() <= 1 || !rule.isAllBindingTables(database, selectStatementContext, tableNames);
     }
     
-    private void addTableDataNodes(final SQLFederationDeciderContext deciderContext, final ShardingRule rule, final Collection<String> tableNames) {
+    private void addTableDataNodes(final Collection<DataNode> dataNodes, final ShardingRule rule, final Collection<String> tableNames) {
         for (String each : tableNames) {
-            rule.findTableRule(each).ifPresent(optional -> deciderContext.getDataNodes().addAll(optional.getActualDataNodes()));
+            rule.findTableRule(each).ifPresent(optional -> dataNodes.addAll(optional.getActualDataNodes()));
         }
     }
     
