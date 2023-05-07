@@ -83,7 +83,7 @@ class DatabaseConnectorFactoryTest {
         return result;
     }
     
-    private static ShardingSphereDatabase mockDatabase() {
+    private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.containsDataSource()).thenReturn(true);
         when(result.isComplete()).thenReturn(true);

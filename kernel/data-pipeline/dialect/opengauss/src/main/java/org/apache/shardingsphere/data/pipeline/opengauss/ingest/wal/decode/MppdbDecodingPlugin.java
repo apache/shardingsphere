@@ -224,7 +224,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         }
     }
     
-    private static PGobject decodeInterval(final String data) {
+    private PGobject decodeInterval(final String data) {
         try {
             return new PGInterval(decodeString(data));
         } catch (final SQLException ignored) {
@@ -232,7 +232,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         }
     }
     
-    private static PGobject decodePgObject(final String data, final String type) {
+    private PGobject decodePgObject(final String data, final String type) {
         try {
             PGobject result = new PGobject();
             result.setType(type);
@@ -243,7 +243,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         }
     }
     
-    private static PGobject decodeBytea(final String data) {
+    private PGobject decodeBytea(final String data) {
         try {
             PGobject result = new PGobject();
             result.setType("bytea");
@@ -255,12 +255,12 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         }
     }
     
-    private static String decodeMoney(final String data) {
+    private String decodeMoney(final String data) {
         String result = decodeString(data);
         return '$' == result.charAt(0) ? result.substring(1) : result;
     }
     
-    private static String decodeString(final String data) {
+    private String decodeString(final String data) {
         if (data.length() > 1) {
             int begin = '\'' == data.charAt(0) ? 1 : 0;
             int end = data.length() + (data.charAt(data.length() - 1) == '\'' ? -1 : 0);
@@ -269,7 +269,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         return data;
     }
     
-    private static byte[] decodeHex(final String hexString) {
+    private byte[] decodeHex(final String hexString) {
         int dataLength = hexString.length();
         Preconditions.checkArgument(0 == (dataLength & 1), "Illegal hex data `%s`", hexString);
         if (0 == dataLength) {
@@ -282,7 +282,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
         return result;
     }
     
-    private static byte decodeHexByte(final String hexString, final int index) {
+    private byte decodeHexByte(final String hexString, final int index) {
         int firstHexChar = Character.digit(hexString.charAt(index), 16);
         int secondHexChar = Character.digit(hexString.charAt(index + 1), 16);
         Preconditions.checkArgument(-1 != firstHexChar && -1 != secondHexChar, "Illegal hex byte `%s` in index `%d`", hexString, index);

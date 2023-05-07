@@ -172,7 +172,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         return database.getSchema(schemaName).getTable(logicTableName);
     }
     
-    private static List<String> getColumnNamesOfInsertStatement(final InsertStatement insertStatement, final ShardingSphereTable table) {
+    private List<String> getColumnNamesOfInsertStatement(final InsertStatement insertStatement, final ShardingSphereTable table) {
         return insertStatement.getColumns().isEmpty() ? table.getColumnNames() : insertStatement.getColumns().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
     }
     

@@ -151,7 +151,7 @@ public abstract class SQLRewriterIT {
         return new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class), mock(ConfigurationProperties.class));
     }
     
-    private static Map<String, DatabaseType> createStorageTypes(final DatabaseConfiguration databaseConfig, final DatabaseType databaseType) {
+    private Map<String, DatabaseType> createStorageTypes(final DatabaseConfiguration databaseConfig, final DatabaseType databaseType) {
         Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1);
         for (Entry<String, DataSource> entry : databaseConfig.getDataSources().entrySet()) {
             result.put(entry.getKey(), databaseType);

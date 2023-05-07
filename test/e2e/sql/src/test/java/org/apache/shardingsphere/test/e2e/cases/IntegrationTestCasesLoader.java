@@ -86,7 +86,7 @@ public final class IntegrationTestCasesLoader {
         return result;
     }
     
-    private static Collection<File> getFiles(final URL url, final SQLCommandType sqlCommandType) throws IOException, URISyntaxException {
+    private Collection<File> getFiles(final URL url, final SQLCommandType sqlCommandType) throws IOException, URISyntaxException {
         Collection<File> result = new LinkedList<>();
         Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
             
@@ -105,7 +105,7 @@ public final class IntegrationTestCasesLoader {
         return unmarshal(file.getPath()).getTestCases().stream().map(each -> new IntegrationTestCaseContext(each, file.getParent())).collect(Collectors.toList());
     }
     
-    private static IntegrationTestCases unmarshal(final String integrateCasesFile) throws IOException, JAXBException {
+    private IntegrationTestCases unmarshal(final String integrateCasesFile) throws IOException, JAXBException {
         try (FileReader reader = new FileReader(integrateCasesFile)) {
             return (IntegrationTestCases) JAXBContext.newInstance(IntegrationTestCases.class).createUnmarshaller().unmarshal(reader);
         }

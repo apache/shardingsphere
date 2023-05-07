@@ -40,7 +40,7 @@ public final class ExecuteLatencyHistogramAdvice implements InstanceMethodAdvice
     
     private final MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(ExecuteLatencyHistogramAdvice.class);
     
-    private static Map<String, Object> getBuckets() {
+    private Map<String, Object> getBuckets() {
         Map<String, Object> result = new HashMap<>(4, 1);
         result.put("type", "exp");
         result.put("start", 1);

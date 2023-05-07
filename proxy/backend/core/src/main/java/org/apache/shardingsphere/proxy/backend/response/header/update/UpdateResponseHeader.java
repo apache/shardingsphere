@@ -76,7 +76,7 @@ public final class UpdateResponseHeader implements ResponseHeader {
         return lastInsertIds.isEmpty() ? 0 : getMinLastInsertId(lastInsertIds);
     }
     
-    private static long getMinLastInsertId(final List<Long> lastInsertIds) {
+    private long getMinLastInsertId(final List<Long> lastInsertIds) {
         Collections.sort(lastInsertIds);
         return lastInsertIds.iterator().next();
     }

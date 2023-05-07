@@ -163,8 +163,8 @@ public abstract class BaseDQLE2EIT {
         return getExpectedRowAndRemoveMayNotExistRow(actual, notAssertionColumns, actualMetaData, expected, rowCount);
     }
     
-    private static boolean isMoveToNextExpectedRow(final ResultSet actual, final Collection<String> notAssertionColumns, final ResultSetMetaData actualMetaData,
-                                                   final List<DataSetRow> expected, final int rowCount) throws SQLException {
+    private boolean isMoveToNextExpectedRow(final ResultSet actual, final Collection<String> notAssertionColumns, final ResultSetMetaData actualMetaData,
+                                            final List<DataSetRow> expected, final int rowCount) throws SQLException {
         int columnIndex = 1;
         for (String each : expected.get(rowCount).splitValues("|")) {
             String columnLabel = actualMetaData.getColumnLabel(columnIndex);

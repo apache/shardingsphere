@@ -130,7 +130,7 @@ class PostgreSQLAdminExecutorCreatorTest {
         assertFalse(actual.isPresent());
     }
     
-    private static SQLStatement parseSQL(final String sql) {
+    private SQLStatement parseSQL(final String sql) {
         CacheOption cacheOption = new CacheOption(0, 0);
         SQLParserRule sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption));
         return sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false);

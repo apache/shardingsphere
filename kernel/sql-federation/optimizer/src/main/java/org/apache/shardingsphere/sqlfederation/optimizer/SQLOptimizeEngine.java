@@ -54,7 +54,7 @@ public final class SQLOptimizeEngine {
         return new SQLOptimizeContext(bestPlan, validatedNodeType);
     }
     
-    private static RelNode optimizeWithRBO(final RelNode logicPlan, final RelOptPlanner hepPlanner) {
+    private RelNode optimizeWithRBO(final RelNode logicPlan, final RelOptPlanner hepPlanner) {
         hepPlanner.setRoot(logicPlan);
         return hepPlanner.findBestExp();
     }

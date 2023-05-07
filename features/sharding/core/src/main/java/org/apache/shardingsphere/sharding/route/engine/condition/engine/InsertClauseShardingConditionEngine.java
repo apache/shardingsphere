@@ -103,7 +103,7 @@ public final class InsertClauseShardingConditionEngine {
         }
     }
     
-    private static void appendMissingShardingConditions(final List<ShardingCondition> shardingConditions, final String columnName, final String tableName) {
+    private void appendMissingShardingConditions(final List<ShardingCondition> shardingConditions, final String columnName, final String tableName) {
         for (ShardingCondition each : shardingConditions) {
             each.getValues().add(new ListShardingConditionValue<>(columnName, tableName, Collections.singletonList(null)));
         }

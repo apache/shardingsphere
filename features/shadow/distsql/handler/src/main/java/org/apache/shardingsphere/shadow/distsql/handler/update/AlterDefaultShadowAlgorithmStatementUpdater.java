@@ -76,7 +76,7 @@ public final class AlterDefaultShadowAlgorithmStatementUpdater implements RuleDe
                 currentRuleConfig.getShadowAlgorithms().keySet(), notExistedAlgorithms -> new MissingRequiredAlgorithmException("shadow", databaseName, notExistedAlgorithms));
     }
     
-    private static void checkAlgorithmCompleteness(final AlgorithmSegment algorithmSegment) {
+    private void checkAlgorithmCompleteness(final AlgorithmSegment algorithmSegment) {
         boolean isCompleteAlgorithm = !Strings.isNullOrEmpty(algorithmSegment.getName()) && !algorithmSegment.getProps().isEmpty();
         ShardingSpherePreconditions.checkState(isCompleteAlgorithm, () -> new InvalidAlgorithmConfigurationException("shadow"));
     }

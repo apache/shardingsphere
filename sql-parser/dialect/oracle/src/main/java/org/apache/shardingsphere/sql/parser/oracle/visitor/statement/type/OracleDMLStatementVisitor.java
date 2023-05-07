@@ -871,11 +871,8 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         return JoinType.RIGHT.name();
     }
     
-    private static String getInnerCrossJoinType(final InnerCrossJoinClauseContext ctx) {
-        if (null != ctx.CROSS()) {
-            return JoinType.CROSS.name();
-        }
-        return JoinType.INNER.name();
+    private String getInnerCrossJoinType(final InnerCrossJoinClauseContext ctx) {
+        return null == ctx.CROSS() ? JoinType.INNER.name() : JoinType.CROSS.name();
     }
     
     private void visitSelectJoinSpecification(final SelectJoinSpecificationContext ctx, final JoinTableSegment joinTableSource) {

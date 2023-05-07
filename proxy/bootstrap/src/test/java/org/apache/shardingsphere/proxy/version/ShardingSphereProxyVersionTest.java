@@ -84,7 +84,7 @@ class ShardingSphereProxyVersionTest {
         return result;
     }
     
-    private static DataSource createDataSource(final String databaseProductName, final String databaseProductVersion) throws SQLException {
+    private DataSource createDataSource(final String databaseProductName, final String databaseProductVersion) throws SQLException {
         DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
