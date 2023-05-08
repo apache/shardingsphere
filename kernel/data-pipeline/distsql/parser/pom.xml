@@ -30,7 +30,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser-spi</artifactId>
+            <artifactId>shardingsphere-parser-sql-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

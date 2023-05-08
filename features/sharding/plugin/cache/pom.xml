@@ -42,7 +42,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser-postgresql</artifactId>
+            <artifactId>shardingsphere-parser-sql-postgresql</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

@@ -34,7 +34,7 @@
     <modules>
         <module>infra</module>
         <module>dialect-exception</module>
-        <module>sql-parser</module>
+        <module>parser</module>
         <module>distsql</module>
         <module>db-protocol</module>
         <module>mode</module>
