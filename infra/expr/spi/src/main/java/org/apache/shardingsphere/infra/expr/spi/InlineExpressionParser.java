@@ -15,31 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.expr.core;
+package org.apache.shardingsphere.infra.expr.spi;
 
 import groovy.lang.Closure;
-import org.apache.shardingsphere.infra.expr.spi.JVMInlineExpressionParser;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.List;
 
 /**
  * Inline expression parser.
  */
-public final class InlineExpressionParser {
-    
-    private static final boolean IS_SUBSTRATE_VM;
-    
-    private final JVMInlineExpressionParser jvmInlineExpressionParser;
-    
-    static {
-        // workaround for https://github.com/helidon-io/helidon-build-tools/issues/858
-        IS_SUBSTRATE_VM = "Substrate VM".equals(System.getProperty("java.vm.name"));
-    }
-    
-    public InlineExpressionParser() {
-        jvmInlineExpressionParser = TypedSPILoader.getService(JVMInlineExpressionParser.class, IS_SUBSTRATE_VM ? "ESPRESSO" : "HOTSPOT");
-    }
+@SingletonSPI
+public interface InlineExpressionParser extends TypedSPI {
     
     /**
      * Replace all inline expression placeholders.
@@ -47,9 +35,7 @@ public final class InlineExpressionParser {
      * @param inlineExpression inline expression with {@code $->}
      * @return result inline expression with {@code $}
      */
-    public String handlePlaceHolder(final String inlineExpression) {
-        return jvmInlineExpressionParser.handlePlaceHolder(inlineExpression);
-    }
+    String handlePlaceHolder(String inlineExpression);
     
     /**
      * Split and evaluate inline expression.
@@ -57,9 +43,7 @@ public final class InlineExpressionParser {
      * @param inlineExpression inline expression
      * @return result list
      */
-    public List<String> splitAndEvaluate(final String inlineExpression) {
-        return jvmInlineExpressionParser.splitAndEvaluate(inlineExpression);
-    }
+    List<String> splitAndEvaluate(String inlineExpression);
     
     /**
      * Evaluate closure.
@@ -67,7 +51,5 @@ public final class InlineExpressionParser {
      * @param inlineExpression inline expression
      * @return closure
      */
-    public Closure<?> evaluateClosure(final String inlineExpression) {
-        return jvmInlineExpressionParser.evaluateClosure(inlineExpression);
-    }
+    Closure<?> evaluateClosure(String inlineExpression);
 }

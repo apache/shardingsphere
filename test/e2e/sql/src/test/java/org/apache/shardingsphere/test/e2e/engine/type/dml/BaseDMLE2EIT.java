@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.engine.type.dml;
 
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.e2e.cases.dataset.row.DataSetRow;
@@ -85,7 +85,7 @@ public abstract class BaseDMLE2EIT {
         assertThat("Only support single table for DML.", containerComposer.getDataSet().getMetaDataList().size(), is(1));
         assertThat(actualUpdateCount, is(containerComposer.getDataSet().getUpdateCount()));
         DataSetMetaData expectedDataSetMetaData = containerComposer.getDataSet().getMetaDataList().get(0);
-        for (String each : new InlineExpressionParser().splitAndEvaluate(expectedDataSetMetaData.getDataNodes())) {
+        for (String each : InlineExpressionParserFactory.newInstance().splitAndEvaluate(expectedDataSetMetaData.getDataNodes())) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = containerComposer.getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (

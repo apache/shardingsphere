@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.hint;
 import groovy.lang.Closure;
 import groovy.util.Expando;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.hint.HintShardingValue;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmInitializationException;
@@ -51,7 +51,7 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     private String getAlgorithmExpression(final Properties props) {
         String algorithmExpression = props.getProperty(ALGORITHM_EXPRESSION_KEY, DEFAULT_ALGORITHM_EXPRESSION);
         ShardingSpherePreconditions.checkNotNull(algorithmExpression, () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression can not be null."));
-        return new InlineExpressionParser().handlePlaceHolder(algorithmExpression.trim());
+        return InlineExpressionParserFactory.newInstance().handlePlaceHolder(algorithmExpression.trim());
     }
     
     @Override
@@ -67,7 +67,7 @@ public final class HintInlineShardingAlgorithm implements HintShardingAlgorithm<
     }
     
     private Closure<?> createClosure() {
-        Closure<?> result = new InlineExpressionParser().evaluateClosure(algorithmExpression).rehydrate(new Expando(), null, null);
+        Closure<?> result = InlineExpressionParserFactory.newInstance().evaluateClosure(algorithmExpression).rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
     }

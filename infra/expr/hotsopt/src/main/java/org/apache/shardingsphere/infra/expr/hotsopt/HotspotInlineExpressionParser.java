@@ -23,7 +23,7 @@ import groovy.lang.Closure;
 import groovy.lang.GString;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
-import org.apache.shardingsphere.infra.expr.spi.JVMInlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Hotspot inline expression parser.
  */
-public final class HotspotInlineExpressionParser implements JVMInlineExpressionParser {
+public final class HotspotInlineExpressionParser implements InlineExpressionParser {
     
     private static final char SPLITTER = ',';
     

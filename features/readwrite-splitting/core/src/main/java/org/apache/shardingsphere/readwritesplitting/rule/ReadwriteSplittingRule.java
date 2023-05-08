@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.Exportabl
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceDeletedEvent;
@@ -103,10 +103,10 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     
     private Map<String, ReadwriteSplittingDataSourceRule> createStaticDataSourceRules(final ReadwriteSplittingDataSourceRuleConfiguration config,
                                                                                       final ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm) {
-        List<String> inlineReadwriteDataSourceNames = new InlineExpressionParser().splitAndEvaluate(config.getName());
-        List<String> inlineWriteDatasourceNames = new InlineExpressionParser().splitAndEvaluate(config.getWriteDataSourceName());
+        List<String> inlineReadwriteDataSourceNames = InlineExpressionParserFactory.newInstance().splitAndEvaluate(config.getName());
+        List<String> inlineWriteDatasourceNames = InlineExpressionParserFactory.newInstance().splitAndEvaluate(config.getWriteDataSourceName());
         List<List<String>> inlineReadDatasourceNames = config.getReadDataSourceNames().stream()
-                .map(each -> new InlineExpressionParser().splitAndEvaluate(each)).collect(Collectors.toList());
+                .map(each -> InlineExpressionParserFactory.newInstance().splitAndEvaluate(each)).collect(Collectors.toList());
         ShardingSpherePreconditions.checkState(inlineWriteDatasourceNames.size() == inlineReadwriteDataSourceNames.size(),
                 () -> new InvalidInlineExpressionDataSourceNameException("Inline expression write data source names size error."));
         inlineReadDatasourceNames.forEach(each -> ShardingSpherePreconditions.checkState(each.size() == inlineReadwriteDataSourceNames.size(),

@@ -22,7 +22,7 @@ import groovy.lang.MissingMethodException;
 import groovy.util.Expando;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
@@ -57,7 +57,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
         ShardingSpherePreconditions.checkState(null != expression && !expression.isEmpty(),
                 () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression cannot be null or empty"));
-        return new InlineExpressionParser().handlePlaceHolder(expression.trim());
+        return InlineExpressionParserFactory.newInstance().handlePlaceHolder(expression.trim());
     }
     
     private boolean isAllowRangeQuery(final Properties props) {
@@ -80,7 +80,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     }
     
     private Closure<?> createClosure() {
-        Closure<?> result = new InlineExpressionParser().evaluateClosure(algorithmExpression).rehydrate(new Expando(), null, null);
+        Closure<?> result = InlineExpressionParserFactory.newInstance().evaluateClosure(algorithmExpression).rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
     }

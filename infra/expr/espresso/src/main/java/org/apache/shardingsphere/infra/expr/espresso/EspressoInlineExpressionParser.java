@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.expr.espresso;
 
 import groovy.lang.Closure;
 import org.apache.shardingsphere.infra.expr.hotsopt.HotspotInlineExpressionParser;
-import org.apache.shardingsphere.infra.expr.spi.JVMInlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.spi.InlineExpressionParser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.TypeLiteral;
@@ -33,7 +33,7 @@ import java.util.Objects;
 /**
  * Espresso inline expression parser.
  */
-public final class EspressoInlineExpressionParser implements JVMInlineExpressionParser {
+public final class EspressoInlineExpressionParser implements InlineExpressionParser {
     
     private static final String JAVA_CLASSPATH;
     

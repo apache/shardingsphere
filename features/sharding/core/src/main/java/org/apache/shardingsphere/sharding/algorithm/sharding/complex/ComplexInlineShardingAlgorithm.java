@@ -21,7 +21,7 @@ import groovy.lang.Closure;
 import groovy.util.Expando;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException;
@@ -65,7 +65,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     private String getAlgorithmExpression(final Properties props) {
         String algorithmExpression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
         ShardingSpherePreconditions.checkNotNull(algorithmExpression, () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression can not be null."));
-        return new InlineExpressionParser().handlePlaceHolder(algorithmExpression.trim());
+        return InlineExpressionParserFactory.newInstance().handlePlaceHolder(algorithmExpression.trim());
     }
     
     private Collection<String> getShardingColumns(final Properties props) {
@@ -126,7 +126,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
     }
     
     private Closure<?> createClosure() {
-        Closure<?> result = new InlineExpressionParser().evaluateClosure(algorithmExpression).rehydrate(new Expando(), null, null);
+        Closure<?> result = InlineExpressionParserFactory.newInstance().evaluateClosure(algorithmExpression).rehydrate(new Expando(), null, null);
         result.setResolveStrategy(Closure.DELEGATE_ONLY);
         return result;
     }

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
@@ -162,7 +162,7 @@ public final class DataSetEnvironmentManager {
     
     private Map<String, Collection<String>> getDataNodeMap(final DataSetMetaData dataSetMetaData) {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
-        for (String each : new InlineExpressionParser().splitAndEvaluate(dataSetMetaData.getDataNodes())) {
+        for (String each : InlineExpressionParserFactory.newInstance().splitAndEvaluate(dataSetMetaData.getDataNodes())) {
             DataNode dataNode = new DataNode(each);
             if (!result.containsKey(dataNode.getDataSourceName())) {
                 result.put(dataNode.getDataSourceName(), new LinkedList<>());

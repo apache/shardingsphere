@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtils;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
@@ -106,7 +106,7 @@ public final class TableRule {
     
     public TableRule(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
         logicTable = tableRuleConfig.getLogicTable();
-        List<String> dataNodes = new InlineExpressionParser().splitAndEvaluate(tableRuleConfig.getActualDataNodes());
+        List<String> dataNodes = InlineExpressionParserFactory.newInstance().splitAndEvaluate(tableRuleConfig.getActualDataNodes());
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
@@ -158,7 +158,7 @@ public final class TableRule {
             return new LinkedList<>();
         }
         List<String> dataSources = Strings.isNullOrEmpty(tableRuleConfig.getActualDataSources()) ? new LinkedList<>(dataSourceNames)
-                : new InlineExpressionParser().splitAndEvaluate(tableRuleConfig.getActualDataSources());
+                : InlineExpressionParserFactory.newInstance().splitAndEvaluate(tableRuleConfig.getActualDataSources());
         return DataNodeUtils.getFormatDataNodes(shardingAlgorithm.getAutoTablesAmount(), logicTable, dataSources);
     }
     
