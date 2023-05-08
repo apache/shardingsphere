@@ -115,7 +115,6 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
 - Workflow file name must consist with the lowercase of `triggerType-actionType`, for example: `nightly-check.yml`. Omit trigger type for pull_request, for example: `check.yml`.
 - Trigger type includes: pull_request (without prefix), nightly.
 - Action type includes: check, ci, e2e, build.
-- Workflow 文件内的 `name` 属性命名与文件名一致，单词以 `-` 作为分隔符，分隔符两侧要加空格，每个单词首字母大写，例如 `Nightly - Check`。
 - `name` property in workflow file should be same with file name, Words separated by `-`, add space between `-` and words, first letter of every word should be capital, for example: `Nightly - Check`.
 - `job` property in workflow should be unique in that workflow file.
 - When using `matrix` property, must add job parallelism limit to 5: `max-parallel: 5`.
