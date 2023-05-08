@@ -205,6 +205,7 @@ class SQLNodeConverterEngineIT {
             result.add("select_substring");
             result.add("select_where_with_bit_expr_with_plus_interval");
             result.add("select_where_with_bit_expr_with_minus_interval");
+            result.add("select_where_with_predicate_with_in_subquery");
             return result;
         }
         // CHECKSTYLE:ON
