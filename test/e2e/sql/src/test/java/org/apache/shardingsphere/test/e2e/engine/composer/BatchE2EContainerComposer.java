@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.engine.composer;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.test.e2e.cases.assertion.IntegrationTestCaseAssertion;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSet;
 import org.apache.shardingsphere.test.e2e.cases.dataset.DataSetLoader;
@@ -85,7 +85,7 @@ public final class BatchE2EContainerComposer extends E2EContainerComposer {
         DataSet expected = getDataSet(actualUpdateCounts);
         assertThat("Only support single table for DML.", expected.getMetaDataList().size(), is(1));
         DataSetMetaData expectedDataSetMetaData = expected.getMetaDataList().get(0);
-        for (String each : new InlineExpressionParser().splitAndEvaluate(expectedDataSetMetaData.getDataNodes())) {
+        for (String each : InlineExpressionParserFactory.newInstance().splitAndEvaluate(expectedDataSetMetaData.getDataNodes())) {
             DataNode dataNode = new DataNode(each);
             DataSource dataSource = getActualDataSourceMap().get(dataNode.getDataSourceName());
             try (

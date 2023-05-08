@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.e2e.engine.type;
 import com.google.common.base.Splitter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
@@ -171,7 +171,7 @@ class DDLE2EIT {
     private void assertTableMetaData(final AssertionTestParameter testParam, final SingleE2EContainerComposer containerComposer) throws SQLException {
         String tableName = containerComposer.getAssertion().getInitialSQL().getAffectedTable();
         DataSetMetaData expected = containerComposer.getDataSet().findMetaData(tableName);
-        Collection<DataNode> dataNodes = new InlineExpressionParser().splitAndEvaluate(expected.getDataNodes()).stream().map(DataNode::new).collect(Collectors.toList());
+        Collection<DataNode> dataNodes = InlineExpressionParserFactory.newInstance().splitAndEvaluate(expected.getDataNodes()).stream().map(DataNode::new).collect(Collectors.toList());
         if (expected.getColumns().isEmpty()) {
             assertNotContainsTable(containerComposer, dataNodes);
             return;
