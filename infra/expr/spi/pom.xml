@@ -33,6 +33,7 @@
             <artifactId>shardingsphere-infra-util</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.apache.groovy</groupId>
             <artifactId>groovy</artifactId>

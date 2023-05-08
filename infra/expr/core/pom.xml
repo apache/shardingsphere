@@ -43,6 +43,7 @@
             <artifactId>shardingsphere-infra-expr-espresso</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.apache.groovy</groupId>
             <artifactId>groovy</artifactId>

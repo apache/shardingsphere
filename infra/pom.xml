@@ -38,7 +38,7 @@
         <module>executor</module>
         <module>merge</module>
         <module>context</module>
-        <module>util</module>
         <module>expr</module>
+        <module>util</module>
     </modules>
 </project>

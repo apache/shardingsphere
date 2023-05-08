@@ -44,6 +44,7 @@
             <artifactId>shardingsphere-infra-expr-hotsopt</artifactId>
             <version>${project.version}</version>
         </dependency>
+        
         <dependency>
             <groupId>org.graalvm.truffle</groupId>
             <artifactId>truffle-api</artifactId>
