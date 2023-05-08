@@ -112,7 +112,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
 ## GitHub Action 规范
 
 - Workflow file name must end with `.yml`
-- Workflow file name must consist with the lowercase of `trigger type-action type`, for example: `nightly-check.yml`. do not add trigger type for pull_request, for example: `check.yml`
+- Workflow file name must consist with the lowercase of `trigger type-action type`, for example: `nightly-check.yml`. omit trigger type for pull_request, for example: `check.yml`
 - Execution action includes: check, ci, e2e, build
 - Trigger type includes: pull_request (without prefix), nightly
 - `name` property in workflow file should be same with file name, add space between `-` and words, first letter of every word should be capital, for example: `Nightly - Check`
