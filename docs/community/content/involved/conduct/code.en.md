@@ -93,7 +93,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
    - When mocking static methods or constructors, it is recommended to use the testing framework's `AutoMockExtension` and `StaticMockSettings` to release resources automatically; If using Mockito's `mockStatic` and `mockConstruction` methods, please use `try-with-resource` or close them in the cleanup method to avoid resource leaks.
    - When verifying only one invocation, there is no need to use `times(1)` parameter, please use the single-argument method of `verify`.
 
-## Contributor Covenant G4 Code of Conduct
+## Contributor Covenant G4 of Conduct
 
  - Common Conduct
    - Every line cannot over `200` chars, guarantee every line have complete semantics.
@@ -108,3 +108,14 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
    - If a rule's branch is over than `5`, every branch take a new line.
    - Rule name of parser should same with java variable's camel case.
    - Define separate files for every SQL type, file name should consist of `database` + `SQL type` + `Statement`. For example: `MySQLDQLStatement.g4`.
+
+## GitHub Action 规范
+
+- Workflow file name must end with `.yml`
+- Workflow file name must consist with the lowercase of `trigger type-action type`, for example: `nightly-check.yml`. do not add trigger type for pull_request, for example: `check.yml`
+- Execution action includes: check, ci, e2e, build
+- Trigger type includes: pull_request (without prefix), nightly
+- `name` property in workflow file should be same with file name, add space between `-` and words, first letter of every word should be capital, for example: `Nightly - Check`
+- `job` property in workflow should be unique in that workflow file
+- When using `matrix` property, must add job parallelism limit to 5. For example: `max-parallel: 5`
+- Must set timeout for job, max timeout is 1 hour. For example: `timeout-minutes: 10`
