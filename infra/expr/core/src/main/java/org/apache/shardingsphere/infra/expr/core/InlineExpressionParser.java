@@ -38,11 +38,7 @@ public final class InlineExpressionParser {
     }
     
     public InlineExpressionParser() {
-        if (IS_SUBSTRATE_VM) {
-            jvmInlineExpressionParser = TypedSPILoader.getService(JVMInlineExpressionParser.class, "ESPRESSO");
-        } else {
-            jvmInlineExpressionParser = TypedSPILoader.getService(JVMInlineExpressionParser.class, "HOTSPOT");
-        }
+        jvmInlineExpressionParser = TypedSPILoader.getService(JVMInlineExpressionParser.class, IS_SUBSTRATE_VM ? "ESPRESSO" : "HOTSPOT");
     }
     
     /**
@@ -52,11 +48,7 @@ public final class InlineExpressionParser {
      * @return result inline expression with {@code $}
      */
     public String handlePlaceHolder(final String inlineExpression) {
-        if (IS_SUBSTRATE_VM) {
-            return TypedSPILoader.getService(JVMInlineExpressionParser.class, "ESPRESSO").handlePlaceHolder(inlineExpression);
-        } else {
-            return TypedSPILoader.getService(JVMInlineExpressionParser.class, "HOTSPOT").handlePlaceHolder(inlineExpression);
-        }
+        return jvmInlineExpressionParser.handlePlaceHolder(inlineExpression);
     }
     
     /**

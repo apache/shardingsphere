@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.expr.spi;
 
 import groovy.lang.Closure;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.List;
 /**
  * JVM inline expression parser.
  */
+@SingletonSPI
 public interface JVMInlineExpressionParser extends TypedSPI {
     
     /**
