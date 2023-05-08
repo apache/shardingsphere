@@ -48,11 +48,7 @@ public final class InlineExpressionParser {
      * @return result inline expression with {@code $}
      */
     public String handlePlaceHolder(final String inlineExpression) {
-        if (IS_SUBSTRATE_VM) {
-            return TypedSPILoader.getService(JVMInlineExpressionParser.class, "ESPRESSO").handlePlaceHolder(inlineExpression);
-        } else {
-            return TypedSPILoader.getService(JVMInlineExpressionParser.class, "HOTSPOT").handlePlaceHolder(inlineExpression);
-        }
+        return jvmInlineExpressionParser.handlePlaceHolder(inlineExpression);
     }
     
     /**
