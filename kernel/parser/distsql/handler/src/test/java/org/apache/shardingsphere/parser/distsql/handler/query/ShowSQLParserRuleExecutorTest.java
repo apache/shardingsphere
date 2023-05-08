@@ -66,7 +66,7 @@ class ShowSQLParserRuleExecutorTest {
     
     private ShardingSphereMetaData mockMetaData() {
         SQLParserRule sqlParserRule = mock(SQLParserRule.class);
-        when(sqlParserRule.getConfiguration()).thenReturn(new SQLParserRuleConfiguration(true, new CacheOption(128, 1024), new CacheOption(2000, 65535)));
+        when(sqlParserRule.getConfiguration()).thenReturn(new SQLParserRuleConfiguration(true, new CacheOption(128, 1024), new CacheOption(2000, 65535), "Standard"));
         return new ShardingSphereMetaData(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.singleton(sqlParserRule)), new ConfigurationProperties(new Properties()));
     }
 }

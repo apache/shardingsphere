@@ -40,7 +40,7 @@ public final class AlterSQLParserRuleStatementUpdater implements GlobalRuleRALUp
         CacheOption sqlStatementCache =
                 null == sqlStatement.getSqlStatementCache() ? currentRuleConfig.getSqlStatementCache()
                         : createCacheOption(currentRuleConfig.getSqlStatementCache(), sqlStatement.getSqlStatementCache());
-        return new SQLParserRuleConfiguration(sqlCommentParseEnabled, parseTreeCache, sqlStatementCache);
+        return new SQLParserRuleConfiguration(sqlCommentParseEnabled, parseTreeCache, sqlStatementCache, "Standard");
     }
     
     private CacheOption createCacheOption(final CacheOption cacheOption, final CacheOptionSegment segment) {

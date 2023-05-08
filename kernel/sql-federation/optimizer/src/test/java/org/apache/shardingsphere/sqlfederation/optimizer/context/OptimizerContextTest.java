@@ -63,6 +63,6 @@ class OptimizerContextTest {
     
     private ShardingSphereRuleMetaData createShardingSphereRuleMetaData() {
         CacheOption cacheOption = new CacheOption(10, 1000);
-        return new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption))));
+        return new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption, "Standard"))));
     }
 }

@@ -34,4 +34,6 @@ public final class SQLParserRuleConfiguration implements GlobalRuleConfiguration
     private final CacheOption parseTreeCache;
     
     private final CacheOption sqlStatementCache;
+    
+    private final String engineType;
 }

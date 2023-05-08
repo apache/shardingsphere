@@ -37,6 +37,7 @@ public final class YamlSQLParserRuleConfigurationSwapper implements YamlRuleConf
         result.setSqlCommentParseEnabled(data.isSqlCommentParseEnabled());
         result.setParseTreeCache(cacheOptionSwapper.swapToYamlConfiguration(data.getParseTreeCache()));
         result.setSqlStatementCache(cacheOptionSwapper.swapToYamlConfiguration(data.getSqlStatementCache()));
+        result.setEngineType(data.getEngineType());
         return result;
     }
     
@@ -48,7 +49,7 @@ public final class YamlSQLParserRuleConfigurationSwapper implements YamlRuleConf
         CacheOption sqlStatementCacheOption = null == yamlConfig.getSqlStatementCache()
                 ? DefaultSQLParserRuleConfigurationBuilder.SQL_STATEMENT_CACHE_OPTION
                 : cacheOptionSwapper.swapToObject(yamlConfig.getSqlStatementCache());
-        return new SQLParserRuleConfiguration(yamlConfig.isSqlCommentParseEnabled(), parseTreeCacheOption, sqlStatementCacheOption);
+        return new SQLParserRuleConfiguration(yamlConfig.isSqlCommentParseEnabled(), parseTreeCacheOption, sqlStatementCacheOption, yamlConfig.getEngineType());
     }
     
     @Override

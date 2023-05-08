@@ -17,16 +17,35 @@
 
 package org.apache.shardingsphere.infra.parser;
 
+import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
+import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngineFactory;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SimpleSQLStatement;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Simple SQL parser engine.
  */
 public final class SimpleSQLParserEngine implements SQLParserEngine {
     
+    private final SQLStatementParserEngine sqlStatementParserEngine;
+    
+    public SimpleSQLParserEngine(final String databaseType, final CacheOption sqlStatementCacheOption, final CacheOption parseTreeCacheOption, final boolean isParseComment) {
+        sqlStatementParserEngine = SQLStatementParserEngineFactory.getSQLStatementParserEngine(
+                databaseType, sqlStatementCacheOption, parseTreeCacheOption, isParseComment);
+    }
+    
+    private boolean isContainShowDatabases(final String sql) {
+        String regex = "^(\\s*)show(\\s+)databases(\\s*)";
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(sql);
+        return matcher.matches();
+    }
+    
     @Override
     public SQLStatement parse(final String sql, final boolean useCache) {
-        return new SimpleSQLStatement();
+        return isContainShowDatabases(sql) ? sqlStatementParserEngine.parse(sql, useCache) : new SimpleSQLStatement();
     }
 }
