@@ -50,7 +50,11 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
     public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule,
                                            final ConfigurationProperties props, final ConnectionContext connectionContext) {
         if (rule.isShardingCacheEnabled()) {
-            return new CachedShardingSQLRouter().createRouteContext(this::createRouteContext0, queryContext, globalRuleMetaData, database, rule.getShardingCache(), props, connectionContext);
+            Optional<RouteContext> result = new CachedShardingSQLRouter()
+                    .loadRouteContext(this::createRouteContext0, queryContext, globalRuleMetaData, database, rule.getShardingCache(), props, connectionContext);
+            if (result.isPresent()) {
+                return result.get();
+            }
         }
         return createRouteContext0(queryContext, globalRuleMetaData, database, rule, props, connectionContext);
     }
