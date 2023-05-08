@@ -65,7 +65,7 @@ class EncryptStatementTest extends AbstractEncryptDriverTest {
         try (Statement statement = getEncryptConnection().createStatement()) {
             statement.execute(INSERT_SQL);
         }
-        assertResultSet(3, 2, "encryptValue", "b");
+        assertResultSet(3, 2, "encryptValue");
     }
     
     @Test
@@ -77,7 +77,7 @@ class EncryptStatementTest extends AbstractEncryptDriverTest {
             assertThat(resultSet.getInt(1), is(6));
             assertFalse(resultSet.next());
         }
-        assertResultSet(3, 6, "encryptValue", "b");
+        assertResultSet(3, 6, "encryptValue");
     }
     
     @Test
@@ -85,7 +85,7 @@ class EncryptStatementTest extends AbstractEncryptDriverTest {
         try (Statement statement = getEncryptConnection().createStatement()) {
             statement.execute(DELETE_SQL);
         }
-        assertResultSet(1, 5, "encryptValue", "b");
+        assertResultSet(1, 5, "encryptValue");
     }
     
     @Test
@@ -95,7 +95,7 @@ class EncryptStatementTest extends AbstractEncryptDriverTest {
             result = statement.executeUpdate(UPDATE_SQL);
         }
         assertThat(result, is(2));
-        assertResultSet(2, 1, "encryptValue", "f");
+        assertResultSet(2, 1, "encryptValue");
     }
     
     @Test
@@ -150,7 +150,7 @@ class EncryptStatementTest extends AbstractEncryptDriverTest {
         }
     }
     
-    private void assertResultSet(final int resultSetCount, final int id, final Object pwd, final Object plain) throws SQLException {
+    private void assertResultSet(final int resultSetCount, final int id, final Object pwd) throws SQLException {
         try (
                 Connection connection = getActualDataSources().get("encrypt").getConnection();
                 Statement statement = connection.createStatement()) {

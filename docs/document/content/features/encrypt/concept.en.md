@@ -17,8 +17,4 @@ It is a helper column used for queries. For some non-idempotent encryption algor
 
 ## Like query column
 
-It is a helper column used for like queries. 
-
-## Plain column
-
-The column is used to store plaintext and provide services during the migration of encrypted data. It can be deleted after the data cleansing is complete.
+It is a helper column used for like queries.

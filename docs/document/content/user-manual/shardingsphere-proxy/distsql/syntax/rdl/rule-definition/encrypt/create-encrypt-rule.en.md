@@ -68,7 +68,7 @@ value ::=
 
 ### Supplement
 
-- `PLAIN` specifies the plain column, `CIPHER` specifies the cipher column, `ASSISTED_QUERY_COLUMN` specifies the assisted query column，`LIKE_QUERY_COLUMN` specifies the like query column;
+- `CIPHER` specifies the cipher column, `ASSISTED_QUERY_COLUMN` specifies the assisted query column，`LIKE_QUERY_COLUMN` specifies the like query column;
 - `encryptAlgorithmType` specifies the encryption algorithm type, please refer to [Encryption Algorithm](/en/user-manual/common-config/builtin-algorithm/encrypt/);
 - Duplicate `ruleName` will not be created;
 - `ifNotExists` clause used for avoid `Duplicate encrypt rule` error.
@@ -107,7 +107,7 @@ COLUMNS(
 
 ### Reserved words
 
-`CREATE`, `ENCRYPT`, `RULE`, `COLUMNS`, `NAME`, `CIPHER`, `PLAIN`, `ENCRYPT_ALGORITHM`, `TYPE`, `TRUE`, `FALSE`
+`CREATE`, `ENCRYPT`, `RULE`, `COLUMNS`, `NAME`, `CIPHER`, `ENCRYPT_ALGORITHM`, `TYPE`, `TRUE`, `FALSE`
 
 ### Related links
 
