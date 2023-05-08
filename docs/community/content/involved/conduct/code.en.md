@@ -93,7 +93,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
    - When mocking static methods or constructors, it is recommended to use the testing framework's `AutoMockExtension` and `StaticMockSettings` to release resources automatically; If using Mockito's `mockStatic` and `mockConstruction` methods, please use `try-with-resource` or close them in the cleanup method to avoid resource leaks.
    - When verifying only one invocation, there is no need to use `times(1)` parameter, please use the single-argument method of `verify`.
 
-## Contributor Covenant G4 Code of Conduct
+## Contributor Covenant G4 of Conduct
 
  - Common Conduct
    - Every line cannot over `200` chars, guarantee every line have complete semantics.
@@ -101,10 +101,21 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
    - Every rule should be in single line, no empty line between rules.
    - Rule of lexer name should capitalization. If name composite with more than one word, use `underline` to separate. Rule name of `DataType` and `Symbol` should end with `underline`. If rule name is conflicted with ANTLR's keyword, should take an `underline` behind rule name.
    - For private rule in lexer should use `fragment`, rule with `fragment` should define behind of public rule which they served.
-   - Common rule of lexer should put in file `Keyword.g4`, every database may has customized rule file by themselves. For example: `MySQLKeyword.g4`.
+   - Common rule of lexer should put in file `Keyword.g4`, every database may have customized rule file by themselves. For example: `MySQLKeyword.g4`.
  - Parser Conduct
    - After every rule finish, blank line should no indents.
    - No space before rule name definition. One space between `colon` and rule, `semicolon` should take a new line and keep indents (including blank lines) consistent with the previous one.
    - If a rule's branch is over than `5`, every branch take a new line.
    - Rule name of parser should same with java variable's camel case.
    - Define separate files for every SQL type, file name should consist of `database` + `SQL type` + `Statement`. For example: `MySQLDQLStatement.g4`.
+
+## GitHub Action of Conduct
+
+- Workflow file name must end with `.yml`.
+- Workflow file name must consist with the lowercase of `triggerType-actionType`, for example: `nightly-check.yml`. Omit trigger type for pull_request, for example: `check.yml`.
+- Trigger type includes: pull_request (without prefix), nightly.
+- Action type includes: check, ci, e2e, build.
+- `name` property in workflow file should be same with file name, Words separated by `-`, add space between `-` and words, first letter of every word should be capital, for example: `Nightly - Check`.
+- `job` property in workflow should be unique in that workflow file.
+- When using `matrix` property, must add job parallelism limit to 5: `max-parallel: 5`.
+- Must set timeout for job, max timeout is 1 hour. For example: `timeout-minutes: 10`.
