@@ -23,7 +23,6 @@ import groovy.lang.Closure;
 import groovy.lang.GString;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.expr.spi.JVMInlineExpressionParser;
 
 import java.util.ArrayList;
@@ -39,7 +38,6 @@ import java.util.stream.Collectors;
 /**
  * Hotspot inline expression parser.
  */
-@RequiredArgsConstructor
 public final class HotspotInlineExpressionParser implements JVMInlineExpressionParser {
     
     private static final char SPLITTER = ',';
@@ -61,16 +59,6 @@ public final class HotspotInlineExpressionParser implements JVMInlineExpressionP
     @Override
     public Closure<?> evaluateClosure(final String inlineExpression) {
         return (Closure<?>) evaluate("{it -> \"" + inlineExpression + "\"}");
-    }
-    
-    @Override
-    public String getType() {
-        return "HOTSPOT";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
     }
     
     private List<Object> evaluate(final List<String> inlineExpressions) {
@@ -186,5 +174,15 @@ public final class HotspotInlineExpressionParser implements JVMInlineExpressionP
             }
         }
         return result.toString();
+    }
+    
+    @Override
+    public String getType() {
+        return "HOTSPOT";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

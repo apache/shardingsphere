@@ -38,11 +38,7 @@ public final class InlineExpressionParser {
     }
     
     public InlineExpressionParser() {
-        if (IS_SUBSTRATE_VM) {
-            jvmInlineExpressionParser = TypedSPILoader.getService(JVMInlineExpressionParser.class, "ESPRESSO");
-        } else {
-            jvmInlineExpressionParser = TypedSPILoader.getService(JVMInlineExpressionParser.class, "HOTSPOT");
-        }
+        jvmInlineExpressionParser = TypedSPILoader.getService(JVMInlineExpressionParser.class, IS_SUBSTRATE_VM ? "ESPRESSO" : "HOTSPOT");
     }
     
     /**

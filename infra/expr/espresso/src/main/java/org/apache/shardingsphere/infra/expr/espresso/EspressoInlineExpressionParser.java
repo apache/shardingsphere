@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.expr.espresso;
 
 import groovy.lang.Closure;
+import org.apache.shardingsphere.infra.expr.hotsopt.HotspotInlineExpressionParser;
 import org.apache.shardingsphere.infra.expr.spi.JVMInlineExpressionParser;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.graalvm.polyglot.Context;
@@ -33,9 +34,9 @@ import java.util.Objects;
  * Espresso inline expression parser.
  */
 public final class EspressoInlineExpressionParser implements JVMInlineExpressionParser {
-
+    
     private static final String JAVA_CLASSPATH;
-
+    
     static {
         // TODO https://github.com/oracle/graal/issues/4555 not yet closed
         if ("Substrate VM".equals(System.getProperty("java.vm.name"))) {
@@ -50,9 +51,7 @@ public final class EspressoInlineExpressionParser implements JVMInlineExpression
     @Override
     public String handlePlaceHolder(final String inlineExpression) {
         try (Context context = getContext()) {
-            return context.getBindings("java")
-                    .getMember("org.apache.shardingsphere.infra.expr.hotsopt.HotspotInlineExpressionParser")
-                    .invokeMember("handlePlaceHolder", inlineExpression).asString();
+            return context.getBindings("java").getMember(HotspotInlineExpressionParser.class.getName()).invokeMember("handlePlaceHolder", inlineExpression).asString();
         }
     }
     
@@ -69,24 +68,22 @@ public final class EspressoInlineExpressionParser implements JVMInlineExpression
         return getInlineExpressionParser().invokeMember("evaluateClosure", inlineExpression).as(Closure.class);
     }
     
-    @Override
-    public String getType() {
-        return "ESPRESSO";
-    }
-    
     private Value getInlineExpressionParser() {
         try (Context context = getContext()) {
-            return context.getBindings("java")
-                    .getMember("org.apache.shardingsphere.infra.expr.hotsopt.HotspotInlineExpressionParser")
-                    .newInstance();
+            return context.getBindings("java").getMember(HotspotInlineExpressionParser.class.getName()).newInstance();
         }
     }
-
+    
     private Context getContext() {
         return Context.newBuilder().allowAllAccess(true)
                 .option("java.Properties.org.graalvm.home", System.getenv("JAVA_HOME"))
                 .option("java.MultiThreaded", Boolean.TRUE.toString())
                 .option("java.Classpath", JAVA_CLASSPATH)
                 .build();
+    }
+    
+    @Override
+    public String getType() {
+        return "ESPRESSO";
     }
 }
