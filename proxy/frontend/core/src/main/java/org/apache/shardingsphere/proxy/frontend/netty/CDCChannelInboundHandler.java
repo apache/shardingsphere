@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCExceptionWrapper
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCLoginException;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCServerException;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
+import org.apache.shardingsphere.data.pipeline.cdc.handler.CDCBackendHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CommitStreamingRequestBody;
@@ -52,7 +53,6 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.util.exception.external.sql.ShardingSphereSQLException;
 import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.data.pipeline.cdc.handler.CDCBackendHandler;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -100,7 +100,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
             ShardingSphereSQLException exception = wrapper.getException();
             channelFuture = ctx.writeAndFlush(CDCResponseGenerator.failed(wrapper.getRequestId(), exception.toSQLException().getSQLState(), exception.getMessage()));
         } else {
-            channelFuture = ctx.writeAndFlush(CDCResponseGenerator.failed("", XOpenSQLState.GENERAL_ERROR.getValue(), cause.getMessage()));
+            channelFuture = ctx.writeAndFlush(CDCResponseGenerator.failed("", XOpenSQLState.GENERAL_ERROR.getValue(), String.valueOf(cause.getMessage())));
         }
         if (CDCConnectionStatus.NOT_LOGGED_IN == connectionContext.getStatus()) {
             channelFuture.addListener(ChannelFutureListener.CLOSE);

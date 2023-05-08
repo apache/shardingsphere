@@ -42,15 +42,17 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRe
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataResult;
 import org.apache.shardingsphere.data.pipeline.cdc.util.CDCSchemaTableUtils;
-import org.apache.shardingsphere.data.pipeline.cdc.util.CDCTableRuleUtils;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineJobNotFoundException;
+import org.apache.shardingsphere.data.pipeline.core.exception.metadata.NoAnyRuleExistsException;
+import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.single.rule.SingleRule;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -110,18 +112,32 @@ public final class CDCBackendHandler {
             tableNames = schemaTableNames;
         }
         ShardingSpherePreconditions.checkState(!tableNames.isEmpty(), () -> new CDCExceptionWrapper(requestId, new NotFindStreamDataSourceTableException()));
-        ShardingRule shardingRule = database.getRuleMetaData().getSingleRule(ShardingRule.class);
-        Map<String, List<DataNode>> actualDataNodesMap = new HashMap<>();
-        // TODO need support case-insensitive later
-        for (String each : tableNames) {
-            actualDataNodesMap.put(each, CDCTableRuleUtils.getActualDataNodes(shardingRule, each));
-        }
+        Map<String, List<DataNode>> actualDataNodesMap = buildDataNodesMap(database, tableNames);
+        ShardingSpherePreconditions.checkState(!actualDataNodesMap.isEmpty(), () -> new PipelineInvalidParameterException(String.format("Not find table %s", tableNames)));
         boolean decodeWithTx = database.getProtocolType() instanceof OpenGaussDatabaseType;
         StreamDataParameter parameter = new StreamDataParameter(requestBody.getDatabase(), new LinkedList<>(schemaTableNames), requestBody.getFull(), actualDataNodesMap, decodeWithTx);
         String jobId = jobAPI.createJob(parameter, CDCSinkType.SOCKET, new Properties());
         connectionContext.setJobId(jobId);
         startStreaming(jobId, connectionContext, channel);
         return CDCResponseGenerator.succeedBuilder(requestId).setStreamDataResult(StreamDataResult.newBuilder().setStreamingId(jobId).build()).build();
+    }
+    
+    private Map<String, List<DataNode>> buildDataNodesMap(final ShardingSphereDatabase database, final Collection<String> tableNames) {
+        Map<String, List<DataNode>> result = new HashMap<>();
+        Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        Optional<SingleRule> singleRule = database.getRuleMetaData().findSingleRule(SingleRule.class);
+        if (!shardingRule.isPresent() && !singleRule.isPresent()) {
+            throw new NoAnyRuleExistsException(database.getName());
+        }
+        // TODO support virtual data source name
+        for (String each : tableNames) {
+            if (singleRule.isPresent() && singleRule.get().getAllDataNodes().containsKey(each)) {
+                result.put(each, new ArrayList<>(singleRule.get().getAllDataNodes().get(each)));
+                continue;
+            }
+            shardingRule.flatMap(value -> value.findTableRule(each)).ifPresent(rule -> result.put(each, rule.getActualDataNodes()));
+        }
+        return result;
     }
     
     /**
@@ -148,7 +164,7 @@ public final class CDCBackendHandler {
     /**
      * Stop streaming.
      *
-     * @param jobId     job id
+     * @param jobId job id
      * @param channelId channel id
      */
     public void stopStreaming(final String jobId, final ChannelId channelId) {

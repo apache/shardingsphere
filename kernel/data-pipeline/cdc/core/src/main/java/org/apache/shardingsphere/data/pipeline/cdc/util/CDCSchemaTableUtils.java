@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -99,7 +100,8 @@ public final class CDCSchemaTableUtils {
      */
     public static Collection<String> parseTableExpressionWithoutSchema(final ShardingSphereDatabase database, final List<String> tableNames) {
         Optional<String> allTablesOptional = tableNames.stream().filter("*"::equals).findFirst();
-        Set<String> allTableNames = new HashSet<>(database.getSchema(database.getName()).getAllTableNames());
+        ShardingSphereSchema schema = database.getSchema(database.getName());
+        Set<String> allTableNames = null == schema ? Collections.emptySet() : new HashSet<>(schema.getAllTableNames());
         return allTablesOptional.isPresent() ? allTableNames : new HashSet<>(tableNames);
     }
 }

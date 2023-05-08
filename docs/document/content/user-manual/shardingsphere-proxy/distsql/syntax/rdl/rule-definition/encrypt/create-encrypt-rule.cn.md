@@ -68,7 +68,7 @@ value ::=
 
 ### 补充说明
 
-- `PLAIN` 指定明文数据列，`CIPHER` 指定密文数据列，`ASSISTED_QUERY_COLUMN` 指定辅助查询列，`LIKE_QUERY_COLUMN` 指定模糊查询列；
+- `CIPHER` 指定密文数据列，`ASSISTED_QUERY_COLUMN` 指定辅助查询列，`LIKE_QUERY_COLUMN` 指定模糊查询列；
 - `encryptAlgorithmType` 指定加密算法类型，请参考 [加密算法](/cn/user-manual/common-config/builtin-algorithm/encrypt/)；
 - 重复的 `ruleName` 将无法被创建；
 - `ifNotExists` 子句用于避免出现 `Duplicate encrypt rule` 错误。
@@ -107,7 +107,7 @@ COLUMNS(
 
 ### 保留字
 
-`CREATE`、`ENCRYPT`、`RULE`、`COLUMNS`、`NAME`、`CIPHER`、`PLAIN`、`ENCRYPT_ALGORITHM`、`TYPE`、`TRUE`、`FALSE`
+`CREATE`、`ENCRYPT`、`RULE`、`COLUMNS`、`NAME`、`CIPHER`、`ENCRYPT_ALGORITHM`、`TYPE`、`TRUE`、`FALSE`
 
 ### 相关链接
 
