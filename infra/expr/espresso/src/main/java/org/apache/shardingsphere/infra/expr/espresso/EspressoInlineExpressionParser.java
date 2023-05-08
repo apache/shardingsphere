@@ -34,14 +34,14 @@ import java.util.Objects;
  */
 public final class EspressoInlineExpressionParser implements JVMInlineExpressionParser {
 
-    private static final String JAVA_HOME;
-
     private static final String JAVA_CLASSPATH;
 
     static {
         // TODO https://github.com/oracle/graal/issues/4555 not yet closed
-        JAVA_HOME = System.getenv("JAVA_HOME");
-        ShardingSpherePreconditions.checkNotNull(JAVA_HOME, () -> new RuntimeException("Failed to determine the system's environment variable JAVA_HOME!"));
+        if ("Substrate VM".equals(System.getProperty("java.vm.name"))) {
+            String javaHome = System.getenv("JAVA_HOME");
+            ShardingSpherePreconditions.checkNotNull(javaHome, () -> new RuntimeException("Failed to determine the system's environment variable JAVA_HOME!"));
+        }
         URL resource = Objects.requireNonNull(EspressoInlineExpressionParser.class.getClassLoader().getResource("espresso-need-libs"));
         String dir = resource.getPath();
         JAVA_CLASSPATH = String.join(":", dir + "/groovy.jar", dir + "/guava.jar", dir + "/shardingsphere-infra-expr-hotsopt.jar");
@@ -84,7 +84,7 @@ public final class EspressoInlineExpressionParser implements JVMInlineExpression
 
     private Context getContext() {
         return Context.newBuilder().allowAllAccess(true)
-                .option("java.Properties.org.graalvm.home", JAVA_HOME)
+                .option("java.Properties.org.graalvm.home", System.getenv("JAVA_HOME"))
                 .option("java.MultiThreaded", Boolean.TRUE.toString())
                 .option("java.Classpath", JAVA_CLASSPATH)
                 .build();
