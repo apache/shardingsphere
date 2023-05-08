@@ -51,7 +51,8 @@ public final class CachedShardingSQLRouter {
      * @return route context
      */
     public Optional<RouteContext> loadRouteContext(final OriginSQLRouter originSQLRouter, final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData,
-                                                   final ShardingSphereDatabase database, final ShardingCache shardingCache, final ConfigurationProperties props, final ConnectionContext connectionContext) {
+                                                   final ShardingSphereDatabase database, final ShardingCache shardingCache, final ConfigurationProperties props,
+                                                   final ConnectionContext connectionContext) {
         if (queryContext.getSql().length() > shardingCache.getConfiguration().getAllowedMaxSqlLength()) {
             return Optional.empty();
         }
