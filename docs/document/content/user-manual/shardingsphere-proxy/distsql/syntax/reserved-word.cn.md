@@ -33,7 +33,7 @@ weight = 5
 
 #### 数据加密
 
-`ENCRYPT`、`COLUMNS`、`CIPHER`、`PLAIN`、`ENCRYPT_ALGORITHM`
+`ENCRYPT`、`COLUMNS`、`CIPHER`、`ENCRYPT_ALGORITHM`
 
 #### 数据库发现
 
