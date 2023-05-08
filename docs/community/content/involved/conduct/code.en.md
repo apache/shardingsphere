@@ -101,7 +101,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
    - Every rule should be in single line, no empty line between rules.
    - Rule of lexer name should capitalization. If name composite with more than one word, use `underline` to separate. Rule name of `DataType` and `Symbol` should end with `underline`. If rule name is conflicted with ANTLR's keyword, should take an `underline` behind rule name.
    - For private rule in lexer should use `fragment`, rule with `fragment` should define behind of public rule which they served.
-   - Common rule of lexer should put in file `Keyword.g4`, every database may has customized rule file by themselves. For example: `MySQLKeyword.g4`.
+   - Common rule of lexer should put in file `Keyword.g4`, every database may have customized rule file by themselves. For example: `MySQLKeyword.g4`.
  - Parser Conduct
    - After every rule finish, blank line should no indents.
    - No space before rule name definition. One space between `colon` and rule, `semicolon` should take a new line and keep indents (including blank lines) consistent with the previous one.
