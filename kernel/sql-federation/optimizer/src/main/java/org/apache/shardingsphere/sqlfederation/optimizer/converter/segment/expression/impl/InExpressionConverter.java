@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expre
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -47,7 +46,6 @@ public final class InExpressionConverter implements SQLSegmentConverter<InExpres
         expressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
         expressionConverter.convert(expression.getRight())
                 .ifPresent(optional -> sqlNodes.add(optional instanceof SqlBasicCall ? new SqlNodeList(((SqlBasicCall) optional).getOperandList(), SqlParserPos.ZERO) : optional));
-        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.IN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO);
-        return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, Collections.singletonList(sqlNode), SqlParserPos.ZERO)) : Optional.of(sqlNode);
+        return Optional.of(new SqlBasicCall(expression.isNot() ? SqlStdOperatorTable.NOT_IN : SqlStdOperatorTable.IN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO));
     }
 }
