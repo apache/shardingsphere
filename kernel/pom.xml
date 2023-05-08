@@ -29,13 +29,13 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>parser</module>
         <module>single</module>
         <module>authority</module>
         <module>transaction</module>
         <module>time-service</module>
         <module>data-pipeline</module>
         <module>sql-federation</module>
+        <module>sql-parser</module>
         <module>sql-translator</module>
         <module>traffic</module>
         <module>logging</module>
