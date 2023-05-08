@@ -64,7 +64,9 @@ public final class YamlShardingRuleConfigurationSwapper implements YamlRuleConfi
         setYamlStrategies(data, result);
         setYamlAlgorithms(data, result);
         result.setDefaultShardingColumn(data.getDefaultShardingColumn());
-        result.setShardingCache(shardingCacheYamlSwapper.swapToYamlConfiguration(data.getShardingCache()));
+        if (null != data.getShardingCache()) {
+            result.setShardingCache(shardingCacheYamlSwapper.swapToYamlConfiguration(data.getShardingCache()));
+        }
         return result;
     }
     
@@ -113,7 +115,9 @@ public final class YamlShardingRuleConfigurationSwapper implements YamlRuleConfi
         setStrategies(yamlConfig, result);
         setAlgorithms(yamlConfig, result);
         result.setDefaultShardingColumn(yamlConfig.getDefaultShardingColumn());
-        result.setShardingCache(shardingCacheYamlSwapper.swapToObject(yamlConfig.getShardingCache()));
+        if (null != yamlConfig.getShardingCache()) {
+            result.setShardingCache(shardingCacheYamlSwapper.swapToObject(yamlConfig.getShardingCache()));
+        }
         return result;
     }
     
