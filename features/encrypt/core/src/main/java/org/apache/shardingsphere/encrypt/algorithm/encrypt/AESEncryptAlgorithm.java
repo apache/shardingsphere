@@ -20,9 +20,9 @@ package org.apache.shardingsphere.encrypt.algorithm.encrypt;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
 import javax.crypto.Cipher;
@@ -54,7 +54,7 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm<Object, Strin
         String aesKey = props.getProperty(AES_KEY);
         ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(aesKey),
                 () -> new EncryptAlgorithmInitializationException(getType(), String.format("%s can not be null or empty", AES_KEY)));
-        return Arrays.copyOf(DigestUtils.sha1(aesKey), 16);
+        return Arrays.copyOf(DigestUtils.sha512(aesKey), 16);
     }
     
     @SneakyThrows(GeneralSecurityException.class)

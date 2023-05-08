@@ -55,7 +55,7 @@ class AESEncryptAlgorithmTest {
     @Test
     void assertEncrypt() {
         Object actual = encryptAlgorithm.encrypt("test", mock(EncryptContext.class));
-        assertThat(actual, is("dSpPiyENQGDUXMKFMJPGWA=="));
+        assertThat(actual, is("eQ+I+kzo1kWAEOZUliq+Wg=="));
     }
     
     @Test
@@ -65,7 +65,7 @@ class AESEncryptAlgorithmTest {
     
     @Test
     void assertDecrypt() {
-        Object actual = encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==", mock(EncryptContext.class));
+        Object actual = encryptAlgorithm.decrypt("eQ+I+kzo1kWAEOZUliq+Wg==", mock(EncryptContext.class));
         assertThat(actual.toString(), is("test"));
     }
     
