@@ -31,7 +31,7 @@ class PostgreSQLServerInfoTest {
         PostgreSQLServerInfo.setServerVersion("foo_db", "13.2");
         assertThat(PostgreSQLServerInfo.getServerVersion("foo_db"), is("13.2-ShardingSphere-Proxy 5.0.0"));
     }
-
+    
     @Test
     void assertSetServerVersionForNull() {
         CommonConstants.PROXY_VERSION.set("5.0.0");
