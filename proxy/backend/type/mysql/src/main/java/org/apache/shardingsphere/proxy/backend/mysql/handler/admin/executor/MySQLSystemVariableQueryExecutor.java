@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.SystemVariable;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
@@ -51,7 +51,7 @@ public final class MySQLSystemVariableQueryExecutor implements DatabaseAdminQuer
     
     private final List<ExpressionProjectionSegment> projections;
     
-    private final List<SystemVariable> variables;
+    private final List<MySQLSystemVariable> variables;
     
     @Getter
     private QueryResultMetaData queryResultMetaData;
@@ -84,7 +84,7 @@ public final class MySQLSystemVariableQueryExecutor implements DatabaseAdminQuer
     public static Optional<DatabaseAdminExecutor> tryGetSystemVariableQueryExecutor(final SelectStatement selectStatement) {
         Collection<ProjectionSegment> projections = selectStatement.getProjections().getProjections();
         List<ExpressionProjectionSegment> expressionProjectionSegments = new ArrayList<>(projections.size());
-        List<SystemVariable> variables = new ArrayList<>(projections.size());
+        List<MySQLSystemVariable> variables = new ArrayList<>(projections.size());
         for (ProjectionSegment each : projections) {
             ExpressionProjectionSegment expression;
             if (!(each instanceof ExpressionProjectionSegment) || !((expression = (ExpressionProjectionSegment) each).getExpr() instanceof VariableSegment)) {
@@ -92,7 +92,7 @@ public final class MySQLSystemVariableQueryExecutor implements DatabaseAdminQuer
             }
             expressionProjectionSegments.add(expression);
             VariableSegment variable = (VariableSegment) expression.getExpr();
-            Optional<SystemVariable> systemVariable = SystemVariable.findSystemVariable(variable.getVariable());
+            Optional<MySQLSystemVariable> systemVariable = MySQLSystemVariable.findSystemVariable(variable.getVariable());
             if (!systemVariable.isPresent()) {
                 return Optional.empty();
             }

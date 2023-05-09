@@ -21,7 +21,7 @@ import org.apache.shardingsphere.dialect.mysql.exception.IncorrectGlobalLocalVar
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.SystemVariable;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MySQLSystemVariableQueryExecutorTest {
+class MySQLMySQLSystemVariableQueryExecutorTest {
     
     @Test
     void assertTryGetSystemVariableQueryExecutorWithOtherExpressionProjection() {
@@ -86,9 +86,9 @@ class MySQLSystemVariableQueryExecutorTest {
         assertThat(actualMetaData.getColumnLabel(3), is("@@max_allowed_packet"));
         MergedResult actualResult = queryExecutor.getMergedResult();
         assertTrue(actualResult.next());
-        assertThat(actualResult.getValue(1, String.class), is(SystemVariable.MAX_CONNECTIONS.getDefaultValue()));
-        assertThat(actualResult.getValue(2, String.class), is(SystemVariable.WARNING_COUNT.getDefaultValue()));
-        assertThat(actualResult.getValue(3, String.class), is(SystemVariable.MAX_ALLOWED_PACKET.getDefaultValue()));
+        assertThat(actualResult.getValue(1, String.class), is(MySQLSystemVariable.MAX_CONNECTIONS.getDefaultValue()));
+        assertThat(actualResult.getValue(2, String.class), is(MySQLSystemVariable.WARNING_COUNT.getDefaultValue()));
+        assertThat(actualResult.getValue(3, String.class), is(MySQLSystemVariable.MAX_ALLOWED_PACKET.getDefaultValue()));
         assertFalse(actualResult.next());
     }
     
