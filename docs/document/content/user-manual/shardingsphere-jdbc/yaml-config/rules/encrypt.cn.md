@@ -58,29 +58,25 @@ rules:
       columns:
         username:
           cipherColumn: username
-          encryptorName: name_encryptor
+          encryptorName: aes_encryptor
           assistedQueryColumn: assisted_query_username
           assistedQueryEncryptorName: assisted_encryptor
           likeQueryColumn: like_query_username
           likeQueryEncryptorName: like_encryptor
         pwd:
           cipherColumn: pwd
-          encryptorName: pwd_encryptor
+          encryptorName: aes_encryptor
           assistedQueryColumn: assisted_query_pwd
           assistedQueryEncryptorName: assisted_encryptor
   encryptors:
-    name_encryptor:
+    aes_encryptor:
       type: AES
       props:
         aes-key-value: 123456abc
     assisted_encryptor:
-      type: AES
-      props:
-        aes-key-value: 123456abc
+      type: MD5
     like_encryptor:
       type: CHAR_DIGEST_LIKE
-    pwd_encryptor:
-      type: MD5
 ```
 
 然后通过 YamlShardingSphereDataSourceFactory 的 createDataSource 方法创建数据源。

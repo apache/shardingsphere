@@ -11,16 +11,6 @@ Encryption algorithms are by the encryption features of Apache ShardingSphere. A
 
 ### Standard Encrypt Algorithm
 
-#### MD5 Encrypt Algorithm
-
-Type: MD5
-
-Attributes:
-
-| *Name* | *DataType* | *Description*        |
-|--------|------------|----------------------|
-| salt   | String     | Salt value(optional) |
-
 #### AES Encrypt Algorithm
 
 Type: AES
@@ -78,6 +68,18 @@ Attributes：
 | mask   | int        | Character encryption mask（decimal number）       |
 | start  | int        | Ciphertext Unicode initial code（decimal number） |
 | dict   | String     | Common words                                    |
+
+### Assisted Encrypt Algorithm
+
+#### MD5 Assisted Encrypt Algorithm
+
+Type: MD5
+
+Attributes:
+
+| *Name* | *DataType* | *Description*        |
+|--------|------------|----------------------|
+| salt   | String     | Salt value(optional) |
 
 ## Operating Procedure
 
