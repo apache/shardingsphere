@@ -48,14 +48,14 @@ public final class EncryptAlgorithmMetaData {
     private final SelectStatementContext selectStatementContext;
     
     /**
-     * Find encryptor.
+     * Find standard encryptor.
      * 
      * @param tableName table name
      * @param columnName column name
-     * @return encryptor
+     * @return standard encryptor
      */
-    public Optional<StandardEncryptAlgorithm> findEncryptor(final String tableName, final String columnName) {
-        return encryptRule.findEncryptor(tableName, columnName);
+    public Optional<StandardEncryptAlgorithm> findStandardEncryptor(final String tableName, final String columnName) {
+        return encryptRule.findStandardEncryptor(tableName, columnName);
     }
     
     /**
@@ -92,7 +92,7 @@ public final class EncryptAlgorithmMetaData {
             return Optional.of(tableName);
         }
         for (String each : selectStatementContext.getTablesContext().getTableNames()) {
-            if (encryptRule.findEncryptor(each, columnProjection.getName()).isPresent()) {
+            if (encryptRule.findStandardEncryptor(each, columnProjection.getName()).isPresent()) {
                 return Optional.of(each);
             }
         }

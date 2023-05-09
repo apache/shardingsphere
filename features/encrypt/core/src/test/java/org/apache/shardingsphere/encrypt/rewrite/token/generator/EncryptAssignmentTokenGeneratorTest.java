@@ -78,7 +78,7 @@ class EncryptAssignmentTokenGeneratorTest {
     
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
-        when(result.findEncryptor("table", "columns")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
+        when(result.findStandardEncryptor("table", "columns")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         return result;
     }
     

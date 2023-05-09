@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.merge.dql;
 
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.ProjectionsContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -90,7 +91,8 @@ class EncryptAlgorithmMetaDataTest {
         when(selectStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        encryptAlgorithm = (StandardEncryptAlgorithm<?, ?>) TypedSPILoader.getService(EncryptAlgorithm.class, "MD5");
+        encryptAlgorithm =
+                (StandardEncryptAlgorithm<?, ?>) TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new PropertiesBuilder.Property("aes-key-value", "123456abc")));
     }
     
     @Test
@@ -110,7 +112,7 @@ class EncryptAlgorithmMetaDataTest {
     void assertFindEncryptContextByStatementContext() {
         when(tablesContext.findTableNamesByColumnProjection(Collections.singletonList(columnProjection), schema)).thenReturn(Collections.emptyMap());
         when(tablesContext.getTableNames()).thenReturn(Arrays.asList("t_user", "t_user_item", "t_order_item"));
-        when(encryptRule.findEncryptor("t_order_item", "id")).thenReturn(Optional.of(encryptAlgorithm));
+        when(encryptRule.findStandardEncryptor("t_order_item", "id")).thenReturn(Optional.of(encryptAlgorithm));
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(database, encryptRule, selectStatementContext);
         Optional<EncryptContext> actual = encryptAlgorithmMetaData.findEncryptContext(1);
         assertTrue(actual.isPresent());
@@ -129,11 +131,11 @@ class EncryptAlgorithmMetaDataTest {
     
     @SuppressWarnings("rawtypes")
     @Test
-    void assertFindEncryptor() {
-        when(encryptRule.findEncryptor("t_order", "id")).thenReturn(Optional.of(encryptAlgorithm));
+    void assertFindStandardEncryptor() {
+        when(encryptRule.findStandardEncryptor("t_order", "id")).thenReturn(Optional.of(encryptAlgorithm));
         EncryptAlgorithmMetaData encryptAlgorithmMetaData = new EncryptAlgorithmMetaData(database, encryptRule, selectStatementContext);
-        Optional<StandardEncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findEncryptor("t_order", "id");
+        Optional<StandardEncryptAlgorithm> actualEncryptor = encryptAlgorithmMetaData.findStandardEncryptor("t_order", "id");
         assertTrue(actualEncryptor.isPresent());
-        assertThat(actualEncryptor.get().getType(), is("MD5"));
+        assertThat(actualEncryptor.get().getType(), is("AES"));
     }
 }

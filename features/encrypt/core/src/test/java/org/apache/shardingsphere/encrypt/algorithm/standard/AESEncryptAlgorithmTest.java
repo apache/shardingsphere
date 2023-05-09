@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm.encrypt;
+package org.apache.shardingsphere.encrypt.algorithm.standard;
 
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -29,36 +30,48 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
-class MD5EncryptAlgorithmTest {
+class AESEncryptAlgorithmTest {
     
     private StandardEncryptAlgorithm<Object, String> encryptAlgorithm;
     
     @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
-        encryptAlgorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "MD5");
+        encryptAlgorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new Property("aes-key-value", "test")));
+    }
+    
+    @Test
+    void assertCreateNewInstanceWithoutAESKey() {
+        assertThrows(EncryptAlgorithmInitializationException.class, () -> TypedSPILoader.getService(EncryptAlgorithm.class, "AES"));
+    }
+    
+    @Test
+    void assertCreateNewInstanceWithEmptyAESKey() {
+        assertThrows(EncryptAlgorithmInitializationException.class, () -> encryptAlgorithm.init(PropertiesBuilder.build(new Property("aes-key-value", ""))));
     }
     
     @Test
     void assertEncrypt() {
-        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("098f6bcd4621d373cade4e832627b4f6"));
+        Object actual = encryptAlgorithm.encrypt("test", mock(EncryptContext.class));
+        assertThat(actual, is("dSpPiyENQGDUXMKFMJPGWA=="));
     }
     
     @Test
-    void assertEncryptWithNullPlaintext() {
+    void assertEncryptNullValue() {
         assertNull(encryptAlgorithm.encrypt(null, mock(EncryptContext.class)));
     }
     
     @Test
-    void assertEncryptWhenConfigSalt() {
-        encryptAlgorithm.init(PropertiesBuilder.build(new Property("salt", "202cb962ac5907")));
-        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("0c243d2934937738f36514035d95344a"));
+    void assertDecrypt() {
+        Object actual = encryptAlgorithm.decrypt("dSpPiyENQGDUXMKFMJPGWA==", mock(EncryptContext.class));
+        assertThat(actual.toString(), is("test"));
     }
     
     @Test
-    void assertDecrypt() {
-        assertThat(encryptAlgorithm.decrypt("test", mock(EncryptContext.class)).toString(), is("test"));
+    void assertDecryptNullValue() {
+        assertNull(encryptAlgorithm.decrypt(null, mock(EncryptContext.class)));
     }
 }

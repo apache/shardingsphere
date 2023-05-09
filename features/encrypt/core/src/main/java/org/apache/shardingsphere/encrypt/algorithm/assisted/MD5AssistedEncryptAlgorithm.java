@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm.encrypt;
+package org.apache.shardingsphere.encrypt.algorithm.assisted;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
 
 import java.util.Properties;
 
 /**
- * MD5 encrypt algorithm.
+ * MD5 assisted encrypt algorithm.
  */
-public final class MD5EncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
+public final class MD5AssistedEncryptAlgorithm implements AssistedEncryptAlgorithm<Object, String> {
     
     private static final String SALT = "salt";
     
@@ -40,11 +40,6 @@ public final class MD5EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return null == plainValue ? null : DigestUtils.md5Hex(plainValue + salt);
-    }
-    
-    @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return cipherValue;
     }
     
     @Override

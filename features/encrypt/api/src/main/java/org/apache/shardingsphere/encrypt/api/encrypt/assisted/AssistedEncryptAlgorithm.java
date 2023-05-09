@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.fixture;
+package org.apache.shardingsphere.encrypt.api.encrypt.assisted;
 
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 
-public final class TestQueryAssistedShardingEncryptAlgorithm implements AssistedEncryptAlgorithm<Object, String> {
-    
-    @Override
-    public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "assistedEncryptValue";
-    }
-    
-    @Override
-    public String getType() {
-        return "assistedTest";
-    }
+/**
+ * Assisted encrypt algorithm.
+ * 
+ * @param <I> type of plain value
+ * @param <O> type of cipher value
+ */
+public interface AssistedEncryptAlgorithm<I, O> extends EncryptAlgorithm<I, O> {
 }

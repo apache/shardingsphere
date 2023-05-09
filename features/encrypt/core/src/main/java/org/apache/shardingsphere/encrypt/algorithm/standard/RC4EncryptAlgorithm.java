@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm.encrypt;
+package org.apache.shardingsphere.encrypt.algorithm.standard;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;

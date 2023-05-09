@@ -17,19 +17,14 @@
 
 package org.apache.shardingsphere.encrypt.fixture;
 
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
 
-public final class CoreQueryAssistedEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Object, String> {
+public final class CoreQueryAssistedEncryptAlgorithmFixture implements AssistedEncryptAlgorithm<Object, String> {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
         return "assistedEncryptValue";
-    }
-    
-    @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        return "decryptValue";
     }
     
     @Override
