@@ -19,7 +19,6 @@
     <metadata>
         <column name="storage_unit" />
         <column name="status" />
-        <column name="delay_time(ms)" />
     </metadata>
-    <row values="read_ds_0| ENABLED| 0" />
+    <row values="read_ds_0| ENABLED" />
 </dataset>
