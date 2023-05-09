@@ -49,10 +49,19 @@ jobs:
           distribution: 'temurin'
           java-version: 11
       - uses: SonarSource/SonarCloud-github-action@master
+      - uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ env.CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ env.CACHE_PREFIX }}-maven-third-party-
+      - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-        with:
-          args: >
-            -Dsonar.organization=apache
-            -Dsonar.projectKey=apache_shardingsphere
+        run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=apache_shardingsphere -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipTests
