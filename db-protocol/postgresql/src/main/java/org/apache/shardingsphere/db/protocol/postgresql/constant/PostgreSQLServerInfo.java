@@ -30,9 +30,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLServerInfo {
     
-    private static final String DEFAULT_POSTGRESQL_VERSION = "12.3";
-    
     private static final String SERVER_VERSION_PATTERN = "%s-ShardingSphere-Proxy %s";
+    
+    private static final String DEFAULT_POSTGRESQL_VERSION = "12.3";
     
     private static final Map<String, String> SERVER_VERSIONS = new ConcurrentHashMap<>();
     
@@ -43,10 +43,7 @@ public final class PostgreSQLServerInfo {
      * @param serverVersion server version
      */
     public static void setServerVersion(final String databaseName, final String serverVersion) {
-        // TODO check when the serverVersion is null value
-        if (null != serverVersion) {
-            SERVER_VERSIONS.put(databaseName, String.format(SERVER_VERSION_PATTERN, serverVersion, CommonConstants.PROXY_VERSION.get()));
-        }
+        SERVER_VERSIONS.put(databaseName, String.format(SERVER_VERSION_PATTERN, serverVersion, CommonConstants.PROXY_VERSION.get()));
     }
     
     /**
