@@ -34,7 +34,7 @@ class MySQLServerInfoTest {
     }
     
     @Test
-    void assertSetServerVersionForNull() {
+    void assertGetDefaultServerVersion() {
         CommonConstants.PROXY_VERSION.set("5.0.0");
         assertThat(MySQLServerInfo.getDefaultServerVersion(), is("5.7.22-ShardingSphere-Proxy 5.0.0"));
     }
