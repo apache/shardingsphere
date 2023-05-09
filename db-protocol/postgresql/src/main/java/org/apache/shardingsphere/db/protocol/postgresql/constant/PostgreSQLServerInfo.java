@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 
@@ -31,6 +32,7 @@ public final class PostgreSQLServerInfo {
     
     private static final String SERVER_VERSION_PATTERN = "%s-ShardingSphere-Proxy %s";
     
+    @Getter
     private static volatile String serverVersion;
     
     /**
@@ -39,15 +41,8 @@ public final class PostgreSQLServerInfo {
      * @param serverVersion server version
      */
     public static synchronized void setServerVersion(final String serverVersion) {
-        PostgreSQLServerInfo.serverVersion = null == serverVersion ? null : String.format(SERVER_VERSION_PATTERN, serverVersion, CommonConstants.PROXY_VERSION.get());
-    }
-    
-    /**
-     * Get current server version.
-     *
-     * @return server version
-     */
-    public static String getServerVersion() {
-        return null == serverVersion ? String.format(SERVER_VERSION_PATTERN, DEFAULT_POSTGRESQL_VERSION, CommonConstants.PROXY_VERSION.get()) : serverVersion;
+        PostgreSQLServerInfo.serverVersion = null == serverVersion
+                ? String.format(SERVER_VERSION_PATTERN, DEFAULT_POSTGRESQL_VERSION, CommonConstants.PROXY_VERSION.get())
+                : String.format(SERVER_VERSION_PATTERN, serverVersion, CommonConstants.PROXY_VERSION.get());
     }
 }
