@@ -22,7 +22,6 @@ All the built-in plugins for ShardingSphere-Proxy are listed below in the form o
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-postgresql`, a PostgreSQL implementation for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
 - `org.apache.shardingsphere:shardingsphere-proxy-frontend-opengauss`, an openGauss implementation for ShardingSphere-Proxy to parse and adapt the protocol for accessing the database
 - `org.apache.shardingsphere:shardingsphere-proxy-backend-core`, the backend core for ShardingSphere Proxy
-- `org.apache.shardingsphere:shardingsphere-sharding-cache`, sharding cache, refer to https://github.com/apache/shardingsphere/issues/21223
 - `org.apache.shardingsphere:shardingsphere-standalone-mode-core`, the persistence definition core of single-machine mode configuration information
 
 For the core `org.apache.shardingsphere:shardingsphere-jdbc-core`,Its built-in plugins reference[ShardingSphere-JDBC Optional Plugins](/en/user-manual/shardingsphere-jdbc/optional-plugins/).
