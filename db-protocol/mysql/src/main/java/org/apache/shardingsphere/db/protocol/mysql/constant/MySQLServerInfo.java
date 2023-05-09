@@ -54,7 +54,7 @@ public final class MySQLServerInfo {
     }
     
     /**
-     * Get current server version by schemaName.
+     * Get server version.
      * 
      * @param databaseName database name
      * @return server version
@@ -64,9 +64,9 @@ public final class MySQLServerInfo {
     }
     
     /**
-     * Set default mysql version.
+     * Set default MySQL version.
      * 
-     * @param defaultMysqlVersion default mysql version
+     * @param defaultMysqlVersion default MySQL version
      */
     public static void setDefaultMysqlVersion(final String defaultMysqlVersion) {
         MySQLServerInfo.defaultMysqlVersion = defaultMysqlVersion;

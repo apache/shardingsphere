@@ -119,7 +119,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
         PostgreSQLPasswordMessagePacket passwordMessagePacket = new PostgreSQLPasswordMessagePacket(payload);
         login(rule, passwordMessagePacket.getDigest());
         context.write(new PostgreSQLAuthenticationOKPacket());
-        context.write(new PostgreSQLParameterStatusPacket("server_version", PostgreSQLServerInfo.getServerVersion()));
+        context.write(new PostgreSQLParameterStatusPacket("server_version", PostgreSQLServerInfo.getServerVersion(currentAuthResult.getDatabase())));
         context.write(new PostgreSQLParameterStatusPacket("client_encoding", clientEncoding));
         context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
         context.write(new PostgreSQLParameterStatusPacket("integer_datetimes", "on"));

@@ -45,7 +45,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     
     @Override
     public void setDatabaseVersion(final String databaseName, final String databaseVersion) {
-        PostgreSQLServerInfo.setServerVersion(databaseVersion);
+        PostgreSQLServerInfo.setServerVersion(databaseName, databaseVersion);
     }
     
     @Override
