@@ -23,6 +23,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
 
+/**
+ * Json utils.
+ */
 @Slf4j
 public final class JsonUtils {
     
