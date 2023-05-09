@@ -62,6 +62,7 @@ import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineSchemaUtils;
 import org.apache.shardingsphere.data.pipeline.core.sharding.ShardingColumnsExtractor;
 import org.apache.shardingsphere.data.pipeline.core.util.JobDataNodeLineConvertUtils;
+import org.apache.shardingsphere.data.pipeline.core.util.JsonUtils;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJob;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobId;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
@@ -117,8 +118,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
-    
-    private static final Gson GSON = new Gson();
     
     private final PipelineDataSourcePersistService dataSourcePersistService = new PipelineDataSourcePersistService();
     
@@ -220,7 +219,7 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     
     @Override
     protected String marshalJobIdLeftPart(final PipelineJobId pipelineJobId) {
-        String text = GSON.toJson(pipelineJobId);
+        String text = JsonUtils.toJson(pipelineJobId);
         return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
     }
     
