@@ -98,8 +98,10 @@ public final class CDCClient {
         try {
             ChannelFuture future = bootstrap.connect(address, port).sync();
             future.channel().closeFuture().sync();
-        } catch (final InterruptedException ex) {
-            log.warn("CDC client interrupted", ex);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("CDC connect failed", ex);
             group.shutdownGracefully();
         }
     }
