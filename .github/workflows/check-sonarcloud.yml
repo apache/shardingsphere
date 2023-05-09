@@ -15,20 +15,11 @@
 # limitations under the License.
 #
 
-name: Check - Sonarcloud
+name: Check - SonarCloud
 
 on:
   push:
     branches: [ master, dev ]
-    paths:
-      - '**/src/main/**'
-      - '**/src/test/**'
-      - 'src/resources/**'
-      - '.github/workflows/check-checkstyle.yml'
-      - 'examples/shardingsphere-example-generator/**'
-      - 'test/e2e/agent/plugins/**'
-      - '!examples/**'
-      - '!*.md'
   pull_request:
     branches: [ master ]
     paths:
@@ -51,7 +42,7 @@ env:
 
 jobs:
   build:
-    name: Analyze to sonarcloud
+    name: Analyze to SonarCloud
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -76,7 +67,7 @@ jobs:
           restore-keys: |
             ${{ env.CACHE_PREFIX }}-maven-third-party-
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/SonarCloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
