@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.core.exception.param.PipelineInvalidParameterException;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 
 /**
  * Json utils.
@@ -41,14 +41,32 @@ public final class JsonUtils {
      *
      * @param value value
      * @return json string
-     * @throws PipelineInvalidParameterException pipeline invalid parameter exception
+     * @throws PipelineInternalException pipeline internal exception
      */
     public static String toJson(final Object value) {
         try {
             return OBJECT_MAPPER.writeValueAsString(value);
         } catch (final JsonProcessingException ex) {
-            log.error("Convert to json failed", ex);
-            throw new PipelineInvalidParameterException(value.toString());
+            log.error("Convert to json failed, value={}", value, ex);
+            throw new PipelineInternalException(ex);
+        }
+    }
+    
+    /**
+     * Read json string.
+     *
+     * @param jsonString json string
+     * @param clazz class
+     * @param <T> type of class
+     * @return object from json
+     * @throws PipelineInternalException pipeline internal exception
+     */
+    public static <T> T readJson(final String jsonString, final Class<T> clazz) {
+        try {
+            return OBJECT_MAPPER.readValue(jsonString, clazz);
+        } catch (final JsonProcessingException ex) {
+            log.error("Parse json failed, jsonString={}", jsonString, ex);
+            throw new PipelineInternalException(ex);
         }
     }
 }
