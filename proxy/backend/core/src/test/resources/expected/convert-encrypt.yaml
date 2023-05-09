@@ -31,6 +31,6 @@ PROPERTIES('minPoolSize'='1', 'connectionTimeoutMilliseconds'='30000', 'maxLifet
 
 CREATE ENCRYPT RULE t_encrypt (
 COLUMNS(
-(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, LIKE_QUERY_COLUMN=user_like, ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc'))), ASSISTED_QUERY_ALGORITHM(TYPE(NAME='md5')), LIKE_QUERY_ALGORITHM(TYPE(NAME='char_digest_like'))),
-(NAME=order_id, CIPHER=order_cipher, ENCRYPT_ALGORITHM(TYPE(NAME='md5')))
+(NAME=user_id, CIPHER=user_cipher, ASSISTED_QUERY_COLUMN=user_assisted, LIKE_QUERY_COLUMN=user_like, ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456abc'))), ASSISTED_QUERY_ALGORITHM(TYPE(NAME='rc4', PROPERTIES('rc4-key-value'='123456abc'))), LIKE_QUERY_ALGORITHM(TYPE(NAME='char_digest_like'))),
+(NAME=order_id, CIPHER=order_cipher, ENCRYPT_ALGORITHM(TYPE(NAME='rc4', PROPERTIES('rc4-key-value'='123456abc'))))
 ));
