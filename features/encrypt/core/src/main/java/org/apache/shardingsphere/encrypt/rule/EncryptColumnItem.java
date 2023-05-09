@@ -29,33 +29,24 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class EncryptColumn {
+public final class EncryptColumnItem {
     
     private final String name;
     
-    private final EncryptColumnItem cipher;
+    private final String encryptorName;
     
     private String dataType;
     
-    private EncryptColumnItem assistedQuery;
-    
-    private EncryptColumnItem likeQuery;
-    
-    /**
-     * Get assisted query.
-     *
-     * @return assisted query column item
-     */
-    public Optional<EncryptColumnItem> getAssistedQuery() {
-        return Optional.of(assistedQuery);
+    public EncryptColumnItem(final String name) {
+        this(name, null);
     }
     
     /**
-     * Get like query.
-     *
-     * @return like query column item
+     * Get data type.
+     * 
+     * @return data type
      */
-    public Optional<EncryptColumnItem> getLikeQuery() {
-        return Optional.ofNullable(likeQuery);
+    public Optional<String> getDataType() {
+        return Optional.ofNullable(dataType);
     }
 }

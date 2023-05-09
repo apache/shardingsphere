@@ -24,8 +24,8 @@ import org.apache.shardingsphere.distsql.handler.exception.storageunit.InvalidSt
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.swapper.YamlEncryptRuleConfigurationSwapper;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlCompatibleEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.swapper.YamlCompatibleEncryptRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -169,9 +169,9 @@ public final class YamlDatabaseConfigurationImportExecutor {
                 ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = swapper.swapToObject((YamlReadwriteSplittingRuleConfiguration) each);
                 ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
                 ruleConfigsMap.get(swapper.getOrder()).add(readwriteSplittingRuleConfig);
-            } else if (each instanceof YamlEncryptRuleConfiguration) {
-                YamlEncryptRuleConfigurationSwapper swapper = new YamlEncryptRuleConfigurationSwapper();
-                EncryptRuleConfiguration encryptRuleConfig = swapper.swapToObject((YamlEncryptRuleConfiguration) each);
+            } else if (each instanceof YamlCompatibleEncryptRuleConfiguration) {
+                YamlCompatibleEncryptRuleConfigurationSwapper swapper = new YamlCompatibleEncryptRuleConfigurationSwapper();
+                EncryptRuleConfiguration encryptRuleConfig = swapper.swapToObject((YamlCompatibleEncryptRuleConfiguration) each);
                 ruleConfigsMap.computeIfAbsent(swapper.getOrder(), key -> new LinkedList<>());
                 ruleConfigsMap.get(swapper.getOrder()).add(encryptRuleConfig);
             } else if (each instanceof YamlShadowRuleConfiguration) {

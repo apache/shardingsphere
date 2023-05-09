@@ -26,12 +26,15 @@ import java.util.Map;
 
 /**
  * Encrypt table rule configuration for YAML.
+ *
+ * @deprecated Should use new api, compatible api will remove in next version.
  */
 @Getter
 @Setter
-public final class YamlEncryptTableRuleConfiguration implements YamlConfiguration {
+@Deprecated
+public final class YamlCompatibleEncryptTableRuleConfiguration implements YamlConfiguration {
     
     private String name;
     
-    private Map<String, YamlEncryptColumnRuleConfiguration> columns = new LinkedHashMap<>();
+    private Map<String, YamlCompatibleEncryptColumnRuleConfiguration> columns = new LinkedHashMap<>();
 }

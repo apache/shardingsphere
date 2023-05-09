@@ -21,6 +21,7 @@ import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlg
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptAlterTableTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAlterTableToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.EncryptColumnItem;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
@@ -76,11 +77,17 @@ class EncryptAlterTableTokenGeneratorTest {
     }
     
     private EncryptColumn mockEncryptColumn() {
-        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "like_certificate_number", "test");
+        EncryptColumn result = new EncryptColumn("certificate_number", new EncryptColumnItem("cipher_certificate_number", "test"));
+        result.setAssistedQuery(new EncryptColumnItem("assisted_certificate_number"));
+        result.setLikeQuery(new EncryptColumnItem("like_certificate_number"));
+        return result;
     }
     
     private EncryptColumn mockNewEncryptColumn() {
-        return new EncryptColumn("cipher_certificate_number_new", "assisted_certificate_number_new", "like_certificate_number_new", "test");
+        EncryptColumn result = new EncryptColumn("certificate_number_new", new EncryptColumnItem("cipher_certificate_number_new", "test"));
+        result.setAssistedQuery(new EncryptColumnItem("assisted_certificate_number_new"));
+        result.setLikeQuery(new EncryptColumnItem("like_certificate_number_new"));
+        return result;
     }
     
     @Test

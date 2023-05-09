@@ -24,6 +24,7 @@ import org.apache.shardingsphere.encrypt.exception.metadata.EncryptColumnNotFoun
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAlterTableToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.EncryptColumnItem;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
@@ -226,13 +227,13 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     private boolean checkPreviousAndAfterHasSameColumnNumber(final String tableName, final ChangeColumnDefinitionSegment segment) {
         EncryptColumn previousColumn = getEncryptColumn(tableName, segment.getPreviousColumn().getIdentifier().getValue());
         EncryptColumn currentColumn = getEncryptColumn(tableName, segment.getColumnDefinition().getColumnName().getIdentifier().getValue());
-        if (previousColumn.getAssistedQueryColumn().isPresent() && !currentColumn.getAssistedQueryColumn().isPresent()) {
+        if (previousColumn.getAssistedQuery().isPresent() && !currentColumn.getAssistedQuery().isPresent()) {
             return false;
         }
-        if (previousColumn.getLikeQueryColumn().isPresent() && !currentColumn.getLikeQueryColumn().isPresent()) {
+        if (previousColumn.getLikeQuery().isPresent() && !currentColumn.getLikeQuery().isPresent()) {
             return false;
         }
-        return previousColumn.getAssistedQueryColumn().isPresent() || !currentColumn.getAssistedQueryColumn().isPresent();
+        return previousColumn.getAssistedQuery().isPresent() || !currentColumn.getAssistedQuery().isPresent();
     }
     
     private Collection<? extends SQLToken> getColumnTokens(final String tableName, final ChangeColumnDefinitionSegment segment) {
@@ -244,11 +245,11 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
         EncryptColumn encryptColumn = getEncryptColumn(tableName, segment.getColumnDefinition().getColumnName().getIdentifier().getValue());
         encryptRule.findAssistedQueryColumn(tableName, previousColumnName)
                 .map(optional -> new EncryptAlterTableToken(segment.getStopIndex() + 1, segment.getColumnDefinition().getColumnName().getStopIndex(),
-                        encryptColumn.getAssistedQueryColumn().orElse(""), ", CHANGE COLUMN " + optional))
+                        encryptColumn.getAssistedQuery().map(EncryptColumnItem::getName).orElse(""), ", CHANGE COLUMN " + optional))
                 .ifPresent(result::add);
         encryptRule.findLikeQueryColumn(tableName, previousColumnName)
                 .map(optional -> new EncryptAlterTableToken(segment.getStopIndex() + 1, segment.getColumnDefinition().getColumnName().getStopIndex(),
-                        encryptColumn.getLikeQueryColumn().orElse(""), ", CHANGE COLUMN " + optional))
+                        encryptColumn.getLikeQuery().map(EncryptColumnItem::getName).orElse(""), ", CHANGE COLUMN " + optional))
                 .ifPresent(result::add);
         return result;
     }

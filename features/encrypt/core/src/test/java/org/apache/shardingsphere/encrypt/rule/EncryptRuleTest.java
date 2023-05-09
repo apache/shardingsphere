@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.rule;
 
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -132,36 +133,39 @@ class EncryptRuleTest {
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfiguration() {
-        AlgorithmConfiguration standardEncryptConfig = new AlgorithmConfiguration("CORE.FIXTURE", new Properties());
-        AlgorithmConfiguration queryAssistedEncryptConfig = new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties());
-        AlgorithmConfiguration queryLikeEncryptConfig = new AlgorithmConfiguration("CORE.QUERY_LIKE.FIXTURE", new Properties());
-        EncryptColumnRuleConfiguration pwdColumnConfig =
-                new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_like", "standard_encryptor", "assisted_encryptor", "like_encryptor");
-        EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "", "test_encryptor");
+        EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd_cipher", "standard_encryptor"));
+        pwdColumnConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("pwd_assist", "assisted_encryptor"));
+        pwdColumnConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("pwd_like", "like_encryptor"));
+        EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", new EncryptColumnItemRuleConfiguration("credit_card_cipher", "standard_encryptor"));
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Arrays.asList(pwdColumnConfig, creditCardColumnConfig));
-        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), getEncryptors(standardEncryptConfig, queryAssistedEncryptConfig, queryLikeEncryptConfig));
+        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), getEncryptors(new AlgorithmConfiguration("CORE.FIXTURE", new Properties()),
+                new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties()), new AlgorithmConfiguration("CORE.QUERY_LIKE.FIXTURE", new Properties())));
     }
     
     @Test
     void assertAssistedQueryEncryptorNameSpecified() {
         EncryptColumnRuleConfiguration pwdColumnConfig =
-                new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "", "standard_encryptor", "assisted_query_test_encryptor", null);
-        assertThat(pwdColumnConfig.getAssistedQueryEncryptorName(), is("assisted_query_test_encryptor"));
+                new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd_cipher", "standard_encryptor"));
+        pwdColumnConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("pwd_assist", "assisted_query_test_encryptor"));
+        assertTrue(pwdColumnConfig.getAssistedQuery().isPresent());
+        assertThat(pwdColumnConfig.getAssistedQuery().get().getEncryptorName(), is("assisted_query_test_encryptor"));
     }
     
     @Test
     void assertLikeQueryEncryptorNameSpecified() {
         EncryptColumnRuleConfiguration pwdColumnConfig =
-                new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "pwd_like", "standard_encryptor", "", "like_query_test_encryptor");
-        assertThat(pwdColumnConfig.getLikeQueryEncryptorName(), is("like_query_test_encryptor"));
+                new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd_cipher", "standard_encryptor"));
+        pwdColumnConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("pwd_like", "like_query_test_encryptor"));
+        assertTrue(pwdColumnConfig.getLikeQuery().isPresent());
+        assertThat(pwdColumnConfig.getLikeQuery().get().getEncryptorName(), is("like_query_test_encryptor"));
     }
     
     private EncryptRuleConfiguration createEncryptRuleConfigurationWithUpperCaseLogicTable() {
         AlgorithmConfiguration standardEncryptConfig = new AlgorithmConfiguration("CORE.FIXTURE", new Properties());
         AlgorithmConfiguration queryAssistedEncryptConfig = new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties());
         AlgorithmConfiguration queryLikeEncryptConfig = new AlgorithmConfiguration("CORE.QUERY_LIKE.FIXTURE", new Properties());
-        EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "", "test_encryptor");
-        EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "", "test_encryptor");
+        EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd_cipher", "test_encryptor"));
+        EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", new EncryptColumnItemRuleConfiguration("credit_card_cipher", "test_encryptor"));
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("T_ENCRYPT", Arrays.asList(pwdColumnConfig, creditCardColumnConfig));
         return new EncryptRuleConfiguration(Collections.singleton(tableConfig), getEncryptors(standardEncryptConfig, queryAssistedEncryptConfig, queryLikeEncryptConfig));
     }

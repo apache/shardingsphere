@@ -23,7 +23,7 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredR
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
@@ -118,11 +118,13 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
     }
     
     private void dropUnusedEncryptor(final EncryptRuleConfiguration currentRuleConfig) {
-        Collection<String> inUsedEncryptors = currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(EncryptColumnRuleConfiguration::getEncryptorName)
+        Collection<String> inUsedEncryptors = currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(optional -> optional.getCipher().getEncryptorName())
                 .collect(Collectors.toSet());
-        inUsedEncryptors.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(EncryptColumnRuleConfiguration::getAssistedQueryEncryptorName)
+        inUsedEncryptors.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream())
+                .map(optional -> optional.getAssistedQuery().map(EncryptColumnItemRuleConfiguration::getEncryptorName).orElse(""))
                 .collect(Collectors.toSet()));
-        inUsedEncryptors.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(EncryptColumnRuleConfiguration::getLikeQueryEncryptorName)
+        inUsedEncryptors.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream())
+                .map(optional -> optional.getLikeQuery().map(EncryptColumnItemRuleConfiguration::getEncryptorName).orElse(""))
                 .collect(Collectors.toSet()));
         Collection<String> unusedEncryptors = currentRuleConfig.getEncryptors().keySet().stream().filter(each -> !inUsedEncryptors.contains(each)).collect(Collectors.toSet());
         unusedEncryptors.forEach(each -> currentRuleConfig.getEncryptors().remove(each));

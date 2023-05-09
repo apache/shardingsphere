@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
@@ -81,7 +82,9 @@ public final class EncryptGeneratorFixtureBuilder {
         encryptors.put("assisted_encryptor", new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties()));
         encryptors.put("like_encryptor", new AlgorithmConfiguration("CORE.QUERY_LIKE.FIXTURE", new Properties()));
         EncryptColumnRuleConfiguration pwdColumnConfig =
-                new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_like", "standard_encryptor", "assisted_encryptor", "like_encryptor");
+                new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd_cipher", "standard_encryptor"));
+        pwdColumnConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("pwd_assist", "assisted_encryptor"));
+        pwdColumnConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("pwd_like", "like_encryptor"));
         return new EncryptRule(
                 new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration("t_user", Collections.singletonList(pwdColumnConfig))), encryptors));
     }

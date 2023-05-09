@@ -17,21 +17,24 @@
 
 package org.apache.shardingsphere.encrypt.yaml.swapper.rule;
 
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlCompatibleEncryptColumnRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class YamlEncryptColumnRuleConfigurationSwapperTest {
+class YamlCompatibleEncryptColumnRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        YamlEncryptColumnRuleConfigurationSwapper swapper = new YamlEncryptColumnRuleConfigurationSwapper();
-        EncryptColumnRuleConfiguration encryptColumnRuleConfig =
-                new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "likeQueryColumn", "encryptorName");
-        YamlEncryptColumnRuleConfiguration actual = swapper.swapToYamlConfiguration(encryptColumnRuleConfig);
+        YamlCompatibleEncryptColumnRuleConfigurationSwapper swapper = new YamlCompatibleEncryptColumnRuleConfigurationSwapper();
+        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("logicColumn", new EncryptColumnItemRuleConfiguration("cipherColumn", "encryptorName"));
+        encryptColumnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assistedQueryColumn"));
+        encryptColumnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("likeQueryColumn"));
+        YamlCompatibleEncryptColumnRuleConfiguration actual = swapper.swapToYamlConfiguration(encryptColumnRuleConfig);
         assertThat(actual.getLogicColumn(), is("logicColumn"));
         assertThat(actual.getCipherColumn(), is("cipherColumn"));
         assertThat(actual.getAssistedQueryColumn(), is("assistedQueryColumn"));
@@ -41,18 +44,20 @@ class YamlEncryptColumnRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        YamlEncryptColumnRuleConfigurationSwapper swapper = new YamlEncryptColumnRuleConfigurationSwapper();
-        YamlEncryptColumnRuleConfiguration yamlEncryptColumnRuleConfig = new YamlEncryptColumnRuleConfiguration();
+        YamlCompatibleEncryptColumnRuleConfigurationSwapper swapper = new YamlCompatibleEncryptColumnRuleConfigurationSwapper();
+        YamlCompatibleEncryptColumnRuleConfiguration yamlEncryptColumnRuleConfig = new YamlCompatibleEncryptColumnRuleConfiguration();
         yamlEncryptColumnRuleConfig.setLogicColumn("logicColumn");
         yamlEncryptColumnRuleConfig.setCipherColumn("cipherColumn");
         yamlEncryptColumnRuleConfig.setAssistedQueryColumn("assistedQueryColumn");
         yamlEncryptColumnRuleConfig.setLikeQueryColumn("likeQueryColumn");
         yamlEncryptColumnRuleConfig.setEncryptorName("encryptorName");
         EncryptColumnRuleConfiguration actual = swapper.swapToObject(yamlEncryptColumnRuleConfig);
-        assertThat(actual.getLogicColumn(), is("logicColumn"));
-        assertThat(actual.getCipherColumn(), is("cipherColumn"));
-        assertThat(actual.getAssistedQueryColumn(), is("assistedQueryColumn"));
-        assertThat(actual.getLikeQueryColumn(), is("likeQueryColumn"));
-        assertThat(actual.getEncryptorName(), is("encryptorName"));
+        assertThat(actual.getName(), is("logicColumn"));
+        assertThat(actual.getCipher().getName(), is("cipherColumn"));
+        assertTrue(actual.getAssistedQuery().isPresent());
+        assertThat(actual.getAssistedQuery().get().getName(), is("assistedQueryColumn"));
+        assertTrue(actual.getLikeQuery().isPresent());
+        assertThat(actual.getLikeQuery().get().getName(), is("likeQueryColumn"));
+        assertThat(actual.getCipher().getEncryptorName(), is("encryptorName"));
     }
 }
