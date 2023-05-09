@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.example.fixture;
 
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 public final class TestQueryAssistedShardingEncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
     
