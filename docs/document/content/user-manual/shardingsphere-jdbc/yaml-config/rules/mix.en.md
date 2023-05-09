@@ -102,7 +102,6 @@ rules:
         aes-key-value: 123456abc
     md5_encryptor:
       type: MD5
-  likeEncryptors:
     like_encryptor:
       type: CHAR_DIGEST_LIKE
   tables:

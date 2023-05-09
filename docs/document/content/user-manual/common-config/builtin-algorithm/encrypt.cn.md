@@ -64,9 +64,9 @@ weight = 5
 | sm4-iv      | String | SM4 使用的 IV （MODE 为 CBC 时需指定，16 Bytes）                        |
 | sm4-padding | String | SM4 使用的 PADDING （PKCS5Padding 或 PKCS7Padding，暂不支持 NoPadding） |
 
-### 模糊查询辅助算法
+### 模糊加密算法
 
-#### 单字符摘要模糊查询辅助算法
+#### 单字符摘要模糊加密算法
 
 类型：CHAR_DIGEST_LIKE
 
@@ -97,13 +97,12 @@ rules:
           likeQueryColumn: name_like
           likeQueryEncryptorName: like_encryptor
   encryptors:
+    like_encryptor:
+      type: CHAR_DIGEST_LIKE
     name_encryptor:
       type: AES
       props:
         aes-key-value: 123456abc
-  likeEncryptors:
-    like_encryptor:
-      type: CHAR_DIGEST_LIKE
 ```
 
 ## 相关参考

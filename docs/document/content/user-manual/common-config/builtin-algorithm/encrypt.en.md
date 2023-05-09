@@ -64,9 +64,9 @@ Attributes:
 | sm4-iv      | String     | SM4 IV (should be specified on CBC, 16 bytes long)                       |
 | sm4-padding | String     | SM4 PADDING (should be PKCS5Padding or PKCS7Padding, NoPadding excepted) |
 
-### Like Assist Query Algorithm
+### Like Encrypt Algorithm
 
-#### CharDigestLike Like Assist Query Algorithm
+#### CharDigestLike Encrypt Algorithm
 
 Type：CHAR_DIGEST_LIKE
 
@@ -97,13 +97,12 @@ rules:
           likeQueryColumn: name_like
           likeQueryEncryptorName: like_encryptor
   encryptors:
+    like_encryptor:
+      type: CHAR_DIGEST_LIKE
     name_encryptor:
       type: AES
       props:
         aes-key-value: 123456abc
-  likeEncryptors:
-    like_encryptor:
-      type: CHAR_DIGEST_LIKE
 ```
 
 ## Related References

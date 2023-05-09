@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.algorithm.encrypt;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -39,7 +39,7 @@ import java.util.Properties;
 /**
  * AES encrypt algorithm.
  */
-public final class AESEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
+public final class AESEncryptAlgorithm implements StandardEncryptAlgorithm<Object, String> {
     
     private static final String AES_KEY = "aes-key-value";
     

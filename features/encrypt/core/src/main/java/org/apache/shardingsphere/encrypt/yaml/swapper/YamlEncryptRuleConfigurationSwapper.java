@@ -48,13 +48,12 @@ public final class YamlEncryptRuleConfigurationSwapper implements YamlRuleConfig
         YamlEncryptRuleConfiguration result = new YamlEncryptRuleConfiguration();
         data.getTables().forEach(each -> result.getTables().put(each.getName(), tableSwapper.swapToYamlConfiguration(each)));
         data.getEncryptors().forEach((key, value) -> result.getEncryptors().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
-        data.getLikeEncryptors().forEach((key, value) -> result.getLikeEncryptors().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         return result;
     }
     
     @Override
     public EncryptRuleConfiguration swapToObject(final YamlEncryptRuleConfiguration yamlConfig) {
-        return new EncryptRuleConfiguration(swapTables(yamlConfig), swapEncryptAlgorithm(yamlConfig), swapLikeEncryptAlgorithm(yamlConfig));
+        return new EncryptRuleConfiguration(swapTables(yamlConfig), swapEncryptAlgorithm(yamlConfig));
     }
     
     private Collection<EncryptTableRuleConfiguration> swapTables(final YamlEncryptRuleConfiguration yamlConfig) {
@@ -70,14 +69,6 @@ public final class YamlEncryptRuleConfigurationSwapper implements YamlRuleConfig
     private Map<String, AlgorithmConfiguration> swapEncryptAlgorithm(final YamlEncryptRuleConfiguration yamlConfig) {
         Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>(yamlConfig.getEncryptors().size(), 1);
         for (Entry<String, YamlAlgorithmConfiguration> entry : yamlConfig.getEncryptors().entrySet()) {
-            result.put(entry.getKey(), algorithmSwapper.swapToObject(entry.getValue()));
-        }
-        return result;
-    }
-    
-    private Map<String, AlgorithmConfiguration> swapLikeEncryptAlgorithm(final YamlEncryptRuleConfiguration yamlConfig) {
-        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>(yamlConfig.getLikeEncryptors().size(), 1);
-        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlConfig.getLikeEncryptors().entrySet()) {
             result.put(entry.getKey(), algorithmSwapper.swapToObject(entry.getValue()));
         }
         return result;

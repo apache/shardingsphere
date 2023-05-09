@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.fixture;
 
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 
-public final class CoreQueryAssistedEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
+public final class CoreQueryAssistedEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Object, String> {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
