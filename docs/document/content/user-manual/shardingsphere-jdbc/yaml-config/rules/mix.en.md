@@ -100,7 +100,7 @@ rules:
       type: AES
       props:
         aes-key-value: 123456abc
-    md5_encryptor:
+    assisted_encryptor:
       type: MD5
     like_encryptor:
       type: CHAR_DIGEST_LIKE
@@ -111,10 +111,10 @@ rules:
           cipherColumn: user_cipher
           encryptorName: aes_encryptor
           assistedQueryColumn: assisted_query_user
-          assistedQueryEncryptorName: aes_encryptor
+          assistedQueryEncryptorName: assisted_encryptor
           likeQueryColumn: like_query_user
           likeQueryEncryptorName: like_encryptor
         order_id:
           cipherColumn: order_cipher
-          encryptorName: md5_encryptor
+          encryptorName: aes_encryptor
 ```
