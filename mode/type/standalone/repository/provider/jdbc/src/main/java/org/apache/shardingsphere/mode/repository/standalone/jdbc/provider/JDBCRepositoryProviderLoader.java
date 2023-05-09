@@ -59,30 +59,38 @@ public final class JDBCRepositoryProviderLoader {
     }
     
     private static JDBCRepositoryProvider loadFromDirectory(final String type) throws URISyntaxException, IOException {
-        URL url = JDBCRepositoryProviderLoader.class.getClassLoader().getResource(ROOT_DIRECTORY);
-        if (null == url) {
+        Enumeration<URL> urls = JDBCRepositoryProviderLoader.class.getClassLoader().getResources(ROOT_DIRECTORY);
+        if (null == urls) {
             return null;
         }
         final JDBCRepositoryProvider[] result = new JDBCRepositoryProvider[1];
-        Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
-            
-            @SneakyThrows(JAXBException.class)
-            @Override
-            public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes) throws IOException {
-                if (file.toString().endsWith(FILE_EXTENSION)) {
-                    JDBCRepositoryProvider provider = (JDBCRepositoryProvider) JAXBContext.newInstance(JDBCRepositoryProvider.class).createUnmarshaller()
-                            .unmarshal(Files.newInputStream(file.toFile().toPath()));
-                    if (Objects.equals(provider.getIsDefault(), true)) {
-                        result[0] = provider;
+        final boolean[] gotIt = new boolean[1];
+        while (urls.hasMoreElements()) {
+            URL url = urls.nextElement();
+            Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
+
+                @SneakyThrows(JAXBException.class)
+                @Override
+                public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes) throws IOException {
+                    if (file.toString().endsWith(FILE_EXTENSION)) {
+                        JDBCRepositoryProvider provider = (JDBCRepositoryProvider) JAXBContext.newInstance(JDBCRepositoryProvider.class).createUnmarshaller()
+                                .unmarshal(Files.newInputStream(file.toFile().toPath()));
+                        if (Objects.equals(provider.getIsDefault(), true)) {
+                            result[0] = provider;
+                        }
+                        if (Objects.equals(provider.getType(), type)) {
+                            result[0] = provider;
+                            gotIt[0] = true;
+                            return FileVisitResult.TERMINATE;
+                        }
                     }
-                    if (Objects.equals(provider.getType(), type)) {
-                        result[0] = provider;
-                        return FileVisitResult.TERMINATE;
-                    }
+                    return FileVisitResult.CONTINUE;
                 }
-                return FileVisitResult.CONTINUE;
+            });
+            if (gotIt[0]) {
+                return result[0];
             }
-        });
+        }
         return result[0];
     }
     
