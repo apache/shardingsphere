@@ -44,8 +44,10 @@ rules:
       type: AES
       props:
         aes-key-value: 123456abc
-    md5_encryptor:
-      type: MD5
+    rc4_encryptor:
+      type: RC4
+      props:
+        rc4-key-value: 123456abc
     like_encryptor:
       type: CHAR_DIGEST_LIKE
   tables:
@@ -55,9 +57,9 @@ rules:
           cipherColumn: user_cipher
           encryptorName: aes_encryptor
           assistedQueryColumn: user_assisted
-          assistedQueryEncryptorName: md5_encryptor
+          assistedQueryEncryptorName: rc4_encryptor
           likeQueryColumn: user_like
           likeQueryEncryptorName: like_encryptor
         order_id:
           cipherColumn: order_cipher
-          encryptorName: md5_encryptor
+          encryptorName: rc4_encryptor

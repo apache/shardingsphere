@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 
-import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
 
-public final class RewriteQueryAssistedEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Object, String> {
+public final class RewriteQueryAssistedEncryptAlgorithmFixture implements AssistedEncryptAlgorithm<Object, String> {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
@@ -28,14 +28,6 @@ public final class RewriteQueryAssistedEncryptAlgorithmFixture implements Standa
             return null;
         }
         return "assisted_query_" + plainValue;
-    }
-    
-    @Override
-    public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        if (null == cipherValue) {
-            return null;
-        }
-        return cipherValue.replaceAll("encrypt_", "");
     }
     
     @Override

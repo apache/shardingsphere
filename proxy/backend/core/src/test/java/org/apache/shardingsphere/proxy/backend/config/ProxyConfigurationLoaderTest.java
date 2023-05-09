@@ -125,12 +125,13 @@ class ProxyConfigurationLoaderTest {
     private void assertEncryptRuleConfiguration(final YamlEncryptRuleConfiguration actual) {
         assertThat(actual.getEncryptors().size(), is(2));
         assertTrue(actual.getEncryptors().containsKey("aes_encryptor"));
-        assertTrue(actual.getEncryptors().containsKey("md5_encryptor"));
+        assertTrue(actual.getEncryptors().containsKey("rc4_encryptor"));
         YamlAlgorithmConfiguration aesEncryptAlgorithmConfig = actual.getEncryptors().get("aes_encryptor");
         assertThat(aesEncryptAlgorithmConfig.getType(), is("AES"));
         assertThat(aesEncryptAlgorithmConfig.getProps().getProperty("aes-key-value"), is("123456abc"));
-        YamlAlgorithmConfiguration md5EncryptAlgorithmConfig = actual.getEncryptors().get("md5_encryptor");
-        assertThat(md5EncryptAlgorithmConfig.getType(), is("MD5"));
+        YamlAlgorithmConfiguration md5EncryptAlgorithmConfig = actual.getEncryptors().get("rc4_encryptor");
+        assertThat(md5EncryptAlgorithmConfig.getType(), is("RC4"));
+        assertThat(md5EncryptAlgorithmConfig.getProps().getProperty("rc4-key-value"), is("123456abc"));
     }
     
     private void assertDataSourceConfiguration(final YamlProxyDataSourceConfiguration actual, final String expectedURL) {
