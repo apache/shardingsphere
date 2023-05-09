@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.agent.core.util.AgentReflectionUtils;
 import org.apache.shardingsphere.driver.ShardingSphereDriver;
-import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.driver.jdbc.core.driver.DriverDataSourceCache;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -66,25 +65,21 @@ public final class PluginContext {
         if (null == contextManager) {
             contextManager = getContextManager().orElse(null);
         }
-        return null == contextManager ? true : contextManager.getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED);
+        return null == contextManager || contextManager.getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.AGENT_PLUGINS_ENABLED);
     }
     
     private Optional<ContextManager> getContextManager() {
         if (enhancedForProxy) {
             return Optional.ofNullable(ProxyContext.getInstance().getContextManager());
         }
-        Optional<ShardingSphereDriver> shardingSphereDriverOptional = getShardingSphereDriver();
-        if (!shardingSphereDriverOptional.isPresent()) {
+        Optional<ShardingSphereDriver> shardingSphereDriver = getShardingSphereDriver();
+        if (!shardingSphereDriver.isPresent()) {
             return Optional.empty();
         }
-        DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(shardingSphereDriverOptional.get(), "dataSourceCache");
+        DriverDataSourceCache dataSourceCache = AgentReflectionUtils.getFieldValue(shardingSphereDriver.get(), "dataSourceCache");
         Map<String, DataSource> dataSourceMap = AgentReflectionUtils.getFieldValue(dataSourceCache, "dataSourceMap");
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            ShardingSphereDataSource shardingSphereDataSource = (ShardingSphereDataSource) entry.getValue();
-            ContextManager result = AgentReflectionUtils.getFieldValue(shardingSphereDataSource, "contextManager");
-            return Optional.ofNullable(result);
-        }
-        return Optional.empty();
+        return dataSourceMap.isEmpty() ? Optional.empty() : Optional.ofNullable(AgentReflectionUtils.getFieldValue(dataSourceMap.values().iterator().next(), "contextManager"));
+        
     }
     
     private Optional<ShardingSphereDriver> getShardingSphereDriver() {
