@@ -20,7 +20,11 @@ If the above conditions are not met, the execution delay of SQL may not be signi
 
 ```yaml
 rules:
-  - !SHARDING_CACHE
+- !SHARDING
+  tables:
+  shardingAlgorithms:
+  # ...
+  shardingCache:
     allowedMaxSqlLength: 512 # Allow cached SQL length limit
     routeCache:
       initialCapacity: 65536 # Initial capacity

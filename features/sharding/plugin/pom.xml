@@ -31,6 +31,5 @@
     <modules>
         <module>cosid</module>
         <module>nanoid</module>
-        <module>cache</module>
     </modules>
 </project>

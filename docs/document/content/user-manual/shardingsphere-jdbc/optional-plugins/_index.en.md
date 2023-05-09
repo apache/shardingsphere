@@ -23,7 +23,6 @@ All the built-in plugins for ShardingSphere-JDBC are listed below in the form of
 - `org.apache.shardingsphere:shardingsphere-postgresql-dialect-exception`, PostgreSQL implementation of database
 - `org.apache.shardingsphere:shardingsphere-readwrite-splitting-core`, read-write splitting core
 - `org.apache.shardingsphere:shardingsphere-shadow-core`, shadow library core
-- `org.apache.shardingsphere:shardingsphere-sharding-cache`, sharding cache,refer to https://github.com/apache/shardingsphere/issues/21223
 - `org.apache.shardingsphere:shardingsphere-sharding-core`, data sharding core
 - `org.apache.shardingsphere:shardingsphere-single-core`, single-table (only the only table that exists in all sharded data sources) core
 - `org.apache.shardingsphere:shardingsphere-sql-federation-core`, federation query executor core
