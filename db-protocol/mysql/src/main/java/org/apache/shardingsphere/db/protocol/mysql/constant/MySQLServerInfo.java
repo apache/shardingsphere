@@ -37,9 +37,9 @@ public final class MySQLServerInfo {
     
     public static final MySQLCharacterSet DEFAULT_CHARSET = MySQLCharacterSet.UTF8MB4_GENERAL_CI;
     
-    private static String defaultMysqlVersion = "5.7.22";
-    
     private static final String SERVER_VERSION_PATTERN = "%s-ShardingSphere-Proxy %s";
+    
+    private static final String DEFAULT_MYSQL_VERSION = "5.7.22";
     
     private static final Map<String, String> SERVER_VERSIONS = new ConcurrentHashMap<>();
     
@@ -64,20 +64,11 @@ public final class MySQLServerInfo {
     }
     
     /**
-     * Set default MySQL version.
-     * 
-     * @param defaultMysqlVersion default MySQL version
-     */
-    public static void setDefaultMysqlVersion(final String defaultMysqlVersion) {
-        MySQLServerInfo.defaultMysqlVersion = defaultMysqlVersion;
-    }
-    
-    /**
      * Get default server version.
      *
      * @return server version
      */
     public static String getDefaultServerVersion() {
-        return String.format(SERVER_VERSION_PATTERN, defaultMysqlVersion, CommonConstants.PROXY_VERSION.get());
+        return String.format(SERVER_VERSION_PATTERN, DEFAULT_MYSQL_VERSION, CommonConstants.PROXY_VERSION.get());
     }
 }
