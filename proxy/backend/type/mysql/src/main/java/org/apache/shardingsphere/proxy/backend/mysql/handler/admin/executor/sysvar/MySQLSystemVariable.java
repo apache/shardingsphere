@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sys
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.dialect.mysql.exception.IncorrectGlobalLocalVariableException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.TransactionIsolationValueProvider;
@@ -986,7 +986,7 @@ public enum MySQLSystemVariable {
     
     VALIDATE_USER_PLUGINS(Flag.GLOBAL | Flag.READONLY | Flag.INVISIBLE, "1"),
     
-    VERSION(Flag.GLOBAL | Flag.READONLY, MySQLServerInfo.getDefaultServerVersion(), new VersionValueProvider()),
+    VERSION(Flag.GLOBAL | Flag.READONLY, DatabaseProtocolServerInfo.getDefaultProtocolVersion("MySQL"), new VersionValueProvider()),
     
     VERSION_COMMENT(Flag.GLOBAL | Flag.READONLY, "Source distribution"),
     

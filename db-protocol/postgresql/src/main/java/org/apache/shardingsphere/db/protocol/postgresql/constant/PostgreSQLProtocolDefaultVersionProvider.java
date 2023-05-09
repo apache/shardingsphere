@@ -17,24 +17,20 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.constant;
 
-import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolDefaultVersionProvider;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class PostgreSQLServerInfoTest {
+/**
+ * Default protocol version provider for PostgreSQL.
+ */
+public final class PostgreSQLProtocolDefaultVersionProvider implements DatabaseProtocolDefaultVersionProvider {
     
-    @Test
-    void assertSetServerVersion() {
-        CommonConstants.PROXY_VERSION.set("5.0.0");
-        PostgreSQLServerInfo.setServerVersion("foo_db", "13.2");
-        assertThat(PostgreSQLServerInfo.getServerVersion("foo_db"), is("13.2-ShardingSphere-Proxy 5.0.0"));
+    @Override
+    public String provide() {
+        return "12.3";
     }
     
-    @Test
-    void assertGetServerVersionWithoutDatabase() {
-        CommonConstants.PROXY_VERSION.set("5.0.0");
-        assertThat(PostgreSQLServerInfo.getServerVersion(null), is("12.3-ShardingSphere-Proxy 5.0.0"));
+    @Override
+    public String getType() {
+        return "PostgreSQL";
     }
 }
