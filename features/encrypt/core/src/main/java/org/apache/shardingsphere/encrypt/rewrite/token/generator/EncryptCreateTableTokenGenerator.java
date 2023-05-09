@@ -59,7 +59,7 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
         for (int index = 0; index < columns.size(); index++) {
             ColumnDefinitionSegment each = columns.get(index);
             String columnName = each.getColumnName().getIdentifier().getValue();
-            Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, columnName);
+            Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findStandardEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
                 result.addAll(getColumnTokens(tableName, columnName, each, columns, index));
             }

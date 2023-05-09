@@ -49,7 +49,7 @@ public final class EncryptMergedResult implements MergedResult {
         if (!encryptContext.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }
-        Optional<StandardEncryptAlgorithm> encryptAlgorithm = metaData.findEncryptor(encryptContext.get().getTableName(), encryptContext.get().getColumnName());
+        Optional<StandardEncryptAlgorithm> encryptAlgorithm = metaData.findStandardEncryptor(encryptContext.get().getTableName(), encryptContext.get().getColumnName());
         if (!encryptAlgorithm.isPresent()) {
             return mergedResult.getValue(columnIndex, type);
         }

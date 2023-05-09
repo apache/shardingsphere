@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.algorithm.encrypt;
+package org.apache.shardingsphere.encrypt.algorithm.standard;
 
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;

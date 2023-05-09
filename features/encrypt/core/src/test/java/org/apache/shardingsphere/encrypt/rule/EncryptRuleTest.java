@@ -47,13 +47,13 @@ class EncryptRuleTest {
     }
     
     @Test
-    void assertFindEncryptor() {
-        assertTrue(new EncryptRule(createEncryptRuleConfiguration()).findEncryptor("t_encrypt", "pwd").isPresent());
+    void assertFindStandardEncryptor() {
+        assertTrue(new EncryptRule(createEncryptRuleConfiguration()).findStandardEncryptor("t_encrypt", "pwd").isPresent());
     }
     
     @Test
-    void assertNotFindEncryptor() {
-        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).findEncryptor("t_encrypt", "other_column").isPresent());
+    void assertNotFindStandardEncryptor() {
+        assertFalse(new EncryptRule(createEncryptRuleConfiguration()).findStandardEncryptor("t_encrypt", "other_column").isPresent());
     }
     
     @Test

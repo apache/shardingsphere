@@ -89,7 +89,7 @@ class EncryptCreateTableTokenGeneratorTest {
         EncryptRule result = mock(EncryptRule.class);
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(encryptTable.getLogicColumns()).thenReturn(Collections.singletonList("t_encrypt"));
-        when(result.findEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
+        when(result.findStandardEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         EncryptColumn column = mockEncryptColumn();
         when(result.getCipherColumn("t_encrypt", "certificate_number")).thenReturn(column.getCipherColumn());

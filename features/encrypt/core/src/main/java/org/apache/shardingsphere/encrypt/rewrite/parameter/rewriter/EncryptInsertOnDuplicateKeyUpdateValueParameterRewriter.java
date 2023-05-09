@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
@@ -66,7 +67,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
         for (int index = 0; index < onDuplicateKeyUpdateValueContext.getValueExpressions().size(); index++) {
             String encryptLogicColumnName = onDuplicateKeyUpdateValueContext.getColumn(index).getIdentifier().getValue();
-            Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, encryptLogicColumnName);
+            Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findStandardEncryptor(tableName, encryptLogicColumnName);
             if (!encryptor.isPresent()) {
                 continue;
             }
@@ -90,7 +91,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
     @SuppressWarnings({"rawtypes", "unchecked"})
     private Collection<Object> buildAddedParams(final String tableName, final String logicColumnName, final Object plainValue, final EncryptContext encryptContext) {
         Collection<Object> result = new LinkedList<>();
-        Optional<StandardEncryptAlgorithm> assistedQueryEncryptor = encryptRule.findAssistedQueryEncryptor(tableName, logicColumnName);
+        Optional<AssistedEncryptAlgorithm> assistedQueryEncryptor = encryptRule.findAssistedQueryEncryptor(tableName, logicColumnName);
         if (assistedQueryEncryptor.isPresent()) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, logicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
