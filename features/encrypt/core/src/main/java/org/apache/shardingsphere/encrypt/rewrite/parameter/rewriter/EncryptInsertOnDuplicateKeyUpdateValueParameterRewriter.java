@@ -19,13 +19,13 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 
 import com.google.common.base.Preconditions;
 import lombok.Setter;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
@@ -66,7 +66,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
         for (int index = 0; index < onDuplicateKeyUpdateValueContext.getValueExpressions().size(); index++) {
             String encryptLogicColumnName = onDuplicateKeyUpdateValueContext.getColumn(index).getIdentifier().getValue();
-            Optional<EncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, encryptLogicColumnName);
+            Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, encryptLogicColumnName);
             if (!encryptor.isPresent()) {
                 continue;
             }
@@ -90,7 +90,7 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
     @SuppressWarnings({"rawtypes", "unchecked"})
     private Collection<Object> buildAddedParams(final String tableName, final String logicColumnName, final Object plainValue, final EncryptContext encryptContext) {
         Collection<Object> result = new LinkedList<>();
-        Optional<EncryptAlgorithm> assistedQueryEncryptor = encryptRule.findAssistedQueryEncryptor(tableName, logicColumnName);
+        Optional<StandardEncryptAlgorithm> assistedQueryEncryptor = encryptRule.findAssistedQueryEncryptor(tableName, logicColumnName);
         if (assistedQueryEncryptor.isPresent()) {
             Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, logicColumnName);
             Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");

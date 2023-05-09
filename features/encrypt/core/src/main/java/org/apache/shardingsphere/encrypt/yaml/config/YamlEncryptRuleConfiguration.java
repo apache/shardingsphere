@@ -38,8 +38,6 @@ public final class YamlEncryptRuleConfiguration implements YamlRuleConfiguration
     
     private Map<String, YamlAlgorithmConfiguration> encryptors = new LinkedHashMap<>();
     
-    private Map<String, YamlAlgorithmConfiguration> likeEncryptors = new LinkedHashMap<>();
-    
     @Override
     public Class<EncryptRuleConfiguration> getRuleConfigurationType() {
         return EncryptRuleConfiguration.class;

@@ -51,8 +51,7 @@ public EncryptRuleConfiguration createEncryptRuleConfiguration() {
     Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new HashMap<>();
     encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));
     encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("assistedTest", props));
-    Map<String, AlgorithmConfiguration> likeEncryptAlgorithmConfigs = new HashMap<>();
-    likeEncryptAlgorithmConfigs.put("like_encryptor", new AlgorithmConfiguration("CHAR_DIGEST_LIKE", new Properties()));
-    return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs, likeEncryptAlgorithmConfigs);
+    encryptAlgorithmConfigs.put("like_encryptor", new AlgorithmConfiguration("CHAR_DIGEST_LIKE", new Properties()));
+    return new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
 }
 ```

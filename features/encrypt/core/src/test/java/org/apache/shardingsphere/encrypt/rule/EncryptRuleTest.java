@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -137,7 +138,7 @@ class EncryptRuleTest {
                 new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_like", "test_encryptor", "test_encryptor", "like_encryptor");
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "", "test_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Arrays.asList(pwdColumnConfig, creditCardColumnConfig));
-        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), getEncryptors(queryAssistedEncryptConfig), getLikeEncryptors(queryLikeEncryptConfig));
+        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), getEncryptors(queryAssistedEncryptConfig, queryLikeEncryptConfig));
     }
     
     @Test
@@ -160,14 +161,13 @@ class EncryptRuleTest {
         EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "", "", "test_encryptor");
         EncryptColumnRuleConfiguration creditCardColumnConfig = new EncryptColumnRuleConfiguration("credit_card", "credit_card_cipher", "", "", "test_encryptor");
         EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("T_ENCRYPT", Arrays.asList(pwdColumnConfig, creditCardColumnConfig));
-        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), getEncryptors(queryAssistedEncryptConfig), getLikeEncryptors(queryLikeEncryptConfig));
+        return new EncryptRuleConfiguration(Collections.singleton(tableConfig), getEncryptors(queryAssistedEncryptConfig, queryLikeEncryptConfig));
     }
     
-    private Map<String, AlgorithmConfiguration> getEncryptors(final AlgorithmConfiguration queryAssistedEncryptConfig) {
-        return Collections.singletonMap("test_encryptor", queryAssistedEncryptConfig);
-    }
-    
-    private Map<String, AlgorithmConfiguration> getLikeEncryptors(final AlgorithmConfiguration queryLikeEncryptConfig) {
-        return Collections.singletonMap("like_encryptor", queryLikeEncryptConfig);
+    private Map<String, AlgorithmConfiguration> getEncryptors(final AlgorithmConfiguration queryAssistedEncryptConfig, final AlgorithmConfiguration queryLikeEncryptConfig) {
+        Map<String, AlgorithmConfiguration> result = new HashMap<>(2, 1);
+        result.put("test_encryptor", queryAssistedEncryptConfig);
+        result.put("like_encryptor", queryLikeEncryptConfig);
+        return result;
     }
 }

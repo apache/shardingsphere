@@ -46,13 +46,11 @@ public final class EncryptRuleStatementConverter {
     public static EncryptRuleConfiguration convert(final Collection<EncryptRuleSegment> ruleSegments) {
         Collection<EncryptTableRuleConfiguration> tables = new LinkedList<>();
         Map<String, AlgorithmConfiguration> encryptors = new HashMap<>();
-        Map<String, AlgorithmConfiguration> likeEncryptors = new HashMap<>();
         for (EncryptRuleSegment each : ruleSegments) {
             tables.add(createEncryptTableRuleConfiguration(each));
             encryptors.putAll(createEncryptorConfigurations(each));
-            likeEncryptors.putAll(createLikeEncryptorConfigurations(each));
         }
-        return new EncryptRuleConfiguration(tables, encryptors, likeEncryptors);
+        return new EncryptRuleConfiguration(tables, encryptors);
     }
     
     private static EncryptTableRuleConfiguration createEncryptTableRuleConfiguration(final EncryptRuleSegment ruleSegment) {
@@ -78,13 +76,6 @@ public final class EncryptRuleStatementConverter {
             if (null != each.getAssistedQueryEncryptor()) {
                 result.put(getAssistedQueryEncryptorName(ruleSegment.getTableName(), each.getName()), createAssistedQueryEncryptorConfiguration(each));
             }
-        }
-        return result;
-    }
-    
-    private static Map<String, AlgorithmConfiguration> createLikeEncryptorConfigurations(final EncryptRuleSegment ruleSegment) {
-        Map<String, AlgorithmConfiguration> result = new HashMap<>(ruleSegment.getColumns().size(), 1);
-        for (EncryptColumnSegment each : ruleSegment.getColumns()) {
             if (null != each.getLikeQueryEncryptor()) {
                 result.put(getLikeQueryEncryptorName(ruleSegment.getTableName(), each.getName()), createLikeQueryEncryptorConfiguration(each));
             }

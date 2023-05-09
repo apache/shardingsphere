@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
@@ -59,7 +59,7 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
         for (int index = 0; index < columns.size(); index++) {
             ColumnDefinitionSegment each = columns.get(index);
             String columnName = each.getColumnName().getIdentifier().getValue();
-            Optional<EncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, columnName);
+            Optional<StandardEncryptAlgorithm> encryptor = encryptRule.findEncryptor(tableName, columnName);
             if (encryptor.isPresent()) {
                 result.addAll(getColumnTokens(tableName, columnName, each, columns, index));
             }

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 
-public final class RewriteQueryAssistedEncryptAlgorithmFixture implements EncryptAlgorithm<Object, String> {
+public final class RewriteQueryAssistedEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Object, String> {
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {

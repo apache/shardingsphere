@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.encrypt.merge.dql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
@@ -54,7 +54,7 @@ public final class EncryptAlgorithmMetaData {
      * @param columnName column name
      * @return encryptor
      */
-    public Optional<EncryptAlgorithm> findEncryptor(final String tableName, final String columnName) {
+    public Optional<StandardEncryptAlgorithm> findEncryptor(final String tableName, final String columnName) {
         return encryptRule.findEncryptor(tableName, columnName);
     }
     

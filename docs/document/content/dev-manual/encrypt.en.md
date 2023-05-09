@@ -24,19 +24,4 @@ Data encrypt algorithm definition
 | RC4                  | RC4 data encrypt algorithm                  | [`org.apache.shardingsphere.encrypt.algorithm.encrypt.RC4EncryptAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/encrypt/core/src/main/java/org/apache/shardingsphere/encrypt/algorithm/encrypt/RC4EncryptAlgorithm.java)                 |
 | SM3                  | SM3 data encrypt algorithm                  | [`org.apache.shardingsphere.encrypt.sm.algorithm.SM3EncryptAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/encrypt/plugin/sm/src/main/java/org/apache/shardingsphere/encrypt/sm/algorithm/SM3EncryptAlgorithm.java)                      |
 | SM4                  | SM4 data encrypt algorithm                  | [`org.apache.shardingsphere.encrypt.sm.algorithm.SM4EncryptAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/encrypt/plugin/sm/src/main/java/org/apache/shardingsphere/encrypt/sm/algorithm/SM4EncryptAlgorithm.java)                      |
-
-## LikeEncryptAlgorithm
-
-### Fully-qualified class name
-
-[`org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/encrypt/api/src/main/java/org/apache/shardingsphere/encrypt/spi/LikeEncryptAlgorithm.java)
-
-### Definition
-
-Data like assist query algorithm definition
-
-### Implementation classes
-
-| *Configuration Type* | *Description*                               | *Fully-qualified class name*                                                                                                                                                                                                                                       |
-|----------------------|---------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | CHAR_DIGEST_LIKE     | Data encryption algorithms for like queries | [`org.apache.shardingsphere.encrypt.algorithm.like.CharDigestLikeEncryptAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/encrypt/core/src/main/java/org/apache/shardingsphere/encrypt/algorithm/like/CharDigestLikeEncryptAlgorithm.java) |

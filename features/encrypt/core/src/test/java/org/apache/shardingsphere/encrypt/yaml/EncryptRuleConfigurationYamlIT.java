@@ -38,7 +38,6 @@ class EncryptRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
     private void assertEncryptRule(final YamlEncryptRuleConfiguration actual) {
         assertColumns(actual);
         assertEncryptAlgorithm(actual);
-        assertLikeEncryptAlgorithm(actual);
     }
     
     private void assertColumns(final YamlEncryptRuleConfiguration actual) {
@@ -56,10 +55,5 @@ class EncryptRuleConfigurationYamlIT extends YamlRuleConfigurationIT {
         assertThat(actual.getEncryptors().size(), is(2));
         assertThat(actual.getEncryptors().get("username_encryptor").getType(), is("AES"));
         assertThat(actual.getEncryptors().get("username_encryptor").getProps().get("aes-key-value"), is("123456abc"));
-    }
-    
-    private void assertLikeEncryptAlgorithm(final YamlEncryptRuleConfiguration actual) {
-        assertThat(actual.getLikeEncryptors().size(), is(1));
-        assertThat(actual.getLikeEncryptors().get("like_encryptor").getType(), is("CHAR_DIGEST_LIKE"));
     }
 }

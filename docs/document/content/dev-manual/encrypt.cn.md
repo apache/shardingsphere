@@ -24,19 +24,4 @@ chapter = true
 | RC4              | 基于 RC4 的数据加密算法 | [`org.apache.shardingsphere.encrypt.algorithm.encrypt.RC4EncryptAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/encrypt/core/src/main/java/org/apache/shardingsphere/encrypt/algorithm/encrypt/RC4EncryptAlgorithm.java)                 |
 | SM3              | 基于 SM3 的数据加密算法 | [`org.apache.shardingsphere.encrypt.sm.algorithm.SM3EncryptAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/encrypt/plugin/sm/src/main/java/org/apache/shardingsphere/encrypt/sm/algorithm/SM3EncryptAlgorithm.java)                      |
 | SM4              | 基于 SM4 的数据加密算法 | [`org.apache.shardingsphere.encrypt.sm.algorithm.SM4EncryptAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/encrypt/plugin/sm/src/main/java/org/apache/shardingsphere/encrypt/sm/algorithm/SM4EncryptAlgorithm.java)                      |
-
-## LikeEncryptAlgorithm
-
-### 全限定类名
-
-[`org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/encrypt/api/src/main/java/org/apache/shardingsphere/encrypt/spi/LikeEncryptAlgorithm.java)
-
-### 定义
-
-数据模糊查询辅助算法
-
-### 已知实现
-
-| *配置标识*           | *详细说明*         | *全限定类名*                                                                                                                                                                                                                                                            |
-|------------------|----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | CHAR_DIGEST_LIKE | 用于模糊查询的数据加密算法  | [`org.apache.shardingsphere.encrypt.algorithm.like.CharDigestLikeEncryptAlgorithm`](https://github.com/apache/shardingsphere/blob/master/features/encrypt/core/src/main/java/org/apache/shardingsphere/encrypt/algorithm/like/CharDigestLikeEncryptAlgorithm.java) |

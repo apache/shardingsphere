@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
@@ -78,7 +78,7 @@ class EncryptAssignmentTokenGeneratorTest {
     
     private EncryptRule mockEncryptRule() {
         EncryptRule result = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
-        when(result.findEncryptor("table", "columns")).thenReturn(Optional.of(mock(EncryptAlgorithm.class)));
+        when(result.findEncryptor("table", "columns")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         return result;
     }
     

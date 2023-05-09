@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.sm.algorithm;
 
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -34,12 +35,12 @@ import static org.mockito.Mockito.mock;
 
 class SM3EncryptAlgorithmTest {
     
-    private EncryptAlgorithm<Object, String> encryptAlgorithm;
+    private StandardEncryptAlgorithm<Object, String> encryptAlgorithm;
     
     @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
-        encryptAlgorithm = (EncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "SM3", PropertiesBuilder.build(new Property("sm3-salt", "test1234")));
+        encryptAlgorithm = (StandardEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "SM3", PropertiesBuilder.build(new Property("sm3-salt", "test1234")));
     }
     
     @Test
