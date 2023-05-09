@@ -91,7 +91,8 @@ class EncryptAlgorithmMetaDataTest {
         when(selectStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        encryptAlgorithm = (StandardEncryptAlgorithm<?, ?>) TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new PropertiesBuilder.Property("aes-key-value", "123456abc")));
+        encryptAlgorithm =
+                (StandardEncryptAlgorithm<?, ?>) TypedSPILoader.getService(EncryptAlgorithm.class, "AES", PropertiesBuilder.build(new PropertiesBuilder.Property("aes-key-value", "123456abc")));
     }
     
     @Test
