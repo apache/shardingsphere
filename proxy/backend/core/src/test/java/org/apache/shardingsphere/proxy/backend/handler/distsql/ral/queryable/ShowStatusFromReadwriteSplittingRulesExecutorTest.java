@@ -64,7 +64,7 @@ class ShowStatusFromReadwriteSplittingRulesExecutorTest {
     void assertGetColumns() {
         ShowStatusFromReadwriteSplittingRulesExecutor executor = new ShowStatusFromReadwriteSplittingRulesExecutor();
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(3));
+        assertThat(columns.size(), is(2));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("storage_unit"));
         assertThat(iterator.next(), is("status"));

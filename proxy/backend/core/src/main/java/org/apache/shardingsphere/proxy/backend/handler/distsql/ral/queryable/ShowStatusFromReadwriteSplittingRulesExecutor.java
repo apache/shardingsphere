@@ -58,7 +58,7 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Conn
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("storage_unit", "status", "delay_time(ms)");
+        return Arrays.asList("storage_unit", "status");
     }
     
     @Override
@@ -128,7 +128,7 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Conn
     
     private LocalDataQueryResultRow buildRow(final String resource, final StorageNodeDataSource storageNodeDataSource) {
         if (null == storageNodeDataSource) {
-            return new LocalDataQueryResultRow(resource, DataSourceState.ENABLED.name(), "0");
+            return new LocalDataQueryResultRow(resource, DataSourceState.ENABLED.name());
         }
         String status = storageNodeDataSource.getStatus().name();
         return new LocalDataQueryResultRow(resource, status);
