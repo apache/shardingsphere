@@ -24,9 +24,7 @@ on:
       - '**/src/main/**'
       - '**/src/test/**'
       - 'src/resources/**'
-      - '.github/workflows/check-checkstyle.yml'
       - 'examples/shardingsphere-example-generator/**'
-      - 'test/e2e/agent/plugins/**'
       - '!examples/**'
       - '!*.md'
   workflow_dispatch:
