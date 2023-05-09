@@ -44,26 +44,22 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
+      - uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 11
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v3
+      - uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Maven packages
-        uses: actions/cache@v3
+      - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
           key: ${{ env.CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.CACHE_PREFIX }}-maven-third-party-
-      - name: SonarCloud Scan
-        uses: SonarSource/SonarCloud-github-action@master
+      - uses: SonarSource/SonarCloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
