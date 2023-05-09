@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.MySQLSessionVariableHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -54,7 +54,7 @@ public final class MySQLSetCharsetExecutor implements MySQLSessionVariableHandle
     private Charset parseCharset(final String value) {
         switch (value.toLowerCase(Locale.ROOT)) {
             case "default":
-                return MySQLServerInfo.DEFAULT_CHARSET.getCharset();
+                return MySQLConstants.DEFAULT_CHARSET.getCharset();
             case "utf8mb4":
                 return StandardCharsets.UTF_8;
             default:

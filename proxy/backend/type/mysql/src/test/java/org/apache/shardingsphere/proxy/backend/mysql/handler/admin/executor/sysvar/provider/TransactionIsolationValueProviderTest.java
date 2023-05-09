@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sys
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.SystemVariable;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.api.TransactionType;
@@ -33,17 +33,17 @@ class TransactionIsolationValueProviderTest {
     
     @Test
     void assertGetGlobalValue() {
-        assertThat(new TransactionIsolationValueProvider().get(Scope.GLOBAL, null, SystemVariable.TRANSACTION_ISOLATION), is("REPEATABLE-READ"));
-        assertThat(new TransactionIsolationValueProvider().get(Scope.GLOBAL, null, SystemVariable.TX_ISOLATION), is("REPEATABLE-READ"));
+        assertThat(new TransactionIsolationValueProvider().get(Scope.GLOBAL, null, MySQLSystemVariable.TRANSACTION_ISOLATION), is("REPEATABLE-READ"));
+        assertThat(new TransactionIsolationValueProvider().get(Scope.GLOBAL, null, MySQLSystemVariable.TX_ISOLATION), is("REPEATABLE-READ"));
     }
     
     @Test
     void assertGetSessionValue() {
         ConnectionSession connectionSession = new ConnectionSession(new MySQLDatabaseType(), TransactionType.LOCAL, new DefaultAttributeMap());
-        assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, SystemVariable.TRANSACTION_ISOLATION), is("REPEATABLE-READ"));
-        assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, SystemVariable.TX_ISOLATION), is("REPEATABLE-READ"));
+        assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TRANSACTION_ISOLATION), is("REPEATABLE-READ"));
+        assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TX_ISOLATION), is("REPEATABLE-READ"));
         connectionSession.setIsolationLevel(TransactionIsolationLevel.READ_COMMITTED);
-        assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, SystemVariable.TRANSACTION_ISOLATION), is("READ-COMMITTED"));
-        assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, SystemVariable.TX_ISOLATION), is("READ-COMMITTED"));
+        assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TRANSACTION_ISOLATION), is("READ-COMMITTED"));
+        assertThat(new TransactionIsolationValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TX_ISOLATION), is("READ-COMMITTED"));
     }
 }

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.ra
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.memory.row.MemoryQueryResultDataRow;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
 import org.apache.shardingsphere.proxy.backend.connector.sane.SaneQueryResultEngine;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.SystemVariable;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
@@ -78,7 +78,7 @@ public final class MySQLSaneQueryResultEngine implements SaneQueryResultEngine {
                 String alias = expressionProjection.getAlias().orElse(expressionProjection.getText());
                 queryResultColumnMetaDataList.add(createRawQueryResultColumnMetaData(text, alias));
                 String value = expressionProjection.getExpr() instanceof VariableSegment
-                        ? SystemVariable.findSystemVariable(((VariableSegment) expressionProjection.getExpr()).getVariable()).map(SystemVariable::getDefaultValue).orElse("1")
+                        ? MySQLSystemVariable.findSystemVariable(((VariableSegment) expressionProjection.getExpr()).getVariable()).map(MySQLSystemVariable::getDefaultValue).orElse("1")
                         : "1";
                 data.add(value);
             }

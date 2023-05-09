@@ -18,27 +18,27 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider;
 
 import io.netty.util.DefaultAttributeMap;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.SystemVariable;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 class VersionValueProviderTest {
     
     @Test
     void assertGetValue() {
-        try (MockedStatic<MySQLServerInfo> mockedStatic = Mockito.mockStatic(MySQLServerInfo.class)) {
-            mockedStatic.when(() -> MySQLServerInfo.getServerVersion(null)).thenReturn("8.0");
+        try (MockedStatic<DatabaseProtocolServerInfo> mockedStatic = Mockito.mockStatic(DatabaseProtocolServerInfo.class)) {
+            mockedStatic.when(() -> DatabaseProtocolServerInfo.getProtocolVersion(null, "MySQL")).thenReturn("8.0");
             ConnectionSession connectionSession = new ConnectionSession(new MySQLDatabaseType(), TransactionType.LOCAL, new DefaultAttributeMap());
-            MatcherAssert.assertThat(new VersionValueProvider().get(Scope.GLOBAL, connectionSession, SystemVariable.VERSION), is("8.0"));
+            assertThat(new VersionValueProvider().get(Scope.GLOBAL, connectionSession, MySQLSystemVariable.VERSION), is("8.0"));
         }
     }
 }

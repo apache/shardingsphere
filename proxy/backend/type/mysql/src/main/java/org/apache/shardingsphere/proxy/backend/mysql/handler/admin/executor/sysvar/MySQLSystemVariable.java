@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sys
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.dialect.mysql.exception.IncorrectGlobalLocalVariableException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.TransactionIsolationValueProvider;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * MySQL system variable.
  */
 @RequiredArgsConstructor
-public enum SystemVariable {
+public enum MySQLSystemVariable {
     
     ACTIVATE_ALL_ROLES_ON_LOGIN(Flag.GLOBAL, "0"),
     
@@ -986,7 +986,7 @@ public enum SystemVariable {
     
     VALIDATE_USER_PLUGINS(Flag.GLOBAL | Flag.READONLY | Flag.INVISIBLE, "1"),
     
-    VERSION(Flag.GLOBAL | Flag.READONLY, MySQLServerInfo.getDefaultServerVersion(), new VersionValueProvider()),
+    VERSION(Flag.GLOBAL | Flag.READONLY, DatabaseProtocolServerInfo.getDefaultProtocolVersion("MySQL"), new VersionValueProvider()),
     
     VERSION_COMMENT(Flag.GLOBAL | Flag.READONLY, "Source distribution"),
     
@@ -1074,26 +1074,26 @@ public enum SystemVariable {
     
     TIMED_MUTEXES(Flag.GLOBAL, "0");
     
-    private static final Map<String, SystemVariable> ALL_VARIABLES = Arrays.stream(values()).collect(Collectors.toMap(Enum::name, Function.identity()));
+    private static final Map<String, MySQLSystemVariable> ALL_VARIABLES = Arrays.stream(values()).collect(Collectors.toMap(Enum::name, Function.identity()));
     
     private final int flag;
     
     @Getter
     private final String defaultValue;
     
-    private final SystemVariableValueProvider variableValueProvider;
+    private final MySQLSystemVariableValueProvider variableValueProvider;
     
-    SystemVariable(final int flag, final String defaultValue) {
-        this(flag, defaultValue, SystemVariableValueProvider.DEFAULT_VALUE_PROVIDER);
+    MySQLSystemVariable(final int flag, final String defaultValue) {
+        this(flag, defaultValue, MySQLSystemVariableValueProvider.DEFAULT_PROVIDER);
     }
     
     /**
      * Find system variable by name.
      *
-     * @param name name
-     * @return optional system variable
+     * @param name variable name
+     * @return system variable
      */
-    public static Optional<SystemVariable> findSystemVariable(final String name) {
+    public static Optional<MySQLSystemVariable> findSystemVariable(final String name) {
         return Optional.ofNullable(ALL_VARIABLES.get(name.toUpperCase()));
     }
     
@@ -1105,18 +1105,16 @@ public enum SystemVariable {
      * @return value
      */
     public String getValue(final Scope scope, final ConnectionSession connectionSession) {
-        validateGetValue(scope);
+        validateScope(scope);
         return variableValueProvider.get(scope, connectionSession, this);
     }
     
-    private void validateGetValue(final Scope scope) {
+    private void validateScope(final Scope scope) {
         if (Scope.GLOBAL == scope) {
-            ShardingSpherePreconditions.checkState(0 == (Flag.ONLY_SESSION & scope()),
-                    () -> new IncorrectGlobalLocalVariableException(this.name().toLowerCase(), Scope.SESSION.name()));
+            ShardingSpherePreconditions.checkState(0 == (Flag.ONLY_SESSION & scope()), () -> new IncorrectGlobalLocalVariableException(name().toLowerCase(), Scope.SESSION.name()));
         }
         if (Scope.SESSION == scope) {
-            ShardingSpherePreconditions.checkState(0 != ((Flag.SESSION | Flag.ONLY_SESSION) & scope()),
-                    () -> new IncorrectGlobalLocalVariableException(this.name().toLowerCase(), Scope.GLOBAL.name()));
+            ShardingSpherePreconditions.checkState(0 != ((Flag.SESSION | Flag.ONLY_SESSION) & scope()), () -> new IncorrectGlobalLocalVariableException(name().toLowerCase(), Scope.GLOBAL.name()));
         }
     }
     

@@ -19,9 +19,10 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.handshake;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
@@ -34,7 +35,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 @Getter
 public final class MySQLHandshakePacket implements MySQLPacket {
     
-    private final int protocolVersion = MySQLServerInfo.PROTOCOL_VERSION;
+    private final int protocolVersion = MySQLConstants.PROTOCOL_VERSION;
     
     private final String serverVersion;
     
@@ -53,10 +54,10 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     private String authPluginName;
     
     public MySQLHandshakePacket(final int connectionId, final boolean sslEnabled, final MySQLAuthenticationPluginData authPluginData) {
-        serverVersion = MySQLServerInfo.getDefaultServerVersion();
+        serverVersion = DatabaseProtocolServerInfo.getDefaultProtocolVersion("MySQL");
         this.connectionId = connectionId;
         capabilityFlagsLower = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower() | (sslEnabled ? MySQLCapabilityFlag.CLIENT_SSL.getValue() : 0);
-        characterSet = MySQLServerInfo.DEFAULT_CHARSET.getId();
+        characterSet = MySQLConstants.DEFAULT_CHARSET.getId();
         statusFlag = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT;
         capabilityFlagsUpper = MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper();
         this.authPluginData = authPluginData;

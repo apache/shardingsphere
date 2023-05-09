@@ -20,11 +20,11 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sys
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 /**
- * System variable getter.
+ * System variable value provider for MySQL.
  */
-public interface SystemVariableValueProvider {
+public interface MySQLSystemVariableValueProvider {
     
-    SystemVariableValueProvider DEFAULT_VALUE_PROVIDER = new SystemVariableValueProvider() {
+    MySQLSystemVariableValueProvider DEFAULT_PROVIDER = new MySQLSystemVariableValueProvider() {
     };
     
     /**
@@ -35,7 +35,7 @@ public interface SystemVariableValueProvider {
      * @param variable variable
      * @return value of variable
      */
-    default String get(Scope scope, ConnectionSession connectionSession, SystemVariable variable) {
+    default String get(Scope scope, ConnectionSession connectionSession, MySQLSystemVariable variable) {
         return variable.getDefaultValue();
     }
 }

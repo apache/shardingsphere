@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sys
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.SystemVariable;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.Test;
@@ -32,17 +32,17 @@ class TransactionReadOnlyValueProviderTest {
     
     @Test
     void assertGetGlobalValue() {
-        assertThat(new TransactionReadOnlyValueProvider().get(Scope.GLOBAL, null, SystemVariable.TX_READ_ONLY), is("0"));
-        assertThat(new TransactionReadOnlyValueProvider().get(Scope.GLOBAL, null, SystemVariable.TRANSACTION_READ_ONLY), is("0"));
+        assertThat(new TransactionReadOnlyValueProvider().get(Scope.GLOBAL, null, MySQLSystemVariable.TX_READ_ONLY), is("0"));
+        assertThat(new TransactionReadOnlyValueProvider().get(Scope.GLOBAL, null, MySQLSystemVariable.TRANSACTION_READ_ONLY), is("0"));
     }
     
     @Test
     void assertGetSessionValue() {
         ConnectionSession connectionSession = new ConnectionSession(new MySQLDatabaseType(), TransactionType.LOCAL, new DefaultAttributeMap());
-        assertThat(new TransactionReadOnlyValueProvider().get(Scope.SESSION, connectionSession, SystemVariable.TX_READ_ONLY), is("0"));
-        assertThat(new TransactionReadOnlyValueProvider().get(Scope.SESSION, connectionSession, SystemVariable.TRANSACTION_READ_ONLY), is("0"));
+        assertThat(new TransactionReadOnlyValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TX_READ_ONLY), is("0"));
+        assertThat(new TransactionReadOnlyValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TRANSACTION_READ_ONLY), is("0"));
         connectionSession.setReadOnly(true);
-        assertThat(new TransactionReadOnlyValueProvider().get(Scope.SESSION, connectionSession, SystemVariable.TX_READ_ONLY), is("1"));
-        assertThat(new TransactionReadOnlyValueProvider().get(Scope.SESSION, connectionSession, SystemVariable.TRANSACTION_READ_ONLY), is("1"));
+        assertThat(new TransactionReadOnlyValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TX_READ_ONLY), is("1"));
+        assertThat(new TransactionReadOnlyValueProvider().get(Scope.SESSION, connectionSession, MySQLSystemVariable.TRANSACTION_READ_ONLY), is("1"));
     }
 }

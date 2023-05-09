@@ -17,25 +17,20 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.constant;
 
-import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolDefaultVersionProvider;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class MySQLServerInfoTest {
+/**
+ * Default protocol version provider for MySQL.
+ */
+public final class MySQLProtocolDefaultVersionProvider implements DatabaseProtocolDefaultVersionProvider {
     
-    @Test
-    void assertSetServerVersion() {
-        String schemaName = "test";
-        CommonConstants.PROXY_VERSION.set("5.0.0");
-        MySQLServerInfo.setServerVersion(schemaName, "5.1.47");
-        assertThat(MySQLServerInfo.getServerVersion(schemaName), is("5.1.47-ShardingSphere-Proxy 5.0.0"));
+    @Override
+    public String provide() {
+        return "5.7.22";
     }
     
-    @Test
-    void assertGetDefaultServerVersion() {
-        CommonConstants.PROXY_VERSION.set("5.0.0");
-        assertThat(MySQLServerInfo.getDefaultServerVersion(), is("5.7.22-ShardingSphere-Proxy 5.0.0"));
+    @Override
+    public String getType() {
+        return "MySQL";
     }
 }

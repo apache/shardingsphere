@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
@@ -42,13 +42,13 @@ class ShowVersionExecutorTest {
     
     @BeforeEach
     void setUp() {
-        previousVersion = MySQLServerInfo.getServerVersion("foo_db");
-        MySQLServerInfo.setServerVersion("foo_db", "8.0.26");
+        previousVersion = DatabaseProtocolServerInfo.getProtocolVersion("foo_db", "MySQL");
+        DatabaseProtocolServerInfo.setProtocolVersion("foo_db", "8.0.26");
     }
     
     @AfterEach
     void tearDown() {
-        MySQLServerInfo.setServerVersion("foo_db", previousVersion);
+        DatabaseProtocolServerInfo.setProtocolVersion("foo_db", previousVersion);
     }
     
     @Test
@@ -96,7 +96,7 @@ class ShowVersionExecutorTest {
         assertThat(actualQueryResultMetaData.getColumnName(1), is(ShowVersionExecutor.FUNCTION_NAME));
         assertThat(actualQueryResultMetaData.getColumnLabel(1), is(expectedColumnLabel));
         while (executor.getMergedResult().next()) {
-            assertThat(executor.getMergedResult().getValue(1, Object.class), is(MySQLServerInfo.getServerVersion("foo_db")));
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is(DatabaseProtocolServerInfo.getProtocolVersion("foo_db", "MySQL")));
         }
     }
 }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.mysql;
 
 import io.netty.channel.Channel;
+import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.netty.MySQLSequenceIdInboundHandler;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -73,9 +73,9 @@ class MySQLFrontendEngineTest {
     void assertSetDatabaseVersion() {
         String databaseName = "db";
         String databaseVersion = "version";
-        try (MockedStatic<MySQLServerInfo> mockedStatic = mockStatic(MySQLServerInfo.class)) {
+        try (MockedStatic<DatabaseProtocolServerInfo> mockedStatic = mockStatic(DatabaseProtocolServerInfo.class)) {
             engine.setDatabaseVersion(databaseName, databaseVersion);
-            mockedStatic.verify(() -> MySQLServerInfo.setServerVersion(databaseName, databaseVersion));
+            mockedStatic.verify(() -> DatabaseProtocolServerInfo.setProtocolVersion(databaseName, databaseVersion));
         }
     }
     
