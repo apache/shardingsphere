@@ -97,8 +97,8 @@ class DropEncryptRuleStatementUpdaterTest {
     
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {
         EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "t_encrypt_user_id_MD5"));
-        columnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("t_encrypt_test_assisted"));
-        columnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("t_encrypt_test_like"));
+        columnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("user_assisted", "t_encrypt_test_assisted"));
+        columnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("user_like", "t_encrypt_test_like"));
         Map<String, AlgorithmConfiguration> encryptors = new HashMap<>(3, 1);
         encryptors.put("t_encrypt_user_id_MD5", new AlgorithmConfiguration("TEST", new Properties()));
         encryptors.put("t_encrypt_test_assisted", new AlgorithmConfiguration("TEST", new Properties()));
