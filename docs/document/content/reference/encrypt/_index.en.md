@@ -60,19 +60,21 @@ Solution description: after selecting the appropriate encryption algorithm, such
 
 ```yaml
 -!ENCRYPT
- encryptors:
-  aes_encryptor:
-   type: AES
-   props:
-    aes-key-value: 123456abc
- tables:
-  t_user:
-   columns:
-    pwd:
-     cipherColumn: pwd_cipher
-     encryptorName: aes_encryptor
-     assistedQueryColumn: pwd_assisted_query
-     assistedQueryEncryptorName: pwd_assisted_query_cipher
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+  tables:
+    t_user:
+      columns:
+        pwd:
+          cipher:
+            name: pwd_cipher
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: pwd_assisted_query
+            encryptorName: pwd_assisted_query_cipher
 ```
 
 With the above configuration, Apache ShardingSphere only needs to convert `logicColumn`, `cipherColumn`, and `assistedQueryColumn`. 

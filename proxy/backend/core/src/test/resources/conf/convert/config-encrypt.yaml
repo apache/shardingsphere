@@ -54,12 +54,16 @@ rules:
     t_encrypt:
       columns:
         user_id:
-          cipherColumn: user_cipher
-          encryptorName: aes_encryptor
-          assistedQueryColumn: user_assisted
-          assistedQueryEncryptorName: rc4_encryptor
-          likeQueryColumn: user_like
-          likeQueryEncryptorName: like_encryptor
+          cipher:
+            name: user_cipher
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: user_assisted
+            encryptorName: rc4_encryptor
+          likeQuery:
+            name: user_like
+            encryptorName: like_encryptor
         order_id:
-          cipherColumn: order_cipher
-          encryptorName: rc4_encryptor
+          cipher:
+            name: order_cipher
+            encryptorName: rc4_encryptor

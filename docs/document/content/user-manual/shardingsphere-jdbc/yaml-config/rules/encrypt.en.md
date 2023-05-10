@@ -17,12 +17,15 @@ rules:
     <table_name> (+): # Encrypt table name
       columns:
         <column_name> (+): # Encrypt logic column name
-          cipherColumn: # Cipher column name
-          encryptorName: # Cipher encrypt algorithm name
-          assistedQueryColumn (?):  # Assisted query column name
-          assistedQueryEncryptorName:  # Assisted query encrypt algorithm name
-          likeQueryColumn (?):  # Like query column name
-          likeQueryEncryptorName:  # Like query encrypt algorithm name 
+          cipher:
+            name: # Cipher column name
+            encryptorName: # Cipher encrypt algorithm name
+          assistedQuery (?):
+            name: # Assisted query column name
+            encryptorName:  # Assisted query encrypt algorithm name
+          likeQuery (?):
+            name: # Like query column name
+            encryptorName:  # Like query encrypt algorithm name 
     
   # Encrypt algorithm configuration
   encryptors:
@@ -58,17 +61,22 @@ rules:
     t_user:
       columns:
         username:
-          cipherColumn: username
-          encryptorName: aes_encryptor
-          assistedQueryColumn: assisted_query_username
-          assistedQueryEncryptorName: assisted_encryptor
-          likeQueryColumn: like_query_username
-          likeQueryEncryptorName: like_encryptor
+          cipher:
+            name: username
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_username
+            encryptorName: assisted_encryptor
+          likeQuery:
+            name: like_query_username
+            encryptorName: like_encryptor
         pwd:
-          cipherColumn: pwd
-          encryptorName: aes_encryptor
-          assistedQueryColumn: assisted_query_pwd
-          assistedQueryEncryptorName: assisted_encryptor
+          cipher:
+            name: pwd
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_pwd
+            encryptorName: assisted_encryptor
   encryptors:
     aes_encryptor:
       type: AES
