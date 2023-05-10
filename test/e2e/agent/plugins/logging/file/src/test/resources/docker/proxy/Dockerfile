@@ -22,5 +22,5 @@ ENV WAIT_VERSION 2.7.2
 
 ADD ${APP_NAME}.tar.gz /opt
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
-RUN chmod +x /wait && mv /opt/${APP_NAME} /opt/shardingsphere-proxy && wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar -P /opt/shardingsphere-proxy/lib
+RUN chmod +x /wait && mv /opt/${APP_NAME} /opt/shardingsphere-proxy && wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar -P /opt/shardingsphere-proxy/lib
 ENTRYPOINT /wait && /opt/shardingsphere-proxy/bin/start.sh -g && tail -f /opt/shardingsphere-proxy/logs/stdout.log
