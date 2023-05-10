@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.postgresql;
 
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
-import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.codec.PostgreSQLPacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
@@ -42,11 +41,6 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     private final CommandExecuteEngine commandExecuteEngine = new PostgreSQLCommandExecuteEngine();
     
     private final DatabasePacketCodecEngine<PostgreSQLPacket> codecEngine = new PostgreSQLPacketCodecEngine();
-    
-    @Override
-    public void setDatabaseVersion(final String databaseName, final String databaseVersion) {
-        DatabaseProtocolServerInfo.setProtocolVersion(databaseName, databaseVersion);
-    }
     
     @Override
     public void release(final ConnectionSession connectionSession) {
