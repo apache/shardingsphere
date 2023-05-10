@@ -10,9 +10,9 @@ Verify the functional correctness of pipeline scenarios.
 
 ## Test environment type
 
-Currently, Native and Docker are available.
-1. Native : Run on developer local machine. Need to start ShardingSphere-Proxy instance (run proxy installation package or run `org.apache.shardingsphere.proxy.Bootstrap` in IDE) and database instance by developer. It could be used for local debugging.
-2. Docker : Run on Docker started by Maven plugin. It could be used for GitHub Actions, and it could be used for local debugging too.
+Currently, NATIVE and DOCKER are available.
+1. NATIVE : Run on developer local machine. Need to start ShardingSphere-Proxy instance and database instance by developer. It could be used for local debugging.
+2. DOCKER : Run on docker started by Maven plugin. It could be used for GitHub Actions, and it could be used for local debugging too.
 
 Supported databases: MySQL, PostgreSQL and openGuass.
 
@@ -22,7 +22,7 @@ Module path: `test/e2e/operation/pipeline`.
 
 ### Environment setup
 
-`${DOCKER-IMAGE}` refers to the name of a Docker mirror, such as `mysql:5.7`. `${DATABASE-TYPE}` refers to database types.
+`${DOCKER-IMAGE}` refers to the name of a docker mirror, such as `mysql:5.7`. `${DATABASE-TYPE}` refers to database types.
 
 Directory: `src/test/resources/env/`
 - `it-env.properties`: Environment setup configuration file.
@@ -48,11 +48,18 @@ Functions included:
 
 Any property of `it-env.properties` could be defined by Maven command line parameter `-D`, and its priority is higher than configuration file.
 
-#### Native environment setup
+#### NATIVE environment setup
 
-Start ShardingSphere-Proxy, registry center (e.g. ZooKeeper) and database.
-Suppose ShardingSphere-Proxy port is 3307.
-Take MySQL as an example, `it-env.properties` could be configured as follows: 
+1. Start ShardingSphere-Proxy (port should be 3307): refer to [proxy startup guide](/en/user-manual/shardingsphere-proxy/startup/bin/), or run `org.apache.shardingsphere.proxy.Bootstrap` in IDE after modifying `proxy/bootstrap/src/main/resources/conf/server.yaml`.
+
+Refer to following files for proxy `server.yaml` configuration:
+- test/e2e/operation/pipeline/src/test/resources/env/mysql/server-8.yaml
+- test/e2e/operation/pipeline/src/test/resources/env/postgresql/server.yaml
+- test/e2e/operation/pipeline/src/test/resources/env/opengauss/server.yaml
+
+2. Start registry center (e.g. ZooKeeper) and database.
+
+3. Take MySQL as an example, `it-env.properties` could be configured as follows: 
 ```
 pipeline.it.env.type=NATIVE
 pipeline.it.native.database=mysql
@@ -61,32 +68,32 @@ pipeline.it.native.mysql.password=root
 pipeline.it.native.mysql.port=3306
 ```
 
-Find test class and start it on IDE.
+4. Find test class and start it on IDE.
 
-#### Docker environment setup
+#### DOCKER environment setup
 
 Refer to `.github/workflows/e2e-pipeline.yml` for more details.
 
-Step 1: Build docker image.
+1. Build docker image.
 
 ```
 ./mvnw -B clean install -am -pl test/e2e/operation/pipeline -Pit.env.docker -DskipTests
 ```
 
-Running the above command will build a Docker image `apache/shardingsphere-proxy-test:latest`.
+Running the above command will build a docker image `apache/shardingsphere-proxy-test:latest`.
 
-The Docker image has port `3308` for remote debugging.
+The docker image has port `3308` for remote debugging.
 
 If only test code is modified, you could reuse existing docker image.
 
-Step 2: Configure `it-env.properties`.
+2. Configure `it-env.properties`.
 
 ```
 pipeline.it.env.type=DOCKER
 pipeline.it.docker.mysql.version=mysql:5.7
 ```
 
-Step 3: Run test cases.
+3. Run test cases.
 
 Take MySQL as an example:
 ```
