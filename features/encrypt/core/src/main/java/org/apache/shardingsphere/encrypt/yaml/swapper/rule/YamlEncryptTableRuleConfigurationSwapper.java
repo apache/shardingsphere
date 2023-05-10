@@ -48,6 +48,7 @@ public final class YamlEncryptTableRuleConfigurationSwapper implements YamlConfi
     public EncryptTableRuleConfiguration swapToObject(final YamlEncryptTableRuleConfiguration yamlConfig) {
         Collection<EncryptColumnRuleConfiguration> columns = new LinkedList<>();
         for (Entry<String, YamlEncryptColumnRuleConfiguration> entry : yamlConfig.getColumns().entrySet()) {
+            entry.getValue().setName(entry.getKey());
             columns.add(columnSwapper.swapToObject(entry.getValue()));
         }
         return new EncryptTableRuleConfiguration(yamlConfig.getName(), columns);
