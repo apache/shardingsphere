@@ -133,7 +133,7 @@ public final class EncryptTable {
      * @return cipher column
      */
     public String getCipherColumn(final String logicColumn) {
-        return columns.get(logicColumn).getName();
+        return columns.get(logicColumn).getCipher().getName();
     }
     
     /**

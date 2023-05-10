@@ -47,7 +47,7 @@ public final class EncryptColumn {
      * @return assisted query column item
      */
     public Optional<EncryptColumnItem> getAssistedQuery() {
-        return Optional.of(assistedQuery);
+        return Optional.ofNullable(assistedQuery);
     }
     
     /**
