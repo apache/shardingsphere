@@ -17,14 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.decode;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
+import org.apache.shardingsphere.data.pipeline.core.util.JsonUtils;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseTimestampUtils;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingException;
@@ -53,13 +50,6 @@ import java.util.List;
  */
 @AllArgsConstructor
 public final class MppdbDecodingPlugin implements DecodingPlugin {
-    
-    private static final ObjectMapper OBJECT_MAPPER;
-    
-    static {
-        OBJECT_MAPPER = new ObjectMapper();
-        OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
     
     private final BaseTimestampUtils timestampUtils;
     
@@ -106,11 +96,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private AbstractRowEvent readTableEvent(final String mppData) {
         MppTableData mppTableData;
-        try {
-            mppTableData = OBJECT_MAPPER.readValue(mppData, MppTableData.class);
-        } catch (final JsonProcessingException ex) {
-            throw new PipelineInternalException(ex);
-        }
+        mppTableData = JsonUtils.readJson(mppData, MppTableData.class);
         AbstractRowEvent result;
         String rowEventType = mppTableData.getOpType();
         switch (rowEventType) {
