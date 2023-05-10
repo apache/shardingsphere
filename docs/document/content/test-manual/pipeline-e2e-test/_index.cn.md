@@ -10,10 +10,10 @@ weight = 4
 
 ## 测试环境类型
 
-目前支持 Native 和 Docker。
+目前支持 NATIVE 和 DOCKER。
 
-1. Native：运行在开发者本机环境。需要在本机启动 ShardingSphere-Proxy 实例（通过 proxy 安装包或者在 IDE 运行 `org.apache.shardingsphere.proxy.Bootstrap`）和数据库实例。一般用于本机调试。
-2. Docker：运行在 Maven 插件拉起的 Docker 环境。一般用于 GitHub Action，也可以在本机运行。
+1. NATIVE：运行在开发者本机环境。需要在本机启动 ShardingSphere-Proxy 实例和数据库实例。一般用于本机调试。
+2. DOCKER：运行在 Maven 插件拉起的 docker 环境。一般用于 GitHub Action，也可以在本机运行。
 
 支持的数据库：MySQL、PostgreSQL、openGauss。
 
@@ -49,11 +49,18 @@ weight = 4
 
 `it-env.properties` 所有属性都可以通过 Maven 命令行 `-D` 的方式传入，优先级高于配置文件。
 
-#### Native 环境启动
+#### NATIVE 环境启动
 
-开发者在本地提前启动 ShardingSphere-Proxy、注册中心（如 ZooKeeper）和数据库。
-要求 ShardingSphere-Proxy 的端口是 3307。
-以 MySQL 为例，`it-env.properties` 可以配置如下：
+1. 在本地启动 ShardingSphere-Proxy（使用 3307 端口）：参考 [proxy 启动手册](/cn/user-manual/shardingsphere-proxy/startup/bin/)，或者修改 `proxy/bootstrap/src/main/resources/conf/server.yaml` 之后在 IDE 运行 `org.apache.shardingsphere.proxy.Bootstrap`。
+
+Proxy 配置可以参考：
+- test/e2e/operation/pipeline/src/test/resources/env/mysql/server-8.yaml
+- test/e2e/operation/pipeline/src/test/resources/env/postgresql/server.yaml
+- test/e2e/operation/pipeline/src/test/resources/env/opengauss/server.yaml
+
+2. 启动注册中心（如 ZooKeeper）和数据库。
+
+3. 以 MySQL 为例，`it-env.properties` 可以配置如下：
 ```
 pipeline.it.env.type=NATIVE
 pipeline.it.native.database=mysql
@@ -62,32 +69,32 @@ pipeline.it.native.mysql.password=root
 pipeline.it.native.mysql.port=3306
 ```
 
-找到对应的测试类，在 IDE 启动运行。
+4. 找到对应的测试类，在 IDE 启动运行。
 
-#### Docker 环境启动
+#### DOCKER 环境启动
 
 参考 `.github/workflows/e2e-pipeline.yml`。
 
-第一步：打包镜像
+1. 打包镜像
 
 ```
 ./mvnw -B clean install -am -pl test/e2e/operation/pipeline -Pit.env.docker -DskipTests
 ```
 
-运行以上命令会构建出一个用于 E2E 测试的 Docker 镜像 `apache/shardingsphere-proxy-test:latest`。
+运行以上命令会构建出一个用于 E2E 测试的 docker 镜像 `apache/shardingsphere-proxy-test:latest`。
 
 该镜像设置了远程调试的端口，默认是 `3308`。
 
 如果仅修改了测试代码，可以复用已有的测试镜像。
 
-第二步：修改 `it-env.properties` 配置
+2. 修改 `it-env.properties` 配置
 
 ```
 pipeline.it.env.type=DOCKER
 pipeline.it.docker.mysql.version=mysql:5.7
 ```
 
-第三步：通过 Maven 运行测试用例。以 MySQL 为例：
+3. 通过 Maven 运行测试用例。以 MySQL 为例：
 
 ```
 ./mvnw -nsu -B install -f test/e2e/operation/pipeline/pom.xml -Dpipeline.it.env.type=docker -Dpipeline.it.docker.mysql.version=mysql:5.7
