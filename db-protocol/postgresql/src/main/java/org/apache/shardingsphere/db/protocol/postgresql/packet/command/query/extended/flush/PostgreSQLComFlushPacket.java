@@ -32,7 +32,7 @@ public class PostgreSQLComFlushPacket extends PostgreSQLCommandPacket {
     }
     
     @Override
-    public void write(PostgreSQLPacketPayload payload) {
+    public void write(final PostgreSQLPacketPayload payload) {
     }
     
     @Override
