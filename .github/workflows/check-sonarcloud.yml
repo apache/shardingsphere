@@ -68,4 +68,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-        run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=apache_shardingsphere -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipTests
+        run: ./mvnw clean sonar:sonar \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.organization=apache \
+              -Dsonar.projectKey=apache_shardingsphere \
+              -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+              -Dsonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
+              -Dsonar.pullrequest.github.repository=apache/shardingsphere \
+              -Dsonar.pullrequest.provider=GitHub \
+              -Dsonar.pullrequest.github.summary_comment=true \
+              -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipTests
