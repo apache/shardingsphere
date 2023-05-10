@@ -115,6 +115,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.StringLiteralValue;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -263,7 +264,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitShowDistVariable(final ShowDistVariableContext ctx) {
-        return new ShowDistVariableStatement(getIdentifierValue(ctx.variableName()).toUpperCase());
+        return new ShowDistVariableStatement(Objects.requireNonNull(getIdentifierValue(ctx.variableName())).toUpperCase());
     }
     
     @Override
