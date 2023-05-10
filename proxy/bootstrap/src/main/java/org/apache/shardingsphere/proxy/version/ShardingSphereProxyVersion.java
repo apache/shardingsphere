@@ -22,16 +22,14 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.state.DataSourceStateManager;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.database.DatabaseServerInfo;
-import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 
 import javax.sql.DataSource;
 import java.util.Map.Entry;
@@ -71,8 +69,7 @@ public final class ShardingSphereProxyVersion {
         }
         DatabaseServerInfo databaseServerInfo = new DatabaseServerInfo(dataSource.get());
         log.info("{}, database name is `{}`", databaseServerInfo, database.getName());
-        TypedSPILoader.getService(DatabaseProtocolFrontendEngine.class, DatabaseTypeEngine.getTrunkDatabaseType(databaseServerInfo.getDatabaseName()).getType())
-                .setDatabaseVersion(database.getName(), databaseServerInfo.getDatabaseVersion());
+        DatabaseProtocolServerInfo.setProtocolVersion(database.getName(), databaseServerInfo.getDatabaseVersion());
     }
     
     private static Optional<DataSource> findDataSourceByProtocolType(final String databaseName, final ShardingSphereResourceMetaData resourceMetaData, final DatabaseType protocolType) {
