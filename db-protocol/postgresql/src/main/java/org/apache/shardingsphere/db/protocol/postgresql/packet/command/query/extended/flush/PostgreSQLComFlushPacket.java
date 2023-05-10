@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Command flush packet for PostgreSQL.
  **/
-public class PostgreSQLComFlushPacket extends PostgreSQLCommandPacket {
+public final class PostgreSQLComFlushPacket extends PostgreSQLCommandPacket {
     
     public PostgreSQLComFlushPacket(final PostgreSQLPacketPayload payload) {
         payload.readInt4();
