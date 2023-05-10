@@ -38,6 +38,7 @@ env:
 
 jobs:
   build:
+    if: github.repository == 'apache/shardingsphere'
     name: Analyze to SonarCloud
     runs-on: ubuntu-latest
     steps:
