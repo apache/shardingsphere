@@ -36,6 +36,7 @@ import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.config.im
 import org.apache.shardingsphere.test.e2e.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.util.DatabaseTypeUtils;
 import org.apache.shardingsphere.test.e2e.env.runtime.DataSourceEnvironment;
+import org.testcontainers.containers.BindMode;
 
 import java.security.InvalidParameterException;
 import java.util.Collections;
@@ -66,8 +67,8 @@ public final class DockerContainerComposer extends BaseContainerComposer {
         }
         for (int i = 0; i < storageContainerCount; i++) {
             StorageContainerConfiguration storageContainerConfig;
+            int majorVersion = new DockerImageVersion(storageContainerImage).getMajorVersion();
             if (DatabaseTypeUtils.isMySQL(databaseType)) {
-                int majorVersion = new DockerImageVersion(storageContainerImage).getMajorVersion();
                 Map<String, String> mountedResources = Collections.singletonMap(String.format("/env/mysql/mysql%s/my.cnf", majorVersion), MySQLContainer.MYSQL_CONF_IN_CONTAINER);
                 storageContainerConfig = MySQLContainerConfigurationFactory.newInstance(null, null, mountedResources);
             } else {
@@ -75,6 +76,9 @@ public final class DockerContainerComposer extends BaseContainerComposer {
             }
             DockerStorageContainer storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, storageContainerImage, null,
                     storageContainerConfig));
+            if (majorVersion > 5 && DatabaseTypeUtils.isMySQL(databaseType)) {
+                storageContainer.withClasspathResourceMapping("/env/mysql/mysql8/02-initdb.sql", "/docker-entrypoint-initdb.d/02-initdb.sql", BindMode.READ_ONLY);
+            }
             storageContainer.setNetworkAliases(Collections.singletonList(String.join(".", databaseType.getType().toLowerCase() + "_" + i, "host")));
             storageContainers.add(storageContainer);
         }
