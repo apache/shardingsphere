@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.impl;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptProjectionTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.EncryptColumnItem;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
@@ -69,7 +70,8 @@ class EncryptProjectionTokenGeneratorTest {
         when(encryptTable2.getLogicColumns()).thenReturn(Collections.singletonList("mobile"));
         when(result.findEncryptTable("doctor")).thenReturn(Optional.of(encryptTable1));
         when(result.findEncryptTable("doctor1")).thenReturn(Optional.of(encryptTable2));
-        EncryptColumn column = new EncryptColumn("mobile", null, null, null);
+        EncryptColumn column = new EncryptColumn("mobile", new EncryptColumnItem("mobile"));
+        column.setLikeQuery(new EncryptColumnItem("mobile"));
         when(result.findEncryptColumn("doctor", "mobile")).thenReturn(Optional.of(column));
         return result;
     }

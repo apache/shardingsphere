@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.merge.dal.show;
 
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -66,8 +67,10 @@ class MergedEncryptShowCreateTableMergedResultTest {
         when(queryResult.getValue(2, String.class)).thenReturn(
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
                         + "`user_id_assisted` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_id_cipher"));
+        columnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("user_id_assisted"));
         MergedEncryptShowCreateTableMergedResult actual = createMergedEncryptShowCreateTableMergedResult(queryResult,
-                mockEncryptRule(Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_id_cipher", "user_id_assisted", "", null))));
+                mockEncryptRule(Collections.singletonList(columnRuleConfig)));
         assertTrue(actual.next());
         assertThat(actual.getValue(2, String.class),
                 is("CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;"));
@@ -79,8 +82,9 @@ class MergedEncryptShowCreateTableMergedResultTest {
         when(queryResult.getValue(2, String.class)).thenReturn(
                 "CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id_cipher` VARCHAR(100) NOT NULL, "
                         + "`user_id_like` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
-        MergedEncryptShowCreateTableMergedResult actual = createMergedEncryptShowCreateTableMergedResult(queryResult,
-                mockEncryptRule(Collections.singletonList(new EncryptColumnRuleConfiguration("user_id", "user_id_cipher", "", "user_id_like", "", "", ""))));
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_id_cipher"));
+        columnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("user_id_like"));
+        MergedEncryptShowCreateTableMergedResult actual = createMergedEncryptShowCreateTableMergedResult(queryResult, mockEncryptRule(Collections.singletonList(columnRuleConfig)));
         assertTrue(actual.next());
         assertThat(actual.getValue(2, String.class),
                 is("CREATE TABLE `t_encrypt` (`id` INT NOT NULL, `user_id` VARCHAR(100) NOT NULL, `order_id` VARCHAR(30) NOT NULL,"

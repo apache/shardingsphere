@@ -15,45 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.rule;
+package org.apache.shardingsphere.encrypt.yaml.config.rule;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-import java.util.Optional;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * Encrypt column.
+ * Encrypt table rule configuration for YAML.
+ *
+ * @deprecated Should use new api, compatible api will remove in next version.
  */
-@RequiredArgsConstructor
 @Getter
 @Setter
-public final class EncryptColumn {
+@Deprecated
+public final class YamlCompatibleEncryptTableRuleConfiguration implements YamlConfiguration {
     
-    private final String name;
+    private String name;
     
-    private final EncryptColumnItem cipher;
-    
-    private EncryptColumnItem assistedQuery;
-    
-    private EncryptColumnItem likeQuery;
-    
-    /**
-     * Get assisted query.
-     *
-     * @return assisted query column item
-     */
-    public Optional<EncryptColumnItem> getAssistedQuery() {
-        return Optional.ofNullable(assistedQuery);
-    }
-    
-    /**
-     * Get like query.
-     *
-     * @return like query column item
-     */
-    public Optional<EncryptColumnItem> getLikeQuery() {
-        return Optional.ofNullable(likeQuery);
-    }
+    private Map<String, YamlCompatibleEncryptColumnRuleConfiguration> columns = new LinkedHashMap<>();
 }

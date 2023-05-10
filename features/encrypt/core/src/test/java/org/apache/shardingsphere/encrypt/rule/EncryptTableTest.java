@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLogicColumnNotFoundException;
@@ -39,8 +40,10 @@ class EncryptTableTest {
     
     @BeforeEach
     void setUp() {
-        encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
-                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "likeQueryColumn", "myEncryptor"))));
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("logicColumn", new EncryptColumnItemRuleConfiguration("cipherColumn", "myEncryptor"));
+        columnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assistedQueryColumn"));
+        columnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("likeQueryColumn"));
+        encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig)));
     }
     
     @Test

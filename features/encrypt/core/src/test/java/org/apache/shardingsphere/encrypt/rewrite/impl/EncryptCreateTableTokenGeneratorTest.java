@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rewrite.impl;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptCreateTableTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.EncryptColumnItem;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
@@ -92,14 +93,17 @@ class EncryptCreateTableTokenGeneratorTest {
         when(result.findStandardEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         EncryptColumn column = mockEncryptColumn();
-        when(result.getCipherColumn("t_encrypt", "certificate_number")).thenReturn(column.getCipherColumn());
-        when(result.findAssistedQueryColumn("t_encrypt", "certificate_number")).thenReturn(column.getAssistedQueryColumn());
-        when(result.findLikeQueryColumn("t_encrypt", "certificate_number")).thenReturn(column.getLikeQueryColumn());
+        when(result.getCipherColumn("t_encrypt", "certificate_number")).thenReturn(column.getCipher().getName());
+        when(result.findAssistedQueryColumn("t_encrypt", "certificate_number")).thenReturn(column.getAssistedQuery().map(EncryptColumnItem::getName));
+        when(result.findLikeQueryColumn("t_encrypt", "certificate_number")).thenReturn(column.getLikeQuery().map(EncryptColumnItem::getName));
         when(encryptTable.findEncryptColumn("certificate_number")).thenReturn(Optional.of(column));
         return result;
     }
     
     private EncryptColumn mockEncryptColumn() {
-        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "like_certificate_number", "test");
+        EncryptColumn result = new EncryptColumn("certificate_number", new EncryptColumnItem("cipher_certificate_number", "test"));
+        result.setAssistedQuery(new EncryptColumnItem("assisted_certificate_number"));
+        result.setLikeQuery(new EncryptColumnItem("like_certificate_number"));
+        return result;
     }
 }

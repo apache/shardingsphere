@@ -23,10 +23,13 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
  * Encrypt column rule configuration for YAML.
+ * 
+ * @deprecated Should use new api, compatible api will remove in next version.
  */
 @Getter
 @Setter
-public final class YamlEncryptColumnRuleConfiguration implements YamlConfiguration {
+@Deprecated
+public final class YamlCompatibleEncryptColumnRuleConfiguration implements YamlConfiguration {
     
     private String logicColumn;
     

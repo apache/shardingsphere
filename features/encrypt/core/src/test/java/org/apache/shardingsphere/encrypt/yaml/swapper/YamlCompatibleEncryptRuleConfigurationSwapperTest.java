@@ -19,8 +19,8 @@ package org.apache.shardingsphere.encrypt.yaml.swapper;
 
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlCompatibleEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlCompatibleEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
@@ -36,11 +36,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-class YamlEncryptRuleConfigurationSwapperTest {
+class YamlCompatibleEncryptRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        YamlEncryptRuleConfiguration actual = getSwapper().swapToYamlConfiguration(createEncryptRuleConfiguration());
+        YamlCompatibleEncryptRuleConfiguration actual = getSwapper().swapToYamlConfiguration(createEncryptRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getEncryptors().size(), is(1));
     }
@@ -58,9 +58,9 @@ class YamlEncryptRuleConfigurationSwapperTest {
         assertThat(actual.getEncryptors().size(), is(1));
     }
     
-    private YamlEncryptRuleConfiguration createYamlEncryptRuleConfiguration() {
-        YamlEncryptRuleConfiguration result = new YamlEncryptRuleConfiguration();
-        YamlEncryptTableRuleConfiguration tableRuleConfig = new YamlEncryptTableRuleConfiguration();
+    private YamlCompatibleEncryptRuleConfiguration createYamlEncryptRuleConfiguration() {
+        YamlCompatibleEncryptRuleConfiguration result = new YamlCompatibleEncryptRuleConfiguration();
+        YamlCompatibleEncryptTableRuleConfiguration tableRuleConfig = new YamlCompatibleEncryptTableRuleConfiguration();
         tableRuleConfig.setName("t_encrypt");
         result.getTables().put("t_encrypt", tableRuleConfig);
         YamlAlgorithmConfiguration algorithmConfig = new YamlAlgorithmConfiguration();
@@ -69,8 +69,8 @@ class YamlEncryptRuleConfigurationSwapperTest {
         return result;
     }
     
-    private YamlEncryptRuleConfigurationSwapper getSwapper() {
+    private YamlCompatibleEncryptRuleConfigurationSwapper getSwapper() {
         EncryptRuleConfiguration ruleConfig = mock(EncryptRuleConfiguration.class);
-        return (YamlEncryptRuleConfigurationSwapper) OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig)).get(ruleConfig);
+        return (YamlCompatibleEncryptRuleConfigurationSwapper) OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig)).get(ruleConfig);
     }
 }

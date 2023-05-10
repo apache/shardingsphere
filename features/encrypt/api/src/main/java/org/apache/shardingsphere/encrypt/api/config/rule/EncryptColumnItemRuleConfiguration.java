@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.yaml.config.rule;
+package org.apache.shardingsphere.encrypt.api.config.rule;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Encrypt table rule configuration for YAML.
+ * Encrypt column item rule configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlEncryptTableRuleConfiguration implements YamlConfiguration {
+public final class EncryptColumnItemRuleConfiguration {
     
-    private String name;
+    private final String name;
     
-    private Map<String, YamlEncryptColumnRuleConfiguration> columns = new LinkedHashMap<>();
+    private final String encryptorName;
+    
+    public EncryptColumnItemRuleConfiguration(final String name) {
+        this(name, null);
+    }
 }

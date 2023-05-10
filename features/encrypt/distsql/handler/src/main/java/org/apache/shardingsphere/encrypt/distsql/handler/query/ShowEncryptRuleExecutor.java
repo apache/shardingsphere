@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
@@ -60,15 +61,15 @@ public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRul
     private Collection<LocalDataQueryResultRow> buildColumnData(final EncryptTableRuleConfiguration tableRuleConfig, final Map<String, AlgorithmConfiguration> encryptors) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         for (EncryptColumnRuleConfiguration each : tableRuleConfig.getColumns()) {
-            AlgorithmConfiguration encryptorAlgorithmConfig = encryptors.get(each.getEncryptorName());
-            AlgorithmConfiguration assistedQueryEncryptorAlgorithmConfig = encryptors.get(each.getAssistedQueryEncryptorName());
-            AlgorithmConfiguration likeQueryEncryptorAlgorithmConfig = encryptors.get(each.getLikeQueryEncryptorName());
+            AlgorithmConfiguration encryptorAlgorithmConfig = encryptors.get(each.getCipher().getEncryptorName());
+            AlgorithmConfiguration assistedQueryEncryptorAlgorithmConfig = each.getAssistedQuery().isPresent() ? encryptors.get(each.getAssistedQuery().get().getEncryptorName()) : null;
+            AlgorithmConfiguration likeQueryEncryptorAlgorithmConfig = each.getLikeQuery().isPresent() ? encryptors.get(each.getLikeQuery().get().getEncryptorName()) : null;
             result.add(new LocalDataQueryResultRow(Arrays.asList(
                     tableRuleConfig.getName(),
-                    each.getLogicColumn(),
-                    each.getCipherColumn(),
-                    nullToEmptyString(each.getAssistedQueryColumn()),
-                    nullToEmptyString(each.getLikeQueryColumn()),
+                    each.getName(),
+                    each.getCipher().getName(),
+                    each.getAssistedQuery().map(EncryptColumnItemRuleConfiguration::getName).orElse(""),
+                    each.getLikeQuery().map(EncryptColumnItemRuleConfiguration::getName).orElse(""),
                     encryptorAlgorithmConfig.getType(),
                     PropertiesConverter.convert(encryptorAlgorithmConfig.getProps()),
                     Objects.isNull(assistedQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : assistedQueryEncryptorAlgorithmConfig.getType(),

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.config;
 
-import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlCompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
@@ -76,7 +76,8 @@ class ProxyConfigurationLoaderTest {
                 .filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(each -> (YamlShardingRuleConfiguration) each);
         assertTrue(shardingRuleConfig.isPresent());
         assertShardingRuleConfiguration(shardingRuleConfig.get());
-        assertFalse(actual.getRules().stream().filter(each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(each -> (YamlEncryptRuleConfiguration) each).isPresent());
+        assertFalse(
+                actual.getRules().stream().filter(each -> each instanceof YamlCompatibleEncryptRuleConfiguration).findFirst().map(each -> (YamlCompatibleEncryptRuleConfiguration) each).isPresent());
     }
     
     private void assertShardingRuleConfiguration(final YamlShardingRuleConfiguration actual) {
@@ -96,7 +97,8 @@ class ProxyConfigurationLoaderTest {
         assertDataSourceConfiguration(actual.getDataSources().get("read_ds_0"), "jdbc:mysql://127.0.0.1:3306/read_ds_0");
         assertDataSourceConfiguration(actual.getDataSources().get("read_ds_1"), "jdbc:mysql://127.0.0.1:3306/read_ds_1");
         assertFalse(actual.getRules().stream().filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(each -> (YamlShardingRuleConfiguration) each).isPresent());
-        assertFalse(actual.getRules().stream().filter(each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(each -> (YamlEncryptRuleConfiguration) each).isPresent());
+        assertFalse(
+                actual.getRules().stream().filter(each -> each instanceof YamlCompatibleEncryptRuleConfiguration).findFirst().map(each -> (YamlCompatibleEncryptRuleConfiguration) each).isPresent());
         Optional<YamlReadwriteSplittingRuleConfiguration> ruleConfig = actual.getRules().stream()
                 .filter(each -> each instanceof YamlReadwriteSplittingRuleConfiguration).findFirst().map(each -> (YamlReadwriteSplittingRuleConfiguration) each);
         assertTrue(ruleConfig.isPresent());
@@ -116,13 +118,13 @@ class ProxyConfigurationLoaderTest {
         assertDataSourceConfiguration(actual.getDataSources().get("ds_0"), "jdbc:mysql://127.0.0.1:3306/encrypt_ds");
         assertFalse(actual.getRules().stream()
                 .filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(each -> (YamlShardingRuleConfiguration) each).isPresent());
-        Optional<YamlEncryptRuleConfiguration> encryptRuleConfig = actual.getRules().stream()
-                .filter(each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(each -> (YamlEncryptRuleConfiguration) each);
+        Optional<YamlCompatibleEncryptRuleConfiguration> encryptRuleConfig = actual.getRules().stream()
+                .filter(each -> each instanceof YamlCompatibleEncryptRuleConfiguration).findFirst().map(each -> (YamlCompatibleEncryptRuleConfiguration) each);
         assertTrue(encryptRuleConfig.isPresent());
         assertEncryptRuleConfiguration(encryptRuleConfig.get());
     }
     
-    private void assertEncryptRuleConfiguration(final YamlEncryptRuleConfiguration actual) {
+    private void assertEncryptRuleConfiguration(final YamlCompatibleEncryptRuleConfiguration actual) {
         assertThat(actual.getEncryptors().size(), is(2));
         assertTrue(actual.getEncryptors().containsKey("aes_encryptor"));
         assertTrue(actual.getEncryptors().containsKey("rc4_encryptor"));

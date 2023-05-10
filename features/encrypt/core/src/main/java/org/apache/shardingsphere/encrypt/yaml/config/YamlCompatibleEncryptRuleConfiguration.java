@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.yaml.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlCompatibleEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
@@ -29,12 +29,15 @@ import java.util.Map;
 
 /**
  * Encrypt rule configuration for YAML.
+ * 
+ * @deprecated Should use new api, compatible api will remove in next version. 
  */
 @Getter
 @Setter
-public final class YamlEncryptRuleConfiguration implements YamlRuleConfiguration {
+@Deprecated
+public final class YamlCompatibleEncryptRuleConfiguration implements YamlRuleConfiguration {
     
-    private Map<String, YamlEncryptTableRuleConfiguration> tables = new LinkedHashMap<>();
+    private Map<String, YamlCompatibleEncryptTableRuleConfiguration> tables = new LinkedHashMap<>();
     
     private Map<String, YamlAlgorithmConfiguration> encryptors = new LinkedHashMap<>();
     
