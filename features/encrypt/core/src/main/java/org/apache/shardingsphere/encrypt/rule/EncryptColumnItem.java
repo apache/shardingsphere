@@ -19,34 +19,19 @@ package org.apache.shardingsphere.encrypt.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
-import java.util.Optional;
 
 /**
  * Encrypt column.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class EncryptColumnItem {
     
     private final String name;
     
     private final String encryptorName;
     
-    private String dataType;
-    
     public EncryptColumnItem(final String name) {
         this(name, null);
-    }
-    
-    /**
-     * Get data type.
-     * 
-     * @return data type
-     */
-    public Optional<String> getDataType() {
-        return Optional.ofNullable(dataType);
     }
 }

@@ -35,8 +35,6 @@ public final class EncryptColumn {
     
     private final EncryptColumnItem cipher;
     
-    private String dataType;
-    
     private EncryptColumnItem assistedQuery;
     
     private EncryptColumnItem likeQuery;

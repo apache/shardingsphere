@@ -19,14 +19,12 @@ package org.apache.shardingsphere.encrypt.api.config.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * Encrypt column item rule configuration.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class EncryptColumnItemRuleConfiguration {
     
     private final String name;
