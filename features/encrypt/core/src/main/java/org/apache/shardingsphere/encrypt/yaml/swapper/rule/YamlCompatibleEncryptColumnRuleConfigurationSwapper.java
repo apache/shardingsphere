@@ -51,10 +51,14 @@ public final class YamlCompatibleEncryptColumnRuleConfigurationSwapper implement
     public EncryptColumnRuleConfiguration swapToObject(final YamlCompatibleEncryptColumnRuleConfiguration yamlConfig) {
         EncryptColumnItemRuleConfiguration cipherColumnConfig = new EncryptColumnItemRuleConfiguration(yamlConfig.getCipherColumn(), yamlConfig.getEncryptorName());
         EncryptColumnRuleConfiguration result = new EncryptColumnRuleConfiguration(yamlConfig.getLogicColumn(), cipherColumnConfig);
-        EncryptColumnItemRuleConfiguration assistedQueryColumnConfig = new EncryptColumnItemRuleConfiguration(yamlConfig.getAssistedQueryColumn(), yamlConfig.getAssistedQueryEncryptorName());
-        result.setAssistedQuery(assistedQueryColumnConfig);
-        EncryptColumnItemRuleConfiguration likeQueryColumnConfig = new EncryptColumnItemRuleConfiguration(yamlConfig.getLikeQueryColumn(), yamlConfig.getLikeQueryEncryptorName());
-        result.setLikeQuery(likeQueryColumnConfig);
+        if (null != yamlConfig.getAssistedQueryColumn()) {
+            EncryptColumnItemRuleConfiguration assistedQueryColumnConfig = new EncryptColumnItemRuleConfiguration(yamlConfig.getAssistedQueryColumn(), yamlConfig.getAssistedQueryEncryptorName());
+            result.setAssistedQuery(assistedQueryColumnConfig);
+        }
+        if (null != yamlConfig.getLikeQueryColumn()) {
+            EncryptColumnItemRuleConfiguration likeQueryColumnConfig = new EncryptColumnItemRuleConfiguration(yamlConfig.getLikeQueryColumn(), yamlConfig.getLikeQueryEncryptorName());
+            result.setLikeQuery(likeQueryColumnConfig);
+        }
         return result;
     }
 }
