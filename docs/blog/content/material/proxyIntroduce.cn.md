@@ -96,7 +96,7 @@ ShardingSphere-Proxy 的启动方式有三种：二进制包、Docker、Helm，�
 
 ### 1. 将 MySQL 的 JDBC 驱动复制到 ext-lib 包
 
-下载驱动 [mysql-connector-java-5.1.47.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar) 或者 [mysql-connector-java-8.0.11.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.11/mysql-connector-java-8.0.11.jar) 放入 ext-lib 包。因为初始目录中并没有 ext-lib，需要自行创建。
+下载驱动 [mysql-connector-java-5.1.49.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar) 或者 [mysql-connector-java-8.0.11.jar](https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.11/mysql-connector-java-8.0.11.jar) 放入 ext-lib 包。因为初始目录中并没有 ext-lib，需要自行创建。
 
 ### 2. 修改 conf/server.yaml 配置文件
 
