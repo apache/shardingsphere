@@ -27,7 +27,7 @@ import java.util.Collections;
 /**
  * Command flush executor for PostgreSQL.
  **/
-public class PostgreSQLComFlushExecutor implements CommandExecutor {
+public final class PostgreSQLComFlushExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
