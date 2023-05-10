@@ -1233,4 +1233,13 @@
     <alter-table sql-case-id="alter_table_drop_expression">
         <table name="t_order" start-index="12" stop-index="18" />
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_column_precision_with_decimal">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <modify-column>
+            <column-definition type="VARCHAR" start-index="34" stop-index="59">
+                <column name="a" stop-index="34" start-index="34" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
 </sql-parser-test-cases>
