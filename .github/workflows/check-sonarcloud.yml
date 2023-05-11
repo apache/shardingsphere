@@ -69,7 +69,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
         run: ./mvnw clean sonar:sonar \
-              -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.organization=apache \
               -Dsonar.projectKey=apache_shardingsphere \
               -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
