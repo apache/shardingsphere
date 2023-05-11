@@ -43,7 +43,7 @@ advisors:
     pointcuts:
       - name: processException
         type: method
-  - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelInboundHandler
+  - target: org.apache.shardingsphere.proxy.frontend.netty.FrontendChannelLimitationInboundHandler
     advice: org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy.CurrentConnectionsCountAdvice
     pointcuts:
       - name: channelActive
