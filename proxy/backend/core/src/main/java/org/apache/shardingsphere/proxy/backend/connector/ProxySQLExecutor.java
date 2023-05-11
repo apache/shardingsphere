@@ -140,7 +140,7 @@ public final class ProxySQLExecutor {
         return sqlStatement instanceof PostgreSQLStatement || sqlStatement instanceof OpenGaussStatement;
     }
     
-    private static String getTableName(final ExecutionContext executionContext) {
+    private String getTableName(final ExecutionContext executionContext) {
         return executionContext.getSqlStatementContext() instanceof TableAvailable && !((TableAvailable) executionContext.getSqlStatementContext()).getAllTables().isEmpty()
                 ? ((TableAvailable) executionContext.getSqlStatementContext()).getAllTables().iterator().next().getTableName().getIdentifier().getValue()
                 : "unknown_table";

@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper;
 
 import com.google.common.base.Strings;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -41,6 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class PipelineCaseHelper {
     
@@ -80,7 +83,7 @@ public final class PipelineCaseHelper {
                 Object orderId = keyGenerateAlgorithm.generateKey();
                 int randomUnsignedInt = generateInt(0, 100);
                 LocalDateTime now = LocalDateTime.now();
-                Object[] addObjs = {orderId, generateInt(0, 100), generateString(6) + "", randomInt, randomInt, randomInt,
+                Object[] addObjs = {orderId, generateInt(0, 100), generateString(6), randomInt, randomInt, randomInt,
                         randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, generateFloat(), generateDouble(),
                         BigDecimal.valueOf(generateDouble()), now, now, now.toLocalDate(), now.toLocalTime(), Year.now().getValue(), "1", "t", "e", "s", "t", generateString(2),
                         emojiText, generateString(1), "1", "2", generateJsonString(32, false)};

@@ -23,7 +23,6 @@ ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存
 - `org.apache.shardingsphere:shardingsphere-postgresql-dialect-exception`，数据库网关的 PostgreSQL 实现
 - `org.apache.shardingsphere:shardingsphere-readwrite-splitting-core`，读写分离核心
 - `org.apache.shardingsphere:shardingsphere-shadow-core`，影子库核心
-- `org.apache.shardingsphere:shardingsphere-sharding-cache`，分片缓存，参考未关闭的 https://github.com/apache/shardingsphere/issues/21223
 - `org.apache.shardingsphere:shardingsphere-sharding-core`，数据分片核心
 - `org.apache.shardingsphere:shardingsphere-single-core`，单表（所有的分片数据源中仅唯一存在的表）核心
 - `org.apache.shardingsphere:shardingsphere-sql-federation-core`，联邦查询执行器核心

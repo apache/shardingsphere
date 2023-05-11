@@ -19,8 +19,9 @@
       t_order:
         columns:
           columnName:
-            cipherColumn: cipher
-            encryptorName: encryptor
+            cipher: 
+              name: cipher
+              encryptorName: encryptor
     encryptors:
       encryptor:
         type: AES

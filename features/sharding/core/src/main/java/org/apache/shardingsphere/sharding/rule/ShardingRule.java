@@ -33,7 +33,7 @@ import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -46,6 +46,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
+import org.apache.shardingsphere.sharding.cache.ShardingCache;
 import org.apache.shardingsphere.sharding.exception.algorithm.keygen.GenerateKeyStrategyNotFoundException;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.ShardingAlgorithmClassImplementationException;
 import org.apache.shardingsphere.sharding.exception.metadata.InvalidBindingTablesException;
@@ -114,6 +115,8 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private final Map<String, Collection<DataNode>> shardingTableDataNodes;
     
+    private final ShardingCache shardingCache;
+    
     public ShardingRule(final ShardingRuleConfiguration ruleConfig, final Collection<String> dataSourceNames, final InstanceContext instanceContext) {
         configuration = ruleConfig;
         this.dataSourceNames = getDataSourceNames(ruleConfig.getTables(), ruleConfig.getAutoTables(), dataSourceNames);
@@ -139,6 +142,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         if (defaultKeyGenerateAlgorithm instanceof InstanceContextAware && -1 == instanceContext.getWorkerId()) {
             ((InstanceContextAware) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
         }
+        shardingCache = null != ruleConfig.getShardingCache() ? new ShardingCache(ruleConfig.getShardingCache(), this) : null;
     }
     
     private Map<String, Collection<DataNode>> createShardingTableDataNodes(final Map<String, TableRule> tableRules) {
@@ -164,12 +168,12 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     }
     
     private Collection<String> getDataSourceNames(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
-        List<String> actualDataSources = new InlineExpressionParser().splitAndEvaluate(shardingAutoTableRuleConfig.getActualDataSources());
+        List<String> actualDataSources = InlineExpressionParserFactory.newInstance().splitAndEvaluate(shardingAutoTableRuleConfig.getActualDataSources());
         return new HashSet<>(actualDataSources);
     }
     
     private Collection<String> getDataSourceNames(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
-        List<String> actualDataNodes = new InlineExpressionParser().splitAndEvaluate(shardingTableRuleConfig.getActualDataNodes());
+        List<String> actualDataNodes = InlineExpressionParserFactory.newInstance().splitAndEvaluate(shardingTableRuleConfig.getActualDataNodes());
         return actualDataNodes.stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
     }
     
@@ -761,6 +765,15 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         }
         BinaryOperationExpression binaryExpression = (BinaryOperationExpression) expression;
         return binaryExpression.getLeft() instanceof ColumnSegment && binaryExpression.getRight() instanceof ColumnSegment && "=".equals(binaryExpression.getOperator());
+    }
+    
+    /**
+     * Is sharding cache enabled.
+     *
+     * @return is sharding cache enabled
+     */
+    public boolean isShardingCacheEnabled() {
+        return null != shardingCache;
     }
     
     @Override

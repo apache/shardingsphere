@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query;
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +38,7 @@ class MySQLColumnDefinition41PacketTest {
     @Test
     void assertWriteWithPayload() {
         when(payload.readInt1()).thenReturn(MySQLBinaryColumnType.MYSQL_TYPE_LONG.getValue(), 0);
-        when(payload.readInt2()).thenReturn(MySQLServerInfo.DEFAULT_CHARSET.getId(), 0);
+        when(payload.readInt2()).thenReturn(MySQLConstants.DEFAULT_CHARSET.getId(), 0);
         when(payload.readInt4()).thenReturn(10);
         when(payload.readIntLenenc()).thenReturn(0x0cL);
         when(payload.readStringLenenc()).thenReturn("def", "logic_db", "tbl", "tbl", "id", "id");
@@ -53,7 +53,7 @@ class MySQLColumnDefinition41PacketTest {
         verify(payload, times(2)).writeStringLenenc("tbl");
         verify(payload, times(2)).writeStringLenenc("id");
         verify(payload).writeIntLenenc(0x0c);
-        verify(payload).writeInt2(MySQLServerInfo.DEFAULT_CHARSET.getId());
+        verify(payload).writeInt2(MySQLConstants.DEFAULT_CHARSET.getId());
         verify(payload).writeInt4(10);
         verify(payload).writeInt1(MySQLBinaryColumnType.MYSQL_TYPE_LONG.getValue());
         verify(payload).writeInt2(0);

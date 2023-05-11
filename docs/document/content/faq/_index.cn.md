@@ -170,18 +170,6 @@ ShardingSphere 采用 snowflake 算法作为默认的分布式自增主键策略
 由于 ShardingSphere 并不知晓数据库的表结构，而原生自增主键是不包含在原始 SQL 中内的，因此 ShardingSphere 无法将该字段解析为分片字段。如自增主键非分片键，则无需关注，可正常返回；若自增主键同时作为分片键使用，ShardingSphere 无法解析其分片值，导致 SQL 路由至多张表，从而影响应用的正确性。
 而原生自增主键返回的前提条件是 INSERT SQL 必须最终路由至一张表，因此，面对返回多表的 INSERT SQL，自增主键则会返回零。
 
-## 数据加密
-
-### [数据加密] JPA 和 数据加密无法一起使用，如何解决？
-
-回答：
-
-由于数据加密的 DDL 尚未开发完成，因此对于自动生成 DDL 语句的 JPA 与 数据加密一起使用时，会导致 JPA 的实体类（Entity）无法同时满足 DDL 和 DML 的情况。
-解决方案如下：
-1. 以需要加密的逻辑列名编写 JPA 的实体类（Entity）。
-2. 关闭 JPA 的 auto-ddl，如 auto-ddl=none。
-3. 手动建表，建表时应使用数据加密配置的 `cipherColumn`,`plainColumn` 和 `assistedQueryColumn` 代替逻辑列。
-
 ## DistSQL
 
 ### [DistSQL] 使用 DistSQL 添加数据源时，如何设置自定义的 JDBC 连接参数或连接池属性？

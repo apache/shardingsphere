@@ -45,7 +45,7 @@ class ProcessOperationLockRegistryTest {
         assertThat(currentMillis, lessThanOrEqualTo(startMillis + 5000L));
     }
     
-    private static void waitUntilReleaseReady(final String lockId) {
+    private void waitUntilReleaseReady(final String lockId) {
         ProcessOperationLockRegistry.getInstance().waitUntilReleaseReady(lockId, new ProcessOperationLockReleaseStrategy() {
             
             private final AtomicBoolean firstTime = new AtomicBoolean(true);

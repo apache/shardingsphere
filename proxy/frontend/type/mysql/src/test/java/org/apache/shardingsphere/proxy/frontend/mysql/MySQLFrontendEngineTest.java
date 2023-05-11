@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.mysql;
 
 import io.netty.channel.Channel;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.netty.MySQLSequenceIdInboundHandler;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -32,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
@@ -42,7 +40,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -67,16 +64,6 @@ class MySQLFrontendEngineTest {
         verify(channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID)).set(any(AtomicInteger.class));
         verify(channel.pipeline())
                 .addBefore(eq(FrontendChannelInboundHandler.class.getSimpleName()), eq(MySQLSequenceIdInboundHandler.class.getSimpleName()), isA(MySQLSequenceIdInboundHandler.class));
-    }
-    
-    @Test
-    void assertSetDatabaseVersion() {
-        String databaseName = "db";
-        String databaseVersion = "version";
-        try (MockedStatic<MySQLServerInfo> mockedStatic = mockStatic(MySQLServerInfo.class)) {
-            engine.setDatabaseVersion(databaseName, databaseVersion);
-            mockedStatic.verify(() -> MySQLServerInfo.setServerVersion(databaseName, databaseVersion));
-        }
     }
     
     @Test

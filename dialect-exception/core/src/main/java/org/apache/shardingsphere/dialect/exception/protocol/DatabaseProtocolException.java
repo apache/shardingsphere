@@ -26,7 +26,7 @@ public abstract class DatabaseProtocolException extends SQLDialectException {
     
     private static final long serialVersionUID = -6035033415978907492L;
     
-    public DatabaseProtocolException(final String reason) {
+    protected DatabaseProtocolException(final String reason) {
         super(reason);
     }
 }

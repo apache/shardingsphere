@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.algorithm.like;
 
+import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
-import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
@@ -41,9 +42,9 @@ class CharDigestLikeEncryptAlgorithmTest {
     @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() {
-        englishLikeEncryptAlgorithm = (LikeEncryptAlgorithm<Object, String>) TypedSPILoader.getService(LikeEncryptAlgorithm.class, "CHAR_DIGEST_LIKE");
-        chineseLikeEncryptAlgorithm = (LikeEncryptAlgorithm<Object, String>) TypedSPILoader.getService(LikeEncryptAlgorithm.class, "CHAR_DIGEST_LIKE");
-        koreanLikeEncryptAlgorithm = (LikeEncryptAlgorithm<Object, String>) TypedSPILoader.getService(LikeEncryptAlgorithm.class,
+        englishLikeEncryptAlgorithm = (LikeEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "CHAR_DIGEST_LIKE");
+        chineseLikeEncryptAlgorithm = (LikeEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class, "CHAR_DIGEST_LIKE");
+        koreanLikeEncryptAlgorithm = (LikeEncryptAlgorithm<Object, String>) TypedSPILoader.getService(EncryptAlgorithm.class,
                 "CHAR_DIGEST_LIKE", PropertiesBuilder.build(new Property("dict", "한국어시험"), new Property("start", "44032")));
     }
     

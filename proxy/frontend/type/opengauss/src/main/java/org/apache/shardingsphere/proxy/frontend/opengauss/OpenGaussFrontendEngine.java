@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.frontend.opengauss;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.opengauss.codec.OpenGaussPacketCodecEngine;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.OpenGaussAuthenticationEngine;
@@ -42,11 +41,6 @@ public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEn
     private final OpenGaussCommandExecuteEngine commandExecuteEngine = new OpenGaussCommandExecuteEngine();
     
     private final OpenGaussPacketCodecEngine codecEngine = new OpenGaussPacketCodecEngine();
-    
-    @Override
-    public void setDatabaseVersion(final String databaseName, final String databaseVersion) {
-        PostgreSQLServerInfo.setServerVersion(databaseVersion);
-    }
     
     @Override
     public void release(final ConnectionSession connectionSession) {

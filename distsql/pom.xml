@@ -29,8 +29,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>statement</module>
-        <module>parser</module>
         <module>handler</module>
     </modules>
 </project>

@@ -229,7 +229,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         return executionContexts.stream().anyMatch(each -> isWriteDMLStatement(each.getSqlStatementContext().getSqlStatement()));
     }
     
-    private static boolean isWriteDMLStatement(final SQLStatement sqlStatement) {
+    private boolean isWriteDMLStatement(final SQLStatement sqlStatement) {
         return sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement);
     }
     

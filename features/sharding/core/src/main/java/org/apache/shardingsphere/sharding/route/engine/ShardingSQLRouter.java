@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.sharding.route.engine;
 
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.sharding.cache.route.CachedShardingSQLRouter;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
@@ -45,10 +46,22 @@ import java.util.Optional;
  */
 public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule,
                                            final ConfigurationProperties props, final ConnectionContext connectionContext) {
+        if (rule.isShardingCacheEnabled()) {
+            Optional<RouteContext> result = new CachedShardingSQLRouter()
+                    .loadRouteContext(this::createRouteContext0, queryContext, globalRuleMetaData, database, rule.getShardingCache(), props, connectionContext);
+            if (result.isPresent()) {
+                return result.get();
+            }
+        }
+        return createRouteContext0(queryContext, globalRuleMetaData, database, rule, props, connectionContext);
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private RouteContext createRouteContext0(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule,
+                                             final ConfigurationProperties props, final ConnectionContext connectionContext) {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         ShardingConditions shardingConditions = createShardingConditions(queryContext, globalRuleMetaData, database, rule);
         Optional<ShardingStatementValidator> validator = ShardingStatementValidatorFactory.newInstance(sqlStatement, shardingConditions);

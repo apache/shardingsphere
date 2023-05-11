@@ -43,7 +43,7 @@
         <spring-framework.version>5.2.15.RELEASE</spring-framework.version>
         <spring-boot.version>2.3.12.RELEASE</spring-boot.version>
         <hikari-cp.version>3.4.2</hikari-cp.version>
-        <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
+        <mysql-connector-java.version>5.1.49</mysql-connector-java.version>
         <postgresql.version>42.4.1</postgresql.version>
         <h2.version>2.1.214</h2.version>
         <slf4j.version>1.7.7</slf4j.version>
@@ -137,42 +137,42 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-sql-parser-engine</artifactId>
+                <artifactId>shardingsphere-parser-sql-engine</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-sql-parser-mysql</artifactId>
+                <artifactId>shardingsphere-parser-sql-mysql</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-sql-parser-oracle</artifactId>
+                <artifactId>shardingsphere-parser-sql-oracle</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-sql-parser-sql92</artifactId>
+                <artifactId>shardingsphere-parser-sql-sql92</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-sql-parser-postgresql</artifactId>
+                <artifactId>shardingsphere-parser-sql-postgresql</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-sql-parser-sqlserver</artifactId>
+                <artifactId>shardingsphere-parser-sql-sqlserver</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-sql-parser-opengauss</artifactId>
+                <artifactId>shardingsphere-parser-sql-opengauss</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.shardingsphere</groupId>
-                <artifactId>shardingsphere-parser-core</artifactId>
+                <artifactId>shardingsphere-sql-parser-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             

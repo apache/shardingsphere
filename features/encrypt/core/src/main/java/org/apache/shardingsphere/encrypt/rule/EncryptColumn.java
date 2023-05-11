@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.Optional;
 
@@ -28,39 +28,32 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class EncryptColumn {
     
-    private final String cipherColumn;
+    private final String name;
     
-    private final String assistedQueryColumn;
+    private final EncryptColumnItem cipher;
     
-    private final String likeQueryColumn;
+    private EncryptColumnItem assistedQuery;
     
-    private final String encryptorName;
+    private EncryptColumnItem likeQuery;
     
-    private final String assistedQueryEncryptorName;
-    
-    private final String likeQueryEncryptorName;
-    
-    public EncryptColumn(final String cipherColumn, final String assistedQueryColumn, final String likeQueryColumn, final String encryptorName) {
-        this(cipherColumn, assistedQueryColumn, likeQueryColumn, encryptorName, null, null);
+    /**
+     * Get assisted query.
+     *
+     * @return assisted query column item
+     */
+    public Optional<EncryptColumnItem> getAssistedQuery() {
+        return Optional.ofNullable(assistedQuery);
     }
     
     /**
-     * Get assisted query column.
+     * Get like query.
      *
-     * @return assisted query column
+     * @return like query column item
      */
-    public Optional<String> getAssistedQueryColumn() {
-        return Strings.isNullOrEmpty(assistedQueryColumn) ? Optional.empty() : Optional.of(assistedQueryColumn);
-    }
-    
-    /**
-     * Get like query column.
-     *
-     * @return like query column
-     */
-    public Optional<String> getLikeQueryColumn() {
-        return Strings.isNullOrEmpty(likeQueryColumn) ? Optional.empty() : Optional.of(likeQueryColumn);
+    public Optional<EncryptColumnItem> getLikeQuery() {
+        return Optional.ofNullable(likeQuery);
     }
 }

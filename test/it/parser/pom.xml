@@ -36,17 +36,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser-engine</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser-statement</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-distsql-statement</artifactId>
+            <artifactId>shardingsphere-parser-sql-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -61,7 +51,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-distsql-parser</artifactId>
+            <artifactId>shardingsphere-parser-distsql-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -106,7 +96,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-parser-distsql-parser</artifactId>
+            <artifactId>shardingsphere-sql-parser-distsql-parser</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

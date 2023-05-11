@@ -17,12 +17,15 @@ rules:
     <table_name> (+): # Encrypt table name
       columns:
         <column_name> (+): # Encrypt logic column name
-          cipherColumn: # Cipher column name
-          encryptorName: # Cipher encrypt algorithm name
-          assistedQueryColumn (?):  # Assisted query column name
-          assistedQueryEncryptorName:  # Assisted query encrypt algorithm name
-          likeQueryColumn (?):  # Like query column name
-          likeQueryEncryptorName:  # Like query encrypt algorithm name 
+          cipher:
+            name: # Cipher column name
+            encryptorName: # Cipher encrypt algorithm name
+          assistedQuery (?):
+            name: # Assisted query column name
+            encryptorName:  # Assisted query encrypt algorithm name
+          likeQuery (?):
+            name: # Like query column name
+            encryptorName:  # Like query encrypt algorithm name 
     
   # Encrypt algorithm configuration
   encryptors:
@@ -58,29 +61,29 @@ rules:
     t_user:
       columns:
         username:
-          cipherColumn: username
-          encryptorName: name_encryptor
-          assistedQueryColumn: assisted_query_username
-          assistedQueryEncryptorName: assisted_encryptor
-          likeQueryColumn: like_query_username
-          likeQueryEncryptorName: like_encryptor
+          cipher:
+            name: username
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_username
+            encryptorName: assisted_encryptor
+          likeQuery:
+            name: like_query_username
+            encryptorName: like_encryptor
         pwd:
-          cipherColumn: pwd
-          encryptorName: pwd_encryptor
-          assistedQueryColumn: assisted_query_pwd
-          assistedQueryEncryptorName: assisted_encryptor
+          cipher:
+            name: pwd
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_pwd
+            encryptorName: assisted_encryptor
   encryptors:
-    name_encryptor:
+    aes_encryptor:
       type: AES
       props:
         aes-key-value: 123456abc
     assisted_encryptor:
-      type: AES
-      props:
-        aes-key-value: 123456abc
-    pwd_encryptor:
       type: MD5
-  likeEncryptors:
     like_encryptor:
       type: CHAR_DIGEST_LIKE
 ```
@@ -89,6 +92,45 @@ Read the YAML configuration to create a data source according to the createDataS
 
 ```java
 YamlShardingSphereDataSourceFactory.createDataSource(getFile());
+```
+
+In order to keep compatibility with earlier YAML configuration, ShardingSphere provides following compatible configuration through 'COMPATIBLE_ENCRYPT', which will be removed in future versions, and it is recommended to upgrade latest YAML configuration.
+
+```yaml
+dataSources:
+  unique_ds:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password:
+
+rules:
+- !COMPATIBLE_ENCRYPT
+  tables:
+    t_user:
+      columns:
+        username:
+          cipherColumn: username
+          encryptorName: aes_encryptor
+          assistedQueryColumn: assisted_query_username
+          assistedQueryEncryptorName: assisted_encryptor
+          likeQueryColumn: like_query_username
+          likeQueryEncryptorName: like_encryptor
+        pwd:
+          cipherColumn: pwd
+          encryptorName: aes_encryptor
+          assistedQueryColumn: assisted_query_pwd
+          assistedQueryEncryptorName: assisted_encryptor
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+    assisted_encryptor:
+      type: MD5
+    like_encryptor:
+      type: CHAR_DIGEST_LIKE
 ```
 
 ## Related References

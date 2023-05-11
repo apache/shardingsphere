@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.single.decider;
 
-import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -32,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,13 +47,10 @@ class SingleSQLFederationDeciderTest {
     
     @Test
     void assertDecideWhenNotContainsSingleTable() {
-        SingleSQLFederationDecider federationDecider = new SingleSQLFederationDecider();
         SelectStatementContext select = createStatementContext();
-        SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
-        federationDecider.decide(actual, select, Collections.emptyList(),
-                mock(ShardingSphereRuleMetaData.class), createDatabase(), mock(SingleRule.class));
-        assertTrue(actual.getDataNodes().isEmpty());
-        assertFalse(actual.isUseSQLFederation());
+        Collection<DataNode> includedDataNodes = new HashSet<>();
+        assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), createDatabase(), mock(SingleRule.class), includedDataNodes));
+        assertTrue(includedDataNodes.isEmpty());
     }
     
     @Test
@@ -62,12 +59,9 @@ class SingleSQLFederationDeciderTest {
         SingleRule rule = createSingleRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(true);
         SelectStatementContext select = createStatementContext();
-        SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
-        SingleSQLFederationDecider federationDecider = new SingleSQLFederationDecider();
-        federationDecider.decide(actual, select, Collections.emptyList(),
-                mock(ShardingSphereRuleMetaData.class), createDatabase(), rule);
-        assertThat(actual.getDataNodes().size(), is(2));
-        assertFalse(actual.isUseSQLFederation());
+        Collection<DataNode> includedDataNodes = new HashSet<>();
+        assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, includedDataNodes));
+        assertThat(includedDataNodes.size(), is(2));
     }
     
     @Test
@@ -76,12 +70,9 @@ class SingleSQLFederationDeciderTest {
         SingleRule rule = createSingleRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(false);
         SelectStatementContext select = createStatementContext();
-        SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
-        SingleSQLFederationDecider federationDecider = new SingleSQLFederationDecider();
-        federationDecider.decide(actual, select, Collections.emptyList(),
-                mock(ShardingSphereRuleMetaData.class), createDatabase(), rule);
-        assertThat(actual.getDataNodes().size(), is(2));
-        assertTrue(actual.isUseSQLFederation());
+        Collection<DataNode> includedDataNodes = new HashSet<>();
+        assertTrue(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, includedDataNodes));
+        assertThat(includedDataNodes.size(), is(2));
     }
     
     @Test
@@ -90,13 +81,9 @@ class SingleSQLFederationDeciderTest {
         SingleRule rule = createSingleRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(true);
         SelectStatementContext select = createStatementContext();
-        SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
-        actual.getDataNodes().add(new DataNode("ds_0", "t_user"));
-        SingleSQLFederationDecider federationDecider = new SingleSQLFederationDecider();
-        federationDecider.decide(actual, select, Collections.emptyList(),
-                mock(ShardingSphereRuleMetaData.class), createDatabase(), rule);
-        assertThat(actual.getDataNodes().size(), is(3));
-        assertFalse(actual.isUseSQLFederation());
+        Collection<DataNode> includedDataNodes = new HashSet<>(Collections.singleton(new DataNode("ds_0", "t_user")));
+        assertFalse(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, includedDataNodes));
+        assertThat(includedDataNodes.size(), is(3));
     }
     
     @Test
@@ -105,16 +92,12 @@ class SingleSQLFederationDeciderTest {
         SingleRule rule = createSingleRule(qualifiedTables);
         when(rule.isSingleTablesInSameDataSource(qualifiedTables)).thenReturn(true);
         SelectStatementContext select = createStatementContext();
-        SQLFederationDeciderContext actual = new SQLFederationDeciderContext();
-        actual.getDataNodes().add(new DataNode("ds_1", "t_user"));
-        SingleSQLFederationDecider federationDecider = new SingleSQLFederationDecider();
-        federationDecider.decide(actual, select, Collections.emptyList(),
-                mock(ShardingSphereRuleMetaData.class), createDatabase(), rule);
-        assertThat(actual.getDataNodes().size(), is(3));
-        assertTrue(actual.isUseSQLFederation());
+        Collection<DataNode> includedDataNodes = new HashSet<>(Collections.singleton(new DataNode("ds_1", "t_user")));
+        assertTrue(new SingleSQLFederationDecider().decide(select, Collections.emptyList(), mock(ShardingSphereRuleMetaData.class), createDatabase(), rule, includedDataNodes));
+        assertThat(includedDataNodes.size(), is(3));
     }
     
-    private static SingleRule createSingleRule(final Collection<QualifiedTable> qualifiedTables) {
+    private SingleRule createSingleRule(final Collection<QualifiedTable> qualifiedTables) {
         SingleRule result = mock(SingleRule.class);
         when(result.getSingleTableNames(any())).thenReturn(qualifiedTables);
         when(result.findSingleTableDataNode(DefaultDatabase.LOGIC_NAME, "t_order")).thenReturn(Optional.of(new DataNode("ds_0", "t_order")));
@@ -122,13 +105,13 @@ class SingleSQLFederationDeciderTest {
         return result;
     }
     
-    private static SelectStatementContext createStatementContext() {
+    private SelectStatementContext createStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         return result;
     }
     
-    private static ShardingSphereDatabase createDatabase() {
+    private ShardingSphereDatabase createDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(result.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));

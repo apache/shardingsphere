@@ -74,10 +74,10 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));
         String tableName = insertStatement.getTable().getTableName().getIdentifier().getValue();
         for (AssignmentSegment each : onDuplicateKeyColumnsSegments) {
-            boolean leftEncryptorPresent = encryptRule.findEncryptor(tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent();
+            boolean leftEncryptorPresent = encryptRule.findStandardEncryptor(tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent();
             if (each.getValue() instanceof FunctionSegment && "VALUES".equalsIgnoreCase(((FunctionSegment) each.getValue()).getFunctionName())) {
                 ColumnSegment rightColumn = (ColumnSegment) ((FunctionSegment) each.getValue()).getParameters().stream().findFirst().get();
-                boolean rightEncryptorPresent = encryptRule.findEncryptor(tableName, rightColumn.getIdentifier().getValue()).isPresent();
+                boolean rightEncryptorPresent = encryptRule.findStandardEncryptor(tableName, rightColumn.getIdentifier().getValue()).isPresent();
                 if (!leftEncryptorPresent && !rightEncryptorPresent) {
                     continue;
                 }
@@ -126,8 +126,8 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
         ColumnSegment valueColumnSegment = (ColumnSegment) functionSegment.getParameters().stream().findFirst().get();
         String valueColumn = valueColumnSegment.getIdentifier().getValue();
         EncryptFunctionAssignmentToken result = new EncryptFunctionAssignmentToken(columnSegment.getStartIndex(), assignmentSegment.getStopIndex());
-        boolean cipherColumnPresent = encryptRule.findEncryptor(tableName, column).isPresent();
-        boolean cipherValueColumnPresent = encryptRule.findEncryptor(tableName, valueColumn).isPresent();
+        boolean cipherColumnPresent = encryptRule.findStandardEncryptor(tableName, column).isPresent();
+        boolean cipherValueColumnPresent = encryptRule.findStandardEncryptor(tableName, valueColumn).isPresent();
         if (cipherColumnPresent && cipherValueColumnPresent) {
             String cipherColumn = encryptRule.getCipherColumn(tableName, column);
             String cipherValueColumn = encryptRule.getCipherColumn(tableName, valueColumn);

@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.infra.binder.decider;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -35,15 +37,16 @@ import java.util.List;
 public interface SQLFederationDecider<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
-     * Judge whether to use sql federation engine.
+     * Judge whether to use SQL federation.
      *
-     * @param deciderContext decider context
      * @param selectStatementContext select statement context
      * @param parameters parameters
      * @param globalRuleMetaData global rule meta data
      * @param database database
      * @param rule rule
+     * @param includedDataNodes included data nodes
+     * @return use SQL federation or not
      */
-    void decide(SQLFederationDeciderContext deciderContext, SelectStatementContext selectStatementContext,
-                List<Object> parameters, ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule);
+    boolean decide(SelectStatementContext selectStatementContext, List<Object> parameters,
+                   ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule, Collection<DataNode> includedDataNodes);
 }

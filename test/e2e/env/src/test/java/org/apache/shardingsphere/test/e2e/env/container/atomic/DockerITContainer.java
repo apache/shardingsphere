@@ -38,7 +38,7 @@ public abstract class DockerITContainer extends GenericContainer<DockerITContain
     
     private final String name;
     
-    public DockerITContainer(final String name, final String containerImage) {
+    protected DockerITContainer(final String name, final String containerImage) {
         super(new RemoteDockerImage(DockerImageName.parse(containerImage)));
         this.name = name;
     }

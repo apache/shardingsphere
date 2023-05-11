@@ -33,66 +33,10 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-util-groovy</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         
         <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.graalvm.truffle</groupId>
-            <artifactId>truffle-api</artifactId>
-        </dependency>
     </dependencies>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>${maven-dependency-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <phase>prepare-package</phase>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.apache.shardingsphere</groupId>
-                                    <artifactId>shardingsphere-infra-util-groovy</artifactId>
-                                    <version>${project.version}</version>
-                                    <type>jar</type>
-                                    <overWrite>true</overWrite>
-                                    <destFileName>shardingsphere-infra-util-groovy.jar</destFileName>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.groovy</groupId>
-                                    <artifactId>groovy</artifactId>
-                                    <version>${groovy.version}</version>
-                                    <type>jar</type>
-                                    <overWrite>true</overWrite>
-                                    <destFileName>groovy.jar</destFileName>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>com.google.guava</groupId>
-                                    <artifactId>guava</artifactId>
-                                    <version>${guava.version}</version>
-                                    <type>jar</type>
-                                    <overWrite>true</overWrite>
-                                    <destFileName>guava.jar</destFileName>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>${project.build.outputDirectory}/espresso-need-libs</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

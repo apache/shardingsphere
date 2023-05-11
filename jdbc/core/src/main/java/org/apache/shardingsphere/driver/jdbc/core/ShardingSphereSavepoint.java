@@ -50,7 +50,7 @@ public final class ShardingSphereSavepoint implements Savepoint {
         return savepointName;
     }
     
-    private static String getUniqueId() {
+    private String getUniqueId() {
         String uidStr = new UID().toString();
         int uidLength = uidStr.length();
         StringBuilder safeString = new StringBuilder(uidLength + 1);

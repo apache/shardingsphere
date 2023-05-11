@@ -70,7 +70,7 @@ public final class MySQLTextResultSetRowPacket implements MySQLPacket {
         } else if (data instanceof BigDecimal) {
             payload.writeStringLenenc(((BigDecimal) data).toPlainString());
         } else if (data instanceof Boolean) {
-            payload.writeBytesLenenc((Boolean) data ? new byte[]{1} : new byte[]{0});
+            payload.writeBytesLenenc((boolean) data ? new byte[]{1} : new byte[]{0});
         } else if (data instanceof LocalDateTime) {
             payload.writeStringLenenc(DATE_TIME_FORMATTER.format((LocalDateTime) data));
         } else {

@@ -176,7 +176,7 @@ public final class E2ETestParameterGenerator {
                 .map(each -> new CaseTestParameter(testCaseContext, adapter, each, envMode, databaseType, sqlCommandType)).collect(Collectors.toList());
     }
     
-    private static Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
+    private Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {
         String candidates = Strings.isNullOrEmpty(databaseTypes) ? "H2,MySQL,Oracle,SQLServer,PostgreSQL,openGauss" : databaseTypes;
         return Splitter.on(',').trimResults().splitToList(candidates).stream().map(each -> TypedSPILoader.getService(DatabaseType.class, each)).collect(Collectors.toList());
     }

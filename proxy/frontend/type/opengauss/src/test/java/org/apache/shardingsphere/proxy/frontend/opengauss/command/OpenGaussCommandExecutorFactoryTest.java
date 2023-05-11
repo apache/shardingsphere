@@ -150,7 +150,7 @@ class OpenGaussCommandExecutorFactoryTest {
     
     @SuppressWarnings("unchecked")
     @SneakyThrows(ReflectiveOperationException.class)
-    private static List<CommandExecutor> getExecutorsFromAggregatedCommandExecutor(final PostgreSQLAggregatedCommandExecutor executor) {
+    private List<CommandExecutor> getExecutorsFromAggregatedCommandExecutor(final PostgreSQLAggregatedCommandExecutor executor) {
         return (List<CommandExecutor>) Plugins.getMemberAccessor().get(PostgreSQLAggregatedCommandExecutor.class.getDeclaredField("executors"), executor);
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
@@ -95,8 +96,9 @@ class DropEncryptRuleStatementUpdaterTest {
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {
-        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "", "t_encrypt_user_id_MD5", "t_encrypt_test_assisted",
-                "t_encrypt_test_like");
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "t_encrypt_user_id_MD5"));
+        columnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("user_assisted", "t_encrypt_test_assisted"));
+        columnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("user_like", "t_encrypt_test_like"));
         Map<String, AlgorithmConfiguration> encryptors = new HashMap<>(3, 1);
         encryptors.put("t_encrypt_user_id_MD5", new AlgorithmConfiguration("TEST", new Properties()));
         encryptors.put("t_encrypt_test_assisted", new AlgorithmConfiguration("TEST", new Properties()));
@@ -106,7 +108,7 @@ class DropEncryptRuleStatementUpdaterTest {
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfigurationWithMultipleTableRules() {
-        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", "user_cipher", "", "", "t_encrypt_user_id_MD5");
+        EncryptColumnRuleConfiguration columnRuleConfig = new EncryptColumnRuleConfiguration("user_id", new EncryptColumnItemRuleConfiguration("user_cipher", "t_encrypt_user_id_MD5"));
         EncryptTableRuleConfiguration tableRuleConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singleton(columnRuleConfig));
         Map<String, AlgorithmConfiguration> encryptors = Collections.singletonMap("t_encrypt_user_id_MD5", new AlgorithmConfiguration("TEST", new Properties()));
         return new EncryptRuleConfiguration(new LinkedList<>(Arrays.asList(tableRuleConfig,

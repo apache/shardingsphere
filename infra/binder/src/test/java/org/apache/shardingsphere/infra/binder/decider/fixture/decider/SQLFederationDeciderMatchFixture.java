@@ -18,20 +18,21 @@
 package org.apache.shardingsphere.infra.binder.decider.fixture.decider;
 
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
-import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.decider.fixture.rule.SQLFederationDeciderRuleMatchFixture;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 
+import java.util.Collection;
 import java.util.List;
 
 public final class SQLFederationDeciderMatchFixture implements SQLFederationDecider<SQLFederationDeciderRuleMatchFixture> {
     
     @Override
-    public void decide(final SQLFederationDeciderContext deciderContext, final SelectStatementContext selectStatementContext, final List<Object> parameters,
-                       final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SQLFederationDeciderRuleMatchFixture rule) {
-        deciderContext.setUseSQLFederation(true);
+    public boolean decide(final SelectStatementContext selectStatementContext, final List<Object> parameters, final ShardingSphereRuleMetaData globalRuleMetaData,
+                          final ShardingSphereDatabase database, final SQLFederationDeciderRuleMatchFixture rule, final Collection<DataNode> includedDataNodes) {
+        return true;
     }
     
     @Override

@@ -17,25 +17,26 @@
 
 package org.apache.shardingsphere.infra.util.exception.internal;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
  * ShardingSphere internal exception.
  */
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class ShardingSphereInternalException extends Exception {
     
     private static final long serialVersionUID = -8238061892944243621L;
     
-    public ShardingSphereInternalException(final String errorMessage, final Object... args) {
+    protected ShardingSphereInternalException(final String errorMessage, final Object... args) {
         super(String.format(errorMessage, args));
     }
     
-    public ShardingSphereInternalException(final Exception cause) {
+    protected ShardingSphereInternalException(final Exception cause) {
         super(cause);
     }
     
-    public ShardingSphereInternalException(final String message, final Exception cause) {
+    protected ShardingSphereInternalException(final String message, final Exception cause) {
         super(message, cause);
     }
 }

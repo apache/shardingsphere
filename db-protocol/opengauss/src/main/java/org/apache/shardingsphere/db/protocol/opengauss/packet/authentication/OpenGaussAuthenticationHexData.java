@@ -19,7 +19,8 @@ package org.apache.shardingsphere.db.protocol.opengauss.packet.authentication;
 
 import lombok.Getter;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.security.SecureRandom;
+import java.util.Random;
 
 /**
  * Authentication hex data for openGauss.
@@ -37,7 +38,7 @@ public final class OpenGaussAuthenticationHexData {
     }
     
     private String generate(final int length) {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
+        Random random = new SecureRandom();
         StringBuilder result = new StringBuilder(length);
         for (int i = 0; i < result.capacity(); i++) {
             result.append(Integer.toString(random.nextInt(0x10), 0x10));

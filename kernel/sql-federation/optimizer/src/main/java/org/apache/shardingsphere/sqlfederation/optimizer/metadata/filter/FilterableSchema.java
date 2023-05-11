@@ -64,7 +64,7 @@ public final class FilterableSchema extends AbstractSchema {
         return result;
     }
     
-    private static ViewTable getViewTable(final ShardingSphereSchema schema, final DatabaseType protocolType, final ShardingSphereTable table, final JavaTypeFactory javaTypeFactory) {
+    private ViewTable getViewTable(final ShardingSphereSchema schema, final DatabaseType protocolType, final ShardingSphereTable table, final JavaTypeFactory javaTypeFactory) {
         RelDataType relDataType = SQLFederationDataTypeUtils.createRelDataType(table, protocolType, javaTypeFactory);
         ShardingSphereView view = schema.getView(table.getName());
         return new ViewTable(javaTypeFactory.getJavaClass(relDataType), RelDataTypeImpl.proto(relDataType), view.getViewDefinition(), Collections.emptyList(), Collections.emptyList());

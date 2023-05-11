@@ -98,11 +98,6 @@
             <artifactId>shardingsphere-jdbc-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sharding-cache</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>

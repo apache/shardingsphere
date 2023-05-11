@@ -22,7 +22,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.netty.MySQLSequenceIdInboundHandler;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -52,11 +51,6 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     public void initChannel(final Channel channel) {
         channel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).set(new AtomicInteger());
         channel.pipeline().addBefore(FrontendChannelInboundHandler.class.getSimpleName(), MySQLSequenceIdInboundHandler.class.getSimpleName(), new MySQLSequenceIdInboundHandler());
-    }
-    
-    @Override
-    public void setDatabaseVersion(final String databaseName, final String databaseVersion) {
-        MySQLServerInfo.setServerVersion(databaseName, databaseVersion);
     }
     
     @Override

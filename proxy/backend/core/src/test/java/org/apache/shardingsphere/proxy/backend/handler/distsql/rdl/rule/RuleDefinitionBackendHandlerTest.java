@@ -67,7 +67,7 @@ class RuleDefinitionBackendHandlerTest {
         return result;
     }
     
-    private static ShardingSphereDatabase mockDatabase() {
+    private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS);
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());

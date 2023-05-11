@@ -23,15 +23,13 @@ import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredR
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionAlterUpdater;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.AlterEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -54,7 +52,6 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkToBeAlteredRules(databaseName, sqlStatement, currentRuleConfig);
         checkToBeAlteredEncryptors(sqlStatement);
-        checkToBeAlteredLikeEncryptors(sqlStatement);
     }
     
     private void checkCurrentRuleConfiguration(final String databaseName, final EncryptRuleConfiguration currentRuleConfig) {
@@ -89,18 +86,13 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
         sqlStatement.getRules().forEach(each -> each.getColumns().forEach(column -> {
             encryptors.add(column.getEncryptor());
             encryptors.add(column.getAssistedQueryEncryptor());
+            encryptors.add(column.getLikeQueryEncryptor());
         }));
         encryptors.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(EncryptAlgorithm.class, each.getName(), each.getProps()));
     }
     
-    private void checkToBeAlteredLikeEncryptors(final AlterEncryptRuleStatement sqlStatement) {
-        Collection<AlgorithmSegment> likeEncryptors = new LinkedHashSet<>();
-        sqlStatement.getRules().forEach(each -> each.getColumns().forEach(column -> likeEncryptors.add(column.getLikeQueryEncryptor())));
-        likeEncryptors.stream().filter(Objects::nonNull).forEach(each -> TypedSPILoader.checkService(LikeEncryptAlgorithm.class, each.getName(), each.getProps()));
-    }
-    
     @Override
-    public RuleConfiguration buildToBeAlteredRuleConfiguration(final AlterEncryptRuleStatement sqlStatement) {
+    public EncryptRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterEncryptRuleStatement sqlStatement) {
         return EncryptRuleStatementConverter.convert(sqlStatement.getRules());
     }
     
@@ -125,11 +117,13 @@ public final class AlterEncryptRuleStatementUpdater implements RuleDefinitionAlt
     }
     
     private void dropUnusedEncryptor(final EncryptRuleConfiguration currentRuleConfig) {
-        Collection<String> inUsedEncryptors = currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(EncryptColumnRuleConfiguration::getEncryptorName)
+        Collection<String> inUsedEncryptors = currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(optional -> optional.getCipher().getEncryptorName())
                 .collect(Collectors.toSet());
-        inUsedEncryptors.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(EncryptColumnRuleConfiguration::getAssistedQueryEncryptorName)
+        inUsedEncryptors.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream())
+                .map(optional -> optional.getAssistedQuery().map(EncryptColumnItemRuleConfiguration::getEncryptorName).orElse(""))
                 .collect(Collectors.toSet()));
-        inUsedEncryptors.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream()).map(EncryptColumnRuleConfiguration::getLikeQueryEncryptorName)
+        inUsedEncryptors.addAll(currentRuleConfig.getTables().stream().flatMap(each -> each.getColumns().stream())
+                .map(optional -> optional.getLikeQuery().map(EncryptColumnItemRuleConfiguration::getEncryptorName).orElse(""))
                 .collect(Collectors.toSet()));
         Collection<String> unusedEncryptors = currentRuleConfig.getEncryptors().keySet().stream().filter(each -> !inUsedEncryptors.contains(each)).collect(Collectors.toSet());
         unusedEncryptors.forEach(each -> currentRuleConfig.getEncryptors().remove(each));

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 
-import org.apache.shardingsphere.encrypt.spi.LikeEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 
 public final class RewriteQueryLikeEncryptAlgorithmFixture implements LikeEncryptAlgorithm<Object, String> {

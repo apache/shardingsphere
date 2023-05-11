@@ -38,7 +38,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-sql-parser-statement</artifactId>
+            <artifactId>shardingsphere-parser-sql-statement</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

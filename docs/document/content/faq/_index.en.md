@@ -174,18 +174,6 @@ Yes. But there is restriction to the use of native auto-increment keys, which me
 Since ShardingSphere does not have the database table structure and native auto-increment key is not included in original SQL, it cannot parse that field to the sharding field. If the auto-increment key is not sharding key, it can be returned normally and is needless to be cared. But if the auto-increment key is also used as sharding key, ShardingSphere cannot parse its sharding value, which will make SQL routed to multiple tables and influence the rightness of the application.
 The premise for returning native auto-increment key is that INSERT SQL is eventually routed to one table. Therefore, auto-increment key will return zero when INSERT SQL returns multiple tables.
 
-## Encryption
-
-### [Encryption] How to solve that `data encryption` can't work with JPA?
-
-Answer:
-
-Because DDL for data encryption has not yet finished, JPA Entity cannot meet the DDL and DML at the same time, when JPA that automatically generates DDL is used with data encryption.
-The solutions are as follows:
-1. Create JPA Entity with logicColumn which needs to encrypt.
-2. Disable JPA auto-ddl, For example setting auto-ddl=none.
-3. Create table manually. Table structure should use `cipherColumn`,`plainColumn` and `assistedQueryColumn` to replace the logicColumn.
-
 ## DistSQL
 
 ### [DistSQL] How to set custom JDBC connection properties or connection pool properties when adding a data source using DistSQL?

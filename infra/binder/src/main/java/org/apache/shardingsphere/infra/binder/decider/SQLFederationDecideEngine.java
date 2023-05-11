@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtils;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPILoader;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -67,13 +69,14 @@ public final class SQLFederationDecideEngine {
         if (isFederationDisabled || !(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
         }
-        SQLFederationDeciderContext context = new SQLFederationDeciderContext();
+        Collection<DataNode> includedDataNodes = new HashSet<>();
         for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
-            if (!context.isUseSQLFederation()) {
-                entry.getValue().decide(context, (SelectStatementContext) sqlStatementContext, parameters, globalRuleMetaData, database, entry.getKey());
+            boolean isUseSQLFederation = entry.getValue().decide((SelectStatementContext) sqlStatementContext, parameters, globalRuleMetaData, database, entry.getKey(), includedDataNodes);
+            if (isUseSQLFederation) {
+                return true;
             }
         }
-        return context.isUseSQLFederation();
+        return false;
     }
     
     private boolean isQuerySystemSchema(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) {

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.check
 import org.apache.shardingsphere.distsql.handler.exception.algorithm.MissingRequiredAlgorithmException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -67,9 +68,11 @@ public final class EncryptRuleConfigurationImportChecker {
     private void checkTableEncryptorsExisted(final EncryptRuleConfiguration configuration, final String databaseName) {
         Collection<EncryptColumnRuleConfiguration> columns = new LinkedList<>();
         configuration.getTables().forEach(each -> columns.addAll(each.getColumns()));
-        Collection<String> notExistedEncryptors = columns.stream().map(EncryptColumnRuleConfiguration::getEncryptorName).collect(Collectors.toList());
-        notExistedEncryptors.addAll(columns.stream().map(EncryptColumnRuleConfiguration::getLikeQueryEncryptorName).filter(Objects::nonNull).collect(Collectors.toList()));
-        notExistedEncryptors.addAll(columns.stream().map(EncryptColumnRuleConfiguration::getAssistedQueryEncryptorName).filter(Objects::nonNull).collect(Collectors.toList()));
+        Collection<String> notExistedEncryptors = columns.stream().map(optional -> optional.getCipher().getEncryptorName()).collect(Collectors.toList());
+        notExistedEncryptors.addAll(
+                columns.stream().map(optional -> optional.getLikeQuery().map(EncryptColumnItemRuleConfiguration::getEncryptorName).orElse(null)).filter(Objects::nonNull).collect(Collectors.toList()));
+        notExistedEncryptors.addAll(columns.stream().map(optional -> optional.getAssistedQuery().map(EncryptColumnItemRuleConfiguration::getEncryptorName).orElse(null)).filter(Objects::nonNull)
+                .collect(Collectors.toList()));
         Collection<String> encryptors = configuration.getEncryptors().keySet();
         notExistedEncryptors.removeIf(encryptors::contains);
         ShardingSpherePreconditions.checkState(notExistedEncryptors.isEmpty(), () -> new MissingRequiredAlgorithmException(databaseName, notExistedEncryptors));

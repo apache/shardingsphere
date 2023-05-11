@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.impl;
 
+import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptAlterTableTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAlterTableToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.EncryptColumnItem;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
-import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
@@ -65,9 +66,9 @@ class EncryptAlterTableTokenGeneratorTest {
         when(result.findLikeQueryColumn("t_encrypt", "certificate_number")).thenReturn(Optional.of("like_certificate_number"));
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(encryptTable.getLogicColumns()).thenReturn(Collections.singleton("t_encrypt"));
-        EncryptAlgorithm<?, ?> encryptAlgorithm = mock(EncryptAlgorithm.class);
-        when(result.findEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(encryptAlgorithm));
-        when(result.findEncryptor("t_encrypt", "certificate_number_new")).thenReturn(Optional.of(encryptAlgorithm));
+        StandardEncryptAlgorithm<?, ?> encryptAlgorithm = mock(StandardEncryptAlgorithm.class);
+        when(result.findStandardEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(encryptAlgorithm));
+        when(result.findStandardEncryptor("t_encrypt", "certificate_number_new")).thenReturn(Optional.of(encryptAlgorithm));
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         when(result.findEncryptColumn("t_encrypt", "certificate_number")).thenReturn(Optional.of(mockEncryptColumn()));
         when(result.findEncryptColumn("t_encrypt", "certificate_number_new")).thenReturn(Optional.of(mockNewEncryptColumn()));
@@ -76,11 +77,17 @@ class EncryptAlterTableTokenGeneratorTest {
     }
     
     private EncryptColumn mockEncryptColumn() {
-        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "like_certificate_number", "test");
+        EncryptColumn result = new EncryptColumn("certificate_number", new EncryptColumnItem("cipher_certificate_number", "test"));
+        result.setAssistedQuery(new EncryptColumnItem("assisted_certificate_number"));
+        result.setLikeQuery(new EncryptColumnItem("like_certificate_number"));
+        return result;
     }
     
     private EncryptColumn mockNewEncryptColumn() {
-        return new EncryptColumn("cipher_certificate_number_new", "assisted_certificate_number_new", "like_certificate_number_new", "test");
+        EncryptColumn result = new EncryptColumn("certificate_number_new", new EncryptColumnItem("cipher_certificate_number_new", "test"));
+        result.setAssistedQuery(new EncryptColumnItem("assisted_certificate_number_new"));
+        result.setLikeQuery(new EncryptColumnItem("like_certificate_number_new"));
+        return result;
     }
     
     @Test

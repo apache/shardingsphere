@@ -28,7 +28,7 @@ algorithmDefinition
     ;
 
 algorithmTypeName
-    : STRING_ | buildInEncryptAlgorithmType | buildInLikeEncryptAlgorithmType
+    : STRING_ | buildInEncryptAlgorithmType
     ;
 
 buildInEncryptAlgorithmType
@@ -37,10 +37,7 @@ buildInEncryptAlgorithmType
     | RC4
     | SM3
     | SM4
-    ;
-
-buildInLikeEncryptAlgorithmType
-    : CHAR_DIGEST_LIKE
+    | CHAR_DIGEST_LIKE
     ;
 
 propertiesDefinition

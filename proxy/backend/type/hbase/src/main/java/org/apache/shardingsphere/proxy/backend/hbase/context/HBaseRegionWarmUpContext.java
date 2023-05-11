@@ -104,7 +104,7 @@ public final class HBaseRegionWarmUpContext {
         }
     }
     
-    private static void warmUpRegion(final RegionLocator regionLocator) throws IOException {
+    private void warmUpRegion(final RegionLocator regionLocator) throws IOException {
         regionLocator.getAllRegionLocations();
     }
     

@@ -113,7 +113,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         List<ColumnProjection> projections = new LinkedList<>();
         for (ColumnProjection each : columnProjections) {
             String tableName = columnTableNames.get(each.getExpression());
-            if (null == tableName || !encryptRule.findEncryptor(tableName, each.getName()).isPresent()) {
+            if (null == tableName || !encryptRule.findStandardEncryptor(tableName, each.getName()).isPresent()) {
                 projections.add(new ColumnProjection(each.getOwner(), each.getName(), each.getAlias().orElse(null)));
             } else {
                 projections.addAll(generateProjections(tableName, each, subqueryType, true, segment));
