@@ -37,15 +37,23 @@ weight = 4
 
 可配置属性：
 
-| *名称*                       | *数据类型*  | *说明*          |
-|----------------------------|---------|---------------|
-| logicColumn                | String  | 逻辑列名称         |
-| cipherColumn               | String  | 密文列名称         |
-| assistedQueryColumn (?)    | String  | 查询辅助列名称       |
-| likeQueryColumn (?)        | String  | 模糊查询列名称       |
-| encryptorName              | String  | 密文列加密算法名称     |
-| assistedQueryEncryptorName | String  | 查询辅助列加密算法名称   |
-| likeQueryEncryptorName     | String  | 模糊查询列加密算法名称   |
+| *名称*              | *数据类型*  | *说明*        |
+|-------------------|---------|-------------|
+| name              | String  | 逻辑列名称       |
+| cipher            | EncryptColumnItemRuleConfiguration  | 密文列配置       |
+| assistedQuery (?) | EncryptColumnItemRuleConfiguration  | 查询辅助列配置     |
+| likeQuery (?)     | EncryptColumnItemRuleConfiguration  | 模糊查询列配置     |
+
+### 加密列属性规则配置
+
+类名称：org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration
+
+可配置属性：
+
+| *名称*            | *数据类型*                             | *说明*    |
+|-----------------|------------------------------------|---------|
+| name            | String                             | 加密列属性名称 |
+| encryptorName   | String                             | 加密列算法名称 |
 
 ### 加解密算法配置
 
@@ -75,8 +83,10 @@ public final class EncryptDatabasesConfiguration {
     public DataSource getDataSource() throws SQLException {
         Properties props = new Properties();
         props.setProperty("aes-key-value", "123456");
-        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", "username", "", "", "name_encryptor");
-        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "like_pwd", "pwd_encryptor");
+        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", new EncryptColumnItemRuleConfiguration("username", "name_encryptor"));
+        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd", "pwd_encryptor"));
+        columnConfigTest.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assisted_query_pwd", "pwd_encryptor"));
+        columnConfigTest.setLikeQuery(new EncryptColumnItemRuleConfiguration("like_pwd", "like_encryptor"));
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
         Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new HashMap<>();
         encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));

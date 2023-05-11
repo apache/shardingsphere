@@ -37,15 +37,23 @@ Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleC
 
 Attributes:
 
-| *Name*                     | *DataType* | *Description*                                                        |
-|----------------------------|------------|----------------------------------------------------------------------|
-| logicColumn                | String     | Logic column name                                                    |
-| cipherColumn               | String     | Cipher column name                                                   |
-| assistedQueryColumn (?)    | String     | Assisted query column name                                           |
-| likeQueryColumn (?)        | String     | Like query column name                                               |
-| encryptorName              | String     | Encrypt algorithm name                                               |
-| assistedQueryEncryptorName | String     | Assisted query encrypt algorithm name                                |
-| likeQueryEncryptorName     | String     | Like query encrypt algorithm name                                    |
+| *Name*        | *DataType*                         | *Description*                |
+|---------------|------------------------------------|------------------------------|
+| name          | String                             | Logic column name            |
+| cipher        | EncryptColumnItemRuleConfiguration | Cipher column config         |
+| assistedQuery (?) | EncryptColumnItemRuleConfiguration | Assisted query column config |
+| likeQuery (?) | EncryptColumnItemRuleConfiguration | Like query column config     |
+
+### Encrypt Column Item Rule Configuration
+
+Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration
+
+Attributes:
+
+| *Name*        | *DataType*                         | *Description*            |
+|-----------------|------------------------------------|--------------------------|
+| name            | String                             | encrypt column item name |
+| encryptorName   | String                             | encryptor name           |
 
 ### Encrypt Algorithm Configuration
 
@@ -75,8 +83,10 @@ public final class EncryptDatabasesConfiguration {
     public DataSource getDataSource() throws SQLException {
         Properties props = new Properties();
         props.setProperty("aes-key-value", "123456");
-        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", "username", "", "", "name_encryptor");
-        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "like_pwd", "pwd_encryptor");
+        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", new EncryptColumnItemRuleConfiguration("username", "name_encryptor"));
+        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd", "pwd_encryptor"));
+        columnConfigTest.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assisted_query_pwd", "pwd_encryptor"));
+        columnConfigTest.setLikeQuery(new EncryptColumnItemRuleConfiguration("like_pwd", "like_encryptor"));
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
         Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new HashMap<>();
         encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));
