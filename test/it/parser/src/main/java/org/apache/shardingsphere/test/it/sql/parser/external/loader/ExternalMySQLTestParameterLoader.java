@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.external.loader;
 
-import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserTestParameter;
+import org.apache.shardingsphere.test.loader.ExternalSQLParserTestParameter;
 import org.apache.shardingsphere.test.loader.AbstractTestParameterLoader;
 import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
 
