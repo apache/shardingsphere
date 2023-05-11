@@ -50,7 +50,7 @@ public final class ExternalMySQLTestParameterLoader extends AbstractTestParamete
             if (line.isEmpty() || lines.isEmpty() && isComment(line)) {
                 continue;
             }
-            if (0 == lines.size() && line.toUpperCase().startsWith("DELIMITER")) {
+            if (lines.isEmpty() && line.toUpperCase().startsWith("DELIMITER")) {
                 delimiter = getNewDelimiter(line, delimiter);
                 continue;
             }
