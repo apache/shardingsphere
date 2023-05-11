@@ -79,8 +79,8 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     }
     
     private void encryptInsertValues(final GroupedParameterBuilder paramBuilder, final InsertStatementContext insertStatementContext,
-                                     final StandardEncryptAlgorithm standardEncryptor, final AssistedEncryptAlgorithm assistQueryEncryptor,
-                                     final LikeEncryptAlgorithm likeQueryEncryptor, final EncryptContext encryptContext) {
+                                     final StandardEncryptAlgorithm<?, ?> standardEncryptor, final AssistedEncryptAlgorithm<?, ?> assistQueryEncryptor,
+                                     final LikeEncryptAlgorithm<?, ?> likeQueryEncryptor, final EncryptContext encryptContext) {
         int columnIndex = getColumnIndex(paramBuilder, insertStatementContext, encryptContext.getColumnName());
         int count = 0;
         for (List<Object> each : insertStatementContext.getGroupedParameters()) {
