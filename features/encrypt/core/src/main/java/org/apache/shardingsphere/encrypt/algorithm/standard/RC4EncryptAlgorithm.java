@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.stream.IntStream;
 
 /**
  * RC4 encrypt algorithm.
@@ -38,27 +39,20 @@ public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     private static final int SBOX_LENGTH = 256;
     
-    private final AtomicReferenceArray<Byte> key = new AtomicReferenceArray<>(SBOX_LENGTH - 1);
+    private AtomicReferenceArray<Byte> key;
     
     private final AtomicReferenceArray<Integer> sBox = new AtomicReferenceArray<>(SBOX_LENGTH);
     
     @Override
     public void init(final Properties props) {
-        byte[] keyBytes = getKey(props);
-        for (int i = 0; i < key.length(); i++) {
-            if (i < keyBytes.length) {
-                key.set(i, keyBytes[i]);
-            } else {
-                key.set(i, (byte) 0);
-            }
-        }
+        key = new AtomicReferenceArray<>(getKey(props));
     }
     
-    private byte[] getKey(final Properties props) {
-        byte[] result = props.getProperty(RC4_KEY, "").getBytes(StandardCharsets.UTF_8);
-        ShardingSpherePreconditions.checkState(KEY_MIN_LENGTH <= result.length && SBOX_LENGTH > result.length,
+    private Byte[] getKey(final Properties props) {
+        byte[] bytes = props.getProperty(RC4_KEY, "").getBytes(StandardCharsets.UTF_8);
+        ShardingSpherePreconditions.checkState(KEY_MIN_LENGTH <= bytes.length && SBOX_LENGTH > bytes.length,
                 () -> new EncryptAlgorithmInitializationException(getType(), "Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1)));
-        return result;
+        return IntStream.range(0, bytes.length).mapToObj(i -> bytes[i]).toArray(Byte[]::new);
     }
     
     @Override
@@ -98,9 +92,6 @@ public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
             sBox.set(i, i);
         }
         for (int i = 0; i < SBOX_LENGTH; i++) {
-            System.out.println(i % key.length());
-            System.out.println(key);
-            System.out.println();
             j = (j + sBox.get(i) + (key.get(i % key.length())) & 0xFF) % SBOX_LENGTH;
             swapSBox(i, j);
         }
