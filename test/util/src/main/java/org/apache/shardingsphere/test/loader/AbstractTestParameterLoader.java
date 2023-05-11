@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.loader;
 
 import com.google.common.collect.Lists;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,7 @@ import java.util.stream.Collectors;
  * 
  * @param <T> type of test parameter
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Slf4j
 public abstract class AbstractTestParameterLoader<T> {
     
@@ -96,8 +97,7 @@ public abstract class AbstractTestParameterLoader<T> {
      * @param reportType report type
      * @return test parameters
      */
-    public abstract Collection<T> createTestParameters(String sqlCaseFileName, List<String> sqlCaseFileContent,
-                                                       List<String> resultFileContent, String databaseType, String reportType);
+    public abstract Collection<T> createTestParameters(String sqlCaseFileName, List<String> sqlCaseFileContent, List<String> resultFileContent, String databaseType, String reportType);
     
     private List<String> loadContent(final URI uri) {
         try (
