@@ -68,7 +68,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-        run: ./mvnw clean sonar:sonar \
+        run: ./mvnw clean verify sonar:sonar \
               -Dsonar.organization=apache \
               -Dsonar.projectKey=apache_shardingsphere \
               -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
