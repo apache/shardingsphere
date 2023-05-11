@@ -50,14 +50,18 @@ rules:
     t_user:
       columns:
         user_name:
-          cipherColumn: user_name_cipher
-          encryptorName: aes_encryptor
+          cipher:
+            name: user_name_cipher
+            encryptorName: aes_encryptor
         password:
-          cipherColumn: password_cipher
-          encryptorName: aes_encryptor
+          cipher:
+            name: password_cipher
+            encryptorName: aes_encryptor
         email:
-          cipherColumn: email_cipher
-          encryptorName: aes_encryptor
+          cipher:
+            name: email_cipher
+            encryptorName: aes_encryptor
         telephone:
-          cipherColumn: telephone_cipher
-          encryptorName: aes_encryptor
+          cipher:
+            name: telephone_cipher
+            encryptorName: aes_encryptor

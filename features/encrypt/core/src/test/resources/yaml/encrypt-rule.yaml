@@ -16,26 +16,28 @@
 #
 
 rules:
-  - !ENCRYPT
-    tables:
-      t_user:
-        columns:
-          username:
-            cipherColumn: username_cipher
-            encryptorName: username_encryptor
-            assistedQueryColumn: assisted_query_username
-            assistedQueryEncryptorName: assisted_encryptor
-            likeQueryColumn: like_query_username
-            likeQueryEncryptorName: like_encryptor
-    encryptors:
-      username_encryptor:
-        type: AES
-        props:
-          aes-key-value: 123456abc
-      assisted_encryptor:
-        type: AES
-        props:
-          aes-key-value: 123456abc
-    likeEncryptors:
-      like_encryptor:
-        type: CHAR_DIGEST_LIKE
+- !ENCRYPT
+  tables:
+    t_user:
+      columns:
+        username:
+          cipher: 
+            name: username_cipher
+            encryptorName: aes_encryptor
+          assistedQuery: 
+            name: assisted_query_username
+            encryptorName: assisted_encryptor
+          likeQuery: 
+            name: like_query_username
+            encryptorName: like_encryptor
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+    assisted_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+    like_encryptor:
+      type: CHAR_DIGEST_LIKE

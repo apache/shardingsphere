@@ -27,7 +27,9 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleCo
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlCompatibleEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.YamlCompatibleEncryptRuleConfigurationSwapper;
+import org.apache.shardingsphere.encrypt.yaml.swapper.YamlEncryptRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -134,6 +136,9 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
             } else if (each instanceof YamlReadwriteSplittingRuleConfiguration) {
                 YamlReadwriteSplittingRuleConfigurationSwapper swapper = new YamlReadwriteSplittingRuleConfigurationSwapper();
                 result.put(swapper.getOrder(), swapper.swapToObject((YamlReadwriteSplittingRuleConfiguration) each));
+            } else if (each instanceof YamlEncryptRuleConfiguration) {
+                YamlEncryptRuleConfigurationSwapper swapper = new YamlEncryptRuleConfigurationSwapper();
+                result.put(swapper.getOrder(), swapper.swapToObject((YamlEncryptRuleConfiguration) each));
             } else if (each instanceof YamlCompatibleEncryptRuleConfiguration) {
                 YamlCompatibleEncryptRuleConfigurationSwapper swapper = new YamlCompatibleEncryptRuleConfigurationSwapper();
                 result.put(swapper.getOrder(), swapper.swapToObject((YamlCompatibleEncryptRuleConfiguration) each));

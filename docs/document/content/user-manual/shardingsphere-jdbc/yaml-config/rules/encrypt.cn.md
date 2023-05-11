@@ -16,12 +16,15 @@ rules:
     <table_name> (+): # 加密表名称
       columns:
         <column_name> (+): # 加密列名称
-          cipherColumn: # 密文列名称
-          encryptorName: # 密文列加密算法名称
-          assistedQueryColumn (?):  # 查询辅助列名称
-          assistedQueryEncryptorName:  # 查询辅助列加密算法名称
-          likeQueryColumn (?):  # 模糊查询列名称
-          likeQueryEncryptorName:  # 模糊查询列加密算法名称
+          cipher:
+            name: # 密文列名称
+            encryptorName: # 密文列加密算法名称
+          assistedQuery (?):  
+            name: # 查询辅助列名称
+            encryptorName:  # 查询辅助列加密算法名称
+          likeQuery (?):
+            name: # 模糊查询列名称
+            encryptorName:  # 模糊查询列加密算法名称
     
   # 加密算法配置
   encryptors:
@@ -57,17 +60,22 @@ rules:
     t_user:
       columns:
         username:
-          cipherColumn: username
-          encryptorName: aes_encryptor
-          assistedQueryColumn: assisted_query_username
-          assistedQueryEncryptorName: assisted_encryptor
-          likeQueryColumn: like_query_username
-          likeQueryEncryptorName: like_encryptor
+          cipher:
+            name: username
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_username
+            encryptorName: assisted_encryptor
+          likeQuery:
+            name: like_query_username
+            encryptorName: like_encryptor
         pwd:
-          cipherColumn: pwd
-          encryptorName: aes_encryptor
-          assistedQueryColumn: assisted_query_pwd
-          assistedQueryEncryptorName: assisted_encryptor
+          cipher:
+            name: pwd
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_pwd
+            encryptorName: assisted_encryptor
   encryptors:
     aes_encryptor:
       type: AES
