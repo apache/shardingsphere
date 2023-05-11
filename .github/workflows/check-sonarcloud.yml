@@ -54,12 +54,13 @@ jobs:
           restore-keys: |
             ${{ env.CACHE_PREFIX }}-maven-third-party-
       - name: Sonar Analyze Upload
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONARCLOUD_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
         run: >
-          ./mvnw clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+          ./mvnw clean verify sonar:sonar
           -Dsonar.branch.name=${{ github.ref_name }}
           -Dsonar.projectKey=apache_shardingsphere
           -Dsonar.login=${SONARCLOUD_TOKEN}
           -B -V
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONARCLOUD_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+
