@@ -19,40 +19,34 @@ package org.apache.shardingsphere.encrypt.yaml.swapper.rule;
 
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlCompatibleEncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Deprecated
-class YamlCompatibleEncryptColumnRuleConfigurationSwapperTest {
+class YamlEncryptColumnRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        YamlCompatibleEncryptColumnRuleConfigurationSwapper swapper = new YamlCompatibleEncryptColumnRuleConfigurationSwapper();
+        YamlEncryptColumnRuleConfigurationSwapper swapper = new YamlEncryptColumnRuleConfigurationSwapper();
         EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("logicColumn", new EncryptColumnItemRuleConfiguration("cipherColumn", "encryptorName"));
         encryptColumnRuleConfig.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assistedQueryColumn"));
         encryptColumnRuleConfig.setLikeQuery(new EncryptColumnItemRuleConfiguration("likeQueryColumn"));
-        YamlCompatibleEncryptColumnRuleConfiguration actual = swapper.swapToYamlConfiguration(encryptColumnRuleConfig);
-        assertThat(actual.getLogicColumn(), is("logicColumn"));
-        assertThat(actual.getCipherColumn(), is("cipherColumn"));
-        assertThat(actual.getAssistedQueryColumn(), is("assistedQueryColumn"));
-        assertThat(actual.getLikeQueryColumn(), is("likeQueryColumn"));
-        assertThat(actual.getEncryptorName(), is("encryptorName"));
+        YamlEncryptColumnRuleConfiguration actual = swapper.swapToYamlConfiguration(encryptColumnRuleConfig);
+        assertThat(actual.getName(), is("logicColumn"));
+        assertThat(actual.getCipher().getName(), is("cipherColumn"));
+        assertThat(actual.getCipher().getEncryptorName(), is("encryptorName"));
+        assertThat(actual.getAssistedQuery().getName(), is("assistedQueryColumn"));
+        assertThat(actual.getLikeQuery().getName(), is("likeQueryColumn"));
     }
     
     @Test
     void assertSwapToObject() {
-        YamlCompatibleEncryptColumnRuleConfigurationSwapper swapper = new YamlCompatibleEncryptColumnRuleConfigurationSwapper();
-        YamlCompatibleEncryptColumnRuleConfiguration yamlEncryptColumnRuleConfig = new YamlCompatibleEncryptColumnRuleConfiguration();
-        yamlEncryptColumnRuleConfig.setLogicColumn("logicColumn");
-        yamlEncryptColumnRuleConfig.setCipherColumn("cipherColumn");
-        yamlEncryptColumnRuleConfig.setAssistedQueryColumn("assistedQueryColumn");
-        yamlEncryptColumnRuleConfig.setLikeQueryColumn("likeQueryColumn");
-        yamlEncryptColumnRuleConfig.setEncryptorName("encryptorName");
-        EncryptColumnRuleConfiguration actual = swapper.swapToObject(yamlEncryptColumnRuleConfig);
+        YamlEncryptColumnRuleConfigurationSwapper swapper = new YamlEncryptColumnRuleConfigurationSwapper();
+        EncryptColumnRuleConfiguration actual = swapper.swapToObject(buildYamlEncryptColumnRuleConfiguration());
         assertThat(actual.getName(), is("logicColumn"));
         assertThat(actual.getCipher().getName(), is("cipherColumn"));
         assertTrue(actual.getAssistedQuery().isPresent());
@@ -60,5 +54,21 @@ class YamlCompatibleEncryptColumnRuleConfigurationSwapperTest {
         assertTrue(actual.getLikeQuery().isPresent());
         assertThat(actual.getLikeQuery().get().getName(), is("likeQueryColumn"));
         assertThat(actual.getCipher().getEncryptorName(), is("encryptorName"));
+    }
+    
+    private YamlEncryptColumnRuleConfiguration buildYamlEncryptColumnRuleConfiguration() {
+        YamlEncryptColumnRuleConfiguration result = new YamlEncryptColumnRuleConfiguration();
+        result.setName("logicColumn");
+        YamlEncryptColumnItemRuleConfiguration cipherColumnConfig = new YamlEncryptColumnItemRuleConfiguration();
+        cipherColumnConfig.setName("cipherColumn");
+        cipherColumnConfig.setEncryptorName("encryptorName");
+        result.setCipher(cipherColumnConfig);
+        YamlEncryptColumnItemRuleConfiguration assistedQueryColumnConfig = new YamlEncryptColumnItemRuleConfiguration();
+        assistedQueryColumnConfig.setName("assistedQueryColumn");
+        result.setAssistedQuery(assistedQueryColumnConfig);
+        YamlEncryptColumnItemRuleConfiguration likeQueryColumnConfig = new YamlEncryptColumnItemRuleConfiguration();
+        likeQueryColumnConfig.setName("likeQueryColumn");
+        result.setLikeQuery(likeQueryColumnConfig);
+        return result;
     }
 }
