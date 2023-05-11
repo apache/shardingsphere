@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.postgresql.util.PostgreSQLPipelineFreemarkerManager;
 
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 /**
  * Abstract ddl adapter for PostgreSQL.
  */
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public abstract class AbstractPostgreSQLDDLAdapter {
     
@@ -47,12 +50,6 @@ public abstract class AbstractPostgreSQLDDLAdapter {
     private final int majorVersion;
     
     private final int minorVersion;
-    
-    protected AbstractPostgreSQLDDLAdapter(final Connection connection, final int majorVersion, final int minorVersion) {
-        this.connection = connection;
-        this.majorVersion = majorVersion;
-        this.minorVersion = minorVersion;
-    }
     
     @SneakyThrows(SQLException.class)
     protected Collection<Map<String, Object>> executeByTemplate(final Map<String, Object> params, final String path) {

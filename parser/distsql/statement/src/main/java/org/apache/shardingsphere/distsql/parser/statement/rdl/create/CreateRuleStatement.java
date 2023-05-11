@@ -30,7 +30,7 @@ public abstract class CreateRuleStatement extends RuleDefinitionStatement {
     
     private final boolean ifNotExists;
     
-    public CreateRuleStatement() {
+    protected CreateRuleStatement() {
         this(false);
     }
 }

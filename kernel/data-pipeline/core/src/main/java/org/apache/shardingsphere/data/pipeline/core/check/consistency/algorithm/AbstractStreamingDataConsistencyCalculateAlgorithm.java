@@ -29,7 +29,6 @@ import java.util.Optional;
 /**
  * Streaming data consistency calculate algorithm.
  */
-@RequiredArgsConstructor
 @Getter
 @Slf4j
 public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends AbstractDataConsistencyCalculateAlgorithm {

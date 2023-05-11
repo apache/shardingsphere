@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.ingest.record;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 /**
  * Record interface.
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
 @ToString
