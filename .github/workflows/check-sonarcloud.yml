@@ -46,19 +46,16 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
+      - uses: actions/setup-java@v3
         with:
           java-version: 11
           distribution: 'temurin'
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v3
+      - uses: actions/cache@v3
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Maven packages
-        uses: actions/cache@v3
+      - uses: actions/cache@v3
         with:
           path: ~/.m2/repository
           key: ${{ env.CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
@@ -68,12 +65,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-        run: ./mvnw clean verify sonar:sonar \
-              -Dsonar.organization=apache \
-              -Dsonar.projectKey=apache_shardingsphere \
-              -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-              -Dsonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
-              -Dsonar.pullrequest.github.repository=apache/shardingsphere \
-              -Dsonar.pullrequest.provider=GitHub \
-              -Dsonar.pullrequest.github.summary_comment=true \
-              -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipTests
+        run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=apache_shardingsphere -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipTests
