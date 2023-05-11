@@ -18,15 +18,8 @@
 name: Check - SonarCloud
 
 on:
+  push:
   pull_request:
-    branches: [ master ]
-    paths:
-      - '**/src/main/**'
-      - '**/src/test/**'
-      - 'src/resources/**'
-      - 'examples/shardingsphere-example-generator/**'
-      - '!examples/**'
-      - '!*.md'
   workflow_dispatch:
 
 concurrency:
@@ -38,7 +31,6 @@ env:
 
 jobs:
   analyze-sonarcloud:
-    if: github.repository == 'apache/shardingsphere'
     name: Analyze to SonarCloud
     runs-on: ubuntu-latest
     timeout-minutes: 40
@@ -61,8 +53,16 @@ jobs:
           key: ${{ env.CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.CACHE_PREFIX }}-maven-third-party-
-      - name: Analyze
+      - name: Sonar Analyze Upload
+        run: >
+          ./mvnw org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+          -Dsonar.branch.name=${{ github.ref_name }}
+          -Dsonar.projectKey=apache_shardingsphere
+          -Dsonar.login=${SONARCLOUD_TOKEN}
+          -B -V
         env:
+          MAVEN_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
+          SONAR_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
+          JAVA_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-        run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=apache_shardingsphere -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipTests
+          SONARCLOUD_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
