@@ -154,4 +154,5 @@
     <sql-case id="alter_table_reset" value="ALTER TABLE t_order RESET (fillfactor = 12)" db-types="PostgreSQL" />
     <sql-case id="alter_table_set_access_method" value="ALTER TABLE t_order SET ACCESS METHOD heap, SET ACCESS METHOD heap2" db-types="PostgreSQL" />
     <sql-case id="alter_table_drop_expression" value="ALTER TABLE t_order ALTER COLUMN a DROP EXPRESSION;" db-types="PostgreSQL" />
+    <sql-case id="alter_table_modify_column_precision_with_decimal" value="ALTER TABLE t_order MODIFY COLUMN a VARCHAR(10.000000000001)" db-types="MySQL" />
 </sql-cases>

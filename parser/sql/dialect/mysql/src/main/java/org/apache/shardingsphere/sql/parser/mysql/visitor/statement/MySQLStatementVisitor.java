@@ -221,6 +221,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLUpdateStatement;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -1139,7 +1140,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         DataTypeLengthSegment result = new DataTypeLengthSegment();
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStartIndex());
-        result.setPrecision(Integer.parseInt(ctx.length.getText()));
+        result.setPrecision(new BigDecimal(ctx.length.getText()).intValue());
         return result;
     }
     

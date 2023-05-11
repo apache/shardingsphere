@@ -38,15 +38,6 @@ public interface DatabaseProtocolFrontendEngine extends TypedSPI {
     }
     
     /**
-     * Set database version.
-     * 
-     * @param databaseName database name
-     * @param databaseVersion database version
-     */
-    default void setDatabaseVersion(String databaseName, String databaseVersion) {
-    }
-    
-    /**
      * Get database packet codec engine.
      * 
      * @return database packet codec engine
