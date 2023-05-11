@@ -18,21 +18,15 @@
 package org.apache.shardingsphere.test.it.sql.parser.it.mysql.external;
 
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserIT;
-import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserTestParameter;
 import org.apache.shardingsphere.test.it.sql.parser.external.loader.ExternalMySQLTestParameterLoader;
-import org.apache.shardingsphere.test.loader.AbstractTestParameterLoader;
 import org.apache.shardingsphere.test.loader.ExternalCaseSettings;
-import org.apache.shardingsphere.test.loader.strategy.impl.GitHubTestParameterLoadStrategy;
 
-@ExternalCaseSettings(value = "MySQL", caseURL = ExternalMySQLParserIT.CASE_URL, resultURL = ExternalMySQLParserIT.RESULT_URL)
+@ExternalCaseSettings(value = "MySQL", caseURL = ExternalMySQLParserIT.CASE_URL, resultURL = ExternalMySQLParserIT.RESULT_URL,
+        testParameterLoader = ExternalMySQLTestParameterLoader.class)
 class ExternalMySQLParserIT extends ExternalSQLParserIT {
     
     static final String CASE_URL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t";
     
     static final String RESULT_URL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r";
     
-    @Override
-    protected AbstractTestParameterLoader<ExternalSQLParserTestParameter> getTestParameterLoader() {
-        return new ExternalMySQLTestParameterLoader(new GitHubTestParameterLoadStrategy());
-    }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.it.sql.parser.external;
 
 import com.google.common.base.Preconditions;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.util.exception.external.ShardingSphereExternalException;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -29,22 +30,26 @@ import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResu
 import org.apache.shardingsphere.test.it.sql.parser.external.result.SQLParseResultReporterCreator;
 import org.apache.shardingsphere.test.loader.AbstractTestParameterLoader;
 import org.apache.shardingsphere.test.loader.ExternalCaseSettings;
-import org.junit.jupiter.api.TestInstance;
+import org.apache.shardingsphere.test.loader.ExternalSQLParserTestParameter;
+import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
+import org.apache.shardingsphere.test.loader.strategy.impl.GitHubTestParameterLoadStrategy;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 import java.util.stream.Stream;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class ExternalSQLParserIT {
     
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @EnabledIf("isEnabled")
-    @MethodSource("provideArguments")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertParseSQL(final String sqlCaseId, final String databaseType, final String sql, final String reportType) throws IOException {
         boolean isSuccess = true;
         try (
@@ -64,13 +69,20 @@ public abstract class ExternalSQLParserIT {
         return SQLParserExternalITEnvironment.getInstance().isSqlParserITEnabled();
     }
     
-    private Stream<Arguments> provideArguments() {
-        ExternalCaseSettings settings = this.getClass().getAnnotation(ExternalCaseSettings.class);
-        Preconditions.checkNotNull(settings, "Annotation ExternalSQLParserITSettings is required.");
-        return getTestParameterLoader()
-                .load(URI.create(settings.caseURL()), URI.create(settings.resultURL()), settings.value(), settings.reportType())
-                .stream().map(each -> Arguments.of(each.getSqlCaseId(), each.getDatabaseType(), each.getSql(), each.getReportType()));
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            ExternalCaseSettings settings = extensionContext.getRequiredTestClass().getAnnotation(ExternalCaseSettings.class);
+            Preconditions.checkNotNull(settings, "Annotation ExternalSQLParserITSettings is required.");
+            return getTestParameters(settings).stream().map(each -> Arguments.of(each.getSqlCaseId(), each.getDatabaseType(), each.getSql(), each.getReportType()));
+        }
+        
+        @SneakyThrows
+        private Collection<ExternalSQLParserTestParameter> getTestParameters(final ExternalCaseSettings settings) {
+            AbstractTestParameterLoader<ExternalSQLParserTestParameter> loader = settings.testParameterLoader().getConstructor(TestParameterLoadStrategy.class)
+                    .newInstance(new GitHubTestParameterLoadStrategy());
+            return loader.load(URI.create(settings.caseURL()), URI.create(settings.resultURL()), settings.value(), settings.reportType());
+        }
     }
-    
-    protected abstract AbstractTestParameterLoader<ExternalSQLParserTestParameter> getTestParameterLoader();
 }
