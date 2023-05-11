@@ -1242,4 +1242,8 @@
             </column-definition>
         </modify-column>
     </alter-table>
+
+    <alter-table sql-case-id="alter_table_order_by">
+        <table name="t_order" start-index="12" stop-index="18" />
+    </alter-table>
 </sql-parser-test-cases>
