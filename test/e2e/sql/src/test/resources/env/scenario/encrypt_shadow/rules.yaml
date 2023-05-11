@@ -94,7 +94,7 @@ rules:
         column: merchant_id
         value: 0
 
-- !ENCRYPT
+- !COMPATIBLE_ENCRYPT
   encryptors:
     aes_encryptor:
       type: AES
@@ -104,16 +104,13 @@ rules:
     t_shadow:
       columns:
         order_name:
-          cipher:
-            name: order_name_cipher
-            encryptorName: aes_encryptor
+          cipherColumn: order_name_cipher
+          encryptorName: aes_encryptor
     t_merchant:
       columns:
         business_code:
-          cipher:
-            name: business_code_cipher
-            encryptorName: aes_encryptor
+          cipherColumn: business_code_cipher
+          encryptorName: aes_encryptor
         telephone:
-          cipher:
-            name: telephone_cipher
-            encryptorName: aes_encryptor
+          cipherColumn: telephone_cipher
+          encryptorName: aes_encryptor

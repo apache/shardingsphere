@@ -298,7 +298,7 @@ rules:
         props:
           foo: bar
 
-  - !ENCRYPT
+  - !COMPATIBLE_ENCRYPT
     encryptors:
       aes_encryptor:
         type: AES
@@ -308,6 +308,5 @@ rules:
       t_shadow:
         columns:
           order_name:
-            cipher:
-              name: order_name_cipher
-              encryptorName: aes_encryptor
+            cipherColumn: order_name_cipher
+            encryptorName: aes_encryptor
