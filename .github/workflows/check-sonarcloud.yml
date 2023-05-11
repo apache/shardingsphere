@@ -19,14 +19,6 @@ name: Check - SonarCloud
 
 on:
   pull_request:
-    branches: [ master ]
-    paths:
-      - '**/src/main/**'
-      - '**/src/test/**'
-      - 'src/resources/**'
-      - 'examples/shardingsphere-example-generator/**'
-      - '!examples/**'
-      - '!*.md'
   workflow_dispatch:
 
 concurrency:
