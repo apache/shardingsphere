@@ -66,6 +66,7 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
         register(SqlStdOperatorTable.PERCENT_REMAINDER);
         register(SqlStdOperatorTable.IS_NULL);
         register(SqlStdOperatorTable.IS_NOT_NULL);
+        register(SqlStdOperatorTable.ALL_GT);
     }
     
     private static void register(final SqlOperator sqlOperator) {

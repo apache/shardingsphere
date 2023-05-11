@@ -208,6 +208,9 @@ class SQLNodeConverterEngineIT {
             result.add("select_where_with_predicate_with_in_subquery");
             result.add("select_where_with_boolean_primary_with_is");
             result.add("select_where_with_boolean_primary_with_is_not");
+            result.add("select_where_with_boolean_primary_with_comparison_subquery");
+            result.add("select_not_between_with_single_table");
+            result.add("select_not_in_with_single_table");
             return result;
         }
         // CHECKSTYLE:ON
