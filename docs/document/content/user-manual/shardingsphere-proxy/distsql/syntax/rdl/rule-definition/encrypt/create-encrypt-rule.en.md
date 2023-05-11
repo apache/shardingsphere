@@ -5,7 +5,7 @@ weight = 1
 
 ## Description
 
-The `CREATE ENCRYPT RULE` syntax is used to create a encrypt rule.
+The `CREATE ENCRYPT RULE` syntax is used to create encrypt rules.
 
 ### Syntax
 
@@ -22,7 +22,7 @@ encryptDefinition ::=
   ruleName '(' 'COLUMNS' '(' columnDefinition (',' columnDefinition)*  ')' ')'
 
 columnDefinition ::=
-  '(' 'NAME' '=' columnName ',' 'CIPHER' '=' cipherColumnName (',' 'ASSISTED_QUERY_COLUMN' '=' assistedQueryColumnName)? (',' 'LIKE_QUERY_COLUMN' '=' likeQueryColumnName)? ',' encryptAlgorithmDefinition (',' assistedQueryAlgorithmDefinition)? (',' likeQueryAlgorithmDefinition)? ')' 
+  '(' 'NAME' '=' columnName ',' 'CIPHER' '=' cipherColumnName (',' 'ASSISTED_QUERY' '=' assistedQueryColumnName)? (',' 'LIKE_QUERY' '=' likeQueryColumnName)? ',' encryptAlgorithmDefinition (',' assistedQueryAlgorithmDefinition)? (',' likeQueryAlgorithmDefinition)? ')' 
 
 encryptAlgorithmDefinition ::=
   'ENCRYPT_ALGORITHM' '(' 'TYPE' '(' 'NAME' '=' encryptAlgorithmType (',' propertiesDefinition)? ')'
@@ -68,14 +68,14 @@ value ::=
 
 ### Supplement
 
-- `CIPHER` specifies the cipher column, `ASSISTED_QUERY_COLUMN` specifies the assisted query column，`LIKE_QUERY_COLUMN` specifies the like query column;
+- `CIPHER` specifies the cipher column, `ASSISTED_QUERY` specifies the assisted query column，`LIKE_QUERY` specifies the like query column;
 - `encryptAlgorithmType` specifies the encryption algorithm type, please refer to [Encryption Algorithm](/en/user-manual/common-config/builtin-algorithm/encrypt/);
 - Duplicate `ruleName` will not be created;
 - `ifNotExists` clause used for avoid `Duplicate encrypt rule` error.
 
 ### Example
 
-#### Create a encrypt rule
+#### Create an encrypt rule
 
 ```sql
 CREATE ENCRYPT RULE t_encrypt (
@@ -90,10 +90,10 @@ COLUMNS(
 ));
 ```
 
-#### Create a encrypt rule with `ifNotExists` clause
+#### Create an encrypt rule with `ifNotExists` clause
 
 ```sql
-CREATE ENCRYPT RULE t_encrypt IF NOT EXISTS (
+CREATE ENCRYPT RULE IF NOT EXISTS t_encrypt (
 COLUMNS(
 (NAME=user_id,CIPHER=user_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc')))),
 (NAME=order_id, CIPHER =order_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='MD5')))
@@ -107,7 +107,7 @@ COLUMNS(
 
 ### Reserved words
 
-`CREATE`, `ENCRYPT`, `RULE`, `COLUMNS`, `NAME`, `CIPHER`, `ENCRYPT_ALGORITHM`, `TYPE`, `TRUE`, `FALSE`
+`CREATE`, `ENCRYPT`, `RULE`, `COLUMNS`, `NAME`, `CIPHER`, `ASSISTED_QUERY`, `LIKE_QUERY`, `ENCRYPT_ALGORITHM`, `ASSISTED_QUERY_ALGORITHM`, `LIKE_QUERY_ALGORITHM`, `TYPE`, `TRUE`, `FALSE`
 
 ### Related links
 
