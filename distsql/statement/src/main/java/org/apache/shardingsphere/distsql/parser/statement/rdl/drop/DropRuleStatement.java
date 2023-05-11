@@ -30,7 +30,7 @@ public abstract class DropRuleStatement extends RuleDefinitionStatement {
     
     private final boolean ifExists;
     
-    public DropRuleStatement() {
+    protected DropRuleStatement() {
         this(false);
     }
 }

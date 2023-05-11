@@ -81,7 +81,7 @@ public abstract class TransactionBaseE2EIT {
     
     private final CommonSQLCommand commonSQL;
     
-    public TransactionBaseE2EIT() {
+    protected TransactionBaseE2EIT() {
         commonSQL = loadCommonSQLCommand();
     }
     
