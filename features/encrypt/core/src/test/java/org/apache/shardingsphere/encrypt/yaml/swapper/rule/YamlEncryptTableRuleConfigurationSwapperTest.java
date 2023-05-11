@@ -20,8 +20,9 @@ package org.apache.shardingsphere.encrypt.yaml.swapper.rule;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlCompatibleEncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlCompatibleEncryptTableRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnItemRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -33,10 +34,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Deprecated
-class YamlCompatibleEncryptTableRuleConfigurationSwapperTest {
+class YamlEncryptTableRuleConfigurationSwapperTest {
     
-    private final YamlCompatibleEncryptTableRuleConfigurationSwapper swapper = new YamlCompatibleEncryptTableRuleConfigurationSwapper();
+    private final YamlEncryptTableRuleConfigurationSwapper swapper = new YamlEncryptTableRuleConfigurationSwapper();
     
     @Test
     void assertSwapToYamlConfiguration() {
@@ -48,32 +48,26 @@ class YamlCompatibleEncryptTableRuleConfigurationSwapperTest {
                 encryptColumnTwoConfig,
                 encryptColumnThreeConfig);
         EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("test_table", encryptColumnRuleConfigs);
-        YamlCompatibleEncryptTableRuleConfiguration actualYamlEncryptTableRuleConfig = swapper.swapToYamlConfiguration(encryptTableRuleConfig);
+        YamlEncryptTableRuleConfiguration actualYamlEncryptTableRuleConfig = swapper.swapToYamlConfiguration(encryptTableRuleConfig);
         assertThat(actualYamlEncryptTableRuleConfig.getName(), is("test_table"));
-        Map<String, YamlCompatibleEncryptColumnRuleConfiguration> actualColumns = actualYamlEncryptTableRuleConfig.getColumns();
+        Map<String, YamlEncryptColumnRuleConfiguration> actualColumns = actualYamlEncryptTableRuleConfig.getColumns();
         assertThat(actualColumns.size(), is(3));
-        YamlCompatibleEncryptColumnRuleConfiguration actualYamlEncryptColumnRuleConfigFirst = actualColumns.get("encrypt_column_1");
-        assertThat(actualYamlEncryptColumnRuleConfigFirst.getCipherColumn(), is("encrypt_cipher_1"));
-        assertThat(actualYamlEncryptColumnRuleConfigFirst.getEncryptorName(), is("test_encryptor_1"));
-        YamlCompatibleEncryptColumnRuleConfiguration actualYamlEncryptColumnRuleConfigSecond = actualColumns.get("encrypt_column_2");
-        assertThat(actualYamlEncryptColumnRuleConfigSecond.getCipherColumn(), is("encrypt_cipher_2"));
-        assertThat(actualYamlEncryptColumnRuleConfigSecond.getEncryptorName(), is("test_encryptor_2"));
-        YamlCompatibleEncryptColumnRuleConfiguration actualYamlEncryptColumnRuleConfigThird = actualColumns.get("encrypt_column_3");
-        assertThat(actualYamlEncryptColumnRuleConfigThird.getCipherColumn(), is("encrypt_cipher_3"));
-        assertThat(actualYamlEncryptColumnRuleConfigThird.getEncryptorName(), is("test_encryptor_3"));
+        YamlEncryptColumnRuleConfiguration actualYamlEncryptColumnRuleConfigFirst = actualColumns.get("encrypt_column_1");
+        assertThat(actualYamlEncryptColumnRuleConfigFirst.getCipher().getName(), is("encrypt_cipher_1"));
+        assertThat(actualYamlEncryptColumnRuleConfigFirst.getCipher().getEncryptorName(), is("test_encryptor_1"));
+        YamlEncryptColumnRuleConfiguration actualYamlEncryptColumnRuleConfigSecond = actualColumns.get("encrypt_column_2");
+        assertThat(actualYamlEncryptColumnRuleConfigSecond.getCipher().getName(), is("encrypt_cipher_2"));
+        assertThat(actualYamlEncryptColumnRuleConfigSecond.getCipher().getEncryptorName(), is("test_encryptor_2"));
+        YamlEncryptColumnRuleConfiguration actualYamlEncryptColumnRuleConfigThird = actualColumns.get("encrypt_column_3");
+        assertThat(actualYamlEncryptColumnRuleConfigThird.getCipher().getName(), is("encrypt_cipher_3"));
+        assertThat(actualYamlEncryptColumnRuleConfigThird.getCipher().getEncryptorName(), is("test_encryptor_3"));
     }
     
     @Test
     void assertSwapToObject() {
-        YamlCompatibleEncryptColumnRuleConfiguration encryptColumnRuleConfig = new YamlCompatibleEncryptColumnRuleConfiguration();
-        encryptColumnRuleConfig.setLogicColumn("encrypt_column");
-        encryptColumnRuleConfig.setCipherColumn("encrypt_cipher");
-        encryptColumnRuleConfig.setAssistedQueryColumn("encrypt_assisted");
-        encryptColumnRuleConfig.setLikeQueryColumn("encrypt_like");
-        encryptColumnRuleConfig.setEncryptorName("test_encryptor");
-        Map<String, YamlCompatibleEncryptColumnRuleConfiguration> columns = new LinkedHashMap<>(1);
-        columns.put("test_column", encryptColumnRuleConfig);
-        YamlCompatibleEncryptTableRuleConfiguration yamlEncryptTableRuleConfig = new YamlCompatibleEncryptTableRuleConfiguration();
+        Map<String, YamlEncryptColumnRuleConfiguration> columns = new LinkedHashMap<>(1);
+        columns.put("test_column", buildYamlEncryptColumnRuleConfiguration());
+        YamlEncryptTableRuleConfiguration yamlEncryptTableRuleConfig = new YamlEncryptTableRuleConfiguration();
         yamlEncryptTableRuleConfig.setName("test_table");
         yamlEncryptTableRuleConfig.setColumns(columns);
         EncryptTableRuleConfiguration actualEncryptTableRuleConfig = swapper.swapToObject(yamlEncryptTableRuleConfig);
@@ -83,10 +77,26 @@ class YamlCompatibleEncryptTableRuleConfigurationSwapperTest {
         EncryptColumnRuleConfiguration actualEncryptColumnRuleConfig = actualColumns.iterator().next();
         assertThat(actualEncryptColumnRuleConfig.getName(), is("test_column"));
         assertThat(actualEncryptColumnRuleConfig.getCipher().getName(), is("encrypt_cipher"));
+        assertThat(actualEncryptColumnRuleConfig.getCipher().getEncryptorName(), is("test_encryptor"));
         assertTrue(actualEncryptColumnRuleConfig.getAssistedQuery().isPresent());
         assertThat(actualEncryptColumnRuleConfig.getAssistedQuery().get().getName(), is("encrypt_assisted"));
         assertTrue(actualEncryptColumnRuleConfig.getLikeQuery().isPresent());
         assertThat(actualEncryptColumnRuleConfig.getLikeQuery().get().getName(), is("encrypt_like"));
-        assertThat(actualEncryptColumnRuleConfig.getCipher().getEncryptorName(), is("test_encryptor"));
+    }
+    
+    private YamlEncryptColumnRuleConfiguration buildYamlEncryptColumnRuleConfiguration() {
+        YamlEncryptColumnRuleConfiguration result = new YamlEncryptColumnRuleConfiguration();
+        result.setName("encrypt_column");
+        YamlEncryptColumnItemRuleConfiguration cipherColumnConfig = new YamlEncryptColumnItemRuleConfiguration();
+        cipherColumnConfig.setName("encrypt_cipher");
+        cipherColumnConfig.setEncryptorName("test_encryptor");
+        result.setCipher(cipherColumnConfig);
+        YamlEncryptColumnItemRuleConfiguration assistedQueryColumnConfig = new YamlEncryptColumnItemRuleConfiguration();
+        assistedQueryColumnConfig.setName("encrypt_assisted");
+        result.setAssistedQuery(assistedQueryColumnConfig);
+        YamlEncryptColumnItemRuleConfiguration likeQueryColumnConfig = new YamlEncryptColumnItemRuleConfiguration();
+        likeQueryColumnConfig.setName("encrypt_like");
+        result.setLikeQuery(likeQueryColumnConfig);
+        return result;
     }
 }
