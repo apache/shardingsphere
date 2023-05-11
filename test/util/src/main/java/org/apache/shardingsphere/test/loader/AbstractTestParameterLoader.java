@@ -47,11 +47,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public abstract class AbstractTestParameterLoader<T> {
-    
+    private static final int DEFAULT_DOWNLOAD_THREADS = 4;
+
+    private final ExecutorService executorService = Executors.newFixedThreadPool(DEFAULT_DOWNLOAD_THREADS);
+
     private final TestParameterLoadStrategy loadStrategy;
-    
-    private final ExecutorService executorService = Executors.newFixedThreadPool(4);
-    
+
     /**
      * Load test parameters.
      *

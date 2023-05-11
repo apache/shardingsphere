@@ -31,7 +31,9 @@ import java.util.Objects;
  * External MySQL SQL parser test parameter loader.
  */
 public final class ExternalMySQLTestParameterLoader extends AbstractTestParameterLoader<ExternalSQLParserTestParameter> {
-    
+
+    private static final int DELIMITER_COMMAND_LENGTH = "DELIMITER".length();
+
     public ExternalMySQLTestParameterLoader(final TestParameterLoadStrategy loadStrategy) {
         super(loadStrategy);
     }
@@ -51,21 +53,21 @@ public final class ExternalMySQLTestParameterLoader extends AbstractTestParamete
                                                                            final List<String> resultFileContent, final String databaseType, final String reportType) {
         Collection<ExternalSQLParserTestParameter> result = new LinkedList<>();
         List<String> sqlLines = new ArrayList<>();
-        int sqlCaseEnum = 1;
+        int sqlCaseIndex = 1;
         String delimiter = ";";
         for (String line : sqlCaseFileContent) {
             String trimLine = line.trim();
-            if (trimLine.isEmpty() || sqlLines.size() == 0 && isComment(trimLine)) {
+            if (trimLine.isEmpty() || 0 == sqlLines.size() && isComment(trimLine)) {
                 continue;
             }
-            if (sqlLines.size() == 0 && trimLine.toUpperCase().startsWith("DELIMITER")) {
+            if (0 == sqlLines.size() && trimLine.toUpperCase().startsWith("DELIMITER")) {
                 delimiter = getNewDelimiter(trimLine, delimiter);
                 continue;
             }
             sqlLines.add(trimLine);
             if (trimLine.endsWith(delimiter)) {
                 if (existInResultContent(resultFileContent, sqlLines)) {
-                    String sqlCaseId = sqlCaseFileName + sqlCaseEnum++;
+                    String sqlCaseId = sqlCaseFileName + sqlCaseIndex++;
                     String sql = String.join("\n", sqlLines);
                     sql = sql.substring(0, sql.length() - delimiter.length());
                     result.add(new ExternalSQLParserTestParameter(sqlCaseId, databaseType, sql, reportType));
@@ -76,10 +78,9 @@ public final class ExternalMySQLTestParameterLoader extends AbstractTestParamete
         return result;
     }
     
-    private String getNewDelimiter(final String delimiterSQL, final String delimiter) {
-        String trimSQL = delimiterSQL.trim();
-        String newDelimiter = trimSQL
-                .substring(9, trimSQL.endsWith(delimiter) ? trimSQL.length() - delimiter.length() : trimSQL.length())
+    private String getNewDelimiter(final String trimSql, final String delimiter) {
+        String newDelimiter = trimSql
+                .substring(DELIMITER_COMMAND_LENGTH, trimSql.endsWith(delimiter) ? trimSql.length() - delimiter.length() : trimSql.length())
                 .trim();
         if (newDelimiter.startsWith("\"") && newDelimiter.endsWith("\"") || newDelimiter.startsWith("'") && newDelimiter.endsWith("'")) {
             newDelimiter = newDelimiter.substring(1, newDelimiter.length() - 1);
@@ -92,11 +93,11 @@ public final class ExternalMySQLTestParameterLoader extends AbstractTestParamete
     }
     
     private boolean existInResultContent(final List<String> resultLines, final List<String> sqlLines) {
-        int nextLineIndex = searchSQLNextLineIndex(resultLines, sqlLines);
-        return nextLineIndex != -1 && (nextLineIndex == resultLines.size() || !resultLines.get(nextLineIndex).contains("ERROR"));
+        int nextLineIndex = findSQLNextLineIndex(resultLines, sqlLines);
+        return -1 != nextLineIndex && (nextLineIndex == resultLines.size() || !resultLines.get(nextLineIndex).contains("ERROR"));
     }
     
-    private int searchSQLNextLineIndex(final List<String> resultLines, final List<String> sqlLines) {
+    private int findSQLNextLineIndex(final List<String> resultLines, final List<String> sqlLines) {
         int completedSQLIndex = 0;
         for (int resultIndex = 0; resultIndex < resultLines.size(); resultIndex++) {
             if (Objects.equals(sqlLines.get(completedSQLIndex), resultLines.get(resultIndex).trim())) {
