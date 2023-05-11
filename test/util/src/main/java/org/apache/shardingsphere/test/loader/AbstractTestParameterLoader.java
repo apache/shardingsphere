@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.test.loader;
 
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
 import org.apache.shardingsphere.test.loader.summary.FileSummary;
@@ -28,8 +30,13 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
@@ -40,6 +47,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public abstract class AbstractTestParameterLoader<T> {
+    
+    private static final int DEFAULT_DOWNLOAD_THREADS = 4;
+    
+    private final ExecutorService executorService = Executors.newFixedThreadPool(DEFAULT_DOWNLOAD_THREADS);
     
     private final TestParameterLoadStrategy loadStrategy;
     
@@ -52,17 +63,27 @@ public abstract class AbstractTestParameterLoader<T> {
      * @param reportType report type
      * @return loaded test parameters
      */
+    @SneakyThrows
     public Collection<T> load(final URI sqlCaseURI, final URI resultURI, final String databaseType, final String reportType) {
         Collection<T> result = new LinkedList<>();
-        Map<String, FileSummary> sqlCaseFileSummaries = loadStrategy.loadSQLCaseFileSummaries(sqlCaseURI).stream().collect(Collectors.toMap(FileSummary::getFileName, v -> v, (k, v) -> v));
-        Map<String, FileSummary> resultFileSummaries = loadStrategy.loadSQLCaseFileSummaries(resultURI).stream().collect(Collectors.toMap(FileSummary::getFileName, v -> v, (k, v) -> v));
-        for (Entry<String, FileSummary> each : sqlCaseFileSummaries.entrySet()) {
+        Map<String, List<String>> sqlCaseFileContents = downloadAllBySummary(sqlCaseURI);
+        Map<String, List<String>> resultFileContents = downloadAllBySummary(resultURI);
+        for (Entry<String, List<String>> each : sqlCaseFileContents.entrySet()) {
             String fileName = each.getKey();
-            String sqlCaseFileContent = loadContent(URI.create(each.getValue().getAccessURI()));
-            String resultFileContent = resultFileSummaries.containsKey(fileName) ? loadContent(URI.create(resultFileSummaries.get(fileName).getAccessURI())) : "";
+            List<String> sqlCaseFileContent = each.getValue();
+            List<String> resultFileContent = resultFileContents.getOrDefault(fileName, Lists.newArrayList());
             result.addAll(createTestParameters(fileName, sqlCaseFileContent, resultFileContent, databaseType, reportType));
         }
         return result;
+    }
+    
+    private Map<String, List<String>> downloadAllBySummary(final URI sqlCaseURI) throws InterruptedException {
+        Map<String, List<String>> contents = new ConcurrentHashMap<>();
+        Collection<FileSummary> fileSummaries = loadStrategy.loadSQLCaseFileSummaries(sqlCaseURI);
+        executorService.invokeAll(fileSummaries.stream()
+                .map(summary -> (Callable<Object>) () -> contents.put(summary.getFileName(), loadContent(URI.create(summary.getAccessURI()))))
+                .collect(Collectors.toList()));
+        return contents;
     }
     
     /**
@@ -75,17 +96,17 @@ public abstract class AbstractTestParameterLoader<T> {
      * @param reportType report type
      * @return test parameters
      */
-    public abstract Collection<T> createTestParameters(String sqlCaseFileName, String sqlCaseFileContent,
-                                                       String resultFileContent, String databaseType, String reportType);
+    public abstract Collection<T> createTestParameters(String sqlCaseFileName, List<String> sqlCaseFileContent,
+                                                       List<String> resultFileContent, String databaseType, String reportType);
     
-    private String loadContent(final URI uri) {
+    private List<String> loadContent(final URI uri) {
         try (
                 InputStreamReader in = new InputStreamReader(uri.toURL().openStream());
                 BufferedReader reader = new BufferedReader(in)) {
-            return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+            return reader.lines().collect(Collectors.toList());
         } catch (final IOException ex) {
             log.warn("Load failed, reason is: ", ex);
-            return "";
+            return Lists.newArrayList();
         }
     }
 }
