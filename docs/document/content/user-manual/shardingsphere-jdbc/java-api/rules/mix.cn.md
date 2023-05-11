@@ -41,11 +41,13 @@ private static ReadwriteSplittingRuleConfiguration createReadwriteSplittingConfi
 }
 
 // 数据加密配置
-public EncryptRuleConfiguration createEncryptRuleConfiguration() {
+private static EncryptRuleConfiguration createEncryptRuleConfiguration() {
     Properties props = new Properties();
     props.setProperty("aes-key-value", "123456");
-    EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", "username", "", "", "name_encryptor");
-    EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "like_pwd", "pwd_encryptor");
+    EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", new EncryptColumnItemRuleConfiguration("username", "name_encryptor"));
+    EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd", "pwd_encryptor"));
+    columnConfigTest.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assisted_query_pwd", "pwd_encryptor"));
+    columnConfigTest.setLikeQuery(new EncryptColumnItemRuleConfiguration("like_pwd", "like_encryptor"));
     EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
     Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new HashMap<>();
     encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));

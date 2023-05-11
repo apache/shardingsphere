@@ -93,6 +93,45 @@ rules:
 YamlShardingSphereDataSourceFactory.createDataSource(getFile());
 ```
 
+为了保持对低版本 YAML 配置的兼容，ShardingSphere 通过 `COMPATIBLE_ENCRYPT` 提供了如下的兼容配置，该配置会在后续版本中删除，建议及时升级最新 YAML 配置。
+
+```yaml
+dataSources:
+  unique_ds:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password:
+
+rules:
+- !COMPATIBLE_ENCRYPT
+  tables:
+    t_user:
+      columns:
+        username:
+          cipherColumn: username
+          encryptorName: aes_encryptor
+          assistedQueryColumn: assisted_query_username
+          assistedQueryEncryptorName: assisted_encryptor
+          likeQueryColumn: like_query_username
+          likeQueryEncryptorName: like_encryptor
+        pwd:
+          cipherColumn: pwd
+          encryptorName: aes_encryptor
+          assistedQueryColumn: assisted_query_pwd
+          assistedQueryEncryptorName: assisted_encryptor
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+    assisted_encryptor:
+      type: MD5
+    like_encryptor:
+      type: CHAR_DIGEST_LIKE
+```
+
 ## 相关参考
 
 - [核心特性：数据加密](/cn/features/encrypt/)
