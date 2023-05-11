@@ -55,12 +55,14 @@ jobs:
             ${{ env.CACHE_PREFIX }}-maven-third-party-
       - name: Sonar Analyze Upload
         env:
+          MAVEN_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
+          SONAR_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
+          JAVA_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONARCLOUD_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
         run: >
-          ./mvnw clean verify sonar:sonar
+          ./mvnw clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
           -Dsonar.branch.name=${{ github.ref_name }}
           -Dsonar.projectKey=apache_shardingsphere
           -Dsonar.login=${SONARCLOUD_TOKEN}
           -B -V
-
