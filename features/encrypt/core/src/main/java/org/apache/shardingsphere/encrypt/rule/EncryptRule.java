@@ -69,6 +69,11 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
         ruleConfig.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each)));
     }
     
+    /**
+     * Encrypt rule constructor.
+     * 
+     * @deprecated deprecated by compatible encrypt rule configuration
+     */
     @Deprecated
     public EncryptRule(final CompatibleEncryptRuleConfiguration ruleConfig) {
         configuration = ruleConfig;

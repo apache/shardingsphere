@@ -27,7 +27,7 @@ public abstract class AlgorithmDefinitionViolationException extends DistSQLExcep
     
     private static final long serialVersionUID = -727466071244178933L;
     
-    public AlgorithmDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+    protected AlgorithmDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, errorCode, reason, messageArgs);
     }
 }

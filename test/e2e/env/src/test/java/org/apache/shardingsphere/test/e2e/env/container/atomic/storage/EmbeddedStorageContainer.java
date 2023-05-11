@@ -46,7 +46,7 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
     
     private final Map<String, DataSource> expectedDataSourceMap;
     
-    public EmbeddedStorageContainer(final DatabaseType databaseType, final String scenario) {
+    protected EmbeddedStorageContainer(final DatabaseType databaseType, final String scenario) {
         this.databaseType = databaseType;
         this.scenario = scenario;
         actualDataSourceMap = createActualDataSourceMap();

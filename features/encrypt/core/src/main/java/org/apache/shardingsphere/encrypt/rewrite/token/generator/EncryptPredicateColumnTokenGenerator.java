@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
@@ -88,31 +89,27 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         return result;
     }
     
-    private SubstitutableColumnNameToken buildSubstitutableColumnNameToken(final ColumnSegment columnSegment, final String tableName, final Collection<WhereSegment> whereSegments,
-                                                                           final EncryptTable encryptTable) {
+    private SubstitutableColumnNameToken buildSubstitutableColumnNameToken(final ColumnSegment columnSegment, final String tableName,
+                                                                           final Collection<WhereSegment> whereSegments, final EncryptTable encryptTable) {
         int startIndex = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getStopIndex() + 2 : columnSegment.getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
         String logicColumn = columnSegment.getIdentifier().getValue();
         // TODO remove foreach loop to improve performance
-        if (isColumnSegmentIncludedInLikeExpression(whereSegments, columnSegment)) {
+        if (includesLike(whereSegments, columnSegment)) {
             Optional<String> likeQueryColumn = encryptTable.findLikeQueryColumn(logicColumn);
-            if (likeQueryColumn.isPresent()) {
-                return new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(likeQueryColumn.get()));
-            } else {
-                throw new UnsupportedEncryptSQLException("LIKE");
-            }
+            ShardingSpherePreconditions.checkState(likeQueryColumn.isPresent(), () -> new UnsupportedEncryptSQLException("LIKE"));
+            return new SubstitutableColumnNameToken(startIndex, stopIndex, createColumnProjections(likeQueryColumn.get()));
         }
         Collection<ColumnProjection> columnProjections =
                 encryptTable.findAssistedQueryColumn(logicColumn).map(this::createColumnProjections).orElseGet(() -> createColumnProjections(encryptTable.getCipherColumn(logicColumn)));
         return new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections);
     }
     
-    private boolean isColumnSegmentIncludedInLikeExpression(final Collection<WhereSegment> whereSegments, final ColumnSegment targetColumnSegment) {
+    private boolean includesLike(final Collection<WhereSegment> whereSegments, final ColumnSegment targetColumnSegment) {
         for (WhereSegment each : whereSegments) {
             Collection<AndPredicate> andPredicates = ExpressionExtractUtils.getAndPredicates(each.getExpr());
             for (AndPredicate andPredicate : andPredicates) {
-                boolean likeColumnSegment = isLikeColumnSegment(andPredicate, targetColumnSegment);
-                if (likeColumnSegment) {
+                if (isLikeColumnSegment(andPredicate, targetColumnSegment)) {
                     return true;
                 }
             }

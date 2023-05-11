@@ -27,11 +27,11 @@ public abstract class ShardingSphereExternalException extends RuntimeException {
     
     private static final long serialVersionUID = 1629786588176694067L;
     
-    public ShardingSphereExternalException(final String reason) {
+    protected ShardingSphereExternalException(final String reason) {
         super(reason);
     }
     
-    public ShardingSphereExternalException(final String reason, final Exception cause) {
+    protected ShardingSphereExternalException(final String reason, final Exception cause) {
         super(reason, cause);
     }
 }

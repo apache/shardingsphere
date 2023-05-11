@@ -29,7 +29,7 @@ public abstract class GlobalClockSQLException extends KernelSQLException {
     
     private static final int KERNEL_CODE = 10;
     
-    public GlobalClockSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+    protected GlobalClockSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
     }
 }
