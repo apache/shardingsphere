@@ -18,7 +18,11 @@
 package org.apache.shardingsphere.test.it.sql.parser.it.postgresql.external;
 
 import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserIT;
+import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserTestParameter;
+import org.apache.shardingsphere.test.it.sql.parser.external.loader.ExternalPostgreSQLTestParameterLoader;
+import org.apache.shardingsphere.test.loader.AbstractTestParameterLoader;
 import org.apache.shardingsphere.test.loader.ExternalCaseSettings;
+import org.apache.shardingsphere.test.loader.strategy.impl.GitHubTestParameterLoadStrategy;
 
 @ExternalCaseSettings(value = "PostgreSQL", caseURL = ExternalPostgreSQLParserIT.CASE_URL, resultURL = ExternalPostgreSQLParserIT.RESULT_URL)
 class ExternalPostgreSQLParserIT extends ExternalSQLParserIT {
@@ -26,4 +30,9 @@ class ExternalPostgreSQLParserIT extends ExternalSQLParserIT {
     static final String CASE_URL = "https://github.com/postgres/postgres/tree/master/src/test/regress/sql";
     
     static final String RESULT_URL = "https://github.com/postgres/postgres/tree/master/src/test/regress/expected";
+    
+    @Override
+    protected AbstractTestParameterLoader<ExternalSQLParserTestParameter> getTestParameterLoader() {
+        return new ExternalPostgreSQLTestParameterLoader(new GitHubTestParameterLoadStrategy());
+    }
 }

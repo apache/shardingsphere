@@ -67,4 +67,5 @@
     <sql-case id="alter_azure_ad_user_with_login" value="ALTER USER [westus/joe] WITH LOGIN = joe@westus.com" db-types="SQLServer" />
     <sql-case id="alter_azure_ad_user_without_login" value="ALTER USER [westus/joe] FROM EXTERNAL PROVIDER" db-types="SQLServer" />
     <sql-case id="alter_user_alias_to_existing_azure_id" value="ALTER USER [westus/joe] WITH LOGIN = joe@westus.com, name= joe_alias" db-types="SQLServer" />
+    <sql-case id="alter_user_identified_with_single_quoted" value="ALTER USER tu1@localhost IDENTIFIED WITH 'sha256_password' REQUIRE CIPHER &quot;DHE-RSA-AES256-SHA&quot;" db-types="MySQL" />
 </sql-cases>

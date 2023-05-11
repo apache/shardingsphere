@@ -25,6 +25,7 @@ import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.ExpressionConverter;
 
@@ -63,6 +64,8 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
         register(SqlStdOperatorTable.LIKE);
         register(SqlStdOperatorTable.NOT_LIKE);
         register(SqlStdOperatorTable.PERCENT_REMAINDER);
+        register(SqlStdOperatorTable.IS_NULL);
+        register(SqlStdOperatorTable.IS_NOT_NULL);
     }
     
     private static void register(final SqlOperator sqlOperator) {
@@ -79,22 +82,33 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     
     @Override
     public Optional<SqlNode> convert(final BinaryOperationExpression segment) {
-        SqlOperator operator = convertOperator(segment.getOperator());
-        List<SqlNode> sqlNodes = convertSqlNodes(segment);
+        SqlOperator operator = convertOperator(segment);
+        List<SqlNode> sqlNodes = convertSqlNodes(segment, operator);
         return Optional.of(new SqlBasicCall(operator, sqlNodes, SqlParserPos.ZERO));
     }
     
-    private List<SqlNode> convertSqlNodes(final BinaryOperationExpression segment) {
-        SqlNode left = new ExpressionConverter().convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
-        SqlNode right = new ExpressionConverter().convert(segment.getRight()).orElseThrow(IllegalStateException::new);
-        List<SqlNode> result = new LinkedList<>();
-        result.add(left);
-        result.addAll(right instanceof SqlNodeList ? ((SqlNodeList) right).getList() : Collections.singletonList(right));
-        return result;
-    }
-    
-    private SqlOperator convertOperator(final String operator) {
+    private SqlOperator convertOperator(final BinaryOperationExpression segment) {
+        String operator = segment.getOperator();
+        if ("IS".equalsIgnoreCase(operator)) {
+            String literals = String.valueOf(((LiteralExpressionSegment) segment.getRight()).getLiterals());
+            if ("NULL".equalsIgnoreCase(literals)) {
+                operator = "IS NULL";
+            } else if ("NOT NULL".equalsIgnoreCase(literals)) {
+                operator = "IS NOT NULL";
+            }
+        }
         Preconditions.checkState(REGISTRY.containsKey(operator), "Unsupported SQL operator: `%s`", operator);
         return REGISTRY.get(operator);
+    }
+    
+    private List<SqlNode> convertSqlNodes(final BinaryOperationExpression segment, final SqlOperator operator) {
+        SqlNode left = new ExpressionConverter().convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
+        List<SqlNode> result = new LinkedList<>();
+        result.add(left);
+        if (!SqlStdOperatorTable.IS_NULL.equals(operator) && !SqlStdOperatorTable.IS_NOT_NULL.equals(operator)) {
+            SqlNode right = new ExpressionConverter().convert(segment.getRight()).orElseThrow(IllegalStateException::new);
+            result.addAll(right instanceof SqlNodeList ? ((SqlNodeList) right).getList() : Collections.singletonList(right));
+        }
+        return result;
     }
 }
