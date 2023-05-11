@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
 
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 public final class FixtureRuleDefinitionCreateUpdater implements RuleDefinitionCreateUpdater<CreateFixtureRuleStatement, FixtureRuleConfiguration> {
     
     @Override
-    public RuleConfiguration buildToBeCreatedRuleConfiguration(final FixtureRuleConfiguration currentRuleConfig, final CreateFixtureRuleStatement sqlStatement) {
+    public FixtureRuleConfiguration buildToBeCreatedRuleConfiguration(final FixtureRuleConfiguration currentRuleConfig, final CreateFixtureRuleStatement sqlStatement) {
         return new FixtureRuleConfiguration();
     }
     

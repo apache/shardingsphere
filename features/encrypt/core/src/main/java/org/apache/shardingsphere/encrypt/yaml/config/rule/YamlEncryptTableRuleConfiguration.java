@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.external;
+package org.apache.shardingsphere.encrypt.yaml.config.rule;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * External SQL parser test parameter.
+ * Encrypt table rule configuration for YAML.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ExternalSQLParserTestParameter {
+@Setter
+public final class YamlEncryptTableRuleConfiguration implements YamlConfiguration {
     
-    private final String sqlCaseId;
+    private String name;
     
-    private final String databaseType;
-    
-    private final String sql;
-    
-    private final String reportType;
+    private Map<String, YamlEncryptColumnRuleConfiguration> columns = new LinkedHashMap<>();
 }

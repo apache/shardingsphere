@@ -23,23 +23,28 @@ rules:
     t_encrypt:
       columns:
         pwd:
-          cipherColumn: cipher_pwd
-          encryptorName: jdbc_encryptor_fixture
+          cipher:
+            name: cipher_pwd
+            encryptorName: jdbc_encryptor_fixture
     t_query_encrypt:
       columns:
         pwd:
-          cipherColumn: cipher_pwd
-          assistedQueryColumn: assist_pwd
-          encryptorName: jdbc_encryptor_fixture
-          assistedQueryEncryptorName: jdbc_query_assisted_encryptor_fixture
+          cipher:
+            name: cipher_pwd
+            encryptorName: jdbc_encryptor_fixture
+          assistedQuery:
+            name: assist_pwd
+            encryptorName: jdbc_query_assisted_encryptor_fixture
     t_encrypt_contains_column:
       columns:
         plain_pwd:
-          cipherColumn: cipher_pwd
-          encryptorName: jdbc_encryptor_fixture
+          cipher:
+            name: cipher_pwd
+            encryptorName: jdbc_encryptor_fixture
         plain_pwd2:
-          cipherColumn: cipher_pwd2
-          encryptorName: jdbc_encryptor_fixture
+          cipher:
+            name: cipher_pwd2
+            encryptorName: jdbc_encryptor_fixture
   encryptors:
     jdbc_encryptor_fixture:
       type: JDBC.FIXTURE

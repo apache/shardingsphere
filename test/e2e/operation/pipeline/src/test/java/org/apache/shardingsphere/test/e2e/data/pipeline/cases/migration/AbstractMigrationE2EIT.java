@@ -47,7 +47,7 @@ public abstract class AbstractMigrationE2EIT {
     
     private final MigrationDistSQLCommand migrationDistSQL;
     
-    public AbstractMigrationE2EIT() {
+    protected AbstractMigrationE2EIT() {
         migrationDistSQL = JAXB.unmarshal(Objects.requireNonNull(AbstractMigrationE2EIT.class.getClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
     }
     

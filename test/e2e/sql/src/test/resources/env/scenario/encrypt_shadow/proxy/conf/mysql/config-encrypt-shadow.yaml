@@ -126,13 +126,16 @@ rules:
     t_shadow:
       columns:
         order_name:
-          cipherColumn: order_name_cipher
-          encryptorName: aes_encryptor
+          cipher:
+            name: order_name_cipher
+            encryptorName: aes_encryptor
     t_merchant:
       columns:
         business_code:
-          cipherColumn: business_code_cipher
-          encryptorName: aes_encryptor
+          cipher:
+            name: business_code_cipher
+            encryptorName: aes_encryptor
         telephone:
-          cipherColumn: telephone_cipher
-          encryptorName: aes_encryptor
+          cipher:
+            name: telephone_cipher
+            encryptorName: aes_encryptor

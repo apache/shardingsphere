@@ -17,49 +17,39 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.external.loader;
 
-import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserTestParameter;
+import org.apache.shardingsphere.test.loader.ExternalSQLParserTestParameter;
 import org.apache.shardingsphere.test.loader.AbstractTestParameterLoader;
 import org.apache.shardingsphere.test.loader.strategy.TestParameterLoadStrategy;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
- * External SQL parser test parameter loader.
+ * External PostgreSQL SQL parser test parameter loader.
  */
-public final class ExternalSQLParserTestParameterLoader extends AbstractTestParameterLoader<ExternalSQLParserTestParameter> {
+public final class ExternalPostgreSQLTestParameterLoader extends AbstractTestParameterLoader<ExternalSQLParserTestParameter> {
     
-    public ExternalSQLParserTestParameterLoader(final TestParameterLoadStrategy loadStrategy) {
+    public ExternalPostgreSQLTestParameterLoader(final TestParameterLoadStrategy loadStrategy) {
         super(loadStrategy);
     }
     
-    /**
-     * Create external SQL parser test parameters.
-     * 
-     * @param sqlCaseFileName SQL case file name
-     * @param sqlCaseFileContent SQL case file content
-     * @param resultFileContent result file content
-     * @param databaseType database type
-     * @param reportType report type
-     * @return external SQL parser test parameters
-     */
-    public Collection<ExternalSQLParserTestParameter> createTestParameters(final String sqlCaseFileName,
-                                                                           final String sqlCaseFileContent, final String resultFileContent, final String databaseType, final String reportType) {
+    @Override
+    public Collection<ExternalSQLParserTestParameter> createTestParameters(final String sqlCaseFileName, final List<String> sqlCaseFileContent,
+                                                                           final List<String> resultFileContent, final String databaseType, final String reportType) {
         Collection<ExternalSQLParserTestParameter> result = new LinkedList<>();
-        String[] rawCaseLines = sqlCaseFileContent.split("\n");
-        String[] rawResultLines = resultFileContent.split("\n");
         String completedSQL = "";
         int sqlCaseEnum = 1;
         int statementLines = 0;
         int resultIndex = 0;
         boolean inProcedure = false;
-        for (String each : rawCaseLines) {
+        for (String each : sqlCaseFileContent) {
             inProcedure = isInProcedure(inProcedure, each.trim());
             completedSQL = getStatement(completedSQL, each.trim(), inProcedure);
             statementLines = completedSQL.isEmpty() ? 0 : statementLines + 1;
             if (completedSQL.contains(";") && !inProcedure) {
-                resultIndex = searchInResultContent(resultIndex, rawResultLines, completedSQL, statementLines);
-                if (resultIndex >= rawResultLines.length || !rawResultLines[resultIndex].contains("ERROR")) {
+                resultIndex = searchInResultContent(resultIndex, resultFileContent, completedSQL, statementLines);
+                if (resultIndex >= resultFileContent.size() || !resultFileContent.get(resultIndex).contains("ERROR")) {
                     String sqlCaseId = sqlCaseFileName + sqlCaseEnum;
                     result.add(new ExternalSQLParserTestParameter(sqlCaseId, databaseType, completedSQL, reportType));
                     sqlCaseEnum++;
@@ -82,16 +72,16 @@ public final class ExternalSQLParserTestParameterLoader extends AbstractTestPara
         return (rawSQLLine.isEmpty() || isComment(rawSQLLine)) && !inProcedure ? "" : completedSQL + rawSQLLine + " ";
     }
     
-    private boolean isComment(final String statement) {
-        return statement.startsWith("#") || statement.startsWith("/") || statement.startsWith("--") || statement.startsWith(":") || statement.startsWith("\\");
+    private boolean isComment(final String line) {
+        return line.startsWith("#") || line.startsWith("/") || line.startsWith("--") || line.startsWith(":") || line.startsWith("\\");
     }
     
-    private int searchInResultContent(final int resultIndex, final String[] resultLines, final String completedSQL, final int statementLines) {
+    private int searchInResultContent(final int resultIndex, final List<String> resultLines, final String completedSQL, final int statementLines) {
         int index = resultIndex;
-        while (index < resultLines.length && !completedSQL.startsWith(resultLines[index].trim())) {
+        while (index < resultLines.size() && !completedSQL.startsWith(resultLines.get(index).trim())) {
             index++;
         }
-        if (index != resultLines.length) {
+        if (index != resultLines.size()) {
             return index + statementLines;
         }
         return resultIndex;

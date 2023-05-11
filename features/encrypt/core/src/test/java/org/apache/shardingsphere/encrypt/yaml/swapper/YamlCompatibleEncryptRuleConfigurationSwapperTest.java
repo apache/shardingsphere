@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.yaml.swapper;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlCompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlCompatibleEncryptTableRuleConfiguration;
@@ -36,6 +36,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
+@Deprecated
 class YamlCompatibleEncryptRuleConfigurationSwapperTest {
     
     @Test
@@ -45,15 +46,15 @@ class YamlCompatibleEncryptRuleConfigurationSwapperTest {
         assertThat(actual.getEncryptors().size(), is(1));
     }
     
-    private EncryptRuleConfiguration createEncryptRuleConfiguration() {
+    private CompatibleEncryptRuleConfiguration createEncryptRuleConfiguration() {
         Collection<EncryptTableRuleConfiguration> tables = Collections.singletonList(new EncryptTableRuleConfiguration("tbl", Collections.emptyList()));
         Map<String, AlgorithmConfiguration> encryptors = Collections.singletonMap("myEncryptor", new AlgorithmConfiguration("FIXTURE", new Properties()));
-        return new EncryptRuleConfiguration(tables, encryptors);
+        return new CompatibleEncryptRuleConfiguration(tables, encryptors);
     }
     
     @Test
     void assertSwapToObject() {
-        EncryptRuleConfiguration actual = getSwapper().swapToObject(createYamlEncryptRuleConfiguration());
+        CompatibleEncryptRuleConfiguration actual = getSwapper().swapToObject(createYamlEncryptRuleConfiguration());
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getEncryptors().size(), is(1));
     }
@@ -70,7 +71,7 @@ class YamlCompatibleEncryptRuleConfigurationSwapperTest {
     }
     
     private YamlCompatibleEncryptRuleConfigurationSwapper getSwapper() {
-        EncryptRuleConfiguration ruleConfig = mock(EncryptRuleConfiguration.class);
+        CompatibleEncryptRuleConfiguration ruleConfig = mock(CompatibleEncryptRuleConfiguration.class);
         return (YamlCompatibleEncryptRuleConfigurationSwapper) OrderedSPILoader.getServices(YamlRuleConfigurationSwapper.class, Collections.singleton(ruleConfig)).get(ruleConfig);
     }
 }

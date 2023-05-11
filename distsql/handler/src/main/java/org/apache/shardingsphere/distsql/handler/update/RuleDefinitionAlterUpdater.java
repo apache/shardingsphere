@@ -34,7 +34,7 @@ public interface RuleDefinitionAlterUpdater<T extends SQLStatement, R extends Ru
      * @param sqlStatement SQL statement
      * @return built to be altered rule configuration
      */
-    RuleConfiguration buildToBeAlteredRuleConfiguration(T sqlStatement);
+    R buildToBeAlteredRuleConfiguration(T sqlStatement);
     
     /**
      * Update current rule configuration.

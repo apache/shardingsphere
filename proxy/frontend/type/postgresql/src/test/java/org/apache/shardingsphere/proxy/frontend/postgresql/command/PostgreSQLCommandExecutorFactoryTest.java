@@ -27,6 +27,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.flush.PostgreSQLComFlushPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.sync.PostgreSQLComSyncPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
@@ -34,13 +35,13 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLUnsupportedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedBatchedStatementsCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.bind.PostgreSQLComBindExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.close.PostgreSQLComCloseExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.describe.PostgreSQLComDescribeExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.execute.PostgreSQLComExecuteExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.flush.PostgreSQLComFlushExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.sync.PostgreSQLComSyncExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple.PostgreSQLComQueryExecutor;
@@ -82,7 +83,7 @@ class PostgreSQLCommandExecutorFactoryTest {
                 new InputOutput(PostgreSQLCommandPacketType.SYNC_COMMAND, PostgreSQLComSyncPacket.class, PostgreSQLComSyncExecutor.class),
                 new InputOutput(PostgreSQLCommandPacketType.CLOSE_COMMAND, PostgreSQLComClosePacket.class, PostgreSQLComCloseExecutor.class),
                 new InputOutput(PostgreSQLCommandPacketType.TERMINATE, PostgreSQLComTerminationPacket.class, PostgreSQLComTerminationExecutor.class),
-                new InputOutput(PostgreSQLCommandPacketType.FLUSH_COMMAND, null, PostgreSQLUnsupportedCommandExecutor.class));
+                new InputOutput(PostgreSQLCommandPacketType.FLUSH_COMMAND, PostgreSQLComFlushPacket.class, PostgreSQLComFlushExecutor.class));
         for (InputOutput each : inputOutputs) {
             Class<? extends PostgreSQLCommandPacket> commandPacketClass = each.getCommandPacketClass();
             if (null == commandPacketClass) {
@@ -147,6 +148,22 @@ class PostgreSQLCommandExecutorFactoryTest {
         Iterator<CommandExecutor> actualPacketsIterator = getExecutorsFromAggregatedCommandExecutor((PostgreSQLAggregatedCommandExecutor) actual).iterator();
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComParseExecutor.class));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLAggregatedBatchedStatementsCommandExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComSyncExecutor.class));
+        assertFalse(actualPacketsIterator.hasNext());
+    }
+    
+    @Test
+    void asserAggregatedFlushPacket() throws SQLException {
+        PostgreSQLComFlushPacket flushPacket = mock(PostgreSQLComFlushPacket.class);
+        when(flushPacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.FLUSH_COMMAND);
+        PostgreSQLComSyncPacket syncPacket = mock(PostgreSQLComSyncPacket.class);
+        when(syncPacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.SYNC_COMMAND);
+        PostgreSQLAggregatedCommandPacket packet = mock(PostgreSQLAggregatedCommandPacket.class);
+        when(packet.getPackets()).thenReturn(Arrays.asList(flushPacket, syncPacket));
+        CommandExecutor actual = PostgreSQLCommandExecutorFactory.newInstance(null, packet, connectionSession, portalContext);
+        assertThat(actual, instanceOf(PostgreSQLAggregatedCommandExecutor.class));
+        Iterator<CommandExecutor> actualPacketsIterator = getExecutorsFromAggregatedCommandExecutor((PostgreSQLAggregatedCommandExecutor) actual).iterator();
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComFlushExecutor.class));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComSyncExecutor.class));
         assertFalse(actualPacketsIterator.hasNext());
     }

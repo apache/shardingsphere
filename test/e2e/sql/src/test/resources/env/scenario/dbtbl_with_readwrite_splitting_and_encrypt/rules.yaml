@@ -201,26 +201,31 @@ rules:
     t_user:
       columns:
         pwd:
-          cipherColumn: pwd_cipher
-          encryptorName: aes_encryptor
+          cipher:
+            name: pwd_cipher
+            encryptorName: aes_encryptor
     t_user_details:
       columns:
         number:
-          cipherColumn: number_cipher
-          encryptorName: aes_encryptor
+          cipher:
+            name: number_cipher
+            encryptorName: aes_encryptor
         number_new:
-          cipherColumn: number_new_cipher
-          encryptorName: aes_encryptor
+          cipher:
+            name: number_new_cipher
+            encryptorName: aes_encryptor
     t_user_encrypt_federate:
       columns:
         pwd:
-          cipherColumn: cipher_pwd
-          encryptorName: aes_encryptor
+          cipher:
+            name: cipher_pwd
+            encryptorName: aes_encryptor
     t_user_encrypt_federate_sharding:
       columns:
         pwd:
-          cipherColumn: cipher_pwd
-          encryptorName: aes_encryptor
+          cipher:
+            name: cipher_pwd
+            encryptorName: aes_encryptor
 
 props:
   sql-federation-type: ADVANCED

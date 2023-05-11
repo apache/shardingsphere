@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
@@ -25,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 /**
  * Abstract pipeline job id.
  */
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public abstract class AbstractPipelineJobId implements PipelineJobId {
     
@@ -33,11 +36,6 @@ public abstract class AbstractPipelineJobId implements PipelineJobId {
     private final JobType jobType;
     
     private final PipelineContextKey contextKey;
-    
-    public AbstractPipelineJobId(final JobType jobType, final PipelineContextKey contextKey) {
-        this.jobType = jobType;
-        this.contextKey = contextKey;
-    }
     
     @Override
     public String getFormatVersion() {

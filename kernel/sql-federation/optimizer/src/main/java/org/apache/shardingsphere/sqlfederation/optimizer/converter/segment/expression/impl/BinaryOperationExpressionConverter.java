@@ -82,23 +82,33 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
     
     @Override
     public Optional<SqlNode> convert(final BinaryOperationExpression segment) {
-        SqlNode left = new ExpressionConverter().convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
-        SqlNode right = new ExpressionConverter().convert(segment.getRight()).orElseThrow(IllegalStateException::new);
+        SqlOperator operator = convertOperator(segment);
+        List<SqlNode> sqlNodes = convertSqlNodes(segment, operator);
+        return Optional.of(new SqlBasicCall(operator, sqlNodes, SqlParserPos.ZERO));
+    }
+    
+    private SqlOperator convertOperator(final BinaryOperationExpression segment) {
         String operator = segment.getOperator();
-        List<SqlNode> sqlNodes = new LinkedList<>();
-        sqlNodes.add(left);
-        if ("IS".equals(operator)) {
-            right = null;
-            if (((LiteralExpressionSegment) segment.getRight()).getLiterals().equals("NULL")) {
+        if ("IS".equalsIgnoreCase(operator)) {
+            String literals = String.valueOf(((LiteralExpressionSegment) segment.getRight()).getLiterals());
+            if ("NULL".equalsIgnoreCase(literals)) {
                 operator = "IS NULL";
-            } else if (((LiteralExpressionSegment) segment.getRight()).getLiterals().equals("NOT NULL")) {
+            } else if ("NOT NULL".equalsIgnoreCase(literals)) {
                 operator = "IS NOT NULL";
             }
-        } else {
-            sqlNodes.addAll(right instanceof SqlNodeList ? ((SqlNodeList) right).getList() : Collections.singletonList(right));
         }
         Preconditions.checkState(REGISTRY.containsKey(operator), "Unsupported SQL operator: `%s`", operator);
-        SqlOperator sqlOperator = REGISTRY.get(operator);
-        return Optional.of(new SqlBasicCall(sqlOperator, sqlNodes.toArray(new SqlNode[0]), SqlParserPos.ZERO));
+        return REGISTRY.get(operator);
+    }
+    
+    private List<SqlNode> convertSqlNodes(final BinaryOperationExpression segment, final SqlOperator operator) {
+        SqlNode left = new ExpressionConverter().convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
+        List<SqlNode> result = new LinkedList<>();
+        result.add(left);
+        if (!SqlStdOperatorTable.IS_NULL.equals(operator) && !SqlStdOperatorTable.IS_NOT_NULL.equals(operator)) {
+            SqlNode right = new ExpressionConverter().convert(segment.getRight()).orElseThrow(IllegalStateException::new);
+            result.addAll(right instanceof SqlNodeList ? ((SqlNodeList) right).getList() : Collections.singletonList(right));
+        }
+        return result;
     }
 }

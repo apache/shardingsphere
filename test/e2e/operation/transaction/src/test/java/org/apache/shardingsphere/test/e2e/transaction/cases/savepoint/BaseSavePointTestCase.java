@@ -30,7 +30,7 @@ import java.sql.Savepoint;
  */
 public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
     
-    public BaseSavePointTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
+    protected BaseSavePointTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
     

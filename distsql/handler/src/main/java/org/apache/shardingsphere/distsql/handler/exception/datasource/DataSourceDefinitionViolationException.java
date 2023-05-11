@@ -27,7 +27,7 @@ public abstract class DataSourceDefinitionViolationException extends DistSQLExce
     
     private static final long serialVersionUID = -3318829232811230364L;
     
-    public DataSourceDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+    protected DataSourceDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, errorCode, reason, messageArgs);
     }
 }

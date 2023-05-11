@@ -29,7 +29,7 @@ public abstract class ReadwriteSplittingSQLException extends FeatureSQLException
     
     private static final int FEATURE_CODE = 2;
     
-    public ReadwriteSplittingSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+    protected ReadwriteSplittingSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, FEATURE_CODE, errorCode, reason, messageArgs);
     }
 }

@@ -25,70 +25,95 @@ rules:
     t_account:
       columns:
         certificate_number:
-          cipherColumn: cipher_certificate_number
-          assistedQueryColumn: assisted_query_certificate_number
-          likeQueryColumn: like_query_certificate_number
-          encryptorName: rewrite_normal_fixture
-          assistedQueryEncryptorName: rewrite_assisted_query_fixture
-          likeQueryEncryptorName: rewrite_like_query_fixture
+          cipher: 
+            name: cipher_certificate_number
+            encryptorName: rewrite_normal_fixture
+          assistedQuery: 
+            name: assisted_query_certificate_number
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery: 
+            name: like_query_certificate_number
+            encryptorName: rewrite_like_query_fixture
         password:
-          cipherColumn: cipher_password
-          assistedQueryColumn: assisted_query_password
-          likeQueryColumn: like_query_password
-          encryptorName: rewrite_normal_fixture
-          assistedQueryEncryptorName: rewrite_assisted_query_fixture
-          likeQueryEncryptorName: rewrite_like_query_fixture
+          cipher: 
+            name: cipher_password
+            encryptorName: rewrite_normal_fixture
+          assistedQuery: 
+            name: assisted_query_password
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery: 
+            name: like_query_password
+            encryptorName: rewrite_like_query_fixture
         amount:
-          cipherColumn: cipher_amount
-          encryptorName: rewrite_normal_fixture
+          cipher: 
+            name: cipher_amount
+            encryptorName: rewrite_normal_fixture
         amount_new:
-          cipherColumn: amount_new_cipher
-          encryptorName: rewrite_normal_fixture
+          cipher: 
+            name: amount_new_cipher
+            encryptorName: rewrite_normal_fixture
     t_account_bak:
       columns:
         certificate_number:
-          cipherColumn: cipher_certificate_number
-          assistedQueryColumn: assisted_query_certificate_number
-          likeQueryColumn: like_query_certificate_number
-          encryptorName: rewrite_normal_fixture
-          assistedQueryEncryptorName: rewrite_assisted_query_fixture
-          likeQueryEncryptorName: rewrite_like_query_fixture
+          cipher: 
+            name: cipher_certificate_number
+            encryptorName: rewrite_normal_fixture
+          assistedQuery: 
+            name: assisted_query_certificate_number
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery: 
+            name: like_query_certificate_number
+            encryptorName: rewrite_like_query_fixture
         password:
-          cipherColumn: cipher_password
-          assistedQueryColumn: assisted_query_password
-          likeQueryColumn: like_query_password
-          encryptorName: rewrite_normal_fixture
-          assistedQueryEncryptorName: rewrite_assisted_query_fixture
-          likeQueryEncryptorName: rewrite_like_query_fixture
+          cipher: 
+            name: cipher_password
+            encryptorName: rewrite_normal_fixture
+          assistedQuery: 
+            name: assisted_query_password
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery: 
+            name: like_query_password
+            encryptorName: rewrite_like_query_fixture
         password_new:
-          cipherColumn: password_new_cipher
-          assistedQueryColumn: password_new_assisted
-          likeQueryColumn: password_new_like
-          encryptorName: rewrite_normal_fixture
-          assistedQueryEncryptorName: rewrite_assisted_query_fixture
-          likeQueryEncryptorName: rewrite_like_query_fixture
+          cipher: 
+            name: password_new_cipher
+            encryptorName: rewrite_normal_fixture
+          assistedQuery: 
+            name: password_new_assisted
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery: 
+            name: password_new_like
+            encryptorName: rewrite_like_query_fixture
         amount:
-          cipherColumn: cipher_amount
-          encryptorName: rewrite_normal_fixture
+          cipher: 
+            name: cipher_amount
+            encryptorName: rewrite_normal_fixture
     t_account_detail:
       columns:
         certificate_number:
-          cipherColumn: cipher_certificate_number
-          assistedQueryColumn: assisted_query_certificate_number
-          likeQueryColumn: like_query_certificate_number
-          encryptorName: rewrite_normal_fixture
-          assistedQueryEncryptorName: rewrite_assisted_query_fixture
-          likeQueryEncryptorName: rewrite_like_query_fixture
+          cipher: 
+            name: cipher_certificate_number
+            encryptorName: rewrite_normal_fixture
+          assistedQuery: 
+            name: assisted_query_certificate_number
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery: 
+            name: like_query_certificate_number
+            encryptorName: rewrite_like_query_fixture
         password:
-          cipherColumn: cipher_password
-          assistedQueryColumn: assisted_query_password
-          likeQueryColumn: like_query_password
-          encryptorName: rewrite_normal_fixture
-          assistedQueryEncryptorName: rewrite_assisted_query_fixture
-          likeQueryEncryptorName: rewrite_like_query_fixture
+          cipher: 
+            name: cipher_password
+            encryptorName: rewrite_normal_fixture
+          assistedQuery: 
+            name: assisted_query_password
+            encryptorName: rewrite_assisted_query_fixture
+          likeQuery: 
+            name: like_query_password
+            encryptorName: rewrite_like_query_fixture
         amount:
-          cipherColumn: cipher_amount
-          encryptorName: rewrite_normal_fixture
+          cipher: 
+            name: cipher_amount
+            encryptorName: rewrite_normal_fixture
   encryptors:
     rewrite_normal_fixture:
       type: REWRITE.NORMAL.FIXTURE

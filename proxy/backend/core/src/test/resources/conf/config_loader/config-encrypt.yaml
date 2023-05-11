@@ -34,11 +34,13 @@ rules:
     t_encrypt:
       columns:
         pwd:
-          cipherColumn: pwd
-          encryptorName: aes_encryptor
+          cipher:
+            name: pwd
+            encryptorName: aes_encryptor
         name:
-          cipherColumn: name
-          encryptorName: rc4_encryptor
+          cipher:
+            name: name
+            encryptorName: rc4_encryptor
   encryptors:
     aes_encryptor:
       type: AES
