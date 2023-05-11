@@ -65,6 +65,7 @@ rules:
             name: telephone_like
             encryptorName: like_encryptor
     t_user_details:
+      columns:
         number:
           cipher:
             name: number_cipher
