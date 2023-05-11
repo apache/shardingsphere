@@ -99,8 +99,16 @@ CIPHER
     : C I P H E R
     ;
 
+ASSISTED_QUERY
+    : A S S I S T E D UL_ Q U E R Y
+    ;
+
 ASSISTED_QUERY_COLUMN
     : A S S I S T E D UL_ Q U E R Y UL_ C O L U M N
+    ;
+
+LIKE_QUERY
+    : L I K E UL_ Q U E R Y
     ;
 
 LIKE_QUERY_COLUMN
@@ -113,26 +121,6 @@ TRUE
 
 FALSE
     : F A L S E
-    ;
-
-DATA_TYPE
-    : D A T A UL_ T Y P E
-    ;
-
-PLAIN_DATA_TYPE
-    : P L A I N UL_ D A T A UL_ T Y P E
-    ;
-
-CIPHER_DATA_TYPE
-    : C I P H E R UL_ D A T A UL_ T Y P E
-    ;
-
-ASSISTED_QUERY_DATA_TYPE
-    : A S S I S T E D UL_ Q U E R Y UL_ D A T A UL_ T Y P E
-    ;
-
-LIKE_QUERY_DATA_TYPE
-    : L I K E UL_ Q U E R Y UL_ D A T A UL_ T Y P E
     ;
 
 IF
