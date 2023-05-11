@@ -109,7 +109,7 @@ alterListItem
     ;
 
 alterOrderList
-    : identifier direction? (COMMA_ identifier direction?)*
+    : columnRef direction? (COMMA_ columnRef direction?)*
     ;
 
 tableConstraintDef
