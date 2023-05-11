@@ -38,58 +38,46 @@ public final class ExternalMySQLTestParameterLoader extends AbstractTestParamete
         super(loadStrategy);
     }
     
-    /**
-     * Create external SQL parser test parameters.
-     * 
-     * @param sqlCaseFileName SQL case file name
-     * @param sqlCaseFileContent SQL case file content
-     * @param resultFileContent result file content
-     * @param databaseType database type
-     * @param reportType report type
-     * @return external SQL parser test parameters
-     */
-    public Collection<ExternalSQLParserTestParameter> createTestParameters(final String sqlCaseFileName,
-                                                                           final List<String> sqlCaseFileContent,
+    @Override
+    public Collection<ExternalSQLParserTestParameter> createTestParameters(final String sqlCaseFileName, final List<String> sqlCaseFileContent,
                                                                            final List<String> resultFileContent, final String databaseType, final String reportType) {
         Collection<ExternalSQLParserTestParameter> result = new LinkedList<>();
-        List<String> sqlLines = new ArrayList<>();
+        List<String> lines = new ArrayList<>();
         int sqlCaseIndex = 1;
         String delimiter = ";";
-        for (String line : sqlCaseFileContent) {
-            String trimLine = line.trim();
-            if (trimLine.isEmpty() || 0 == sqlLines.size() && isComment(trimLine)) {
+        for (String each : sqlCaseFileContent) {
+            String line = each.trim();
+            if (line.isEmpty() || lines.isEmpty() && isComment(line)) {
                 continue;
             }
-            if (0 == sqlLines.size() && trimLine.toUpperCase().startsWith("DELIMITER")) {
-                delimiter = getNewDelimiter(trimLine, delimiter);
+            if (0 == lines.size() && line.toUpperCase().startsWith("DELIMITER")) {
+                delimiter = getNewDelimiter(line, delimiter);
                 continue;
             }
-            sqlLines.add(trimLine);
-            if (trimLine.endsWith(delimiter)) {
-                if (existInResultContent(resultFileContent, sqlLines)) {
+            lines.add(line);
+            if (line.endsWith(delimiter)) {
+                if (existInResultContent(resultFileContent, lines)) {
                     String sqlCaseId = sqlCaseFileName + sqlCaseIndex++;
-                    String sql = String.join("\n", sqlLines);
+                    String sql = String.join("\n", lines);
                     sql = sql.substring(0, sql.length() - delimiter.length());
                     result.add(new ExternalSQLParserTestParameter(sqlCaseId, databaseType, sql, reportType));
                 }
-                sqlLines.clear();
+                lines.clear();
             }
         }
         return result;
     }
     
-    private String getNewDelimiter(final String trimSql, final String delimiter) {
-        String newDelimiter = trimSql
-                .substring(DELIMITER_COMMAND_LENGTH, trimSql.endsWith(delimiter) ? trimSql.length() - delimiter.length() : trimSql.length())
-                .trim();
+    private boolean isComment(final String line) {
+        return line.startsWith("#") || line.startsWith("/") || line.startsWith("--") || line.startsWith(":") || line.startsWith("\\");
+    }
+    
+    private String getNewDelimiter(final String sql, final String delimiter) {
+        String newDelimiter = sql.substring(DELIMITER_COMMAND_LENGTH, sql.endsWith(delimiter) ? sql.length() - delimiter.length() : sql.length()).trim();
         if (newDelimiter.startsWith("\"") && newDelimiter.endsWith("\"") || newDelimiter.startsWith("'") && newDelimiter.endsWith("'")) {
             newDelimiter = newDelimiter.substring(1, newDelimiter.length() - 1);
         }
         return newDelimiter.isEmpty() ? delimiter : newDelimiter;
-    }
-    
-    private boolean isComment(final String statement) {
-        return statement.startsWith("#") || statement.startsWith("/") || statement.startsWith("--") || statement.startsWith(":") || statement.startsWith("\\");
     }
     
     private boolean existInResultContent(final List<String> resultLines, final List<String> sqlLines) {

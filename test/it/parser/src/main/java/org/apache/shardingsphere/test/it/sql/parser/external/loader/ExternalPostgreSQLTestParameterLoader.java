@@ -34,18 +34,8 @@ public final class ExternalPostgreSQLTestParameterLoader extends AbstractTestPar
         super(loadStrategy);
     }
     
-    /**
-     * Create external SQL parser test parameters.
-     * 
-     * @param sqlCaseFileName SQL case file name
-     * @param sqlCaseFileContent SQL case file content
-     * @param resultFileContent result file content
-     * @param databaseType database type
-     * @param reportType report type
-     * @return external SQL parser test parameters
-     */
-    public Collection<ExternalSQLParserTestParameter> createTestParameters(final String sqlCaseFileName,
-                                                                           final List<String> sqlCaseFileContent,
+    @Override
+    public Collection<ExternalSQLParserTestParameter> createTestParameters(final String sqlCaseFileName, final List<String> sqlCaseFileContent,
                                                                            final List<String> resultFileContent, final String databaseType, final String reportType) {
         Collection<ExternalSQLParserTestParameter> result = new LinkedList<>();
         String completedSQL = "";
@@ -82,8 +72,8 @@ public final class ExternalPostgreSQLTestParameterLoader extends AbstractTestPar
         return (rawSQLLine.isEmpty() || isComment(rawSQLLine)) && !inProcedure ? "" : completedSQL + rawSQLLine + " ";
     }
     
-    private boolean isComment(final String statement) {
-        return statement.startsWith("#") || statement.startsWith("/") || statement.startsWith("--") || statement.startsWith(":") || statement.startsWith("\\");
+    private boolean isComment(final String line) {
+        return line.startsWith("#") || line.startsWith("/") || line.startsWith("--") || line.startsWith(":") || line.startsWith("\\");
     }
     
     private int searchInResultContent(final int resultIndex, final List<String> resultLines, final String completedSQL, final int statementLines) {
