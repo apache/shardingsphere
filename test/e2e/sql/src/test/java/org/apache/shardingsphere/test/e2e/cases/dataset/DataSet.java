@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
 /**
  * Data sets root xml entry.
  */
-@Getter
 @XmlRootElement(name = "dataset")
+@Getter
 public final class DataSet {
     
     @XmlAttribute(name = "update-count")

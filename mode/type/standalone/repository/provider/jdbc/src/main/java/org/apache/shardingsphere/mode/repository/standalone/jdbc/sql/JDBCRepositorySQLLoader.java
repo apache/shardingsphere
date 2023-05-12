@@ -68,7 +68,7 @@ public final class JDBCRepositorySQLLoader {
         while (urls.hasMoreElements()) {
             URL url = urls.nextElement();
             Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
-
+                
                 @SneakyThrows(JAXBException.class)
                 @Override
                 public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes) throws IOException {
