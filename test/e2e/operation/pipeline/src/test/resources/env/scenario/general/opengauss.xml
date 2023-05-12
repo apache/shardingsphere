@@ -26,7 +26,7 @@
         double_column double precision,
         numeric_column numeric(10,2),
         boolean_column boolean,
-        char_column character(10),
+        char_column character(32),
         text_column text,
         bytea_column bytea,
         date_column date,
