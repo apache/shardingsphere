@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -55,15 +54,6 @@ class DatabaseRulePersistServiceTest {
         when(repository.getDirectly("/metadata/foo_db/versions/0/rules")).thenReturn(readYAML());
         Collection<RuleConfiguration> actual = new DatabaseRulePersistService(repository).load("foo_db");
         assertThat(actual.size(), is(1));
-    }
-    
-    @Test
-    void assertIsExisted() {
-        when(repository.getDirectly("/metadata/foo_db/active_version")).thenReturn("0");
-        when(repository.getDirectly("/metadata/foo_db/versions/0/rules")).thenReturn(readYAML());
-        DatabaseRulePersistService databaseRulePersistService = new DatabaseRulePersistService(repository);
-        assertTrue(databaseRulePersistService.isExisted("foo_db"));
-        assertFalse(databaseRulePersistService.isExisted("foo_db_1"));
     }
     
     @SneakyThrows({IOException.class, URISyntaxException.class})
