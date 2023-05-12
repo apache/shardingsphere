@@ -31,25 +31,44 @@ class KeepFromXToYMaskAlgorithmTest {
     
     private KeepFromXToYMaskAlgorithm maskAlgorithm;
     
+    private KeepFromXToYMaskAlgorithm sameFromXToYMaskAlgorithm;
+    
     @BeforeEach
     void setUp() {
         maskAlgorithm = new KeepFromXToYMaskAlgorithm();
-        maskAlgorithm.init(PropertiesBuilder.build(new Property("from-x", "2"), new Property("to-y", "5"), new Property("replace-char", "*")));
+        maskAlgorithm.init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", "*")));
+        sameFromXToYMaskAlgorithm = new KeepFromXToYMaskAlgorithm();
+        sameFromXToYMaskAlgorithm.init(PropertiesBuilder.build(new Property("from-x", "5"), new Property("to-y", "5"), new Property("replace-char", "*")));
     }
     
     @Test
     void assertMask() {
-        assertThat(maskAlgorithm.mask("abc123456"), is("**c123***"));
+        assertThat(maskAlgorithm.mask("abc123456"), is("***123***"));
+        assertThat(sameFromXToYMaskAlgorithm.mask("abc123456"), is("*****3***"));
     }
     
     @Test
-    void assertMaskWhenPlainValueLengthLessThanToY() {
-        assertThat(maskAlgorithm.mask("abc"), is("**c"));
+    void assertMaskWhenPlainValueLengthLessThanFromXPlusOne() {
+        assertThat(maskAlgorithm.mask("abc"), is("***"));
+        assertThat(sameFromXToYMaskAlgorithm.mask("abc"), is("***"));
     }
     
     @Test
-    void assertMaskWhenPlainValueLengthLessThanFromX() {
-        assertThat(maskAlgorithm.mask("a"), is("a"));
+    void assertMaskWhenPlainValueLengthEqualsFromXPlusOne() {
+        assertThat(maskAlgorithm.mask("abc1"), is("***1"));
+        assertThat(sameFromXToYMaskAlgorithm.mask("abc123"), is("*****3"));
+    }
+    
+    @Test
+    void assertMaskWhenPlainValueLengthLessThanToYPlusOne() {
+        assertThat(maskAlgorithm.mask("abc12"), is("***12"));
+        assertThat(sameFromXToYMaskAlgorithm.mask("abc12"), is("*****"));
+    }
+    
+    @Test
+    void assertMaskWhenPlainValueLengthEqualsToYPlusOne() {
+        assertThat(maskAlgorithm.mask("abc123"), is("***123"));
+        assertThat(sameFromXToYMaskAlgorithm.mask("abc123"), is("*****3"));
     }
     
     @Test
@@ -68,5 +87,11 @@ class KeepFromXToYMaskAlgorithmTest {
     void assertInitWhenReplaceCharIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "2"), new Property("to-y", "5"), new Property("replace-char", ""))));
+    }
+    
+    @Test
+    void assertInitWhenFromXGreaterThanToY() {
+        assertThrows(MaskAlgorithmInitializationException.class,
+                () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "5"), new Property("to-y", "2"), new Property("replace-char", ""))));
     }
 }
