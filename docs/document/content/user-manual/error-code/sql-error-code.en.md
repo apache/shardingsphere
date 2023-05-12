@@ -267,6 +267,7 @@ SQL error codes provide by standard `SQL State`, `Vendor Code` and `Reason`, whi
 | 42000     | 20740       | Insert value of index \`%s\` can not support for encrypt.                                          |
 | 0A000     | 20741       | The SQL clause \`%s\` is unsupported in encrypt rule.                                              |
 | HY004     | 20780       | Encrypt algorithm \`%s\` initialization failed, reason is: %s.                                     |
+| HY004     | 20781       | \`%s\` column's encryptor name \`%s\` does not match encrypt algorithm type \`%s\`.                |
 | 44000     | 20703       | Cipher column of \`%s\` can not be null in database \`%s\`.                                        |
 | 44000     | 20704       | Encrypt column encryptor not found, reason is: %s.                                                 |
 | 44000     | 20705       | Assisted query column of \`%s\` can not be null in database \`%s\`.                                |

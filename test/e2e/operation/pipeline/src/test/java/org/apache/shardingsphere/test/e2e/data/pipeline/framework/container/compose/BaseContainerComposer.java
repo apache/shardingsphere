@@ -26,7 +26,7 @@ public abstract class BaseContainerComposer implements Startable {
     
     private final ITContainers containers;
     
-    public BaseContainerComposer() {
+    protected BaseContainerComposer() {
         containers = new ITContainers("");
     }
     

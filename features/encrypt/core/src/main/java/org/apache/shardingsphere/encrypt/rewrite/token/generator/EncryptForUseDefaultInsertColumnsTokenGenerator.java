@@ -102,7 +102,6 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
                 }
                 if (encryptTable.findLikeQueryEncryptorName(columnName).isPresent()) {
                     addLikeQueryColumn(result, encryptTable, columnName, columnIndex);
-                    columnIndex++;
                 }
             }
         }

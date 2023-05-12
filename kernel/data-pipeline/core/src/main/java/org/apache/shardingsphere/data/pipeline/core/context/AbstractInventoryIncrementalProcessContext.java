@@ -51,7 +51,7 @@ public abstract class AbstractInventoryIncrementalProcessContext implements Inve
     
     private final LazyInitializer<ExecuteEngine> incrementalExecuteEngineLazyInitializer;
     
-    public AbstractInventoryIncrementalProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
+    protected AbstractInventoryIncrementalProcessContext(final String jobId, final PipelineProcessConfiguration originalProcessConfig) {
         PipelineProcessConfiguration processConfig = PipelineProcessConfigurationUtils.convertWithDefaultValue(originalProcessConfig);
         this.pipelineProcessConfig = processConfig;
         PipelineReadConfiguration readConfig = processConfig.getRead();

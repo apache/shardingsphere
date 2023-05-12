@@ -40,4 +40,13 @@ public final class CompatibleEncryptRuleConfiguration implements DatabaseRuleCon
     private final Collection<EncryptTableRuleConfiguration> tables;
     
     private final Map<String, AlgorithmConfiguration> encryptors;
+    
+    /**
+     * Convert to encrypt rule configuration.
+     * 
+     * @return encrypt rule configuration
+     */
+    public EncryptRuleConfiguration convertToEncryptRuleConfiguration() {
+        return new EncryptRuleConfiguration(tables, encryptors);
+    }
 }

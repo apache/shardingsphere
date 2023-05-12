@@ -55,4 +55,11 @@ public @interface ExternalCaseSettings {
      * @return get report type
      */
     String reportType() default "CSV";
+    
+    /**
+     * Get test parameter loader.
+     *
+     * @return test parameter loader
+     */
+    Class<? extends AbstractTestParameterLoader<ExternalSQLParserTestParameter>> testParameterLoader();
 }

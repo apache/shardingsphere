@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.external;
+package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 
 /**
- * External SQL parser test parameter.
+ * Create rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExternalSQLParserTestParameter {
+public abstract class CreateRuleStatement extends RuleDefinitionStatement {
     
-    private final String sqlCaseId;
+    private final boolean ifNotExists;
     
-    private final String databaseType;
-    
-    private final String sql;
-    
-    private final String reportType;
+    protected CreateRuleStatement() {
+        this(false);
+    }
 }

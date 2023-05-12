@@ -35,6 +35,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClie
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 
+import java.net.ConnectException;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -95,13 +96,18 @@ public final class CDCClient {
                         channel.pipeline().addLast(new CDCRequestHandler(parameter, consumer));
                     }
                 });
+        ChannelFuture future = bootstrap.connect(address, port);
+        future.addListener(f -> {
+            if (!f.isSuccess() && f.cause() instanceof ConnectException) {
+                log.error("CDC connect failed", f.cause());
+                future.channel().close();
+            }
+        });
         try {
-            ChannelFuture future = bootstrap.connect(address, port).sync();
             future.channel().closeFuture().sync();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.warn("CDC connect failed", ex);
+        } catch (final InterruptedException ex) {
+            log.warn("CDC client interrupted", ex);
+        } finally {
             group.shutdownGracefully();
         }
     }

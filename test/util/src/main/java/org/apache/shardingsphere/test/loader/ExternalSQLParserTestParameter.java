@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
+package org.apache.shardingsphere.test.loader;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 
 /**
- * Drop rule statement.
+ * External SQL parser test parameter.
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class DropRuleStatement extends RuleDefinitionStatement {
+public final class ExternalSQLParserTestParameter {
     
-    private final boolean ifExists;
+    private final String sqlCaseId;
     
-    public DropRuleStatement() {
-        this(false);
-    }
+    private final String databaseType;
+    
+    private final String sql;
+    
+    private final String reportType;
 }
