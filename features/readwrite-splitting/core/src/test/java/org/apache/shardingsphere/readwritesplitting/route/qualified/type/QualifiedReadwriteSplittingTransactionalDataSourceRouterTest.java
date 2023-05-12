@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.readwritesplitting.route.qualified.type;
 
-import org.apache.shardingsphere.infra.connection.ConnectionContext;
-import org.apache.shardingsphere.infra.connection.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
