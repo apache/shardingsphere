@@ -157,7 +157,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
     
     private void executeScanRequest(final HBaseOperation hbaseOperation) {
         Scan scan = (Scan) hbaseOperation.getOperation();
-        scan.setLimit(Long.valueOf(maxLimitResultSize).intValue());
+        scan.setLimit((int) maxLimitResultSize);
         ResultScanner resultScanner = HBaseExecutor.executeQuery(hbaseOperation.getTableName(), table -> table.getScanner(scan));
         iterator = resultScanner.iterator();
         setColumns(iterator);
