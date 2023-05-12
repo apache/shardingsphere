@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -34,7 +35,7 @@ class DataSourcePoolDestroyerTest {
     
     @Test
     void assertAsyncDestroyWithoutAutoCloseableDataSource() {
-        new DataSourcePoolDestroyer(mock(DataSource.class)).asyncDestroy();
+        assertDoesNotThrow(() -> new DataSourcePoolDestroyer(mock(DataSource.class)).asyncDestroy());
     }
     
     @Test

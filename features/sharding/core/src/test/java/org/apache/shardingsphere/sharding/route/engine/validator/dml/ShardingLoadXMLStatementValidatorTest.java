@@ -35,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -51,7 +52,8 @@ class ShardingLoadXMLStatementValidatorTest {
     @Test
     void assertPreValidateLoadXMLWithSingleTable() {
         MySQLLoadXMLStatement sqlStatement = new MySQLLoadXMLStatement(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        new ShardingLoadXMLStatementValidator().preValidate(shardingRule, new LoadXMLStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        assertDoesNotThrow(() -> new ShardingLoadXMLStatementValidator().preValidate(
+                shardingRule, new LoadXMLStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
