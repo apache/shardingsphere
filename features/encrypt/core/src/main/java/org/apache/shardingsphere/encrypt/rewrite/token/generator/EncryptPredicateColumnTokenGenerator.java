@@ -84,13 +84,12 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
             if (!encryptTable.isPresent() || !encryptTable.get().findEncryptColumn(each.getIdentifier().getValue()).isPresent()) {
                 continue;
             }
-            result.add(buildSubstitutableColumnNameToken(each, tableName, whereSegments, encryptTable.get()));
+            result.add(buildSubstitutableColumnNameToken(each, whereSegments, encryptTable.get()));
         }
         return result;
     }
     
-    private SubstitutableColumnNameToken buildSubstitutableColumnNameToken(final ColumnSegment columnSegment, final String tableName,
-                                                                           final Collection<WhereSegment> whereSegments, final EncryptTable encryptTable) {
+    private SubstitutableColumnNameToken buildSubstitutableColumnNameToken(final ColumnSegment columnSegment, final Collection<WhereSegment> whereSegments, final EncryptTable encryptTable) {
         int startIndex = columnSegment.getOwner().isPresent() ? columnSegment.getOwner().get().getStopIndex() + 2 : columnSegment.getStartIndex();
         int stopIndex = columnSegment.getStopIndex();
         String logicColumn = columnSegment.getIdentifier().getValue();
