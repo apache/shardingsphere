@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * External PostgreSQL SQL parser test parameter loader.
+ * Default external SQL parser test parameter loader.
  */
 public final class DefaultExternalTestParameterLoader extends AbstractTestParameterLoader<ExternalSQLParserTestParameter> {
     
