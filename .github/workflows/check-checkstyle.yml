@@ -52,3 +52,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: apache/skywalking-eyes@v0.4.0
+  
+  call-workflow-passing-data:
+    uses: apache/shardingsphere/.github/workflows/check-sonarcloud.yml.yml@master
