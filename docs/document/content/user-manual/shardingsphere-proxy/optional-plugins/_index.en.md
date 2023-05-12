@@ -31,7 +31,7 @@ If ShardingSphere Proxy needs to use optional plugins, you need to download the 
 All optional plugins are listed below in the form of `groupId:artifactId`.
 
 - Standalone mode configuration information persistence definition
-  - `org.apache.shardingsphere:shardingsphere-standalone-mode-repository-jdbc-mysql`, MySQL based persistence
+  - `org.apache.shardingsphere:shardingsphere-standalone-mode-repository-jdbc`, JDBC based persistence
 - Cluster mode configuration information persistence definition
   - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-nacos`, Nacos based persistence
   - `org.apache.shardingsphere:shardingsphere-cluster-mode-repository-consul`, Consul based persistence

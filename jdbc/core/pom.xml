@@ -112,7 +112,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-standalone-mode-repository-jdbc-h2</artifactId>
+            <artifactId>shardingsphere-standalone-mode-repository-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
