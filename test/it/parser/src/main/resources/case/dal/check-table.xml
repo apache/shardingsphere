@@ -45,4 +45,8 @@
         <table name="t_order" start-index="16" stop-index="22" />
         <table name="t_order_item" start-index="24" stop-index="35" />
     </checksum-table>
+    <check-table sql-case-id="check_multi_tables">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <table name="t_order_item" start-index="21" stop-index="32" />
+    </check-table>
 </sql-parser-test-cases>

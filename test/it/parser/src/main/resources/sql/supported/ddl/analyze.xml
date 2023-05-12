@@ -27,4 +27,5 @@
     <sql-case id="analyze_table_list_chained_rows_into" value="ANALYZE TABLE orders LIST CHAINED ROWS INTO chained_rows" db-types="Oracle" />
     <sql-case id="analyze_index" value="ANALYZE INDEX order_index VALIDATE STRUCTURE; " db-types="Oracle" />
     <sql-case id="analyze_cluster" value="ANALYZE CLUSTER personnel VALIDATE STRUCTURE" db-types="Oracle" />
+    <sql-case id="analyze_table_update_histogram_using_data" value="ANALYZE TABLE tbl_datetime UPDATE HISTOGRAM ON col1 USING DATA '{&quot;buckets&quot;: [[20170216162223, 0.125], [&quot;2017-02-10 08:15:18.000000&quot;, 0.375], [&quot;2018-02-12 07:04:18.000000&quot;, 0.5], [&quot;2018-03-21 21:12:42.000000&quot;, 0.75]], &quot;data-type&quot;: &quot;datetime&quot;, &quot;null-values&quot;: 0.25, &quot;collation-id&quot;: 8, &quot;sampling-rate&quot;: 1.0, &quot;histogram-type&quot;: &quot;singleton&quot;, &quot;number-of-buckets-specified&quot;: 4}';" db-types="MySQL" />
 </sql-cases>
