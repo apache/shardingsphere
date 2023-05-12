@@ -120,7 +120,9 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Inst
                 client.close();
                 throw new OperationTimeoutException();
             }
-        } catch (final InterruptedException | OperationTimeoutException ex) {
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        } catch (final OperationTimeoutException ex) {
             ZookeeperExceptionHandler.handleException(ex);
         }
     }

@@ -67,6 +67,7 @@ class ExecuteEngineTest {
             // TODO assertTimeout
             future.get();
         } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
             fail();
         } catch (final ExecutionException ex) {
             actualCause = ex.getCause();

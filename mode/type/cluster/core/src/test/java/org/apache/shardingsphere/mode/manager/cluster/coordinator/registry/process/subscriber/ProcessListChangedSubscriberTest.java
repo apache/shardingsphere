@@ -126,6 +126,7 @@ class ProcessListChangedSubscriberTest {
             try {
                 Thread.sleep(50L);
             } catch (final InterruptedException ignored) {
+                Thread.currentThread().interrupt();
             }
             subscriber.completeToReportLocalProcesses(new ReportLocalProcessesCompletedEvent(taskId));
         });
@@ -152,6 +153,7 @@ class ProcessListChangedSubscriberTest {
             try {
                 Thread.sleep(50L);
             } catch (final InterruptedException ignored) {
+                Thread.currentThread().interrupt();
             }
             subscriber.completeToKillLocalProcess(new KillLocalProcessCompletedEvent(processId));
         });

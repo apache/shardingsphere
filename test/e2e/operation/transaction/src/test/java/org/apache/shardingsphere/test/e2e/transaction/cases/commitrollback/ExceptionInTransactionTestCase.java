@@ -76,6 +76,7 @@ public final class ExceptionInTransactionTestCase extends BaseTransactionTestCas
         try {
             queryThread.join();
         } catch (final InterruptedException ignored) {
+            Thread.currentThread().interrupt();
         }
     }
 }

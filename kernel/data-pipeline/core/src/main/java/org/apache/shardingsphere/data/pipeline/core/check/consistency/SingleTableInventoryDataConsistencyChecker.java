@@ -155,7 +155,10 @@ public final class SingleTableInventoryDataConsistencyChecker {
     private <T> T waitFuture(final Future<T> future) {
         try {
             return future.get();
-        } catch (final InterruptedException | ExecutionException ex) {
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new SQLWrapperException(new SQLException(ex));
+        } catch (final ExecutionException ex) {
             if (ex.getCause() instanceof PipelineSQLException) {
                 throw (PipelineSQLException) ex.getCause();
             }

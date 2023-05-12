@@ -65,7 +65,9 @@ public final class SchemaMetaDataLoaderEngine {
             for (Future<Collection<SchemaMetaData>> each : futures) {
                 mergeSchemaMetaDataMap(result, each.get());
             }
-        } catch (final InterruptedException | ExecutionException ex) {
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        } catch (final ExecutionException ex) {
             if (ex.getCause() instanceof SQLException) {
                 throw (SQLException) ex.getCause();
             }
