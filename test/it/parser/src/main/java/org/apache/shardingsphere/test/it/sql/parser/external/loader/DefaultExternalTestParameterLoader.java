@@ -28,9 +28,9 @@ import java.util.List;
 /**
  * External PostgreSQL SQL parser test parameter loader.
  */
-public final class ExternalPostgreSQLTestParameterLoader extends AbstractTestParameterLoader<ExternalSQLParserTestParameter> {
+public final class DefaultExternalTestParameterLoader extends AbstractTestParameterLoader<ExternalSQLParserTestParameter> {
     
-    public ExternalPostgreSQLTestParameterLoader(final TestParameterLoadStrategy loadStrategy) {
+    public DefaultExternalTestParameterLoader(final TestParameterLoadStrategy loadStrategy) {
         super(loadStrategy);
     }
     
