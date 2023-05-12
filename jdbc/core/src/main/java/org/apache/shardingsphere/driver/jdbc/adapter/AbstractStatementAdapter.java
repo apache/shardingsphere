@@ -143,7 +143,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         if (result > Integer.MAX_VALUE) {
             result = Integer.MAX_VALUE;
         }
-        return hasResult ? Long.valueOf(result).intValue() : -1;
+        return hasResult ? (int) result : -1;
     }
     
     @Override
