@@ -93,8 +93,7 @@ public abstract class BaseTransactionTestCase {
     }
     
     protected static void assertTableRowCount(final Connection connection, final String tableName, final int rowNum) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(String.format("SELECT COUNT(*) FROM %s", tableName));
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(String.format("SELECT COUNT(*) FROM %s", tableName))) {
             if (resultSet.next()) {
                 int rowCount = resultSet.getInt(1);
                 assertThat(String.format("Recode num assert error, expect: %s, actual: %s.", rowNum, rowCount), rowCount, is(rowNum));
@@ -120,8 +119,7 @@ public abstract class BaseTransactionTestCase {
     }
     
     protected void assertAccountBalances(final Connection connection, final int... expectedBalances) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM account");
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery("SELECT * FROM account")) {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 int actualBalance = resultSet.getInt("balance");
