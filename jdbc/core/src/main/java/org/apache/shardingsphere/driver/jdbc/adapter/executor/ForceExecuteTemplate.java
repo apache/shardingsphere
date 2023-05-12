@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.adapter.executor;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -51,8 +52,11 @@ public final class ForceExecuteTemplate<T> {
         if (exceptions.isEmpty()) {
             return;
         }
-        SQLException ex = new SQLException("");
-        exceptions.forEach(ex::setNextException);
+        Iterator<SQLException> iterator = exceptions.iterator();
+        SQLException ex = iterator.next();
+        while (iterator.hasNext()) {
+            ex.setNextException(iterator.next());
+        }
         throw ex;
     }
 }
