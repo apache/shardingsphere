@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.result.query;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.Cell;
 import org.apache.hadoop.hbase.CellUtil;
@@ -27,9 +28,8 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
-import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverter;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseOperation;
+import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.HBaseOperationConverterFactory;
 import org.apache.shardingsphere.proxy.backend.hbase.converter.operation.HBaseSelectOperation;
 import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseExecutor;
@@ -42,6 +42,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.li
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit.NumberLiteralLimitValueSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,137 +55,97 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
- * Result get for HBase.
+ * HBase get result.
  */
 @Slf4j
 public final class HBaseGetResultSet implements HBaseQueryResultSet {
     
     private SelectStatementContext statementContext;
     
-    private Collection<String> columns = Collections.singleton("rowKey");
-    
-    private Result compensateResult;
-    
-    private Iterator<Result> iterator;
-    
     private long resultNum;
     
     private long maxLimitResultSize;
     
+    @Getter
+    private Collection<String> columnNames = Collections.singleton("rowKey");
+    
+    private Result compensateResult;
+    
+    private Iterator<Result> rows;
+    
     /**
      * Init data.
      *
-     * @param sqlStatementContext SQL statement context.
+     * @param sqlStatementContext SQL statement context
      */
     @Override
     public void init(final SQLStatementContext<?> sqlStatementContext) {
         statementContext = (SelectStatementContext) sqlStatementContext;
-        HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
-        HBaseOperation hbaseOperation = converter.convert();
         initResultNum(sqlStatementContext);
-        final long startMill = System.currentTimeMillis();
-        if (hbaseOperation.getOperation() instanceof Get) {
-            executeGetRequest(hbaseOperation);
-        } else if (hbaseOperation.getOperation() instanceof HBaseSelectOperation) {
-            executeGetsRequest(hbaseOperation);
+        HBaseOperation operation = HBaseOperationConverterFactory.newInstance(sqlStatementContext).convert();
+        long startMills = System.currentTimeMillis();
+        if (operation.getOperation() instanceof Get) {
+            executeGetRequest(operation);
+        } else if (operation.getOperation() instanceof HBaseSelectOperation) {
+            executeGetsRequest(operation);
         } else {
-            executeScanRequest(hbaseOperation);
+            executeScanRequest(operation);
         }
-        
-        final long endMill = System.currentTimeMillis();
-        
-        printExecuteTime(endMill, startMill);
-    }
-    
-    private void printExecuteTime(final long endMill, final long startMill) {
-        String hbTable;
-        
-        if (statementContext.getSqlStatement().getFrom() instanceof SimpleTableSegment) {
-            hbTable = ((SimpleTableSegment) statementContext.getSqlStatement().getFrom()).getTableName().getIdentifier().getValue();
-        } else {
-            hbTable = statementContext.getSqlStatement().getFrom().toString();
-        }
-        
-        String whereCase = "";
-        
-        if (statementContext.getSqlStatement().getWhere().isPresent()) {
-            ExpressionSegment expressionSegment = statementContext.getSqlStatement().getWhere().get().getExpr();
-            if (expressionSegment instanceof BetweenExpression) {
-                whereCase += ((BetweenExpression) expressionSegment).getBetweenExpr();
-            } else if (expressionSegment instanceof BinaryOperationExpression) {
-                whereCase += ((BinaryOperationExpression) expressionSegment).getText();
-            }
-        }
-        if (endMill - startMill > HBaseContext.getInstance().getProps().<Long>getValue(HBasePropertyKey.EXECUTE_TIME_OUT)) {
-            log.info(String.format("query hbase table: %s,  where case: %s  ,  query %dms time out", hbTable, whereCase, endMill - startMill));
-        } else {
-            log.info(String.format("query hbase table: %s,  where case: %s  ,  execute time: %dms", hbTable, whereCase, endMill - startMill));
-        }
+        logExecuteTime(startMills);
     }
     
     private void initResultNum(final SQLStatementContext<?> sqlStatementContext) {
         resultNum = 0;
         maxLimitResultSize = HBaseContext.getInstance().getProps().<Long>getValue(HBasePropertyKey.MAX_SCAN_LIMIT_SIZE);
         Optional<PaginationValueSegment> paginationSegment = ((MySQLSelectStatement) sqlStatementContext.getSqlStatement()).getLimit().flatMap(LimitSegment::getRowCount);
-        paginationSegment.ifPresent(valueSegment -> maxLimitResultSize = Math.min(maxLimitResultSize, ((NumberLiteralLimitValueSegment) valueSegment).getValue()));
+        paginationSegment.ifPresent(optional -> maxLimitResultSize = Math.min(maxLimitResultSize, ((NumberLiteralLimitValueSegment) optional).getValue()));
     }
     
-    private void executeGetsRequest(final HBaseOperation hbaseOperation) {
-        List<Result> results = Arrays.asList(HBaseExecutor.executeQuery(hbaseOperation.getTableName(), table -> table.get(((HBaseSelectOperation) hbaseOperation.getOperation()).getGets())));
+    private void executeGetRequest(final HBaseOperation operation) {
+        Result result = HBaseExecutor.executeQuery(operation.getTableName(), table -> table.get((Get) operation.getOperation()));
+        Collection<Result> rows = 0 == result.rawCells().length ? Collections.emptyList() : Collections.singleton(result);
+        this.rows = rows.iterator();
+        setColumnNames(this.rows);
+    }
+    
+    private void executeGetsRequest(final HBaseOperation operation) {
+        List<Result> results = Arrays.asList(HBaseExecutor.executeQuery(operation.getTableName(), table -> table.get(((HBaseSelectOperation) operation.getOperation()).getGets())));
         results = results.stream().filter(result -> result.rawCells().length > 0).collect(Collectors.toList());
-        orderResults(results);
-        iterator = results.iterator();
-        setColumns(iterator);
-    }
-    
-    private void orderResults(final List<Result> results) {
-        if (!this.statementContext.getOrderByContext().isGenerated()) {
-            return;
+        if (statementContext.getOrderByContext().isGenerated()) {
+            results.sort(this::compareResult);
         }
-        results.sort(this::compareResult);
+        rows = results.iterator();
+        setColumnNames(rows);
     }
     
     private int compareResult(final Result result1, final Result result2) {
         return Bytes.toString(result1.getRow()).compareTo(Bytes.toString(result2.getRow()));
     }
     
-    private void executeGetRequest(final HBaseOperation hbaseOperation) {
-        Result result = HBaseExecutor.executeQuery(hbaseOperation.getTableName(), table -> table.get((Get) hbaseOperation.getOperation()));
-        List<Result> rows = 0 == result.rawCells().length ? Collections.emptyList() : Collections.singletonList(result);
-        iterator = rows.iterator();
-        setColumns(iterator);
-    }
-    
     private void executeScanRequest(final HBaseOperation hbaseOperation) {
         Scan scan = (Scan) hbaseOperation.getOperation();
-        scan.setLimit(Long.valueOf(maxLimitResultSize).intValue());
+        scan.setLimit((int) maxLimitResultSize);
         ResultScanner resultScanner = HBaseExecutor.executeQuery(hbaseOperation.getTableName(), table -> table.getScanner(scan));
-        iterator = resultScanner.iterator();
-        setColumns(iterator);
+        rows = resultScanner.iterator();
+        setColumnNames(rows);
     }
     
-    private void setColumns(final Iterator<Result> iterator) {
-        if (iterator.hasNext()) {
-            compensateResult = iterator.next();
+    private void setColumnNames(final Iterator<Result> rows) {
+        if (rows.hasNext()) {
+            compensateResult = rows.next();
         }
-        if (compensateResult != null) {
-            Map<String, String> row = parseResult(compensateResult);
-            columns = row.keySet();
-        } else {
-            columns = Arrays.asList("rowKey", "content");
-        }
+        columnNames = null == compensateResult ? Arrays.asList("rowKey", "content") : parseResult(compensateResult).keySet();
     }
     
     private Map<String, String> parseResult(final Result result) {
         Map<String, String> row = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         row.put("rowKey", Bytes.toString(result.getRow()));
         Long timestamp = null;
-        for (Cell cell : result.listCells()) {
-            String column = new String(CellUtil.cloneQualifier(cell), StandardCharsets.UTF_8);
-            String value = new String(CellUtil.cloneValue(cell), StandardCharsets.UTF_8);
-            cell.getTimestamp();
-            if (timestamp == null) {
-                timestamp = cell.getTimestamp();
+        for (Cell each : result.listCells()) {
+            String column = new String(CellUtil.cloneQualifier(each), StandardCharsets.UTF_8);
+            String value = new String(CellUtil.cloneValue(each), StandardCharsets.UTF_8);
+            if (null == timestamp) {
+                timestamp = each.getTimestamp();
             }
             row.put(column, value);
         }
@@ -192,49 +153,51 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
         return row;
     }
     
-    /**
-     * Get result set column names.
-     *
-     * @return result set column names.
-     */
-    @Override
-    public Collection<String> getColumnNames() {
-        return columns;
+    private void logExecuteTime(final long startMills) {
+        long endMills = System.currentTimeMillis();
+        String tableName = statementContext.getSqlStatement().getFrom() instanceof SimpleTableSegment
+                ? ((SimpleTableSegment) statementContext.getSqlStatement().getFrom()).getTableName().getIdentifier().getValue()
+                : statementContext.getSqlStatement().getFrom().toString();
+        String whereClause = getWhereClause();
+        if (endMills - startMills > HBaseContext.getInstance().getProps().<Long>getValue(HBasePropertyKey.EXECUTE_TIME_OUT)) {
+            log.info(String.format("query hbase table: %s,  where case: %s  ,  query %dms time out", tableName, whereClause, endMills - startMills));
+        } else {
+            log.info(String.format("query hbase table: %s,  where case: %s  ,  execute time: %dms", tableName, whereClause, endMills - startMills));
+        }
     }
     
-    /**
-     * Go to next data.
-     *
-     * @return true if next data exist.
-     */
+    private String getWhereClause() {
+        if (!statementContext.getSqlStatement().getWhere().isPresent()) {
+            return "";
+        }
+        StringBuilder result = new StringBuilder();
+        ExpressionSegment expressionSegment = statementContext.getSqlStatement().getWhere().get().getExpr();
+        if (expressionSegment instanceof BetweenExpression) {
+            result.append(((BetweenExpression) expressionSegment).getBetweenExpr());
+        } else if (expressionSegment instanceof BinaryOperationExpression) {
+            result.append(((BinaryOperationExpression) expressionSegment).getText());
+        }
+        return result.toString();
+    }
+    
     @Override
     public boolean next() {
-        return resultNum < maxLimitResultSize && (iterator.hasNext() || compensateResult != null);
+        return resultNum < maxLimitResultSize && (rows.hasNext() || compensateResult != null);
     }
     
-    /**
-     * Get row data.
-     *
-     * @return row data.
-     */
     @Override
     public Collection<Object> getRowData() {
         Map<String, String> row;
-        if (compensateResult != null) {
+        if (null == compensateResult) {
+            row = parseResult(rows.next());
+        } else {
             row = parseResult(compensateResult);
             compensateResult = null;
-        } else {
-            row = parseResult(iterator.next());
         }
         resultNum++;
-        return columns.stream().map(each -> row.getOrDefault(each, "")).collect(Collectors.toList());
+        return columnNames.stream().map(each -> row.getOrDefault(each, "")).collect(Collectors.toList());
     }
     
-    /**
-     * Get Type.
-     *
-     * @return Type Name.
-     */
     @Override
     public String getType() {
         return MySQLSelectStatement.class.getCanonicalName();
