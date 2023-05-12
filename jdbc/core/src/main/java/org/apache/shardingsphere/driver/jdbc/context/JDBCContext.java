@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.driver.jdbc.context;
 
 import com.google.common.eventbus.Subscribe;
-import lombok.Getter;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
 
@@ -27,17 +26,26 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * JDBC context.
  */
-@Getter
 public final class JDBCContext {
     
-    private volatile CachedDatabaseMetaData cachedDatabaseMetaData;
+    private final AtomicReference<CachedDatabaseMetaData> cachedDatabaseMetaData = new AtomicReference<>();
     
     public JDBCContext(final Map<String, DataSource> dataSources) throws SQLException {
-        cachedDatabaseMetaData = createCachedDatabaseMetaData(dataSources).orElse(null);
+        cachedDatabaseMetaData.set(createCachedDatabaseMetaData(dataSources).orElse(null));
+    }
+    
+    /**
+     * Get cached database meta data.
+     * 
+     * @return cached database meta data
+     */
+    public CachedDatabaseMetaData getCachedDatabaseMetaData() {
+        return cachedDatabaseMetaData.get();
     }
     
     /**
@@ -46,9 +54,10 @@ public final class JDBCContext {
      * @param event data source changed event
      * @throws SQLException SQL exception
      */
+    @SuppressWarnings("UnstableApiUsage")
     @Subscribe
-    public synchronized void refreshCachedDatabaseMetaData(final DataSourceChangedEvent event) throws SQLException {
-        cachedDatabaseMetaData = createCachedDatabaseMetaData(DataSourcePoolCreator.create(event.getDataSourcePropertiesMap())).orElse(null);
+    public void refreshCachedDatabaseMetaData(final DataSourceChangedEvent event) throws SQLException {
+        cachedDatabaseMetaData.set(createCachedDatabaseMetaData(DataSourcePoolCreator.create(event.getDataSourcePropertiesMap())).orElse(null));
     }
     
     private Optional<CachedDatabaseMetaData> createCachedDatabaseMetaData(final Map<String, DataSource> dataSources) throws SQLException {
