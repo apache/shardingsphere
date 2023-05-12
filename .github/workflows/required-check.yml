@@ -31,7 +31,7 @@ env:
 
 jobs:
   check-checkstyle:
-    name: Check - CheckStyle
+    name: Required Check - CheckStyle
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
