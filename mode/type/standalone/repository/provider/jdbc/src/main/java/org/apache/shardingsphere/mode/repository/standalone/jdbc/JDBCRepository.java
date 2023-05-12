@@ -24,8 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.props.JDBCRepositoryProperties;
 import org.apache.shardingsphere.mode.repository.standalone.jdbc.props.JDBCRepositoryPropertyKey;
-import org.apache.shardingsphere.mode.repository.standalone.jdbc.provider.JDBCRepositoryProvider;
-import org.apache.shardingsphere.mode.repository.standalone.jdbc.provider.JDBCRepositoryProviderLoader;
+import org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQL;
+import org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,7 +48,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     private static final String SEPARATOR = "/";
     
-    private JDBCRepositoryProvider provider;
+    private JDBCRepositorySQL repositorySQL;
     
     private HikariDataSource dataSource;
     
@@ -56,9 +56,9 @@ public final class JDBCRepository implements StandalonePersistRepository {
     @Override
     public void init(final Properties props) {
         JDBCRepositoryProperties jdbcRepositoryProps = new JDBCRepositoryProperties(props);
-        provider = JDBCRepositoryProviderLoader.load(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
+        repositorySQL = JDBCRepositorySQLLoader.load(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
         dataSource = new HikariDataSource();
-        dataSource.setDriverClassName(provider.getDriverClassName());
+        dataSource.setDriverClassName(repositorySQL.getDriverClassName());
         dataSource.setJdbcUrl(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL));
         dataSource.setUsername(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.USERNAME));
         dataSource.setPassword(jdbcRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD));
@@ -70,7 +70,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
                 statement.execute("DROP TABLE IF EXISTS `repository`");
             }
             // Finish TODO
-            statement.execute(provider.getCreateTableSQL());
+            statement.execute(repositorySQL.getCreateTableSQL());
         }
     }
     
@@ -78,7 +78,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     public String getDirectly(final String key) {
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(provider.getSelectByKeySQL())) {
+                PreparedStatement preparedStatement = connection.prepareStatement(repositorySQL.getSelectByKeySQL())) {
             preparedStatement.setString(1, key);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
@@ -95,7 +95,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     public List<String> getChildrenKeys(final String key) {
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(provider.getSelectByParentKeySQL())) {
+                PreparedStatement preparedStatement = connection.prepareStatement(repositorySQL.getSelectByParentKeySQL())) {
             preparedStatement.setString(1, key);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 List<String> resultChildren = new LinkedList<>();
@@ -152,7 +152,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     private void insert(final String key, final String value, final String parent) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(provider.getInsertSQL())) {
+                PreparedStatement preparedStatement = connection.prepareStatement(repositorySQL.getInsertSQL())) {
             preparedStatement.setString(1, UUID.randomUUID().toString());
             preparedStatement.setString(2, key);
             preparedStatement.setString(3, value);
@@ -165,7 +165,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     public void update(final String key, final String value) {
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(provider.getUpdateSQL())) {
+                PreparedStatement preparedStatement = connection.prepareStatement(repositorySQL.getUpdateSQL())) {
             preparedStatement.setString(1, value);
             preparedStatement.setString(2, key);
             preparedStatement.executeUpdate();
@@ -178,7 +178,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     public void delete(final String key) {
         try (
                 Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(provider.getDeleteSQL())) {
+                PreparedStatement preparedStatement = connection.prepareStatement(repositorySQL.getDeleteSQL())) {
             preparedStatement.setString(1, key);
             preparedStatement.executeUpdate();
         } catch (final SQLException ex) {

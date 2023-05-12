@@ -25,6 +25,7 @@
         <version>5.3.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-standalone-mode-repository-jdbc</artifactId>
+    <name>${project.artifactId}</name>
     
     <dependencies>
         <dependency>
@@ -41,6 +42,22 @@
         </dependency>
         
         <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>javax.activation-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <scope>compile</scope>
@@ -56,26 +73,6 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>test</scope>
-        </dependency>
-        
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-core</artifactId>
-        </dependency>
-    
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-        </dependency>
-    
-        <dependency>
-            <groupId>javax.activation</groupId>
-            <artifactId>javax.activation-api</artifactId>
         </dependency>
     </dependencies>
 </project>

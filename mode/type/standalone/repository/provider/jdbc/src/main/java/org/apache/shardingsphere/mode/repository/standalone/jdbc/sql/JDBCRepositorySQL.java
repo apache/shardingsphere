@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.standalone.jdbc.provider;
+package org.apache.shardingsphere.mode.repository.standalone.jdbc.sql;
 
 import lombok.Getter;
 
@@ -24,64 +24,36 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * JDBC repository provider.
+ * JDBC repository SQL.
  */
 @XmlRootElement(name = "sql")
 @Getter
-public class JDBCRepositoryProvider {
+public final class JDBCRepositorySQL {
     
-    /**
-     * JDBCRepositoryProvider type.
-     */
-    @XmlAttribute(name = "type", required = true)
+    @XmlAttribute(required = true)
     private String type;
     
-    /**
-     * JDBCRepositoryProvider driverClassName.
-     */
     @XmlAttribute(name = "driver-class-name", required = true)
     private String driverClassName;
     
-    /**
-     * Whether it is the default provider.
-     */
-    @XmlAttribute(name = "is-default")
-    private Boolean isDefault = false;
+    @XmlAttribute(name = "default")
+    private boolean isDefault;
     
-    /**
-     * Create table SQL.
-     */
     @XmlElement(name = "create-table", required = true)
     private String createTableSQL;
     
-    /**
-     * Select by key SQL.
-     */
     @XmlElement(name = "select-by-key", required = true)
     private String selectByKeySQL;
     
-    /**
-     * Select by parent key SQL.
-     */
     @XmlElement(name = "select-by-parent", required = true)
     private String selectByParentKeySQL;
     
-    /**
-     * Insert SQL.
-     */
     @XmlElement(name = "insert", required = true)
     private String insertSQL;
     
-    /**
-     * Update SQL.
-     */
     @XmlElement(name = "update", required = true)
     private String updateSQL;
     
-    /**
-     * Delete SQL.
-     */
     @XmlElement(name = "delete", required = true)
     private String deleteSQL;
-    
 }
