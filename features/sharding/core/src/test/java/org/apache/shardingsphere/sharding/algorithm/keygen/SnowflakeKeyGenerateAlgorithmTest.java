@@ -47,6 +47,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -144,7 +145,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
-        setLastMilliseconds(algorithm, timeService.getCurrentMillis() + 2);
+        setLastMillis(algorithm, timeService.getCurrentMillis() + 2);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 8388609L, 8388610L, 12582912L, 12582913L, 16777217L, 16777218L, 20971520L, 20971521L, 25165825L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
         for (int i = 0; i < DEFAULT_KEY_AMOUNT; i++) {
@@ -161,7 +162,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
-        setLastMilliseconds(algorithm, timeService.getCurrentMillis() + 2);
+        setLastMillis(algorithm, timeService.getCurrentMillis() + 2);
         assertThrows(SnowflakeClockMoveBackException.class, () -> batchGenerate(algorithm));
     }
     
@@ -179,7 +180,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
-        setLastMilliseconds(algorithm, timeService.getCurrentMillis());
+        setLastMillis(algorithm, timeService.getCurrentMillis());
         setSequence(algorithm, (1 << DEFAULT_SEQUENCE_BITS) - 1L);
         List<Comparable<?>> expected = Arrays.asList(4194304L, 4194305L, 4194306L, 8388608L, 8388609L, 8388610L, 12582913L, 12582914L, 12582915L, 16777216L);
         List<Comparable<?>> actual = new ArrayList<>(DEFAULT_KEY_AMOUNT);
@@ -190,13 +191,13 @@ class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private void setLastMilliseconds(final KeyGenerateAlgorithm algorithm, final Number value) {
-        Plugins.getMemberAccessor().set(SnowflakeKeyGenerateAlgorithm.class.getDeclaredField("lastMilliseconds"), algorithm, value);
+    private void setLastMillis(final KeyGenerateAlgorithm algorithm, final Number value) {
+        Plugins.getMemberAccessor().set(SnowflakeKeyGenerateAlgorithm.class.getDeclaredField("lastMillis"), algorithm, new AtomicLong(value.longValue()));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setSequence(final KeyGenerateAlgorithm algorithm, final Number value) {
-        Plugins.getMemberAccessor().set(SnowflakeKeyGenerateAlgorithm.class.getDeclaredField("sequence"), algorithm, value);
+        Plugins.getMemberAccessor().set(SnowflakeKeyGenerateAlgorithm.class.getDeclaredField("sequence"), algorithm, new AtomicLong(value.longValue()));
     }
     
     @Test
