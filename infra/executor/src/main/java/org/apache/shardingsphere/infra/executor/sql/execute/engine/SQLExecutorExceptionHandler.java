@@ -59,11 +59,13 @@ public final class SQLExecutorExceptionHandler {
      */
     public static void handleException(final Exception exception) throws SQLException {
         if (isExceptionThrown()) {
+            IS_EXCEPTION_THROWN.remove();
             if (exception instanceof SQLException) {
                 throw (SQLException) exception;
             }
             throw new UnknownSQLException(exception).toSQLException();
         }
+        IS_EXCEPTION_THROWN.remove();
         log.error("exception occur: ", exception);
     }
 }
