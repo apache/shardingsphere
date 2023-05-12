@@ -56,10 +56,9 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
     private static final List<String> POSTGRESQL_COLUMN_NAMES = Arrays.asList("order_id", "user_id", "status", "t_int2", "t_numeric", "t_bool", "t_bytea", "t_char", "t_varchar", "t_float",
             "t_double", "t_json", "t_jsonb", "t_text", "t_date", "t_time", "t_timestamp", "t_timestamptz");
     
-    private static final List<String> OPENGAUSS_COLUMN_NAMES = Arrays.asList("order_id", "user_id", "status", "int_column", "smallint_column", "float_column", "double_column", "numeric_column",
-            "boolean_column", "char_column", "text_column", "bytea_column", "date_column", "time_column", "smalldatetime_column", "timestamp_column", "timestamptz_column", "interval_column",
-            "array_column", "json_column", "jsonb_column", "uuid_column", "hash32_column", "tsvector_column", "bit_column", "int4range_column", "reltime_column", "abstime_column", "point_column",
-            "lseg_column", "box_column", "circle_column", "bitvarying_column", "cidr_column", "inet_column", "macaddr_column", "hll_column");
+    private static final List<String> OPENGAUSS_COLUMN_NAMES = Arrays.asList("order_id", "user_id", "status", "c_int", "c_smallint", "c_float", "c_double", "c_numeric", "c_boolean", "c_char",
+            "c_text", "c_bytea", "c_date", "c_time", "c_smalldatetime", "c_timestamp", "c_timestamptz", "c_interval", "c_array", "c_json", "c_jsonb", "c_uuid", "c_hash32", "c_tsvector", "c_bit",
+            "c_int4range", "c_reltime", "c_abstime", "c_point", "c_lseg", "c_box", "c_circle", "c_bitvarying", "c_cidr", "c_inet", "c_macaddr", "c_hll");
     
     private final DataSource dataSource;
     

@@ -111,7 +111,7 @@ class CDCE2EIT {
                 initSchemaAndTable(containerComposer, connection, 3);
             }
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
-            Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(containerComposer.getDatabaseType(), 10);
+            Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(containerComposer.getDatabaseType(), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
             log.info("init data begin: {}", LocalDateTime.now());
             DataSourceExecuteUtils.execute(jdbcDataSource, containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), dataPair.getLeft());
             log.info("init data end: {}", LocalDateTime.now());
