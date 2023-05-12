@@ -92,7 +92,7 @@ public final class ShardingRouteEngineFactory {
      */
     public static ShardingRouteEngine newInstance(final ShardingRule shardingRule, final ShardingSphereDatabase database, final QueryContext queryContext,
                                                   final ShardingConditions shardingConditions, final ConfigurationProperties props, final ConnectionContext connectionContext) {
-        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof TCLStatement) {
             return new ShardingDatabaseBroadcastRoutingEngine();
