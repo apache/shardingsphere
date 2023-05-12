@@ -63,7 +63,7 @@ public final class NewDataSourcePersistService implements DatabaseBasedPersistSe
         return result;
     }
     
-    //TODO Remove this
+    // TODO Remove this
     @Override
     public Map<String, DataSourceProperties> load(final String databaseName, final String version) {
         return Collections.emptyMap();
