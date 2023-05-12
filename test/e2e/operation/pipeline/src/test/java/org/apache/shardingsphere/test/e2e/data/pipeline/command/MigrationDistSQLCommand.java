@@ -25,9 +25,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@Setter
 @XmlRootElement(name = "command")
 @XmlAccessorType(XmlAccessType.FIELD)
+@Setter
 public final class MigrationDistSQLCommand {
     
     @XmlElement(name = "alter-migration-rule")
