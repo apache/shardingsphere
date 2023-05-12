@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.sql.parser.it.mysql.external;
+package org.apache.shardingsphere.encrypt.exception.algorithm;
 
-import org.apache.shardingsphere.test.it.sql.parser.external.ExternalSQLParserIT;
-import org.apache.shardingsphere.test.it.sql.parser.external.loader.ExternalMySQLTestParameterLoader;
-import org.apache.shardingsphere.test.loader.ExternalCaseSettings;
+import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
-@ExternalCaseSettings(value = "MySQL", caseURL = ExternalMySQLParserIT.CASE_URL, resultURL = ExternalMySQLParserIT.RESULT_URL, testParameterLoader = ExternalMySQLTestParameterLoader.class)
-class ExternalMySQLParserIT extends ExternalSQLParserIT {
+/**
+ * Mismatched encrypt algorithm type exception.
+ */
+public final class MismatchedEncryptAlgorithmTypeException extends EncryptSQLException {
     
-    static final String CASE_URL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t";
+    private static final long serialVersionUID = -3133058284863085899L;
     
-    static final String RESULT_URL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r";
-    
+    public MismatchedEncryptAlgorithmTypeException(final String columnType, final String encryptorName, final String encryptAlgorithmType) {
+        super(XOpenSQLState.GENERAL_ERROR, 81, "`%s` column's encryptor name `%s` does not match encrypt algorithm type `%s`.", columnType, encryptorName, encryptAlgorithmType);
+    }
 }
