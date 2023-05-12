@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.mask.algorithm.cover;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropsChecker;
+import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
 import java.util.Properties;
@@ -45,6 +47,7 @@ public final class KeepFromXToYMaskAlgorithm implements MaskAlgorithm<Object, St
         fromX = createFromX(props);
         toY = createToY(props);
         replaceChar = createReplaceChar(props);
+        ShardingSpherePreconditions.checkState(fromX <= toY, () -> new MaskAlgorithmInitializationException(getType(), "fromX must be less than or equal to toY"));
     }
     
     private Integer createFromX(final Properties props) {
@@ -68,11 +71,8 @@ public final class KeepFromXToYMaskAlgorithm implements MaskAlgorithm<Object, St
         if (Strings.isNullOrEmpty(result)) {
             return result;
         }
-        if (result.length() <= fromX || toY <= fromX) {
-            return result;
-        }
         char[] chars = result.toCharArray();
-        for (int i = 0; i < fromX; i++) {
+        for (int i = 0; i < Math.min(fromX, result.length()); i++) {
             chars[i] = replaceChar;
         }
         for (int i = toY + 1; i < chars.length; i++) {
