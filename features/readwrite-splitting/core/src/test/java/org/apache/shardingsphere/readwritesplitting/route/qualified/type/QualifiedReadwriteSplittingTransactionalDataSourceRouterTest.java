@@ -34,8 +34,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class QualifiedReadwriteSplittingTransactionalDataSourceRouterTest {
-
+class QualifiedReadwriteSplittingTransactionalDataSourceRouterTest {
+    
     @Test
     void assertWriteRouteTransaction() {
         ConnectionContext connectionContext = mock(ConnectionContext.class);
@@ -46,7 +46,7 @@ public final class QualifiedReadwriteSplittingTransactionalDataSourceRouterTest 
         when(connectionContext.getTransactionContext().isInTransaction()).thenReturn(Boolean.FALSE);
         assertFalse(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(connectionContext).isQualified(null, null));
     }
-
+    
     @Test
     void assertRoute() {
         ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingDataSourceRuleConfiguration =
@@ -59,5 +59,4 @@ public final class QualifiedReadwriteSplittingTransactionalDataSourceRouterTest 
         rule = new ReadwriteSplittingDataSourceRule(readwriteSplittingDataSourceRuleConfiguration, TransactionalReadQueryStrategy.DYNAMIC, new RoundRobinReadQueryLoadBalanceAlgorithm());
         assertThat(new QualifiedReadwriteSplittingTransactionalDataSourceRouter(new ConnectionContext()).route(rule), is("read_ds_0"));
     }
-
 }
