@@ -62,7 +62,7 @@ public final class TransactionDeadlockTestCase extends BaseTransactionTestCase {
     private void prepare() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             executeWithLog(connection, "DELETE FROM account");
-            executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4)");
+            executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4)");
         }
         try (Connection connection = getDataSource().getConnection()) {
             assertAccountRowCount(connection, 4);
@@ -71,7 +71,7 @@ public final class TransactionDeadlockTestCase extends BaseTransactionTestCase {
     
     @Override
     protected void executeTest(final TransactionContainerComposer containerComposer) throws SQLException {
-        long startTime = System.currentTimeMillis();
+        final long startTime = System.currentTimeMillis();
         Collection<Future<Void>> futures = new LinkedList<>();
         futures.add(executor.submit(this::executeTransfer1));
         futures.add(executor.submit(this::executeTransfer2));
