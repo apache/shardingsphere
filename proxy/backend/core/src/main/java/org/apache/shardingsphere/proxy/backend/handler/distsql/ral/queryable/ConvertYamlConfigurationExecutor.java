@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
+import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -118,6 +119,8 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
                 appendReadWriteSplittingDistSQL((ReadwriteSplittingRuleConfiguration) each, result);
             } else if (each instanceof EncryptRuleConfiguration) {
                 appendEncryptDistSQL((EncryptRuleConfiguration) each, result);
+            } else if (each instanceof CompatibleEncryptRuleConfiguration) {
+                appendEncryptDistSQL(((CompatibleEncryptRuleConfiguration) each).convertToEncryptRuleConfiguration(), result);
             } else if (each instanceof ShadowRuleConfiguration) {
                 appendShadowDistSQL((ShadowRuleConfiguration) each, result);
             } else if (each instanceof MaskRuleConfiguration) {

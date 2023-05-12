@@ -35,7 +35,7 @@ public final class AlterCompatibleEncryptRuleStatementUpdater implements RuleDef
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final AlterEncryptRuleStatement sqlStatement, final CompatibleEncryptRuleConfiguration currentRuleConfig) {
-        delegate.checkSQLStatement(database, sqlStatement, new EncryptRuleConfiguration(currentRuleConfig.getTables(), currentRuleConfig.getEncryptors()));
+        delegate.checkSQLStatement(database, sqlStatement, currentRuleConfig.convertToEncryptRuleConfiguration());
     }
     
     @Override
@@ -46,8 +46,7 @@ public final class AlterCompatibleEncryptRuleStatementUpdater implements RuleDef
     
     @Override
     public void updateCurrentRuleConfiguration(final CompatibleEncryptRuleConfiguration currentRuleConfig, final CompatibleEncryptRuleConfiguration toBeAlteredRuleConfig) {
-        delegate.updateCurrentRuleConfiguration(new EncryptRuleConfiguration(currentRuleConfig.getTables(), currentRuleConfig.getEncryptors()),
-                new EncryptRuleConfiguration(toBeAlteredRuleConfig.getTables(), toBeAlteredRuleConfig.getEncryptors()));
+        delegate.updateCurrentRuleConfiguration(currentRuleConfig.convertToEncryptRuleConfiguration(), toBeAlteredRuleConfig.convertToEncryptRuleConfiguration());
     }
     
     @Override

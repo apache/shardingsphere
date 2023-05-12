@@ -104,11 +104,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_NETTY_BACKLOG("proxy-netty-backlog", "1024", int.class, false),
     
     /**
-     * Proxy instance type.
-     */
-    PROXY_INSTANCE_TYPE("proxy-instance-type", "Proxy", String.class, true),
-    
-    /**
      * CDC server port.
      */
     CDC_SERVER_PORT("cdc-server-port", "33071", int.class, true),

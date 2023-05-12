@@ -54,4 +54,8 @@
     </analyze>
 
     <analyze sql-case-id="analyze_cluster" />
+
+    <analyze sql-case-id="analyze_table_update_histogram_using_data" >
+        <table name="tbl_datetime" start-index="14" stop-index="24" />
+    </analyze>
 </sql-parser-test-cases>

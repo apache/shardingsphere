@@ -15,31 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.distsql.parser.segment;
+package org.apache.shardingsphere.encrypt.exception.algorithm;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.ASTNode;
+import org.apache.shardingsphere.encrypt.exception.EncryptSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * Encrypt column segment.
+ * Mismatched encrypt algorithm type exception.
  */
-@RequiredArgsConstructor
-@Getter
-public final class EncryptColumnSegment implements ASTNode {
+public final class MismatchedEncryptAlgorithmTypeException extends EncryptSQLException {
     
-    private final String name;
+    private static final long serialVersionUID = -3133058284863085899L;
     
-    private final String cipherColumn;
-    
-    private final String assistedQueryColumn;
-    
-    private final String likeQueryColumn;
-    
-    private final AlgorithmSegment encryptor;
-    
-    private final AlgorithmSegment assistedQueryEncryptor;
-    
-    private final AlgorithmSegment likeQueryEncryptor;
+    public MismatchedEncryptAlgorithmTypeException(final String columnType, final String encryptorName, final String encryptAlgorithmType) {
+        super(XOpenSQLState.GENERAL_ERROR, 81, "`%s` column's encryptor name `%s` does not match encrypt algorithm type `%s`.", columnType, encryptorName, encryptAlgorithmType);
+    }
 }

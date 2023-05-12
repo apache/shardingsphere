@@ -20,11 +20,14 @@ package org.apache.shardingsphere.encrypt.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.assisted.AssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
+import org.apache.shardingsphere.encrypt.exception.algorithm.MismatchedEncryptAlgorithmTypeException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptAssistedQueryEncryptorNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptEncryptorNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptLikeQueryEncryptorNotFoundException;
@@ -66,7 +69,10 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
     public EncryptRule(final EncryptRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         ruleConfig.getEncryptors().forEach((key, value) -> putAllEncryptors(key, TypedSPILoader.getService(EncryptAlgorithm.class, value.getType(), value.getProps())));
-        ruleConfig.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each)));
+        for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
+            each.getColumns().forEach(this::checkEncryptAlgorithmType);
+            tables.put(each.getName().toLowerCase(), new EncryptTable(each));
+        }
     }
     
     /**
@@ -78,7 +84,10 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
     public EncryptRule(final CompatibleEncryptRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
         ruleConfig.getEncryptors().forEach((key, value) -> putAllEncryptors(key, TypedSPILoader.getService(EncryptAlgorithm.class, value.getType(), value.getProps())));
-        ruleConfig.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each)));
+        for (EncryptTableRuleConfiguration each : ruleConfig.getTables()) {
+            each.getColumns().forEach(this::checkEncryptAlgorithmType);
+            tables.put(each.getName().toLowerCase(), new EncryptTable(each));
+        }
     }
     
     @SuppressWarnings("rawtypes")
@@ -92,6 +101,15 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule, Colu
         if (algorithm instanceof AssistedEncryptAlgorithm) {
             assistedEncryptors.put(encryptorName, (AssistedEncryptAlgorithm) algorithm);
         }
+    }
+    
+    private void checkEncryptAlgorithmType(final EncryptColumnRuleConfiguration columnRuleConfig) {
+        ShardingSpherePreconditions.checkState(standardEncryptors.containsKey(columnRuleConfig.getCipher().getEncryptorName()),
+                () -> new MismatchedEncryptAlgorithmTypeException("Cipher", columnRuleConfig.getCipher().getEncryptorName(), StandardEncryptAlgorithm.class.getSimpleName()));
+        columnRuleConfig.getLikeQuery().ifPresent(optional -> ShardingSpherePreconditions.checkState(likeEncryptors.containsKey(optional.getEncryptorName()),
+                () -> new MismatchedEncryptAlgorithmTypeException("Like query", optional.getEncryptorName(), LikeEncryptAlgorithm.class.getSimpleName())));
+        columnRuleConfig.getAssistedQuery().ifPresent(optional -> ShardingSpherePreconditions.checkState(assistedEncryptors.containsKey(optional.getEncryptorName()),
+                () -> new MismatchedEncryptAlgorithmTypeException("Assisted query", optional.getEncryptorName(), AssistedEncryptAlgorithm.class.getSimpleName())));
     }
     
     /**

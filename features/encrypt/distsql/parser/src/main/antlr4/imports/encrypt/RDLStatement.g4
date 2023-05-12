@@ -44,19 +44,15 @@ encryptColumnDefinition
     ;
 
 columnDefinition
-    : NAME EQ_ columnName (COMMA_ DATA_TYPE EQ_ dataType)?
+    : NAME EQ_ columnName
     ;
 
 columnName
     : IDENTIFIER_
     ;
 
-dataType
-    : STRING_
-    ;
-
 cipherColumnDefinition
-    :  CIPHER EQ_ cipherColumnName (COMMA_ CIPHER_DATA_TYPE EQ_ dataType)?
+    :  CIPHER EQ_ cipherColumnName
     ;
 
 cipherColumnName
@@ -64,7 +60,7 @@ cipherColumnName
     ;
 
 assistedQueryColumnDefinition
-    : ASSISTED_QUERY_COLUMN EQ_ assistedQueryColumnName (COMMA_ ASSISTED_QUERY_DATA_TYPE EQ_ dataType)?
+    : (ASSISTED_QUERY | ASSISTED_QUERY_COLUMN) EQ_ assistedQueryColumnName
     ;
 
 assistedQueryColumnName
@@ -72,7 +68,7 @@ assistedQueryColumnName
     ;
 
 likeQueryColumnDefinition
-    : LIKE_QUERY_COLUMN EQ_ likeQueryColumnName (COMMA_ LIKE_QUERY_DATA_TYPE EQ_ dataType)?
+    : (LIKE_QUERY | LIKE_QUERY_COLUMN) EQ_ likeQueryColumnName
     ;
 
 likeQueryColumnName

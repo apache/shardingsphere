@@ -300,12 +300,12 @@ analyzeTable
     ;
 
 histogram
-    : UPDATE HISTOGRAM ON columnNames (WITH NUMBER_ BUCKETS)?
+    : UPDATE HISTOGRAM ON columnNames (WITH NUMBER_ BUCKETS | USING DATA string_)?
     | DROP HISTOGRAM ON columnNames
     ;
 
 checkTable
-    : CHECK TABLE tableList checkTableOption?
+    : CHECK tableOrTables tableList checkTableOption?
     ;
 
 checkTableOption
