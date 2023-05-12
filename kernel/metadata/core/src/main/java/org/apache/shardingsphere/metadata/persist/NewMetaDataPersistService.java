@@ -26,9 +26,9 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataPersistService;
+import org.apache.shardingsphere.metadata.persist.service.config.database.NewDataSourcePersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionPersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.database.DataSourcePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalRulePersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.PropertiesPersistService;
@@ -51,7 +51,7 @@ public final class NewMetaDataPersistService implements MetaDataBasedPersistServ
     private final PersistRepository repository;
     
     // TODO replace all service to new persist service
-    private final DataSourcePersistService dataSourceService;
+    private final NewDataSourcePersistService dataSourceService;
     
     private final DatabaseMetaDataPersistService databaseMetaDataService;
     
@@ -67,7 +67,7 @@ public final class NewMetaDataPersistService implements MetaDataBasedPersistServ
     
     public NewMetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
-        dataSourceService = new DataSourcePersistService(repository);
+        dataSourceService = new NewDataSourcePersistService(repository);
         databaseMetaDataService = new DatabaseMetaDataPersistService(repository);
         databaseRulePersistService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);

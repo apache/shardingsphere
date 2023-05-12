@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.opengauss.command;
 
+import io.netty.buffer.Unpooled;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.OpenGaussCommandPacketType;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.query.extended.bind.OpenGaussComBatchBindPacket;
@@ -26,23 +27,25 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.flush.PostgreSQLComFlushPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.sync.PostgreSQLComSyncPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLComTerminationPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.opengauss.command.query.extended.bind.OpenGaussComBatchBindExecutor;
 import org.apache.shardingsphere.proxy.frontend.opengauss.command.query.simple.OpenGaussComQueryExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLComTerminationExecutor;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.generic.PostgreSQLUnsupportedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedBatchedStatementsCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLAggregatedCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.bind.PostgreSQLComBindExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.close.PostgreSQLComCloseExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.describe.PostgreSQLComDescribeExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.execute.PostgreSQLComExecuteExecutor;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.flush.PostgreSQLComFlushExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse.PostgreSQLComParseExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.sync.PostgreSQLComSyncExecutor;
 import org.junit.jupiter.api.Test;
@@ -51,6 +54,7 @@ import org.mockito.Mock;
 import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -87,15 +91,10 @@ class OpenGaussCommandExecutorFactoryTest {
     }
     
     @Test
-    void assertNewUnsupportedExecutor() throws SQLException {
-        CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.FLUSH_COMMAND, null, connectionSession, portalContext);
-        assertThat(actual, instanceOf(PostgreSQLUnsupportedCommandExecutor.class));
-    }
-    
-    @Test
     void assertAggregatedPacketNotBatchedStatements() throws SQLException {
         PostgreSQLComParsePacket parsePacket = mock(PostgreSQLComParsePacket.class);
         when(parsePacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.PARSE_COMMAND);
+        PostgreSQLComFlushPacket flushPacket = new PostgreSQLComFlushPacket(new PostgreSQLPacketPayload(Unpooled.wrappedBuffer(new byte[4]), StandardCharsets.UTF_8));
         PostgreSQLComBindPacket bindPacket = mock(PostgreSQLComBindPacket.class);
         when(bindPacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.BIND_COMMAND);
         PostgreSQLComDescribePacket describePacket = mock(PostgreSQLComDescribePacket.class);
@@ -106,11 +105,12 @@ class OpenGaussCommandExecutorFactoryTest {
         when(syncPacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.SYNC_COMMAND);
         PostgreSQLAggregatedCommandPacket packet = mock(PostgreSQLAggregatedCommandPacket.class);
         when(packet.isContainsBatchedStatements()).thenReturn(false);
-        when(packet.getPackets()).thenReturn(Arrays.asList(parsePacket, bindPacket, describePacket, executePacket, syncPacket));
+        when(packet.getPackets()).thenReturn(Arrays.asList(parsePacket, flushPacket, bindPacket, describePacket, executePacket, syncPacket));
         CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(null, packet, connectionSession, portalContext);
         assertThat(actual, instanceOf(PostgreSQLAggregatedCommandExecutor.class));
         Iterator<CommandExecutor> actualPacketsIterator = getExecutorsFromAggregatedCommandExecutor((PostgreSQLAggregatedCommandExecutor) actual).iterator();
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComParseExecutor.class));
+        assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComFlushExecutor.class));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComBindExecutor.class));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComDescribeExecutor.class));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLComExecuteExecutor.class));

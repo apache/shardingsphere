@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Check - CheckStyle and License
+name: Required - Check
 
 on:
   push:

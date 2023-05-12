@@ -42,7 +42,7 @@ Virtually all databases are [supported](https://shardingsphere.apache.org/docume
 
 ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
 
-So far, ShardingSphere has been used by over [13,000 projects on GitHub](https://github.com/search?l=Maven+POM&q=shardingsphere&type=Code).
+So far, ShardingSphere has been used by over [10,000 projects on GitHub](https://github.com/search?l=Maven+POM&q=shardingsphere+language%3A%22Maven+POM%22&type=Code).
 
 ### DOCUMENTATION📜
 

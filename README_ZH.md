@@ -36,7 +36,7 @@ Apache ShardingSphere 产品定位为 `Database Plus`，旨在构建异构数据
 
 ShardingSphere 已于 2020 年 4 月 16 日成为 [Apache 软件基金会](https://apache.org/index.html#projects-list)的顶级项目。
 
-迄今为止，已有超过 [13,000 个 GitHub 项目](https://github.com/search?l=Maven+POM&q=shardingsphere&type=Code)采用了 ShardingSphere。
+迄今为止，已有超过 [10,000 个 GitHub 项目](https://github.com/search?l=Maven+POM&q=shardingsphere+language%3A%22Maven+POM%22&type=Code)采用了 ShardingSphere。
 
 ### 文档📜
 
