@@ -102,6 +102,7 @@ public final class ITContainers implements Startable {
                         try {
                             Thread.sleep(500L);
                         } catch (final InterruptedException ignored) {
+                            Thread.currentThread().interrupt();
                         }
                     }
                 });

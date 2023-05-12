@@ -43,6 +43,7 @@ class ResourceLockTest {
             try {
                 Thread.sleep(50L);
             } catch (final InterruptedException ignored) {
+                Thread.currentThread().interrupt();
             }
             resourceLock.doNotify();
         });

@@ -128,6 +128,7 @@ public final class PipelineDistributedBarrier {
             }
             return result;
         } catch (final InterruptedException ignored) {
+            Thread.currentThread().interrupt();
         }
         return false;
     }
