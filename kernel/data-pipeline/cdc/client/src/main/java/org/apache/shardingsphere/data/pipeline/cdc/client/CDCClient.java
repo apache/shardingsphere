@@ -28,6 +28,7 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.CDCRequestHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.LoginRequestHandler;
@@ -35,7 +36,6 @@ import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClie
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult.Record;
 
-import java.net.ConnectException;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -77,6 +77,7 @@ public final class CDCClient {
         startInternal(parameter.getAddress(), parameter.getPort());
     }
     
+    @SneakyThrows(InterruptedException.class)
     private void startInternal(final String address, final int port) {
         Bootstrap bootstrap = new Bootstrap();
         NioEventLoopGroup group = new NioEventLoopGroup();
@@ -96,17 +97,9 @@ public final class CDCClient {
                         channel.pipeline().addLast(new CDCRequestHandler(parameter, consumer));
                     }
                 });
-        ChannelFuture future = bootstrap.connect(address, port);
-        future.addListener(f -> {
-            if (!f.isSuccess() && f.cause() instanceof ConnectException) {
-                log.error("CDC connect failed", f.cause());
-                future.channel().close();
-            }
-        });
         try {
+            ChannelFuture future = bootstrap.connect(address, port).sync();
             future.channel().closeFuture().sync();
-        } catch (final InterruptedException ex) {
-            log.warn("CDC client interrupted", ex);
         } finally {
             group.shutdownGracefully();
         }
