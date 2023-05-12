@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-name: Check - CheckStyle and License
+name: Required - Check
 
 on:
   push:
@@ -31,7 +31,7 @@ env:
 
 jobs:
   check-checkstyle:
-    name: Required Check - CheckStyle
+    name: Required - CheckStyle
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
