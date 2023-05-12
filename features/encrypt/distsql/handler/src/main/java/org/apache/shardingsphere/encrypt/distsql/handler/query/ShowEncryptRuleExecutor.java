@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
+import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
@@ -47,7 +48,10 @@ public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRul
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         if (rule.isPresent()) {
-            result = buildData((EncryptRuleConfiguration) rule.get().getConfiguration(), sqlStatement);
+            EncryptRuleConfiguration ruleConfig = rule.get().getConfiguration() instanceof CompatibleEncryptRuleConfiguration
+                    ? ((CompatibleEncryptRuleConfiguration) rule.get().getConfiguration()).convertToEncryptRuleConfiguration()
+                    : (EncryptRuleConfiguration) rule.get().getConfiguration();
+            result = buildData(ruleConfig, sqlStatement);
         }
         return result;
     }

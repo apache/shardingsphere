@@ -212,6 +212,8 @@ public final class YamlDatabaseConfigurationImportExecutor {
             ruleConfigs.forEach(each -> addReadwriteSplittingRuleConfiguration((ReadwriteSplittingRuleConfiguration) each, allRuleConfigs, database));
         } else if (ruleConfig instanceof EncryptRuleConfiguration) {
             ruleConfigs.forEach(each -> addEncryptRuleConfiguration((EncryptRuleConfiguration) each, allRuleConfigs, database));
+        } else if (ruleConfig instanceof CompatibleEncryptRuleConfiguration) {
+            ruleConfigs.forEach(each -> addEncryptRuleConfiguration(((CompatibleEncryptRuleConfiguration) each).convertToEncryptRuleConfiguration(), allRuleConfigs, database));
         } else if (ruleConfig instanceof ShadowRuleConfiguration) {
             ruleConfigs.forEach(each -> addShadowRuleConfiguration((ShadowRuleConfiguration) each, allRuleConfigs, database));
         } else if (ruleConfig instanceof MaskRuleConfiguration) {

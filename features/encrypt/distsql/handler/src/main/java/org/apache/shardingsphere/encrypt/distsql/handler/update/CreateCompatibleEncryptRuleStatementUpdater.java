@@ -35,19 +35,18 @@ public final class CreateCompatibleEncryptRuleStatementUpdater implements RuleDe
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final CreateEncryptRuleStatement sqlStatement, final CompatibleEncryptRuleConfiguration currentRuleConfig) {
-        delegate.checkSQLStatement(database, sqlStatement, new EncryptRuleConfiguration(currentRuleConfig.getTables(), currentRuleConfig.getEncryptors()));
+        delegate.checkSQLStatement(database, sqlStatement, currentRuleConfig.convertToEncryptRuleConfiguration());
     }
     
     @Override
     public CompatibleEncryptRuleConfiguration buildToBeCreatedRuleConfiguration(final CompatibleEncryptRuleConfiguration currentRuleConfig, final CreateEncryptRuleStatement sqlStatement) {
-        EncryptRuleConfiguration ruleConfig = delegate.buildToBeCreatedRuleConfiguration(new EncryptRuleConfiguration(currentRuleConfig.getTables(), currentRuleConfig.getEncryptors()), sqlStatement);
+        EncryptRuleConfiguration ruleConfig = delegate.buildToBeCreatedRuleConfiguration(currentRuleConfig.convertToEncryptRuleConfiguration(), sqlStatement);
         return new CompatibleEncryptRuleConfiguration(ruleConfig.getTables(), ruleConfig.getEncryptors());
     }
     
     @Override
     public void updateCurrentRuleConfiguration(final CompatibleEncryptRuleConfiguration currentRuleConfig, final CompatibleEncryptRuleConfiguration toBeCreatedRuleConfig) {
-        delegate.updateCurrentRuleConfiguration(new EncryptRuleConfiguration(currentRuleConfig.getTables(), currentRuleConfig.getEncryptors()),
-                new EncryptRuleConfiguration(toBeCreatedRuleConfig.getTables(), toBeCreatedRuleConfig.getEncryptors()));
+        delegate.updateCurrentRuleConfiguration(currentRuleConfig.convertToEncryptRuleConfiguration(), toBeCreatedRuleConfig.convertToEncryptRuleConfiguration());
     }
     
     @Override

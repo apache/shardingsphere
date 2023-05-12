@@ -19,7 +19,6 @@ package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
@@ -35,17 +34,17 @@ public final class DropCompatibleEncryptRuleStatementUpdater implements RuleDefi
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final DropEncryptRuleStatement sqlStatement, final CompatibleEncryptRuleConfiguration currentRuleConfig) {
-        delegate.checkSQLStatement(database, sqlStatement, new EncryptRuleConfiguration(currentRuleConfig.getTables(), currentRuleConfig.getEncryptors()));
+        delegate.checkSQLStatement(database, sqlStatement, currentRuleConfig.convertToEncryptRuleConfiguration());
     }
     
     @Override
     public boolean hasAnyOneToBeDropped(final DropEncryptRuleStatement sqlStatement, final CompatibleEncryptRuleConfiguration currentRuleConfig) {
-        return delegate.hasAnyOneToBeDropped(sqlStatement, new EncryptRuleConfiguration(currentRuleConfig.getTables(), currentRuleConfig.getEncryptors()));
+        return delegate.hasAnyOneToBeDropped(sqlStatement, currentRuleConfig.convertToEncryptRuleConfiguration());
     }
     
     @Override
     public boolean updateCurrentRuleConfiguration(final DropEncryptRuleStatement sqlStatement, final CompatibleEncryptRuleConfiguration currentRuleConfig) {
-        return delegate.updateCurrentRuleConfiguration(sqlStatement, new EncryptRuleConfiguration(currentRuleConfig.getTables(), currentRuleConfig.getEncryptors()));
+        return delegate.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig.convertToEncryptRuleConfiguration());
     }
     
     @Override
