@@ -79,7 +79,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @PipelineE2ESettings(database = {
         @PipelineE2EDatabaseSettings(type = "MySQL", scenarioFiles = "env/scenario/general/mysql.xml"),
-        @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/scenario/general/postgresql.xml")})
+        @PipelineE2EDatabaseSettings(type = "openGauss", scenarioFiles = "env/scenario/general/opengauss.xml")})
 @Slf4j
 class CDCE2EIT {
     
@@ -108,10 +108,10 @@ class CDCE2EIT {
             }
             createOrderTableRule(containerComposer);
             try (Connection connection = containerComposer.getProxyDataSource().getConnection()) {
-                initSchemaAndTable(containerComposer, connection, 2);
+                initSchemaAndTable(containerComposer, connection, 3);
             }
             DataSource jdbcDataSource = containerComposer.generateShardingSphereDataSourceFromProxy();
-            Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(containerComposer.getDatabaseType(), PipelineContainerComposer.TABLE_INIT_ROW_COUNT);
+            Pair<List<Object[]>, List<Object[]>> dataPair = PipelineCaseHelper.generateFullInsertData(containerComposer.getDatabaseType(), 10);
             log.info("init data begin: {}", LocalDateTime.now());
             DataSourceExecuteUtils.execute(jdbcDataSource, containerComposer.getExtraSQLCommand().getFullInsertOrder(SOURCE_TABLE_NAME), dataPair.getLeft());
             log.info("init data end: {}", LocalDateTime.now());
@@ -170,7 +170,7 @@ class CDCE2EIT {
     }
     
     private void startCDCClient(final PipelineContainerComposer containerComposer) {
-        DataSource dataSource = StorageContainerUtils.generateDataSource(containerComposer.appendExtraParameter(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false)),
+        DataSource dataSource = StorageContainerUtils.generateDataSource(containerComposer.getActualJdbcUrlTemplate(PipelineContainerComposer.DS_4, false),
                 containerComposer.getUsername(), containerComposer.getPassword());
         StartCDCClientParameter parameter = new StartCDCClientParameter();
         parameter.setAddress("localhost");

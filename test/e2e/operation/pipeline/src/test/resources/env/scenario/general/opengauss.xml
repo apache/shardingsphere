@@ -1,0 +1,82 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<command>
+    <create-table-order>
+        create table test.t_order (
+        order_id bigint,
+        user_id integer,
+        status character varying(50),
+        int_column integer,
+        smallint_column smallint,
+        float_column real,
+        double_column double precision,
+        numeric_column numeric(10,2),
+        boolean_column boolean,
+        char_column character(10),
+        text_column text,
+        bytea_column bytea,
+        date_column date,
+        time_column time without time zone,
+        smalldatetime_column smalldatetime,
+        timestamp_column timestamp without time zone,
+        timestamptz_column timestamp with time zone,
+        interval_column interval,
+        array_column integer[],
+        json_column json,
+        jsonb_column jsonb,
+        uuid_column uuid,
+        hash32_column hash32,
+        tsvector_column tsvector,
+        bit_column bit(4),
+        int4range_column int4range,
+        reltime_column reltime,
+        abstime_column abstime,
+        point_column point,
+        lseg_column lseg,
+        box_column box,
+        circle_column circle,
+        bitvarying_column bit varying(32),
+        cidr_column cidr,
+        inet_column inet,
+        macaddr_column macaddr,
+        hll_column hll(14,10,12,0),
+        PRIMARY KEY ( order_id )
+        );
+    </create-table-order>
+
+    <full-insert-order>
+        INSERT INTO test.t_order (
+        order_id, user_id, status, int_column, smallint_column, float_column, double_column, numeric_column, boolean_column, char_column, text_column, bytea_column, date_column, time_column,
+        smalldatetime_column, timestamp_column, timestamptz_column, interval_column, array_column, json_column, jsonb_column, uuid_column, hash32_column, tsvector_column, bit_column,
+        int4range_column, reltime_column, abstime_column, point_column, lseg_column, box_column, circle_column, bitvarying_column, cidr_column, inet_column, macaddr_column, hll_column
+        ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+    </full-insert-order>
+
+    <create-table-order-item>
+        CREATE TABLE test.t_order_item (
+        item_id int8 NOT NULL,
+        order_id int8 NOT NULL,
+        user_id int4 NOT NULL,
+        status varchar(50),
+        PRIMARY KEY (item_id)
+        )
+    </create-table-order-item>
+
+    <full-insert-order-item>
+        INSERT INTO test.t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)
+    </full-insert-order-item>
+</command>

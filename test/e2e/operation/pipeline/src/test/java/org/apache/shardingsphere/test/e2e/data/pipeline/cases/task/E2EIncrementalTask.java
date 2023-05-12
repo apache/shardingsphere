@@ -20,8 +20,9 @@ package org.apache.shardingsphere.test.e2e.data.pipeline.cases.task;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.cases.base.BaseIncrementTask;
 import org.apache.shardingsphere.test.e2e.data.pipeline.framework.helper.PipelineCaseHelper;
@@ -52,6 +53,11 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
     
     private static final List<String> POSTGRESQL_COLUMN_NAMES = Arrays.asList("order_id", "user_id", "status", "t_int2", "t_numeric", "t_bool", "t_bytea", "t_char", "t_varchar", "t_float",
             "t_double", "t_json", "t_jsonb", "t_text", "t_date", "t_time", "t_timestamp", "t_timestamptz");
+    
+    private static final List<String> OPENGAUSS_COLUMN_NAMES = Arrays.asList("order_id", "user_id", "status", "int_column", "smallint_column", "float_column", "double_column", "numeric_column",
+            "boolean_column", "char_column", "text_column", "bytea_column", "date_column", "time_column", "smalldatetime_column", "timestamp_column", "timestamptz_column", "interval_column",
+            "array_column", "json_column", "jsonb_column", "uuid_column", "hash32_column", "tsvector_column", "bit_column", "int4range_column", "reltime_column", "abstime_column", "point_column",
+            "lseg_column", "box_column", "circle_column", "bitvarying_column", "cidr_column", "inet_column", "macaddr_column", "hll_column");
     
     private final DataSource dataSource;
     
@@ -88,8 +94,10 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
         String sql;
         if (databaseType instanceof MySQLDatabaseType) {
             sql = SQLBuilderUtils.buildInsertSQL(MYSQL_COLUMN_NAMES, orderTableName);
-        } else if (databaseType instanceof SchemaSupportedDatabaseType) {
+        } else if (databaseType instanceof PostgreSQLDatabaseType) {
             sql = SQLBuilderUtils.buildInsertSQL(POSTGRESQL_COLUMN_NAMES, orderTableName);
+        } else if (databaseType instanceof OpenGaussDatabaseType) {
+            sql = SQLBuilderUtils.buildInsertSQL(OPENGAUSS_COLUMN_NAMES, orderTableName);
         } else {
             throw new UnsupportedOperationException();
         }
@@ -110,13 +118,17 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
             DataSourceExecuteUtils.execute(dataSource, sql, parameters);
             return;
         }
-        if (databaseType instanceof SchemaSupportedDatabaseType) {
+        if (databaseType instanceof PostgreSQLDatabaseType) {
             String sql = SQLBuilderUtils.buildUpdateSQL(ignoreShardingColumns(POSTGRESQL_COLUMN_NAMES), orderTableName, "?");
             Object[] parameters = {"中文测试", randomInt, BigDecimal.valueOf(10000), true, new byte[]{}, "char", "varchar", PipelineCaseHelper.generateFloat(),
                     PipelineCaseHelper.generateDouble(), PipelineCaseHelper.generateJsonString(10, true), PipelineCaseHelper.generateJsonString(20, true), "text-update", LocalDate.now(),
                     LocalTime.now(), Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now(), orderId};
             log.info("update sql: {}, params: {}", sql, parameters);
             DataSourceExecuteUtils.execute(dataSource, sql, parameters);
+            return;
+        }
+        if (databaseType instanceof OpenGaussDatabaseType) {
+            return;
         }
     }
     
