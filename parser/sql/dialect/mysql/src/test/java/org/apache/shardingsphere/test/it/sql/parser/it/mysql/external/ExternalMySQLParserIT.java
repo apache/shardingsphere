@@ -27,5 +27,4 @@ class ExternalMySQLParserIT extends ExternalSQLParserIT {
     static final String CASE_URL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/t";
     
     static final String RESULT_URL = "https://github.com/mysql/mysql-server/tree/8.0/mysql-test/r";
-    
 }
