@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.repository.standalone.jdbc;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.mode.repository.standalone.jdbc.provider.JDBCRepositoryProvider;
-import org.apache.shardingsphere.mode.repository.standalone.jdbc.provider.JDBCRepositoryProviderLoader;
+import org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQL;
+import org.apache.shardingsphere.mode.repository.standalone.jdbc.sql.JDBCRepositorySQLLoader;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.AfterEach;
@@ -33,6 +33,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Properties;
@@ -50,7 +51,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class JDBCRepositoryTest {
     
-    private JDBCRepositoryProvider fixture;
+    private JDBCRepositorySQL repositorySQL;
     
     @Mock
     private Connection mockJdbcConnection;
@@ -72,7 +73,7 @@ class JDBCRepositoryTest {
     private JDBCRepository repository;
     
     @BeforeEach
-    void setup() throws Exception {
+    void setup() throws SQLException {
         mockedConstruction = mockConstruction(HikariDataSource.class, (mock, context) -> when(mock.getConnection()).thenReturn(mockJdbcConnection));
         when(mockJdbcConnection.createStatement()).thenReturn(mockStatement);
         repository = new JDBCRepository();
@@ -80,9 +81,9 @@ class JDBCRepositoryTest {
                 new Property("jdbc_url", "jdbc:h2:mem:config;DB_CLOSE_DELAY=0;DATABASE_TO_UPPER=false;MODE=MYSQL"),
                 new Property("username", "sa"),
                 new Property("password", ""),
-                new Property("provider", "FIXTURE"));
+                new Property("provider", "H2"));
         repository.init(props);
-        fixture = JDBCRepositoryProviderLoader.load("FIXTURE");
+        repositorySQL = JDBCRepositorySQLLoader.load("H2");
     }
     
     @AfterEach
@@ -92,14 +93,14 @@ class JDBCRepositoryTest {
     
     @Test
     void assertInit() throws Exception {
-        verify(mockStatement).execute(fixture.getCreateTableSQL());
+        verify(mockStatement).execute(repositorySQL.getCreateTableSQL());
     }
     
     @Test
-    void assertGet() throws Exception {
+    void assertGet() throws SQLException {
         String key = "key";
         String value = "value";
-        when(mockJdbcConnection.prepareStatement(fixture.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getString("value")).thenReturn(value);
@@ -109,8 +110,8 @@ class JDBCRepositoryTest {
     }
     
     @Test
-    void assertGetFailure() throws Exception {
-        when(mockJdbcConnection.prepareStatement(fixture.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
+    void assertGetFailure() throws SQLException {
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
         String actual = repository.getDirectly("key");
@@ -118,8 +119,8 @@ class JDBCRepositoryTest {
     }
     
     @Test
-    void assertPersistAndGetChildrenKeys() throws Exception {
-        when(mockJdbcConnection.prepareStatement(fixture.getSelectByParentKeySQL())).thenReturn(mockPreparedStatement);
+    void assertPersistAndGetChildrenKeys() throws SQLException {
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByParentKeySQL())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true, true, true, false);
         when(mockResultSet.getString("key")).thenReturn("parent1/test1", "parent1/test2", "");
@@ -129,8 +130,8 @@ class JDBCRepositoryTest {
     }
     
     @Test
-    void assertPersistAndGetChildrenKeysFailure() throws Exception {
-        when(mockJdbcConnection.prepareStatement(fixture.getSelectByParentKeySQL())).thenReturn(mockPreparedStatement);
+    void assertPersistAndGetChildrenKeysFailure() throws SQLException {
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByParentKeySQL())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
         List<String> actual = repository.getChildrenKeys("key");
@@ -138,11 +139,11 @@ class JDBCRepositoryTest {
     }
     
     @Test
-    void assertPersistWithUpdateForSimpleKeys() throws Exception {
+    void assertPersistWithUpdateForSimpleKeys() throws SQLException {
         final String key = "key";
         final String value = "value";
-        when(mockJdbcConnection.prepareStatement(fixture.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
-        when(mockJdbcConnection.prepareStatement(fixture.getUpdateSQL())).thenReturn(mockPreparedStatementForPersist);
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getUpdateSQL())).thenReturn(mockPreparedStatementForPersist);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getString("value")).thenReturn("oldValue");
@@ -155,11 +156,11 @@ class JDBCRepositoryTest {
     }
     
     @Test
-    void assertPersistForDirectory() throws Exception {
+    void assertPersistForDirectory() throws SQLException {
         final String key = "/parent/child/test1";
         final String value = "test1_content";
-        when(mockJdbcConnection.prepareStatement(fixture.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
-        when(mockJdbcConnection.prepareStatement(fixture.getInsertSQL())).thenReturn(mockPreparedStatementForPersist);
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getInsertSQL())).thenReturn(mockPreparedStatementForPersist);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         repository.persist(key, value);
         int depthOfDirectory = (int) key.chars().filter(ch -> ch == '/').count();
@@ -192,23 +193,23 @@ class JDBCRepositoryTest {
     }
     
     @Test
-    void assertPersistFailureDuringUpdate() throws Exception {
+    void assertPersistFailureDuringUpdate() throws SQLException {
         final String key = "key";
-        when(mockJdbcConnection.prepareStatement(fixture.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(true);
         when(mockResultSet.getString("value")).thenReturn("oldValue");
-        when(mockJdbcConnection.prepareStatement(fixture.getUpdateSQL())).thenReturn(mockPreparedStatement);
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getUpdateSQL())).thenReturn(mockPreparedStatement);
         repository.persist(key, "value");
         verify(mockPreparedStatementForPersist, times(0)).executeUpdate();
     }
     
     @Test
-    void assertPersistWithInsertForSimpleKeys() throws Exception {
+    void assertPersistWithInsertForSimpleKeys() throws SQLException {
         final String key = "key";
         final String value = "value";
-        when(mockJdbcConnection.prepareStatement(fixture.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
-        when(mockJdbcConnection.prepareStatement(fixture.getInsertSQL())).thenReturn(mockPreparedStatementForPersist);
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getInsertSQL())).thenReturn(mockPreparedStatementForPersist);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
         repository.persist(key, value);
@@ -221,28 +222,28 @@ class JDBCRepositoryTest {
     }
     
     @Test
-    void assertPersistFailureDuringInsert() throws Exception {
-        when(mockJdbcConnection.prepareStatement(fixture.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
+    void assertPersistFailureDuringInsert() throws SQLException {
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getSelectByKeySQL())).thenReturn(mockPreparedStatement);
         when(mockPreparedStatement.executeQuery()).thenReturn(mockResultSet);
         when(mockResultSet.next()).thenReturn(false);
-        when(mockJdbcConnection.prepareStatement(fixture.getInsertSQL())).thenReturn(mockPreparedStatement);
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getInsertSQL())).thenReturn(mockPreparedStatement);
         repository.persist("key", "value");
         verify(mockPreparedStatementForPersist, times(0)).executeUpdate();
     }
     
     @Test
-    void assertDelete() throws Exception {
+    void assertDelete() throws SQLException {
         String key = "key";
-        when(mockJdbcConnection.prepareStatement(fixture.getDeleteSQL())).thenReturn(mockPreparedStatement);
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getDeleteSQL())).thenReturn(mockPreparedStatement);
         repository.delete(key);
         verify(mockPreparedStatement).setString(1, key);
         verify(mockPreparedStatement).executeUpdate();
     }
     
     @Test
-    void assertDeleteFailure() throws Exception {
+    void assertDeleteFailure() throws SQLException {
         String key = "key";
-        when(mockJdbcConnection.prepareStatement(fixture.getDeleteSQL())).thenReturn(mockPreparedStatementForPersist);
+        when(mockJdbcConnection.prepareStatement(repositorySQL.getDeleteSQL())).thenReturn(mockPreparedStatementForPersist);
         repository.delete(key);
         verify(mockPreparedStatement, times(0)).executeUpdate();
     }

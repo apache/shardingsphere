@@ -24,7 +24,7 @@ import java.util.Properties;
 /**
  * JDBC repository properties.
  */
-public class JDBCRepositoryProperties extends TypedProperties<JDBCRepositoryPropertyKey> {
+public final class JDBCRepositoryProperties extends TypedProperties<JDBCRepositoryPropertyKey> {
     
     public JDBCRepositoryProperties(final Properties props) {
         super(JDBCRepositoryPropertyKey.class, props);
