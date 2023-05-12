@@ -26,21 +26,25 @@ import static org.hamcrest.Matchers.is;
 
 class InlineExpressionParserFactoryTest {
     
-    private String originalJavaVmName;
+    private String originalImageCode;
     
     @BeforeEach
     public void setUp() {
-        originalJavaVmName = System.getProperty("java.vm.name");
+        originalImageCode = System.getProperty("org.graalvm.nativeimage.imagecode");
     }
     
     @AfterEach
     public void tearDown() {
-        System.setProperty("java.vm.name", originalJavaVmName);
+        if (null != originalImageCode) {
+            System.setProperty("org.graalvm.nativeimage.imagecode", originalImageCode);
+        } else {
+            System.clearProperty("org.graalvm.nativeimage.imagecode");
+        }
     }
     
     @Test
     void assertNewInstance() {
-        System.setProperty("java.vm.name", "");
+        System.setProperty("org.graalvm.nativeimage.imagecode", "");
         assertThat(InlineExpressionParserFactory.newInstance().getType(), is("HOTSPOT"));
     }
 }
