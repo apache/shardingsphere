@@ -21,7 +21,6 @@ import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransaction
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -30,7 +29,7 @@ import java.sql.SQLException;
 /**
  * Integration test of multiple operations in one transaction.
  */
-@TransactionTestCase(dbTypes = TransactionTestConstants.MYSQL)
+@TransactionTestCase
 public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransactionTestCase {
     
     public MultiOperationsCommitAndRollbackTestCase(final TransactionBaseE2EIT baseTransactionITCase, final DataSource dataSource) {
