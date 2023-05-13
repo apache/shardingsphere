@@ -38,6 +38,10 @@ import java.util.Optional;
 @Slf4j
 public final class ConsistencyCheckJob extends AbstractSimplePipelineJob {
     
+    public ConsistencyCheckJob(final String jobId) {
+        super(jobId);
+    }
+    
     @Override
     public ConsistencyCheckJobItemContext buildPipelineJobItemContext(final ShardingContext shardingContext) {
         ConsistencyCheckJobConfiguration jobConfig = new YamlConsistencyCheckJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());

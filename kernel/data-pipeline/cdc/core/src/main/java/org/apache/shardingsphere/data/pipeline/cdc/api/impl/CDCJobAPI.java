@@ -226,7 +226,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
      * @param importerConnector importer connector
      */
     public void startJob(final String jobId, final ImporterConnector importerConnector) {
-        CDCJob job = new CDCJob(importerConnector);
+        CDCJob job = new CDCJob(jobId, importerConnector);
         PipelineJobCenter.addJob(jobId, job);
         updateJobConfigurationDisabled(jobId, false);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
