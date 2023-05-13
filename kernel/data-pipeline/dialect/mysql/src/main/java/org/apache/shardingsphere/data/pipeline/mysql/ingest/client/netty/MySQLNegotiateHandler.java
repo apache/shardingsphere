@@ -40,7 +40,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandsha
 import java.security.NoSuchAlgorithmException;
 
 /**
- * MySQL Negotiate Handler.
+ * MySQL negotiate handler.
  */
 @RequiredArgsConstructor
 public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
