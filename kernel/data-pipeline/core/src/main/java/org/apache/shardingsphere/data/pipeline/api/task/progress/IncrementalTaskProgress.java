@@ -17,18 +17,57 @@
 
 package org.apache.shardingsphere.data.pipeline.api.task.progress;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Incremental task progress.
  */
-@Getter
-@Setter
 public final class IncrementalTaskProgress implements TaskProgress {
     
-    private volatile IngestPosition<?> position;
+    private final AtomicReference<IngestPosition<?>> position = new AtomicReference<>();
     
-    private IncrementalTaskDelay incrementalTaskDelay = new IncrementalTaskDelay();
+    private final AtomicReference<IncrementalTaskDelay> incrementalTaskDelay = new AtomicReference<>();
+    
+    public IncrementalTaskProgress(final IngestPosition<?> position) {
+        this.position.set(position);
+        incrementalTaskDelay.set(new IncrementalTaskDelay());
+    }
+    
+    /**
+     * Get position.
+     * 
+     * @return position
+     */
+    public IngestPosition<?> getPosition() {
+        return position.get();
+    }
+    
+    /**
+     * Set position.
+     * 
+     * @param position position
+     */
+    public void setPosition(final IngestPosition<?> position) {
+        this.position.set(position);
+    }
+    
+    /**
+     * Get incremental task delay.
+     * 
+     * @return incremental task delay
+     */
+    public IncrementalTaskDelay getIncrementalTaskDelay() {
+        return incrementalTaskDelay.get();
+    }
+    
+    /**
+     * Set incremental task delay.
+     * 
+     * @param incrementalTaskDelay incremental task delay
+     */
+    public void setIncrementalTaskDelay(final IncrementalTaskDelay incrementalTaskDelay) {
+        this.incrementalTaskDelay.set(incrementalTaskDelay);
+    }
 }
