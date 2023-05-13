@@ -164,7 +164,7 @@ public enum PostgreSQLCommand {
     
     private static CachedResult compute(final Class<? extends SQLStatement> target) {
         Optional<PostgreSQLCommand> result = Arrays.stream(PostgreSQLCommand.values()).filter(each -> matches(target, each)).findAny();
-        return result.map(CachedResult::new).orElse(CachedResult.EMPTY_RESULT);
+        return result.map(CachedResult::new).orElse(CachedResult.EMPTY);
     }
     
     private static boolean matches(final Class<? extends SQLStatement> sqlStatementClass, final PostgreSQLCommand postgreSQLCommand) {
@@ -174,7 +174,7 @@ public enum PostgreSQLCommand {
     @RequiredArgsConstructor
     private static final class CachedResult {
         
-        private static final CachedResult EMPTY_RESULT = new CachedResult(null);
+        private static final CachedResult EMPTY = new CachedResult(null);
         
         private final PostgreSQLCommand result;
         
