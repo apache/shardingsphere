@@ -169,8 +169,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
                 InventoryIncrementalJobItemProgress jobItemProgress = new InventoryIncrementalJobItemProgress();
                 jobItemProgress.setSourceDatabaseType(jobConfig.getSourceDatabaseType());
                 jobItemProgress.setDataSourceName(dumperConfig.getDataSourceName());
-                IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress();
-                incrementalTaskProgress.setPosition(PipelineJobPreparerUtils.getIncrementalPosition(null, dumperConfig, dataSourceManager));
+                IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress(PipelineJobPreparerUtils.getIncrementalPosition(null, dumperConfig, dataSourceManager));
                 jobItemProgress.setIncremental(new JobItemIncrementalTasksProgress(incrementalTaskProgress));
                 PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persistJobItemProgress(jobId, i,
                         YamlEngine.marshal(getJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress)));
