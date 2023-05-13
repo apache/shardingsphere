@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.cdc.context;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCConnectionStatus;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 
 /**
@@ -27,13 +27,12 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
  */
 @Getter
 @Setter
+@RequiredArgsConstructor
 public final class CDCConnectionContext {
     
-    private volatile CDCConnectionStatus status;
+    private final ShardingSphereUser currentUser;
     
     private volatile String database;
     
     private volatile String jobId;
-    
-    private volatile ShardingSphereUser currentUser;
 }
