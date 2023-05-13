@@ -53,6 +53,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -77,11 +78,11 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     
     private final JobRateLimitAlgorithm rateLimitAlgorithm;
     
-    private volatile Statement batchInsertStatement;
+    private final AtomicReference<Statement> batchInsertStatement = new AtomicReference<>();
     
-    private volatile Statement updateStatement;
+    private final AtomicReference<Statement> updateStatement = new AtomicReference<>();
     
-    private volatile Statement batchDeleteStatement;
+    private final AtomicReference<Statement> batchDeleteStatement = new AtomicReference<>();
     
     public DataSourceImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
                               final PipelineJobProgressListener jobProgressListener) {
@@ -210,7 +211,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
         DataRecord dataRecord = dataRecords.get(0);
         String insertSql = pipelineSqlBuilder.buildInsertSQL(getSchemaName(dataRecord.getTableName()), dataRecord);
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertSql)) {
-            batchInsertStatement = preparedStatement;
+            batchInsertStatement.set(preparedStatement);
             preparedStatement.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
                 for (int i = 0; i < each.getColumnCount(); i++) {
@@ -220,7 +221,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
             }
             preparedStatement.executeBatch();
         } finally {
-            batchInsertStatement = null;
+            batchInsertStatement.set(null);
         }
     }
     
@@ -240,7 +241,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
         List<Column> updatedColumns = pipelineSqlBuilder.extractUpdatedColumns(record);
         String updateSql = pipelineSqlBuilder.buildUpdateSQL(getSchemaName(record.getTableName()), record, conditionColumns);
         try (PreparedStatement preparedStatement = connection.prepareStatement(updateSql)) {
-            updateStatement = preparedStatement;
+            updateStatement.set(preparedStatement);
             for (int i = 0; i < updatedColumns.size(); i++) {
                 preparedStatement.setObject(i + 1, updatedColumns.get(i).getValue());
             }
@@ -259,7 +260,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
                 log.warn("executeUpdate failed, updateCount={}, updateSql={}, updatedColumns={}, conditionColumns={}", updateCount, updateSql, updatedColumns, conditionColumns);
             }
         } finally {
-            updateStatement = null;
+            updateStatement.set(null);
         }
     }
     
@@ -268,7 +269,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
         List<Column> conditionColumns = RecordUtils.extractConditionColumns(dataRecord, importerConfig.getShardingColumns(dataRecord.getTableName()));
         String deleteSQL = pipelineSqlBuilder.buildDeleteSQL(getSchemaName(dataRecord.getTableName()), dataRecord, conditionColumns);
         try (PreparedStatement preparedStatement = connection.prepareStatement(deleteSQL)) {
-            batchDeleteStatement = preparedStatement;
+            batchDeleteStatement.set(preparedStatement);
             preparedStatement.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
                 for (int i = 0; i < conditionColumns.size(); i++) {
@@ -285,7 +286,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
                 log.warn("batchDelete failed, counts={}, sql={}, conditionColumns={}", Arrays.toString(counts), deleteSQL, conditionColumns);
             }
         } finally {
-            batchDeleteStatement = null;
+            batchDeleteStatement.set(null);
         }
     }
     
@@ -309,8 +310,8 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     
     @Override
     protected void doStop() throws SQLException {
-        cancelStatement(batchInsertStatement);
-        cancelStatement(updateStatement);
-        cancelStatement(batchDeleteStatement);
+        cancelStatement(batchInsertStatement.get());
+        cancelStatement(updateStatement.get());
+        cancelStatement(batchDeleteStatement.get());
     }
 }
