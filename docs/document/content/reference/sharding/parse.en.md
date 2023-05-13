@@ -79,7 +79,7 @@ Since V5.0.x, the architecture of the parsing engine has been restructured and a
 
 ```java
 CacheOption cacheOption = new CacheOption(128, 1024L);
-SQLParserEngine parserEngine = new SQLParserEngine(sql, cacheOption);
+SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
 ParseASTNode parseASTNode = parserEngine.parse(sql, useCache);
 ```
 
@@ -87,7 +87,7 @@ ParseASTNode parseASTNode = parserEngine.parse(sql, useCache);
 
 ```java
 CacheOption cacheOption = new CacheOption(128, 1024L);
-SQLParserEngine parserEngine = new SQLParserEngine(sql, cacheOption);
+SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
 ParseASTNode parseASTNode = parserEngine.parse(sql, useCache);
 SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(sql, "STATEMENT", useCache, new Properties());
 SQLStatement sqlStatement = sqlVisitorEngine.visit(parseASTNode);
