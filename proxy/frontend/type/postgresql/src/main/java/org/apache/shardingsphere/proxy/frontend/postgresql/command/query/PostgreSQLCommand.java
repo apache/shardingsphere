@@ -154,7 +154,7 @@ public enum PostgreSQLCommand {
     }
     
     /*
-     * Refer to <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>. 
+     * Refer to <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>.
      */
     @SuppressWarnings("OptionalAssignedToNull")
     private static Optional<PostgreSQLCommand> getPostgreSQLCommand(final Class<? extends SQLStatement> sqlStatementClass) {
