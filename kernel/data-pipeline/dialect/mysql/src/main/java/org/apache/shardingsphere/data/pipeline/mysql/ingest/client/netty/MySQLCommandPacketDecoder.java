@@ -33,7 +33,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import java.util.List;
 
 /**
- * MySQL Command Packet decoder.
+ * MySQL command packet decoder.
  */
 public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
