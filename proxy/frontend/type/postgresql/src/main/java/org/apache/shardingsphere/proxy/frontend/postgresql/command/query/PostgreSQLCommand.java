@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.AnalyzeTableStatement;
@@ -131,7 +132,7 @@ public enum PostgreSQLCommand {
     CLOSE_CURSOR(CloseStatement.class),
     SUCCESS(DistSQLStatement.class);
     
-    private static final Map<Class<? extends SQLStatement>, Optional<PostgreSQLCommand>> COMPUTED_CLASSES = new ConcurrentHashMap<>(64, 1);
+    private static final Map<Class<? extends SQLStatement>, CachedResult> COMPUTED_STATEMENTS = new ConcurrentHashMap<>(64, 1);
     
     private final Collection<Class<? extends SQLStatement>> sqlStatementClasses;
     
@@ -156,16 +157,29 @@ public enum PostgreSQLCommand {
     /*
      * Refer to <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>.
      */
-    @SuppressWarnings("OptionalAssignedToNull")
     private static Optional<PostgreSQLCommand> getPostgreSQLCommand(final Class<? extends SQLStatement> sqlStatementClass) {
-        Optional<PostgreSQLCommand> result;
-        if (null == (result = COMPUTED_CLASSES.get(sqlStatementClass))) {
-            result = COMPUTED_CLASSES.computeIfAbsent(sqlStatementClass, target -> Arrays.stream(PostgreSQLCommand.values()).filter(each -> matches(target, each)).findAny());
-        }
-        return result;
+        CachedResult result = COMPUTED_STATEMENTS.get(sqlStatementClass);
+        return null != result ? result.get() : COMPUTED_STATEMENTS.computeIfAbsent(sqlStatementClass, PostgreSQLCommand::compute).get();
+    }
+    
+    private static CachedResult compute(final Class<? extends SQLStatement> target) {
+        Optional<PostgreSQLCommand> result = Arrays.stream(PostgreSQLCommand.values()).filter(each -> matches(target, each)).findAny();
+        return result.map(CachedResult::new).orElse(CachedResult.EMPTY);
     }
     
     private static boolean matches(final Class<? extends SQLStatement> sqlStatementClass, final PostgreSQLCommand postgreSQLCommand) {
         return postgreSQLCommand.sqlStatementClasses.stream().anyMatch(each -> each.isAssignableFrom(sqlStatementClass));
+    }
+    
+    @RequiredArgsConstructor
+    private static final class CachedResult {
+        
+        private static final CachedResult EMPTY = new CachedResult(null);
+        
+        private final PostgreSQLCommand result;
+        
+        private Optional<PostgreSQLCommand> get() {
+            return Optional.ofNullable(result);
+        }
     }
 }
