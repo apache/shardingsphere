@@ -26,7 +26,6 @@ import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCExceptionWrapper;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCLoginException;
@@ -72,9 +71,6 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     
     @Override
     public void channelActive(final ChannelHandlerContext ctx) {
-        CDCConnectionContext context = new CDCConnectionContext();
-        context.setStatus(CDCConnectionStatus.NOT_LOGGED_IN);
-        ctx.channel().attr(CONNECTION_CONTEXT_KEY).setIfAbsent(context);
         CDCResponse response = CDCResponse.newBuilder().setServerGreetingResult(ServerGreetingResult.newBuilder().setServerVersion(ShardingSphereVersion.VERSION).setProtocolVersion("1")
                 .build()).build();
         ctx.writeAndFlush(response);
@@ -93,7 +89,6 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
         log.error("caught CDC resolution error", cause);
         // TODO add CDC exception to wrapper this exception, and add the parameters requestId and whether to close connect
-        CDCConnectionContext connectionContext = ctx.channel().attr(CONNECTION_CONTEXT_KEY).get();
         ChannelFuture channelFuture;
         if (cause instanceof CDCExceptionWrapper) {
             CDCExceptionWrapper wrapper = (CDCExceptionWrapper) cause;
@@ -102,7 +97,8 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         } else {
             channelFuture = ctx.writeAndFlush(CDCResponseGenerator.failed("", XOpenSQLState.GENERAL_ERROR.getValue(), String.valueOf(cause.getMessage())));
         }
-        if (CDCConnectionStatus.NOT_LOGGED_IN == connectionContext.getStatus()) {
+        CDCConnectionContext connectionContext = ctx.channel().attr(CONNECTION_CONTEXT_KEY).get();
+        if (null == connectionContext) {
             channelFuture.addListener(ChannelFutureListener.CLOSE);
         }
     }
@@ -110,10 +106,9 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     @Override
     public void channelRead(final ChannelHandlerContext ctx, final Object msg) {
         CDCConnectionContext connectionContext = ctx.channel().attr(CONNECTION_CONTEXT_KEY).get();
-        CDCConnectionStatus status = connectionContext.getStatus();
         CDCRequest request = (CDCRequest) msg;
-        if (CDCConnectionStatus.NOT_LOGGED_IN == status) {
-            processLogin(ctx, request, connectionContext);
+        if (null == connectionContext) {
+            processLogin(ctx, request);
             return;
         }
         switch (request.getType()) {
@@ -141,7 +136,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         }
     }
     
-    private void processLogin(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
+    private void processLogin(final ChannelHandlerContext ctx, final CDCRequest request) {
         if (!request.hasLoginRequestBody() || !request.getLoginRequestBody().hasBasicBody()) {
             throw new CDCExceptionWrapper(request.getRequestId(), new PipelineInvalidParameterException("Login request body is empty"));
         }
@@ -149,8 +144,7 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         Optional<ShardingSphereUser> user = authorityRule.findUser(new Grantee(body.getUsername(), getHostAddress(ctx)));
         if (user.isPresent() && Objects.equals(Hashing.sha256().hashBytes(user.get().getPassword().getBytes()).toString().toUpperCase(), body.getPassword())) {
-            connectionContext.setStatus(CDCConnectionStatus.LOGGED_IN);
-            connectionContext.setCurrentUser(user.get());
+            ctx.channel().attr(CONNECTION_CONTEXT_KEY).set(new CDCConnectionContext(user.get()));
             ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
         } else {
             throw new CDCExceptionWrapper(request.getRequestId(), new CDCLoginException("Illegal username or password"));
