@@ -37,10 +37,6 @@ import java.util.List;
  */
 public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
-    private enum States {
-        RESPONSE_PACKET, FIELD_PACKET, ROW_DATA_PACKET
-    }
-    
     private volatile States currentState = States.RESPONSE_PACKET;
     
     private volatile InternalResultSet internalResultSet;
@@ -97,5 +93,10 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
                 internalResultSet = new InternalResultSet(fieldCountPacket);
                 break;
         }
+    }
+    
+    private enum States {
+        
+        RESPONSE_PACKET, FIELD_PACKET, ROW_DATA_PACKET
     }
 }
