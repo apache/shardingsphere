@@ -63,7 +63,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutor implemen
             }
             if (each instanceof PostgreSQLComExecutePacket) {
                 String tag = PostgreSQLCommand.valueOf(preparedStatement.getSqlStatementContext().getSqlStatement().getClass()).orElse(PostgreSQLCommand.INSERT).getTag();
-                result.add(new PostgreSQLCommandCompletePacket(tag, totalInserted / executePacketCount));
+                result.add(new PostgreSQLCommandCompletePacket(tag, 0 == executePacketCount ? 1 : totalInserted / executePacketCount));
             }
         }
         return result;
