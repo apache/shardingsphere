@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -79,7 +80,7 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
             calculateIfNecessary();
             Optional<DataConsistencyCalculatedResult> nextResult = this.nextResult.get();
             this.nextResult.set(null);
-            return nextResult.orElse(null);
+            return nextResult.orElseThrow(NoSuchElementException::new);
         }
         
         private void calculateIfNecessary() {
