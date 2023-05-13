@@ -49,10 +49,10 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractPipelineJob implements PipelineJob {
     
     @Getter
-    private volatile String jobId;
+    private final String jobId;
     
     @Getter(AccessLevel.PROTECTED)
-    private volatile PipelineJobAPI jobAPI;
+    private final PipelineJobAPI jobAPI;
     
     @Getter
     private volatile boolean stopping;
@@ -62,7 +62,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     private final Map<Integer, PipelineTasksRunner> tasksRunnerMap = new ConcurrentHashMap<>();
     
-    protected void setJobId(final String jobId) {
+    protected AbstractPipelineJob(final String jobId) {
         this.jobId = jobId;
         jobAPI = TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobId).getTypeName());
     }
@@ -129,10 +129,8 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         for (PipelineTasksRunner each : tasksRunnerMap.values()) {
             each.stop();
         }
-        if (null != jobId) {
-            Optional<ElasticJobListener> pipelineJobListener = ElasticJobServiceLoader.getCachedTypedServiceInstance(ElasticJobListener.class, PipelineElasticJobListener.class.getName());
-            pipelineJobListener.ifPresent(jobListener -> awaitJobStopped((PipelineElasticJobListener) jobListener, jobId, TimeUnit.SECONDS.toMillis(2)));
-        }
+        Optional<ElasticJobListener> pipelineJobListener = ElasticJobServiceLoader.getCachedTypedServiceInstance(ElasticJobListener.class, PipelineElasticJobListener.class.getName());
+        pipelineJobListener.ifPresent(jobListener -> awaitJobStopped((PipelineElasticJobListener) jobListener, jobId, TimeUnit.SECONDS.toMillis(2)));
         if (null != jobBootstrap) {
             jobBootstrap.shutdown();
         }
@@ -157,9 +155,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     private void innerClean() {
         tasksRunnerMap.clear();
-        if (null != jobId) {
-            PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
-        }
+        PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
     }
     
     protected abstract void doClean();
