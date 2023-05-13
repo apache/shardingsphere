@@ -28,8 +28,8 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class InlineExpressionParserFactory {
     
-    // workaround for https://github.com/helidon-io/helidon-build-tools/issues/858
-    private static final boolean IS_SUBSTRATE_VM = "Substrate VM".equals(System.getProperty("java.vm.name"));
+    // workaround for https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/condition/EnabledInNativeImage.html
+    private static final boolean IS_SUBSTRATE_VM = "runtime".equals(System.getProperty("org.graalvm.nativeimage.imagecode"));
     
     /**
      * Create new instance of inline expression parser.

@@ -26,9 +26,10 @@ import org.graalvm.polyglot.TypeLiteral;
 import org.graalvm.polyglot.Value;
 
 import java.net.URL;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Espresso inline expression parser.
@@ -37,46 +38,53 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     
     private static final String JAVA_CLASSPATH;
     
+    private static final String JAVA_HOME;
+    
     static {
-        // TODO https://github.com/oracle/graal/issues/4555 not yet closed
-        if ("Substrate VM".equals(System.getProperty("java.vm.name"))) {
-            String javaHome = System.getenv("JAVA_HOME");
-            ShardingSpherePreconditions.checkNotNull(javaHome, () -> new RuntimeException("Failed to determine the system's environment variable JAVA_HOME!"));
-        }
-        URL resource = Objects.requireNonNull(EspressoInlineExpressionParser.class.getClassLoader().getResource("espresso-need-libs"));
-        String dir = resource.getPath();
-        JAVA_CLASSPATH = String.join(":", dir + "/groovy.jar", dir + "/guava.jar", dir + "/shardingsphere-infra-expr-hotsopt.jar");
+        JAVA_HOME = System.getenv("JAVA_HOME");
+        URL resource = EspressoInlineExpressionParser.class.getClassLoader().getResource("espresso-need-libs");
+        String dir = null != resource ? resource.getPath() : null;
+        JAVA_CLASSPATH = Stream.of("groovy.jar", "guava.jar", "shardingsphere-infra-expr-hotsopt.jar",
+                "shardingsphere-infra-expr-spi.jar", "shardingsphere-infra-util.jar")
+                .map(s -> dir + "/" + s)
+                .collect(Collectors.joining(":"));
     }
     
     @Override
     public String handlePlaceHolder(final String inlineExpression) {
-        try (Context context = getContext()) {
-            return context.getBindings("java").getMember(HotspotInlineExpressionParser.class.getName()).invokeMember("handlePlaceHolder", inlineExpression).asString();
+        try (Context context = createContext()) {
+            return createInlineExpressionParser(context).invokeMember("handlePlaceHolder", inlineExpression).asString();
         }
     }
     
     @Override
     public List<String> splitAndEvaluate(final String inlineExpression) {
-        List<String> splitAndEvaluate = getInlineExpressionParser().invokeMember("splitAndEvaluate", inlineExpression).as(new TypeLiteral<List<String>>() {
-        });
-        // GraalVM Truffle Espresso 22.3.1 has a different behavior for generic List than Hotspot.
-        return splitAndEvaluate.isEmpty() ? Collections.emptyList() : splitAndEvaluate;
+        try (Context context = createContext()) {
+            List<String> listProjection = createInlineExpressionParser(context).invokeMember("splitAndEvaluate", inlineExpression)
+                    .as(new TypeLiteral<List<String>>() {
+                    });
+            // org.graalvm.polyglot.Value#as only creates projections for classes in Truffle Context
+            return new ArrayList<>(listProjection);
+        }
     }
     
     @Override
     public Closure<?> evaluateClosure(final String inlineExpression) {
-        return getInlineExpressionParser().invokeMember("evaluateClosure", inlineExpression).as(Closure.class);
-    }
-    
-    private Value getInlineExpressionParser() {
-        try (Context context = getContext()) {
-            return context.getBindings("java").getMember(HotspotInlineExpressionParser.class.getName()).newInstance();
+        try (Context context = createContext()) {
+            return createInlineExpressionParser(context).invokeMember("evaluateClosure", inlineExpression).as(Closure.class);
         }
     }
     
-    private Context getContext() {
-        return Context.newBuilder().allowAllAccess(true)
-                .option("java.Properties.org.graalvm.home", System.getenv("JAVA_HOME"))
+    private Value createInlineExpressionParser(final Context context) {
+        return context.getBindings("java").getMember(HotspotInlineExpressionParser.class.getName()).newInstance();
+    }
+    
+    private Context createContext() {
+        // TODO https://github.com/oracle/graal/issues/4555 not yet closed
+        ShardingSpherePreconditions.checkNotNull(JAVA_HOME, () -> new RuntimeException("Failed to determine the system's environment variable JAVA_HOME!"));
+        return Context.newBuilder()
+                .allowAllAccess(true)
+                .option("java.Properties.org.graalvm.home", JAVA_HOME)
                 .option("java.MultiThreaded", Boolean.TRUE.toString())
                 .option("java.Classpath", JAVA_CLASSPATH)
                 .build();

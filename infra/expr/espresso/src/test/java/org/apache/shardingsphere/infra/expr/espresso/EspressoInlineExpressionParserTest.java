@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.infra.expr.espresso;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledInNativeImage;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 
 import java.util.Collections;
@@ -29,6 +30,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @EnabledInNativeImage
+@DisabledIfSystemProperty(named = "org.graalvm.nativeimage.imagecode", matches = "agent", disabledReason = "Skip this unit test when using GraalVM Native Build Tools")
 class EspressoInlineExpressionParserTest {
     
     @Test
@@ -123,7 +125,7 @@ class EspressoInlineExpressionParserTest {
      * Because `org.graalvm.polyglot.Value#as` does not allow this type to be returned from the guest JVM.
      */
     @Test
-    @DisabledInNativeImage
+    @Disabled
     void assertEvaluateClosure() {
         assertThat(new EspressoInlineExpressionParser().evaluateClosure("${1+2}").call().toString(), is("3"));
     }
