@@ -31,19 +31,16 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * MySQL Command Packet decoder.
+ * MySQL command packet decoder.
  */
 public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     
-    private enum States {
-        RESPONSE_PACKET, FIELD_PACKET, ROW_DATA_PACKET
-    }
+    private final AtomicReference<States> currentState = new AtomicReference<>(States.RESPONSE_PACKET);
     
-    private volatile States currentState = States.RESPONSE_PACKET;
-    
-    private volatile InternalResultSet internalResultSet;
+    private final AtomicReference<InternalResultSet> internalResultSet = new AtomicReference<>();
     
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
@@ -52,11 +49,11 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     }
     
     private void decodeCommandPacket(final MySQLPacketPayload payload, final List<Object> out) {
-        if (States.FIELD_PACKET == currentState) {
+        if (States.FIELD_PACKET == currentState.get()) {
             decodeFieldPacket(payload);
             return;
         }
-        if (States.ROW_DATA_PACKET == currentState) {
+        if (States.ROW_DATA_PACKET == currentState.get()) {
             decodeRowDataPacket(payload, out);
             return;
         }
@@ -66,20 +63,20 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
     private void decodeFieldPacket(final MySQLPacketPayload payload) {
         if (MySQLEofPacket.HEADER == (payload.getByteBuf().getByte(0) & 0xff)) {
             new MySQLEofPacket(payload);
-            currentState = States.ROW_DATA_PACKET;
+            currentState.set(States.ROW_DATA_PACKET);
         } else {
-            internalResultSet.getFieldDescriptors().add(new MySQLColumnDefinition41Packet(payload));
+            internalResultSet.get().getFieldDescriptors().add(new MySQLColumnDefinition41Packet(payload));
         }
     }
     
     private void decodeRowDataPacket(final MySQLPacketPayload payload, final List<Object> out) {
         if (MySQLEofPacket.HEADER == (payload.getByteBuf().getByte(0) & 0xff)) {
             new MySQLEofPacket(payload);
-            out.add(internalResultSet);
-            currentState = States.RESPONSE_PACKET;
-            internalResultSet = null;
+            out.add(internalResultSet.get());
+            currentState.set(States.RESPONSE_PACKET);
+            internalResultSet.set(null);
         } else {
-            internalResultSet.getFieldValues().add(new MySQLTextResultSetRowPacket(payload, internalResultSet.getHeader().getColumnCount()));
+            internalResultSet.get().getFieldValues().add(new MySQLTextResultSetRowPacket(payload, internalResultSet.get().getHeader().getColumnCount()));
         }
     }
     
@@ -93,9 +90,14 @@ public final class MySQLCommandPacketDecoder extends ByteToMessageDecoder {
                 break;
             default:
                 MySQLFieldCountPacket fieldCountPacket = new MySQLFieldCountPacket(payload);
-                currentState = States.FIELD_PACKET;
-                internalResultSet = new InternalResultSet(fieldCountPacket);
+                currentState.set(States.FIELD_PACKET);
+                internalResultSet.set(new InternalResultSet(fieldCountPacket));
                 break;
         }
+    }
+    
+    private enum States {
+        
+        RESPONSE_PACKET, FIELD_PACKET, ROW_DATA_PACKET
     }
 }

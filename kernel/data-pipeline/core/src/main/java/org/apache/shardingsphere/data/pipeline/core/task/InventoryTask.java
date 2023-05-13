@@ -44,6 +44,7 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Inventory task.
@@ -65,7 +66,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
     
     private final Importer importer;
     
-    private volatile IngestPosition<?> position;
+    private final AtomicReference<IngestPosition<?>> position;
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
                          final PipelineChannelCreator pipelineChannelCreator, final ImporterConnector importerConnector,
@@ -77,9 +78,9 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
         this.inventoryImporterExecuteEngine = inventoryImporterExecuteEngine;
         channel = createChannel(pipelineChannelCreator);
         dumper = new InventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
-        importer = TypedSPILoader.getService(ImporterCreator.class, importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener,
-                ImporterType.INVENTORY);
-        position = inventoryDumperConfig.getPosition();
+        importer = TypedSPILoader.getService(ImporterCreator.class,
+                importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener, ImporterType.INVENTORY);
+        position = new AtomicReference<>(inventoryDumperConfig.getPosition());
     }
     
     private String generateTaskId(final InventoryDumperConfiguration inventoryDumperConfig) {
@@ -123,7 +124,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
         return pipelineChannelCreator.createPipelineChannel(1, records -> {
             Record lastNormalRecord = RecordUtils.getLastNormalRecord(records);
             if (null != lastNormalRecord) {
-                position = lastNormalRecord.getPosition();
+                position.set(lastNormalRecord.getPosition());
             }
         });
     }
@@ -136,7 +137,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
     
     @Override
     public InventoryTaskProgress getTaskProgress() {
-        return new InventoryTaskProgress(position);
+        return new InventoryTaskProgress(position.get());
     }
     
     @Override
