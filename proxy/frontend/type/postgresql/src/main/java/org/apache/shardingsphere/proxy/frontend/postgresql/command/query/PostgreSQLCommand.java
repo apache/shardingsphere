@@ -153,11 +153,8 @@ public enum PostgreSQLCommand {
         return getPostgreSQLCommand(sqlStatementClass);
     }
     
-    /**
+    /*
      * Refer to <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>. 
-     *
-     * @param sqlStatementClass SQL statement class
-     * @return optional PostgreSQLCommand
      */
     @SuppressWarnings("OptionalAssignedToNull")
     private static Optional<PostgreSQLCommand> getPostgreSQLCommand(final Class<? extends SQLStatement> sqlStatementClass) {
