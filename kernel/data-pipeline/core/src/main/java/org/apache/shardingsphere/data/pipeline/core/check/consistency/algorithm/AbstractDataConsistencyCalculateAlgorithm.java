@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Abstract data consistency calculate algorithm.
@@ -31,19 +32,18 @@ import java.sql.Statement;
 @Slf4j
 public abstract class AbstractDataConsistencyCalculateAlgorithm implements DataConsistencyCalculateAlgorithm {
     
-    @Getter
-    private volatile boolean canceling;
+    private final AtomicBoolean canceling = new AtomicBoolean(false);
     
-    private volatile Statement currentStatement;
+    private final AtomicReference<Statement> currentStatement = new AtomicReference<>();
     
-    protected void setCurrentStatement(final Statement statement) {
-        this.currentStatement = statement;
+    protected final void setCurrentStatement(final Statement statement) {
+        currentStatement.set(statement);
     }
     
     @Override
     public void cancel() throws SQLException {
-        canceling = true;
-        Statement statement = currentStatement;
+        canceling.set(true);
+        Statement statement = currentStatement.get();
         if (null == statement || statement.isClosed()) {
             log.info("cancel, statement is null or closed");
             return;
@@ -59,5 +59,14 @@ public abstract class AbstractDataConsistencyCalculateAlgorithm implements DataC
             log.info("cancel failed: {}", ex.getMessage());
         }
         log.info("cancel cost {} ms", System.currentTimeMillis() - startTimeMillis);
+    }
+    
+    /**
+     * Is canceling.
+     * 
+     * @return is canceling or not
+     */
+    public final boolean isCanceling() {
+        return canceling.get();
     }
 }

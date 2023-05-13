@@ -37,6 +37,7 @@ import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -101,9 +102,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             ColumnValueReader columnValueReader = PipelineTypedSPILoader.getDatabaseTypedService(ColumnValueReader.class, param.getDatabaseType());
             ResultSet resultSet = calculationContext.getResultSet();
             while (resultSet.next()) {
-                if (isCanceling()) {
-                    throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName());
-                }
+                ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName()));
                 ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                 int columnCount = resultSetMetaData.getColumnCount();
                 Collection<Object> record = new LinkedList<>();
