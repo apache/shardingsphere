@@ -27,7 +27,7 @@ public abstract class StorageUnitDefinitionViolationException extends DistSQLExc
     
     private static final long serialVersionUID = -2686784350802985974L;
     
-    public StorageUnitDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+    protected StorageUnitDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, errorCode, reason, messageArgs);
     }
 }

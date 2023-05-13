@@ -27,8 +27,8 @@ import java.util.LinkedList;
 /**
  * XML definition of database name environment.
  */
-@Getter
 @XmlRootElement(name = "databases")
+@Getter
 public final class DatabaseNameEnvironment {
     
     @XmlElement(name = "database")

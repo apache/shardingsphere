@@ -233,6 +233,7 @@ public final class MySQLClient {
         try {
             return blockingEventQueue.poll(100L, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException ignored) {
+            Thread.currentThread().interrupt();
             return null;
         }
     }
@@ -251,7 +252,10 @@ public final class MySQLClient {
                 throw new PipelineInternalException(((MySQLErrPacket) response).getErrorMessage());
             }
             throw new PipelineInternalException("unexpected response type");
-        } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new PipelineInternalException(ex);
+        } catch (final ExecutionException | TimeoutException ex) {
             throw new PipelineInternalException(ex);
         }
     }
@@ -270,6 +274,7 @@ public final class MySQLClient {
                 eventLoopGroup.shutdownGracefully();
             }
         } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
             log.error("close channel interrupted", ex);
         }
     }

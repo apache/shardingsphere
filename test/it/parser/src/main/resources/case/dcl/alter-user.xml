@@ -67,4 +67,5 @@
     <alter-user sql-case-id="alter_azure_ad_user_with_login" />
     <alter-user sql-case-id="alter_azure_ad_user_without_login" />
     <alter-user sql-case-id="alter_user_alias_to_existing_azure_id" />
+    <alter-user sql-case-id="alter_user_identified_with_single_quoted" />
 </sql-parser-test-cases>

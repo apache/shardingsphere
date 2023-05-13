@@ -148,6 +148,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
             try {
                 Thread.sleep(sleepTime);
             } catch (final InterruptedException ignored) {
+                Thread.currentThread().interrupt();
                 break;
             }
             time += sleepTime;

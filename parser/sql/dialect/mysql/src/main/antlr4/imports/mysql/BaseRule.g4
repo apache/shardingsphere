@@ -738,7 +738,7 @@ componentName
     ;
     
 pluginName
-    : identifier
+    : textOrIdentifier
     ;
     
 hostname

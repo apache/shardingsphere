@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.distsql.parser.segment;
 
-import com.google.common.base.Strings;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
@@ -27,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.api.ASTNode;
 /**
  * Encrypt column segment.
  */
-@AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
 public final class EncryptColumnSegment implements ASTNode {
@@ -40,35 +37,9 @@ public final class EncryptColumnSegment implements ASTNode {
     
     private final String likeQueryColumn;
     
-    private String dataType;
-    
-    private String cipherDataType;
-    
-    private String assistedQueryDataType;
-    
-    private String likeQueryDataType;
-    
     private final AlgorithmSegment encryptor;
     
     private final AlgorithmSegment assistedQueryEncryptor;
     
     private final AlgorithmSegment likeQueryEncryptor;
-    
-    /**
-     * Is the data type correct.
-     *
-     * @return correct or not
-     */
-    public boolean isCorrectDataType() {
-        boolean requireDataType = !Strings.isNullOrEmpty(dataType);
-        return isCorrectDataType(requireDataType, name, dataType) && isCorrectDataType(requireDataType, cipherColumn, cipherDataType)
-                && isCorrectDataType(requireDataType, assistedQueryColumn, assistedQueryDataType) && isCorrectDataType(requireDataType, likeQueryColumn, likeQueryDataType);
-    }
-    
-    private boolean isCorrectDataType(final boolean requireDataType, final String field, final String fieldDataType) {
-        boolean noDataTypeRequired = !requireDataType && Strings.isNullOrEmpty(fieldDataType);
-        boolean requireDataTypeAndFieldExisted = requireDataType && !Strings.isNullOrEmpty(field) && !Strings.isNullOrEmpty(fieldDataType);
-        boolean requireDataTypeAndFieldNotExisted = requireDataType && Strings.isNullOrEmpty(field) && Strings.isNullOrEmpty(fieldDataType);
-        return noDataTypeRequired || requireDataTypeAndFieldExisted || requireDataTypeAndFieldNotExisted;
-    }
 }

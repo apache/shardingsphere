@@ -31,7 +31,7 @@ public abstract class AbstractJobType implements JobType {
     
     private final String typeCode;
     
-    public AbstractJobType(final String typeName, final String typeCode) {
+    protected AbstractJobType(final String typeName, final String typeCode) {
         this.typeName = typeName;
         Preconditions.checkArgument(2 == typeCode.length(), "code length is not 2");
         this.typeCode = typeCode;

@@ -37,15 +37,15 @@ public abstract class ShardingSphereSQLException extends ShardingSphereExternalE
     
     private final Exception cause;
     
-    public ShardingSphereSQLException(final SQLState sqlState, final int typeOffset, final int errorCode, final String reason, final Object... messageArgs) {
+    protected ShardingSphereSQLException(final SQLState sqlState, final int typeOffset, final int errorCode, final String reason, final Object... messageArgs) {
         this(sqlState.getValue(), typeOffset, errorCode, reason, messageArgs);
     }
     
-    public ShardingSphereSQLException(final String sqlState, final int typeOffset, final int errorCode, final String reason, final Object... messageArgs) {
+    protected ShardingSphereSQLException(final String sqlState, final int typeOffset, final int errorCode, final String reason, final Object... messageArgs) {
         this(sqlState, typeOffset, errorCode, null == reason ? null : String.format(reason, messageArgs), (Exception) null);
     }
     
-    public ShardingSphereSQLException(final String sqlState, final int typeOffset, final int errorCode, final String reason, final Exception cause) {
+    protected ShardingSphereSQLException(final String sqlState, final int typeOffset, final int errorCode, final String reason, final Exception cause) {
         super(reason, cause);
         this.sqlState = sqlState;
         vendorCode = typeOffset * 10000 + errorCode;

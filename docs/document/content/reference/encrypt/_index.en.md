@@ -20,7 +20,7 @@ Apache ShardingSphere will encrypt the plaintext requested by users and store it
 
 Before explaining the whole process, we need to understand the encryption rules and configuration. Encryption configuration is mainly divided into three parts: data source configuration, encryptor configuration, encryption table configuration, as shown in the figure below:
 
-![2](https://shardingsphere.apache.org/document/current/img/encrypt/2_en_v2.png)
+![2](https://shardingsphere.apache.org/document/current/img/encrypt/2_en_v3.png)
 
 Data source configuration: the configuration of the data source.
 

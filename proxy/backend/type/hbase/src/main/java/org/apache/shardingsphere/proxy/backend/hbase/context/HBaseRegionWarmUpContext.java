@@ -141,6 +141,7 @@ public final class HBaseRegionWarmUpContext {
             try {
                 Thread.sleep(100L);
             } catch (final InterruptedException ignore) {
+                Thread.currentThread().interrupt();
             }
         }
         log.info(String.format("%s cluster end warm up, execute time: %dms, warm table: %d", clusterName, System.currentTimeMillis() - startWarmUpTime, executeCount.get()));

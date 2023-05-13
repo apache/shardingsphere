@@ -743,7 +743,7 @@
                             <owner name="t_order" start-index="28" stop-index="34" />
                         </column>
                     </left>
-                    <operator>&gt;</operator>
+                    <operator>&gt; ALL</operator>
                     <right>
                         <subquery start-index="49" stop-index="98">
                             <select>

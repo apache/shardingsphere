@@ -27,8 +27,8 @@ import java.util.LinkedList;
 /**
  * Integration test cases.
  */
-@Getter
 @XmlRootElement(name = "integration-test-cases")
+@Getter
 public final class IntegrationTestCases {
     
     @XmlElement(name = "test-case")

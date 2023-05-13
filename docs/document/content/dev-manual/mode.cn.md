@@ -17,9 +17,9 @@ chapter = true
 
 ### 已知实现
 
-| *配置标识* | *详细说明*     | *全限定类名*                                                                                                                                                                                                                                                                       |
-|--------|------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| H2     | 基于 H2 的持久化 | [`org.apache.shardingsphere.mode.repository.standalone.h2.H2Repository`](https://github.com/apache/shardingsphere/blob/master/mode/type/standalone/repository/provider/jdbc/core/src/main/java/org/apache/shardingsphere/mode/repository/standalone/jdbc/JDBCRepository.java) |
+| *配置标识* | *详细说明*       | *全限定类名*                                                                                                                                                                                                                                                                           |
+|--------|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| JDBC   | 基于 JDBC 的持久化 | [`org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository`](https://github.com/apache/shardingsphere/blob/master/mode/type/standalone/repository/provider/jdbc/core/src/main/java/org/apache/shardingsphere/mode/repository/standalone/jdbc/JDBCRepository.java) |
 
 ## ClusterPersistRepository
 

@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class QualifiedReadwriteSplittingPrimaryDataSourceRouterTest {
+class QualifiedReadwriteSplittingPrimaryDataSourceRouterTest {
     
     @Mock
     private CommonSQLStatementContext<SQLStatement> sqlStatementContext;

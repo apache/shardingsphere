@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.encrypt.algorithm.standard;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.exception.algorithm.EncryptAlgorithmInitializationException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Properties;
 
 /**
@@ -34,54 +33,39 @@ public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     
     private static final String RC4_KEY = "rc4-key-value";
     
-    private static final int SBOX_LENGTH = 256;
-    
     private static final int KEY_MIN_LENGTH = 5;
     
-    private volatile byte[] key = new byte[SBOX_LENGTH - 1];
+    private static final int SBOX_LENGTH = 256;
     
-    private volatile int[] sBox = new int[SBOX_LENGTH];
+    private byte[] key;
     
     @Override
     public void init(final Properties props) {
-        reset();
-        setKey(props.getProperty(RC4_KEY, "").getBytes(StandardCharsets.UTF_8));
+        key = getKey(props);
     }
     
-    private void setKey(final byte[] key) {
-        ShardingSpherePreconditions.checkState(KEY_MIN_LENGTH <= key.length && SBOX_LENGTH > key.length,
+    private byte[] getKey(final Properties props) {
+        byte[] result = props.getProperty(RC4_KEY, "").getBytes(StandardCharsets.UTF_8);
+        ShardingSpherePreconditions.checkState(KEY_MIN_LENGTH <= result.length && SBOX_LENGTH > result.length,
                 () -> new EncryptAlgorithmInitializationException(getType(), "Key length has to be between " + KEY_MIN_LENGTH + " and " + (SBOX_LENGTH - 1)));
-        this.key = key;
+        return result;
     }
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return null == plainValue ? null : Base64.encodeBase64String(handle(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8)));
+        return null == plainValue ? null : Base64.encodeBase64String(crypt(String.valueOf(plainValue).getBytes(StandardCharsets.UTF_8)));
     }
     
     @Override
     public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
-        if (null == cipherValue) {
-            return null;
-        }
-        byte[] result = handle(Base64.decodeBase64(cipherValue));
-        return new String(result, StandardCharsets.UTF_8);
-    }
-    
-    private byte[] handle(final byte[] data) {
-        return crypt(data);
-    }
-    
-    private void reset() {
-        Arrays.fill(key, (byte) 0);
-        Arrays.fill(sBox, 0);
+        return null == cipherValue ? null : new String(crypt(Base64.decodeBase64(cipherValue)), StandardCharsets.UTF_8);
     }
     
     /*
      * @see <a href="http://en.wikipedia.org/wiki/RC4#Pseudo-random_generation_algorithm_.28PRGA.29">Pseudo-random generation algorithm</a>
      */
     private byte[] crypt(final byte[] message) {
-        sBox = initSBox(key);
+        int[] sBox = getSBox();
         byte[] result = new byte[message.length];
         int i = 0;
         int j = 0;
@@ -98,7 +82,7 @@ public final class RC4EncryptAlgorithm implements StandardEncryptAlgorithm<Objec
     /*
      * @see <a href="http://en.wikipedia.org/wiki/RC4#Key-scheduling_algorithm_.28KSA.29">Wikipedia. Init sBox</a>
      */
-    private int[] initSBox(final byte[] key) {
+    private int[] getSBox() {
         int[] result = new int[SBOX_LENGTH];
         int j = 0;
         for (int i = 0; i < SBOX_LENGTH; i++) {

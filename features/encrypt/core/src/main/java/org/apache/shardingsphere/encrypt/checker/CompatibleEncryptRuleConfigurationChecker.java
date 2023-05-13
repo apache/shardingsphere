@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.checker;
 
 import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -39,7 +38,7 @@ public final class CompatibleEncryptRuleConfigurationChecker implements RuleConf
     
     @Override
     public void check(final String databaseName, final CompatibleEncryptRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
-        delegate.check(databaseName, new EncryptRuleConfiguration(config.getTables(), config.getEncryptors()), dataSourceMap, rules);
+        delegate.check(databaseName, config.convertToEncryptRuleConfiguration(), dataSourceMap, rules);
     }
     
     @Override

@@ -30,9 +30,9 @@ import java.util.logging.Logger;
 /**
  * Datasource for caching connections.
  */
+@Getter
 public abstract class AutoDataSource implements DataSource {
     
-    @Getter
     private final Set<Connection> connectionCache = new HashSet<>();
     
     /**

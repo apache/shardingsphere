@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
-import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
@@ -68,17 +67,6 @@ class AlterEncryptRuleStatementUpdaterTest {
     @Test
     void assertCheckSQLStatementWithoutToBeAlteredEncryptors() {
         assertThrows(ServiceProviderNotFoundServerException.class, () -> updater.checkSQLStatement(database, createSQLStatement("INVALID_TYPE"), createCurrentRuleConfiguration()));
-    }
-    
-    @Test
-    void assertCheckSQLStatementWithIncompleteDataType() {
-        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "assisted_column", "like_column",
-                "int varchar(10)", null, null, null, new AlgorithmSegment("test", new Properties()),
-                new AlgorithmSegment("test", new Properties()),
-                new AlgorithmSegment("test", new Properties()));
-        EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment));
-        AlterEncryptRuleStatement statement = new AlterEncryptRuleStatement(Collections.singleton(ruleSegment));
-        assertThrows(InvalidRuleConfigurationException.class, () -> updater.checkSQLStatement(database, statement, createCurrentRuleConfiguration()));
     }
     
     @Test
