@@ -19,18 +19,17 @@ package org.apache.shardingsphere.data.pipeline.api.check.consistency;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.metadata.model.PipelineColumnMetaData;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Data consistency calculate parameter.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class DataConsistencyCalculateParameter {
     
     /**
@@ -55,10 +54,25 @@ public final class DataConsistencyCalculateParameter {
      */
     private final PipelineColumnMetaData uniqueKey;
     
-    /**
-     * Calculation context.
-     */
-    private volatile AutoCloseable calculationContext;
-    
     private final Object tableCheckPosition;
+    
+    private final AtomicReference<AutoCloseable> calculationContext = new AtomicReference<>();
+    
+    /**
+     * Get calculation context.
+     *
+     * @return calculation context
+     */
+    public AutoCloseable getCalculationContext() {
+        return calculationContext.get();
+    }
+    
+    /**
+     * Set calculation context.
+     *
+     * @param calculationContext calculation context
+     */
+    public void setCalculationContext(final AutoCloseable calculationContext) {
+        this.calculationContext.set(calculationContext);
+    }
 }
