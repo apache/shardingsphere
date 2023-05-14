@@ -51,7 +51,7 @@ public final class ExecuteLatencyHistogramAdvice implements InstanceMethodAdvice
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        methodTimeRecorder.record(method);
+        methodTimeRecorder.recordNow(method);
     }
     
     @Override
