@@ -49,7 +49,7 @@ public final class DataRecord extends Record {
     
     private Long csn;
     
-    public DataRecord(final IngestPosition<?> position, final int columnCount) {
+    public DataRecord(final IngestPosition position, final int columnCount) {
         super(position);
         columns = new ArrayList<>(columnCount);
     }

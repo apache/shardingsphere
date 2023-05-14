@@ -45,14 +45,14 @@ class InventoryIncrementalJobItemProgressTest {
         InventoryIncrementalJobItemProgress actual = getJobItemProgress(ConfigurationFileUtils.readFile("job-progress.yaml"));
         assertThat(actual.getStatus(), is(JobStatus.RUNNING));
         assertThat(actual.getSourceDatabaseType(), is("H2"));
-        assertThat(actual.getInventory().getInventoryTaskProgressMap().size(), is(4));
+        assertThat(actual.getInventory().getProgresses().size(), is(4));
         assertNotNull(actual.getIncremental().getIncrementalTaskProgress());
     }
     
     @Test
     void assertGetIncrementalPosition() {
         InventoryIncrementalJobItemProgress actual = getJobItemProgress(ConfigurationFileUtils.readFile("job-progress.yaml"));
-        Optional<IngestPosition<?>> position = actual.getIncremental().getIncrementalPosition();
+        Optional<IngestPosition> position = actual.getIncremental().getIncrementalPosition();
         assertTrue(position.isPresent());
         assertThat(position.get(), instanceOf(PlaceholderPosition.class));
     }

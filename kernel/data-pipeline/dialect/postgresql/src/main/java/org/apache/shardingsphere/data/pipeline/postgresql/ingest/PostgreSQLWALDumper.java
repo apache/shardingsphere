@@ -58,7 +58,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     
     private final PostgreSQLLogicalReplication logicalReplication;
     
-    public PostgreSQLWALDumper(final DumperConfiguration dumperConfig, final IngestPosition<WALPosition> position,
+    public PostgreSQLWALDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
                                final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
                 () -> new UnsupportedSQLOperationException("PostgreSQLWALDumper only support PipelineDataSourceConfiguration"));

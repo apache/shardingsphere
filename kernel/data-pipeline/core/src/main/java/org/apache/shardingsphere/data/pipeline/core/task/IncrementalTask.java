@@ -77,7 +77,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
                            final InventoryIncrementalJobItemContext jobItemContext) {
         taskId = dumperConfig.getDataSourceName();
         this.incrementalExecuteEngine = incrementalExecuteEngine;
-        IngestPosition<?> position = dumperConfig.getPosition();
+        IngestPosition position = dumperConfig.getPosition();
         taskProgress = createIncrementalTaskProgress(position, jobItemContext.getInitProgress());
         channel = createChannel(concurrency, pipelineChannelCreator, taskProgress);
         dumper = PipelineTypedSPILoader.getDatabaseTypedService(
@@ -85,7 +85,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
         importers = createImporters(concurrency, importerConfig, importerConnector, channel, jobItemContext);
     }
     
-    private IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition<?> position, final InventoryIncrementalJobItemProgress jobItemProgress) {
+    private IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition position, final InventoryIncrementalJobItemProgress jobItemProgress) {
         IncrementalTaskProgress result = new IncrementalTaskProgress(position);
         if (null != jobItemProgress && null != jobItemProgress.getIncremental()) {
             Optional.ofNullable(jobItemProgress.getIncremental().getIncrementalTaskProgress())

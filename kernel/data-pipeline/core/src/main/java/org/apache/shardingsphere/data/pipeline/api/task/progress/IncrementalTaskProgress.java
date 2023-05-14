@@ -26,11 +26,11 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class IncrementalTaskProgress implements TaskProgress {
     
-    private final AtomicReference<IngestPosition<?>> position = new AtomicReference<>();
+    private final AtomicReference<IngestPosition> position = new AtomicReference<>();
     
     private final AtomicReference<IncrementalTaskDelay> incrementalTaskDelay = new AtomicReference<>();
     
-    public IncrementalTaskProgress(final IngestPosition<?> position) {
+    public IncrementalTaskProgress(final IngestPosition position) {
         this.position.set(position);
         incrementalTaskDelay.set(new IncrementalTaskDelay());
     }
@@ -40,7 +40,7 @@ public final class IncrementalTaskProgress implements TaskProgress {
      * 
      * @return position
      */
-    public IngestPosition<?> getPosition() {
+    public IngestPosition getPosition() {
         return position.get();
     }
     
@@ -49,7 +49,7 @@ public final class IncrementalTaskProgress implements TaskProgress {
      * 
      * @param position position
      */
-    public void setPosition(final IngestPosition<?> position) {
+    public void setPosition(final IngestPosition position) {
         this.position.set(position);
     }
     

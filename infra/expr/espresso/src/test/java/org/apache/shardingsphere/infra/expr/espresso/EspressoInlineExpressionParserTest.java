@@ -119,9 +119,8 @@ class EspressoInlineExpressionParserTest {
     }
     
     /*
-     * TODO
-     * This method needs to avoid returning a groovy.lang.Closure class instance, and instead return the result of `Closure#call`.
-     * Because `org.graalvm.polyglot.Value#as` does not allow this type to be returned from the guest JVM.
+     * TODO This method needs to avoid returning a groovy.lang.Closure class instance, and instead return the result of `Closure#call`. Because `org.graalvm.polyglot.Value#as` does not allow this type
+     * to be returned from the guest JVM.
      */
     @Test
     @Disabled("See java doc")

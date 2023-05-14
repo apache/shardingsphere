@@ -95,7 +95,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     @Override
     protected void runBlocking() {
-        IngestPosition<?> position = dumperConfig.getPosition();
+        IngestPosition position = dumperConfig.getPosition();
         if (position instanceof FinishedPosition) {
             log.info("Ignored because of already finished.");
             return;
@@ -205,7 +205,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         return result;
     }
     
-    private IngestPosition<?> newPosition(final ResultSet resultSet) throws SQLException {
+    private IngestPosition newPosition(final ResultSet resultSet) throws SQLException {
         return dumperConfig.hasUniqueKey()
                 ? PrimaryKeyPositionFactory.newInstance(resultSet.getObject(dumperConfig.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue())
                 : new PlaceholderPosition();

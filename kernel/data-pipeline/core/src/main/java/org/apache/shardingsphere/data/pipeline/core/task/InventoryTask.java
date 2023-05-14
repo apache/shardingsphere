@@ -66,7 +66,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
     
     private final Importer importer;
     
-    private final AtomicReference<IngestPosition<?>> position;
+    private final AtomicReference<IngestPosition> position;
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
                          final PipelineChannelCreator pipelineChannelCreator, final ImporterConnector importerConnector,

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 @ToString(callSuper = true)
 public final class PlaceholderRecord extends Record {
     
-    public PlaceholderRecord(final IngestPosition<?> position) {
+    public PlaceholderRecord(final IngestPosition position) {
         super(position);
     }
 }
