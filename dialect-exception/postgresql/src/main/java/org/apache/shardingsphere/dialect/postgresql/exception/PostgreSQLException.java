@@ -20,6 +20,7 @@ package org.apache.shardingsphere.dialect.postgresql.exception;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.VendorError;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 
@@ -44,7 +45,9 @@ public final class PostgreSQLException extends SQLException {
     }
     
     @Getter
-    public static class ServerErrorMessage {
+    public static class ServerErrorMessage implements Serializable {
+        
+        private static final long serialVersionUID = -2823942573556507523L;
         
         private final String severity;
         
@@ -60,17 +63,17 @@ public final class PostgreSQLException extends SQLException {
         
         @Override
         public String toString() {
-            StringBuilder totalMessage = new StringBuilder();
+            StringBuilder result = new StringBuilder();
             if (null != severity) {
-                totalMessage.append(severity).append(": ");
+                result.append(severity).append(": ");
             }
             if (null != message) {
-                totalMessage.append(message);
+                result.append(message);
             }
             if (null != sqlState) {
-                totalMessage.append("\n  ").append(MessageFormat.format("Server SQLState: {0}", sqlState));
+                result.append("\n  ").append(MessageFormat.format("Server SQLState: {0}", sqlState));
             }
-            return totalMessage.toString();
+            return result.toString();
         }
     }
 }
