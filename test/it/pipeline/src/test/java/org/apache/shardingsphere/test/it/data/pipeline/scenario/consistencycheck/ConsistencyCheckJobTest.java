@@ -47,7 +47,7 @@ class ConsistencyCheckJobTest {
     }
     
     @Test
-    void assertBuildPipelineJobItemContext() throws ReflectiveOperationException {
+    void assertBuildPipelineJobItemContext() {
         ConsistencyCheckJobId pipelineJobId = new ConsistencyCheckJobId(PipelineContextKey.buildForProxy(), JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId());
         String checkJobId = new ConsistencyCheckJobAPI().marshalJobId(pipelineJobId);
         Map<String, Object> expectTableCheckPosition = Collections.singletonMap("t_order", 100);
