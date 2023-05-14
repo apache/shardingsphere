@@ -33,8 +33,6 @@
     <module name="LineLength">
         <property name="fileExtensions" value="java" />
         <property name="max" value="200" />
-        <!-- TODO remove ignorePattern when fix spotless format bug -->
-        <property name="ignorePattern" value="@ExternalCaseSettings"/>
     </module>
     <module name="NewlineAtEndOfFile">
         <property name="lineSeparator" value="lf" />
