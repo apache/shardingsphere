@@ -28,13 +28,13 @@ import java.util.Properties;
  */
 public final class MD5AssistedEncryptAlgorithm implements AssistedEncryptAlgorithm<Object, String> {
     
-    private static final String SALT = "salt";
+    private static final String SALT_KEY = "salt";
     
     private String salt;
     
     @Override
     public void init(final Properties props) {
-        this.salt = props.getProperty(SALT, "");
+        this.salt = props.getProperty(SALT_KEY, "");
     }
     
     @Override
