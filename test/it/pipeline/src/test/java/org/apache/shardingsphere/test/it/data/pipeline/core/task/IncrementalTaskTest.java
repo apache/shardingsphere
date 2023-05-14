@@ -30,6 +30,8 @@ import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContext
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -65,8 +67,8 @@ class IncrementalTaskTest {
         incrementalTask.stop();
     }
     
-    // TODO H2 doesn't support incremental
-    // @Test
+    @Test
+    @Disabled("H2 doesn't support incremental")
     void assertStart() throws ExecutionException, InterruptedException, TimeoutException {
         CompletableFuture.allOf(incrementalTask.start().toArray(new CompletableFuture[0])).get(10, TimeUnit.SECONDS);
         assertThat(incrementalTask.getTaskId(), is("ds_0"));
