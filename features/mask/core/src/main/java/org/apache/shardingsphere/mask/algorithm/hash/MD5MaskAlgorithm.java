@@ -27,13 +27,13 @@ import java.util.Properties;
  */
 public final class MD5MaskAlgorithm implements MaskAlgorithm<Object, String> {
     
-    private static final String SALT = "salt";
+    private static final String SALT_KEY = "salt";
     
     private String salt;
     
     @Override
     public void init(final Properties props) {
-        salt = props.getProperty(SALT, "");
+        salt = props.getProperty(SALT_KEY, "");
     }
     
     @Override
