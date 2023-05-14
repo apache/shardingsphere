@@ -118,14 +118,13 @@ class EspressoInlineExpressionParserTest {
         assertThat(new EspressoInlineExpressionParser().handlePlaceHolder("t_${[\"new$->{1+2}\"]}"), is("t_${[\"new${1+2}\"]}"));
     }
     
-    /**
+    /*
      * TODO
-     * This method needs to avoid returning a groovy.lang.Closure class instance,
-     * and instead return the result of `Closure#call`.
+     * This method needs to avoid returning a groovy.lang.Closure class instance, and instead return the result of `Closure#call`.
      * Because `org.graalvm.polyglot.Value#as` does not allow this type to be returned from the guest JVM.
      */
     @Test
-    @Disabled
+    @Disabled("See java doc")
     void assertEvaluateClosure() {
         assertThat(new EspressoInlineExpressionParser().evaluateClosure("${1+2}").call().toString(), is("3"));
     }
