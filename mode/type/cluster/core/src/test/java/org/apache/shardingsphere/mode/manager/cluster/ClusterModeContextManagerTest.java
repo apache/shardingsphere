@@ -51,6 +51,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 
@@ -69,7 +70,7 @@ class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.createDatabase("db");
+        assertDoesNotThrow(() -> clusterModeContextManager.createDatabase("db"));
     }
     
     @Test
@@ -85,7 +86,7 @@ class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.dropDatabase("db");
+        assertDoesNotThrow(() -> clusterModeContextManager.dropDatabase("db"));
     }
     
     @Test
@@ -101,7 +102,7 @@ class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.createSchema("db", "Schema Name");
+        assertDoesNotThrow(() -> clusterModeContextManager.createSchema("db", "Schema Name"));
     }
     
     @Test
@@ -120,8 +121,7 @@ class ClusterModeContextManagerTest {
         contextManager.addSchema("db", "Schema Name");
         ClusterModeContextManager clusterModeContextManager = new ClusterModeContextManager();
         clusterModeContextManager.setContextManagerAware(contextManager);
-        clusterModeContextManager
-                .alterSchema(new AlterSchemaPOJO("db", "Schema Name", "Rename Schema Name", new LinkedList<>()));
+        assertDoesNotThrow(() -> clusterModeContextManager.alterSchema(new AlterSchemaPOJO("db", "Schema Name", "Rename Schema Name", new LinkedList<>())));
     }
     
     @Test
@@ -134,10 +134,9 @@ class ClusterModeContextManagerTest {
         ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
                 new ClusterPersistRepositoryConfiguration("Type", "Namespace", "Server Lists", new Properties()));
         ClusterModeContextManager modeContextManager = new ClusterModeContextManager();
-        clusterModeContextManager
-                .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
-                        modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.dropSchema("db", new LinkedList<>());
+        clusterModeContextManager.setContextManagerAware(
+                new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator, modeConfiguration, modeContextManager, null, new EventBusContext())));
+        assertDoesNotThrow(() -> clusterModeContextManager.dropSchema("db", new LinkedList<>()));
     }
     
     @Test
@@ -155,7 +154,7 @@ class ClusterModeContextManagerTest {
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
         Collection<String> stringList = new LinkedList<>();
         stringList.add("foo");
-        clusterModeContextManager.dropSchema("db", stringList);
+        assertDoesNotThrow(() -> clusterModeContextManager.dropSchema("db", stringList));
     }
     
     @Test
@@ -174,7 +173,7 @@ class ClusterModeContextManagerTest {
         Collection<String> stringList = new LinkedList<>();
         stringList.add("/");
         stringList.add("foo");
-        clusterModeContextManager.dropSchema("db", stringList);
+        assertDoesNotThrow(() -> clusterModeContextManager.dropSchema("db", stringList));
     }
     
     @Test
@@ -208,7 +207,7 @@ class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.registerStorageUnits("db", new TreeMap<>());
+        assertDoesNotThrow(() -> clusterModeContextManager.registerStorageUnits("db", new TreeMap<>()));
     }
     
     @Test
@@ -224,7 +223,7 @@ class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.alterStorageUnits("db", new TreeMap<>());
+        assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", new TreeMap<>()));
     }
     
     @Test
@@ -241,7 +240,7 @@ class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.alterStorageUnits("db", new TreeMap<>());
+        assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", new TreeMap<>()));
     }
     
     @Test
@@ -259,7 +258,7 @@ class ClusterModeContextManagerTest {
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
         Map<String, DataSourceProperties> stringDataSourcePropertiesMap = new HashMap<>();
         stringDataSourcePropertiesMap.put("active_version", new DataSourceProperties("active_version", new HashMap<>()));
-        clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap));
     }
     
     @Test
@@ -278,7 +277,7 @@ class ClusterModeContextManagerTest {
         Map<String, DataSourceProperties> stringDataSourcePropertiesMap = new HashMap<>();
         stringDataSourcePropertiesMap.put("\n", new DataSourceProperties("\n", new HashMap<>()));
         stringDataSourcePropertiesMap.put("active_version", new DataSourceProperties("active_version", new HashMap<>()));
-        clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap));
     }
     
     @Test
@@ -298,7 +297,7 @@ class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.alterStorageUnits("db", new TreeMap<>());
+        assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", new TreeMap<>()));
     }
     
     @Test
@@ -316,7 +315,7 @@ class ClusterModeContextManagerTest {
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
         Map<String, DataSourceProperties> stringDataSourcePropertiesMap = new HashMap<>(new TreeMap<>());
-        clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap));
     }
     
     @Test
@@ -335,7 +334,7 @@ class ClusterModeContextManagerTest {
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
         Map<String, DataSourceProperties> stringDataSourcePropertiesMap = new HashMap<>();
         stringDataSourcePropertiesMap.put("42", new DataSourceProperties("active_version", new HashMap<>()));
-        clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterStorageUnits("db", stringDataSourcePropertiesMap));
     }
     
     @Test
@@ -351,7 +350,7 @@ class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.unregisterStorageUnits("db", new LinkedList<>());
+        assertDoesNotThrow(() -> clusterModeContextManager.unregisterStorageUnits("db", new LinkedList<>()));
     }
     
     @Test
@@ -368,7 +367,7 @@ class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.unregisterStorageUnits("db", new LinkedList<>());
+        assertDoesNotThrow(() -> clusterModeContextManager.unregisterStorageUnits("db", new LinkedList<>()));
     }
     
     @Test
@@ -381,10 +380,9 @@ class ClusterModeContextManagerTest {
         ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
                 new ClusterPersistRepositoryConfiguration("Type", "Namespace", "Server Lists", new Properties()));
         ClusterModeContextManager modeContextManager = new ClusterModeContextManager();
-        clusterModeContextManager
-                .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
-                        modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.alterRuleConfiguration("db", new LinkedList<>());
+        clusterModeContextManager.setContextManagerAware(
+                new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator, modeConfiguration, modeContextManager, null, new EventBusContext())));
+        assertDoesNotThrow(() -> clusterModeContextManager.alterRuleConfiguration("db", new LinkedList<>()));
     }
     
     @Test
@@ -402,7 +400,7 @@ class ClusterModeContextManagerTest {
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
         Collection<RuleConfiguration> ruleConfigurationList = new LinkedList<>();
         ruleConfigurationList.add(new RuleConfigurationFixture());
-        clusterModeContextManager.alterRuleConfiguration("db", ruleConfigurationList);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterRuleConfiguration("db", ruleConfigurationList));
     }
     
     private ShardingSphereMetaData createShardingSphereMetaData() {
@@ -427,7 +425,7 @@ class ClusterModeContextManagerTest {
         Collection<RuleConfiguration> ruleConfigurationList = new LinkedList<>();
         ruleConfigurationList.add(new RuleConfigurationFixture());
         ruleConfigurationList.add(new RuleConfigurationFixture());
-        clusterModeContextManager.alterRuleConfiguration("db", ruleConfigurationList);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterRuleConfiguration("db", ruleConfigurationList));
     }
     
     @Test
@@ -446,7 +444,7 @@ class ClusterModeContextManagerTest {
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
         Collection<RuleConfiguration> ruleConfigurationList = new LinkedList<>();
         ruleConfigurationList.add(new RuleConfigurationFixture());
-        clusterModeContextManager.alterRuleConfiguration("db", ruleConfigurationList);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterRuleConfiguration("db", ruleConfigurationList));
     }
     
     @Test
@@ -462,7 +460,7 @@ class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.alterGlobalRuleConfiguration(new LinkedList<>());
+        assertDoesNotThrow(() -> clusterModeContextManager.alterGlobalRuleConfiguration(new LinkedList<>()));
     }
     
     @Test
@@ -480,7 +478,7 @@ class ClusterModeContextManagerTest {
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
         Collection<RuleConfiguration> ruleConfigurationList = new LinkedList<>();
         ruleConfigurationList.add(new RuleConfigurationFixture());
-        clusterModeContextManager.alterGlobalRuleConfiguration(ruleConfigurationList);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterGlobalRuleConfiguration(ruleConfigurationList));
     }
     
     @Test
@@ -499,7 +497,7 @@ class ClusterModeContextManagerTest {
         Collection<RuleConfiguration> ruleConfigurationList = new LinkedList<>();
         ruleConfigurationList.add(new RuleConfigurationFixture());
         ruleConfigurationList.add(new RuleConfigurationFixture());
-        clusterModeContextManager.alterGlobalRuleConfiguration(ruleConfigurationList);
+        assertDoesNotThrow(() -> clusterModeContextManager.alterGlobalRuleConfiguration(ruleConfigurationList));
     }
     
     @Test
@@ -515,21 +513,21 @@ class ClusterModeContextManagerTest {
         clusterModeContextManager
                 .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
                         modeConfiguration, modeContextManager, null, new EventBusContext())));
-        clusterModeContextManager.alterProperties(new Properties());
+        assertDoesNotThrow(() -> clusterModeContextManager.alterProperties(new Properties()));
     }
     
     @Test
     void assertConstructor() {
         ClusterModeContextManager actualClusterModeContextManager = new ClusterModeContextManager();
         MetaDataPersistService persistService = new MetaDataPersistService(new ClusterPersistRepositoryFixture());
-        MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData());
-        ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
-        WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
-        ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
-                new ClusterPersistRepositoryConfiguration("Type", "Namespace", "Server Lists", new Properties()));
-        ClusterModeContextManager modeContextManager = new ClusterModeContextManager();
-        actualClusterModeContextManager
-                .setContextManagerAware(new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator,
-                        modeConfiguration, modeContextManager, null, new EventBusContext())));
+        try (MetaDataContexts metaDataContexts = new MetaDataContexts(persistService, new ShardingSphereMetaData())) {
+            ComputeNodeInstance instance = new ComputeNodeInstance(new JDBCInstanceMetaData("42"));
+            WorkerIdGenerator workerIdGenerator = mock(WorkerIdGenerator.class);
+            ModeConfiguration modeConfiguration = new ModeConfiguration("Type",
+                    new ClusterPersistRepositoryConfiguration("Type", "Namespace", "Server Lists", new Properties()));
+            ClusterModeContextManager modeContextManager = new ClusterModeContextManager();
+            assertDoesNotThrow(() -> actualClusterModeContextManager.setContextManagerAware(
+                    new ContextManager(metaDataContexts, new InstanceContext(instance, workerIdGenerator, modeConfiguration, modeContextManager, null, new EventBusContext()))));
+        }
     }
 }

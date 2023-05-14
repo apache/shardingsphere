@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitState
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,6 +32,7 @@ import java.util.HashSet;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -55,18 +55,18 @@ class PostgreSQLDatabaseTypeTest {
     }
     
     @Test
-    void assertHandleRollbackOnlyForNotRollbackOnly() throws SQLException {
-        new PostgreSQLDatabaseType().handleRollbackOnly(false, mock(CommitStatement.class));
+    void assertHandleRollbackOnlyForNotRollbackOnly() {
+        assertDoesNotThrow(() -> new PostgreSQLDatabaseType().handleRollbackOnly(false, mock(CommitStatement.class)));
     }
     
     @Test
-    void assertHandleRollbackOnlyForRollbackOnlyAndCommitStatement() throws SQLException {
-        new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(CommitStatement.class));
+    void assertHandleRollbackOnlyForRollbackOnlyAndCommitStatement() {
+        assertDoesNotThrow(() -> new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(CommitStatement.class)));
     }
     
     @Test
-    void assertHandleRollbackOnlyForRollbackOnlyAndRollbackStatement() throws SQLException {
-        new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(RollbackStatement.class));
+    void assertHandleRollbackOnlyForRollbackOnlyAndRollbackStatement() {
+        assertDoesNotThrow(() -> new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(RollbackStatement.class)));
     }
     
     @Test

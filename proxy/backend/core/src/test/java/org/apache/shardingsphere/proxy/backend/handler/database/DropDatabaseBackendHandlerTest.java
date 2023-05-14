@@ -43,6 +43,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -99,7 +100,7 @@ class DropDatabaseBackendHandlerTest {
     void assertExecuteDropNotExistDatabaseWithIfExists() {
         when(sqlStatement.getDatabaseName()).thenReturn("test_not_exist_db");
         when(sqlStatement.isIfExists()).thenReturn(true);
-        handler.execute();
+        assertDoesNotThrow(() -> handler.execute());
     }
     
     @Test
