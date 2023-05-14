@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Transaction rule.
@@ -51,7 +52,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
     
     private final Map<String, ShardingSphereDatabase> databases;
     
-    private volatile ShardingSphereTransactionManagerEngine resource;
+    private final AtomicReference<ShardingSphereTransactionManagerEngine> resource;
     
     public TransactionRule(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
@@ -59,7 +60,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         providerType = ruleConfig.getProviderType();
         props = ruleConfig.getProps();
         this.databases = new ConcurrentHashMap<>(databases);
-        resource = createTransactionManagerEngine(this.databases);
+        resource = new AtomicReference<>(createTransactionManagerEngine(this.databases));
     }
     
     private synchronized ShardingSphereTransactionManagerEngine createTransactionManagerEngine(final Map<String, ShardingSphereDatabase> databases) {
@@ -79,6 +80,15 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine();
         result.init(databaseTypes, dataSourceMap, providerType);
         return result;
+    }
+    
+    /**
+     * Get resource.
+     * 
+     * @return resource
+     */
+    public ShardingSphereTransactionManagerEngine getResource() {
+        return resource.get();
     }
     
     @Override
@@ -107,18 +117,18 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
     }
     
     private void rebuildEngine() {
-        ShardingSphereTransactionManagerEngine previousEngine = resource;
+        ShardingSphereTransactionManagerEngine previousEngine = resource.get();
         if (null != previousEngine) {
             closeEngine(previousEngine);
         }
-        resource = createTransactionManagerEngine(databases);
+        resource.set(createTransactionManagerEngine(databases));
     }
     
     private void closeEngine() {
-        ShardingSphereTransactionManagerEngine engine = resource;
+        ShardingSphereTransactionManagerEngine engine = resource.get();
         if (null != engine) {
             closeEngine(engine);
-            resource = new ShardingSphereTransactionManagerEngine();
+            resource.set(new ShardingSphereTransactionManagerEngine());
         }
     }
     
