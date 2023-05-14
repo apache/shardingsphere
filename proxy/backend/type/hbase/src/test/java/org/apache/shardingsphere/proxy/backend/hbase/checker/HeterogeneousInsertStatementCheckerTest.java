@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class HeterogeneousInsertStatementCheckerTest {
@@ -30,7 +31,7 @@ class HeterogeneousInsertStatementCheckerTest {
     @Test
     void assertExecuteInsertStatement() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getInsertStatement());
-        HBaseCheckerFactory.newInstance(sqlStatement).execute();
+        assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
     }
     
     @Test
@@ -77,7 +78,7 @@ class HeterogeneousInsertStatementCheckerTest {
     void assertInsertWithLiteralAndParameterMarker() {
         String sql = "INSERT /*+ HBase */ INTO t_order_item(rowKey, order_id, user_id, status, creation_date) VALUES (?, ?, ?, 'insert', '2017-08-08')";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HBaseCheckerFactory.newInstance(sqlStatement).execute();
+        assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
     }
     
     @Test

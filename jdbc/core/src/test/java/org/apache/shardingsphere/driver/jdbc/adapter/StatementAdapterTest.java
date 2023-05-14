@@ -43,6 +43,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -142,13 +143,17 @@ class StatementAdapterTest {
     }
     
     @Test
-    void assertGetWarnings() {
-        assertNull(mockShardingSphereStatement().getWarnings());
+    void assertGetWarnings() throws SQLException {
+        try (ShardingSphereStatement actual = mockShardingSphereStatement()) {
+            assertNull(actual.getWarnings());
+        }
     }
     
     @Test
-    void assertClearWarnings() {
-        mockShardingSphereStatement().clearWarnings();
+    void assertClearWarnings() throws SQLException {
+        try (ShardingSphereStatement actual = mockShardingSphereStatement()) {
+            assertDoesNotThrow(actual::clearWarnings);
+        }
     }
     
     @Test

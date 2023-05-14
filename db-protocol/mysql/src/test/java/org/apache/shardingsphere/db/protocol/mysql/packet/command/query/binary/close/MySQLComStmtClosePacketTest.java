@@ -25,6 +25,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,7 +44,6 @@ class MySQLComStmtClosePacketTest {
     @Test
     void assertWrite() {
         when(payload.readInt4()).thenReturn(1);
-        MySQLComStmtClosePacket actual = new MySQLComStmtClosePacket(payload);
-        actual.write(payload);
+        assertDoesNotThrow(() -> new MySQLComStmtClosePacket(payload).write(payload));
     }
 }

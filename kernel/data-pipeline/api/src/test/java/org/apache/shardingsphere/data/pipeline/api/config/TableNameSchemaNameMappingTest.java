@@ -24,13 +24,14 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class TableNameSchemaNameMappingTest {
     
     @Test
     void assertConstructFromNull() {
-        new TableNameSchemaNameMapping(null);
+        assertDoesNotThrow(() -> new TableNameSchemaNameMapping(null));
     }
     
     @Test
