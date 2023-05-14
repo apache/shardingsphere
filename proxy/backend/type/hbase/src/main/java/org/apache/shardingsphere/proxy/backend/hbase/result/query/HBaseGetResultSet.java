@@ -60,6 +60,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class HBaseGetResultSet implements HBaseQueryResultSet {
     
+    private static final String ROW_KEY_COLUMN_NAME = "rowKey";
+    
+    private static final String CONTENT_COLUMN_NAME = "content";
+    
+    private static final String TIMESTAMP_COLUMN_NAME = "timestamp";
+    
     private SelectStatementContext statementContext;
     
     private long resultNum;
@@ -67,7 +73,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
     private long maxLimitResultSize;
     
     @Getter
-    private Collection<String> columnNames = Collections.singleton("rowKey");
+    private Collection<String> columnNames = Collections.singleton(ROW_KEY_COLUMN_NAME);
     
     private Result compensateResult;
     
@@ -134,12 +140,12 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
         if (rows.hasNext()) {
             compensateResult = rows.next();
         }
-        columnNames = null == compensateResult ? Arrays.asList("rowKey", "content") : parseResult(compensateResult).keySet();
+        columnNames = null == compensateResult ? Arrays.asList(ROW_KEY_COLUMN_NAME, CONTENT_COLUMN_NAME) : parseResult(compensateResult).keySet();
     }
     
     private Map<String, String> parseResult(final Result result) {
         Map<String, String> row = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        row.put("rowKey", Bytes.toString(result.getRow()));
+        row.put(ROW_KEY_COLUMN_NAME, Bytes.toString(result.getRow()));
         Long timestamp = null;
         for (Cell each : result.listCells()) {
             String column = new String(CellUtil.cloneQualifier(each), StandardCharsets.UTF_8);
@@ -149,7 +155,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
             }
             row.put(column, value);
         }
-        row.put("timestamp", String.valueOf(timestamp));
+        row.put(TIMESTAMP_COLUMN_NAME, String.valueOf(timestamp));
         return row;
     }
     
