@@ -67,6 +67,8 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
         register(SqlStdOperatorTable.IS_NULL);
         register(SqlStdOperatorTable.IS_NOT_NULL);
         register(SqlStdOperatorTable.ALL_GT);
+        register(SqlStdOperatorTable.IS_FALSE);
+        register(SqlStdOperatorTable.IS_NOT_FALSE);
     }
     
     private static void register(final SqlOperator sqlOperator) {
@@ -96,6 +98,10 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
                 operator = "IS NULL";
             } else if ("NOT NULL".equalsIgnoreCase(literals)) {
                 operator = "IS NOT NULL";
+            } else if ("FALSE".equalsIgnoreCase(literals)) {
+                operator = "IS FALSE";
+            } else if ("NOT FALSE".equalsIgnoreCase(literals)) {
+                operator = "IS NOT FALSE";
             }
         }
         Preconditions.checkState(REGISTRY.containsKey(operator), "Unsupported SQL operator: `%s`", operator);
@@ -106,7 +112,8 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
         SqlNode left = new ExpressionConverter().convert(segment.getLeft()).orElseThrow(IllegalStateException::new);
         List<SqlNode> result = new LinkedList<>();
         result.add(left);
-        if (!SqlStdOperatorTable.IS_NULL.equals(operator) && !SqlStdOperatorTable.IS_NOT_NULL.equals(operator)) {
+        if (!SqlStdOperatorTable.IS_NULL.equals(operator) && !SqlStdOperatorTable.IS_NOT_NULL.equals(operator) && !SqlStdOperatorTable.IS_FALSE.equals(operator)
+                && !SqlStdOperatorTable.IS_NOT_FALSE.equals(operator)) {
             SqlNode right = new ExpressionConverter().convert(segment.getRight()).orElseThrow(IllegalStateException::new);
             result.addAll(right instanceof SqlNodeList ? ((SqlNodeList) right).getList() : Collections.singletonList(right));
         }

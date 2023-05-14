@@ -211,6 +211,8 @@ class SQLNodeConverterEngineIT {
             result.add("select_where_with_boolean_primary_with_comparison_subquery");
             result.add("select_not_between_with_single_table");
             result.add("select_not_in_with_single_table");
+            result.add("select_where_with_expr_with_is");
+            result.add("select_where_with_expr_with_is_not");
             return result;
         }
         // CHECKSTYLE:ON
