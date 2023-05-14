@@ -110,7 +110,7 @@ class MultiplexMemoryPipelineChannelTest {
     
     @RequiredArgsConstructor
     @Getter
-    private static final class IntPosition implements IngestPosition<IntPosition> {
+    private static final class IntPosition implements IngestPosition {
         
         private final int id;
     }

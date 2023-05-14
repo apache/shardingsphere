@@ -53,13 +53,13 @@ public final class YamlJobItemInventoryTasksProgressSwapper {
     }
     
     private String[] getFinished(final JobItemInventoryTasksProgress progress) {
-        return progress.getInventoryTaskProgressMap().entrySet().stream()
+        return progress.getProgresses().entrySet().stream()
                 .filter(entry -> entry.getValue().getPosition() instanceof FinishedPosition)
                 .map(Entry::getKey).toArray(String[]::new);
     }
     
     private Map<String, String> getUnfinished(final JobItemInventoryTasksProgress progress) {
-        return progress.getInventoryTaskProgressMap().entrySet().stream()
+        return progress.getProgresses().entrySet().stream()
                 .filter(entry -> !(entry.getValue().getPosition() instanceof FinishedPosition))
                 .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPosition().toString()));
     }

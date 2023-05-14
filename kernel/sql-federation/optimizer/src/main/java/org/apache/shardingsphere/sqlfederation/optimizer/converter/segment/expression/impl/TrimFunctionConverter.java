@@ -46,10 +46,10 @@ public final class TrimFunctionConverter extends FunctionConverter {
         SqlIdentifier functionName = new SqlIdentifier(segment.getFunctionName(), SqlParserPos.ZERO);
         List<SqlOperator> functions = new LinkedList<>();
         SqlStdOperatorTable.instance().lookupOperatorOverloads(functionName, null, SqlSyntax.FUNCTION, functions, SqlNameMatchers.withCaseSensitive(false));
-        return Optional.of(new SqlBasicCall(functions.iterator().next(), getFunctionParameters(segment.getParameters()), SqlParserPos.ZERO));
+        return Optional.of(new SqlBasicCall(functions.iterator().next(), getTrimFunctionParameters(segment.getParameters()), SqlParserPos.ZERO));
     }
     
-    private List<SqlNode> getFunctionParameters(final Collection<ExpressionSegment> sqlSegments) {
+    private List<SqlNode> getTrimFunctionParameters(final Collection<ExpressionSegment> sqlSegments) {
         List<SqlNode> result = new LinkedList<>();
         if (1 == sqlSegments.size()) {
             result.add(Flag.BOTH.symbol(SqlParserPos.ZERO));

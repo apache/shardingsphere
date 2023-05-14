@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
  */
 @RequiredArgsConstructor
 @Getter
-public final class BinlogPosition implements IngestPosition<BinlogPosition> {
+public final class BinlogPosition implements IngestPosition {
     
     private final String filename;
     

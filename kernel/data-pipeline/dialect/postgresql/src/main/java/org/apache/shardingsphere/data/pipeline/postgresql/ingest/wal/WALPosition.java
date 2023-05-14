@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.Base
  */
 @RequiredArgsConstructor
 @Getter
-public final class WALPosition implements IngestPosition<WALPosition> {
+public final class WALPosition implements IngestPosition {
     
     private final BaseLogSequenceNumber logSequenceNumber;
     

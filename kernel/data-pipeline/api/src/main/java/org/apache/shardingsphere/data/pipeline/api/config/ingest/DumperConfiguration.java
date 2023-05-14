@@ -50,7 +50,7 @@ public class DumperConfiguration {
     
     private PipelineDataSourceConfiguration dataSourceConfig;
     
-    private IngestPosition<?> position;
+    private IngestPosition position;
     
     private Map<ActualTableName, LogicTableName> tableNameMap;
     
