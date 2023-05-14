@@ -82,7 +82,7 @@ class ShardingCopyStatementValidatorTest {
         CopyStatementContext sqlStatementContext = new CopyStatementContext(sqlStatement);
         String tableName = "t_order";
         when(shardingRule.isShardingTable(tableName)).thenReturn(true);
-        assertDoesNotThrow(() -> new ShardingCopyStatementValidator().preValidate(
-                shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class)));
+        new ShardingCopyStatementValidator().preValidate(
+                shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class));
     }
 }
