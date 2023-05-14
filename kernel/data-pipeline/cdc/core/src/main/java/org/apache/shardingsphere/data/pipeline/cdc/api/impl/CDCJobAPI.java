@@ -119,66 +119,45 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
      * @return job id
      */
     public String createJob(final StreamDataParameter param, final CDCSinkType sinkType, final Properties sinkProps) {
-        YamlCDCJobConfiguration yamlJobConfig = new YamlCDCJobConfiguration();
-        yamlJobConfig.setDatabaseName(param.getDatabaseName());
-        yamlJobConfig.setSchemaTableNames(param.getSchemaTableNames());
-        yamlJobConfig.setFull(param.isFull());
-        yamlJobConfig.setDecodeWithTX(param.isDecodeWithTX());
+        PipelineContextKey contextKey = PipelineContextKey.buildForProxy(param.getDatabaseName());
+        YamlCDCJobConfiguration yamlJobConfig = getYamlCDCJobConfiguration(param, sinkType, sinkProps, contextKey);
+        extendYamlJobConfiguration(contextKey, yamlJobConfig);
+        CDCJobConfiguration jobConfig = new YamlCDCJobConfigurationSwapper().swapToObject(yamlJobConfig);
+        ShardingSpherePreconditions.checkState(0 != jobConfig.getJobShardingCount(), () -> new PipelineJobCreationWithInvalidShardingCountException(jobConfig.getJobId()));
+        GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobConfig.getJobId()));
+        String jobConfigKey = PipelineMetaDataNode.getJobConfigPath(jobConfig.getJobId());
+        if (repositoryAPI.isExisted(jobConfigKey)) {
+            log.warn("CDC job already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
+        } else {
+            repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobConfig.getJobId()), getJobClassName());
+            JobConfigurationPOJO jobConfigPOJO = convertJobConfiguration(jobConfig);
+            jobConfigPOJO.setDisabled(true);
+            repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(jobConfigPOJO));
+            if (!param.isFull()) {
+                initIncrementalPosition(jobConfig);
+            }
+        }
+        return jobConfig.getJobId();
+    }
+    
+    private YamlCDCJobConfiguration getYamlCDCJobConfiguration(final StreamDataParameter param, final CDCSinkType sinkType, final Properties sinkProps, final PipelineContextKey contextKey) {
+        YamlCDCJobConfiguration result = new YamlCDCJobConfiguration();
+        result.setDatabaseName(param.getDatabaseName());
+        result.setSchemaTableNames(param.getSchemaTableNames());
+        result.setFull(param.isFull());
+        result.setDecodeWithTX(param.isDecodeWithTX());
         YamlSinkConfiguration sinkConfig = new YamlSinkConfiguration();
         sinkConfig.setSinkType(sinkType.name());
         sinkConfig.setProps(sinkProps);
-        yamlJobConfig.setSinkConfig(sinkConfig);
-        PipelineContextKey contextKey = PipelineContextKey.buildForProxy(param.getDatabaseName());
+        result.setSinkConfig(sinkConfig);
         ShardingSphereDatabase database = PipelineContextManager.getContext(contextKey).getContextManager().getMetaDataContexts().getMetaData().getDatabase(param.getDatabaseName());
-        yamlJobConfig.setDataSourceConfiguration(pipelineDataSourceConfigSwapper.swapToYamlConfiguration(getDataSourceConfiguration(database)));
+        result.setDataSourceConfiguration(pipelineDataSourceConfigSwapper.swapToYamlConfiguration(getDataSourceConfiguration(database)));
         List<JobDataNodeLine> jobDataNodeLines = JobDataNodeLineConvertUtils.convertDataNodesToLines(param.getDataNodesMap());
-        yamlJobConfig.setJobShardingDataNodes(jobDataNodeLines.stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
-        JobDataNodeLine tableFirstDataNodes = new JobDataNodeLine(param.getDataNodesMap().entrySet().stream().map(each -> new JobDataNodeEntry(each.getKey(), each.getValue().subList(0, 1)))
-                .collect(Collectors.toList()));
-        yamlJobConfig.setTablesFirstDataNodes(tableFirstDataNodes.marshal());
-        extendYamlJobConfiguration(contextKey, yamlJobConfig);
-        CDCJobConfiguration jobConfig = new YamlCDCJobConfigurationSwapper().swapToObject(yamlJobConfig);
-        String jobId = jobConfig.getJobId();
-        ShardingSpherePreconditions.checkState(0 != jobConfig.getJobShardingCount(), () -> new PipelineJobCreationWithInvalidShardingCountException(jobId));
-        GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId));
-        String jobConfigKey = PipelineMetaDataNode.getJobConfigPath(jobId);
-        if (repositoryAPI.isExisted(jobConfigKey)) {
-            log.warn("CDC job already exists in registry center, ignore, jobConfigKey={}", jobConfigKey);
-            return jobId;
-        }
-        repositoryAPI.persist(PipelineMetaDataNode.getJobRootPath(jobId), getJobClassName());
-        JobConfigurationPOJO jobConfigPOJO = convertJobConfiguration(jobConfig);
-        jobConfigPOJO.setDisabled(true);
-        repositoryAPI.persist(jobConfigKey, YamlEngine.marshal(jobConfigPOJO));
-        if (!param.isFull()) {
-            initIncrementalPosition(jobConfig);
-        }
-        return jobId;
-    }
-    
-    private void initIncrementalPosition(final CDCJobConfiguration jobConfig) {
-        PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
-        String jobId = jobConfig.getJobId();
-        try {
-            for (int i = 0; i < jobConfig.getJobShardingCount(); i++) {
-                if (getJobItemProgress(jobId, i).isPresent()) {
-                    continue;
-                }
-                TableNameSchemaNameMapping tableNameSchemaNameMapping = getTableNameSchemaNameMapping(jobConfig.getSchemaTableNames());
-                DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig, i, tableNameSchemaNameMapping);
-                InventoryIncrementalJobItemProgress jobItemProgress = new InventoryIncrementalJobItemProgress();
-                jobItemProgress.setSourceDatabaseType(jobConfig.getSourceDatabaseType());
-                jobItemProgress.setDataSourceName(dumperConfig.getDataSourceName());
-                IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress(PipelineJobPreparerUtils.getIncrementalPosition(null, dumperConfig, dataSourceManager));
-                jobItemProgress.setIncremental(new JobItemIncrementalTasksProgress(incrementalTaskProgress));
-                PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persistJobItemProgress(jobId, i,
-                        YamlEngine.marshal(getJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress)));
-            }
-        } catch (final SQLException ex) {
-            throw new PrepareJobWithGetBinlogPositionException(jobConfig.getJobId(), ex);
-        } finally {
-            dataSourceManager.close();
-        }
+        result.setJobShardingDataNodes(jobDataNodeLines.stream().map(JobDataNodeLine::marshal).collect(Collectors.toList()));
+        JobDataNodeLine tableFirstDataNodes = new JobDataNodeLine(param.getDataNodesMap().entrySet().stream()
+                .map(each -> new JobDataNodeEntry(each.getKey(), each.getValue().subList(0, 1))).collect(Collectors.toList()));
+        result.setTablesFirstDataNodes(tableFirstDataNodes.marshal());
+        return result;
     }
     
     private ShardingSpherePipelineDataSourceConfiguration getDataSourceConfiguration(final ShardingSphereDatabase database) {
@@ -192,6 +171,71 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         Collection<YamlRuleConfiguration> yamlRuleConfigurations = ruleConfigSwapperEngine.swapToYamlRuleConfigurations(database.getRuleMetaData().getConfigurations());
         targetRootConfig.setRules(yamlRuleConfigurations);
         return new ShardingSpherePipelineDataSourceConfiguration(targetRootConfig);
+    }
+    
+    private void initIncrementalPosition(final CDCJobConfiguration jobConfig) {
+        PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
+        String jobId = jobConfig.getJobId();
+        try {
+            for (int i = 0; i < jobConfig.getJobShardingCount(); i++) {
+                if (getJobItemProgress(jobId, i).isPresent()) {
+                    continue;
+                }
+                DumperConfiguration dumperConfig = buildDumperConfiguration(jobConfig, i, getTableNameSchemaNameMapping(jobConfig.getSchemaTableNames()));
+                InventoryIncrementalJobItemProgress jobItemProgress = getInventoryIncrementalJobItemProgress(jobConfig, dataSourceManager, dumperConfig);
+                PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persistJobItemProgress(
+                        jobId, i, YamlEngine.marshal(getJobItemProgressSwapper().swapToYamlConfiguration(jobItemProgress)));
+            }
+        } catch (final SQLException ex) {
+            throw new PrepareJobWithGetBinlogPositionException(jobConfig.getJobId(), ex);
+        } finally {
+            dataSourceManager.close();
+        }
+    }
+    
+    private static InventoryIncrementalJobItemProgress getInventoryIncrementalJobItemProgress(final CDCJobConfiguration jobConfig,
+                                                                                              final PipelineDataSourceManager dataSourceManager,
+                                                                                              final DumperConfiguration dumperConfig) throws SQLException {
+        InventoryIncrementalJobItemProgress result = new InventoryIncrementalJobItemProgress();
+        result.setSourceDatabaseType(jobConfig.getSourceDatabaseType());
+        result.setDataSourceName(dumperConfig.getDataSourceName());
+        IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress(PipelineJobPreparerUtils.getIncrementalPosition(null, dumperConfig, dataSourceManager));
+        result.setIncremental(new JobItemIncrementalTasksProgress(incrementalTaskProgress));
+        return result;
+    }
+    
+    /**
+     * Start job.
+     *
+     * @param jobId job id
+     * @param importerConnector importer connector
+     */
+    public void startJob(final String jobId, final ImporterConnector importerConnector) {
+        CDCJob job = new CDCJob(jobId, importerConnector);
+        PipelineJobCenter.addJob(jobId, job);
+        updateJobConfigurationDisabled(jobId, false);
+        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfigPOJO.toJobConfiguration());
+        job.setJobBootstrap(oneOffJobBootstrap);
+        oneOffJobBootstrap.execute();
+    }
+    
+    /**
+     * Update job configuration disabled.
+     *
+     * @param jobId job id
+     * @param disabled disabled
+     */
+    public void updateJobConfigurationDisabled(final String jobId, final boolean disabled) {
+        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
+        jobConfigPOJO.setDisabled(disabled);
+        if (disabled) {
+            jobConfigPOJO.getProps().setProperty("stop_time_millis", String.valueOf(System.currentTimeMillis()));
+        } else {
+            jobConfigPOJO.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
+            jobConfigPOJO.getProps().remove("stop_time_millis");
+        }
+        PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobConfigPOJO.getJobName())).updateJobConfiguration(jobConfigPOJO);
     }
     
     @Override
@@ -217,40 +261,6 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         CDCJobId jobId = (CDCJobId) pipelineJobId;
         String text = Joiner.on('|').join(jobId.getContextKey().getDatabaseName(), jobId.getSchemaTableNames(), jobId.isFull());
         return DigestUtils.md5Hex(text.getBytes(StandardCharsets.UTF_8));
-    }
-    
-    /**
-     * Start job.
-     *
-     * @param jobId             job id
-     * @param importerConnector importer connector
-     */
-    public void startJob(final String jobId, final ImporterConnector importerConnector) {
-        CDCJob job = new CDCJob(jobId, importerConnector);
-        PipelineJobCenter.addJob(jobId, job);
-        updateJobConfigurationDisabled(jobId, false);
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(PipelineJobIdUtils.parseContextKey(jobId)), job, jobConfigPOJO.toJobConfiguration());
-        job.setJobBootstrap(oneOffJobBootstrap);
-        oneOffJobBootstrap.execute();
-    }
-    
-    /**
-     * Update job configuration disabled.
-     *
-     * @param jobId    job id
-     * @param disabled disabled
-     */
-    public void updateJobConfigurationDisabled(final String jobId, final boolean disabled) {
-        JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
-        jobConfigPOJO.setDisabled(disabled);
-        if (disabled) {
-            jobConfigPOJO.getProps().setProperty("stop_time_millis", String.valueOf(System.currentTimeMillis()));
-        } else {
-            jobConfigPOJO.getProps().setProperty("start_time_millis", String.valueOf(System.currentTimeMillis()));
-            jobConfigPOJO.getProps().remove("stop_time_millis");
-        }
-        PipelineAPIFactory.getJobConfigurationAPI(PipelineJobIdUtils.parseContextKey(jobConfigPOJO.getJobName())).updateJobConfiguration(jobConfigPOJO);
     }
     
     @Override
