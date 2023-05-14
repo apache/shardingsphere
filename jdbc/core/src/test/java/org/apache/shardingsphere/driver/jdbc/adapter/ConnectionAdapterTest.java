@@ -100,7 +100,7 @@ class ConnectionAdapterTest {
         try (Connection actual = createConnectionAdaptor()) {
             String originalSchema = actual.getSchema();
             actual.setSchema("");
-            assertThat(actual.getSchema(), is(originalSchema));    
+            assertThat(actual.getSchema(), is(originalSchema));
         }
     }
     
