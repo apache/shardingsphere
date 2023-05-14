@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 /**
  * Placeholder position.
  */
-public final class PlaceholderPosition implements IngestPosition<PlaceholderPosition> {
+public final class PlaceholderPosition implements IngestPosition {
     
     @Override
     public String toString() {

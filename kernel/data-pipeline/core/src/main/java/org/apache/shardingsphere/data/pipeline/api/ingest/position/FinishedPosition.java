@@ -20,5 +20,5 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 /**
  * Finished inventory position.
  */
-public final class FinishedPosition implements IngestPosition<FinishedPosition> {
+public final class FinishedPosition implements IngestPosition {
 }
