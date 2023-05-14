@@ -149,7 +149,7 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     
     private Object readColumnData(final ByteBuffer data, final String columnType) {
         data.mark();
-        if ('n' == data.get() && data.remaining() >= 3 && 'u' == data.get() && 'l' == data.get() && 'l' == data.get()) {
+        if ('n' == data.get() && data.remaining() >= 3 && 'u' == data.get() && 'l' == data.get()) {
             if (data.hasRemaining()) {
                 data.get();
             }
