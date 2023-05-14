@@ -75,7 +75,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
             try {
                 return Integer.parseInt(delta);
             } catch (final NumberFormatException ignored) {
-                throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_LIKE", "delta can only be a decimal number");
+                throw new EncryptAlgorithmInitializationException(getType(), "delta can only be a decimal number");
             }
         }
         return DEFAULT_DELTA;
@@ -87,7 +87,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
             try {
                 return Integer.parseInt(mask);
             } catch (final NumberFormatException ignored) {
-                throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_LIKE", "mask can only be a decimal number");
+                throw new EncryptAlgorithmInitializationException(getType(), "mask can only be a decimal number");
             }
         }
         return DEFAULT_MASK;
@@ -99,7 +99,7 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
             try {
                 return Integer.parseInt(start);
             } catch (final NumberFormatException ignored) {
-                throw new EncryptAlgorithmInitializationException("CHAR_DIGEST_LIKE", "start can only be a decimal number");
+                throw new EncryptAlgorithmInitializationException(getType(), "start can only be a decimal number");
             }
         }
         return DEFAULT_START;
