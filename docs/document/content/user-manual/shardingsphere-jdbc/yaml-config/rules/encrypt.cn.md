@@ -16,12 +16,15 @@ rules:
     <table_name> (+): # 加密表名称
       columns:
         <column_name> (+): # 加密列名称
-          cipherColumn: # 密文列名称
-          encryptorName: # 密文列加密算法名称
-          assistedQueryColumn (?):  # 查询辅助列名称
-          assistedQueryEncryptorName:  # 查询辅助列加密算法名称
-          likeQueryColumn (?):  # 模糊查询列名称
-          likeQueryEncryptorName:  # 模糊查询列加密算法名称
+          cipher:
+            name: # 密文列名称
+            encryptorName: # 密文列加密算法名称
+          assistedQuery (?):  
+            name: # 查询辅助列名称
+            encryptorName:  # 查询辅助列加密算法名称
+          likeQuery (?):
+            name: # 模糊查询列名称
+            encryptorName:  # 模糊查询列加密算法名称
     
   # 加密算法配置
   encryptors:
@@ -57,6 +60,56 @@ rules:
     t_user:
       columns:
         username:
+          cipher:
+            name: username
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_username
+            encryptorName: assisted_encryptor
+          likeQuery:
+            name: like_query_username
+            encryptorName: like_encryptor
+        pwd:
+          cipher:
+            name: pwd
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_pwd
+            encryptorName: assisted_encryptor
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+    assisted_encryptor:
+      type: MD5
+    like_encryptor:
+      type: CHAR_DIGEST_LIKE
+```
+
+然后通过 YamlShardingSphereDataSourceFactory 的 createDataSource 方法创建数据源。
+
+```java
+YamlShardingSphereDataSourceFactory.createDataSource(getFile());
+```
+
+为了保持对低版本 YAML 配置的兼容，ShardingSphere 通过 `COMPATIBLE_ENCRYPT` 提供了如下的兼容配置，该配置会在后续版本中删除，建议及时升级最新 YAML 配置。
+
+```yaml
+dataSources:
+  unique_ds:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://localhost:3306/demo_ds?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password:
+
+rules:
+- !COMPATIBLE_ENCRYPT
+  tables:
+    t_user:
+      columns:
+        username:
           cipherColumn: username
           encryptorName: aes_encryptor
           assistedQueryColumn: assisted_query_username
@@ -77,12 +130,6 @@ rules:
       type: MD5
     like_encryptor:
       type: CHAR_DIGEST_LIKE
-```
-
-然后通过 YamlShardingSphereDataSourceFactory 的 createDataSource 方法创建数据源。
-
-```java
-YamlShardingSphereDataSourceFactory.createDataSource(getFile());
 ```
 
 ## 相关参考

@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
-import org.apache.shardingsphere.distsql.handler.exception.rule.InvalidRuleConfigurationException;
 import org.apache.shardingsphere.distsql.handler.exception.storageunit.EmptyStorageUnitException;
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.handler.converter.EncryptRuleStatementConverter;
-import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptRuleSegment;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
@@ -34,7 +32,6 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -49,7 +46,6 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
         if (!sqlStatement.isIfNotExists()) {
             checkDuplicateRuleNames(database.getName(), sqlStatement, currentRuleConfig);
         }
-        checkDataType(sqlStatement);
         checkToBeCreatedEncryptors(sqlStatement);
         checkDataSources(database);
     }
@@ -81,16 +77,6 @@ public final class CreateEncryptRuleStatementUpdater implements RuleDefinitionCr
             currentRuleNames = currentRuleConfig.getTables().stream().map(EncryptTableRuleConfiguration::getName).collect(Collectors.toSet());
         }
         return sqlStatement.getRules().stream().map(EncryptRuleSegment::getTableName).filter(currentRuleNames::contains).collect(Collectors.toSet());
-    }
-    
-    private void checkDataType(final CreateEncryptRuleStatement sqlStatement) {
-        Collection<String> invalidRules = sqlStatement.getRules().stream()
-                .map(each -> getInvalidColumns(each.getTableName(), each.getColumns())).flatMap(Collection::stream).collect(Collectors.toList());
-        ShardingSpherePreconditions.checkState(invalidRules.isEmpty(), () -> new InvalidRuleConfigurationException("encrypt", invalidRules, Collections.singleton("incomplete data type")));
-    }
-    
-    private Collection<String> getInvalidColumns(final String tableName, final Collection<EncryptColumnSegment> columns) {
-        return columns.stream().filter(each -> !each.isCorrectDataType()).map(each -> String.format("%s.%s", tableName, each.getName())).collect(Collectors.toList());
     }
     
     private void checkToBeCreatedEncryptors(final CreateEncryptRuleStatement sqlStatement) {

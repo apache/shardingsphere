@@ -40,7 +40,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandsha
 import java.security.NoSuchAlgorithmException;
 
 /**
- * MySQL Negotiate Handler.
+ * MySQL negotiate handler.
  */
 @RequiredArgsConstructor
 public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
@@ -59,11 +59,11 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     
     private final Promise<Object> authResultCallback;
     
-    private volatile ServerInfo serverInfo;
+    private ServerInfo serverInfo;
     
-    private volatile byte[] seed;
+    private byte[] seed;
     
-    private volatile boolean publicKeyRequested;
+    private boolean publicKeyRequested;
     
     @SneakyThrows(NoSuchAlgorithmException.class)
     @Override
@@ -75,8 +75,7 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
             handshakeResponsePacket.setCapabilityFlags(generateClientCapability());
             handshakeResponsePacket.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
             ctx.channel().writeAndFlush(handshakeResponsePacket);
-            serverInfo = new ServerInfo();
-            serverInfo.setServerVersion(new ServerVersion(handshake.getServerVersion()));
+            serverInfo = new ServerInfo(new ServerVersion(handshake.getServerVersion()));
             return;
         }
         if (msg instanceof MySQLAuthSwitchRequestPacket) {

@@ -50,12 +50,15 @@ rules:
     <table_name>: # 加密表名称
       columns:
         <column_name> (+): # 加密列名称
-          cipherColumn: # 密文列名称
-          encryptorName: # 密文列加密算法名称
-          assistedQueryColumn (?):  # 查询辅助列名称
-          assistedQueryEncryptorName:  # 查询辅助列加密算法名称
-          likeQueryColumn (?):  # 模糊查询列名称
-          likeQueryEncryptorName:  # 模糊查询列加密算法名称
+          cipher:
+            name: # 密文列名称
+            encryptorName: # 密文列加密算法名称
+          assistedQuery (?):
+            name: # 查询辅助列名称
+            encryptorName:  # 查询辅助列加密算法名称
+          likeQuery (?):
+            name: # 模糊查询列名称
+            encryptorName:  # 模糊查询列加密算法名称
 ```
 
 ## 配置示例
@@ -107,13 +110,17 @@ rules:
     t_encrypt:
       columns:
         user_id:
-          cipherColumn: user_cipher
-          encryptorName: aes_encryptor
-          assistedQueryColumn: assisted_query_user
-          assistedQueryEncryptorName: assisted_encryptor
-          likeQueryColumn: like_query_user
-          likeQueryEncryptorName: like_encryptor
+          cipher:
+            name: user_cipher
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_user
+            encryptorName: assisted_encryptor
+          likeQuery:
+            name: like_query_user
+            encryptorName: like_encryptor
         order_id:
-          cipherColumn: order_cipher
-          encryptorName: aes_encryptor
+          cipher:
+            name: order_cipher
+            encryptorName: aes_encryptor
 ```

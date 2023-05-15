@@ -94,10 +94,12 @@ rules:
     t_user:
       columns:
         username:
-          cipherColumn: username
-          encryptorName: name_encryptor
-          likeQueryColumn: name_like
-          likeQueryEncryptorName: like_encryptor
+          cipher:
+            name: username
+            encryptorName: name_encryptor
+          likeQuery:
+            name: name_like
+            encryptorName: like_encryptor
   encryptors:
     like_encryptor:
       type: CHAR_DIGEST_LIKE

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.migration;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
@@ -42,7 +41,6 @@ import java.util.Optional;
 /**
  * Migration job.
  */
-@RequiredArgsConstructor
 @Slf4j
 public final class MigrationJob extends AbstractSimplePipelineJob {
     
@@ -52,6 +50,10 @@ public final class MigrationJob extends AbstractSimplePipelineJob {
     
     // Shared by all sharding items
     private final MigrationJobPreparer jobPreparer = new MigrationJobPreparer();
+    
+    public MigrationJob(final String jobId) {
+        super(jobId);
+    }
     
     @Override
     protected InventoryIncrementalJobItemContext buildPipelineJobItemContext(final ShardingContext shardingContext) {

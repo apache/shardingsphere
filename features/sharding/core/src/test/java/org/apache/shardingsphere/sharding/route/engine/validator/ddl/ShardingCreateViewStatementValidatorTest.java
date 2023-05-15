@@ -44,6 +44,7 @@ import org.mockito.quality.Strictness;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -79,8 +80,8 @@ class ShardingCreateViewStatementValidatorTest {
     
     @Test
     void assertPreValidateCreateView() {
-        new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class),
-                mock(ConfigurationProperties.class));
+        assertDoesNotThrow(() -> new ShardingCreateViewStatementValidator().preValidate(
+                shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class)));
     }
     
     @Test
@@ -97,8 +98,8 @@ class ShardingCreateViewStatementValidatorTest {
     void assertPostValidateCreateView() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
-        new ShardingCreateViewStatementValidator().postValidate(shardingRule, createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class),
-                mock(ConfigurationProperties.class), routeContext);
+        assertDoesNotThrow(() -> new ShardingCreateViewStatementValidator().postValidate(
+                shardingRule, createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test

@@ -51,7 +51,7 @@ class MySQLTextResultSetRowPacketTest {
     void assertWrite() {
         long now = System.currentTimeMillis();
         Timestamp timestamp = new Timestamp(now);
-        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(Arrays.asList(null, "value", BigDecimal.ONE, new byte[]{}, timestamp));
+        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(Arrays.asList(null, "value", BigDecimal.ONE, new byte[]{}, timestamp, Boolean.TRUE));
         actual.write(payload);
         verify(payload).writeInt1(0xfb);
         verify(payload).writeStringLenenc("value");
@@ -61,6 +61,7 @@ class MySQLTextResultSetRowPacketTest {
         } else {
             verify(payload).writeStringLenenc(timestamp.toString());
         }
+        verify(payload).writeBytesLenenc(new byte[]{1});
     }
     
     @Test

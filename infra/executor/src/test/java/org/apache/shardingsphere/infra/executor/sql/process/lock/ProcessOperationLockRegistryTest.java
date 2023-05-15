@@ -36,6 +36,7 @@ class ProcessOperationLockRegistryTest {
             try {
                 Thread.sleep(50L);
             } catch (final InterruptedException ignored) {
+                Thread.currentThread().interrupt();
             }
             ProcessOperationLockRegistry.getInstance().notify(lockId);
         });

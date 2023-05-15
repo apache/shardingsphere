@@ -30,8 +30,8 @@ import java.util.Properties;
 /**
  * CDC job configuration.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public final class CDCJobConfiguration implements PipelineJobConfiguration {
     
     private final String jobId;

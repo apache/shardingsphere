@@ -60,6 +60,7 @@ public final class CDCServer extends Thread {
                 each.channel().closeFuture().sync();
             }
         } catch (final InterruptedException ignored) {
+            Thread.currentThread().interrupt();
         } finally {
             close();
         }

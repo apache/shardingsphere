@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 /**
  * Integer primary key position.
  */
-public final class IntegerPrimaryKeyPosition extends PrimaryKeyPosition<Long> implements IngestPosition<IntegerPrimaryKeyPosition> {
+public final class IntegerPrimaryKeyPosition extends PrimaryKeyPosition<Long> implements IngestPosition {
     
     private final long beginValue;
     

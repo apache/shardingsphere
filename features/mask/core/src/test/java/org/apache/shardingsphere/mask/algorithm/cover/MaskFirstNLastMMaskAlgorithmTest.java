@@ -31,20 +31,56 @@ class MaskFirstNLastMMaskAlgorithmTest {
     
     private MaskFirstNLastMMaskAlgorithm maskAlgorithm;
     
+    private MaskFirstNLastMMaskAlgorithm sameFirstNLastMMaskAlgorithm;
+    
     @BeforeEach
     void setUp() {
         maskAlgorithm = new MaskFirstNLastMMaskAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", "*")));
+        sameFirstNLastMMaskAlgorithm = new MaskFirstNLastMMaskAlgorithm();
+        sameFirstNLastMMaskAlgorithm.init(PropertiesBuilder.build(new Property("first-n", "5"), new Property("last-m", "5"), new Property("replace-char", "*")));
     }
     
     @Test
     void assertMask() {
-        assertThat(maskAlgorithm.mask("abc12345678"), is("***123*****"));
+        assertThat(maskAlgorithm.mask("abc123456"), is("***1*****"));
+        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc123456789"), is("*****34*****"));
     }
     
     @Test
     void assertMaskWhenPlainValueLengthLessThanFirstN() {
         assertThat(maskAlgorithm.mask("ab"), is("**"));
+        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc"), is("***"));
+    }
+    
+    @Test
+    void assertMaskWhenPlainValueLengthEqualsFirstN() {
+        assertThat(maskAlgorithm.mask("abc"), is("***"));
+        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc12"), is("*****"));
+    }
+    
+    @Test
+    void assertMaskWhenPlainValueLengthLessThanLastM() {
+        assertThat(maskAlgorithm.mask("abc1"), is("****"));
+        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc1"), is("****"));
+    }
+    
+    @Test
+    void assertMaskWhenPlainValueLengthEqualsLastM() {
+        assertThat(maskAlgorithm.mask("abc12"), is("*****"));
+        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc12"), is("*****"));
+    }
+    
+    @Test
+    void assertMaskWhenPlainValueLengthLessThanFirstNPlusLastM() {
+        assertThat(maskAlgorithm.mask("abc1234"), is("*******"));
+        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc123456"), is("*********"));
+    }
+    
+    @Test
+    void assertMaskWhenPlainValueLengthEqualsFirstNPlusLastM() {
+        assertThat(maskAlgorithm.mask("abc12345"), is("********"));
+        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc1234567"), is("**********"));
     }
     
     @Test

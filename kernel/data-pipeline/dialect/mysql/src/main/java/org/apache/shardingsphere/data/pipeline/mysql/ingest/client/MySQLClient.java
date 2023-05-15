@@ -29,7 +29,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
@@ -61,6 +60,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * MySQL Connector.
@@ -233,6 +233,7 @@ public final class MySQLClient {
         try {
             return blockingEventQueue.poll(100L, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException ignored) {
+            Thread.currentThread().interrupt();
             return null;
         }
     }
@@ -251,7 +252,10 @@ public final class MySQLClient {
                 throw new PipelineInternalException(((MySQLErrPacket) response).getErrorMessage());
             }
             throw new PipelineInternalException("unexpected response type");
-        } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new PipelineInternalException(ex);
+        } catch (final ExecutionException | TimeoutException ex) {
             throw new PipelineInternalException(ex);
         }
     }
@@ -270,6 +274,7 @@ public final class MySQLClient {
                 eventLoopGroup.shutdownGracefully();
             }
         } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
             log.error("close channel interrupted", ex);
         }
     }
@@ -292,10 +297,13 @@ public final class MySQLClient {
         }
     }
     
-    @AllArgsConstructor
     private final class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
         
-        private volatile AbstractBinlogEvent lastBinlogEvent;
+        private final AtomicReference<AbstractBinlogEvent> lastBinlogEvent;
+        
+        MySQLBinlogEventHandler(final AbstractBinlogEvent lastBinlogEvent) {
+            this.lastBinlogEvent = new AtomicReference<>(lastBinlogEvent);
+        }
         
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
@@ -303,8 +311,8 @@ public final class MySQLClient {
                 return;
             }
             if (msg instanceof AbstractBinlogEvent) {
-                lastBinlogEvent = (AbstractBinlogEvent) msg;
-                blockingEventQueue.put(lastBinlogEvent);
+                lastBinlogEvent.set((AbstractBinlogEvent) msg);
+                blockingEventQueue.put(lastBinlogEvent.get());
                 reconnectTimes.set(0);
             }
         }
@@ -320,8 +328,8 @@ public final class MySQLClient {
         
         @Override
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
-            String fileName = null == lastBinlogEvent ? null : lastBinlogEvent.getFileName();
-            Long position = null == lastBinlogEvent ? null : lastBinlogEvent.getPosition();
+            String fileName = null == lastBinlogEvent.get() ? null : lastBinlogEvent.get().getFileName();
+            Long position = null == lastBinlogEvent.get() ? null : lastBinlogEvent.get().getPosition();
             log.error("MySQLBinlogEventHandler protocol resolution error, file name:{}, position:{}", fileName, position, cause);
         }
         
@@ -334,7 +342,7 @@ public final class MySQLClient {
             reconnectTimes.incrementAndGet();
             connect();
             log.info("reconnect times {}", reconnectTimes.get());
-            subscribe(lastBinlogEvent.getFileName(), lastBinlogEvent.getPosition());
+            subscribe(lastBinlogEvent.get().getFileName(), lastBinlogEvent.get().getPosition());
         }
     }
 }

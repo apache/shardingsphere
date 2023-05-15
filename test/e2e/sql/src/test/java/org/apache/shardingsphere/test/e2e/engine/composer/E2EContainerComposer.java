@@ -64,7 +64,7 @@ public abstract class E2EContainerComposer implements AutoCloseable {
     
     private final Map<String, DataSource> expectedDataSourceMap;
     
-    public E2EContainerComposer(final E2ETestParameter testParam) {
+    protected E2EContainerComposer(final E2ETestParameter testParam) {
         containerComposer = CONTAINER_COMPOSER_REGISTRY.getContainerComposer(testParam);
         containerComposer.start();
         actualDataSourceMap = containerComposer.getActualDataSourceMap();

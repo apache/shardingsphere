@@ -51,12 +51,15 @@ rules:
     <table_name>: # Encryption table name
       columns:
         <column_name> (+): # Encrypt logic column name
-          cipherColumn: # Cipher column name
-          encryptorName: # Cipher encrypt algorithm name
-          assistedQueryColumn (?):  # Assisted query column name
-          assistedQueryEncryptorName:  # Assisted query encrypt algorithm name
-          likeQueryColumn (?):  # Like query column name
-          likeQueryEncryptorName:  # Like query encrypt algorithm name 
+          cipher:
+            name: # Cipher column name
+            encryptorName: # Cipher encrypt algorithm name
+          assistedQuery (?):
+            name: # Assisted query column name
+            encryptorName:  # Assisted query encrypt algorithm name
+          likeQuery (?):
+            name: # Like query column name
+            encryptorName:  # Like query encrypt algorithm name 
 ```
 
 ## Samples
@@ -108,13 +111,17 @@ rules:
     t_encrypt:
       columns:
         user_id:
-          cipherColumn: user_cipher
-          encryptorName: aes_encryptor
-          assistedQueryColumn: assisted_query_user
-          assistedQueryEncryptorName: assisted_encryptor
-          likeQueryColumn: like_query_user
-          likeQueryEncryptorName: like_encryptor
+          cipher:
+            name: user_cipher
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: assisted_query_user
+            encryptorName: assisted_encryptor
+          likeQuery:
+            name: like_query_user
+            encryptorName: like_encryptor
         order_id:
-          cipherColumn: order_cipher
-          encryptorName: aes_encryptor
+          cipher:
+            name: order_cipher
+            encryptorName: aes_encryptor
 ```

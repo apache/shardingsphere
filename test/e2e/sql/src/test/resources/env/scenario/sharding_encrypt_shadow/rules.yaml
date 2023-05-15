@@ -124,5 +124,6 @@ rules:
       t_shadow:
         columns:
           order_name:
-            cipherColumn: order_name_cipher
-            encryptorName: aes_encryptor
+            cipher:
+              name: order_name_cipher
+              encryptorName: aes_encryptor

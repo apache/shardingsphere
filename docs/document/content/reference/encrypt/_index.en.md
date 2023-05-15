@@ -20,7 +20,7 @@ Apache ShardingSphere will encrypt the plaintext requested by users and store it
 
 Before explaining the whole process, we need to understand the encryption rules and configuration. Encryption configuration is mainly divided into three parts: data source configuration, encryptor configuration, encryption table configuration, as shown in the figure below:
 
-![2](https://shardingsphere.apache.org/document/current/img/encrypt/2_en_v2.png)
+![2](https://shardingsphere.apache.org/document/current/img/encrypt/2_en_v3.png)
 
 Data source configuration: the configuration of the data source.
 
@@ -60,19 +60,21 @@ Solution description: after selecting the appropriate encryption algorithm, such
 
 ```yaml
 -!ENCRYPT
- encryptors:
-  aes_encryptor:
-   type: AES
-   props:
-    aes-key-value: 123456abc
- tables:
-  t_user:
-   columns:
-    pwd:
-     cipherColumn: pwd_cipher
-     encryptorName: aes_encryptor
-     assistedQueryColumn: pwd_assisted_query
-     assistedQueryEncryptorName: pwd_assisted_query_cipher
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+  tables:
+    t_user:
+      columns:
+        pwd:
+          cipher:
+            name: pwd_cipher
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: pwd_assisted_query
+            encryptorName: pwd_assisted_query_cipher
 ```
 
 With the above configuration, Apache ShardingSphere only needs to convert `logicColumn`, `cipherColumn`, and `assistedQueryColumn`. 

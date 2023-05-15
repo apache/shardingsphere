@@ -25,6 +25,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.flush.PostgreSQLComFlushPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.sync.PostgreSQLComSyncPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
@@ -78,6 +79,8 @@ public final class PostgreSQLCommandPacketFactory {
                 return new PostgreSQLComSyncPacket(payload);
             case CLOSE_COMMAND:
                 return new PostgreSQLComClosePacket(payload);
+            case FLUSH_COMMAND:
+                return new PostgreSQLComFlushPacket(payload);
             case TERMINATE:
                 return new PostgreSQLComTerminationPacket(payload);
             default:

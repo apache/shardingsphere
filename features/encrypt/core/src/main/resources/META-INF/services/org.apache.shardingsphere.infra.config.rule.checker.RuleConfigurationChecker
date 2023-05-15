@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.encrypt.checker.EncryptRuleConfigurationChecker
+org.apache.shardingsphere.encrypt.checker.CompatibleEncryptRuleConfigurationChecker

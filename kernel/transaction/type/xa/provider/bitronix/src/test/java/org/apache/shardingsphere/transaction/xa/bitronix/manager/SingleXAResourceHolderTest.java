@@ -28,6 +28,7 @@ import javax.transaction.xa.XAResource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -74,6 +75,6 @@ class SingleXAResourceHolderTest {
     
     @Test
     void assertClose() {
-        singleXAResourceHolder.close();
+        assertDoesNotThrow(() -> singleXAResourceHolder.close());
     }
 }

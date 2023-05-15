@@ -26,14 +26,15 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class MethodInvocationRecorderTest {
     
     @Test
-    void assertRecordMethodInvocationSuccess() throws SQLException {
+    void assertRecordMethodInvocationSuccess() {
         MethodInvocationRecorder<List<?>> methodInvocationRecorder = new MethodInvocationRecorder<>();
         methodInvocationRecorder.record("isEmpty", List::isEmpty);
-        methodInvocationRecorder.replay(Collections.emptyList());
+        assertDoesNotThrow(() -> methodInvocationRecorder.replay(Collections.emptyList()));
     }
     
     @Test

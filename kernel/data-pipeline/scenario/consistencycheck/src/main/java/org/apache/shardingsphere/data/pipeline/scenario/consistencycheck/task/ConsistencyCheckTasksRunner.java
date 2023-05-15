@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.task;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
@@ -42,6 +40,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Consistency check tasks runner.
@@ -64,8 +63,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
     
     private final ExecuteCallback checkExecuteCallback;
     
-    @Setter(AccessLevel.PRIVATE)
-    private volatile DataConsistencyCalculateAlgorithm calculateAlgorithm;
+    private final AtomicReference<DataConsistencyCalculateAlgorithm> calculateAlgorithm = new AtomicReference<>();
     
     public ConsistencyCheckTasksRunner(final ConsistencyCheckJobItemContext jobItemContext) {
         this.jobItemContext = jobItemContext;
@@ -102,7 +100,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
             PipelineJobConfiguration parentJobConfig = jobAPI.getJobConfiguration(parentJobId);
             DataConsistencyCalculateAlgorithm calculateAlgorithm = jobAPI.buildDataConsistencyCalculateAlgorithm(
                     parentJobConfig, checkJobConfig.getAlgorithmTypeName(), checkJobConfig.getAlgorithmProps());
-            setCalculateAlgorithm(calculateAlgorithm);
+            ConsistencyCheckTasksRunner.this.calculateAlgorithm.set(calculateAlgorithm);
             Map<String, DataConsistencyCheckResult> dataConsistencyCheckResult;
             try {
                 dataConsistencyCheckResult = jobAPI.dataConsistencyCheck(parentJobConfig, calculateAlgorithm, jobItemContext.getProgressContext());
@@ -114,7 +112,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         
         @Override
         protected void doStop() throws SQLException {
-            DataConsistencyCalculateAlgorithm algorithm = calculateAlgorithm;
+            DataConsistencyCalculateAlgorithm algorithm = calculateAlgorithm.get();
             if (null != algorithm) {
                 algorithm.cancel();
             }
@@ -133,7 +131,7 @@ public final class ConsistencyCheckTasksRunner implements PipelineTasksRunner {
         
         @Override
         public void onFailure(final Throwable throwable) {
-            DataConsistencyCalculateAlgorithm algorithm = calculateAlgorithm;
+            DataConsistencyCalculateAlgorithm algorithm = calculateAlgorithm.get();
             if (null != algorithm && algorithm.isCanceling()) {
                 log.info("onFailure, canceling, check job id: {}, parent job id: {}", checkJobId, parentJobId);
                 checkJobAPI.stop(checkJobId);

@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.infra.expr.espresso;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledInNativeImage;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.junit.jupiter.api.condition.EnabledInNativeImage;
 
 import java.util.Collections;
@@ -29,6 +30,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @EnabledInNativeImage
+@DisabledIfSystemProperty(named = "org.graalvm.nativeimage.imagecode", matches = "agent", disabledReason = "Skip this unit test when using GraalVM Native Build Tools")
 class EspressoInlineExpressionParserTest {
     
     @Test
@@ -116,14 +118,12 @@ class EspressoInlineExpressionParserTest {
         assertThat(new EspressoInlineExpressionParser().handlePlaceHolder("t_${[\"new$->{1+2}\"]}"), is("t_${[\"new${1+2}\"]}"));
     }
     
-    /**
-     * TODO
-     * This method needs to avoid returning a groovy.lang.Closure class instance,
-     * and instead return the result of `Closure#call`.
-     * Because `org.graalvm.polyglot.Value#as` does not allow this type to be returned from the guest JVM.
+    /*
+     * TODO This method needs to avoid returning a groovy.lang.Closure class instance, and instead return the result of `Closure#call`. Because `org.graalvm.polyglot.Value#as` does not allow this type
+     * to be returned from the guest JVM.
      */
     @Test
-    @DisabledInNativeImage
+    @Disabled("See java doc")
     void assertEvaluateClosure() {
         assertThat(new EspressoInlineExpressionParser().evaluateClosure("${1+2}").call().toString(), is("3"));
     }

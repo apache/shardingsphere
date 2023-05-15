@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.db.protocol.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Map;
@@ -25,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Database protocol server info.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseProtocolServerInfo {
     
     private static final String SERVER_INFORMATION_PATTERN = "%s-ShardingSphere-Proxy %s";

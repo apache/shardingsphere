@@ -29,7 +29,7 @@ public abstract class MetaDataSQLException extends KernelSQLException {
     
     private static final int KERNEL_CODE = 0;
     
-    public MetaDataSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+    protected MetaDataSQLException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, KERNEL_CODE, errorCode, reason, messageArgs);
     }
 }

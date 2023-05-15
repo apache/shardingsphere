@@ -38,7 +38,7 @@ public abstract class PropertySynonyms {
     
     private final Map<String, Object> localProperties;
     
-    public PropertySynonyms(final Map<String, Object> props, final Collection<String> standardPropertyKeys, final Map<String, String> propertySynonyms) {
+    protected PropertySynonyms(final Map<String, Object> props, final Collection<String> standardPropertyKeys, final Map<String, String> propertySynonyms) {
         this.standardPropertyKeys = standardPropertyKeys;
         standardProperties = buildStandardProperties(props, standardPropertyKeys, propertySynonyms);
         localProperties = buildLocalProperties(props, standardPropertyKeys, propertySynonyms);

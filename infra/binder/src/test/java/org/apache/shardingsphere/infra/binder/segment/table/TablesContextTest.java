@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -58,8 +59,11 @@ class TablesContextTest {
     void assertInstanceCreatedWhenNoExceptionThrown() {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 10, new IdentifierValue("tbl")));
         tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue("schema")));
-        new TablesContext(Collections.singleton(tableSegment), DatabaseTypeEngine.getDatabaseType("MySQL"));
-        // TODO add assertion
+        TablesContext tablesContext = new TablesContext(Collections.singleton(tableSegment), DatabaseTypeEngine.getDatabaseType("MySQL"));
+        assertThat(tablesContext.getDatabaseName(), is(Optional.of("schema")));
+        assertThat(tablesContext.getSchemaName(), is(Optional.of("schema")));
+        assertThat(tablesContext.getTableNames(), is(Collections.singleton("tbl")));
+        assertTrue(tablesContext.getSubqueryTables().isEmpty());
     }
     
     @Test

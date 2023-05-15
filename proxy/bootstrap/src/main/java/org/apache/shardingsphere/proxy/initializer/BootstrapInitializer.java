@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.initializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
@@ -65,14 +64,12 @@ public final class BootstrapInitializer {
     private ContextManager createContextManager(final ProxyConfiguration proxyConfig, final ModeConfiguration modeConfig, final int port, final boolean force) throws SQLException {
         ContextManagerBuilderParameter param = new ContextManagerBuilderParameter(modeConfig, proxyConfig.getDatabaseConfigurations(),
                 proxyConfig.getGlobalConfiguration().getRules(), proxyConfig.getGlobalConfiguration().getProperties(), proxyConfig.getGlobalConfiguration().getLabels(),
-                createInstanceMetaData(proxyConfig, port), force);
+                createInstanceMetaData(port), force);
         return TypedSPILoader.getService(ContextManagerBuilder.class, null == modeConfig ? null : modeConfig.getType()).build(param);
     }
     
-    private InstanceMetaData createInstanceMetaData(final ProxyConfiguration proxyConfig, final int port) {
-        String instanceType = proxyConfig.getGlobalConfiguration().getProperties().getProperty(
-                ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getKey(), ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getDefaultValue());
-        return TypedSPILoader.getService(InstanceMetaDataBuilder.class, instanceType).build(port);
+    private InstanceMetaData createInstanceMetaData(final int port) {
+        return TypedSPILoader.getService(InstanceMetaDataBuilder.class, "Proxy").build(port);
     }
     
     private void contextManagerInitializedCallback(final ContextManager contextManager) {

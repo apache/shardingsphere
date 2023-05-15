@@ -24,15 +24,11 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Column value reader for PostgreSQL.
  */
 public final class PostgreSQLColumnValueReader extends AbstractColumnValueReader {
-    
-    private static final Collection<String> TYPE_ALIASES = Collections.singletonList("openGauss");
     
     private static final String PG_MONEY_TYPE = "money";
     
@@ -67,10 +63,5 @@ public final class PostgreSQLColumnValueReader extends AbstractColumnValueReader
     @Override
     public String getType() {
         return "PostgreSQL";
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        return TYPE_ALIASES;
     }
 }

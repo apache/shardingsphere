@@ -59,7 +59,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -105,15 +104,15 @@ class InsertClauseShardingConditionEngineTest {
     }
     
     private InsertValueContext createInsertValueContext() {
-        return new InsertValueContext(Collections.singletonList(new LiteralExpressionSegment(0, 10, "1")), Collections.emptyList(), 0);
+        return new InsertValueContext(Collections.singleton(new LiteralExpressionSegment(0, 10, "1")), Collections.emptyList(), 0);
     }
     
     private InsertValueContext createInsertValueContextAsCommonExpressionSegmentEmptyText() {
-        return new InsertValueContext(Collections.singletonList(new CommonExpressionSegment(0, 10, "null")), Collections.emptyList(), 0);
+        return new InsertValueContext(Collections.singleton(new CommonExpressionSegment(0, 10, "null")), Collections.emptyList(), 0);
     }
     
     private InsertValueContext createInsertValueContextAsCommonExpressionSegmentWithNow() {
-        return new InsertValueContext(Collections.singletonList(new CommonExpressionSegment(0, 10, "now()")), Collections.emptyList(), 0);
+        return new InsertValueContext(Collections.singleton(new CommonExpressionSegment(0, 10, "now()")), Collections.emptyList(), 0);
     }
     
     @Test
@@ -166,8 +165,8 @@ class InsertClauseShardingConditionEngineTest {
         GeneratedKeyContext generatedKeyContext = mock(GeneratedKeyContext.class);
         when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(generatedKeyContext));
         when(generatedKeyContext.isGenerated()).thenReturn(true);
-        when(generatedKeyContext.getGeneratedValues()).thenReturn(Collections.singletonList("foo_col1"));
-        when(shardingRule.findTableRule(eq("foo_table"))).thenReturn(Optional.of(new TableRule(Collections.singletonList("foo_col_1"), "test")));
+        when(generatedKeyContext.getGeneratedValues()).thenReturn(Collections.singleton("foo_col_1"));
+        when(shardingRule.findTableRule("foo_table")).thenReturn(Optional.of(new TableRule(Collections.singleton("foo_col_1"), "test")));
         when(shardingRule.findShardingColumn(any(), any())).thenReturn(Optional.of("foo_sharding_col"));
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
         assertThat(shardingConditions.get(0).getStartIndex(), is(0));
@@ -176,7 +175,7 @@ class InsertClauseShardingConditionEngineTest {
     
     @Test
     void assertCreateShardingConditionsWithParameterMarkers() {
-        InsertValueContext insertValueContext = new InsertValueContext(Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0)), Collections.singletonList(1), 0);
+        InsertValueContext insertValueContext = new InsertValueContext(Collections.singleton(new ParameterMarkerExpressionSegment(0, 0, 0)), Collections.singletonList(1), 0);
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(insertValueContext));
         when(shardingRule.findShardingColumn("foo_col_1", "foo_table")).thenReturn(Optional.of("foo_col_1"));
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.singletonList(1));

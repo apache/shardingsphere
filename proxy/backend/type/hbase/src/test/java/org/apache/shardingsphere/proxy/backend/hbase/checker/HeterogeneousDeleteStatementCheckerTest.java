@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class HeterogeneousDeleteStatementCheckerTest {
@@ -30,7 +31,7 @@ class HeterogeneousDeleteStatementCheckerTest {
     @Test
     void assertExecuteDeleteStatement() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getDeleteStatement());
-        HBaseCheckerFactory.newInstance(sqlStatement).execute();
+        assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
     }
     
     @Test

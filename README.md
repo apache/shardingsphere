@@ -7,7 +7,7 @@
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=apache_shardingsphere&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=apache_shardingsphere)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=apache_shardingsphere&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=apache_shardingsphere)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=apache_shardingsphere&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=apache_shardingsphere)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=apache_shardingsphere&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=apache_shardingsphere)
 [![codecov](https://codecov.io/gh/apache/shardingsphere/branch/master/graph/badge.svg)](https://codecov.io/gh/apache/shardingsphere)
 
 [![OpenSSF Best Practices](https://bestpractices.coreinfrastructure.org/projects/5394/badge)](https://bestpractices.coreinfrastructure.org/projects/5394)
@@ -42,7 +42,7 @@ Virtually all databases are [supported](https://shardingsphere.apache.org/docume
 
 ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
 
-So far, ShardingSphere has been used by over [13,000 projects on GitHub](https://github.com/search?l=Maven+POM&q=shardingsphere&type=Code).
+So far, ShardingSphere has been used by over [10,000 projects on GitHub](https://github.com/search?l=Maven+POM&q=shardingsphere+language%3A%22Maven+POM%22&type=Code).
 
 ### DOCUMENTATION📜
 

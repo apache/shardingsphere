@@ -37,6 +37,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,7 +61,8 @@ class ShardingAlterIndexStatementValidatorTest {
         when(database.getSchema("public").getTable("t_order")).thenReturn(table);
         when(table.containsIndex("t_order_index")).thenReturn(true);
         when(table.containsIndex("t_order_index_new")).thenReturn(false);
-        new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        assertDoesNotThrow(() -> new ShardingAlterIndexStatementValidator().preValidate(
+                shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test

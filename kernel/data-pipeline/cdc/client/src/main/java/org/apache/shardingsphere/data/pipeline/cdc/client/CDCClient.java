@@ -28,6 +28,7 @@ import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.CDCRequestHandler;
 import org.apache.shardingsphere.data.pipeline.cdc.client.handler.LoginRequestHandler;
@@ -76,6 +77,7 @@ public final class CDCClient {
         startInternal(parameter.getAddress(), parameter.getPort());
     }
     
+    @SneakyThrows(InterruptedException.class)
     private void startInternal(final String address, final int port) {
         Bootstrap bootstrap = new Bootstrap();
         NioEventLoopGroup group = new NioEventLoopGroup();
@@ -98,10 +100,7 @@ public final class CDCClient {
         try {
             ChannelFuture future = bootstrap.connect(address, port).sync();
             future.channel().closeFuture().sync();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            log.warn("CDC connect failed", ex);
+        } finally {
             group.shutdownGracefully();
         }
     }

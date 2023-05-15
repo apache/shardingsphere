@@ -28,6 +28,7 @@ import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -70,7 +71,7 @@ class CircuitBreakerConnectionTest {
     
     @Test
     void assertClearWarnings() {
-        connection.clearWarnings();
+        assertDoesNotThrow(connection::clearWarnings);
     }
     
     @Test
@@ -86,12 +87,12 @@ class CircuitBreakerConnectionTest {
     
     @Test
     void assertCommit() {
-        connection.commit();
+        assertDoesNotThrow(connection::commit);
     }
     
     @Test
     void assertRollback() {
-        connection.rollback();
+        assertDoesNotThrow(() -> connection.rollback());
     }
     
     @Test
@@ -125,7 +126,7 @@ class CircuitBreakerConnectionTest {
     
     @Test
     void assertClose() {
-        connection.close();
+        assertDoesNotThrow(connection::close);
     }
     
     @Test

@@ -22,12 +22,15 @@ import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
+import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlCompatibleEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.YamlCompatibleEncryptRuleConfigurationSwapper;
+import org.apache.shardingsphere.encrypt.yaml.swapper.YamlEncryptRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -116,6 +119,8 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
                 appendReadWriteSplittingDistSQL((ReadwriteSplittingRuleConfiguration) each, result);
             } else if (each instanceof EncryptRuleConfiguration) {
                 appendEncryptDistSQL((EncryptRuleConfiguration) each, result);
+            } else if (each instanceof CompatibleEncryptRuleConfiguration) {
+                appendEncryptDistSQL(((CompatibleEncryptRuleConfiguration) each).convertToEncryptRuleConfiguration(), result);
             } else if (each instanceof ShadowRuleConfiguration) {
                 appendShadowDistSQL((ShadowRuleConfiguration) each, result);
             } else if (each instanceof MaskRuleConfiguration) {
@@ -134,6 +139,9 @@ public final class ConvertYamlConfigurationExecutor implements QueryableRALExecu
             } else if (each instanceof YamlReadwriteSplittingRuleConfiguration) {
                 YamlReadwriteSplittingRuleConfigurationSwapper swapper = new YamlReadwriteSplittingRuleConfigurationSwapper();
                 result.put(swapper.getOrder(), swapper.swapToObject((YamlReadwriteSplittingRuleConfiguration) each));
+            } else if (each instanceof YamlEncryptRuleConfiguration) {
+                YamlEncryptRuleConfigurationSwapper swapper = new YamlEncryptRuleConfigurationSwapper();
+                result.put(swapper.getOrder(), swapper.swapToObject((YamlEncryptRuleConfiguration) each));
             } else if (each instanceof YamlCompatibleEncryptRuleConfiguration) {
                 YamlCompatibleEncryptRuleConfigurationSwapper swapper = new YamlCompatibleEncryptRuleConfigurationSwapper();
                 result.put(swapper.getOrder(), swapper.swapToObject((YamlCompatibleEncryptRuleConfiguration) each));

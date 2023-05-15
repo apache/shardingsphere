@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 /**
  * No unique key position.
  */
-public final class NoUniqueKeyPosition extends PrimaryKeyPosition<Void> implements IngestPosition<NoUniqueKeyPosition> {
+public final class NoUniqueKeyPosition extends PrimaryKeyPosition<Void> implements IngestPosition {
     
     @Override
     public Void getBeginValue() {

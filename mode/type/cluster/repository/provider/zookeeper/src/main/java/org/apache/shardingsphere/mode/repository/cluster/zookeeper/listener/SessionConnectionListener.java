@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.ZookeeperExceptionHandler;
 
 import java.util.Properties;
 
@@ -69,7 +68,7 @@ public final class SessionConnectionListener implements ConnectionStateListener 
             sleepInterval();
             return false;
         } catch (final InterruptedException ex) {
-            ZookeeperExceptionHandler.handleException(ex);
+            Thread.currentThread().interrupt();
             return true;
         }
     }

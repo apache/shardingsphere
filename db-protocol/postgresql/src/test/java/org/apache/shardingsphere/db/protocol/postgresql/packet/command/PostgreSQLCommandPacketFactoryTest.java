@@ -75,6 +75,11 @@ class PostgreSQLCommandPacketFactoryTest {
     }
     
     @Test
+    void assertNewInstanceWithFlushComPacket() {
+        assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.FLUSH_COMMAND, payload), instanceOf(PostgreSQLAggregatedCommandPacket.class));
+    }
+    
+    @Test
     void assertNewInstanceWithTerminationComPacket() {
         when(payload.getByteBuf()).thenReturn(mock(ByteBuf.class));
         assertThat(PostgreSQLCommandPacketFactory.newInstance(PostgreSQLCommandPacketType.TERMINATE, payload), instanceOf(PostgreSQLComTerminationPacket.class));

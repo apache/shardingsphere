@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.binder;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.UnknownSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.AnalyzeTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.ExplainStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dal.FlushStatementContext;
@@ -157,7 +157,7 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof DALStatement) {
             return getDALStatementContext((DALStatement) sqlStatement);
         }
-        return new CommonSQLStatementContext<>(sqlStatement);
+        return new UnknownSQLStatementContext<>(sqlStatement);
     }
     
     private static SQLStatementContext<?> getDMLStatementContext(final ShardingSphereMetaData metaData,
@@ -254,7 +254,7 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof FetchStatement) {
             return new FetchStatementContext((FetchStatement) sqlStatement);
         }
-        return new CommonSQLStatementContext<>(sqlStatement);
+        return new UnknownSQLStatementContext<>(sqlStatement);
     }
     
     private static SQLStatementContext<?> getDCLStatementContext(final DCLStatement sqlStatement) {
@@ -267,7 +267,7 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof SQLServerDenyUserStatement) {
             return new DenyUserStatementContext((SQLServerDenyUserStatement) sqlStatement);
         }
-        return new CommonSQLStatementContext<>(sqlStatement);
+        return new UnknownSQLStatementContext<>(sqlStatement);
     }
     
     private static SQLStatementContext<?> getDALStatementContext(final DALStatement sqlStatement) {
@@ -301,6 +301,6 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof MySQLKillStatement) {
             return new KillStatementContext((MySQLKillStatement) sqlStatement);
         }
-        return new CommonSQLStatementContext<>(sqlStatement);
+        return new UnknownSQLStatementContext<>(sqlStatement);
     }
 }

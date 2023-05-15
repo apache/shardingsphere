@@ -49,6 +49,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -136,7 +137,7 @@ class SingleStandardRouteEngineTest {
     @Test
     void assertRouteIfNotExistsDuplicateSingleTable() {
         SingleStandardRouteEngine engine = new SingleStandardRouteEngine(Collections.singletonList(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "t_order")), mockStatement(true));
-        engine.route(new RouteContext(), mockSingleRule());
+        assertDoesNotThrow(() -> engine.route(new RouteContext(), mockSingleRule()));
     }
     
     private SQLStatement mockStatement(final boolean ifNotExists) {

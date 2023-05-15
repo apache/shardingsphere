@@ -59,11 +59,13 @@
 #    t_encrypt:
 #      columns:
 #        user_id:
-#          cipherColumn: user_cipher
-#          encryptorName: aes_encryptor
+#          cipher:
+#            name: user_cipher
+#            encryptorName: aes_encryptor
 #        order_id:
-#          cipherColumn: order_encrypt
-#          encryptorName: rc4_encryptor
+#          cipher:
+#            name: order_encrypt
+#            encryptorName: rc4_encryptor
 
 ######################################################################################################
 #
@@ -108,8 +110,10 @@
 #    t_encrypt:
 #      columns:
 #        user_id:
-#          cipherColumn: user_cipher
-#          encryptorName: aes_encryptor
+#          cipher:
+#            name: user_cipher
+#            encryptorName: aes_encryptor
 #        order_id:
-#          cipherColumn: order_cipher
-#          encryptorName: rc4_encryptor
+#          cipher:
+#            name: order_encrypt
+#            encryptorName: rc4_encryptor

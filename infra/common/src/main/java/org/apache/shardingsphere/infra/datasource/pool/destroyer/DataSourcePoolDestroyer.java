@@ -58,6 +58,7 @@ public final class DataSourcePoolDestroyer {
             try {
                 Thread.sleep(10L);
             } catch (final InterruptedException ignore) {
+                Thread.currentThread().interrupt();
             }
         }
     }

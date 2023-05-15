@@ -93,14 +93,12 @@ public abstract class BaseTransactionTestCase {
     }
     
     protected static void assertTableRowCount(final Connection connection, final String tableName, final int rowNum) throws SQLException {
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(String.format("select * from %s", tableName));
-        int resultSetCount = 0;
-        while (resultSet.next()) {
-            resultSetCount++;
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(String.format("SELECT COUNT(*) FROM %s", tableName))) {
+            if (resultSet.next()) {
+                int rowCount = resultSet.getInt(1);
+                assertThat(String.format("Recode num assert error, expect: %s, actual: %s.", rowNum, rowCount), rowCount, is(rowNum));
+            }
         }
-        statement.close();
-        assertThat(String.format("Recode num assert error, expect: %s, actual: %s.", rowNum, resultSetCount), resultSetCount, is(rowNum));
     }
     
     protected void executeSqlListWithLog(final Connection connection, final String... sqlList) throws SQLException {
@@ -118,5 +116,19 @@ public abstract class BaseTransactionTestCase {
             result++;
         }
         return result;
+    }
+    
+    protected void assertAccountBalances(final Connection connection, final int... expectedBalances) throws SQLException {
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery("SELECT * FROM account")) {
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                int actualBalance = resultSet.getInt("balance");
+                assertBalance(actualBalance, expectedBalances[id - 1]);
+            }
+        }
+    }
+    
+    private void assertBalance(final int actual, final int expected) {
+        assertThat(String.format("Balance is %s, should be %s.", actual, expected), actual, is(expected));
     }
 }

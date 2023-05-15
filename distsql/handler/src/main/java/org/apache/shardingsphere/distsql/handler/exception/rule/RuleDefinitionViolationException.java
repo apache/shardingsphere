@@ -27,7 +27,7 @@ public abstract class RuleDefinitionViolationException extends DistSQLException 
     
     private static final long serialVersionUID = 1090914641996552474L;
     
-    public RuleDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
+    protected RuleDefinitionViolationException(final SQLState sqlState, final int errorCode, final String reason, final Object... messageArgs) {
         super(sqlState, errorCode, reason, messageArgs);
     }
 }

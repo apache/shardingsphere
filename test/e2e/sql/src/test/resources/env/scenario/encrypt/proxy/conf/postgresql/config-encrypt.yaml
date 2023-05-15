@@ -43,38 +43,50 @@ rules:
     t_user:
       columns:
         user_name:
-          cipherColumn: user_name_cipher
-          likeQueryColumn: user_name_like
-          encryptorName: aes_encryptor
-          likeQueryEncryptorName: like_encryptor
+          cipher:
+            name: user_name_cipher
+            encryptorName: aes_encryptor
+          likeQuery:
+            name: user_name_like
+            encryptorName: like_encryptor
         password:
-          cipherColumn: password_cipher
-          encryptorName: aes_encryptor
+          cipher:
+            name: password_cipher
+            encryptorName: aes_encryptor
         email:
-          cipherColumn: email_cipher
-          encryptorName: aes_encryptor
+          cipher:
+            name: email_cipher
+            encryptorName: aes_encryptor
         telephone:
-          cipherColumn: telephone_cipher
-          likeQueryColumn: telephone_like
-          encryptorName: aes_encryptor
-          likeQueryEncryptorName: like_encryptor
+          cipher:
+            name: telephone_cipher
+            encryptorName: aes_encryptor
+          likeQuery:
+            name: telephone_like
+            encryptorName: like_encryptor
     t_user_details:
       columns:
         number:
-          cipherColumn: number_cipher
-          encryptorName: aes_encryptor
+          cipher:
+            name: number_cipher
+            encryptorName: aes_encryptor
         number_new:
-          cipherColumn: number_new_cipher
-          encryptorName: aes_encryptor
+          cipher: 
+            name: number_new_cipher
+            encryptorName: aes_encryptor
     t_merchant:
       columns:
         business_code:
-          cipherColumn: business_code_cipher
-          likeQueryColumn: business_code_like
-          encryptorName: aes_encryptor
-          likeQueryEncryptorName: like_encryptor
+          cipher:
+            name: business_code_cipher
+            encryptorName: aes_encryptor
+          likeQuery:
+            name: business_code_like
+            encryptorName: like_encryptor
         telephone:
-          cipherColumn: telephone_cipher
-          likeQueryColumn: telephone_like
-          encryptorName: aes_encryptor
-          likeQueryEncryptorName: like_encryptor
+          cipher:
+            name: telephone_cipher
+            encryptorName: aes_encryptor
+          likeQuery:
+            name: telephone_like
+            encryptorName: like_encryptor

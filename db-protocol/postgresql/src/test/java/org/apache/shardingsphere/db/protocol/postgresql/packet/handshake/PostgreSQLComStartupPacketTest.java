@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 
 class PostgreSQLComStartupPacketTest {
@@ -76,6 +77,6 @@ class PostgreSQLComStartupPacketTest {
     
     @Test
     void assertWrite() {
-        new PostgreSQLComStartupPacket(mock(PostgreSQLPacketPayload.class)).write(mock(PostgreSQLPacketPayload.class));
+        assertDoesNotThrow(() -> new PostgreSQLComStartupPacket(mock(PostgreSQLPacketPayload.class)).write(mock(PostgreSQLPacketPayload.class)));
     }
 }

@@ -106,7 +106,12 @@ class InventoryTaskSplitterTest {
     @Test
     void assertSplitInventoryDataWithCharPrimary() throws SQLException {
         initCharPrimaryEnvironment(dumperConfig);
-        inventoryTaskSplitter.splitInventoryData(jobItemContext);
+        List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobItemContext);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getTaskId(), is("ds_0.t_order#0"));
+        IntegerPrimaryKeyPosition keyPosition = (IntegerPrimaryKeyPosition) actual.get(0).getTaskProgress().getPosition();
+        assertThat(keyPosition.getBeginValue(), is(0L));
+        assertThat(keyPosition.getEndValue(), is(999L));
     }
     
     @Test

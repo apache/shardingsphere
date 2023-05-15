@@ -24,26 +24,39 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class TokenUtilsTest {
     
     @Test
     void assertGetLogicAndActualTablesFromRouteUnit() {
-        assertThat(TokenUtils.getLogicAndActualTables(getRouteUnit(), mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class)).get("logic_order_table"), is("table_order_0"));
-    }
-    
-    @Test
-    void assertGetLogicAndActualTablesFromShardingRule() {
-        // TODO add more test case
+        Map<String, String> actual = TokenUtils.getLogicAndActualTableMap(getRouteUnit(), mockSQLStatementContext(), mockShardingRule());
+        assertThat(actual.get("foo_table"), is("foo_table_0"));
+        assertThat(actual.get("bar_table"), is("bar_table_0"));
     }
     
     private RouteUnit getRouteUnit() {
-        return new RouteUnit(new RouteMapper(DefaultDatabase.LOGIC_NAME, "ds_0"), Collections.singleton(new RouteMapper("LOGIC_ORDER_TABLE", "table_order_0")));
+        return new RouteUnit(new RouteMapper(DefaultDatabase.LOGIC_NAME, "ds_0"), Collections.singleton(new RouteMapper("foo_table", "foo_table_0")));
+    }
+    
+    private static SQLStatementContext<?> mockSQLStatementContext() {
+        SQLStatementContext<?> result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getTablesContext().getTableNames()).thenReturn(Arrays.asList("foo_table", "bar_table"));
+        return result;
+    }
+    
+    private static ShardingRule mockShardingRule() {
+        ShardingRule result = mock(ShardingRule.class);
+        when(result.getLogicAndActualTablesFromBindingTable(DefaultDatabase.LOGIC_NAME, "foo_table", "foo_table_0", Arrays.asList("foo_table", "bar_table")))
+                .thenReturn(Collections.singletonMap("bar_table", "bar_table_0"));
+        return result;
     }
 }

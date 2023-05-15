@@ -152,6 +152,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
         try {
             condition.await(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException ignored) {
+            Thread.currentThread().interrupt();
         } finally {
             lock.unlock();
         }

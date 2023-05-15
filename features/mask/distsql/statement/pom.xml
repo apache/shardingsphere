@@ -30,7 +30,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-distsql-statement</artifactId>
+            <artifactId>shardingsphere-parser-distsql-statement</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
