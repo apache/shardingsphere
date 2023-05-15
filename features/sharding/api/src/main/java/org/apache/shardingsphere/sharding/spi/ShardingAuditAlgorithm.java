@@ -39,5 +39,5 @@ public interface ShardingAuditAlgorithm extends ShardingSphereAlgorithm {
      * @param globalRuleMetaData global rule meta data
      * @param database database
      */
-    void check(SQLStatementContext<?> sqlStatementContext, List<Object> params, Grantee grantee, ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database);
+    void check(SQLStatementContext sqlStatementContext, List<Object> params, Grantee grantee, ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database);
 }

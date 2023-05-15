@@ -133,7 +133,7 @@ public final class BatchPreparedStatementExecutor {
      * @return execute results
      * @throws SQLException SQL exception
      */
-    public int[] executeBatch(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
+    public int[] executeBatch(final SQLStatementContext sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         JDBCExecutorCallback<int[]> callback = new JDBCExecutorCallback<int[]>(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType(),
                 metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getStorageTypes(), sqlStatementContext.getSqlStatement(), isExceptionThrown) {
@@ -156,7 +156,7 @@ public final class BatchPreparedStatementExecutor {
         return isNeedAccumulate(sqlStatementContext) ? accumulate(results) : results.get(0);
     }
     
-    private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
+    private boolean isNeedAccumulate(final SQLStatementContext sqlStatementContext) {
         for (ShardingSphereRule each : metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules()) {
             if (each instanceof DataNodeContainedRule && ((DataNodeContainedRule) each).isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames())) {
                 return true;

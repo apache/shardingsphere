@@ -80,7 +80,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         if (!MySQLComStmtPrepareChecker.isStatementAllowed(sqlStatement)) {
             throw new UnsupportedPreparedStatementException();
         }
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
         int statementId = MySQLStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
         MySQLServerPreparedStatement serverPreparedStatement = new MySQLServerPreparedStatement(packet.getSql(), sqlStatementContext, new CopyOnWriteArrayList<>());
@@ -97,7 +97,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         }
     }
     
-    private Collection<DatabasePacket<?>> createPackets(final SQLStatementContext<?> sqlStatementContext, final int statementId, final MySQLServerPreparedStatement serverPreparedStatement) {
+    private Collection<DatabasePacket<?>> createPackets(final SQLStatementContext sqlStatementContext, final int statementId, final MySQLServerPreparedStatement serverPreparedStatement) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         List<Projection> projections = getProjections(sqlStatementContext);
         int parameterCount = sqlStatementContext.getSqlStatement().getParameterCount();
@@ -115,11 +115,11 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         return result;
     }
     
-    private List<Projection> getProjections(final SQLStatementContext<?> sqlStatementContext) {
+    private List<Projection> getProjections(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections() : Collections.emptyList();
     }
     
-    private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final SQLStatementContext<?> sqlStatementContext, final int characterSet,
+    private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final SQLStatementContext sqlStatementContext, final int characterSet,
                                                                                    final MySQLServerPreparedStatement serverPreparedStatement) {
         Map<ParameterMarkerSegment, ShardingSphereColumn> columnsOfParameterMarkers =
                 MySQLComStmtPrepareParameterMarkerExtractor.findColumnsOfParameterMarkers(sqlStatementContext.getSqlStatement(), getSchema(sqlStatementContext));
@@ -158,7 +158,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         return result;
     }
     
-    private ShardingSphereSchema getSchema(final SQLStatementContext<?> sqlStatementContext) {
+    private ShardingSphereSchema getSchema(final SQLStatementContext sqlStatementContext) {
         String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().orElseGet(connectionSession::getDefaultDatabaseName);
         ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
         return sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema)

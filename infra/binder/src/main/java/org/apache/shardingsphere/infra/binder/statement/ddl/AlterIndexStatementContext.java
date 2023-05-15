@@ -37,7 +37,7 @@ import java.util.Optional;
  * Alter index statement context.
  */
 @Getter
-public final class AlterIndexStatementContext extends CommonSQLStatementContext<AlterIndexStatement> implements TableAvailable, IndexAvailable {
+public final class AlterIndexStatementContext extends CommonSQLStatementContext implements TableAvailable, IndexAvailable {
     
     private final TablesContext tablesContext;
     
@@ -45,6 +45,11 @@ public final class AlterIndexStatementContext extends CommonSQLStatementContext<
         super(sqlStatement);
         SimpleTableSegment simpleTableSegment = AlterIndexStatementHandler.getSimpleTableSegment(sqlStatement).orElse(null);
         tablesContext = new TablesContext(simpleTableSegment, getDatabaseType());
+    }
+    
+    @Override
+    public AlterIndexStatement getSqlStatement() {
+        return (AlterIndexStatement) super.getSqlStatement();
     }
     
     @Override

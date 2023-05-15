@@ -34,7 +34,7 @@ import java.util.Optional;
  * Create function statement context.
  */
 @Getter
-public final class CreateFunctionStatementContext extends CommonSQLStatementContext<CreateFunctionStatement> {
+public final class CreateFunctionStatementContext extends CommonSQLStatementContext {
     
     private final TablesContext tablesContext;
     
@@ -43,5 +43,10 @@ public final class CreateFunctionStatementContext extends CommonSQLStatementCont
         Optional<RoutineBodySegment> routineBodySegment = CreateFunctionStatementHandler.getRoutineBodySegment(sqlStatement);
         Collection<SimpleTableSegment> tables = routineBodySegment.map(optional -> new TableExtractor().extractExistTableFromRoutineBody(optional)).orElseGet(Collections::emptyList);
         tablesContext = new TablesContext(tables, getDatabaseType());
+    }
+    
+    @Override
+    public CreateFunctionStatement getSqlStatement() {
+        return (CreateFunctionStatement) super.getSqlStatement();
     }
 }

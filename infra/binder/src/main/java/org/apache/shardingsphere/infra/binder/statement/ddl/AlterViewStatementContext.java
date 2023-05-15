@@ -35,7 +35,7 @@ import java.util.Optional;
  * Alter view statement context.
  */
 @Getter
-public final class AlterViewStatementContext extends CommonSQLStatementContext<AlterViewStatement> implements TableAvailable {
+public final class AlterViewStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
@@ -51,6 +51,11 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext<A
         });
         AlterViewStatementHandler.getRenameView(sqlStatement).ifPresent(tables::add);
         tablesContext = new TablesContext(tables, getDatabaseType());
+    }
+    
+    @Override
+    public AlterViewStatement getSqlStatement() {
+        return (AlterViewStatement) super.getSqlStatement();
     }
     
     @Override

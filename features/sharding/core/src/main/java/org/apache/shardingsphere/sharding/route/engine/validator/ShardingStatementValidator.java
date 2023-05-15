@@ -23,16 +23,13 @@ import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
 
 /**
  * Sharding statement validator.
- *
- * @param <T> type of SQL statement
  */
-public interface ShardingStatementValidator<T extends SQLStatement> {
+public interface ShardingStatementValidator {
     
     /**
      * Validate whether sharding operation is supported before route.
@@ -43,7 +40,7 @@ public interface ShardingStatementValidator<T extends SQLStatement> {
      * @param database database
      * @param props props
      */
-    void preValidate(ShardingRule shardingRule, SQLStatementContext<T> sqlStatementContext, List<Object> params, ShardingSphereDatabase database, ConfigurationProperties props);
+    void preValidate(ShardingRule shardingRule, SQLStatementContext sqlStatementContext, List<Object> params, ShardingSphereDatabase database, ConfigurationProperties props);
     
     /**
      * Validate whether sharding operation is supported after route.
@@ -56,6 +53,6 @@ public interface ShardingStatementValidator<T extends SQLStatement> {
      * @param props props
      * @param routeContext route context
      */
-    void postValidate(ShardingRule shardingRule, SQLStatementContext<T> sqlStatementContext, HintValueContext hintValueContext, List<Object> params,
+    void postValidate(ShardingRule shardingRule, SQLStatementContext sqlStatementContext, HintValueContext hintValueContext, List<Object> params,
                       ShardingSphereDatabase database, ConfigurationProperties props, RouteContext routeContext);
 }

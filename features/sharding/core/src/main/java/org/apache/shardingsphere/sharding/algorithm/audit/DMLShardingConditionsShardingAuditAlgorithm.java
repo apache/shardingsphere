@@ -36,7 +36,7 @@ import java.util.List;
 public final class DMLShardingConditionsShardingAuditAlgorithm implements ShardingAuditAlgorithm {
     
     @Override
-    public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params,
+    public void check(final SQLStatementContext sqlStatementContext, final List<Object> params,
                       final Grantee grantee, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
         if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
             ShardingRule rule = database.getRuleMetaData().getSingleRule(ShardingRule.class);

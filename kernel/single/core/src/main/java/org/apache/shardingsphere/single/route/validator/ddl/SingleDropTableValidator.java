@@ -28,11 +28,11 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.DropTableSta
 /**
  * Single drop table validator.
  */
-public final class SingleDropTableValidator implements SingleMetaDataValidator<DropTableStatement> {
+public final class SingleDropTableValidator implements SingleMetaDataValidator {
     
     @Override
-    public void validate(final SingleRule rule, final SQLStatementContext<DropTableStatement> sqlStatementContext, final ShardingSphereDatabase database) {
-        if (DropTableStatementHandler.containsCascade(sqlStatementContext.getSqlStatement())) {
+    public void validate(final SingleRule rule, final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
+        if (DropTableStatementHandler.containsCascade((DropTableStatement) sqlStatementContext.getSqlStatement())) {
             throw new UnsupportedDropCascadeTableException();
         }
     }

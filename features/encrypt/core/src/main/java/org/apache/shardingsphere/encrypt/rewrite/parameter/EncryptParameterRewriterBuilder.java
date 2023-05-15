@@ -49,7 +49,7 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     
     private final Map<String, ShardingSphereSchema> schemas;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     private final Collection<EncryptCondition> encryptConditions;
     

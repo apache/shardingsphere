@@ -34,7 +34,7 @@ import java.util.Optional;
  * Create procedure statement context.
  */
 @Getter
-public final class CreateProcedureStatementContext extends CommonSQLStatementContext<CreateProcedureStatement> {
+public final class CreateProcedureStatementContext extends CommonSQLStatementContext {
     
     private final TablesContext tablesContext;
     
@@ -43,5 +43,10 @@ public final class CreateProcedureStatementContext extends CommonSQLStatementCon
         Optional<RoutineBodySegment> routineBodySegment = CreateProcedureStatementHandler.getRoutineBodySegment(sqlStatement);
         Collection<SimpleTableSegment> tables = routineBodySegment.map(optional -> new TableExtractor().extractExistTableFromRoutineBody(optional)).orElseGet(Collections::emptyList);
         tablesContext = new TablesContext(tables, getDatabaseType());
+    }
+    
+    @Override
+    public CreateProcedureStatement getSqlStatement() {
+        return (CreateProcedureStatement) super.getSqlStatement();
     }
 }

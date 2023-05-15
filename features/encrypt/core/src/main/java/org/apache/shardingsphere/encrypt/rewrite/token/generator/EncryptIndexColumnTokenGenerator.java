@@ -39,17 +39,17 @@ import java.util.Optional;
  * Index column token generator for encrypt.
  */
 @Setter
-public final class EncryptIndexColumnTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>>, EncryptRuleAware {
+public final class EncryptIndexColumnTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, EncryptRuleAware {
     
     private EncryptRule encryptRule;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof IndexAvailable;
     }
     
     @Override
-    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Preconditions.checkArgument(sqlStatementContext instanceof IndexAvailable, "SQLStatementContext must implementation IndexAvailable interface.");
         if (sqlStatementContext.getTablesContext().getTableNames().isEmpty()) {
             return Collections.emptyList();

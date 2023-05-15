@@ -59,7 +59,7 @@ public final class SQLFederationDecideEngine {
      * @return use SQL federation or not
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public boolean decide(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,
+    public boolean decide(final SQLStatementContext sqlStatementContext, final List<Object> parameters,
                           final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData) {
         // TODO BEGIN: move this logic to SQLFederationDecider implement class when we remove sql federation type
         if (isQuerySystemSchema(sqlStatementContext, database)) {
@@ -79,7 +79,7 @@ public final class SQLFederationDecideEngine {
         return false;
     }
     
-    private boolean isQuerySystemSchema(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) {
+    private boolean isQuerySystemSchema(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
         return sqlStatementContext instanceof SelectStatementContext
                 && SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
     }

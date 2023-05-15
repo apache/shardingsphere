@@ -38,26 +38,27 @@ import java.util.Optional;
 /**
  * Sharding alter index statement validator.
  */
-public final class ShardingAlterIndexStatementValidator extends ShardingDDLStatementValidator<AlterIndexStatement> {
+public final class ShardingAlterIndexStatementValidator extends ShardingDDLStatementValidator {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterIndexStatement> sqlStatementContext,
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
-        Optional<IndexSegment> index = sqlStatementContext.getSqlStatement().getIndex();
+        AlterIndexStatement alterIndexStatement = (AlterIndexStatement) sqlStatementContext.getSqlStatement();
+        Optional<IndexSegment> index = alterIndexStatement.getIndex();
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
         ShardingSphereSchema schema = index.flatMap(optional -> optional.getOwner()
                 .map(owner -> database.getSchema(owner.getIdentifier().getValue()))).orElseGet(() -> database.getSchema(defaultSchemaName));
         if (index.isPresent() && !isSchemaContainsIndex(schema, index.get())) {
             throw new IndexNotExistedException(index.get().getIndexName().getIdentifier().getValue());
         }
-        Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(sqlStatementContext.getSqlStatement());
+        Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(alterIndexStatement);
         if (renameIndex.isPresent() && isSchemaContainsIndex(schema, renameIndex.get())) {
             throw new DuplicatedIndexException(renameIndex.get().getIndexName().getIdentifier().getValue());
         }
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterIndexStatement> sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

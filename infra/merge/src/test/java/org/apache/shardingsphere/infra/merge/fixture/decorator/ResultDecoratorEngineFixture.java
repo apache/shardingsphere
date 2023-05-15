@@ -28,7 +28,7 @@ public final class ResultDecoratorEngineFixture implements ResultDecoratorEngine
     
     @Override
     public ResultDecorator<?> newInstance(final ShardingSphereDatabase database,
-                                          final DecoratorRuleFixture rule, final ConfigurationProperties props, final SQLStatementContext<?> sqlStatementContext) {
+                                          final DecoratorRuleFixture rule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
         return new ResultDecoratorFixture();
     }
     

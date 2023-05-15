@@ -42,7 +42,7 @@ public final class TokenUtils {
      * @param shardingRule sharding rule
      * @return key is logic table name, values is actual table belong to this data source
      */
-    public static Map<String, String> getLogicAndActualTableMap(final RouteUnit routeUnit, final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule) {
+    public static Map<String, String> getLogicAndActualTableMap(final RouteUnit routeUnit, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         Map<String, String> result = new HashMap<>(tableNames.size(), 1);
         for (RouteMapper each : routeUnit.getTableMappers()) {

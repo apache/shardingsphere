@@ -31,13 +31,18 @@ import java.util.Collection;
  * Flush statement context.
  */
 @Getter
-public final class FlushStatementContext extends CommonSQLStatementContext<FlushStatement> implements TableAvailable {
+public final class FlushStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
     public FlushStatementContext(final FlushStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(FlushStatementHandler.getSimpleTableSegment(sqlStatement), getDatabaseType());
+    }
+    
+    @Override
+    public FlushStatement getSqlStatement() {
+        return (FlushStatement) super.getSqlStatement();
     }
     
     @Override

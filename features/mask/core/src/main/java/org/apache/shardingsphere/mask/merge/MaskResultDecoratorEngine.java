@@ -36,7 +36,7 @@ public final class MaskResultDecoratorEngine implements ResultDecoratorEngine<Ma
     
     @Override
     public ResultDecorator<?> newInstance(final ShardingSphereDatabase database, final MaskRule maskRule,
-                                          final ConfigurationProperties props, final SQLStatementContext<?> sqlStatementContext) {
+                                          final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             MaskAlgorithmMetaData algorithmMetaData = new MaskAlgorithmMetaData(database, maskRule, (SelectStatementContext) sqlStatementContext);
             return new MaskDQLResultDecorator(algorithmMetaData);

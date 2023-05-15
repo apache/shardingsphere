@@ -47,8 +47,8 @@ class TokenUtilsTest {
         return new RouteUnit(new RouteMapper(DefaultDatabase.LOGIC_NAME, "ds_0"), Collections.singleton(new RouteMapper("foo_table", "foo_table_0")));
     }
     
-    private static SQLStatementContext<?> mockSQLStatementContext() {
-        SQLStatementContext<?> result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+    private static SQLStatementContext mockSQLStatementContext() {
+        SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getTablesContext().getTableNames()).thenReturn(Arrays.asList("foo_table", "bar_table"));
         return result;
     }

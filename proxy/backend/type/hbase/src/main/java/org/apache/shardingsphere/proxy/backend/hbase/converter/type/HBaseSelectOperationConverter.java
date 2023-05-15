@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class HBaseSelectOperationConverter implements HBaseOperationConverter {
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     @Override
     public HBaseOperation convert() {

@@ -39,21 +39,22 @@ import java.util.Optional;
 /**
  * Sharding alter view statement validator.
  */
-public final class ShardingAlterViewStatementValidator extends ShardingDDLStatementValidator<AlterViewStatement> {
+public final class ShardingAlterViewStatementValidator extends ShardingDDLStatementValidator {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterViewStatement> sqlStatementContext,
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
-        Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(sqlStatementContext.getSqlStatement());
+        AlterViewStatement alterViewStatement = (AlterViewStatement) sqlStatementContext.getSqlStatement();
+        Optional<SelectStatement> selectStatement = AlterViewStatementHandler.getSelectStatement(alterViewStatement);
         if (selectStatement.isPresent()) {
             TableExtractor extractor = new TableExtractor();
             extractor.extractTablesFromSelect(selectStatement.get());
             validateShardingTable(shardingRule, "ALTER VIEW", extractor.getRewriteTables());
         }
-        Optional<SimpleTableSegment> renamedView = AlterViewStatementHandler.getRenameView(sqlStatementContext.getSqlStatement());
+        Optional<SimpleTableSegment> renamedView = AlterViewStatementHandler.getRenameView(alterViewStatement);
         if (renamedView.isPresent()) {
             String targetView = renamedView.get().getTableName().getIdentifier().getValue();
-            String originView = sqlStatementContext.getSqlStatement().getView().getTableName().getIdentifier().getValue();
+            String originView = alterViewStatement.getView().getTableName().getIdentifier().getValue();
             validateBroadcastShardingView(shardingRule, originView, targetView);
         }
     }
@@ -66,7 +67,7 @@ public final class ShardingAlterViewStatementValidator extends ShardingDDLStatem
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<AlterViewStatement> sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

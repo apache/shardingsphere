@@ -23,9 +23,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchem
 /**
  * Create schema statement context.
  */
-public final class CreateSchemaStatementContext extends CommonSQLStatementContext<CreateSchemaStatement> {
+public final class CreateSchemaStatementContext extends CommonSQLStatementContext {
     
     public CreateSchemaStatementContext(final CreateSchemaStatement sqlStatement) {
         super(sqlStatement);
+    }
+    
+    @Override
+    public CreateSchemaStatement getSqlStatement() {
+        return (CreateSchemaStatement) super.getSqlStatement();
     }
 }

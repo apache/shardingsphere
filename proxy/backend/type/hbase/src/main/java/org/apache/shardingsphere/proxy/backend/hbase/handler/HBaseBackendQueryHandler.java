@@ -44,7 +44,7 @@ public final class HBaseBackendQueryHandler implements HBaseBackendHandler {
     
     @Override
     public ResponseHeader execute() {
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
         resultSet.init(sqlStatementContext);
         List<QueryHeader> queryHeaders = resultSet.getColumnNames().stream().map(each -> new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false))
                 .collect(Collectors.toList());

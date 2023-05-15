@@ -49,14 +49,14 @@ import java.util.Optional;
  * Assignment parameter rewriter for encrypt.
  */
 @Setter
-public final class EncryptAssignmentParameterRewriter implements ParameterRewriter<SQLStatementContext<?>>, EncryptRuleAware, DatabaseNameAware {
+public final class EncryptAssignmentParameterRewriter implements ParameterRewriter<SQLStatementContext>, EncryptRuleAware, DatabaseNameAware {
     
     private EncryptRule encryptRule;
     
     private String databaseName;
     
     @Override
-    public boolean isNeedRewrite(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof UpdateStatementContext) {
             return true;
         }
@@ -67,7 +67,7 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
     }
     
     @Override
-    public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
+    public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
         String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));
         for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {

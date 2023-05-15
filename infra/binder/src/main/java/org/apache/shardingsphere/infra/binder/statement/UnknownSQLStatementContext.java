@@ -21,12 +21,10 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
  * Unknown SQL statement context.
- * 
- * @param <T> type of SQL statement
  */
-public final class UnknownSQLStatementContext<T extends SQLStatement> extends CommonSQLStatementContext<T> {
+public final class UnknownSQLStatementContext extends CommonSQLStatementContext {
     
-    public UnknownSQLStatementContext(final T sqlStatement) {
+    public UnknownSQLStatementContext(final SQLStatement sqlStatement) {
         super(sqlStatement);
     }
 }

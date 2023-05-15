@@ -35,7 +35,7 @@ public final class QualifiedReadwriteSplittingTransactionalDataSourceRouter impl
     private final StandardReadwriteSplittingDataSourceRouter standardRouter = new StandardReadwriteSplittingDataSourceRouter();
     
     @Override
-    public boolean isQualified(final SQLStatementContext<?> sqlStatementContext, final ReadwriteSplittingDataSourceRule rule) {
+    public boolean isQualified(final SQLStatementContext sqlStatementContext, final ReadwriteSplittingDataSourceRule rule) {
         return connectionContext.getTransactionContext().isInTransaction();
     }
     

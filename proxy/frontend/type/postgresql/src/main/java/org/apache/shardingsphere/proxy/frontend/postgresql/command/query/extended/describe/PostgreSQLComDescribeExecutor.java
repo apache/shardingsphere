@@ -238,7 +238,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     private void tryDescribePreparedStatementByJDBC(final PostgreSQLServerPreparedStatement logicPreparedStatement) throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = connectionSession.getDatabaseName();
-        SQLStatementContext<?> sqlStatementContext =
+        SQLStatementContext sqlStatementContext =
                 SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), logicPreparedStatement.getSqlStatementContext().getSqlStatement(), databaseName);
         QueryContext queryContext = new QueryContext(sqlStatementContext, logicPreparedStatement.getSql(), Collections.emptyList());
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);

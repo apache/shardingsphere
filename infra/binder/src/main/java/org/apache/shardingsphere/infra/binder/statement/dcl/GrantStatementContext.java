@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.binder.statement.dcl;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
-import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
 
@@ -30,13 +30,18 @@ import java.util.Collection;
  * Grant statement context.
  */
 @Getter
-public final class GrantStatementContext extends CommonSQLStatementContext<GrantStatement> implements TableAvailable {
+public final class GrantStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
     public GrantStatementContext(final GrantStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
+    }
+    
+    @Override
+    public GrantStatement getSqlStatement() {
+        return (GrantStatement) super.getSqlStatement();
     }
     
     @Override

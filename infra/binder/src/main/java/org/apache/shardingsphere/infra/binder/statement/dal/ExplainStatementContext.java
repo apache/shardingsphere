@@ -34,7 +34,7 @@ import java.util.LinkedList;
  * Explain statement context.
  */
 @Getter
-public final class ExplainStatementContext extends CommonSQLStatementContext<ExplainStatement> implements TableAvailable {
+public final class ExplainStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
@@ -52,6 +52,11 @@ public final class ExplainStatementContext extends CommonSQLStatementContext<Exp
         extractor.extractTablesFromSQLStatement(explainableStatement);
         result.addAll(extractor.getRewriteTables());
         return result;
+    }
+    
+    @Override
+    public ExplainStatement getSqlStatement() {
+        return (ExplainStatement) super.getSqlStatement();
     }
     
     @Override

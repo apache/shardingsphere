@@ -123,7 +123,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     private MergedResult mergedResult;
     
     public DatabaseConnector(final String driverType, final ShardingSphereDatabase database, final QueryContext queryContext, final ProxyDatabaseConnectionManager databaseConnectionManager) {
-        SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
+        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         failedIfBackendNotReady(databaseConnectionManager.getConnectionSession(), sqlStatementContext);
         this.driverType = driverType;
         this.database = database;
@@ -136,7 +136,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         proxySQLExecutor = new ProxySQLExecutor(driverType, databaseConnectionManager, this);
     }
     
-    private void failedIfBackendNotReady(final ConnectionSession connectionSession, final SQLStatementContext<?> sqlStatementContext) {
+    private void failedIfBackendNotReady(final ConnectionSession connectionSession, final SQLStatementContext sqlStatementContext) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
         boolean isSystemSchema = SystemSchemaUtils.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
         ShardingSpherePreconditions.checkState(isSystemSchema || database.containsDataSource(), () -> new StorageUnitNotExistedException(connectionSession.getDatabaseName()));
@@ -145,7 +145,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         }
     }
     
-    private boolean isTransparentStatement(final SQLStatementContext<?> sqlStatementContext) {
+    private boolean isTransparentStatement(final SQLStatementContext sqlStatementContext) {
         Optional<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleForShardingRule(database.getRuleMetaData().findRules(DataNodeContainedRule.class));
         Collection<ColumnContainedRule> columnContainedRules = database.getRuleMetaData().findRules(ColumnContainedRule.class);
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
@@ -371,7 +371,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
                 : queryResultSample.getMetaData().getColumnCount();
     }
     
-    private boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
+    private boolean hasSelectExpandProjections(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
     
@@ -385,7 +385,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
                 : queryHeaderBuilderEngine.build(queryResultSample.getMetaData(), database, columnIndex);
     }
     
-    private MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+    private MergedResult mergeQuery(final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps(),
                 databaseConnectionManager.getConnectionSession().getConnectionContext());
         return mergeEngine.merge(queryResults, sqlStatementContext);
@@ -402,13 +402,13 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         return result;
     }
     
-    private void mergeUpdateCount(final SQLStatementContext<?> sqlStatementContext, final UpdateResponseHeader response) {
+    private void mergeUpdateCount(final SQLStatementContext sqlStatementContext, final UpdateResponseHeader response) {
         if (isNeedAccumulate(sqlStatementContext)) {
             response.mergeUpdateCount();
         }
     }
     
-    private boolean isNeedAccumulate(final SQLStatementContext<?> sqlStatementContext) {
+    private boolean isNeedAccumulate(final SQLStatementContext sqlStatementContext) {
         Optional<DataNodeContainedRule> dataNodeContainedRule = database.getRuleMetaData().findSingleRule(DataNodeContainedRule.class);
         return dataNodeContainedRule.isPresent() && dataNodeContainedRule.get().isNeedAccumulate(sqlStatementContext.getTablesContext().getTableNames());
     }

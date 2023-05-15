@@ -47,7 +47,7 @@ public final class HBaseBackendUpdateHandler implements DatabaseBackendHandler {
      */
     @Override
     public UpdateResponseHeader execute() {
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         Collection<UpdateResult> updateResults = updater.executeUpdate(converter.convert());
         return new UpdateResponseHeader(sqlStatement, updateResults);

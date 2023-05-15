@@ -69,7 +69,7 @@ public final class SQLRewriteEntry {
      * @param connectionContext connection context
      * @return route unit and SQL rewrite result map
      */
-    public SQLRewriteResult rewrite(final String sql, final List<Object> params, final SQLStatementContext<?> sqlStatementContext,
+    public SQLRewriteResult rewrite(final String sql, final List<Object> params, final SQLStatementContext sqlStatementContext,
                                     final RouteContext routeContext, final ConnectionContext connectionContext) {
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, params, sqlStatementContext, routeContext, connectionContext);
         SQLTranslatorRule rule = globalRuleMetaData.getSingleRule(SQLTranslatorRule.class);
@@ -80,7 +80,7 @@ public final class SQLRewriteEntry {
                 : new RouteSQLRewriteEngine(rule, protocolType, storageTypes).rewrite(sqlRewriteContext, routeContext);
     }
     
-    private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> params, final SQLStatementContext<?> sqlStatementContext,
+    private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> params, final SQLStatementContext sqlStatementContext,
                                                       final RouteContext routeContext, final ConnectionContext connectionContext) {
         SQLRewriteContext result = new SQLRewriteContext(database.getName(), database.getSchemas(), sqlStatementContext, sql, params, connectionContext);
         decorate(decorators, result, routeContext);
@@ -90,7 +90,7 @@ public final class SQLRewriteEntry {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void decorate(final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
-        if (((CommonSQLStatementContext<?>) sqlRewriteContext.getSqlStatementContext()).isHintSkipSQLRewrite()) {
+        if (((CommonSQLStatementContext) sqlRewriteContext.getSqlStatementContext()).isHintSkipSQLRewrite()) {
             return;
         }
         for (Entry<ShardingSphereRule, SQLRewriteContextDecorator> entry : decorators.entrySet()) {

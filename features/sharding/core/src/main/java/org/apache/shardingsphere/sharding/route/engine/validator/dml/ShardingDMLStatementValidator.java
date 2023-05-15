@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.As
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,10 +43,8 @@ import java.util.Optional;
 
 /**
  * Sharding DML statement validator.
- * 
- * @param <T> type of SQL statement
  */
-public abstract class ShardingDMLStatementValidator<T extends SQLStatement> implements ShardingStatementValidator<T> {
+public abstract class ShardingDMLStatementValidator implements ShardingStatementValidator {
     
     /**
      * Validate multiple table.
@@ -55,7 +52,7 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
      * @param shardingRule sharding rule
      * @param sqlStatementContext sqlStatementContext
      */
-    protected void validateMultipleTable(final ShardingRule shardingRule, final SQLStatementContext<T> sqlStatementContext) {
+    protected void validateMultipleTable(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         boolean isAllShardingTables = shardingRule.isAllShardingTables(tableNames) && (1 == tableNames.size() || shardingRule.isAllBindingTables(tableNames));
         boolean isAllBroadcastTables = shardingRule.isAllBroadcastTables(tableNames);
@@ -117,7 +114,7 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
      * @return sharding conditions
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    protected Optional<ShardingConditions> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule,
+    protected Optional<ShardingConditions> createShardingConditions(final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule,
                                                                     final Collection<AssignmentSegment> assignments, final List<Object> params) {
         Collection<ShardingConditionValue> values = new LinkedList<>();
         String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();

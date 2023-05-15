@@ -97,7 +97,7 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         ShardingSphereRuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
         SQLParserRule sqlParserRule = globalRuleMetaData.getSingleRule(SQLParserRule.class);
         SQLStatement previewedStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(getSqlStatement().getSql(), false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), previewedStatement, databaseName);
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), previewedStatement, databaseName);
         QueryContext queryContext = new QueryContext(sqlStatementContext, getSqlStatement().getSql(), Collections.emptyList());
         getConnectionSession().setQueryContext(queryContext);
         if (sqlStatementContext instanceof CursorAvailable && sqlStatementContext instanceof CursorDefinitionAware) {
@@ -112,7 +112,7 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         return executionUnits.stream().map(this::buildRow).collect(Collectors.toList());
     }
     
-    private void setUpCursorDefinition(final SQLStatementContext<?> sqlStatementContext) {
+    private void setUpCursorDefinition(final SQLStatementContext sqlStatementContext) {
         if (!((CursorAvailable) sqlStatementContext).getCursorName().isPresent()) {
             return;
         }

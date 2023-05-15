@@ -42,7 +42,7 @@ public final class ShardingComplexRoutingEngine implements ShardingRouteEngine {
     
     private final ShardingConditions shardingConditions;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     private final HintValueContext hintValueContext;
     

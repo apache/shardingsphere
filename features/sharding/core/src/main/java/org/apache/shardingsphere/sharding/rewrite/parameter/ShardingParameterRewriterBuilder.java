@@ -46,7 +46,7 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     
     private final Map<String, ShardingSphereSchema> schemas;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     @SuppressWarnings("rawtypes")
     @Override

@@ -28,7 +28,7 @@ public final class ResultMergerEngineFixture implements ResultMergerEngine<Merge
     
     @Override
     public ResultMerger newInstance(final String databaseName, final DatabaseType protocolType, final MergerRuleFixture rule, final ConfigurationProperties props,
-                                    final SQLStatementContext<?> sqlStatementContext) {
+                                    final SQLStatementContext sqlStatementContext) {
         return new ResultMergerFixture();
     }
     

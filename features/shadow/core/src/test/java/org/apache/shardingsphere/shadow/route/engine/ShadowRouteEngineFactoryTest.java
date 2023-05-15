@@ -55,25 +55,25 @@ class ShadowRouteEngineFactoryTest {
         assertThat(shadowSelectRouteEngine, instanceOf(ShadowSelectStatementRoutingEngine.class));
     }
     
-    private SQLStatementContext<InsertStatement> createInsertSqlStatementContext() {
+    private SQLStatementContext createInsertSqlStatementContext() {
         InsertStatementContext result = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(InsertStatement.class));
         return result;
     }
     
-    private SQLStatementContext<UpdateStatement> createUpdateSqlStatementContext() {
+    private SQLStatementContext createUpdateSqlStatementContext() {
         UpdateStatementContext result = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(UpdateStatement.class));
         return result;
     }
     
-    private SQLStatementContext<DeleteStatement> createDeleteSqlStatementContext() {
+    private SQLStatementContext createDeleteSqlStatementContext() {
         DeleteStatementContext result = mock(DeleteStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(DeleteStatement.class));
         return result;
     }
     
-    private SQLStatementContext<SelectStatement> createSelectSqlStatementContext() {
+    private SQLStatementContext createSelectSqlStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         return result;

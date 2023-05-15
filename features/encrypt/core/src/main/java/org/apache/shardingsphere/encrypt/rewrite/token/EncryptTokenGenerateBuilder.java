@@ -51,7 +51,7 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     
     private final EncryptRule encryptRule;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     private final Collection<EncryptCondition> encryptConditions;
     

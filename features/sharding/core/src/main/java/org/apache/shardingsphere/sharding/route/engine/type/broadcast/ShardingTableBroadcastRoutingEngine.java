@@ -47,7 +47,7 @@ public final class ShardingTableBroadcastRoutingEngine implements ShardingRouteE
     
     private final ShardingSphereDatabase database;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     private final Collection<String> shardingRuleTableNames;
     

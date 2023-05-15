@@ -47,7 +47,7 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     private final boolean transparentStatement;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     @Override
     public int getColumnCount() throws SQLException {

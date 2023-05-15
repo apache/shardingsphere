@@ -38,7 +38,7 @@ import java.util.Collections;
  * Create index statement context.
  */
 @Getter
-public final class CreateIndexStatementContext extends CommonSQLStatementContext<CreateIndexStatement> implements TableAvailable, IndexAvailable {
+public final class CreateIndexStatementContext extends CommonSQLStatementContext implements TableAvailable, IndexAvailable {
     
     private final TablesContext tablesContext;
     
@@ -48,6 +48,11 @@ public final class CreateIndexStatementContext extends CommonSQLStatementContext
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
         generatedIndex = null == sqlStatement.getIndex();
+    }
+    
+    @Override
+    public CreateIndexStatement getSqlStatement() {
+        return (CreateIndexStatement) super.getSqlStatement();
     }
     
     @Override

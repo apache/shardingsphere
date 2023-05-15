@@ -59,7 +59,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Insert SQL statement context.
  */
 @Getter
-public final class InsertStatementContext extends CommonSQLStatementContext<InsertStatement> implements TableAvailable, ParameterAware {
+public final class InsertStatementContext extends CommonSQLStatementContext implements TableAvailable, ParameterAware {
     
     private final TablesContext tablesContext;
     
@@ -188,11 +188,6 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         return Optional.ofNullable(generatedKeyContext);
     }
     
-    @Override
-    public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getTables();
-    }
-    
     /**
      * Judge whether contains insert columns.
      *
@@ -259,6 +254,16 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
             result.add(each.getValues());
         }
         return result;
+    }
+    
+    @Override
+    public InsertStatement getSqlStatement() {
+        return (InsertStatement) super.getSqlStatement();
+    }
+    
+    @Override
+    public Collection<SimpleTableSegment> getAllTables() {
+        return tablesContext.getTables();
     }
     
     @Override

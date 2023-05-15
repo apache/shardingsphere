@@ -56,7 +56,7 @@ public final class EncryptAlterTableTokenGenerator implements CollectionSQLToken
     private EncryptRule encryptRule;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof AlterTableStatementContext;
     }
     

@@ -33,15 +33,15 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatem
 public final class QualifiedReadwriteSplittingPrimaryDataSourceRouter implements QualifiedReadwriteSplittingDataSourceRouter {
     
     @Override
-    public boolean isQualified(final SQLStatementContext<?> sqlStatementContext, final ReadwriteSplittingDataSourceRule rule) {
+    public boolean isQualified(final SQLStatementContext sqlStatementContext, final ReadwriteSplittingDataSourceRule rule) {
         return isPrimaryRoute(sqlStatementContext);
     }
     
-    private boolean isPrimaryRoute(final SQLStatementContext<?> sqlStatementContext) {
+    private boolean isPrimaryRoute(final SQLStatementContext sqlStatementContext) {
         return isWriteRouteStatement(sqlStatementContext) || isHintWriteRouteOnly(sqlStatementContext);
     }
     
-    private boolean isWriteRouteStatement(final SQLStatementContext<?> sqlStatementContext) {
+    private boolean isWriteRouteStatement(final SQLStatementContext sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         return containsLockSegment(sqlStatement) || containsLastInsertIdProjection(sqlStatementContext) || !(sqlStatement instanceof SelectStatement);
     }
@@ -50,12 +50,12 @@ public final class QualifiedReadwriteSplittingPrimaryDataSourceRouter implements
         return sqlStatement instanceof SelectStatement && SelectStatementHandler.getLockSegment((SelectStatement) sqlStatement).isPresent();
     }
     
-    private boolean containsLastInsertIdProjection(final SQLStatementContext<?> sqlStatementContext) {
+    private boolean containsLastInsertIdProjection(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && ((SelectStatementContext) sqlStatementContext).getProjectionsContext().isContainsLastInsertIdProjection();
     }
     
-    private boolean isHintWriteRouteOnly(final SQLStatementContext<?> sqlStatementContext) {
-        return HintManager.isWriteRouteOnly() || sqlStatementContext instanceof CommonSQLStatementContext && ((CommonSQLStatementContext<?>) sqlStatementContext).isHintWriteRouteOnly();
+    private boolean isHintWriteRouteOnly(final SQLStatementContext sqlStatementContext) {
+        return HintManager.isWriteRouteOnly() || sqlStatementContext instanceof CommonSQLStatementContext && ((CommonSQLStatementContext) sqlStatementContext).isHintWriteRouteOnly();
     }
     
     @Override

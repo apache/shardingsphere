@@ -53,7 +53,6 @@ import java.util.Optional;
  */
 public final class SingleSQLRouter implements SQLRouter<SingleRule> {
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public RouteContext createRouteContext(final QueryContext queryContext, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final SingleRule rule,
                                            final ConfigurationProperties props, final ConnectionContext connectionContext) {
@@ -61,7 +60,7 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
             return createSingleDataSourceRouteContext(rule, database);
         }
         RouteContext result = new RouteContext();
-        SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
+        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         Optional<SingleMetaDataValidator> validator = SingleMetaDataValidatorFactory.newInstance(sqlStatementContext.getSqlStatement());
         validator.ifPresent(optional -> optional.validate(rule, sqlStatementContext, database));
         Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, database, rule, result);
@@ -75,7 +74,7 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
     @Override
     public void decorateRouteContext(final RouteContext routeContext, final QueryContext queryContext, final ShardingSphereDatabase database,
                                      final SingleRule rule, final ConfigurationProperties props, final ConnectionContext connectionContext) {
-        SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
+        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         Collection<QualifiedTable> singleTableNames = getSingleTableNames(sqlStatementContext, database, rule, routeContext);
         if (singleTableNames.isEmpty()) {
             return;
@@ -92,7 +91,7 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
         return result;
     }
     
-    private Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext<?> sqlStatementContext,
+    private Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext sqlStatementContext,
                                                            final ShardingSphereDatabase database, final SingleRule rule, final RouteContext routeContext) {
         DatabaseType databaseType = sqlStatementContext.getDatabaseType();
         Collection<QualifiedTable> result = getQualifiedTables(database, databaseType, sqlStatementContext.getTablesContext().getTables());
@@ -112,7 +111,7 @@ public final class SingleSQLRouter implements SQLRouter<SingleRule> {
         return result;
     }
     
-    private void validateSameDataSource(final SQLStatementContext<?> sqlStatementContext, final SingleRule rule,
+    private void validateSameDataSource(final SQLStatementContext sqlStatementContext, final SingleRule rule,
                                         final ConfigurationProperties props, final Collection<QualifiedTable> singleTableNames, final RouteContext routeContext) {
         String sqlFederationType = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_TYPE);
         boolean allTablesInSameDataSource = "NONE".equals(sqlFederationType)

@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     private final Collection<String> logicTables;
     
@@ -87,7 +87,7 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
         return sqlStatementContext instanceof CursorAvailable || isViewStatementContext(sqlStatementContext) ? dataSourceNames.iterator().next() : getRandomDataSourceName(dataSourceNames);
     }
     
-    private boolean isViewStatementContext(final SQLStatementContext<?> sqlStatementContext) {
+    private boolean isViewStatementContext(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof CreateViewStatementContext || sqlStatementContext instanceof AlterViewStatementContext || sqlStatementContext instanceof DropViewStatementContext;
     }
     

@@ -38,7 +38,7 @@ import java.util.Map;
  * Delete statement context.
  */
 @Getter
-public final class DeleteStatementContext extends CommonSQLStatementContext<DeleteStatement> implements TableAvailable, WhereAvailable {
+public final class DeleteStatementContext extends CommonSQLStatementContext implements TableAvailable, WhereAvailable {
     
     private final TablesContext tablesContext;
     
@@ -72,6 +72,11 @@ public final class DeleteStatementContext extends CommonSQLStatementContext<Dele
             }
         }
         return result;
+    }
+    
+    @Override
+    public DeleteStatement getSqlStatement() {
+        return (DeleteStatement) super.getSqlStatement();
     }
     
     @Override

@@ -62,7 +62,7 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     private static final Collection<String> KERNEL_SUPPORTED_TABLES = Arrays.asList(PG_NAMESPACE, PG_CLASS);
     
     @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext) {
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof ShowStatement) {
             return Optional.of(new PostgreSQLShowVariableExecutor((ShowStatement) sqlStatement));
@@ -71,7 +71,7 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof SelectStatement) {
             Collection<String> selectedTableNames = getSelectedTableNames((SelectStatement) sqlStatement);

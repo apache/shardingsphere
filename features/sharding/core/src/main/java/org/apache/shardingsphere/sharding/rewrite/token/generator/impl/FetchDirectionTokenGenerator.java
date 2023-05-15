@@ -34,17 +34,17 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.FetchStatem
  * Fetch direction token generator.
  */
 @Setter
-public final class FetchDirectionTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext<?>>, ConnectionContextAware {
+public final class FetchDirectionTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext>, ConnectionContextAware {
     
     private ConnectionContext connectionContext;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof FetchStatementContext;
     }
     
     @Override
-    public SQLToken generateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+    public SQLToken generateSQLToken(final SQLStatementContext sqlStatementContext) {
         FetchStatement fetchStatement = ((FetchStatementContext) sqlStatementContext).getSqlStatement();
         CursorNameSegment cursorName = fetchStatement.getCursorName();
         int startIndex = fetchStatement.getDirection().map(DirectionSegment::getStartIndex).orElseGet("FETCH"::length);

@@ -36,5 +36,5 @@ public interface ServerPreparedStatement {
      *
      * @return {@link SQLStatementContext}
      */
-    SQLStatementContext<?> getSqlStatementContext();
+    SQLStatementContext getSqlStatementContext();
 }

@@ -34,17 +34,17 @@ import java.util.LinkedList;
  * Constraint token generator.
  */
 @Setter
-public final class ConstraintTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>>, ShardingRuleAware {
+public final class ConstraintTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ShardingRuleAware {
     
     private ShardingRule shardingRule;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof ConstraintAvailable && !((ConstraintAvailable) sqlStatementContext).getConstraints().isEmpty();
     }
     
     @Override
-    public Collection<ConstraintToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
+    public Collection<ConstraintToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<ConstraintToken> result = new LinkedList<>();
         if (sqlStatementContext instanceof ConstraintAvailable) {
             for (ConstraintSegment each : ((ConstraintAvailable) sqlStatementContext).getConstraints()) {

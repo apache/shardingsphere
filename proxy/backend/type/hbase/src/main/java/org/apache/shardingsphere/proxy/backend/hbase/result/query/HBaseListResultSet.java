@@ -45,7 +45,7 @@ public final class HBaseListResultSet implements HBaseQueryResultSet {
      * @param sqlStatementContext SQL statement context
      */
     @Override
-    public void init(final SQLStatementContext<?> sqlStatementContext) {
+    public void init(final SQLStatementContext sqlStatementContext) {
         ShowTablesStatementContext context = (ShowTablesStatementContext) sqlStatementContext;
         Map<String, String> result;
         if (context.getSqlStatement().getFromSchema().isPresent()) {

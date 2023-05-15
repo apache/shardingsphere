@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 class SQLTokenGeneratorsTest {
     
     @Test
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings("unchecked")
     void assertGenerateSQLTokensWithOptionalSQLTokenGenerator() {
         OptionalSQLTokenGenerator<SQLStatementContext> generator = mock(OptionalSQLTokenGenerator.class);
         SQLToken expectedToken = mock(SQLToken.class);
@@ -53,7 +53,7 @@ class SQLTokenGeneratorsTest {
     @Test
     @SuppressWarnings("unchecked")
     void assertGenerateSQLTokensWithCollectionSQLTokenGenerator() {
-        CollectionSQLTokenGenerator<SQLStatementContext<?>> generator = mock(CollectionSQLTokenGenerator.class);
+        CollectionSQLTokenGenerator<SQLStatementContext> generator = mock(CollectionSQLTokenGenerator.class);
         Collection<SQLToken> expectedTokens = Arrays.asList(mock(SQLToken.class), mock(SQLToken.class));
         doReturn(expectedTokens).when(generator).generateSQLTokens(any());
         SQLTokenGenerators generators = new SQLTokenGenerators();

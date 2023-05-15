@@ -32,19 +32,19 @@ import java.util.List;
 /**
  * Sharding load xml statement validator.
  */
-public final class ShardingLoadXMLStatementValidator extends ShardingDMLStatementValidator<MySQLLoadXMLStatement> {
+public final class ShardingLoadXMLStatementValidator extends ShardingDMLStatementValidator {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<MySQLLoadXMLStatement> sqlStatementContext,
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
-        String tableName = sqlStatementContext.getSqlStatement().getTableSegment().getTableName().getIdentifier().getValue();
+        String tableName = ((MySQLLoadXMLStatement) sqlStatementContext.getSqlStatement()).getTableSegment().getTableName().getIdentifier().getValue();
         if (shardingRule.isShardingTable(tableName)) {
             throw new UnsupportedShardingOperationException("LOAD XML", tableName);
         }
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<MySQLLoadXMLStatement> sqlStatementContext, final HintValueContext hintValueContext,
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
                              final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

@@ -46,7 +46,7 @@ public final class DatabaseBackendHandlerFactory {
      * @return created instance
      */
     public static DatabaseBackendHandler newInstance(final QueryContext queryContext, final ConnectionSession connectionSession, final boolean preferPreparedStatement) {
-        SQLStatementContext<?> sqlStatementContext = queryContext.getSqlStatementContext();
+        SQLStatementContext sqlStatementContext = queryContext.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof DoStatement) {
             return new UnicastDatabaseBackendHandler(queryContext, connectionSession);

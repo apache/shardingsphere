@@ -23,9 +23,14 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 /**
  * Kill process statement.
  */
-public final class KillStatementContext extends CommonSQLStatementContext<MySQLKillStatement> {
+public final class KillStatementContext extends CommonSQLStatementContext {
     
     public KillStatementContext(final MySQLKillStatement sqlStatement) {
         super(sqlStatement);
+    }
+    
+    @Override
+    public MySQLKillStatement getSqlStatement() {
+        return (MySQLKillStatement) super.getSqlStatement();
     }
 }

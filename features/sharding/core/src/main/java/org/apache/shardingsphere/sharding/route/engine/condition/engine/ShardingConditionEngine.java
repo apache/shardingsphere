@@ -47,7 +47,7 @@ public final class ShardingConditionEngine {
      * @param params SQL parameters
      * @return sharding conditions
      */
-    public List<ShardingCondition> createShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
+    public List<ShardingCondition> createShardingConditions(final SQLStatementContext sqlStatementContext, final List<Object> params) {
         TimeServiceRule timeServiceRule = globalRuleMetaData.getSingleRule(TimeServiceRule.class);
         return sqlStatementContext instanceof InsertStatementContext
                 ? new InsertClauseShardingConditionEngine(database, shardingRule, timeServiceRule).createShardingConditions((InsertStatementContext) sqlStatementContext, params)

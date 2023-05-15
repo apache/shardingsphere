@@ -58,7 +58,7 @@ class OpenGaussAdminExecutorCreatorTest {
     @Test
     void assertCreateOtherExecutor() {
         OpenGaussAdminExecutorCreator creator = new OpenGaussAdminExecutorCreator();
-        SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.emptyList());
         assertThat(creator.create(sqlStatementContext), is(Optional.empty()));
         assertThat(creator.create(sqlStatementContext, "", "", Collections.emptyList()), is(Optional.empty()));

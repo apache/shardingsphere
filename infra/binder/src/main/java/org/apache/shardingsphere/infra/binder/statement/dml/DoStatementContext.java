@@ -23,9 +23,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement
 /**
  * Do statement context.
  */
-public final class DoStatementContext extends CommonSQLStatementContext<DoStatement> {
+public final class DoStatementContext extends CommonSQLStatementContext {
     
     public DoStatementContext(final DoStatement sqlStatement) {
         super(sqlStatement);
+    }
+    
+    @Override
+    public DoStatement getSqlStatement() {
+        return (DoStatement) super.getSqlStatement();
     }
 }

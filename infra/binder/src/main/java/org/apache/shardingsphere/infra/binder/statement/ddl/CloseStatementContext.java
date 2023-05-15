@@ -37,7 +37,7 @@ import java.util.Optional;
  * Close statement context.
  */
 @Getter
-public final class CloseStatementContext extends CommonSQLStatementContext<CloseStatement> implements CursorAvailable, WhereAvailable, CursorDefinitionAware {
+public final class CloseStatementContext extends CommonSQLStatementContext implements CursorAvailable, WhereAvailable, CursorDefinitionAware {
     
     private CursorStatementContext cursorStatementContext;
     
@@ -46,6 +46,11 @@ public final class CloseStatementContext extends CommonSQLStatementContext<Close
     public CloseStatementContext(final CloseStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(Collections.emptyList(), getDatabaseType());
+    }
+    
+    @Override
+    public CloseStatement getSqlStatement() {
+        return (CloseStatement) super.getSqlStatement();
     }
     
     @Override
