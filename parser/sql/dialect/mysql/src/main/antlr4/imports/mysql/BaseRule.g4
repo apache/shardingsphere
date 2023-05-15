@@ -567,11 +567,15 @@ identifierKeywordsAmbiguous4SystemVariables
     | PERSIST_ONLY
     | SESSION
     ;
-    
+
 textOrIdentifier
-    : identifier | string_
+    : identifier  | string_ | ipAddress
     ;
-    
+
+ipAddress
+    : IP_ADDRESS
+    ;
+
 variable
     : userVariable | systemVariable
     ;
