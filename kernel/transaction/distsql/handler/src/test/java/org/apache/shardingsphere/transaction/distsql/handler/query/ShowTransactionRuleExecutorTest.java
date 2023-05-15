@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.distsql.parser.statement.queryable.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -44,13 +45,14 @@ class ShowTransactionRuleExecutorTest {
     @Test
     void assertExecuteWithXA() {
         ShowTransactionRuleExecutor executor = new ShowTransactionRuleExecutor();
-        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData("XA", "Atomikos", PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts")));
+        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData(TransactionType.XA.name(), "Atomikos",
+                PropertiesBuilder.build(new Property("host", "127.0.0.1"), new Property("databaseName", "jbossts")));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(new LinkedHashMap<>(), ruleMetaData, new ConfigurationProperties(new Properties()));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowTransactionRuleStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("XA"));
+        assertThat(row.getCell(1), is(TransactionType.XA.name()));
         assertThat(row.getCell(2), is("Atomikos"));
         String props = (String) row.getCell(3);
         assertTrue(props.contains("databaseName=jbossts"));
@@ -60,13 +62,13 @@ class ShowTransactionRuleExecutorTest {
     @Test
     void assertExecuteWithLocal() {
         ShowTransactionRuleExecutor executor = new ShowTransactionRuleExecutor();
-        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData("LOCAL", null, new Properties());
+        ShardingSphereRuleMetaData ruleMetaData = mockGlobalRuleMetaData(TransactionType.LOCAL.name(), null, new Properties());
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(new LinkedHashMap<>(), ruleMetaData, new ConfigurationProperties(new Properties()));
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowTransactionRuleStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
-        assertThat(row.getCell(1), is("LOCAL"));
+        assertThat(row.getCell(1), is(TransactionType.LOCAL.name()));
         assertThat(row.getCell(2), is(""));
         assertThat(row.getCell(3), is(""));
     }
@@ -83,11 +85,11 @@ class ShowTransactionRuleExecutorTest {
     }
     
     private ShardingSphereRuleMetaData mockGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
-        TransactionRule transactionRule = new TransactionRule(createAuthorityRuleConfiguration(defaultType, providerType, props), Collections.emptyMap());
+        TransactionRule transactionRule = new TransactionRule(createTransactionRuleConfiguration(defaultType, providerType, props), Collections.emptyMap());
         return new ShardingSphereRuleMetaData(Collections.singleton(transactionRule));
     }
     
-    private TransactionRuleConfiguration createAuthorityRuleConfiguration(final String defaultType, final String providerType, final Properties props) {
+    private TransactionRuleConfiguration createTransactionRuleConfiguration(final String defaultType, final String providerType, final Properties props) {
         return new TransactionRuleConfiguration(defaultType, providerType, props);
     }
 }

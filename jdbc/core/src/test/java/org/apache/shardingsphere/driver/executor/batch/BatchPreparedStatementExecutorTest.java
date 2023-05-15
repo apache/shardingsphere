@@ -118,7 +118,7 @@ class BatchPreparedStatementExecutorTest {
     
     private TransactionRule mockTransactionRule() {
         TransactionRule result = mock(TransactionRule.class);
-        when(result.getResource()).thenReturn(new ShardingSphereTransactionManagerEngine());
+        when(result.getResource()).thenReturn(new ShardingSphereTransactionManagerEngine(TransactionType.LOCAL));
         return result;
     }
     

@@ -142,4 +142,9 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     public boolean containsProviderType(final String providerType) {
         return TypedSPILoader.contains(XATransactionManagerProvider.class, providerType);
     }
+    
+    @Override
+    public String getType() {
+        return TransactionType.XA.name();
+    }
 }

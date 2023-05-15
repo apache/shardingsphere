@@ -148,4 +148,9 @@ public final class SeataATShardingSphereTransactionManager implements ShardingSp
         RmNettyRemotingClient.getInstance().destroy();
         TmNettyRemotingClient.getInstance().destroy();
     }
+    
+    @Override
+    public String getType() {
+        return TransactionType.BASE.name();
+    }
 }
