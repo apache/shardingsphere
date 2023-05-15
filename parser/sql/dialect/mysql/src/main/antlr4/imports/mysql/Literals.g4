@@ -66,13 +66,13 @@ BIT_NUM_
     ;
 
 IDENTIFIER_
-    :  IP_ADDRESS
+    :  IP_ADDRESS_
     |  [A-Za-z_$0-9\u0080-\uFFFF]*?[A-Za-z_$\u0080-\uFFFF]+?[A-Za-z_$0-9\u0080-\uFFFF]*
     |  BQ_ ~'`'+ BQ_
     ;
 
-IP_ADDRESS
-    : DIGIT+ '.' DIGIT+ '.' DIGIT+ '.' DIGIT+
+IP_ADDRESS_
+    : DIGIT+ DOT_ DIGIT+ DOT_ DIGIT+ DOT_ DIGIT+
     ;
 
 NOT_SUPPORT_
