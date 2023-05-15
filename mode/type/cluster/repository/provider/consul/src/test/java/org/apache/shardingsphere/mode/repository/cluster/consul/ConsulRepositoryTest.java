@@ -193,11 +193,6 @@ class ConsulRepositoryTest {
     }
     
     @Test
-    void assertWatchIgnored() {
-        // TODO
-    }
-    
-    @Test
     void assertDelete() {
         repository.delete("key");
         verify(client).deleteKVValue(any(String.class));
