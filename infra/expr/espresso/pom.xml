@@ -68,11 +68,24 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.apache.shardingsphere</groupId>
+                                    <artifactId>shardingsphere-infra-expr-spi</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.shardingsphere</groupId>
+                                    <artifactId>shardingsphere-infra-util</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.shardingsphere</groupId>
                                     <artifactId>shardingsphere-infra-expr-hotsopt</artifactId>
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
-                                    <destFileName>shardingsphere-infra-expr-hotsopt.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.groovy</groupId>
@@ -80,7 +93,6 @@
                                     <version>${groovy.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
-                                    <destFileName>groovy.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>com.google.guava</groupId>
@@ -88,9 +100,9 @@
                                     <version>${guava.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
-                                    <destFileName>guava.jar</destFileName>
                                 </artifactItem>
                             </artifactItems>
+                            <stripVersion>true</stripVersion>
                             <outputDirectory>${project.build.outputDirectory}/espresso-need-libs</outputDirectory>
                         </configuration>
                     </execution>

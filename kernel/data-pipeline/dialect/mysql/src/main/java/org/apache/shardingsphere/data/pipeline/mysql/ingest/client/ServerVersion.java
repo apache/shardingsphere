@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Server Version.
+ * Server version.
  */
 @Getter
 @Slf4j

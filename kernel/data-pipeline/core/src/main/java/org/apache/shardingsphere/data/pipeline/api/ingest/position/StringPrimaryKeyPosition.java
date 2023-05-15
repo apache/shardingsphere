@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class StringPrimaryKeyPosition extends PrimaryKeyPosition<String> implements IngestPosition<StringPrimaryKeyPosition> {
+public final class StringPrimaryKeyPosition extends PrimaryKeyPosition<String> implements IngestPosition {
     
     private final String beginValue;
     

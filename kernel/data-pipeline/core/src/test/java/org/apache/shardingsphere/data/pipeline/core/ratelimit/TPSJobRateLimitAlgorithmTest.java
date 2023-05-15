@@ -29,6 +29,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class TPSJobRateLimitAlgorithmTest {
@@ -54,6 +55,6 @@ class TPSJobRateLimitAlgorithmTest {
     
     @Test
     void assertIntercept() {
-        tpsJobRateLimitAlgorithm.intercept(JobOperationType.UPDATE, 1);
+        assertDoesNotThrow(() -> tpsJobRateLimitAlgorithm.intercept(JobOperationType.UPDATE, 1));
     }
 }

@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.cdc.constant;
+package org.apache.shardingsphere.infra.binder.statement;
+
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * CDC connection status.
+ * Unknown SQL statement context.
+ * 
+ * @param <T> type of SQL statement
  */
-public enum CDCConnectionStatus {
+public final class UnknownSQLStatementContext<T extends SQLStatement> extends CommonSQLStatementContext<T> {
     
-    NOT_LOGGED_IN, LOGGED_IN
+    public UnknownSQLStatementContext(final T sqlStatement) {
+        super(sqlStatement);
+    }
 }

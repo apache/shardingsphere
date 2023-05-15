@@ -61,6 +61,7 @@ import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Inventory dumper.
@@ -81,7 +82,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     private final PipelineTableMetaDataLoader metaDataLoader;
     
-    private volatile Statement dumpStatement;
+    private final AtomicReference<Statement> dumpStatement = new AtomicReference<>();
     
     public InventoryDumper(final InventoryDumperConfiguration dumperConfig, final PipelineChannel channel, final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
         this.dumperConfig = dumperConfig;
@@ -95,7 +96,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     @Override
     protected void runBlocking() {
-        IngestPosition<?> position = dumperConfig.getPosition();
+        IngestPosition position = dumperConfig.getPosition();
         if (position instanceof FinishedPosition) {
             log.info("Ignored because of already finished.");
             return;
@@ -118,7 +119,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
             connection.setTransactionIsolation(dumperConfig.getTransactionIsolation());
         }
         try (PreparedStatement preparedStatement = JDBCStreamQueryUtils.generateStreamQueryPreparedStatement(databaseType, connection, buildInventoryDumpSQL())) {
-            dumpStatement = preparedStatement;
+            dumpStatement.set(preparedStatement);
             if (!(databaseType instanceof MySQLDatabaseType)) {
                 preparedStatement.setFetchSize(batchSize);
             }
@@ -138,7 +139,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                         rateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
                     }
                 }
-                dumpStatement = null;
+                dumpStatement.set(null);
                 log.info("Inventory dump done, rowCount={}", rowCount);
             }
         }
@@ -205,7 +206,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         return result;
     }
     
-    private IngestPosition<?> newPosition(final ResultSet resultSet) throws SQLException {
+    private IngestPosition newPosition(final ResultSet resultSet) throws SQLException {
         return dumperConfig.hasUniqueKey()
                 ? PrimaryKeyPositionFactory.newInstance(resultSet.getObject(dumperConfig.getUniqueKeyColumns().get(0).getName()), ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue())
                 : new PlaceholderPosition();
@@ -213,6 +214,6 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     
     @Override
     protected void doStop() throws SQLException {
-        cancelStatement(dumpStatement);
+        cancelStatement(dumpStatement.get());
     }
 }

@@ -24,6 +24,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 @ExtendWith(MockitoExtension.class)
 class MySQLUnsupportedCommandPacketTest {
     
@@ -32,7 +34,6 @@ class MySQLUnsupportedCommandPacketTest {
     
     @Test
     void assertWrite() {
-        MySQLUnsupportedCommandPacket actual = new MySQLUnsupportedCommandPacket(MySQLCommandPacketType.COM_DEBUG);
-        actual.write(payload);
+        assertDoesNotThrow(() -> new MySQLUnsupportedCommandPacket(MySQLCommandPacketType.COM_DEBUG).write(payload));
     }
 }

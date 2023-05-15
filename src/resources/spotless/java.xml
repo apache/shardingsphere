@@ -45,5 +45,6 @@
         <setting id="org.eclipse.jdt.core.formatter.alignment_for_parameters_in_constructor_declaration" value="106" />
         <setting id="org.eclipse.jdt.core.formatter.alignment_for_throws_clause_in_constructor_declaration" value="106" />
         <setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_explicit_constructor_call.count_dependent" value="16|5|80" />
+        <setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_annotation" value="16" />
     </profile>
 </profiles>

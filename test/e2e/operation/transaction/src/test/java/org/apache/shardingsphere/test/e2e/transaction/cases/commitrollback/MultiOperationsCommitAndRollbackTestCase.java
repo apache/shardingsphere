@@ -17,21 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.transaction.cases.commitrollback;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
-import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Integration test of multiple operations in one transaction.
@@ -52,52 +45,32 @@ public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransact
     private void assertRollback() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
-            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
-            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
-            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
-            executeUpdateWithLog(connection, "update account set balance = 3, transaction_id = 3 where id = 2;");
-            assertQueryAccount(connection, 1, 3);
+            assertAccountRowCount(connection, 0);
+            executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1)");
+            executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(2, 2, 2)");
+            executeUpdateWithLog(connection, "UPDATE account SET balance = 3, transaction_id = 3 WHERE id = 2");
+            assertAccountBalances(connection, 1, 3);
             connection.rollback();
         }
         try (Connection connection = getDataSource().getConnection()) {
-            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
-            assertQueryAccount(connection, 1, 2);
+            assertAccountRowCount(connection, 0);
+            assertAccountBalances(connection, 1, 2);
         }
     }
     
     private void assertCommit() throws SQLException {
         try (Connection connection = getDataSource().getConnection()) {
             connection.setAutoCommit(false);
-            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 0);
-            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
-            executeWithLog(connection, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
-            executeUpdateWithLog(connection, "update account set balance = 3, transaction_id = 3 where id = 2;");
-            assertQueryAccount(connection, 1, 3);
+            assertAccountRowCount(connection, 0);
+            executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(1, 1, 1)");
+            executeWithLog(connection, "INSERT INTO account(id, balance, transaction_id) VALUES(2, 2, 2)");
+            executeUpdateWithLog(connection, "UPDATE account SET balance = 3, transaction_id = 3 WHERE id = 2");
+            assertAccountBalances(connection, 1, 3);
             connection.commit();
         }
         try (Connection connection = getDataSource().getConnection()) {
-            assertTableRowCount(connection, TransactionTestConstants.ACCOUNT, 2);
-            assertQueryAccount(connection, 1, 3);
+            assertAccountRowCount(connection, 2);
+            assertAccountBalances(connection, 1, 3);
         }
-    }
-    
-    private void assertQueryAccount(final Connection connection, final int... expectedBalances) throws SQLException {
-        Preconditions.checkArgument(2 == expectedBalances.length);
-        Statement queryStatement = connection.createStatement();
-        ResultSet resultSet = queryStatement.executeQuery("select * from account;");
-        while (resultSet.next()) {
-            int id = resultSet.getInt("id");
-            int actualBalance = resultSet.getInt("balance");
-            if (1 == id) {
-                assertBalance(actualBalance, expectedBalances[0]);
-            }
-            if (2 == id) {
-                assertBalance(actualBalance, expectedBalances[1]);
-            }
-        }
-    }
-    
-    private void assertBalance(final int actual, final int expected) {
-        assertThat(String.format("Balance is %s, should be %s.", actual, expected), actual, is(expected));
     }
 }

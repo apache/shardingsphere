@@ -82,7 +82,7 @@ ShardingSphere 的 SQL 解析器经历了 3 代产品的更新迭代。
 
 ```java
 CacheOption cacheOption = new CacheOption(128, 1024L);
-SQLParserEngine parserEngine = new SQLParserEngine(sql, cacheOption);
+SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
 ParseASTNode parseASTNode = parserEngine.parse(sql, useCache); 
 ```
 
@@ -90,7 +90,7 @@ ParseASTNode parseASTNode = parserEngine.parse(sql, useCache);
 
 ```java
 CacheOption cacheOption = new CacheOption(128, 1024L);
-SQLParserEngine parserEngine = new SQLParserEngine(sql, cacheOption);
+SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
 ParseASTNode parseASTNode = parserEngine.parse(sql, useCache);
 SQLVisitorEngine sqlVisitorEngine = new SQLVisitorEngine(sql, "STATEMENT", useCache, new Properties());
 SQLStatement sqlStatement = sqlVisitorEngine.visit(parseASTNode);

@@ -133,10 +133,10 @@ public final class PipelineJobPreparerUtils {
      * @return ingest position
      * @throws SQLException sql exception
      */
-    public static IngestPosition<?> getIncrementalPosition(final JobItemIncrementalTasksProgress initIncremental, final DumperConfiguration dumperConfig,
-                                                           final PipelineDataSourceManager dataSourceManager) throws SQLException {
+    public static IngestPosition getIncrementalPosition(final JobItemIncrementalTasksProgress initIncremental, final DumperConfiguration dumperConfig,
+                                                        final PipelineDataSourceManager dataSourceManager) throws SQLException {
         if (null != initIncremental) {
-            Optional<IngestPosition<?>> position = initIncremental.getIncrementalPosition();
+            Optional<IngestPosition> position = initIncremental.getIncrementalPosition();
             if (position.isPresent()) {
                 return position.get();
             }

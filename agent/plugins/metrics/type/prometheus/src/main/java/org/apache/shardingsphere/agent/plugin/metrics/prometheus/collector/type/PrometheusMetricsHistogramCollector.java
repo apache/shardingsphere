@@ -29,6 +29,22 @@ import java.util.Map;
  */
 public final class PrometheusMetricsHistogramCollector implements HistogramMetricsCollector {
     
+    private static final String BUCKETS_KEY = "buckets";
+    
+    private static final String TYPE_KEY = "type";
+    
+    private static final String EXP_TYPE_KEY = "exp";
+    
+    private static final String LINEAR_TYPE_KEY = "linear";
+    
+    private static final String START_KEY = "start";
+    
+    private static final String COUNT_KEY = "count";
+    
+    private static final String FACTOR_KEY = "factor";
+    
+    private static final String WIDTH_KEY = "width";
+    
     private final Histogram histogram;
     
     public PrometheusMetricsHistogramCollector(final MetricConfiguration config) {
@@ -39,19 +55,19 @@ public final class PrometheusMetricsHistogramCollector implements HistogramMetri
     
     @SuppressWarnings("unchecked")
     private void appendProperties(final Builder builder, final Map<String, Object> props) {
-        Map<String, Object> buckets = (Map<String, Object>) props.get("buckets");
+        Map<String, Object> buckets = (Map<String, Object>) props.get(BUCKETS_KEY);
         if (null == buckets) {
             return;
         }
-        if ("exp".equals(buckets.get("type"))) {
-            double start = null == buckets.get("start") ? 1 : Double.parseDouble(buckets.get("start").toString());
-            double factor = null == buckets.get("factor") ? 1 : Double.parseDouble(buckets.get("factor").toString());
-            int count = null == buckets.get("count") ? 1 : (int) buckets.get("count");
+        if (EXP_TYPE_KEY.equals(buckets.get(TYPE_KEY))) {
+            double start = null == buckets.get(START_KEY) ? 1 : Double.parseDouble(buckets.get(START_KEY).toString());
+            double factor = null == buckets.get(FACTOR_KEY) ? 1 : Double.parseDouble(buckets.get(FACTOR_KEY).toString());
+            int count = null == buckets.get(COUNT_KEY) ? 1 : (int) buckets.get(COUNT_KEY);
             builder.exponentialBuckets(start, factor, count);
-        } else if ("linear".equals(buckets.get("type"))) {
-            double start = null == buckets.get("start") ? 1 : Double.parseDouble(buckets.get("start").toString());
-            double width = null == buckets.get("width") ? 1 : Double.parseDouble(buckets.get("width").toString());
-            int count = null == buckets.get("count") ? 1 : (int) buckets.get("count");
+        } else if (LINEAR_TYPE_KEY.equals(buckets.get(TYPE_KEY))) {
+            double start = null == buckets.get(START_KEY) ? 1 : Double.parseDouble(buckets.get(START_KEY).toString());
+            double width = null == buckets.get(WIDTH_KEY) ? 1 : Double.parseDouble(buckets.get(WIDTH_KEY).toString());
+            int count = null == buckets.get(COUNT_KEY) ? 1 : (int) buckets.get(COUNT_KEY);
             builder.linearBuckets(start, width, count);
         }
     }

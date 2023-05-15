@@ -29,7 +29,7 @@ class MethodTimeRecorderTest {
     @Test
     void assertGetElapsedTimeAndCleanWithRecorded() throws InterruptedException, NoSuchMethodException {
         MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(AgentAdvice.class);
-        methodTimeRecorder.record(Object.class.getDeclaredMethod("toString"));
+        methodTimeRecorder.recordNow(Object.class.getDeclaredMethod("toString"));
         Thread.sleep(5L);
         assertThat(methodTimeRecorder.getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), greaterThanOrEqualTo(5L));
     }

@@ -38,6 +38,7 @@ public final class ResourceLock {
     /**
      * Await.
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @SneakyThrows(InterruptedException.class)
     public void doAwait() {
         lock.lock();

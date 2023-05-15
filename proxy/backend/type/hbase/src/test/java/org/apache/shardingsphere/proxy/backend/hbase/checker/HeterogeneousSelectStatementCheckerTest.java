@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -43,7 +44,7 @@ class HeterogeneousSelectStatementCheckerTest {
     @Test
     void assertSelectStatement() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getSelectStatement());
-        HBaseCheckerFactory.newInstance(sqlStatement).execute();
+        assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
     }
     
     @Test
@@ -95,7 +96,7 @@ class HeterogeneousSelectStatementCheckerTest {
     void assertSelectStatementWithInExpression() {
         String sql = "SELECT /*+ HBase */ * from t_order where rowKey in (1, 2, 3)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HBaseCheckerFactory.newInstance(sqlStatement).execute();
+        assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
     }
     
     @Test
@@ -118,14 +119,14 @@ class HeterogeneousSelectStatementCheckerTest {
     void assertExecuteSelectWithParameterMarker() {
         String sql = "SELECT /*+ HBase */ * from t_order where rowKey in (?, ?, ?)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HBaseCheckerFactory.newInstance(sqlStatement).execute();
+        assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
     }
     
     @Test
     void assertSelectStatementUseCrc32() {
         String sql = "SELECT /*+ HBase */ crc32(concat_ws('#',rowKey)) from t_order where rowKey in (1, 2, 3)";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HBaseCheckerFactory.newInstance(sqlStatement).execute();
+        assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
     }
     
     @Test
@@ -140,7 +141,7 @@ class HeterogeneousSelectStatementCheckerTest {
     void assertExecuteSelectWithBetween() {
         String sql = "SELECT /*+ HBase */ * from t_order where rowKey between 1 and 2";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        HBaseCheckerFactory.newInstance(sqlStatement).execute();
+        assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
     }
     
     @Test

@@ -49,7 +49,7 @@ public abstract class AbstractExecuteLatencyHistogramAdvice implements InstanceM
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        getMethodTimeRecorder().record(method);
+        getMethodTimeRecorder().recordNow(method);
     }
     
     @Override

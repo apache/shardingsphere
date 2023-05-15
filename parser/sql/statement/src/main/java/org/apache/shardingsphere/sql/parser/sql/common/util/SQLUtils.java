@@ -55,11 +55,11 @@ public final class SQLUtils {
     
     private static final String EXCLUDED_CHARACTERS = "[]`'\"";
     
-    private static final Pattern SINGLE_CHARACTER_PATTERN = Pattern.compile("^_|([^\\\\])_");
+    private static final Pattern SINGLE_CHARACTER_PATTERN = Pattern.compile("([^\\\\])_|^_");
     
     private static final Pattern SINGLE_CHARACTER_ESCAPE_PATTERN = Pattern.compile("\\\\_");
     
-    private static final Pattern ANY_CHARACTER_PATTERN = Pattern.compile("^%|([^\\\\])%");
+    private static final Pattern ANY_CHARACTER_PATTERN = Pattern.compile("([^\\\\])%|^%");
     
     private static final Pattern ANY_CHARACTER_ESCAPE_PATTERN = Pattern.compile("\\\\%");
     

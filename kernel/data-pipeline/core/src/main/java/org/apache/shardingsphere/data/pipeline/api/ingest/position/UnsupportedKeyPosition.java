@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 /**
  * Unsupported key position.
  */
-public final class UnsupportedKeyPosition extends PrimaryKeyPosition<Void> implements IngestPosition<UnsupportedKeyPosition> {
+public final class UnsupportedKeyPosition extends PrimaryKeyPosition<Void> implements IngestPosition {
     
     @Override
     public Void getBeginValue() {
