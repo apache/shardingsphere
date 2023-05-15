@@ -53,7 +53,7 @@ public final class ShardingCreateTableStatementValidator extends ShardingDDLStat
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext, final List<Object> params,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
-        String primaryTable = ((CreateTableStatement) sqlStatementContext).getTable().getTableName().getIdentifier().getValue();
+        String primaryTable = ((CreateTableStatement) sqlStatementContext.getSqlStatement()).getTable().getTableName().getIdentifier().getValue();
         if (isRouteUnitDataNodeDifferentSize(shardingRule, routeContext, primaryTable)) {
             throw new ShardingDDLRouteException("CREATE", "TABLE", sqlStatementContext.getTablesContext().getTableNames());
         }

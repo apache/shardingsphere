@@ -144,7 +144,7 @@ public final class SQLStatementContextFactory {
      * @return SQL statement context
      */
     public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData,
-                                                     final List<Object> params, final SQLStatement sqlStatement, final String defaultDatabaseName) {
+                                                  final List<Object> params, final SQLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof DMLStatement) {
             return getDMLStatementContext(metaData, params, (DMLStatement) sqlStatement, defaultDatabaseName);
         }
@@ -161,7 +161,7 @@ public final class SQLStatementContextFactory {
     }
     
     private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData,
-                                                                 final List<Object> params, final DMLStatement sqlStatement, final String defaultDatabaseName) {
+                                                              final List<Object> params, final DMLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
             return new SelectStatementContext(metaData, params, (SelectStatement) sqlStatement, defaultDatabaseName);
         }
@@ -193,7 +193,7 @@ public final class SQLStatementContextFactory {
     }
     
     private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final List<Object> params,
-                                                                 final DDLStatement sqlStatement, final String defaultDatabaseName) {
+                                                              final DDLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof CreateSchemaStatement) {
             return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
         }
