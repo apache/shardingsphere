@@ -40,7 +40,7 @@ import java.util.Optional;
  * @param <T> type of SQL statement
  */
 @Getter
-public class CommonSQLStatementContext<T extends SQLStatement> implements SQLStatementContext<T> {
+public abstract class CommonSQLStatementContext<T extends SQLStatement> implements SQLStatementContext<T> {
     
     private final T sqlStatement;
     
