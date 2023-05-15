@@ -81,7 +81,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Re
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectClauseNContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectContext;
-import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectFetchFirstValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectFetchValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectLimitContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectLimitValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SelectNoParensContext;
@@ -1232,7 +1232,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         if (null != ctx.ALL()) {
             return null;
         }
-        ASTNode astNode = visit(ctx.aExpr());
+        ASTNode astNode = visit(ctx.cExpr());
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
@@ -1241,7 +1241,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     @Override
     public ASTNode visitSelectOffsetValue(final SelectOffsetValueContext ctx) {
-        ASTNode astNode = visit(ctx.aExpr());
+        ASTNode astNode = visit(ctx.cExpr());
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
@@ -1249,15 +1249,12 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     }
     
     @Override
-    public ASTNode visitSelectFetchFirstValue(final SelectFetchFirstValueContext ctx) {
+    public ASTNode visitSelectFetchValue(final SelectFetchValueContext ctx) {
         ASTNode astNode = visit(ctx.cExpr());
-        if (null != astNode) {
-            if (astNode instanceof ParameterMarkerLimitValueSegment) {
-                return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
-            }
-            return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
+        if (astNode instanceof ParameterMarkerExpressionSegment) {
+            return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
-        return visit(ctx.NUMBER_());
+        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
     }
     
     private LimitSegment createLimitSegmentWhenLimitAndOffset(final SelectLimitContext ctx) {
@@ -1280,8 +1277,8 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
     
     private LimitSegment createLimitSegmentWhenRowCountOrOffsetAbsent(final SelectLimitContext ctx) {
         if (null != ctx.limitClause()) {
-            if (null != ctx.limitClause().selectFetchFirstValue()) {
-                LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectFetchFirstValue());
+            if (null != ctx.limitClause().selectFetchValue()) {
+                LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectFetchValue());
                 return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, limit);
             }
             LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());

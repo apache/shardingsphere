@@ -215,10 +215,8 @@ qualifiedNameList
     ;
 
 selectLimit
-    : limitClause offsetClause
-    | offsetClause limitClause
-    | limitClause
-    | offsetClause
+    : limitClause offsetClause?
+    | offsetClause limitClause?
     ;
 
 valuesClause
@@ -228,30 +226,24 @@ valuesClause
 
 limitClause
     : LIMIT selectLimitValue
-    | FETCH firstOrNext selectFetchFirstValue rowOrRows ONLY
-    | FETCH firstOrNext selectFetchFirstValue rowOrRows WITH TIES
-    | FETCH firstOrNext rowOrRows ONLY
-    | FETCH firstOrNext rowOrRows WITH TIES
+    | FETCH firstOrNext selectFetchValue? rowOrRows onlyOrWithTies
     ;
 
 offsetClause
-    : OFFSET selectOffsetValue
-    | OFFSET selectOffsetValue rowOrRows
+    : OFFSET selectOffsetValue rowOrRows?
     ;
 
 selectLimitValue
-    : aExpr
+    : cExpr
     | ALL
     ;
 
 selectOffsetValue
-    : aExpr
+    : cExpr
     ;
 
-selectFetchFirstValue
+selectFetchValue
     : cExpr
-    | PLUS_ NUMBER_
-    | MINUS_ NUMBER_
     ;
 
 rowOrRows
@@ -260,6 +252,10 @@ rowOrRows
 
 firstOrNext
     : FIRST | NEXT
+    ;
+
+onlyOrWithTies
+    : ONLY | WITH TIES
     ;
 
 targetList

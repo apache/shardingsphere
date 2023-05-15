@@ -82,7 +82,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Rel
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SchemaNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectClauseNContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectContext;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectFetchFirstValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectFetchValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectLimitContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectLimitValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.SelectNoParensContext;
@@ -1265,7 +1265,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         if (null != ctx.ALL()) {
             return null;
         }
-        ASTNode astNode = visit(ctx.aExpr());
+        ASTNode astNode = visit(ctx.cExpr());
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
@@ -1274,7 +1274,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     
     @Override
     public ASTNode visitSelectOffsetValue(final SelectOffsetValueContext ctx) {
-        ASTNode astNode = visit(ctx.aExpr());
+        ASTNode astNode = visit(ctx.cExpr());
         if (astNode instanceof ParameterMarkerExpressionSegment) {
             return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
@@ -1282,15 +1282,12 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     }
     
     @Override
-    public ASTNode visitSelectFetchFirstValue(final SelectFetchFirstValueContext ctx) {
+    public ASTNode visitSelectFetchValue(final SelectFetchValueContext ctx) {
         ASTNode astNode = visit(ctx.cExpr());
-        if (null != astNode) {
-            if (astNode instanceof ParameterMarkerLimitValueSegment) {
-                return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
-            }
-            return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
+        if (astNode instanceof ParameterMarkerExpressionSegment) {
+            return new ParameterMarkerLimitValueSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ((ParameterMarkerExpressionSegment) astNode).getParameterMarkerIndex());
         }
-        return visit(ctx.NUMBER_());
+        return new NumberLiteralLimitValueSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), Long.parseLong(((LiteralExpressionSegment) astNode).getLiterals().toString()));
     }
     
     private LimitSegment createLimitSegmentWhenLimitAndOffset(final SelectLimitContext ctx) {
@@ -1318,8 +1315,8 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
                 LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitClause().selectOffsetValue());
                 return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, limit);
             }
-            if (null != ctx.limitClause().selectFetchFirstValue()) {
-                LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectFetchFirstValue());
+            if (null != ctx.limitClause().selectFetchValue()) {
+                LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectFetchValue());
                 return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), null, limit);
             }
             LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
