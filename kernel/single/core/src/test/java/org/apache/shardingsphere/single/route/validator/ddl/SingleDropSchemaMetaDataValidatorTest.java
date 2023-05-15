@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.single.route.validator.ddl;
 
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.UnknownSQLStatementContext;
 import org.apache.shardingsphere.infra.exception.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -70,6 +70,6 @@ class SingleDropSchemaMetaDataValidatorTest {
         PostgreSQLDropSchemaStatement dropSchemaStatement = mock(PostgreSQLDropSchemaStatement.class, RETURNS_DEEP_STUBS);
         when(dropSchemaStatement.isContainsCascade()).thenReturn(isCascade);
         when(dropSchemaStatement.getSchemaNames()).thenReturn(Collections.singleton(new IdentifierValue(schemaName)));
-        return new CommonSQLStatementContext<>(dropSchemaStatement);
+        return new UnknownSQLStatementContext<>(dropSchemaStatement);
     }
 }
