@@ -42,6 +42,7 @@ import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.math.BigDecimal;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -296,6 +297,8 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                         matched = ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
                     } else if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
                         matched = DataConsistencyCheckUtils.isBigDecimalEquals((BigDecimal) thisResult, (BigDecimal) thatResult);
+                    } else if (thisResult instanceof Array && thatResult instanceof Array) {
+                        matched = Objects.deepEquals(((Array) thisResult).getArray(), ((Array) thatResult).getArray());
                     } else {
                         matched = equalsBuilder.append(thisResult, thatResult).isEquals();
                     }

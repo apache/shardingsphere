@@ -123,7 +123,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
         }
         extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(PipelineContainerComposer.class.getClassLoader().getResource(testParam.getScenario())), ExtraSQLCommand.class);
         containerComposer.start();
-        sourceDataSource = StorageContainerUtils.generateDataSource(appendExtraParameter(getActualJdbcUrlTemplate(DS_0, false)), username, password);
+        sourceDataSource = StorageContainerUtils.generateDataSource(getActualJdbcUrlTemplate(DS_0, false), username, password);
         proxyDataSource = StorageContainerUtils.generateDataSource(
                 appendExtraParameter(containerComposer.getProxyJdbcUrl(PROXY_DATABASE)), ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD);
         init(jobType);
@@ -198,7 +198,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Append extra parameter.
-     * 
+     *
      * @param jdbcUrl JDBC URL
      * @return appended JDBC URL
      */
@@ -207,14 +207,14 @@ public final class PipelineContainerComposer implements AutoCloseable {
             return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("rewriteBatchedStatements", Boolean.TRUE.toString())));
         }
         if (DatabaseTypeUtils.isPostgreSQL(databaseType) || DatabaseTypeUtils.isOpenGauss(databaseType)) {
-            return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified")));
+            return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, PropertiesBuilder.build(new Property("stringtype", "unspecified"), new Property("bitToString", Boolean.TRUE.toString())));
         }
         return jdbcUrl;
     }
     
     /**
      * Register storage unit.
-     * 
+     *
      * @param storageUnitName storage unit name
      * @throws SQLException SQL exception
      */
@@ -222,13 +222,13 @@ public final class PipelineContainerComposer implements AutoCloseable {
         String registerStorageUnitTemplate = "REGISTER STORAGE UNIT ${ds} ( URL='${url}', USER='${user}', PASSWORD='${password}')".replace("${ds}", storageUnitName)
                 .replace("${user}", getUsername())
                 .replace("${password}", getPassword())
-                .replace("${url}", appendExtraParameter(getActualJdbcUrlTemplate(storageUnitName, true)));
+                .replace("${url}", getActualJdbcUrlTemplate(storageUnitName, true));
         proxyExecuteWithLog(registerStorageUnitTemplate, 2);
     }
     
     /**
      * Add resource.
-     * 
+     *
      * @param distSQL dist SQL
      * @throws SQLException SQL exception
      */
@@ -239,7 +239,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Get actual JDBC URL template.
-     * 
+     *
      * @param databaseName database name
      * @param isInContainer is in container
      * @param storageContainerIndex storage container index
@@ -257,18 +257,18 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Get actual JDBC URL template.
-     * 
+     *
      * @param databaseName database name
      * @param isInContainer is in container
      * @return actual JDBC URL template
      */
     public String getActualJdbcUrlTemplate(final String databaseName, final boolean isInContainer) {
-        return getActualJdbcUrlTemplate(databaseName, isInContainer, 0);
+        return appendExtraParameter(getActualJdbcUrlTemplate(databaseName, isInContainer, 0));
     }
     
     /**
      * Create schema.
-     * 
+     *
      * @param connection connection
      * @param sleepSeconds sleep seconds
      * @throws SQLException SQL exception
@@ -286,8 +286,8 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Create source order table.
-     * 
-     * @param sourceTableName source table name 
+     *
+     * @param sourceTableName source table name
      * @throws SQLException SQL exception
      */
     public void createSourceOrderTable(final String sourceTableName) throws SQLException {
@@ -296,7 +296,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Create source table index list.
-     * 
+     *
      * @param schema schema
      * @param sourceTableName source table name
      * @throws SQLException SQL exception
@@ -311,7 +311,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Create source comment on list.
-     * 
+     *
      * @param schema schema
      * @param sourceTableName source table name
      * @throws SQLException SQL exception
@@ -322,7 +322,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Create source order item table.
-     * 
+     *
      * @throws SQLException SQL exception
      */
     public void createSourceOrderItemTable() throws SQLException {
@@ -331,7 +331,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Source execute with log.
-     * 
+     *
      * @param sql SQL
      * @throws SQLException SQL exception
      */
@@ -344,7 +344,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Proxy execute with log.
-     * 
+     *
      * @param sql SQL
      * @param sleepSeconds sleep seconds
      * @throws SQLException SQL exception
@@ -360,7 +360,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Wait job prepare success.
-     * 
+     *
      * @param distSQL dist SQL
      */
     @SneakyThrows(InterruptedException.class)
@@ -376,7 +376,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Query for list with log.
-     * 
+     *
      * @param sql SQL
      * @return query result
      * @throws RuntimeException runtime exception
@@ -399,7 +399,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Transform result set to list.
-     * 
+     *
      * @param resultSet result set
      * @return transformed result
      * @throws SQLException SQL exception
@@ -420,7 +420,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Start increment task.
-     * 
+     *
      * @param baseIncrementTask base increment task
      */
     public void startIncrementTask(final BaseIncrementTask baseIncrementTask) {
@@ -430,7 +430,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Wait increment task finished.
-     * 
+     *
      * @param distSQL dist SQL
      * @return result
      * @throws InterruptedException interrupted exception
@@ -464,7 +464,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Assert proxy order record exist.
-     * 
+     *
      * @param tableName table name
      * @param orderId order id
      */
@@ -480,7 +480,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Assert proxy order record exist.
-     * 
+     *
      * @param sql SQL
      */
     @SneakyThrows(InterruptedException.class)
@@ -499,7 +499,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Get target table records count.
-     * 
+     *
      * @param tableName table name
      * @return target table records count
      */
@@ -511,7 +511,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Assert greater than order table init rows.
-     * 
+     *
      * @param tableInitRows table init rows
      * @param schema schema
      */
@@ -523,7 +523,7 @@ public final class PipelineContainerComposer implements AutoCloseable {
     
     /**
      * Generate ShardingSphere data source from proxy.
-     * 
+     *
      * @return ShardingSphere data source
      * @throws SQLException SQL exception
      */

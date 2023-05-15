@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
+package org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal;
 
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.AbstractColumnValueReader;
-import org.postgresql.util.PGobject;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -26,42 +25,48 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 /**
- * Column value reader for PostgreSQL.
+ * Column value reader for openGauss.
  */
-public final class PostgreSQLColumnValueReader extends AbstractColumnValueReader {
+public final class OpenGaussColumnValueReader extends AbstractColumnValueReader {
     
-    private static final String PG_MONEY_TYPE = "money";
+    private static final String MONEY_TYPE = "money";
     
-    private static final String PG_BIT_TYPE = "bit";
+    private static final String BIT_TYPE = "bit";
+    
+    private static final String BOOL_TYPE = "bool";
     
     @Override
     protected Object doReadValue(final ResultSet resultSet, final ResultSetMetaData metaData, final int columnIndex) throws SQLException {
-        if (isPgMoneyType(metaData, columnIndex)) {
+        if (isMoneyType(metaData, columnIndex)) {
             return resultSet.getBigDecimal(columnIndex);
         }
-        if (isPgBitType(metaData, columnIndex)) {
-            PGobject result = new PGobject();
-            result.setType("bit");
-            Object bitValue = resultSet.getObject(columnIndex);
-            result.setValue(null == bitValue ? null : (Boolean) bitValue ? "1" : "0");
-            return result;
+        if (isBitType(metaData, columnIndex)) {
+            // openGauss JDBC driver can't parse bit(n) correctly when n > 1, so JDBC url already add bitToString, there just return string
+            return resultSet.getString(columnIndex);
+        }
+        if (isBoolType(metaData, columnIndex)) {
+            return resultSet.getBoolean(columnIndex);
         }
         return super.defaultDoReadValue(resultSet, metaData, columnIndex);
     }
     
-    private boolean isPgMoneyType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
-        return PG_MONEY_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
+    private boolean isMoneyType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
+        return MONEY_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
     }
     
-    private boolean isPgBitType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
+    private boolean isBoolType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
+        return BOOL_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
+    }
+    
+    private boolean isBitType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
         if (Types.BIT == resultSetMetaData.getColumnType(index)) {
-            return PG_BIT_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
+            return BIT_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
         }
         return false;
     }
     
     @Override
     public String getType() {
-        return "PostgreSQL";
+        return "openGauss";
     }
 }

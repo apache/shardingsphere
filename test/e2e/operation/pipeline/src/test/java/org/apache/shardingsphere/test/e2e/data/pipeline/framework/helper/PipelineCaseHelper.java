@@ -21,11 +21,13 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.e2e.data.pipeline.util.AutoIncrementKeyGenerateAlgorithm;
 
@@ -41,6 +43,7 @@ import java.time.OffsetDateTime;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -91,13 +94,26 @@ public final class PipelineCaseHelper {
             }
             return result;
         }
-        if (databaseType instanceof SchemaSupportedDatabaseType) {
+        if (databaseType instanceof PostgreSQLDatabaseType) {
             for (int i = 0; i < insertRows; i++) {
                 Object orderId = keyGenerateAlgorithm.generateKey();
                 result.add(new Object[]{orderId, generateInt(0, 100), generateString(6), generateInt(-128, 127),
                         BigDecimal.valueOf(generateDouble()), true, "bytea".getBytes(), generateString(2), generateString(2), generateFloat(), generateDouble(),
                         generateJsonString(8, false), generateJsonString(12, true), emojiText, LocalDate.now(),
                         LocalTime.now(), Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now()});
+            }
+            return result;
+        }
+        if (databaseType instanceof OpenGaussDatabaseType) {
+            for (int i = 0; i < insertRows; i++) {
+                Object orderId = keyGenerateAlgorithm.generateKey();
+                // TODO openGauss mpp plugin parses single quotes incorrectly
+                result.add(new Object[]{orderId, generateInt(0, 1000), "status" + i, generateInt(-1000, 9999), generateInt(0, 100), generateFloat(), generateDouble(),
+                        BigDecimal.valueOf(generateDouble()), false, generateString(6), "texts", "bytea".getBytes(), LocalDate.now(), LocalTime.now(), "2001-10-01",
+                        Timestamp.valueOf(LocalDateTime.now()), OffsetDateTime.now(), "0 years 0 mons 1 days 2 hours 3 mins 4 secs", "{1, 2, 3}", generateJsonString(8, false),
+                        generateJsonString(8, true), UUID.randomUUID().toString(), DigestUtils.md5Hex(orderId.toString()), null, "0000", "[1,1000)",
+                        "1 years 1 mons 10 days -06:00:00", "2000-01-02 00:00:00+00", "(1.0,1.0)", "[(0.0,0.0),(2.0,2.0)]", "(3.0,3.0),(1.0,1.0)", "<(5.0,5.0),5.0>", "1111",
+                        "192.168.0.0/16", "192.168.1.1", "08:00:2b:01:02:03", "\\x484c4c00000000002b05000000000000000000000000000000000000"});
             }
             return result;
         }
@@ -109,7 +125,7 @@ public final class PipelineCaseHelper {
     }
     
     private static String generateString(final int strLength) {
-        return RandomStringUtils.randomAlphabetic(strLength);
+        return RandomStringUtils.randomAlphanumeric(strLength);
     }
     
     /**
