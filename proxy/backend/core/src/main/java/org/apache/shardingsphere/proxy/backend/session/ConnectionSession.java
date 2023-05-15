@@ -46,7 +46,7 @@ public final class ConnectionSession {
     
     private volatile int connectionId;
     
-    private volatile Grantee grantee;
+    private Grantee grantee;
     
     private final TransactionStatus transactionStatus;
     
