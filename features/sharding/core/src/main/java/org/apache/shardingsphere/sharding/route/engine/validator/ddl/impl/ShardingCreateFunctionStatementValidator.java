@@ -39,12 +39,13 @@ import java.util.Optional;
 /**
  * Sharding create function statement validator.
  */
-public final class ShardingCreateFunctionStatementValidator extends ShardingDDLStatementValidator<CreateFunctionStatement> {
+public final class ShardingCreateFunctionStatementValidator extends ShardingDDLStatementValidator {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateFunctionStatement> sqlStatementContext,
+    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext,
                             final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props) {
-        Optional<RoutineBodySegment> routineBodySegment = CreateFunctionStatementHandler.getRoutineBodySegment(sqlStatementContext.getSqlStatement());
+        CreateFunctionStatement createFunctionStatement = (CreateFunctionStatement) sqlStatementContext.getSqlStatement();
+        Optional<RoutineBodySegment> routineBodySegment = CreateFunctionStatementHandler.getRoutineBodySegment(createFunctionStatement);
         if (!routineBodySegment.isPresent()) {
             return;
         }
@@ -52,14 +53,14 @@ public final class ShardingCreateFunctionStatementValidator extends ShardingDDLS
         Collection<SimpleTableSegment> existTables = extractor.extractExistTableFromRoutineBody(routineBodySegment.get());
         validateShardingTable(shardingRule, "CREATE FUNCTION", existTables);
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
-        ShardingSphereSchema schema = sqlStatementContext.getSqlStatement().getFunctionName().flatMap(optional -> optional.getOwner()
+        ShardingSphereSchema schema = createFunctionStatement.getFunctionName().flatMap(optional -> optional.getOwner()
                 .map(owner -> database.getSchema(owner.getIdentifier().getValue()))).orElseGet(() -> database.getSchema(defaultSchemaName));
         validateTableExist(schema, existTables);
         validateTableNotExist(schema, extractor.extractNotExistTableFromRoutineBody(routineBodySegment.get()));
     }
     
     @Override
-    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CreateFunctionStatement> sqlStatementContext, final HintValueContext hintValueContext,
+    public void postValidate(final ShardingRule shardingRule, final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
                              final List<Object> params, final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

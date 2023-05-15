@@ -85,7 +85,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
      * @param sqlStatementContext SQL statement context
      */
     @Override
-    public void init(final SQLStatementContext<?> sqlStatementContext) {
+    public void init(final SQLStatementContext sqlStatementContext) {
         statementContext = (SelectStatementContext) sqlStatementContext;
         initResultNum(sqlStatementContext);
         HBaseOperation operation = HBaseOperationConverterFactory.newInstance(sqlStatementContext).convert();
@@ -100,7 +100,7 @@ public final class HBaseGetResultSet implements HBaseQueryResultSet {
         logExecuteTime(startMills);
     }
     
-    private void initResultNum(final SQLStatementContext<?> sqlStatementContext) {
+    private void initResultNum(final SQLStatementContext sqlStatementContext) {
         resultNum = 0;
         maxLimitResultSize = HBaseContext.getInstance().getProps().<Long>getValue(HBasePropertyKey.MAX_SCAN_LIMIT_SIZE);
         Optional<PaginationValueSegment> paginationSegment = ((MySQLSelectStatement) sqlStatementContext.getSqlStatement()).getLimit().flatMap(LimitSegment::getRowCount);

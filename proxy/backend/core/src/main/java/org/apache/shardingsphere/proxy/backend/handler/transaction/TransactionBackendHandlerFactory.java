@@ -53,8 +53,8 @@ public final class TransactionBackendHandlerFactory {
      * @param connectionSession connection session
      * @return backend handler
      */
-    public static ProxyBackendHandler newInstance(final SQLStatementContext<? extends TCLStatement> sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
-        TCLStatement tclStatement = sqlStatementContext.getSqlStatement();
+    public static ProxyBackendHandler newInstance(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
+        TCLStatement tclStatement = (TCLStatement) sqlStatementContext.getSqlStatement();
         if (tclStatement instanceof BeginTransactionStatement || tclStatement instanceof StartTransactionStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.BEGIN, connectionSession);
         }

@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
 class SQLRewriteContextTest {
     
     @Mock
-    private CommonSQLStatementContext<?> sqlStatementContext;
+    private CommonSQLStatementContext sqlStatementContext;
     
     @Mock
     private SQLToken sqlToken;

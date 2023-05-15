@@ -30,13 +30,18 @@ import java.util.Collection;
  * Load data statement context.
  */
 @Getter
-public final class LoadDataStatementContext extends CommonSQLStatementContext<MySQLLoadDataStatement> implements TableAvailable {
+public final class LoadDataStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
     public LoadDataStatementContext(final MySQLLoadDataStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTableSegment(), getDatabaseType());
+    }
+    
+    @Override
+    public MySQLLoadDataStatement getSqlStatement() {
+        return (MySQLLoadDataStatement) super.getSqlStatement();
     }
     
     @Override

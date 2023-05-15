@@ -130,7 +130,7 @@ public final class SQLStatementContextFactory {
      * @param defaultDatabaseName default database name
      * @return SQL statement context
      */
-    public static SQLStatementContext<?> newInstance(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final String defaultDatabaseName) {
+    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement, final String defaultDatabaseName) {
         return newInstance(metaData, Collections.emptyList(), sqlStatement, defaultDatabaseName);
     }
     
@@ -143,8 +143,8 @@ public final class SQLStatementContextFactory {
      * @param defaultDatabaseName default database name
      * @return SQL statement context
      */
-    public static SQLStatementContext<?> newInstance(final ShardingSphereMetaData metaData,
-                                                     final List<Object> params, final SQLStatement sqlStatement, final String defaultDatabaseName) {
+    public static SQLStatementContext newInstance(final ShardingSphereMetaData metaData,
+                                                  final List<Object> params, final SQLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof DMLStatement) {
             return getDMLStatementContext(metaData, params, (DMLStatement) sqlStatement, defaultDatabaseName);
         }
@@ -157,11 +157,11 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof DALStatement) {
             return getDALStatementContext((DALStatement) sqlStatement);
         }
-        return new UnknownSQLStatementContext<>(sqlStatement);
+        return new UnknownSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext<?> getDMLStatementContext(final ShardingSphereMetaData metaData,
-                                                                 final List<Object> params, final DMLStatement sqlStatement, final String defaultDatabaseName) {
+    private static SQLStatementContext getDMLStatementContext(final ShardingSphereMetaData metaData,
+                                                              final List<Object> params, final DMLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof SelectStatement) {
             return new SelectStatementContext(metaData, params, (SelectStatement) sqlStatement, defaultDatabaseName);
         }
@@ -192,8 +192,8 @@ public final class SQLStatementContextFactory {
         throw new UnsupportedSQLOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
     
-    private static SQLStatementContext<?> getDDLStatementContext(final ShardingSphereMetaData metaData, final List<Object> params,
-                                                                 final DDLStatement sqlStatement, final String defaultDatabaseName) {
+    private static SQLStatementContext getDDLStatementContext(final ShardingSphereMetaData metaData, final List<Object> params,
+                                                              final DDLStatement sqlStatement, final String defaultDatabaseName) {
         if (sqlStatement instanceof CreateSchemaStatement) {
             return new CreateSchemaStatementContext((CreateSchemaStatement) sqlStatement);
         }
@@ -254,10 +254,10 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof FetchStatement) {
             return new FetchStatementContext((FetchStatement) sqlStatement);
         }
-        return new UnknownSQLStatementContext<>(sqlStatement);
+        return new UnknownSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext<?> getDCLStatementContext(final DCLStatement sqlStatement) {
+    private static SQLStatementContext getDCLStatementContext(final DCLStatement sqlStatement) {
         if (sqlStatement instanceof GrantStatement) {
             return new GrantStatementContext((GrantStatement) sqlStatement);
         }
@@ -267,10 +267,10 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof SQLServerDenyUserStatement) {
             return new DenyUserStatementContext((SQLServerDenyUserStatement) sqlStatement);
         }
-        return new UnknownSQLStatementContext<>(sqlStatement);
+        return new UnknownSQLStatementContext(sqlStatement);
     }
     
-    private static SQLStatementContext<?> getDALStatementContext(final DALStatement sqlStatement) {
+    private static SQLStatementContext getDALStatementContext(final DALStatement sqlStatement) {
         if (sqlStatement instanceof ExplainStatement) {
             return new ExplainStatementContext((ExplainStatement) sqlStatement);
         }
@@ -301,6 +301,6 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof MySQLKillStatement) {
             return new KillStatementContext((MySQLKillStatement) sqlStatement);
         }
-        return new UnknownSQLStatementContext<>(sqlStatement);
+        return new UnknownSQLStatementContext(sqlStatement);
     }
 }

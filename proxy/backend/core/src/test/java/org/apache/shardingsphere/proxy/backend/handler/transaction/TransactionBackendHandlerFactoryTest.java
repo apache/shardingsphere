@@ -65,7 +65,7 @@ class TransactionBackendHandlerFactoryTest {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
-        SQLStatementContext<CommitStatement> context = mock(SQLStatementContext.class);
+        SQLStatementContext context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(CommitStatement.class));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -82,7 +82,7 @@ class TransactionBackendHandlerFactoryTest {
         ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
-        SQLStatementContext<RollbackStatement> context = mock(SQLStatementContext.class);
+        SQLStatementContext context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(RollbackStatement.class));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -99,10 +99,9 @@ class TransactionBackendHandlerFactoryTest {
         return result;
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     void assertBroadcastBackendHandlerReturnedWhenTCLStatementNotHit() {
-        SQLStatementContext<TCLStatement> context = mock(SQLStatementContext.class);
+        SQLStatementContext context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(TCLStatement.class));
         DatabaseConnectorFactory mockFactory = mock(DatabaseConnectorFactory.class);
         when(DatabaseConnectorFactory.getInstance()).thenReturn(mockFactory);

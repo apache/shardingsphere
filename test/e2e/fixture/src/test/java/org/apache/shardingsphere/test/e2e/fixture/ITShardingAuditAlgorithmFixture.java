@@ -28,7 +28,7 @@ import java.util.List;
 public final class ITShardingAuditAlgorithmFixture implements ShardingAuditAlgorithm {
     
     @Override
-    public void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> params,
+    public void check(final SQLStatementContext sqlStatementContext, final List<Object> params,
                       final Grantee grantee, final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database) {
     }
     

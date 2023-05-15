@@ -31,13 +31,18 @@ import java.util.Collections;
  * Comment statement context.
  */
 @Getter
-public final class CommentStatementContext extends CommonSQLStatementContext<CommentStatement> implements TableAvailable {
+public final class CommentStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
     public CommentStatementContext(final CommentStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(null == sqlStatement.getTable() ? Collections.emptyList() : Collections.singletonList(sqlStatement.getTable()), getDatabaseType());
+    }
+    
+    @Override
+    public CommentStatement getSqlStatement() {
+        return (CommentStatement) super.getSqlStatement();
     }
     
     @Override

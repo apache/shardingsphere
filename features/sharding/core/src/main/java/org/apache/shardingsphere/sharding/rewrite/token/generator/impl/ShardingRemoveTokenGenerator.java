@@ -30,19 +30,19 @@ import java.util.LinkedList;
 /**
  * Sharding remove token generator.
  */
-public final class ShardingRemoveTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>>, IgnoreForSingleRoute {
+public final class ShardingRemoveTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, IgnoreForSingleRoute {
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return isContainsAggregationDistinctProjection(sqlStatementContext);
     }
     
-    private boolean isContainsAggregationDistinctProjection(final SQLStatementContext<?> sqlStatementContext) {
+    private boolean isContainsAggregationDistinctProjection(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections().isEmpty();
     }
     
     @Override
-    public Collection<? extends SQLToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
+    public Collection<? extends SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
         if (isContainsAggregationDistinctProjection(sqlStatementContext)) {
             ((SelectStatementContext) sqlStatementContext).getSqlStatement().getGroupBy().ifPresent(optional -> result.add(new RemoveToken(optional.getStartIndex(), optional.getStopIndex())));

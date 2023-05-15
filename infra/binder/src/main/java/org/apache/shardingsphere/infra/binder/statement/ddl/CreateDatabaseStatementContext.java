@@ -17,17 +17,20 @@
 
 package org.apache.shardingsphere.infra.binder.statement.ddl;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 
 /**
  * Create database statement context.
  */
-@Getter
-public final class CreateDatabaseStatementContext extends CommonSQLStatementContext<CreateDatabaseStatement> {
+public final class CreateDatabaseStatementContext extends CommonSQLStatementContext {
     
     public CreateDatabaseStatementContext(final CreateDatabaseStatement sqlStatement) {
         super(sqlStatement);
+    }
+    
+    @Override
+    public CreateDatabaseStatement getSqlStatement() {
+        return (CreateDatabaseStatement) super.getSqlStatement();
     }
 }

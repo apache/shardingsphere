@@ -30,13 +30,18 @@ import java.util.Collection;
  * Drop view statement context.
  */
 @Getter
-public final class DropViewStatementContext extends CommonSQLStatementContext<DropViewStatement> implements TableAvailable {
+public final class DropViewStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
     public DropViewStatementContext(final DropViewStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getViews(), getDatabaseType());
+    }
+    
+    @Override
+    public DropViewStatement getSqlStatement() {
+        return (DropViewStatement) super.getSqlStatement();
     }
     
     @Override

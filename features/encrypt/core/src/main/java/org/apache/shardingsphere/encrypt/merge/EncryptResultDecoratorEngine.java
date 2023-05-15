@@ -38,7 +38,7 @@ public final class EncryptResultDecoratorEngine implements ResultDecoratorEngine
     
     @Override
     public ResultDecorator<?> newInstance(final ShardingSphereDatabase database,
-                                          final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext<?> sqlStatementContext) {
+                                          final EncryptRule encryptRule, final ConfigurationProperties props, final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof SelectStatementContext) {
             EncryptAlgorithmMetaData algorithmMetaData = new EncryptAlgorithmMetaData(database, encryptRule, (SelectStatementContext) sqlStatementContext);
             return new EncryptDQLResultDecorator(algorithmMetaData);

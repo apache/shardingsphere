@@ -33,13 +33,18 @@ import java.util.stream.Collectors;
  * Rename table statement context.
  */
 @Getter
-public final class RenameTableStatementContext extends CommonSQLStatementContext<RenameTableStatement> implements TableAvailable {
+public final class RenameTableStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
     public RenameTableStatementContext(final RenameTableStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getRenameTables().stream().map(RenameTableDefinitionSegment::getRenameTable).collect(Collectors.toList()), getDatabaseType());
+    }
+    
+    @Override
+    public RenameTableStatement getSqlStatement() {
+        return (RenameTableStatement) super.getSqlStatement();
     }
     
     @Override

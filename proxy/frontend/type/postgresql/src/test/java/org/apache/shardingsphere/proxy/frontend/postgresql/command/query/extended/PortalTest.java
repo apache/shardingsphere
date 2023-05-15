@@ -130,7 +130,7 @@ class PortalTest {
     @Test
     void assertGetName() throws SQLException {
         Portal portal = new Portal("", new PostgreSQLServerPreparedStatement("",
-                new UnknownSQLStatementContext<>(new PostgreSQLEmptyStatement()), Collections.emptyList()), Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
+                new UnknownSQLStatementContext(new PostgreSQLEmptyStatement()), Collections.emptyList()), Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         assertThat(portal.getName(), is(""));
     }
     
@@ -211,7 +211,7 @@ class PortalTest {
     void assertExecuteEmptyStatement() throws SQLException {
         when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(proxyBackendHandler.next()).thenReturn(false);
-        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", new UnknownSQLStatementContext<>(new PostgreSQLEmptyStatement()), Collections.emptyList());
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", new UnknownSQLStatementContext(new PostgreSQLEmptyStatement()), Collections.emptyList());
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
@@ -228,7 +228,7 @@ class PortalTest {
         VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
         variableAssignSegment.setVariable(new VariableSegment(0, 0, "client_encoding"));
         setStatement.getVariableAssigns().add(variableAssignSegment);
-        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(sql, new UnknownSQLStatementContext<>(setStatement), Collections.emptyList());
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(sql, new UnknownSQLStatementContext(setStatement), Collections.emptyList());
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         portal.bind();
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
@@ -237,7 +237,6 @@ class PortalTest {
         assertThat(actualPackets.get(1), instanceOf(PostgreSQLParameterStatusPacket.class));
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     void assertDescribeBeforeBind() {
         PostgreSQLServerPreparedStatement preparedStatement = mock(PostgreSQLServerPreparedStatement.class);
@@ -247,7 +246,7 @@ class PortalTest {
     
     @Test
     void assertClose() throws SQLException {
-        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", new UnknownSQLStatementContext<>(new PostgreSQLEmptyStatement()), Collections.emptyList());
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", new UnknownSQLStatementContext(new PostgreSQLEmptyStatement()), Collections.emptyList());
         new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager).close();
         verify(databaseConnectionManager).unmarkResourceInUse(proxyBackendHandler);
         verify(proxyBackendHandler).close();

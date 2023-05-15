@@ -204,7 +204,7 @@ class ShardingStandardRoutingEngineTest {
     }
     
     private ShardingStandardRoutingEngine createShardingStandardRoutingEngine(final String logicTableName, final ShardingConditions shardingConditions,
-                                                                              final SQLStatementContext<?> sqlStatementContext, final HintValueContext hintValueContext) {
+                                                                              final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext) {
         return new ShardingStandardRoutingEngine(logicTableName, shardingConditions, sqlStatementContext, hintValueContext, new ConfigurationProperties(new Properties()));
     }
 }

@@ -45,7 +45,7 @@ import java.util.Optional;
  * Cursor statement context.
  */
 @Getter
-public final class CursorStatementContext extends CommonSQLStatementContext<OpenGaussCursorStatement> implements CursorAvailable, TableAvailable, WhereAvailable, CursorDefinition {
+public final class CursorStatementContext extends CommonSQLStatementContext implements CursorAvailable, TableAvailable, WhereAvailable, CursorDefinition {
     
     private final Collection<WhereSegment> whereSegments = new LinkedList<>();
     
@@ -74,6 +74,11 @@ public final class CursorStatementContext extends CommonSQLStatementContext<Open
         select.getWhere().ifPresent(whereSegments::add);
         whereSegments.addAll(WhereExtractUtils.getSubqueryWhereSegments(select));
         whereSegments.addAll(WhereExtractUtils.getJoinWhereSegments(select));
+    }
+    
+    @Override
+    public OpenGaussCursorStatement getSqlStatement() {
+        return (OpenGaussCursorStatement) super.getSqlStatement();
     }
     
     @Override

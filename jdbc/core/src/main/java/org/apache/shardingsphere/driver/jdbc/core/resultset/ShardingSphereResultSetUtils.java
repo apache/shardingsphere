@@ -44,7 +44,7 @@ public final class ShardingSphereResultSetUtils {
      * @return column label and index map
      * @throws SQLException SQL exception
      */
-    public static Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext<?> sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
+    public static Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext sqlStatementContext, final ResultSetMetaData resultSetMetaData) throws SQLException {
         if (hasSelectExpandProjections(sqlStatementContext)) {
             return createColumnLabelAndIndexMapWithExpandProjections((SelectStatementContext) sqlStatementContext);
         }
@@ -65,7 +65,7 @@ public final class ShardingSphereResultSetUtils {
         return result;
     }
     
-    private static boolean hasSelectExpandProjections(final SQLStatementContext<?> sqlStatementContext) {
+    private static boolean hasSelectExpandProjections(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && !((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().isEmpty();
     }
 }

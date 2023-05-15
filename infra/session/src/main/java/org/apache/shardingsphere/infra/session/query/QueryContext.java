@@ -32,7 +32,7 @@ import java.util.Optional;
 @Getter
 public final class QueryContext {
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     private final String sql;
     
@@ -45,15 +45,15 @@ public final class QueryContext {
     
     private final boolean useCache;
     
-    public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params) {
+    public QueryContext(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> params) {
         this(sqlStatementContext, sql, params, new HintValueContext());
     }
     
-    public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext) {
+    public QueryContext(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext) {
         this(sqlStatementContext, sql, params, hintValueContext, false);
     }
     
-    public QueryContext(final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext, final boolean useCache) {
+    public QueryContext(final SQLStatementContext sqlStatementContext, final String sql, final List<Object> params, final HintValueContext hintValueContext, final boolean useCache) {
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         parameters = params;

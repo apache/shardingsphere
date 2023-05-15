@@ -52,7 +52,7 @@ class ShadowNonDMLStatementRoutingEngineTest {
         shadowRouteEngine = new ShadowNonDMLStatementRoutingEngine(createSQLStatementContext());
     }
     
-    private SQLStatementContext<?> createSQLStatementContext() {
+    private SQLStatementContext createSQLStatementContext() {
         CreateTableStatementContext result = mock(CreateTableStatementContext.class);
         MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement(false);
         sqlStatement.getCommentSegments().add(new CommentSegment("/* SHARDINGSPHERE_HINT: SHADOW=true */", 0, 20));

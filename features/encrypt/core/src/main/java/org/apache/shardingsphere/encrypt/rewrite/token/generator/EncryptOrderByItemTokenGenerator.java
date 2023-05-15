@@ -44,7 +44,7 @@ import java.util.Optional;
  * Order by item token generator for encrypt.
  */
 @Setter
-public final class EncryptOrderByItemTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>>, SchemaMetaDataAware, EncryptRuleAware {
+public final class EncryptOrderByItemTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, SchemaMetaDataAware, EncryptRuleAware {
     
     private String databaseName;
     
@@ -53,12 +53,12 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
     private EncryptRule encryptRule;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext && containsOrderByItem(sqlStatementContext);
     }
     
     @Override
-    public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
+    public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName);
         ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> schemas.get(defaultSchema));
@@ -90,7 +90,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
         return result;
     }
     
-    private Collection<OrderByItem> getOrderByItems(final SQLStatementContext<?> sqlStatementContext) {
+    private Collection<OrderByItem> getOrderByItems(final SQLStatementContext sqlStatementContext) {
         if (!(sqlStatementContext instanceof SelectStatementContext)) {
             return Collections.emptyList();
         }
@@ -104,7 +104,7 @@ public final class EncryptOrderByItemTokenGenerator implements CollectionSQLToke
         return result;
     }
     
-    private boolean containsOrderByItem(final SQLStatementContext<?> sqlStatementContext) {
+    private boolean containsOrderByItem(final SQLStatementContext sqlStatementContext) {
         if (!(sqlStatementContext instanceof SelectStatementContext)) {
             return false;
         }

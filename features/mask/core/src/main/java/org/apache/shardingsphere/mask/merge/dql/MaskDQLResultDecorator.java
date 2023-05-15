@@ -34,12 +34,12 @@ public final class MaskDQLResultDecorator implements ResultDecorator<MaskRule> {
     private final MaskAlgorithmMetaData metaData;
     
     @Override
-    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext<?> sqlStatementContext, final MaskRule rule) {
+    public MergedResult decorate(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final MaskRule rule) {
         return new MaskMergedResult(metaData, new TransparentMergedResult(queryResult));
     }
     
     @Override
-    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext<?> sqlStatementContext, final MaskRule rule) {
+    public MergedResult decorate(final MergedResult mergedResult, final SQLStatementContext sqlStatementContext, final MaskRule rule) {
         return new MaskMergedResult(metaData, mergedResult);
     }
 }

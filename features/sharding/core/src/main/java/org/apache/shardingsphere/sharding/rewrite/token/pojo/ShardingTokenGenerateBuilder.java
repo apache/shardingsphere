@@ -57,7 +57,7 @@ public final class ShardingTokenGenerateBuilder implements SQLTokenGeneratorBuil
     
     private final RouteContext routeContext;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {

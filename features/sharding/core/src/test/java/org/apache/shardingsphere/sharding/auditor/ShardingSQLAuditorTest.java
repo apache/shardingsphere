@@ -54,7 +54,7 @@ class ShardingSQLAuditorTest {
     private ShardingRule rule;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private CommonSQLStatementContext<?> sqlStatementContext;
+    private CommonSQLStatementContext sqlStatementContext;
     
     @Mock
     private Grantee grantee;

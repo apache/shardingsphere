@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.Shardi
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -56,7 +55,7 @@ class ShardingAlterViewStatementValidatorTest {
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
         sqlStatement.setSelect(selectStatement);
-        SQLStatementContext<AlterViewStatement> sqlStatementContext = new AlterViewStatementContext(sqlStatement);
+        SQLStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.isShardingTable("t_order")).thenReturn(false);
         assertDoesNotThrow(() -> new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
@@ -69,7 +68,7 @@ class ShardingAlterViewStatementValidatorTest {
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
         sqlStatement.setSelect(selectStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        SQLStatementContext<AlterViewStatement> sqlStatementContext = new AlterViewStatementContext(sqlStatement);
+        SQLStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement);
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class,
                 () -> new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
@@ -80,7 +79,7 @@ class ShardingAlterViewStatementValidatorTest {
         OpenGaussAlterViewStatement selectStatement = new OpenGaussAlterViewStatement();
         selectStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
-        SQLStatementContext<AlterViewStatement> sqlStatementContext = new AlterViewStatementContext(selectStatement);
+        SQLStatementContext sqlStatementContext = new AlterViewStatementContext(selectStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.isBroadcastTable("t_order")).thenReturn(true);
         when(shardingRule.isBroadcastTable("t_order_new")).thenReturn(true);
@@ -92,7 +91,7 @@ class ShardingAlterViewStatementValidatorTest {
         OpenGaussAlterViewStatement selectStatement = new OpenGaussAlterViewStatement();
         selectStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
-        SQLStatementContext<AlterViewStatement> sqlStatementContext = new AlterViewStatementContext(selectStatement);
+        SQLStatementContext sqlStatementContext = new AlterViewStatementContext(selectStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.isBroadcastTable("t_order")).thenReturn(true);
         when(shardingRule.isBroadcastTable("t_order_new")).thenReturn(false);

@@ -54,7 +54,7 @@ class EncryptDALResultDecoratorTest {
     private EncryptRule rule;
     
     @Mock
-    private SQLStatementContext<?> sqlStatementContext;
+    private SQLStatementContext sqlStatementContext;
     
     @Test
     void assertMergedResultWithDescribeStatement() {
@@ -88,7 +88,7 @@ class EncryptDALResultDecoratorTest {
         assertThat(encryptDALResultDecorator.decorate(mock(MergedResult.class), sqlStatementContext, rule), instanceOf(MergedResult.class));
     }
     
-    private SQLStatementContext<?> getDescribeStatementContext() {
+    private SQLStatementContext getDescribeStatementContext() {
         ExplainStatementContext result = mock(ExplainStatementContext.class);
         SimpleTableSegment simpleTableSegment = getSimpleTableSegment();
         when(result.getAllTables()).thenReturn(Collections.singleton(simpleTableSegment));
@@ -96,7 +96,7 @@ class EncryptDALResultDecoratorTest {
         return result;
     }
     
-    private SQLStatementContext<?> getShowColumnsStatementContext() {
+    private SQLStatementContext getShowColumnsStatementContext() {
         ShowColumnsStatementContext result = mock(ShowColumnsStatementContext.class);
         SimpleTableSegment simpleTableSegment = getSimpleTableSegment();
         when(result.getAllTables()).thenReturn(Collections.singleton(simpleTableSegment));
@@ -104,7 +104,7 @@ class EncryptDALResultDecoratorTest {
         return result;
     }
     
-    private SQLStatementContext<?> getShowCreateTableStatementContext() {
+    private SQLStatementContext getShowCreateTableStatementContext() {
         ShowCreateTableStatementContext result = mock(ShowCreateTableStatementContext.class);
         SimpleTableSegment simpleTableSegment = getSimpleTableSegment();
         when(result.getAllTables()).thenReturn(Collections.singleton(simpleTableSegment));

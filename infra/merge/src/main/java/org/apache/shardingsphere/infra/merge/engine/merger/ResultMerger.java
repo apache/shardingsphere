@@ -41,5 +41,5 @@ public interface ResultMerger {
      * @return merged result
      * @throws SQLException SQL exception
      */
-    MergedResult merge(List<QueryResult> queryResults, SQLStatementContext<?> sqlStatementContext, ShardingSphereDatabase database, ConnectionContext connectionContext) throws SQLException;
+    MergedResult merge(List<QueryResult> queryResults, SQLStatementContext sqlStatementContext, ShardingSphereDatabase database, ConnectionContext connectionContext) throws SQLException;
 }

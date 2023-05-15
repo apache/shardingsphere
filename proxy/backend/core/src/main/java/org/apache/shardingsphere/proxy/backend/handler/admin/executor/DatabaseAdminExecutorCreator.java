@@ -36,7 +36,7 @@ public interface DatabaseAdminExecutorCreator extends TypedSPI {
      * @param sqlStatementContext SQL statement context
      * @return created instance
      */
-    Optional<DatabaseAdminExecutor> create(SQLStatementContext<?> sqlStatementContext);
+    Optional<DatabaseAdminExecutor> create(SQLStatementContext sqlStatementContext);
     
     /**
      * Create database admin executor.
@@ -47,5 +47,5 @@ public interface DatabaseAdminExecutorCreator extends TypedSPI {
      * @param parameters parameters
      * @return created instance
      */
-    Optional<DatabaseAdminExecutor> create(SQLStatementContext<?> sqlStatementContext, String sql, String databaseName, List<Object> parameters);
+    Optional<DatabaseAdminExecutor> create(SQLStatementContext sqlStatementContext, String sql, String databaseName, List<Object> parameters);
 }

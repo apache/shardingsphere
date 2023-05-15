@@ -201,7 +201,7 @@ class ProxySQLExecutorTest {
         return new TruncateStatementContext(sqlStatement);
     }
     
-    private SQLStatementContext<?> createPostgreSQLTruncateStatementContext() {
+    private SQLStatementContext createPostgreSQLTruncateStatementContext() {
         PostgreSQLTruncateStatement sqlStatement = new PostgreSQLTruncateStatement();
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         return new TruncateStatementContext(sqlStatement);

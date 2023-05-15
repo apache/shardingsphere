@@ -34,13 +34,18 @@ import java.util.LinkedList;
  * Show columns statement context.
  */
 @Getter
-public final class ShowColumnsStatementContext extends CommonSQLStatementContext<MySQLShowColumnsStatement> implements TableAvailable, RemoveAvailable {
+public final class ShowColumnsStatementContext extends CommonSQLStatementContext implements TableAvailable, RemoveAvailable {
     
     private final TablesContext tablesContext;
     
     public ShowColumnsStatementContext(final MySQLShowColumnsStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
+    }
+    
+    @Override
+    public MySQLShowColumnsStatement getSqlStatement() {
+        return (MySQLShowColumnsStatement) super.getSqlStatement();
     }
     
     @Override

@@ -45,7 +45,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @param connectionSession connection session
      * @return created instance
      */
-    public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, final ConnectionSession connectionSession) {
+    public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext sqlStatementContext, final ConnectionSession connectionSession) {
         Optional<DatabaseAdminExecutorCreator> executorCreator = TypedSPILoader.findService(DatabaseAdminExecutorCreator.class, databaseType.getType());
         if (!executorCreator.isPresent()) {
             return Optional.empty();
@@ -64,7 +64,7 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @param parameters parameters
      * @return created instance
      */
-    public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext,
+    public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext sqlStatementContext,
                                                             final ConnectionSession connectionSession, final String sql, final List<Object> parameters) {
         Optional<DatabaseAdminExecutorCreator> executorCreator = TypedSPILoader.findService(DatabaseAdminExecutorCreator.class, databaseType.getType());
         if (!executorCreator.isPresent()) {
@@ -74,7 +74,7 @@ public final class DatabaseAdminBackendHandlerFactory {
         return executor.map(optional -> createProxyBackendHandler(sqlStatementContext, connectionSession, optional));
     }
     
-    private static ProxyBackendHandler createProxyBackendHandler(final SQLStatementContext<?> sqlStatementContext, final ConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
+    private static ProxyBackendHandler createProxyBackendHandler(final SQLStatementContext sqlStatementContext, final ConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
         return executor instanceof DatabaseAdminQueryExecutor
                 ? new DatabaseAdminQueryBackendHandler(connectionSession, (DatabaseAdminQueryExecutor) executor)
                 : new DatabaseAdminUpdateBackendHandler(connectionSession, sqlStatementContext.getSqlStatement(), executor);

@@ -36,7 +36,7 @@ import java.util.LinkedList;
  * Update SQL statement context.
  */
 @Getter
-public final class UpdateStatementContext extends CommonSQLStatementContext<UpdateStatement> implements TableAvailable, WhereAvailable {
+public final class UpdateStatementContext extends CommonSQLStatementContext implements TableAvailable, WhereAvailable {
     
     private final TablesContext tablesContext;
     
@@ -55,6 +55,11 @@ public final class UpdateStatementContext extends CommonSQLStatementContext<Upda
         TableExtractor tableExtractor = new TableExtractor();
         tableExtractor.extractTablesFromUpdate(getSqlStatement());
         return tableExtractor.getRewriteTables();
+    }
+    
+    @Override
+    public UpdateStatement getSqlStatement() {
+        return (UpdateStatement) super.getSqlStatement();
     }
     
     @Override

@@ -32,15 +32,15 @@ import java.util.LinkedList;
 /**
  * Aggregation distinct token generator.
  */
-public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>>, IgnoreForSingleRoute {
+public final class AggregationDistinctTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, IgnoreForSingleRoute {
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof SelectStatementContext;
     }
     
     @Override
-    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
+    public Collection<AggregationDistinctToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<AggregationDistinctToken> result = new LinkedList<>();
         for (AggregationDistinctProjection each : ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getAggregationDistinctProjections()) {
             result.add(generateSQLToken(each));

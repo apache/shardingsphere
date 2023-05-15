@@ -53,7 +53,7 @@ class ServerPreparedStatementRegistryTest {
         }
         
         @Override
-        public SQLStatementContext<?> getSqlStatementContext() {
+        public SQLStatementContext getSqlStatementContext() {
             throw new UnsupportedSQLOperationException("");
         }
     }

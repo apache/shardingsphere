@@ -82,12 +82,12 @@ class PostgreSQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithOtherSQLStatementContextOnly() {
-        assertThat(new PostgreSQLAdminExecutorCreator().create(new UnknownSQLStatementContext<>(new PostgreSQLInsertStatement())), is(Optional.empty()));
+        assertThat(new PostgreSQLAdminExecutorCreator().create(new UnknownSQLStatementContext(new PostgreSQLInsertStatement())), is(Optional.empty()));
     }
     
     @Test
     void assertCreateWithShowSQLStatement() {
-        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(new UnknownSQLStatementContext<>(new PostgreSQLShowStatement("client_encoding")));
+        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(new UnknownSQLStatementContext(new PostgreSQLShowStatement("client_encoding")));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLShowVariableExecutor.class));
     }
@@ -146,7 +146,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithSetStatement() {
         PostgreSQLSetStatement setStatement = new PostgreSQLSetStatement();
-        UnknownSQLStatementContext<PostgreSQLSetStatement> sqlStatementContext = new UnknownSQLStatementContext<>(setStatement);
+        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(setStatement);
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "SET client_encoding = utf8", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLSetVariableAdminExecutor.class));
@@ -155,7 +155,7 @@ class PostgreSQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithResetStatement() {
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator()
-                .create(new UnknownSQLStatementContext<>(new PostgreSQLResetParameterStatement("client_encoding")), "RESET client_encoding", "", Collections.emptyList());
+                .create(new UnknownSQLStatementContext(new PostgreSQLResetParameterStatement("client_encoding")), "RESET client_encoding", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLResetVariableAdminExecutor.class));
     }

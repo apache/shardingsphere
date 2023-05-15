@@ -33,7 +33,6 @@ import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.RenameTableDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLRenameTableStatement;
 import org.junit.jupiter.api.Test;
@@ -59,7 +58,7 @@ class ShardingRenameTableStatementValidatorTest {
     
     @Test
     void assertPreValidateShardingTable() {
-        SQLStatementContext<RenameTableStatement> sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
+        SQLStatementContext sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.tableRuleExists(argThat(tableNames -> tableNames.contains("t_order") || tableNames.contains("t_user_order")))).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class,
@@ -68,7 +67,7 @@ class ShardingRenameTableStatementValidatorTest {
     
     @Test
     void assertPreValidateBroadcastTable() {
-        SQLStatementContext<RenameTableStatement> sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
+        SQLStatementContext sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.isBroadcastTable(eq("t_order"))).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class,
@@ -77,7 +76,7 @@ class ShardingRenameTableStatementValidatorTest {
     
     @Test
     void assertPreValidateNormalCase() {
-        SQLStatementContext<RenameTableStatement> sqlStatementContext = createRenameTableStatementContext("t_not_sharding_table", "t_not_sharding_table_new");
+        SQLStatementContext sqlStatementContext = createRenameTableStatementContext("t_not_sharding_table", "t_not_sharding_table_new");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         assertDoesNotThrow(() -> new ShardingRenameTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
@@ -90,7 +89,7 @@ class ShardingRenameTableStatementValidatorTest {
         when(tableRule.getActualDataNodes()).thenReturn(Arrays.asList(mock(DataNode.class), mock(DataNode.class)));
         when(shardingRule.getTableRule("t_order")).thenReturn(tableRule);
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
-        SQLStatementContext<RenameTableStatement> sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
+        SQLStatementContext sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
         assertThrows(ShardingDDLRouteException.class,
@@ -105,14 +104,14 @@ class ShardingRenameTableStatementValidatorTest {
         when(tableRule.getActualDataNodes()).thenReturn(Collections.singletonList(mock(DataNode.class)));
         when(shardingRule.getTableRule("t_order")).thenReturn(tableRule);
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
-        SQLStatementContext<RenameTableStatement> sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
+        SQLStatementContext sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
         assertDoesNotThrow(() -> new ShardingRenameTableStatementValidator().postValidate(
                 shardingRule, sqlStatementContext, new HintValueContext(), Collections.emptyList(), database, props, routeContext));
     }
     
-    private SQLStatementContext<RenameTableStatement> createRenameTableStatementContext(final String originTableName, final String newTableName) {
+    private SQLStatementContext createRenameTableStatementContext(final String originTableName, final String newTableName) {
         MySQLRenameTableStatement sqlStatement = new MySQLRenameTableStatement();
         RenameTableDefinitionSegment renameTableDefinitionSegment = new RenameTableDefinitionSegment(0, 0);
         renameTableDefinitionSegment.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(originTableName))));

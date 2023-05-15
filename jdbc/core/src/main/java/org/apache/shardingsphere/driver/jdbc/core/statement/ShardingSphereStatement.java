@@ -247,7 +247,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes());
     }
     
-    private boolean isTransparentStatement(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereRuleMetaData ruleMetaData) {
+    private boolean isTransparentStatement(final SQLStatementContext sqlStatementContext, final ShardingSphereRuleMetaData ruleMetaData) {
         Optional<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleForShardingRule(ruleMetaData.findRules(DataNodeContainedRule.class));
         Collection<ColumnContainedRule> columnContainedRules = ruleMetaData.findRules(ColumnContainedRule.class);
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
@@ -334,7 +334,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
     }
     
-    private int executeUpdate(final ExecuteUpdateCallback updateCallback, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
+    private int executeUpdate(final ExecuteUpdateCallback updateCallback, final SQLStatementContext sqlStatementContext) throws SQLException {
         return isNeedImplicitCommitTransaction(executionContext) ? executeUpdateWithImplicitCommitTransaction(updateCallback, sqlStatementContext)
                 : useDriverToExecuteUpdate(updateCallback, sqlStatementContext);
     }
@@ -354,7 +354,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return executeUpdate(updateCallback, executionContext.getSqlStatementContext());
     }
     
-    private int executeUpdateWithImplicitCommitTransaction(final ExecuteUpdateCallback updateCallback, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
+    private int executeUpdateWithImplicitCommitTransaction(final ExecuteUpdateCallback updateCallback, final SQLStatementContext sqlStatementContext) throws SQLException {
         int result;
         try {
             connection.setAutoCommit(false);
@@ -369,7 +369,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         return result;
     }
     
-    private int useDriverToExecuteUpdate(final ExecuteUpdateCallback updateCallback, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
+    private int useDriverToExecuteUpdate(final ExecuteUpdateCallback updateCallback, final SQLStatementContext sqlStatementContext) throws SQLException {
         ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext();
         cacheStatements(executionGroupContext.getInputGroups());
         JDBCExecutorCallback<Integer> callback = createExecuteUpdateCallback(updateCallback, sqlStatementContext);
@@ -377,7 +377,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
                 executionContext.getQueryContext(), executionContext.getRouteContext().getRouteUnits(), callback);
     }
     
-    private JDBCExecutorCallback<Integer> createExecuteUpdateCallback(final ExecuteUpdateCallback updateCallback, final SQLStatementContext<?> sqlStatementContext) {
+    private JDBCExecutorCallback<Integer> createExecuteUpdateCallback(final ExecuteUpdateCallback updateCallback, final SQLStatementContext sqlStatementContext) {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         return new JDBCExecutorCallback<Integer>(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType(),
                 metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getResourceMetaData().getStorageTypes(), sqlStatementContext.getSqlStatement(), isExceptionThrown) {
@@ -481,7 +481,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         }
     }
     
-    private void checkSameDatabaseNameInTransaction(final SQLStatementContext<?> sqlStatementContext, final String connectionDatabaseName) {
+    private void checkSameDatabaseNameInTransaction(final SQLStatementContext sqlStatementContext, final String connectionDatabaseName) {
         if (!connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction()) {
             return;
         }
@@ -529,7 +529,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         String sql = sqlParserRule.isSqlCommentParseEnabled() ? originSQL : SQLHintUtils.removeHint(originSQL);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(
                 DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType())).parse(sql, false);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), sqlStatement, connection.getDatabaseName());
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), sqlStatement, connection.getDatabaseName());
         HintValueContext hintValueContext = sqlParserRule.isSqlCommentParseEnabled() ? new HintValueContext() : SQLHintUtils.extractHint(originSQL);
         return new QueryContext(sqlStatementContext, sql, Collections.emptyList(), hintValueContext);
     }

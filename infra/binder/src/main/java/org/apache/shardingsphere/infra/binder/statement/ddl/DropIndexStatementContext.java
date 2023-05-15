@@ -36,7 +36,7 @@ import java.util.Optional;
  * Drop index statement context.
  */
 @Getter
-public final class DropIndexStatementContext extends CommonSQLStatementContext<DropIndexStatement> implements TableAvailable, IndexAvailable {
+public final class DropIndexStatementContext extends CommonSQLStatementContext implements TableAvailable, IndexAvailable {
     
     private final TablesContext tablesContext;
     
@@ -44,6 +44,11 @@ public final class DropIndexStatementContext extends CommonSQLStatementContext<D
         super(sqlStatement);
         SimpleTableSegment simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(sqlStatement).orElse(null);
         tablesContext = new TablesContext(simpleTableSegment, getDatabaseType());
+    }
+    
+    @Override
+    public DropIndexStatement getSqlStatement() {
+        return (DropIndexStatement) super.getSqlStatement();
     }
     
     @Override

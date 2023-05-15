@@ -32,13 +32,18 @@ import java.util.LinkedList;
  * Prepare statement context.
  */
 @Getter
-public final class PrepareStatementContext extends CommonSQLStatementContext<PrepareStatement> implements TableAvailable {
+public final class PrepareStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
     public PrepareStatementContext(final PrepareStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(extractTablesFromPreparedStatement(sqlStatement), getDatabaseType());
+    }
+    
+    @Override
+    public PrepareStatement getSqlStatement() {
+        return (PrepareStatement) super.getSqlStatement();
     }
     
     @Override

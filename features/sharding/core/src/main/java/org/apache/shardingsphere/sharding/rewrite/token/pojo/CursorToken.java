@@ -39,12 +39,11 @@ public final class CursorToken extends SQLToken implements Substitutable, RouteU
     
     private final IdentifierValue identifier;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     private final ShardingRule shardingRule;
     
-    public CursorToken(final int startIndex, final int stopIndex, final IdentifierValue identifier,
-                       final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule) {
+    public CursorToken(final int startIndex, final int stopIndex, final IdentifierValue identifier, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.identifier = identifier;

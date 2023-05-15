@@ -97,7 +97,7 @@ public final class RouteSQLRewriteEngine {
         }
     }
     
-    private boolean isNeedAggregateRewrite(final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) {
+    private boolean isNeedAggregateRewrite(final SQLStatementContext sqlStatementContext, final Collection<RouteUnit> routeUnits) {
         if (!(sqlStatementContext instanceof SelectStatementContext) || routeUnits.size() == 1) {
             return false;
         }

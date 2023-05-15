@@ -90,7 +90,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
         metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         this.preparedStatement = preparedStatement;
         Iterator<List<Object>> parameterSetsIterator = parameterSets.iterator();
-        SQLStatementContext<?> sqlStatementContext = null;
+        SQLStatementContext sqlStatementContext = null;
         ExecutionContext executionContext = null;
         if (parameterSetsIterator.hasNext()) {
             List<Object> firstGroupOfParam = parameterSetsIterator.next();
@@ -104,12 +104,12 @@ public final class PostgreSQLBatchedStatementsExecutor {
         prepareForRestOfParametersSet(parameterSetsIterator, sqlStatementContext);
     }
     
-    private SQLStatementContext<?> createSQLStatementContext(final List<Object> params) {
+    private SQLStatementContext createSQLStatementContext(final List<Object> params) {
         return SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), params, preparedStatement.getSqlStatementContext().getSqlStatement(),
                 connectionSession.getDatabaseName());
     }
     
-    private void prepareForRestOfParametersSet(final Iterator<List<Object>> paramSetsIterator, final SQLStatementContext<?> sqlStatementContext) {
+    private void prepareForRestOfParametersSet(final Iterator<List<Object>> paramSetsIterator, final SQLStatementContext sqlStatementContext) {
         while (paramSetsIterator.hasNext()) {
             List<Object> eachGroupOfParam = paramSetsIterator.next();
             if (sqlStatementContext instanceof ParameterAware) {
@@ -122,7 +122,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
         }
     }
     
-    private QueryContext createQueryContext(final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
+    private QueryContext createQueryContext(final SQLStatementContext sqlStatementContext, final List<Object> params) {
         return new QueryContext(sqlStatementContext, preparedStatement.getSql(), params);
     }
     

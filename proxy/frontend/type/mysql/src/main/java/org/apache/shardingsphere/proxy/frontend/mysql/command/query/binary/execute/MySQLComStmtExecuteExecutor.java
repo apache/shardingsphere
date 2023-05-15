@@ -73,7 +73,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         MySQLServerPreparedStatement preparedStatement = updateAndGetPreparedStatement();
         List<Object> params = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet(), preparedStatement.getParameterColumnDefinitionFlags());
         preparedStatement.getLongData().forEach(params::set);
-        SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext();
+        SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(params);
         }

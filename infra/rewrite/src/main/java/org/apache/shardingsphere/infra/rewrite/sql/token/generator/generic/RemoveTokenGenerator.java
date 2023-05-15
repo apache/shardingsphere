@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 /**
  * Remove token generator.
  */
-public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>> {
+public final class RemoveTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext> {
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {

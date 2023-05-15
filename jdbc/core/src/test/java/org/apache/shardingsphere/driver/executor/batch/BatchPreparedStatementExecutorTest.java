@@ -85,7 +85,7 @@ class BatchPreparedStatementExecutorTest {
     private BatchPreparedStatementExecutor executor;
     
     @Mock
-    private SQLStatementContext<?> sqlStatementContext;
+    private SQLStatementContext sqlStatementContext;
     
     @BeforeEach
     void setUp() {

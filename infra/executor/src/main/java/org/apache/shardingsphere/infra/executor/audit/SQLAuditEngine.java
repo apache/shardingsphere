@@ -47,7 +47,7 @@ public final class SQLAuditEngine {
      * @param grantee grantee
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static void audit(final SQLStatementContext<?> sqlStatementContext, final List<Object> params,
+    public static void audit(final SQLStatementContext sqlStatementContext, final List<Object> params,
                              final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final Grantee grantee) {
         Collection<ShardingSphereRule> rules = new LinkedList<>(globalRuleMetaData.getRules());
         if (null != database) {

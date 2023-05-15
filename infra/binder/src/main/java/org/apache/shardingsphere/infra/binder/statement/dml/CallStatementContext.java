@@ -23,9 +23,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStateme
 /**
  * Call statement context.
  */
-public final class CallStatementContext extends CommonSQLStatementContext<CallStatement> {
+public final class CallStatementContext extends CommonSQLStatementContext {
     
     public CallStatementContext(final CallStatement sqlStatement) {
         super(sqlStatement);
+    }
+    
+    @Override
+    public CallStatement getSqlStatement() {
+        return (CallStatement) super.getSqlStatement();
     }
 }

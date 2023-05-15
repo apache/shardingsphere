@@ -68,7 +68,7 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
         return result;
     }
     
-    private ShardingConditions getMergedShardingConditions(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters,
+    private ShardingConditions getMergedShardingConditions(final SQLStatementContext sqlStatementContext, final List<Object> parameters,
                                                            final ShardingSphereRuleMetaData globalRuleMetaData, final ShardingSphereDatabase database, final ShardingRule rule) {
         List<ShardingCondition> shardingConditions = new ShardingConditionEngine(
                 globalRuleMetaData, database, rule).createShardingConditions(sqlStatementContext, parameters);

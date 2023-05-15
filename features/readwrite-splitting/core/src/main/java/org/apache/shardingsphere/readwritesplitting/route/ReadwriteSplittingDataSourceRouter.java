@@ -45,7 +45,7 @@ public final class ReadwriteSplittingDataSourceRouter {
      * @param sqlStatementContext SQL statement context
      * @return data source name
      */
-    public String route(final SQLStatementContext<?> sqlStatementContext) {
+    public String route(final SQLStatementContext sqlStatementContext) {
         for (QualifiedReadwriteSplittingDataSourceRouter each : getQualifiedRouters(connectionContext)) {
             if (each.isQualified(sqlStatementContext, rule)) {
                 return each.route(rule);

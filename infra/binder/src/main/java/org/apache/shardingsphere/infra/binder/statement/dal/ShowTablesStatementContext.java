@@ -30,10 +30,15 @@ import java.util.LinkedList;
  * Show tables statement context.
  */
 @Getter
-public final class ShowTablesStatementContext extends CommonSQLStatementContext<MySQLShowTablesStatement> implements RemoveAvailable {
+public final class ShowTablesStatementContext extends CommonSQLStatementContext implements RemoveAvailable {
     
     public ShowTablesStatementContext(final MySQLShowTablesStatement sqlStatement) {
         super(sqlStatement);
+    }
+    
+    @Override
+    public MySQLShowTablesStatement getSqlStatement() {
+        return (MySQLShowTablesStatement) super.getSqlStatement();
     }
     
     @Override

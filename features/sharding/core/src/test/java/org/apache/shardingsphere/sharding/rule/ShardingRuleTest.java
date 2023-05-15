@@ -529,7 +529,7 @@ class ShardingRuleTest {
     
     @Test
     void assertIsAllBindingTableWithUpdateStatementContext() {
-        SQLStatementContext<?> sqlStatementContext = mock(UpdateStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(UpdateStatementContext.class);
         assertTrue(
                 createMaximumShardingRule().isAllBindingTables(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
     }

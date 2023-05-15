@@ -38,35 +38,35 @@ class HBaseOperationConverterFactoryTest {
     
     @Test
     void assertExecuteSelectStatement() {
-        SQLStatementContext<?> sqlStatementContext = mock(SelectStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         assertThat(converter, instanceOf(HBaseSelectOperationConverter.class));
     }
     
     @Test
     void assertExecuteInsertStatement() {
-        SQLStatementContext<?> sqlStatementContext = mock(InsertStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         assertThat(converter, instanceOf(HBaseInsertOperationConverter.class));
     }
     
     @Test
     void assertExecuteUpdateStatement() {
-        SQLStatementContext<?> sqlStatementContext = mock(UpdateStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(UpdateStatementContext.class);
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         assertThat(converter, instanceOf(HBaseUpdateOperationConverter.class));
     }
     
     @Test
     void assertExecuteDeleteStatement() {
-        SQLStatementContext<?> sqlStatementContext = mock(DeleteStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(DeleteStatementContext.class);
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         assertThat(converter, instanceOf(HBaseDeleteOperationConverter.class));
     }
     
     @Test
     void assertExecuteFlushStatement() {
-        SQLStatementContext<?> sqlStatementContext = mock(FlushStatementContext.class);
+        SQLStatementContext sqlStatementContext = mock(FlushStatementContext.class);
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         assertThat(converter, instanceOf(HBaseRegionReloadOperationConverter.class));
     }

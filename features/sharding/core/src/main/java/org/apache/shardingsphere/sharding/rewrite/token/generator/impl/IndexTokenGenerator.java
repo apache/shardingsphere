@@ -37,7 +37,7 @@ import java.util.Map;
  * Index token generator.
  */
 @Setter
-public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>>, ShardingRuleAware, SchemaMetaDataAware {
+public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ShardingRuleAware, SchemaMetaDataAware {
     
     private ShardingRule shardingRule;
     
@@ -46,12 +46,12 @@ public final class IndexTokenGenerator implements CollectionSQLTokenGenerator<SQ
     private Map<String, ShardingSphereSchema> schemas;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof IndexAvailable && !((IndexAvailable) sqlStatementContext).getIndexes().isEmpty();
     }
     
     @Override
-    public Collection<IndexToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
+    public Collection<IndexToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<IndexToken> result = new LinkedList<>();
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName);
         if (sqlStatementContext instanceof IndexAvailable) {

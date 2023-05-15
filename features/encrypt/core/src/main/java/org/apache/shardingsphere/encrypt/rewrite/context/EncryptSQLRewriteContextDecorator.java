@@ -45,7 +45,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     @SuppressWarnings("rawtypes")
     @Override
     public void decorate(final EncryptRule encryptRule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
-        SQLStatementContext<?> sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
+        SQLStatementContext sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
         if (!containsEncryptTable(encryptRule, sqlStatementContext)) {
             return;
         }
@@ -61,7 +61,7 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     }
     
     private Collection<EncryptCondition> createEncryptConditions(final EncryptRule encryptRule, final SQLRewriteContext sqlRewriteContext) {
-        SQLStatementContext<?> sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
+        SQLStatementContext sqlStatementContext = sqlRewriteContext.getSqlStatementContext();
         if (!(sqlStatementContext instanceof WhereAvailable)) {
             return Collections.emptyList();
         }
@@ -71,7 +71,6 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
                 .createEncryptConditions(whereSegments, columnSegments, sqlStatementContext, sqlRewriteContext.getDatabaseName());
     }
     
-    @SuppressWarnings("rawtypes")
     private boolean containsEncryptTable(final EncryptRule encryptRule, final SQLStatementContext sqlStatementContext) {
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             if (encryptRule.findEncryptTable(each).isPresent()) {

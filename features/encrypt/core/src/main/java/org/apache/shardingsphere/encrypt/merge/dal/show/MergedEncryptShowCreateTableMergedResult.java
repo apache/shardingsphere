@@ -30,7 +30,7 @@ public final class MergedEncryptShowCreateTableMergedResult extends EncryptShowC
     
     private final QueryResult queryResult;
     
-    public MergedEncryptShowCreateTableMergedResult(final QueryResult queryResult, final SQLStatementContext<?> sqlStatementContext, final EncryptRule encryptRule) {
+    public MergedEncryptShowCreateTableMergedResult(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
         super(sqlStatementContext, encryptRule);
         this.queryResult = queryResult;
     }

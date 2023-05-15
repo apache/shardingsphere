@@ -52,25 +52,25 @@ class SQLRouteCountAdviceTest {
     
     @Test
     void assertInsertRoute() {
-        QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext<>(new MySQLInsertStatement()), "", Collections.emptyList());
+        QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext(new MySQLInsertStatement()), "", Collections.emptyList());
         assertRoute(queryContext, "INSERT=1");
     }
     
     @Test
     void assertUpdateRoute() {
-        QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext<>(new MySQLUpdateStatement()), "", Collections.emptyList());
+        QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext(new MySQLUpdateStatement()), "", Collections.emptyList());
         assertRoute(queryContext, "UPDATE=1");
     }
     
     @Test
     void assertDeleteRoute() {
-        QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext<>(new MySQLDeleteStatement()), "", Collections.emptyList());
+        QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext(new MySQLDeleteStatement()), "", Collections.emptyList());
         assertRoute(queryContext, "DELETE=1");
     }
     
     @Test
     void assertSelectRoute() {
-        QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext<>(new MySQLSelectStatement()), "", Collections.emptyList());
+        QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext(new MySQLSelectStatement()), "", Collections.emptyList());
         assertRoute(queryContext, "SELECT=1");
     }
     

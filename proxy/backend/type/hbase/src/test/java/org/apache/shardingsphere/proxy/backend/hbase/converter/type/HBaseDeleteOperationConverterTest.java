@@ -37,7 +37,7 @@ class HBaseDeleteOperationConverterTest {
     @Test
     void assertConvert() {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(HBaseSupportedSQLStatement.getDeleteStatement());
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         HBaseOperation hbaseOperation = converter.convert();
         assertThat(hbaseOperation.getTableName(), is(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME));
@@ -48,7 +48,7 @@ class HBaseDeleteOperationConverterTest {
     void assertConvertWithIn() {
         String sql = " delete /*+ hbase */ from t_test_order where rowKey in ('2', '1')";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
+        SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(null, sqlStatement, "");
         HBaseOperationConverter converter = HBaseOperationConverterFactory.newInstance(sqlStatementContext);
         HBaseOperation hBaseOperation = converter.convert();
         assertThat(hBaseOperation.getTableName(), is(HBaseSupportedSQLStatement.HBASE_DATABASE_TABLE_NAME));

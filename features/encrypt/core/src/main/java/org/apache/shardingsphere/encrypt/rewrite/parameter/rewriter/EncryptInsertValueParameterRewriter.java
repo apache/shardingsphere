@@ -58,7 +58,7 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     private String databaseName;
     
     @Override
-    public boolean isNeedRewrite(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof InsertStatementContext && !InsertStatementHandler.getSetAssignmentSegment(((InsertStatementContext) sqlStatementContext).getSqlStatement()).isPresent()
                 && null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext();
     }

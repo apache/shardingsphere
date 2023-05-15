@@ -43,7 +43,7 @@ public final class ExecutionContext {
      *
      * @return SQL statement context.
      */
-    public SQLStatementContext<?> getSqlStatementContext() {
+    public SQLStatementContext getSqlStatementContext() {
         return queryContext.getSqlStatementContext();
     }
 }

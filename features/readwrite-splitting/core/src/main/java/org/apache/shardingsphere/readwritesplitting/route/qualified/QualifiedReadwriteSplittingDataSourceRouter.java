@@ -32,7 +32,7 @@ public interface QualifiedReadwriteSplittingDataSourceRouter {
      * @param rule readwrite splitting datasource rule
      * @return qualified to route or not
      */
-    boolean isQualified(SQLStatementContext<?> sqlStatementContext, ReadwriteSplittingDataSourceRule rule);
+    boolean isQualified(SQLStatementContext sqlStatementContext, ReadwriteSplittingDataSourceRule rule);
     
     /**
      * Route to data source.

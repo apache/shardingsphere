@@ -52,13 +52,13 @@ public final class ShardingConditions {
     
     private final List<ShardingCondition> conditions;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     private final ShardingRule rule;
     
     private final boolean subqueryContainsShardingCondition;
     
-    public ShardingConditions(final List<ShardingCondition> conditions, final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {
+    public ShardingConditions(final List<ShardingCondition> conditions, final SQLStatementContext sqlStatementContext, final ShardingRule rule) {
         this.conditions = conditions;
         this.sqlStatementContext = sqlStatementContext;
         this.rule = rule;
@@ -117,7 +117,7 @@ public final class ShardingConditions {
         return (selectContainsSubquery || insertSelectContainsSubquery) && !rule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames()).isEmpty();
     }
     
-    private boolean isSubqueryContainsShardingCondition(final List<ShardingCondition> conditions, final SQLStatementContext<?> sqlStatementContext) {
+    private boolean isSubqueryContainsShardingCondition(final List<ShardingCondition> conditions, final SQLStatementContext sqlStatementContext) {
         Collection<SelectStatement> selectStatements = getSelectStatements(sqlStatementContext);
         if (selectStatements.size() > 1) {
             Map<Integer, List<ShardingCondition>> startIndexShardingConditions = new HashMap<>();
@@ -136,7 +136,7 @@ public final class ShardingConditions {
         return true;
     }
     
-    private Collection<SelectStatement> getSelectStatements(final SQLStatementContext<?> sqlStatementContext) {
+    private Collection<SelectStatement> getSelectStatements(final SQLStatementContext sqlStatementContext) {
         Collection<SelectStatement> result = new LinkedList<>();
         if (sqlStatementContext instanceof SelectStatementContext) {
             result.add(((SelectStatementContext) sqlStatementContext).getSqlStatement());
@@ -183,7 +183,7 @@ public final class ShardingConditions {
                 && shardingValue1.getColumnName().equals(shardingValue2.getColumnName()) || isBindingTable(shardingRule, shardingValue1, shardingValue2);
     }
     
-    private Collection<String> findHintStrategyTables(final SQLStatementContext<?> sqlStatementContext) {
+    private Collection<String> findHintStrategyTables(final SQLStatementContext sqlStatementContext) {
         Collection<String> result = new HashSet<>();
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
             Optional<TableRule> tableRule = rule.findTableRule(each);
