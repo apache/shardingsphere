@@ -249,7 +249,7 @@ class SelectStatementContextTest {
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
-        assertTrue(selectStatementContext.isSameGroupByAndOrderByItems());
+        assertTrue(selectStatementContext.isGroupByStartsWithOrderByItems());
     }
     
     private SelectStatementContext createSelectStatementContext(final SelectStatement selectStatement) {
@@ -286,7 +286,7 @@ class SelectStatementContextTest {
     private void assertIsNotSameGroupByAndOrderByItemsWhenEmptyGroupBy(final SelectStatement selectStatement) {
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
-        assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
+        assertFalse(selectStatementContext.isGroupByStartsWithOrderByItems());
     }
     
     @Test
@@ -319,7 +319,7 @@ class SelectStatementContextTest {
         selectStatement.setGroupBy(new GroupBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.ASC, NullsOrderType.LAST))));
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(new IndexOrderByItemSegment(0, 0, 1, OrderDirection.DESC, NullsOrderType.LAST))));
         SelectStatementContext selectStatementContext = createSelectStatementContext(selectStatement);
-        assertFalse(selectStatementContext.isSameGroupByAndOrderByItems());
+        assertFalse(selectStatementContext.isGroupByStartsWithOrderByItems());
     }
     
     @Test

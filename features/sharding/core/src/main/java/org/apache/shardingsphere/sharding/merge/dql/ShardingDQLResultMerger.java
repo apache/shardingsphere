@@ -125,7 +125,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     
     private MergedResult getGroupByMergedResult(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,
                                                 final Map<String, Integer> columnLabelIndexMap, final ShardingSphereSchema schema) throws SQLException {
-        return selectStatementContext.isSameGroupByAndOrderByItems()
+        return selectStatementContext.isGroupByStartsWithOrderByItems()
                 ? new GroupByStreamMergedResult(columnLabelIndexMap, queryResults, selectStatementContext, schema)
                 : new GroupByMemoryMergedResult(queryResults, selectStatementContext, schema);
     }

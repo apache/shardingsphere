@@ -145,6 +145,6 @@ public final class PaginationContext {
     
     private boolean isMaxRowCount(final SelectStatementContext selectStatementContext) {
         return (!selectStatementContext.getGroupByContext().getItems().isEmpty()
-                || !selectStatementContext.getProjectionsContext().getAggregationProjections().isEmpty()) && !selectStatementContext.isSameGroupByAndOrderByItems();
+                || !selectStatementContext.getProjectionsContext().getAggregationProjections().isEmpty()) && !selectStatementContext.isGroupByStartsWithOrderByItems();
     }
 }

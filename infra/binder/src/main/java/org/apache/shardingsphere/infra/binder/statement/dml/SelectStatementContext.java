@@ -72,9 +72,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtils;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -294,8 +296,20 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
      *
      * @return group by and order by sequence is same or not
      */
-    public boolean isSameGroupByAndOrderByItems() {
-        return !groupByContext.getItems().isEmpty() && groupByContext.getItems().equals(orderByContext.getItems());
+    public boolean isGroupByStartsWithOrderByItems() {
+        if (groupByContext.getItems().isEmpty()) {
+            return false;
+        }
+        Iterator<OrderByItem> orderByIterator = orderByContext.getItems().iterator();
+        Iterator<OrderByItem> groupByIterator = groupByContext.getItems().iterator();
+        while (groupByIterator.hasNext() && orderByIterator.hasNext()) {
+            OrderByItem groupItem = groupByIterator.next();
+            OrderByItem orderItem = orderByIterator.next();
+            if (!Objects.equals(groupItem, orderItem)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     @Override
