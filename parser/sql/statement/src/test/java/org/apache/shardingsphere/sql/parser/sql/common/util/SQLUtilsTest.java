@@ -62,7 +62,7 @@ class SQLUtilsTest {
         assertThat(SQLUtils.getExactlyValue("`xxx`"), is("xxx"));
         assertThat(SQLUtils.getExactlyValue("[xxx]"), is("xxx"));
         assertThat(SQLUtils.getExactlyValue("\"xxx\""), is("xxx"));
-        assertThat(SQLUtils.getExactlyValue("xxx"), is("xxx"));
+        assertThat(SQLUtils.getExactlyValue("'xxx'"), is("xxx"));
     }
     
     @Test
@@ -70,7 +70,7 @@ class SQLUtilsTest {
         assertThat(SQLUtils.getExactlyValue("`xxx`", "`"), is("`xxx`"));
         assertThat(SQLUtils.getExactlyValue("[xxx]", "[]"), is("[xxx]"));
         assertThat(SQLUtils.getExactlyValue("\"xxx\"", "\""), is("\"xxx\""));
-        assertThat(SQLUtils.getExactlyValue("xxx", ""), is("xxx"));
+        assertThat(SQLUtils.getExactlyValue("'xxx'", "'"), is("'xxx'"));
     }
     
     @Test
