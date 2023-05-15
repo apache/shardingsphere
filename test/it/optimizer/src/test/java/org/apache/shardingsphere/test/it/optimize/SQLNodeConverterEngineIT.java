@@ -213,6 +213,7 @@ class SQLNodeConverterEngineIT {
             result.add("select_not_in_with_single_table");
             result.add("select_where_with_expr_with_is");
             result.add("select_where_with_expr_with_is_not");
+            result.add("select_where_with_expr_with_not");
             return result;
         }
         // CHECKSTYLE:ON
