@@ -31,19 +31,19 @@ GRANT ALL PRIVILEGES ON DATABASE read_ds_1 TO test_user;
 
 CREATE TABLE "t_order" ("order_id" INT PRIMARY KEY, "user_id" INT NOT NULL, "status" VARCHAR(45) NULL);
 CREATE TABLE "t_order_item" ("item_id" INT PRIMARY KEY, "order_id" int NOT NULL, "user_id" int NOT NULL, "status" varchar(50) DEFAULT NULL);
-CREATE TABLE "account"("id" INT, "balance" FLOAT, "transaction_id" INT);
+CREATE TABLE "account"("id" INT PRIMARY KEY, "balance" FLOAT, "transaction_id" INT);
 CREATE TABLE "t_address" ("id" INT PRIMARY KEY, "code" VARCHAR(36) DEFAULT NULL, "address" VARCHAR(36) DEFAULT NULL);
 
 \c read_ds_0;
 
 CREATE TABLE "t_order" ("order_id" INT PRIMARY KEY, "user_id" INT NOT NULL, "status" VARCHAR(45) NULL);
 CREATE TABLE "t_order_item" ("item_id" INT PRIMARY KEY, "order_id" int NOT NULL, "user_id" int NOT NULL, "status" varchar(50) DEFAULT NULL);
-CREATE TABLE "account"("id" INT, "balance" FLOAT, "transaction_id" INT);
+CREATE TABLE "account"("id" INT PRIMARY KEY, "balance" FLOAT, "transaction_id" INT);
 CREATE TABLE "t_address" ("id" INT PRIMARY KEY, "code" VARCHAR(36) DEFAULT NULL, "address" VARCHAR(36) DEFAULT NULL);
 
 \c read_ds_1;
 
 CREATE TABLE "t_order" ("order_id" INT PRIMARY KEY, "user_id" INT NOT NULL, "status" VARCHAR(45) NULL);
 CREATE TABLE "t_order_item" ("item_id" INT PRIMARY KEY, "order_id" int NOT NULL, "user_id" int NOT NULL, "status" varchar(50) DEFAULT NULL);
-CREATE TABLE "account"("id" INT, "balance" FLOAT, "transaction_id" INT);
+CREATE TABLE "account"("id" INT PRIMARY KEY, "balance" FLOAT, "transaction_id" INT);
 CREATE TABLE "t_address" ("id" INT PRIMARY KEY, "code" VARCHAR(36) DEFAULT NULL, "address" VARCHAR(36) DEFAULT NULL);

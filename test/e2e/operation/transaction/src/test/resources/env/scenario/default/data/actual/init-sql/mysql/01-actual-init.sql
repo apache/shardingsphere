@@ -30,14 +30,14 @@ CREATE TABLE transaction_it_0.`t_order_0` (`order_id` INT PRIMARY KEY, `user_id`
 CREATE TABLE transaction_it_0.`t_order_1` (`order_id` INT PRIMARY KEY, `user_id` INT NOT NULL, `status` VARCHAR(45) NULL);
 CREATE TABLE transaction_it_0.`t_order_item_0` (`item_id` INT PRIMARY KEY, `order_id` int NOT NULL, `user_id` int NOT NULL, `status` varchar(50) DEFAULT NULL);
 CREATE TABLE transaction_it_0.`t_order_item_1` (`item_id` INT PRIMARY KEY, `order_id` int NOT NULL, `user_id` int NOT NULL, `status` varchar(50) DEFAULT NULL);
-CREATE TABLE transaction_it_0.`account_0`(`id` BIGINT, `balance` FLOAT, `transaction_id` INT);
-CREATE TABLE transaction_it_0.`account_1`(`id` BIGINT, `balance` FLOAT, `transaction_id` INT);
+CREATE TABLE transaction_it_0.`account_0`(`id` INT PRIMARY KEY, `balance` FLOAT, `transaction_id` INT);
+CREATE TABLE transaction_it_0.`account_1`(`id` INT PRIMARY KEY, `balance` FLOAT, `transaction_id` INT);
 CREATE TABLE transaction_it_0.`t_address` (`id` INT PRIMARY KEY, `code` VARCHAR(36) DEFAULT NULL, `address` VARCHAR(36) DEFAULT NULL);
 
 CREATE TABLE transaction_it_1.`t_order_0` (`order_id` INT PRIMARY KEY, `user_id` INT NOT NULL, `status` VARCHAR(45) NULL);
 CREATE TABLE transaction_it_1.`t_order_1` (`order_id` INT PRIMARY KEY, `user_id` INT NOT NULL, `status` VARCHAR(45) NULL);
 CREATE TABLE transaction_it_1.`t_order_item_0` (`item_id` INT PRIMARY KEY, `order_id` int NOT NULL, `user_id` int NOT NULL, `status` varchar(50) DEFAULT NULL);
 CREATE TABLE transaction_it_1.`t_order_item_1` (`item_id` INT PRIMARY KEY, `order_id` int NOT NULL, `user_id` int NOT NULL, `status` varchar(50) DEFAULT NULL);
-CREATE TABLE transaction_it_1.`account_0`(`id` BIGINT, `balance` FLOAT, `transaction_id` INT);
-CREATE TABLE transaction_it_1.`account_1`(`id` BIGINT, `balance` FLOAT, `transaction_id` INT);
+CREATE TABLE transaction_it_1.`account_0`(`id` INT PRIMARY KEY, `balance` FLOAT, `transaction_id` INT);
+CREATE TABLE transaction_it_1.`account_1`(`id` INT PRIMARY KEY, `balance` FLOAT, `transaction_id` INT);
 CREATE TABLE transaction_it_1.`t_address` (`id` INT PRIMARY KEY, `code` VARCHAR(36) DEFAULT NULL, `address` VARCHAR(36) DEFAULT NULL);
