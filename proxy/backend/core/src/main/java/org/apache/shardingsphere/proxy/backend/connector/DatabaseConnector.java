@@ -116,7 +116,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private final ProxyDatabaseConnectionManager databaseConnectionManager;
     
-    private volatile SQLFederationExecutor federationExecutor;
+    private SQLFederationExecutor federationExecutor;
     
     private List<QueryHeader> queryHeaders;
     
