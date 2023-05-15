@@ -1161,7 +1161,7 @@ dataType
     | (dataTypeName = NCHAR | dataTypeName = NATIONAL CHAR) fieldLength? BINARY?
     | dataTypeName = SIGNED (INTEGER | INT)?
     | dataTypeName = BINARY fieldLength?
-    | (dataTypeName = CHAR VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
+    | (dataTypeName = CHAR_VARYING | dataTypeName = CHARACTER_VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
     | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL CHAR VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
     | dataTypeName = VARBINARY fieldLength?
     | dataTypeName = YEAR fieldLength? fieldOptions?

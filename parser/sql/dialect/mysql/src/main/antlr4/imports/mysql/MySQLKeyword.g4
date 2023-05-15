@@ -243,8 +243,16 @@ CHAR
     : C H A R
     ;
 
+CHAR_VARYING
+    : CHAR ' ' VARYING
+    ;
+
 CHARACTER
     : C H A R A C T E R
+    ;
+
+CHARACTER_VARYING
+    : CHARACTER ' ' VARYING
     ;
 
 CHARSET

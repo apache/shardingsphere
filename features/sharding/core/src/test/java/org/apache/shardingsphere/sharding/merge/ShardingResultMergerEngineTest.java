@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.merge;
 
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.UnknownSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -104,7 +104,7 @@ class ShardingResultMergerEngineTest {
     @Test
     void assertNewInstanceWithDALStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        CommonSQLStatementContext<PostgreSQLShowStatement> sqlStatementContext = new CommonSQLStatementContext<>(new PostgreSQLShowStatement(""));
+        UnknownSQLStatementContext<PostgreSQLShowStatement> sqlStatementContext = new UnknownSQLStatementContext<>(new PostgreSQLShowStatement(""));
         assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), null, props,
                 sqlStatementContext), instanceOf(ShardingDALResultMerger.class));
     }
@@ -130,7 +130,7 @@ class ShardingResultMergerEngineTest {
     @Test
     void assertNewInstanceWithDDLStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        CommonSQLStatementContext<OpenGaussFetchStatement> sqlStatementContext = new CommonSQLStatementContext<>(new OpenGaussFetchStatement());
+        UnknownSQLStatementContext<OpenGaussFetchStatement> sqlStatementContext = new UnknownSQLStatementContext<>(new OpenGaussFetchStatement());
         assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, TypedSPILoader.getService(DatabaseType.class, "MySQL"), null, props,
                 sqlStatementContext), instanceOf(ShardingDDLResultMerger.class));
     }

@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 
 class ShardingSphereTransactionManagerEngineTest {
     
-    private final ShardingSphereTransactionManagerEngine transactionManagerEngine = new ShardingSphereTransactionManagerEngine();
+    private final ShardingSphereTransactionManagerEngine transactionManagerEngine = new ShardingSphereTransactionManagerEngine(TransactionType.XA);
     
     @Test
     void assertGetEngine() {
