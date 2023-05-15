@@ -94,6 +94,9 @@ jobs:
           key: ${{ env.CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ env.CACHE_PREFIX }}-maven-third-party-
+      - name: Aggregate jacoco coverage report
+        run:
+          ./mvnw clean verify -Dmaven.javadoc.skip=true -B -V -Pcoverage
       - name: Generate jacoco coverage to SonarCloud
         env:
           MAVEN_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
