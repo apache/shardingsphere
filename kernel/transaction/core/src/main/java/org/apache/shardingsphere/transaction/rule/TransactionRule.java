@@ -65,7 +65,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
     
     private synchronized ShardingSphereTransactionManagerEngine createTransactionManagerEngine(final Map<String, ShardingSphereDatabase> databases) {
         if (databases.isEmpty()) {
-            return new ShardingSphereTransactionManagerEngine();
+            return new ShardingSphereTransactionManagerEngine(defaultType);
         }
         Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(databases.size(), 1);
         Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(databases.size(), 1);
@@ -75,9 +75,9 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
             database.getResourceMetaData().getStorageTypes().forEach((key, value) -> databaseTypes.put(database.getName() + "." + key, value));
         }
         if (dataSourceMap.isEmpty()) {
-            return new ShardingSphereTransactionManagerEngine();
+            return new ShardingSphereTransactionManagerEngine(defaultType);
         }
-        ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine();
+        ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine(defaultType);
         result.init(databaseTypes, dataSourceMap, providerType);
         return result;
     }
@@ -128,7 +128,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         ShardingSphereTransactionManagerEngine engine = resource.get();
         if (null != engine) {
             closeEngine(engine);
-            resource.set(new ShardingSphereTransactionManagerEngine());
+            resource.set(new ShardingSphereTransactionManagerEngine(defaultType));
         }
     }
     
