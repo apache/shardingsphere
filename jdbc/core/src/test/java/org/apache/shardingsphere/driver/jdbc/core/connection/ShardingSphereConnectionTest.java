@@ -68,7 +68,7 @@ class ShardingSphereConnectionTest {
                 .thenReturn(new ShardingSphereRuleMetaData(Arrays.asList(mockTransactionRule(), mock(TrafficRule.class))));
         return result;
     }
-
+    
     private TransactionRule mockTransactionRule() {
         return new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), "", new Properties()), Collections.emptyMap());
     }
