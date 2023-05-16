@@ -25,7 +25,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 
 /**
- * Record interface.
+ * Record.
  */
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

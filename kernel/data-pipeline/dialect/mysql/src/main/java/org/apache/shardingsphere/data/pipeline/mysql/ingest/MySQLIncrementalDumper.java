@@ -126,9 +126,9 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     }
     
     private void createPlaceholderRecord(final AbstractBinlogEvent event) {
-        PlaceholderRecord record = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()));
-        record.setCommitTime(event.getTimestamp() * 1000L);
-        channel.pushRecord(record);
+        PlaceholderRecord placeholderRecord = new PlaceholderRecord(new BinlogPosition(event.getFileName(), event.getPosition(), event.getServerId()));
+        placeholderRecord.setCommitTime(event.getTimestamp() * 1000L);
+        channel.pushRecord(placeholderRecord);
     }
     
     private PipelineTableMetaData getPipelineTableMetaData(final String actualTableName) {
@@ -138,16 +138,16 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
     private void handleWriteRowsEvent(final WriteRowsEvent event, final PipelineTableMetaData tableMetaData) {
         Set<ColumnName> columnNameSet = dumperConfig.getColumnNameSet(event.getTableName()).orElse(null);
         for (Serializable[] each : event.getAfterRows()) {
-            DataRecord record = createDataRecord(event, each.length);
-            record.setType(IngestDataChangeType.INSERT);
+            DataRecord dataRecord = createDataRecord(event, each.length);
+            dataRecord.setType(IngestDataChangeType.INSERT);
             for (int i = 0; i < each.length; i++) {
                 PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
                 if (isColumnUnneeded(columnNameSet, columnMetaData.getName())) {
                     continue;
                 }
-                record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, columnMetaData.isUniqueKey()));
+                dataRecord.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), true, columnMetaData.isUniqueKey()));
             }
-            channel.pushRecord(record);
+            channel.pushRecord(dataRecord);
         }
     }
     
@@ -160,8 +160,8 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         for (int i = 0; i < event.getBeforeRows().size(); i++) {
             Serializable[] beforeValues = event.getBeforeRows().get(i);
             Serializable[] afterValues = event.getAfterRows().get(i);
-            DataRecord record = createDataRecord(event, beforeValues.length);
-            record.setType(IngestDataChangeType.UPDATE);
+            DataRecord dataRecord = createDataRecord(event, beforeValues.length);
+            dataRecord.setType(IngestDataChangeType.UPDATE);
             for (int j = 0; j < beforeValues.length; j++) {
                 Serializable oldValue = beforeValues[j];
                 Serializable newValue = afterValues[j];
@@ -170,27 +170,27 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
                 if (isColumnUnneeded(columnNameSet, columnMetaData.getName())) {
                     continue;
                 }
-                record.addColumn(new Column(columnMetaData.getName(),
+                dataRecord.addColumn(new Column(columnMetaData.getName(),
                         handleValue(columnMetaData, oldValue),
                         handleValue(columnMetaData, newValue), updated, columnMetaData.isUniqueKey()));
             }
-            channel.pushRecord(record);
+            channel.pushRecord(dataRecord);
         }
     }
     
     private void handleDeleteRowsEvent(final DeleteRowsEvent event, final PipelineTableMetaData tableMetaData) {
         Set<ColumnName> columnNameSet = dumperConfig.getColumnNameSet(event.getTableName()).orElse(null);
         for (Serializable[] each : event.getBeforeRows()) {
-            DataRecord record = createDataRecord(event, each.length);
-            record.setType(IngestDataChangeType.DELETE);
+            DataRecord dataRecord = createDataRecord(event, each.length);
+            dataRecord.setType(IngestDataChangeType.DELETE);
             for (int i = 0, length = each.length; i < length; i++) {
                 PipelineColumnMetaData columnMetaData = tableMetaData.getColumnMetaData(i + 1);
                 if (isColumnUnneeded(columnNameSet, columnMetaData.getName())) {
                     continue;
                 }
-                record.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), null, true, columnMetaData.isUniqueKey()));
+                dataRecord.addColumn(new Column(columnMetaData.getName(), handleValue(columnMetaData, each[i]), null, true, columnMetaData.isUniqueKey()));
             }
-            channel.pushRecord(record);
+            channel.pushRecord(dataRecord);
         }
     }
     
