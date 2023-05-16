@@ -55,7 +55,10 @@ public final class EtcdDistributedLock implements DistributedLock {
         try {
             lock.lock(lockKey, lease.grant(timeToLiveSeconds).get().getID()).get(timeoutMillis, TimeUnit.MILLISECONDS);
             return true;
-        } catch (final InterruptedException | ExecutionException | TimeoutException ignored) {
+        } catch (final InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+            return false;
+        } catch (final ExecutionException | TimeoutException ignored) {
             return false;
         }
     }
@@ -64,7 +67,9 @@ public final class EtcdDistributedLock implements DistributedLock {
     public void unlock() {
         try {
             lock.unlock(lockKey).get();
-        } catch (final InterruptedException | ExecutionException ignored) {
+        } catch (final InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        } catch (final ExecutionException ignored) {
         }
     }
 }
