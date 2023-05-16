@@ -59,9 +59,9 @@ import static org.mockito.Mockito.when;
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ImportMetaDataUpdaterTest {
     
-    private static final String METADATA_VALUE = "{\"meta_data\":{\"databases\":{\"sharding_db\":\"databaseName: sharding_db\\ndataSources:\\nrules:\\n\"},"
-            + "\"props\":\"props:\\n  system-log-level: INFO\\n  sql-show: false\\n\","
-            + "\"rules\":\"rules:\\n- !AUTHORITY\\n  privilege:\\n    type: ALL_PERMITTED\\n  users:\\n  - authenticationMethodName: ''\\n    password: root\\n    user: root@%\\n\"}}";
+    private static final String METADATA_VALUE = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7InNoYXJkaW5nX2RiIjoiZGF0YWJhc2VOYW1lOiBzaGFyZGluZ19kYlxuZGF0YVNvdXJjZXM6XG5ydWxlczpcbiJ9LCJwcm9w"
+            + "cyI6InByb3BzOlxuICBzeXN0ZW0tbG9nLWxldmVsOiBJTkZPXG4gIHNxbC1zaG93OiBmYWxzZVxuIiwicnVsZXMiOiJydWxlczpcbi0gIUFVVEhPUklUWVxuICBwcml2aWxlZ2U6XG4gICAgdHlwZTogQUxMX1BFUk1JVFRFR"
+            + "FxuICB1c2VyczpcbiAgLSBhdXRoZW50aWNhdGlvbk1ldGhvZE5hbWU6ICcnXG4gICAgcGFzc3dvcmQ6IHJvb3RcbiAgICB1c2VyOiByb290QCVcbiJ9fQ==";
     
     private static final String EMPTY = "empty_metadata";
     
@@ -71,7 +71,7 @@ class ImportMetaDataUpdaterTest {
     
     @BeforeEach
     void setup() {
-        featureMap.put(EMPTY, "/conf/import/empty-metadata.json");
+        featureMap.put(EMPTY, "/conf/import/empty-metadata.data");
     }
     
     @Test

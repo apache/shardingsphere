@@ -569,7 +569,7 @@ identifierKeywordsAmbiguous4SystemVariables
     ;
 
 textOrIdentifier
-    : identifier  | string_ | ipAddress
+    : identifier | string_ | ipAddress
     ;
 
 ipAddress
@@ -1185,7 +1185,7 @@ dataType
     | dataTypeName = LONGTEXT charsetWithOptBinary?
     | dataTypeName = ENUM stringList charsetWithOptBinary?
     | dataTypeName = SET stringList charsetWithOptBinary?
-    | dataTypeName = (SERIAL | JSON | GEOMETRY | GEOMETRYCOLLECTION | POINT | MULTIPOINT | LINESTRING | MULTILINESTRING | POLYGON | MULTIPOLYGON)
+    | dataTypeName = (SERIAL | JSON | GEOMETRY | GEOMCOLLECTION | GEOMETRYCOLLECTION | POINT | MULTIPOINT | LINESTRING | MULTILINESTRING | POLYGON | MULTIPOLYGON)
     ;
     
 stringList

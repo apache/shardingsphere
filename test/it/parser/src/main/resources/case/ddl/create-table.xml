@@ -1808,6 +1808,13 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_geomcollection">
+        <table name="t1" start-index="13" stop-index="14" />
+        <column-definition type="GEOMCOLLECTION" start-index="17" stop-index="32">
+            <column name="g" />
+        </column-definition>
+    </create-table>
+
     <create-table sql-case-id="create_table_with_start_transaction">
         <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT" start-index="22" stop-index="33">

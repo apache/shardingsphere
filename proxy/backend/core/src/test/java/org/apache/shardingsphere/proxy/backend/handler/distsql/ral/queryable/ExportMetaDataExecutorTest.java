@@ -73,6 +73,9 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class ExportMetaDataExecutorTest {
     
+    private static final String METADATA_VALUE_EXPECTED = "eyJtZXRhX2RhdGEiOnsiZGF0YWJhc2VzIjp7ImVtcHR5X21ldGFkYXRhIjoiZGF0YWJhc2VOYW1lOiBudWxsXG5kYXRhU291cmNlczpcbn"
+            + "J1bGVzOlxuIn0sInByb3BzIjoiIiwicnVsZXMiOiJydWxlczpcbi0gIUdMT0JBTF9DTE9DS1xuICBlbmFibGVkOiBmYWxzZVxuICBwcm92aWRlcjogbG9jYWxcbiAgdHlwZTogVFNPXG4ifX0=";
+    
     private final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
     
     @Test
@@ -98,9 +101,7 @@ class ExportMetaDataExecutorTest {
         Collection<LocalDataQueryResultRow> actual = new ExportMetaDataExecutor().getRows(contextManager.getMetaDataContexts().getMetaData(), sqlStatement);
         assertThat(actual.size(), is(1));
         LocalDataQueryResultRow row = actual.iterator().next();
-        assertThat(row.getCell(3),
-                is("{\"meta_data\":{\"databases\":{\"empty_metadata\":\"databaseName: null\\ndataSources:\\nrules:\\n\"},"
-                        + "\"props\":\"\",\"rules\":\"rules:\\n- !GLOBAL_CLOCK\\n  enabled: false\\n  provider: local\\n  type: TSO\\n\"}}"));
+        assertThat(row.getCell(3), is(METADATA_VALUE_EXPECTED));
     }
     
     private ContextManager mockEmptyContextManager() {
@@ -164,7 +165,7 @@ class ExportMetaDataExecutorTest {
     @SneakyThrows(IOException.class)
     private String loadExpectedRow() {
         StringBuilder result = new StringBuilder();
-        String fileName = Objects.requireNonNull(ExportMetaDataExecutorTest.class.getResource("/expected/export-metadata-configuration.json")).getFile();
+        String fileName = Objects.requireNonNull(ExportMetaDataExecutorTest.class.getResource("/expected/export-metadata-configuration.data")).getFile();
         try (
                 FileReader fileReader = new FileReader(fileName);
                 BufferedReader reader = new BufferedReader(fileReader)) {

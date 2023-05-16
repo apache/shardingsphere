@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.shardingsphere.distsql.handler.ral.query.MetaDataRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportMetaDataStatement;
 import org.apache.shardingsphere.globalclock.core.provider.GlobalClockProvider;
@@ -77,7 +78,7 @@ public final class ExportMetaDataExecutor implements MetaDataRequiredQueryableRA
         ExportedClusterInfo exportedClusterInfo = new ExportedClusterInfo();
         exportedClusterInfo.setMetaData(exportedMetaData);
         generateSnapshotInfo(metaData, exportedClusterInfo);
-        return JsonUtils.toJsonString(exportedClusterInfo);
+        return Base64.encodeBase64String(JsonUtils.toJsonString(exportedClusterInfo).getBytes());
     }
     
     private Map<String, String> getDatabases(final ProxyContext proxyContext) {
