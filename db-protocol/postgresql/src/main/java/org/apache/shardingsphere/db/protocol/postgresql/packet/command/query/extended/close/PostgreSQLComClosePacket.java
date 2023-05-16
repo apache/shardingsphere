@@ -53,7 +53,6 @@ public final class PostgreSQLComClosePacket extends PostgreSQLCommandPacket {
     }
     
     @RequiredArgsConstructor
-    @Getter
     public enum Type {
         
         PREPARED_STATEMENT('S'),
