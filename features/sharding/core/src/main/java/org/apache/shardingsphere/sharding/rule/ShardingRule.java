@@ -320,7 +320,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     }
     
     private ShardingStrategyConfiguration getTableShardingStrategyConfiguration(final TableRule tableRule, final ShardingStrategyConfiguration defaultTableShardingStrategyConfig) {
-        return null == tableRule.getDatabaseShardingStrategyConfig() ? defaultTableShardingStrategyConfig : tableRule.getDatabaseShardingStrategyConfig();
+        return null == tableRule.getTableShardingStrategyConfig() ? defaultTableShardingStrategyConfig : tableRule.getTableShardingStrategyConfig();
     }
     
     /**
