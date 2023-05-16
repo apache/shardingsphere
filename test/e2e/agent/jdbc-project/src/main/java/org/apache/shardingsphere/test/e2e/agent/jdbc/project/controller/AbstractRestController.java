@@ -26,10 +26,10 @@ import org.apache.shardingsphere.test.e2e.agent.jdbc.project.vo.response.ResultC
 public abstract class AbstractRestController {
     
     protected HttpResult<Void> success() {
-        return new HttpResult<Void>().toBuilder().code(ResultCode.SUCCESS.getCode()).message(ResultCode.SUCCESS.getMessage()).build();
+        return new HttpResult<>(ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), null);
     }
     
     protected <T> HttpResult<T> success(final T data) {
-        return new HttpResult<T>().toBuilder().code(ResultCode.SUCCESS.getCode()).message(ResultCode.SUCCESS.getMessage()).data(data).build();
+        return new HttpResult<>(ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), data);
     }
 }
