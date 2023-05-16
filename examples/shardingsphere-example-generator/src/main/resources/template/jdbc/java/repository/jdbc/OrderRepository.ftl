@@ -19,10 +19,6 @@
 package org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.repository;
 
 import org.apache.shardingsphere.example.${package}.${framework?replace('-', '.')}.entity.Order;
-<#if transaction!="local">
-import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
-</#if>
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -109,13 +105,8 @@ public final class OrderRepository {
     
     public Long insert(final Order order) throws SQLException {
         String sql = "INSERT INTO t_order (user_id, order_type, address_id, status) VALUES (?, ?, ?, ?)";
-    <#if transaction?contains("xa")>
-        TransactionTypeHolder.set(TransactionType.XA);
-    <#elseif transaction?contains("base")>
-        TransactionTypeHolder.set(TransactionType.BASE);
-    </#if>
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
         <#if transaction!="local">
             connection.setAutoCommit(false);
         </#if>
@@ -132,10 +123,7 @@ public final class OrderRepository {
         <#if transaction!="local">
             connection.commit();
         </#if>
-        }<#if transaction!="local"> finally {
-            TransactionTypeHolder.clear();
         }
-        </#if>
         return order.getOrderId();
     }
     
