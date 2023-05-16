@@ -47,8 +47,6 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     
     private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(3, 1);
     
-    private static final String BINLOG_ROW_IMAGE = "BINLOG_ROW_IMAGE";
-    
     static {
         REQUIRED_VARIABLES.put("LOG_BIN", "ON");
         REQUIRED_VARIABLES.put("BINLOG_FORMAT", "ROW");
@@ -104,7 +102,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
         try (PreparedStatement preparedStatement = connection.prepareStatement(SHOW_VARIABLES_SQL)) {
             preparedStatement.setString(1, key);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next() || !BINLOG_ROW_IMAGE.equalsIgnoreCase(key)) {
+                if (resultSet.next()) {
                     String actualValue = resultSet.getString(2);
                     ShardingSpherePreconditions.checkState(toBeCheckedValue.equalsIgnoreCase(actualValue),
                             () -> new PrepareJobWithInvalidSourceDataSourceException(key, toBeCheckedValue, actualValue));
