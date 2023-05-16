@@ -66,8 +66,8 @@ BIT_NUM_
     ;
 
 IDENTIFIER_
-    :  [A-Za-z_$0-9\u0080-\uFFFF]*?[A-Za-z_$\u0080-\uFFFF]+?[A-Za-z_$0-9\u0080-\uFFFF]*
-    |  BQ_ ~'`'+ BQ_
+    : [A-Za-z_$0-9\u0080-\uFFFF]*?[A-Za-z_$\u0080-\uFFFF]+?[A-Za-z_$0-9\u0080-\uFFFF]*
+    | BQ_ ~'`'+ BQ_
     ;
 
 IP_ADDRESS

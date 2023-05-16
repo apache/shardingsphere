@@ -569,7 +569,7 @@ identifierKeywordsAmbiguous4SystemVariables
     ;
 
 textOrIdentifier
-    : identifier  | string_ | ipAddress
+    : identifier | string_ | ipAddress
     ;
 
 ipAddress
