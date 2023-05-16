@@ -1271,6 +1271,14 @@ LONGTEXT
     : L O N G T E X T
     ;
 
+LONG_CHAR_VARYING
+    : LONG ' ' CHAR ' ' VARYING
+    ;
+
+LONG_VARCHAR
+    : LONG ' ' VARCHAR
+    ;
+
 LOOP
     : L O O P
     ;
@@ -1533,6 +1541,10 @@ NAMES
 
 NATIONAL
     : N A T I O N A L
+    ;
+
+NATIONAL_CHAR_VARYING
+    : NATIONAL ' ' CHAR_VARYING
     ;
 
 NATURAL
