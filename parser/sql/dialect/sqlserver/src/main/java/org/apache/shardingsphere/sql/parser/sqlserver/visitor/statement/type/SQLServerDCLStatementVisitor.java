@@ -103,11 +103,8 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     private Collection<SimpleTableSegment> getTableFromGrantPrivilegeClause(final GrantClassPrivilegesClauseContext ctx) {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         if (null != ctx.onClassClause()) {
-            if (null != ctx.onClassClause().classItem() && null != ctx.onClassClause().classItem().OBJECT()) {
-                result.add((SimpleTableSegment) visit(ctx.onClassClause().securable()));
-            } else if (null != ctx.classPrivileges().privilegeType().get(0).objectPermission()) {
-                result.add((SimpleTableSegment) visit(ctx.onClassClause().securable()));
-            } else if (null != ctx.classPrivileges().privilegeType().get(0).PRIVILEGES()) {
+            if (null != ctx.onClassClause().classItem() && null != ctx.onClassClause().classItem().OBJECT()
+                    || null != ctx.classPrivileges().privilegeType().get(0).objectPermission() || null != ctx.classPrivileges().privilegeType().get(0).PRIVILEGES()) {
                 result.add((SimpleTableSegment) visit(ctx.onClassClause().securable()));
             }
         }
@@ -146,11 +143,8 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     private Collection<SimpleTableSegment> getTableFromRevokeClassPrivilegesClause(final RevokeClassPrivilegesClauseContext ctx) {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         if (null != ctx.onClassClause()) {
-            if (null != ctx.onClassClause().classItem() && null != ctx.onClassClause().classItem().OBJECT()) {
-                result.add((SimpleTableSegment) visit(ctx.onClassClause().securable()));
-            } else if (null != ctx.classPrivileges().privilegeType().get(0).objectPermission()) {
-                result.add((SimpleTableSegment) visit(ctx.onClassClause().securable()));
-            } else if (null != ctx.classPrivileges().privilegeType().get(0).PRIVILEGES()) {
+            if (null != ctx.onClassClause().classItem() && null != ctx.onClassClause().classItem().OBJECT()
+                    || null != ctx.classPrivileges().privilegeType().get(0).objectPermission() || null != ctx.classPrivileges().privilegeType().get(0).PRIVILEGES()) {
                 result.add((SimpleTableSegment) visit(ctx.onClassClause().securable()));
             }
         }
@@ -259,11 +253,8 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     private Collection<SimpleTableSegment> getTableFromDenyClassPrivilegesClause(final DenyClassPrivilegesClauseContext ctx) {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         if (null != ctx.onClassClause()) {
-            if (null != ctx.onClassClause().classItem() && null != ctx.onClassClause().classItem().OBJECT()) {
-                result.add((SimpleTableSegment) visit(ctx.onClassClause().securable()));
-            } else if (null != ctx.classPrivileges().privilegeType().get(0).objectPermission()) {
-                result.add((SimpleTableSegment) visit(ctx.onClassClause().securable()));
-            } else if (null != ctx.classPrivileges().privilegeType().get(0).PRIVILEGES()) {
+            if (null != ctx.onClassClause().classItem() && null != ctx.onClassClause().classItem().OBJECT()
+                    || null != ctx.classPrivileges().privilegeType().get(0).objectPermission() || null != ctx.classPrivileges().privilegeType().get(0).PRIVILEGES()) {
                 result.add((SimpleTableSegment) visit(ctx.onClassClause().securable()));
             }
         }

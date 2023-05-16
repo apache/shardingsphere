@@ -228,9 +228,7 @@ public final class MySQLJsonValueDecoder {
         out.append('"');
         for (int i = 0; i < str.length(); ++i) {
             char c = str.charAt(i);
-            if (c == '"') {
-                out.append('\\');
-            } else if (c == '\\') {
+            if (c == '"' || c == '\\') {
                 out.append('\\');
             }
             out.append(c);
