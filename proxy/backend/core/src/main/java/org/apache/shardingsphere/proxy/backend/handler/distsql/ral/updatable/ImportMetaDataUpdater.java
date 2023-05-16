@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportMetaDataStatement;
@@ -54,18 +55,17 @@ public final class ImportMetaDataUpdater implements RALUpdater<ImportMetaDataSta
         if (sqlStatement.getFilePath().isPresent()) {
             File file = new File(sqlStatement.getFilePath().get());
             try {
-                jsonMetaDataConfig = FileUtils.readFileToString(file, Charset.defaultCharset());
+                jsonMetaDataConfig = new String(Base64.decodeBase64(FileUtils.readFileToString(file, Charset.defaultCharset())));
             } catch (final IOException ex) {
                 throw new FileIOException(ex);
             }
         } else {
-            jsonMetaDataConfig = sqlStatement.getMetaDataValue();
+            jsonMetaDataConfig = new String(Base64.decodeBase64(sqlStatement.getMetaDataValue()));
         }
         ExportedClusterInfo exportedClusterInfo = JsonUtils.readValue(jsonMetaDataConfig, ExportedClusterInfo.class);
         ExportedMetaData exportedMetaData = exportedClusterInfo.getMetaData();
         importServerConfig(exportedMetaData);
         importDatabase(exportedMetaData);
-        // TODO restore snapshot info
     }
     
     private void importServerConfig(final ExportedMetaData exportedMetaData) {
