@@ -27,6 +27,8 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.transaction.ConnectionTransaction;
 import org.apache.shardingsphere.transaction.ConnectionTransaction.DistributedTransactionOperationType;
+import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +40,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -62,8 +65,12 @@ class ShardingSphereConnectionTest {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(Collections.singletonMap("ds", mock(DataSource.class, RETURNS_DEEP_STUBS)));
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
-                .thenReturn(new ShardingSphereRuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class))));
+                .thenReturn(new ShardingSphereRuleMetaData(Arrays.asList(mockTransactionRule(), mock(TrafficRule.class))));
         return result;
+    }
+
+    private TransactionRule mockTransactionRule() {
+        return new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), "", new Properties()), Collections.emptyMap());
     }
     
     @AfterEach
@@ -100,6 +107,7 @@ class ShardingSphereConnectionTest {
     void assertSetAutoCommitWithDistributedTransaction() throws SQLException {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
         when(connectionTransaction.getDistributedTransactionOperationType(true)).thenReturn(DistributedTransactionOperationType.COMMIT);
+        when(connectionTransaction.getTransactionType()).thenReturn(TransactionType.XA);
         mockConnectionManager(connectionTransaction);
         connection.setAutoCommit(true);
         assertTrue(connection.getAutoCommit());
@@ -124,6 +132,7 @@ class ShardingSphereConnectionTest {
     void assertCommitWithDistributedTransaction() throws SQLException {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
         when(connectionTransaction.getDistributedTransactionOperationType(false)).thenReturn(DistributedTransactionOperationType.BEGIN);
+        when(connectionTransaction.getTransactionType()).thenReturn(TransactionType.XA);
         DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManager(connectionTransaction);
         connection.setAutoCommit(false);
         assertTrue(databaseConnectionManager.getConnectionContext().getTransactionContext().isInTransaction());
@@ -150,6 +159,7 @@ class ShardingSphereConnectionTest {
     void assertRollbackWithDistributedTransaction() throws SQLException {
         ConnectionTransaction connectionTransaction = mock(ConnectionTransaction.class);
         when(connectionTransaction.getDistributedTransactionOperationType(false)).thenReturn(DistributedTransactionOperationType.BEGIN);
+        when(connectionTransaction.getTransactionType()).thenReturn(TransactionType.XA);
         final DriverDatabaseConnectionManager databaseConnectionManager = mockConnectionManager(connectionTransaction);
         connection.setAutoCommit(false);
         assertFalse(connection.getAutoCommit());
