@@ -867,6 +867,10 @@ GEOMETRY
     : G E O M E T R Y
     ;
 
+GEOMCOLLECTION
+    : G E O M C O L L E C T I O N
+    ;
+
 GEOMETRYCOLLECTION
     : G E O M E T R Y C O L L E C T I O N
     ;

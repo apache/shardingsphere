@@ -129,4 +129,5 @@
     <sql-case id="create_table_with_invisible" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10) INVISIBLE) ENGINE=INNODB" db-types="MySQL" />
     <sql-case id="create_table_with_varchar2_char_and_byte_type" value="CREATE TABLE t_order (SYS_ID VARCHAR2(32 CHAR) VISIBLE NOT NULL, ATTACHMENT_NAME VARCHAR2(1024 BYTE) VISIBLE DEFAULT '')" db-types="Oracle" />
     <sql-case id="create_table_with_character_varying" value="CREATE TABLE t_order (order_id INT, user_id INT, status CHARACTER VARYING(50))" db-types="MySQL" />
+    <sql-case id="create_table_with_geomcollection" value="CREATE TABLE t1 (g GEOMCOLLECTION)" db-types="MySQL" />
 </sql-cases>
