@@ -253,10 +253,10 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
     }
     
     private String checkSchemaInName(final String typname, final String schema) {
-        if (typname.indexOf(schema + "\".") > 0) {
+        if (typname.contains(schema + "\".")) {
             return typname.substring(schema.length() + 3);
         }
-        if (typname.indexOf(schema + ".") > 0) {
+        if (typname.contains(schema + ".")) {
             return typname.substring(schema.length() + 1);
         }
         return typname;
