@@ -53,25 +53,24 @@ public final class PostgreSQLComClosePacket extends PostgreSQLCommandPacket {
     }
     
     @RequiredArgsConstructor
-    @Getter
     public enum Type {
         
         PREPARED_STATEMENT('S'),
         
         PORTAL('P');
         
-        private final char type;
+        private final char value;
         
         /**
          * Value of type.
          *
-         * @param type type
+         * @param type type char
          * @return type
          * @throws PostgreSQLProtocolException PostgreSQL protocol exception
          */
         public static Type valueOf(final char type) {
             for (Type each : values()) {
-                if (type == each.type) {
+                if (type == each.value) {
                     return each;
                 }
             }
