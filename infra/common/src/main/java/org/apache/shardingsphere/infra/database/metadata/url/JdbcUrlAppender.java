@@ -38,7 +38,7 @@ public final class JdbcUrlAppender {
         Properties currentQueryProps = DatabaseTypeEngine.getDatabaseType(jdbcUrl).getDataSourceMetaData(jdbcUrl, null).getQueryProperties();
         return hasConflictedQueryProperties(currentQueryProps, queryProps)
                 ? concat(jdbcUrl.substring(0, jdbcUrl.indexOf('?') + 1), getMergedProperties(currentQueryProps, queryProps))
-                : concat(jdbcUrl + (currentQueryProps.isEmpty() ? "?" : "&"), queryProps);
+                : concat(jdbcUrl + getURLDelimiter(currentQueryProps), queryProps);
     }
     
     private boolean hasConflictedQueryProperties(final Properties currentQueryProps, final Properties toBeAppendedQueryProps) {
@@ -63,5 +63,9 @@ public final class JdbcUrlAppender {
         }
         result.deleteCharAt(result.length() - 1);
         return result.toString();
+    }
+    
+    private String getURLDelimiter(final Properties currentQueryProps) {
+        return currentQueryProps.isEmpty() ? "?" : "&";
     }
 }
