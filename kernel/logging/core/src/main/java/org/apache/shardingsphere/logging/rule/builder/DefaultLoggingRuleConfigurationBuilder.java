@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.logging.rule.builder;
 
-import ch.qos.logback.classic.Logger;
+import org.slf4j.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
