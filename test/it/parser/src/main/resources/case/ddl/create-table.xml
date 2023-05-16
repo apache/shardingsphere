@@ -1814,4 +1814,11 @@
             <column name="g" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_start_transaction">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" start-index="22" stop-index="33">
+            <column name="order_id" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

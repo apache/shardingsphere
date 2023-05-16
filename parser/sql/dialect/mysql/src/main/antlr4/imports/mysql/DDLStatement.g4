@@ -32,7 +32,11 @@ alterStatement
     ;
 
 createTable
-    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? partitionClause? duplicateAsQueryExpression? | createLikeClause)
+    : CREATE TEMPORARY? TABLE ifNotExists? tableName (createDefinitionClause? createTableOptions? partitionClause? duplicateAsQueryExpression? startTransaction? | createLikeClause)
+    ;
+
+startTransaction
+    : START TRANSACTION
     ;
 
 partitionClause
