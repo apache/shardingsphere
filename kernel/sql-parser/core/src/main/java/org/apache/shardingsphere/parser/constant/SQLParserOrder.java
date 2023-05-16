@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.parser.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * SQL parser order.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLParserOrder {
     
     /**

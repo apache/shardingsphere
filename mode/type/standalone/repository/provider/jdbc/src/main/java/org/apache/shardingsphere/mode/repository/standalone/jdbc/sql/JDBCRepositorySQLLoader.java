@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.repository.standalone.jdbc.sql;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
 import javax.xml.bind.JAXBContext;
@@ -40,6 +42,7 @@ import java.util.jar.JarFile;
 /**
  * JDBC repository SQL Loader.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JDBCRepositorySQLLoader {
     
     private static final String ROOT_DIRECTORY = "sql";

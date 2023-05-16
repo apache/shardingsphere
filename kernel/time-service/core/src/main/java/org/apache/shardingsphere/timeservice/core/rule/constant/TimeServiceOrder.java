@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.timeservice.core.rule.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Time service order.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TimeServiceOrder {
     
     /**
