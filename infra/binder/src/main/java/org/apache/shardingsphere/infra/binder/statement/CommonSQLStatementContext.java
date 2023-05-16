@@ -48,7 +48,7 @@ public abstract class CommonSQLStatementContext implements SQLStatementContext {
     
     private final SQLHintExtractor sqlHintExtractor;
     
-    public CommonSQLStatementContext(final SQLStatement sqlStatement) {
+    protected CommonSQLStatementContext(final SQLStatement sqlStatement) {
         this.sqlStatement = sqlStatement;
         databaseType = getDatabaseType(sqlStatement);
         tablesContext = new TablesContext(Collections.emptyList(), databaseType);
