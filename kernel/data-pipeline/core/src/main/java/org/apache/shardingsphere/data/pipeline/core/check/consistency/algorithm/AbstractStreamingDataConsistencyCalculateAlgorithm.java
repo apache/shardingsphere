@@ -78,13 +78,13 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
         @Override
         public DataConsistencyCalculatedResult next() {
             calculateIfNecessary();
-            Optional<DataConsistencyCalculatedResult> nextResult = this.nextResult.get();
+            Optional<DataConsistencyCalculatedResult> nextCalculatedResult = this.nextResult.get();
             this.nextResult.set(null);
-            return nextResult.orElseThrow(NoSuchElementException::new);
+            return nextCalculatedResult.orElseThrow(NoSuchElementException::new);
         }
         
         private void calculateIfNecessary() {
-            if (null == nextResult.get()) {
+            if (!nextResult.get().isPresent()) {
                 nextResult.set(calculateChunk(param));
             }
         }
