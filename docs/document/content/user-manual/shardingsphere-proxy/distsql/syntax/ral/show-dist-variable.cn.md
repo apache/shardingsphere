@@ -1,6 +1,6 @@
 +++
 title = "SHOW DIST VARIABLE"
-weight = 4
+weight = 7
 +++
 
 ### 描述

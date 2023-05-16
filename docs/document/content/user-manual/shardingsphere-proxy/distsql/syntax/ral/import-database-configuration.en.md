@@ -1,6 +1,6 @@
 +++
 title = "IMPORT DATABASE CONFIGURATION"
-weight = 9
+weight = 12
 +++
 
 ### Description

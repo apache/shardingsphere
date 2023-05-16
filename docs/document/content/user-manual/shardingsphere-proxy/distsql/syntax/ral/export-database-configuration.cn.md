@@ -1,6 +1,6 @@
 +++
 title = "EXPORT DATABASE CONFIGURATION"
-weight = 8
+weight = 11
 +++
 
 ### 描述
