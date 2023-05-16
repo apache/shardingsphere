@@ -24,9 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLFeatureNotSupportedException;
@@ -48,12 +46,7 @@ class UnsupportedOperationConnectionTest {
                 new ShardingSphereRuleMetaData(Arrays.asList(mock(TransactionRule.class, RETURNS_DEEP_STUBS), mock(TrafficRule.class))));
         shardingSphereConnection = new ShardingSphereConnection(DefaultDatabase.LOGIC_NAME, contextManager, mock(JDBCContext.class));
     }
-    
-    @AfterEach
-    void tearDown() {
-        TransactionTypeHolder.clear();
-    }
-    
+        
     @Test
     void assertPrepareCall() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereConnection.prepareCall(""));
