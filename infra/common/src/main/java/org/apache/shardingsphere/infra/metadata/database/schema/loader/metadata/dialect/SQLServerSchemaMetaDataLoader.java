@@ -102,7 +102,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
         String collationName = resultSet.getString("COLLATION_NAME");
         boolean primaryKey = "1".equals(resultSet.getString("IS_PRIMARY_KEY"));
         boolean generated = "1".equals(resultSet.getString("IS_IDENTITY"));
-        boolean caseSensitive = null != collationName && collationName.indexOf("_CS") > 0;
+        boolean caseSensitive = null != collationName && collationName.contains("_CS");
         boolean isVisible = !(versionContainsHiddenColumn(databaseMetaData) && "1".equals(resultSet.getString("IS_HIDDEN")));
         return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, isVisible, false);
     }
