@@ -364,7 +364,7 @@ public final class PostgreSQLByteConverter {
     }
     
     private static short readShort2(final byte[] bytes, final int index) {
-        return (short) (((bytes[index] & 255) << 8) + ((bytes[index + 1] & 255)));
+        return (short) (((bytes[index] & 255) << 8) + (bytes[index + 1] & 255));
     }
     
     /**
