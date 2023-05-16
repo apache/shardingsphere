@@ -1,6 +1,6 @@
 +++
 title = "SHOW COMPUTE NODE INFO"
-weight = 1
+weight = 4
 +++
 
 ### 描述

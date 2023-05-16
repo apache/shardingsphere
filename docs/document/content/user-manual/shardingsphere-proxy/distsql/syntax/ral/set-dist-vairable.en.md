@@ -1,6 +1,6 @@
 +++
 title = "SET DIST VARIABLE"
-weight = 3
+weight = 6
 +++
 
 ### Description

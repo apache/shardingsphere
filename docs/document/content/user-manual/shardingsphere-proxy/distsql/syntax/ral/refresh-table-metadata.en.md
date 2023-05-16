@@ -1,6 +1,6 @@
 +++
 title = "REFRESH TABLE METADATA"
-weight = 5
+weight = 8
 +++
 
 ### Description
