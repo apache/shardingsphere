@@ -43,7 +43,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.valu
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.time.MySQLTimestampBinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.time.MySQLYearBinlogProtocolValue;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -52,7 +52,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLBinlogProtocolValueFactory {
     
-    private static final Map<MySQLBinaryColumnType, MySQLBinlogProtocolValue> BINLOG_PROTOCOL_VALUES = new HashMap<>();
+    private static final Map<MySQLBinaryColumnType, MySQLBinlogProtocolValue> BINLOG_PROTOCOL_VALUES = new EnumMap<>(MySQLBinaryColumnType.class);
     
     static {
         registerIntegerTypeValue();
