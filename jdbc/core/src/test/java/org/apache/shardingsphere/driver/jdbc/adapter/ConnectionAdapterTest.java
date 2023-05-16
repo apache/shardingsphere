@@ -24,9 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -43,11 +41,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class ConnectionAdapterTest {
-    
-    @AfterEach
-    void tearDown() {
-        TransactionTypeHolder.clear();
-    }
     
     @Test
     void assertGetWarnings() throws SQLException {

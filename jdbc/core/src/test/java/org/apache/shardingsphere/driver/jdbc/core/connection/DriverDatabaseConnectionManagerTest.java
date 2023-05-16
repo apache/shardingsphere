@@ -26,14 +26,12 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
-import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -149,16 +147,6 @@ class DriverDatabaseConnectionManagerTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
         assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false"));
-    }
-    
-    @Test
-    void assertGetConnectionWhenConfigTrafficRuleInXaTransaction() throws SQLException {
-        TransactionTypeHolder.set(TransactionType.XA);
-        List<Connection> actual = databaseConnectionManager.getConnections("127.0.0.1@3307", 1, ConnectionMode.MEMORY_STRICTLY);
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getMetaData().getUserName(), is("root"));
-        assertThat(actual.get(0).getMetaData().getURL(), is("jdbc:mysql://127.0.0.1:3307/logic_db?serverTimezone=UTC&useSSL=false"));
-        TransactionTypeHolder.clear();
     }
     
     @Test

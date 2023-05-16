@@ -27,13 +27,11 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.state.cluster.ClusterStateContext;
 import org.apache.shardingsphere.infra.state.instance.InstanceStateContext;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -82,10 +80,5 @@ class DriverStateContextTest {
     void assertGetConnectionWithOkState() {
         Connection actual = DriverStateContext.getConnection(DefaultDatabase.LOGIC_NAME, contextManager, mock(JDBCContext.class));
         assertThat(actual, instanceOf(ShardingSphereConnection.class));
-    }
-    
-    @AfterEach
-    void tearDown() {
-        TransactionTypeHolder.clear();
     }
 }

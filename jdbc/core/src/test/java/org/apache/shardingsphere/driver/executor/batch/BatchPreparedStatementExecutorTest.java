@@ -40,9 +40,8 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
-import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,6 +63,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -90,7 +90,6 @@ class BatchPreparedStatementExecutorTest {
     @BeforeEach
     void setUp() {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
-        TransactionTypeHolder.set(TransactionType.LOCAL);
         ShardingSphereConnection connection = new ShardingSphereConnection("foo_db", mockContextManager(), mock(JDBCContext.class));
         executor = new BatchPreparedStatementExecutor(
                 connection.getContextManager().getMetaDataContexts(), new JDBCExecutor(executorEngine, connection.getDatabaseConnectionManager().getConnectionContext()), "foo_db");
@@ -117,9 +116,7 @@ class BatchPreparedStatementExecutorTest {
     }
     
     private TransactionRule mockTransactionRule() {
-        TransactionRule result = mock(TransactionRule.class);
-        when(result.getResource()).thenReturn(new ShardingSphereTransactionManagerEngine(TransactionType.LOCAL));
-        return result;
+        return new TransactionRule(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), "", new Properties()), Collections.emptyMap());
     }
     
     private ShardingRule mockShardingRule() {
@@ -139,7 +136,6 @@ class BatchPreparedStatementExecutorTest {
     @AfterEach
     void tearDown() {
         executorEngine.close();
-        TransactionTypeHolder.clear();
     }
     
     @Test
