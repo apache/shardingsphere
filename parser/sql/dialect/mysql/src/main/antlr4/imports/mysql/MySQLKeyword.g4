@@ -1535,6 +1535,10 @@ NATIONAL
     : N A T I O N A L
     ;
 
+NATIONAL_CHAR
+    : NATIONAL ' ' CHAR
+    ;
+
 NATURAL
     : N A T U R A L
     ;
