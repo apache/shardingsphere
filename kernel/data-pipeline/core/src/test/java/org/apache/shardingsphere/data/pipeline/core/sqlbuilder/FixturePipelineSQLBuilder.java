@@ -54,7 +54,7 @@ public final class FixturePipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public List<Column> extractUpdatedColumns(final DataRecord record) {
+    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
         return Collections.emptyList();
     }
     

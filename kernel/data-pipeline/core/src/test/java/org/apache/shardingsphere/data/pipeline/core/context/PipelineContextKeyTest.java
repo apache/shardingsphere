@@ -21,9 +21,8 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PipelineContextKeyTest {
     
@@ -39,7 +38,7 @@ class PipelineContextKeyTest {
     void assertHashCodeEqualsForJdbcMode() {
         PipelineContextKey contextKey1 = PipelineContextKey.build("logic_db", InstanceType.JDBC);
         PipelineContextKey contextKey2 = PipelineContextKey.build("sharding_db", InstanceType.JDBC);
-        assertTrue(contextKey1.hashCode() != contextKey2.hashCode());
-        assertNotEquals(contextKey1, contextKey2);
+        assertThat(contextKey1.hashCode(), not(contextKey2.hashCode()));
+        assertThat(contextKey1, not(contextKey2));
     }
 }

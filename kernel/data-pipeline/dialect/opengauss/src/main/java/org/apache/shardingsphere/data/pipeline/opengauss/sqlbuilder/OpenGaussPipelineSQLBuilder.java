@@ -73,8 +73,8 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
     }
     
     @Override
-    public List<Column> extractUpdatedColumns(final DataRecord record) {
-        return record.getColumns().stream().filter(each -> !(each.isUniqueKey())).collect(Collectors.toList());
+    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
+        return dataRecord.getColumns().stream().filter(each -> !(each.isUniqueKey())).collect(Collectors.toList());
     }
     
     private String buildConflictSQL(final DataRecord dataRecord) {
