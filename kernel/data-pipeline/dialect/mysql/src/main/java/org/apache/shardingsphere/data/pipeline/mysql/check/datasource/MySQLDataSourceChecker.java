@@ -100,9 +100,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
                 preparedStatement.setString(parameterIndex++, entry.getKey());
             }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (!resultSet.next()) {
-                    return;
-                }
+                resultSet.next();
                 String key = resultSet.getString(1).toUpperCase();
                 String toBeCheckedValue = REQUIRED_VARIABLES.get(key);
                 String actualValue = resultSet.getString(2);
