@@ -1822,6 +1822,14 @@
         </column-definition>
     </create-table>
 
+    <create-table sql-case-id="create_table_with_cast_function">
+        <table name="t1" start-index="13" stop-index="14" />
+        <column-definition type="json" start-index="16" stop-index="21">
+            <column name="j" />
+        </column-definition>
+        <constraint-definition index-name="mv_idx" start-index="24" stop-index="64" />
+    </create-table>
+
     <create-table sql-case-id="create_table_with_long_char_varying">
         <table name="t_order" start-index="13" stop-index="19" />
         <column-definition type="INT" start-index="22" stop-index="33">

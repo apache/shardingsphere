@@ -38,6 +38,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Boolean
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CaseExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CaseWhenContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CastFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CastTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CharFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CollateClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnNameContext;
@@ -922,8 +923,8 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
                 result.getParameters().add((LiteralExpressionSegment) expr);
             }
         }
-        if (null != ctx.dataType()) {
-            result.getParameters().add((DataTypeSegment) visit(ctx.dataType()));
+        if (null != ctx.castType()) {
+            result.getParameters().add((DataTypeSegment) visit(ctx.castType()));
         }
         if (null != ctx.DATETIME()) {
             DataTypeSegment dataType = new DataTypeSegment();
@@ -934,6 +935,23 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
                 dataType.setDataLength((DataTypeLengthSegment) visit(ctx.typeDatetimePrecision()));
             }
             result.getParameters().add(dataType);
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCastType(final CastTypeContext ctx) {
+        DataTypeSegment result = new DataTypeSegment();
+        result.setDataTypeName(ctx.castTypeName.getText());
+        result.setStartIndex(ctx.start.getStartIndex());
+        result.setStopIndex(ctx.stop.getStopIndex());
+        if (null != ctx.fieldLength()) {
+            DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.fieldLength());
+            result.setDataLength(dataTypeLengthSegment);
+        }
+        if (null != ctx.precision()) {
+            DataTypeLengthSegment dataTypeLengthSegment = (DataTypeLengthSegment) visit(ctx.precision());
+            result.setDataLength(dataTypeLengthSegment);
         }
         return result;
     }

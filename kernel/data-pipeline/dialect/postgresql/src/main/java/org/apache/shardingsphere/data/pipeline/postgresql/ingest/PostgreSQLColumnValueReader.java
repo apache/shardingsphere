@@ -39,14 +39,16 @@ public final class PostgreSQLColumnValueReader extends AbstractColumnValueReader
         if (isPgMoneyType(metaData, columnIndex)) {
             return resultSet.getBigDecimal(columnIndex);
         }
-        if (isPgBitType(metaData, columnIndex)) {
-            PGobject result = new PGobject();
-            result.setType("bit");
-            Object bitValue = resultSet.getObject(columnIndex);
-            result.setValue(null == bitValue ? null : (Boolean) bitValue ? "1" : "0");
-            return result;
+        if (!isPgBitType(metaData, columnIndex)) {
+            return defaultDoReadValue(resultSet, metaData, columnIndex);
         }
-        return super.defaultDoReadValue(resultSet, metaData, columnIndex);
+        PGobject result = new PGobject();
+        result.setType("bit");
+        Object bitValue = resultSet.getObject(columnIndex);
+        if (null != bitValue) {
+            result.setValue((Boolean) bitValue ? "1" : "0");
+        }
+        return result;
     }
     
     private boolean isPgMoneyType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
@@ -54,10 +56,7 @@ public final class PostgreSQLColumnValueReader extends AbstractColumnValueReader
     }
     
     private boolean isPgBitType(final ResultSetMetaData resultSetMetaData, final int index) throws SQLException {
-        if (Types.BIT == resultSetMetaData.getColumnType(index)) {
-            return PG_BIT_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
-        }
-        return false;
+        return Types.BIT == resultSetMetaData.getColumnType(index) && PG_BIT_TYPE.equalsIgnoreCase(resultSetMetaData.getColumnTypeName(index));
     }
     
     @Override

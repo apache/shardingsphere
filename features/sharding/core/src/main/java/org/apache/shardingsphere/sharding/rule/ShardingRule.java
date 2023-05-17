@@ -268,8 +268,8 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private Optional<String> getAlgorithmExpression(final TableRule tableRule, final boolean databaseAlgorithm, final BindingTableCheckedConfiguration checkedConfig) {
         ShardingStrategyConfiguration shardingStrategyConfig = databaseAlgorithm
-                ? null == tableRule.getDatabaseShardingStrategyConfig() ? checkedConfig.getDefaultDatabaseShardingStrategyConfig() : tableRule.getDatabaseShardingStrategyConfig()
-                : null == tableRule.getTableShardingStrategyConfig() ? checkedConfig.getDefaultTableShardingStrategyConfig() : tableRule.getTableShardingStrategyConfig();
+                ? getDatabaseShardingStrategyConfiguration(tableRule, checkedConfig.getDefaultDatabaseShardingStrategyConfig())
+                : getTableShardingStrategyConfiguration(tableRule, checkedConfig.getDefaultTableShardingStrategyConfig());
         ShardingAlgorithm shardingAlgorithm = checkedConfig.getShardingAlgorithms().get(shardingStrategyConfig.getShardingAlgorithmName());
         String dataNodePrefix = databaseAlgorithm ? tableRule.getDataSourceDataNode().getPrefix() : tableRule.getTableDataNode().getPrefix();
         String shardingColumn = getShardingColumn(shardingStrategyConfig, checkedConfig.getDefaultShardingColumn());
@@ -302,6 +302,10 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      * @return database sharding strategy configuration
      */
     public ShardingStrategyConfiguration getDatabaseShardingStrategyConfiguration(final TableRule tableRule) {
+        return getDatabaseShardingStrategyConfiguration(tableRule, defaultDatabaseShardingStrategyConfig);
+    }
+    
+    private ShardingStrategyConfiguration getDatabaseShardingStrategyConfiguration(final TableRule tableRule, final ShardingStrategyConfiguration defaultDatabaseShardingStrategyConfig) {
         return null == tableRule.getDatabaseShardingStrategyConfig() ? defaultDatabaseShardingStrategyConfig : tableRule.getDatabaseShardingStrategyConfig();
     }
     
@@ -312,6 +316,10 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      * @return table sharding strategy configuration
      */
     public ShardingStrategyConfiguration getTableShardingStrategyConfiguration(final TableRule tableRule) {
+        return getTableShardingStrategyConfiguration(tableRule, defaultTableShardingStrategyConfig);
+    }
+    
+    private ShardingStrategyConfiguration getTableShardingStrategyConfiguration(final TableRule tableRule, final ShardingStrategyConfiguration defaultTableShardingStrategyConfig) {
         return null == tableRule.getTableShardingStrategyConfig() ? defaultTableShardingStrategyConfig : tableRule.getTableShardingStrategyConfig();
     }
     

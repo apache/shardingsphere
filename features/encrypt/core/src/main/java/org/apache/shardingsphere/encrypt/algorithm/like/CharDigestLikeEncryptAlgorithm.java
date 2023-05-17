@@ -71,9 +71,8 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     
     private int createDelta(final Properties props) {
         if (props.containsKey(DELTA_KEY)) {
-            String delta = props.getProperty(DELTA_KEY);
             try {
-                return Integer.parseInt(delta);
+                return Integer.parseInt(props.getProperty(DELTA_KEY));
             } catch (final NumberFormatException ignored) {
                 throw new EncryptAlgorithmInitializationException(getType(), "delta can only be a decimal number");
             }
@@ -83,9 +82,8 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     
     private int createMask(final Properties props) {
         if (props.containsKey(MASK_KEY)) {
-            String mask = props.getProperty(MASK_KEY);
             try {
-                return Integer.parseInt(mask);
+                return Integer.parseInt(props.getProperty(MASK_KEY));
             } catch (final NumberFormatException ignored) {
                 throw new EncryptAlgorithmInitializationException(getType(), "mask can only be a decimal number");
             }
@@ -95,9 +93,8 @@ public final class CharDigestLikeEncryptAlgorithm implements LikeEncryptAlgorith
     
     private int createStart(final Properties props) {
         if (props.containsKey(START_KEY)) {
-            String start = props.getProperty(START_KEY);
             try {
-                return Integer.parseInt(start);
+                return Integer.parseInt(props.getProperty(START_KEY));
             } catch (final NumberFormatException ignored) {
                 throw new EncryptAlgorithmInitializationException(getType(), "start can only be a decimal number");
             }

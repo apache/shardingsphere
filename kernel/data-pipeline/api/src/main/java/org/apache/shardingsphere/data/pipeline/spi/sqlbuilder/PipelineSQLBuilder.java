@@ -104,11 +104,11 @@ public interface PipelineSQLBuilder extends TypedSPI {
     /**
      * Extract updated columns.
      *
-     * @param record data record
+     * @param dataRecord data record
      * @return filtered columns
      */
     // TODO Consider remove extractUpdatedColumns. openGauss has special impl currently
-    List<Column> extractUpdatedColumns(DataRecord record);
+    List<Column> extractUpdatedColumns(DataRecord dataRecord);
     
     /**
      * Build delete SQL.
