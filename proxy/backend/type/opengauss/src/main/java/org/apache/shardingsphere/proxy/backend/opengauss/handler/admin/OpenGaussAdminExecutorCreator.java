@@ -46,6 +46,8 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     
     private static final String OG_DATABASE = "pg_database";
     
+    private static final String OG_TABLES = "pg_tables";
+    
     private final PostgreSQLAdminExecutorCreator delegated = new PostgreSQLAdminExecutorCreator();
     
     @Override
@@ -62,7 +64,8 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     }
     
     private boolean isSystemCatalogQuery(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext.getTablesContext().getTableNames().contains(OG_DATABASE)) {
+        final Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
+        if (tableNames.contains(OG_DATABASE) || tableNames.contains(OG_TABLES)) {
             return true;
         }
         if (!(sqlStatementContext.getSqlStatement() instanceof SelectStatement)) {

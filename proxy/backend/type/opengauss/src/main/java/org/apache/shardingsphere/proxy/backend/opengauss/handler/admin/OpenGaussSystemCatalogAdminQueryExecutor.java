@@ -26,10 +26,13 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema.OpenGaussDatabase;
 import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema.OpenGaussSystemCatalog;
+import org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema.OpenGaussTables;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
@@ -41,6 +44,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Select database executor for openGauss.
@@ -88,11 +95,20 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
     private OpenGaussSystemCatalog constructOgCatalog() {
         Collection<String> allDatabaseNames = ProxyContext.getInstance().getAllDatabaseNames();
         OpenGaussDatabase[] openGaussDatabases = new OpenGaussDatabase[allDatabaseNames.size()];
-        int i = 0;
+        List<OpenGaussTables> openGaussTables = new LinkedList<>();
+        int index = 0;
         for (String each : allDatabaseNames) {
-            openGaussDatabases[i++] = new OpenGaussDatabase(each, DAT_COMPATIBILITY);
+            for (Map.Entry<String, ShardingSphereSchema> schema : ProxyContext.getInstance().getDatabase(each).getSchemas().entrySet()) {
+                String schemaName = schema.getKey();
+                for (String tableName : schema.getValue().getAllTableNames()) {
+                    openGaussTables.add(new OpenGaussTables(schemaName, tableName));
+                }
+            }
+            openGaussDatabases[index++] = new OpenGaussDatabase(each, DAT_COMPATIBILITY);
         }
-        return new OpenGaussSystemCatalog(openGaussDatabases);
+        openGaussTables.addAll(SystemSchemaBuilderRule.OPEN_GAUSS_PG_CATALOG.getTables().stream().map(tableName -> new OpenGaussTables(PG_CATALOG, tableName)).collect(Collectors.toSet()));
+        openGaussTables.addAll(SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG.getTables().stream().map(tableName -> new OpenGaussTables(PG_CATALOG, tableName)).collect(Collectors.toSet()));
+        return new OpenGaussSystemCatalog(openGaussDatabases, openGaussTables.toArray(new OpenGaussTables[0]));
     }
     
     /**

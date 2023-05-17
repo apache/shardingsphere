@@ -49,6 +49,8 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     
     private static final String PG_DATABASE = "pg_database";
     
+    private static final String PG_TABLES = "pg_tables";
+    
     private static final String PG_TRIGGER = "pg_trigger";
     
     private static final String PG_INHERITS = "pg_inherits";
