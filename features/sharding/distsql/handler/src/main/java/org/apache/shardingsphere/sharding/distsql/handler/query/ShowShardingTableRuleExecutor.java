@@ -177,7 +177,7 @@ public final class ShowShardingTableRuleExecutor implements RQLExecutor<ShowShar
     
     private String getAllowHintDisable(final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig) {
         return getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig).isPresent()
-                ? Boolean.valueOf(getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig).get().isAllowHintDisable()).toString()
+                ? Boolean.toString(getShardingAuditStrategyConfiguration(shardingAuditStrategyConfig).get().isAllowHintDisable())
                 : "";
     }
     

@@ -53,8 +53,7 @@ public final class ShowShadowAlgorithmExecutor implements RQLExecutor<ShowShadow
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         while (data.hasNext()) {
             Entry<String, AlgorithmConfiguration> row = data.next();
-            result.add(new LocalDataQueryResultRow(row.getKey(), row.getValue().getType(),
-                    convertToString(row.getValue().getProps()), Boolean.valueOf(row.getKey().equals(defaultAlgorithm)).toString()));
+            result.add(new LocalDataQueryResultRow(row.getKey(), row.getValue().getType(), convertToString(row.getValue().getProps()), Boolean.toString(row.getKey().equals(defaultAlgorithm))));
         }
         return result;
     }
