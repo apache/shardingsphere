@@ -295,16 +295,20 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
             return;
         }
         try (Connection connection = dataSource.getConnection()) {
-            // TODO it's better use transaction, but execute delete maybe not effect when open transaction of PostgreSQL sometimes
-            for (DataRecord each : buffer) {
-                try {
-                    doFlush(connection, each);
-                } catch (final SQLException ex) {
-                    throw new PipelineImporterJobWriteException(String.format("Write failed, record=%s", each), ex);
-                }
-            }
+            sequentialFlush(connection, buffer);
         } catch (final SQLException ex) {
             throw new PipelineImporterJobWriteException(ex);
+        }
+    }
+    
+    private void sequentialFlush(final Connection connection, final List<DataRecord> buffer) {
+        // TODO it's better use transaction, but execute delete maybe not effect when open transaction of PostgreSQL sometimes
+        for (DataRecord each : buffer) {
+            try {
+                doFlush(connection, each);
+            } catch (final SQLException ex) {
+                throw new PipelineImporterJobWriteException(String.format("Write failed, record=%s", each), ex);
+            }
         }
     }
     
