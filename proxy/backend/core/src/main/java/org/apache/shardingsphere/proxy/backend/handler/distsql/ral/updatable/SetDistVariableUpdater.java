@@ -23,6 +23,7 @@ import ch.qos.logback.classic.LoggerContext;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyValue;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
@@ -37,8 +38,11 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.updater.ConnectionSessionRequiredRALUpdater;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -122,12 +126,18 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
     
     private void handleVariables(final ConnectionSession connectionSession, final SetDistVariableStatement sqlStatement) {
         VariableEnum variable = VariableEnum.getValueOf(sqlStatement.getName());
-        switch (variable) {
-            case TRANSACTION_TYPE:
-                connectionSession.getTransactionStatus().setTransactionType(getTransactionType(sqlStatement.getValue()));
-                break;
-            default:
-                throw new UnsupportedVariableException(sqlStatement.getName());
+        if (variable == VariableEnum.TRANSACTION_TYPE) {
+            ContextManager contextManager = ProxyContext.getInstance().getContextManager();
+            Collection<RuleConfiguration> ruleConfigurations = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
+            TransactionRuleConfiguration currentRuleConfig = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getConfiguration();
+            TransactionRuleConfiguration newRuleConfig =
+                    new TransactionRuleConfiguration(currentRuleConfig.getDefaultType(), getTransactionType(sqlStatement.getValue()).name(), currentRuleConfig.getProps());
+            ruleConfigurations.remove(currentRuleConfig);
+            ruleConfigurations.add(newRuleConfig);
+            contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(ruleConfigurations);
+            connectionSession.getTransactionStatus().setTransactionType(getTransactionType(sqlStatement.getValue()));
+        } else {
+            throw new UnsupportedVariableException(sqlStatement.getName());
         }
     }
     
