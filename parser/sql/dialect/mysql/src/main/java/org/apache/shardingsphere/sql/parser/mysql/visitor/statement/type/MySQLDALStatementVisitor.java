@@ -561,6 +561,8 @@ public final class MySQLDALStatementVisitor extends MySQLStatementVisitor implem
             result.setStatement((SQLStatement) visit(ctx.explainableStatement()));
         } else if (null != ctx.select()) {
             result.setStatement((SQLStatement) visit(ctx.select()));
+        } else if (null != ctx.delete()) {
+            result.setStatement((SQLStatement) visit(ctx.delete()));
         }
         return result;
     }

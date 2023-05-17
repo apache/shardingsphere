@@ -73,7 +73,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitCreateShadowRule(final CreateShadowRuleContext ctx) {
-        List<ShadowRuleSegment> shadowRuleSegments = ctx.shadowRuleDefinition().stream().map(this::visit).map(each -> (ShadowRuleSegment) each).collect(Collectors.toList());
+        List<ShadowRuleSegment> shadowRuleSegments = ctx.shadowRuleDefinition().stream().map(this::visit).map(ShadowRuleSegment.class::cast).collect(Collectors.toList());
         return new CreateShadowRuleStatement(null != ctx.ifNotExists(), autoCreateAlgorithmName(shadowRuleSegments));
     }
     
@@ -123,7 +123,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitAlterShadowRule(final AlterShadowRuleContext ctx) {
-        List<ShadowRuleSegment> shadowRuleSegments = ctx.shadowRuleDefinition().stream().map(this::visit).map(each -> (ShadowRuleSegment) each).collect(Collectors.toList());
+        List<ShadowRuleSegment> shadowRuleSegments = ctx.shadowRuleDefinition().stream().map(this::visit).map(ShadowRuleSegment.class::cast).collect(Collectors.toList());
         return new AlterShadowRuleStatement(autoCreateAlgorithmName(shadowRuleSegments));
     }
     
@@ -160,8 +160,8 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
         return null == ctx || ctx.isEmpty() ? null : new IdentifierValue(ctx.getText()).getValue();
     }
     
-    private Collection<ShadowAlgorithmSegment> visitShadowAlgorithms(final List<AlgorithmDefinitionContext> ctxs) {
-        return ctxs.stream().map(this::visit).map(each -> (ShadowAlgorithmSegment) each).collect(Collectors.toList());
+    private Collection<ShadowAlgorithmSegment> visitShadowAlgorithms(final List<AlgorithmDefinitionContext> contexts) {
+        return contexts.stream().map(this::visit).map(ShadowAlgorithmSegment.class::cast).collect(Collectors.toList());
     }
     
     @Override

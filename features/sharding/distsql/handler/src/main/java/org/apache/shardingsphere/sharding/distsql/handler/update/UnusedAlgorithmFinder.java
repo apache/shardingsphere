@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 
@@ -26,31 +28,32 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * Abstract drop sharding table rule updater.
+ * Unused algorithm finder.
  */
-public abstract class AbstractDropShardingRuleUpdater {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class UnusedAlgorithmFinder {
     
     /**
-     * Drop unused algorithm.
+     * Find unused algorithms.
      * 
-     * @param currentRuleConfig current sharding rule configuration
+     * @param ruleConfig sharding rule configuration
+     * @return found unused algorithms
      */
-    public void dropUnusedAlgorithm(final ShardingRuleConfiguration currentRuleConfig) {
-        Collection<String> inUsedAlgorithms = currentRuleConfig.getTables().stream().map(each -> Arrays.asList(each.getTableShardingStrategy(), each.getDatabaseShardingStrategy()))
+    public static Collection<String> find(final ShardingRuleConfiguration ruleConfig) {
+        Collection<String> inUsedAlgorithms = ruleConfig.getTables().stream().map(each -> Arrays.asList(each.getTableShardingStrategy(), each.getDatabaseShardingStrategy()))
                 .flatMap(Collection::stream).filter(Objects::nonNull).map(ShardingStrategyConfiguration::getShardingAlgorithmName).collect(Collectors.toSet());
-        inUsedAlgorithms.addAll(currentRuleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getDatabaseShardingStrategy()))
+        inUsedAlgorithms.addAll(ruleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getDatabaseShardingStrategy()))
                 .map(each -> each.getDatabaseShardingStrategy().getShardingAlgorithmName()).collect(Collectors.toSet()));
-        inUsedAlgorithms.addAll(currentRuleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getTableShardingStrategy()))
+        inUsedAlgorithms.addAll(ruleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getTableShardingStrategy()))
                 .map(each -> each.getTableShardingStrategy().getShardingAlgorithmName()).collect(Collectors.toSet()));
-        inUsedAlgorithms.addAll(currentRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getShardingStrategy()))
+        inUsedAlgorithms.addAll(ruleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getShardingStrategy()))
                 .map(each -> each.getShardingStrategy().getShardingAlgorithmName()).collect(Collectors.toSet()));
-        if (null != currentRuleConfig.getDefaultDatabaseShardingStrategy()) {
-            inUsedAlgorithms.add(currentRuleConfig.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName());
+        if (null != ruleConfig.getDefaultDatabaseShardingStrategy()) {
+            inUsedAlgorithms.add(ruleConfig.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName());
         }
-        if (null != currentRuleConfig.getDefaultTableShardingStrategy()) {
-            inUsedAlgorithms.add(currentRuleConfig.getDefaultTableShardingStrategy().getShardingAlgorithmName());
+        if (null != ruleConfig.getDefaultTableShardingStrategy()) {
+            inUsedAlgorithms.add(ruleConfig.getDefaultTableShardingStrategy().getShardingAlgorithmName());
         }
-        Collection<String> unusedAlgorithms = currentRuleConfig.getShardingAlgorithms().keySet().stream().filter(each -> !inUsedAlgorithms.contains(each)).collect(Collectors.toSet());
-        unusedAlgorithms.forEach(each -> currentRuleConfig.getShardingAlgorithms().remove(each));
+        return ruleConfig.getShardingAlgorithms().keySet().stream().filter(each -> !inUsedAlgorithms.contains(each)).collect(Collectors.toSet());
     }
 }

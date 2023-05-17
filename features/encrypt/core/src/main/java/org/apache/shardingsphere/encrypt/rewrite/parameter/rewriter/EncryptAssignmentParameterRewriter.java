@@ -49,7 +49,7 @@ import java.util.Optional;
  * Assignment parameter rewriter for encrypt.
  */
 @Setter
-public final class EncryptAssignmentParameterRewriter implements ParameterRewriter<SQLStatementContext>, EncryptRuleAware, DatabaseNameAware {
+public final class EncryptAssignmentParameterRewriter implements ParameterRewriter, EncryptRuleAware, DatabaseNameAware {
     
     private EncryptRule encryptRule;
     

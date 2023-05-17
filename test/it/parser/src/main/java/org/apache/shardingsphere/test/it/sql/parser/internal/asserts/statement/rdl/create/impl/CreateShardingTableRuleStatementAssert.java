@@ -59,12 +59,12 @@ public final class CreateShardingTableRuleStatementAssert {
             if (expected instanceof CreateShardingAutoTableRuleStatementTestCase) {
                 CreateShardingAutoTableRuleStatementTestCase autoTableRuleStatementTestCase = (CreateShardingAutoTableRuleStatementTestCase) expected;
                 assertThat(assertContext.getText("if not exists segment assertion error: "), actual.isIfNotExists(), is(autoTableRuleStatementTestCase.isIfNotExists()));
-                Collection<AutoTableRuleSegment> actualAutoTableRules = actual.getRules().stream().map(each -> (AutoTableRuleSegment) each).collect(Collectors.toList());
+                Collection<AutoTableRuleSegment> actualAutoTableRules = actual.getRules().stream().map(AutoTableRuleSegment.class::cast).collect(Collectors.toList());
                 assertShardingAutoTableRules(assertContext, actualAutoTableRules, autoTableRuleStatementTestCase.getRules());
             } else {
                 CreateShardingTableRuleStatementTestCase tableRuleStatementTestCase = (CreateShardingTableRuleStatementTestCase) expected;
                 assertThat(assertContext.getText("if not exists segment assertion error: "), actual.isIfNotExists(), is(tableRuleStatementTestCase.isIfNotExists()));
-                Collection<TableRuleSegment> actualTableRules = actual.getRules().stream().map(each -> (TableRuleSegment) each).collect(Collectors.toList());
+                Collection<TableRuleSegment> actualTableRules = actual.getRules().stream().map(TableRuleSegment.class::cast).collect(Collectors.toList());
                 assertShardingTableRules(assertContext, actualTableRules, tableRuleStatementTestCase.getRules());
             }
         }

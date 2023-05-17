@@ -52,6 +52,6 @@ public final class ShardingRuleConfigurationConverter {
      * @throws IllegalStateException if there is no available sharding rule
      */
     public static Optional<YamlShardingRuleConfiguration> findYamlShardingRuleConfiguration(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
-        return yamlRuleConfigs.stream().filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(each -> (YamlShardingRuleConfiguration) each);
+        return yamlRuleConfigs.stream().filter(YamlShardingRuleConfiguration.class::isInstance).findFirst().map(YamlShardingRuleConfiguration.class::cast);
     }
 }

@@ -31,7 +31,7 @@ explain
     : (DESC | DESCRIBE | EXPLAIN)
     (tableName (columnRef | textString)?
     | explainType? (explainableStatement | FOR CONNECTION connectionId)
-    | ANALYZE (FORMAT EQ_ TREE)? select)
+    | ANALYZE (FORMAT EQ_ TREE)? (select | delete))
     ;
     
 fromSchema

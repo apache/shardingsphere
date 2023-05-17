@@ -51,7 +51,7 @@ import java.util.Optional;
  * Insert value parameter rewriter for encrypt.
  */
 @Setter
-public final class EncryptInsertValueParameterRewriter implements ParameterRewriter<InsertStatementContext>, EncryptRuleAware, DatabaseNameAware {
+public final class EncryptInsertValueParameterRewriter implements ParameterRewriter, EncryptRuleAware, DatabaseNameAware {
     
     private EncryptRule encryptRule;
     
@@ -64,7 +64,8 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
     }
     
     @Override
-    public void rewrite(final ParameterBuilder paramBuilder, final InsertStatementContext insertStatementContext, final List<Object> params) {
+    public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
+        InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
         String tableName = insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue();
         Iterator<String> descendingColumnNames = insertStatementContext.getDescendingColumnNames();
         String schemaName = insertStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(insertStatementContext.getDatabaseType(), databaseName));

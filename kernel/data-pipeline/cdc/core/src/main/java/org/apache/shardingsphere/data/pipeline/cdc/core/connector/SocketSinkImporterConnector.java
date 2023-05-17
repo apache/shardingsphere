@@ -113,7 +113,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
             return;
         }
         if (ImporterType.INVENTORY == importerType || null == dataRecordComparator) {
-            int dataRecordCount = (int) recordList.stream().filter(each -> each instanceof DataRecord).count();
+            int dataRecordCount = (int) recordList.stream().filter(DataRecord.class::isInstance).count();
             Record lastRecord = recordList.get(recordList.size() - 1);
             if (lastRecord instanceof FinishedRecord && 0 == dataRecordCount) {
                 socketSinkImporter.ackWithLastDataRecord(new CDCAckPosition(lastRecord, 0));

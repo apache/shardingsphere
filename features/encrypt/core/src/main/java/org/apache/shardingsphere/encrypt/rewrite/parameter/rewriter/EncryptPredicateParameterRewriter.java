@@ -40,7 +40,7 @@ import java.util.Map.Entry;
  * Predicate parameter rewriter for encrypt.
  */
 @Setter
-public final class EncryptPredicateParameterRewriter implements ParameterRewriter<SQLStatementContext>, EncryptRuleAware, EncryptConditionsAware, DatabaseNameAware {
+public final class EncryptPredicateParameterRewriter implements ParameterRewriter, EncryptRuleAware, EncryptConditionsAware, DatabaseNameAware {
     
     private EncryptRule encryptRule;
     
