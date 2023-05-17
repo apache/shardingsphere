@@ -205,9 +205,8 @@ public final class CDCBackendHandler {
      * Commit streaming.
      *
      * @param jobId job ID
-     * @throws SQLException SQL exception
      */
-    public void commitStreaming(final String jobId) throws SQLException {
+    public void commitStreaming(final String jobId) {
         jobAPI.commit(jobId);
     }
     
