@@ -51,7 +51,7 @@ public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisito
     public ASTNode visitGrant(final GrantContext ctx) {
         OpenGaussGrantStatement result = new OpenGaussGrantStatement();
         if (containsTableSegment(ctx.privilegeClause())) {
-            result.getTables().addAll(findTableSegments(ctx.privilegeClause()));
+            result.getTables().addAll(getTableSegments(ctx.privilegeClause()));
         }
         return result;
     }
@@ -60,7 +60,7 @@ public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisito
     public ASTNode visitRevoke(final RevokeContext ctx) {
         OpenGaussRevokeStatement result = new OpenGaussRevokeStatement();
         if (containsTableSegment(ctx.privilegeClause())) {
-            result.getTables().addAll(findTableSegments(ctx.privilegeClause()));
+            result.getTables().addAll(getTableSegments(ctx.privilegeClause()));
         }
         return result;
     }
@@ -70,7 +70,7 @@ public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisito
     }
     
     @SuppressWarnings("unchecked")
-    private Collection<SimpleTableSegment> findTableSegments(final PrivilegeClauseContext ctx) {
+    private Collection<SimpleTableSegment> getTableSegments(final PrivilegeClauseContext ctx) {
         return ((CollectionValue<SimpleTableSegment>) visit(ctx.onObjectClause().privilegeLevel().tableNames())).getValue();
     }
     
