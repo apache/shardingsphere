@@ -61,10 +61,7 @@ public final class ShadowTableRule {
             ShadowAlgorithm shadowAlgorithm = shadowAlgorithms.get(each);
             if (shadowAlgorithm instanceof ColumnShadowAlgorithm) {
                 ShadowOperationType operationType = ((ColumnShadowAlgorithm<?>) shadowAlgorithm).getShadowOperationType();
-                if (!result.containsKey(operationType)) {
-                    result.put(operationType, new LinkedList<>());
-                }
-                result.get(operationType).add(new ShadowAlgorithmNameRule(((ColumnShadowAlgorithm<?>) shadowAlgorithm).getShadowColumn(), each));
+                result.computeIfAbsent(operationType, unused -> new LinkedList<>()).add(new ShadowAlgorithmNameRule(((ColumnShadowAlgorithm<?>) shadowAlgorithm).getShadowColumn(), each));
             }
         }
         return result;
