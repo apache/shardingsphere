@@ -230,12 +230,8 @@ public final class CDCChannelInboundHandler extends ChannelInboundHandlerAdapter
     private void processCommitStreamingRequest(final ChannelHandlerContext ctx, final CDCRequest request, final CDCConnectionContext connectionContext) {
         CommitStreamingRequestBody requestBody = request.getCommitStreamingRequestBody();
         checkPrivileges(request.getRequestId(), connectionContext.getCurrentUser().getGrantee(), backendHandler.getDatabaseNameByJobId(requestBody.getStreamingId()));
-        try {
-            backendHandler.commitStreaming(connectionContext.getJobId());
-            connectionContext.setJobId(null);
-            ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
-        } catch (final SQLException ex) {
-            throw new CDCExceptionWrapper(request.getRequestId(), new CDCServerException(ex.getMessage()));
-        }
+        backendHandler.commitStreaming(connectionContext.getJobId());
+        connectionContext.setJobId(null);
+        ctx.writeAndFlush(CDCResponseGenerator.succeedBuilder(request.getRequestId()).build());
     }
 }
