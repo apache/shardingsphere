@@ -1026,8 +1026,8 @@ castType
     : castTypeName = BINARY fieldLength?
     | castTypeName = CHAR fieldLength? charsetWithOptBinary?
     | (castTypeName = NCHAR | castTypeName = NATIONAL_CHAR) fieldLength?
-    | castTypeName = SIGNED (INT | INTEGER)?
-    | castTypeName = UNSIGNED (INT | INTEGER)?
+    | castTypeName = (SIGNED | SIGNED_INT | SIGNED_INTEGER)
+    | castTypeName = (UNSIGNED | UNSIGNED_INT | UNSIGNED_INTEGER)
     | castTypeName = DATE
     | castTypeName = TIME typeDatetimePrecision?
     | castTypeName = DATETIME typeDatetimePrecision?
@@ -1159,7 +1159,7 @@ dataType
     | dataTypeName = (BOOL | BOOLEAN)
     | dataTypeName = CHAR fieldLength? charsetWithOptBinary?
     | (dataTypeName = NCHAR | dataTypeName = NATIONAL_CHAR) fieldLength? BINARY?
-    | dataTypeName = SIGNED (INTEGER | INT)?
+    | dataTypeName = (SIGNED | SIGNED_INT | SIGNED_INTEGER)
     | dataTypeName = BINARY fieldLength?
     | (dataTypeName = CHAR_VARYING | dataTypeName = CHARACTER_VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
     | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL_CHAR_VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
@@ -1167,7 +1167,7 @@ dataType
     | dataTypeName = YEAR fieldLength? fieldOptions?
     | dataTypeName = DATE
     | dataTypeName = TIME typeDatetimePrecision?
-    | dataTypeName = UNSIGNED (INTEGER | INT)?
+    | dataTypeName = (UNSIGNED | UNSIGNED_INT | UNSIGNED_INTEGER)
     | dataTypeName = TIMESTAMP typeDatetimePrecision?
     | dataTypeName = DATETIME typeDatetimePrecision?
     | dataTypeName = TINYBLOB

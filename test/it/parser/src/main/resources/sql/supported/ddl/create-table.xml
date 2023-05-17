@@ -133,4 +133,8 @@
     <sql-case id="create_table_with_start_transaction" value="CREATE TABLE t_order (order_id INT) START TRANSACTION" db-types="MySQL" />
     <sql-case id="create_table_with_cast_function" value="CREATE TABLE t1(j json, INDEX mv_idx((CAST(j AS UNSIGNED ARRAY))))" db-types="MySQL" />
     <sql-case id="create_table_with_long_char_varying" value="CREATE TABLE t_order (order_id INT, user_id INT, status LONG CHAR VARYING)" db-types="MySQL" />
+    <sql-case id="create_table_with_signed_int_cast_function" value="CREATE TABLE t1(j json, INDEX mv_idx((CAST(j AS SIGNED INT ARRAY))))" db-types="MySQL" />
+    <sql-case id="create_table_with_signed_int" value="CREATE TABLE t_order (order_id INT, user_id INT, status SIGNED INT)" db-types="MySQL" />
+    <sql-case id="create_table_with_unsigned_int_cast_function" value="CREATE TABLE t1(j json, INDEX mv_idx((CAST(j AS UNSIGNED INT ARRAY))))" db-types="MySQL" />
+    <sql-case id="create_table_with_unsigned_int" value="CREATE TABLE t_order (order_id INT, user_id INT, status UNSIGNED INT)" db-types="MySQL" />
 </sql-cases>
