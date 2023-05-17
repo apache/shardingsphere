@@ -1821,4 +1821,12 @@
             <column name="order_id" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_cast_function">
+        <table name="t1" start-index="13" stop-index="14" />
+        <column-definition type="json" start-index="16" stop-index="21">
+            <column name="j" />
+        </column-definition>
+        <constraint-definition index-name="mv_idx" start-index="24" stop-index="64" />
+    </create-table>
 </sql-parser-test-cases>

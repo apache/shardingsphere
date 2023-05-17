@@ -1013,7 +1013,7 @@ repairType
     ;
     
 castFunction
-    : CAST LP_ expr AS dataType RP_
+    : CAST LP_ expr AS castType ARRAY? RP_
     | CAST LP_ expr AT TIME ZONE expr AS DATETIME typeDatetimePrecision? RP_
     ;
 
@@ -1023,23 +1023,19 @@ convertFunction
     ;
     
 castType
-    : BINARY fieldLength?
-    | CHAR fieldLength? charsetWithOptBinary?
-    | nchar fieldLength?
-    | SIGNED INT?
-    | UNSIGNED INT?
-    | DATE
-    | TIME typeDatetimePrecision?
-    | DATETIME typeDatetimePrecision?
-    | DECIMAL (fieldLength | precision)?
-    | JSON
-    | REAL
-    | DOUBLE PRECISION
-    | FLOAT precision?
-    ;
-    
-nchar
-    : NCHAR | NATIONAL CHAR
+    : castTypeName = BINARY fieldLength?
+    | castTypeName = CHAR fieldLength? charsetWithOptBinary?
+    | (castTypeName = NCHAR | castTypeName = NATIONAL_CHAR) fieldLength?
+    | castTypeName = SIGNED (INT | INTEGER)?
+    | castTypeName = UNSIGNED (INT | INTEGER)?
+    | castTypeName = DATE
+    | castTypeName = TIME typeDatetimePrecision?
+    | castTypeName = DATETIME typeDatetimePrecision?
+    | castTypeName = DECIMAL (fieldLength | precision)?
+    | castTypeName = JSON
+    | castTypeName = REAL
+    | castTypeName = DOUBLE PRECISION
+    | castTypeName = FLOAT precision?
     ;
     
 positionFunction
@@ -1162,11 +1158,11 @@ dataType
     | dataTypeName = BIT fieldLength?
     | dataTypeName = (BOOL | BOOLEAN)
     | dataTypeName = CHAR fieldLength? charsetWithOptBinary?
-    | (dataTypeName = NCHAR | dataTypeName = NATIONAL CHAR) fieldLength? BINARY?
+    | (dataTypeName = NCHAR | dataTypeName = NATIONAL_CHAR) fieldLength? BINARY?
     | dataTypeName = SIGNED (INTEGER | INT)?
     | dataTypeName = BINARY fieldLength?
     | (dataTypeName = CHAR_VARYING | dataTypeName = CHARACTER_VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
-    | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL CHAR VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
+    | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL_CHAR VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
     | dataTypeName = VARBINARY fieldLength?
     | dataTypeName = YEAR fieldLength? fieldOptions?
     | dataTypeName = DATE
