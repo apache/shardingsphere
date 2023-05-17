@@ -41,7 +41,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dcl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dcl.OpenGaussRevokeStatement;
 
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * DCL statement visitor for openGauss.
@@ -51,24 +50,28 @@ public final class OpenGaussDCLStatementVisitor extends OpenGaussStatementVisito
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         OpenGaussGrantStatement result = new OpenGaussGrantStatement();
-        Optional<Collection<SimpleTableSegment>> tableSegment = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
-        tableSegment.ifPresent(optional -> result.getTables().addAll(optional));
+        if (containsTableSegment(ctx.privilegeClause())) {
+            result.getTables().addAll(getTableSegments(ctx.privilegeClause()));
+        }
         return result;
     }
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
         OpenGaussRevokeStatement result = new OpenGaussRevokeStatement();
-        Optional<Collection<SimpleTableSegment>> tableSegment = null == ctx.privilegeClause() ? Optional.empty() : getTableFromPrivilegeClause(ctx.privilegeClause());
-        tableSegment.ifPresent(optional -> result.getTables().addAll(optional));
+        if (containsTableSegment(ctx.privilegeClause())) {
+            result.getTables().addAll(getTableSegments(ctx.privilegeClause()));
+        }
         return result;
     }
     
+    private boolean containsTableSegment(final PrivilegeClauseContext ctx) {
+        return null != ctx && null != ctx.onObjectClause() && null != ctx.onObjectClause().privilegeLevel() && null != ctx.onObjectClause().privilegeLevel().tableNames();
+    }
+    
     @SuppressWarnings("unchecked")
-    private Optional<Collection<SimpleTableSegment>> getTableFromPrivilegeClause(final PrivilegeClauseContext ctx) {
-        return null == ctx.onObjectClause() || null == ctx.onObjectClause().privilegeLevel() || null == ctx.onObjectClause().privilegeLevel().tableNames()
-                ? Optional.empty()
-                : Optional.of(((CollectionValue<SimpleTableSegment>) visit(ctx.onObjectClause().privilegeLevel().tableNames())).getValue());
+    private Collection<SimpleTableSegment> getTableSegments(final PrivilegeClauseContext ctx) {
+        return ((CollectionValue<SimpleTableSegment>) visit(ctx.onObjectClause().privilegeLevel().tableNames())).getValue();
     }
     
     @Override

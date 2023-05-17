@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Create
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropRoleContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.DropUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.GrantContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ObjectPrivilegeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.RevokeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.SetRoleContext;
 import org.apache.shardingsphere.sql.parser.oracle.visitor.statement.OracleStatementVisitor;
@@ -41,9 +40,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleRevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleSetRoleStatement;
 
-import java.util.Collection;
-import java.util.Collections;
-
 /**
  * DCL statement visitor for Oracle.
  */
@@ -52,10 +48,8 @@ public final class OracleDCLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
         OracleGrantStatement result = new OracleGrantStatement();
-        if (null != ctx.objectPrivilegeClause()) {
-            for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.objectPrivilegeClause())) {
-                result.getTables().add(each);
-            }
+        if (null != ctx.objectPrivilegeClause() && null != ctx.objectPrivilegeClause().onObjectClause().tableName()) {
+            result.getTables().add((SimpleTableSegment) visit(ctx.objectPrivilegeClause().onObjectClause().tableName()));
         }
         return result;
     }
@@ -63,16 +57,10 @@ public final class OracleDCLStatementVisitor extends OracleStatementVisitor impl
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
         OracleRevokeStatement result = new OracleRevokeStatement();
-        if (null != ctx.objectPrivilegeClause()) {
-            for (SimpleTableSegment each : getTableFromPrivilegeClause(ctx.objectPrivilegeClause())) {
-                result.getTables().add(each);
-            }
+        if (null != ctx.objectPrivilegeClause() && null != ctx.objectPrivilegeClause().onObjectClause().tableName()) {
+            result.getTables().add((SimpleTableSegment) visit(ctx.objectPrivilegeClause().onObjectClause().tableName()));
         }
         return result;
-    }
-    
-    private Collection<SimpleTableSegment> getTableFromPrivilegeClause(final ObjectPrivilegeClauseContext ctx) {
-        return null == ctx.onObjectClause().tableName() ? Collections.emptyList() : Collections.singletonList((SimpleTableSegment) visit(ctx.onObjectClause().tableName()));
     }
     
     @Override
