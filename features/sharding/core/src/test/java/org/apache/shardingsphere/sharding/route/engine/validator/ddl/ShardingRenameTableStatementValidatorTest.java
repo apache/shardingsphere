@@ -46,7 +46,6 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -69,7 +68,7 @@ class ShardingRenameTableStatementValidatorTest {
     void assertPreValidateBroadcastTable() {
         SQLStatementContext sqlStatementContext = createRenameTableStatementContext("t_order", "t_user_order");
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(shardingRule.isBroadcastTable(eq("t_order"))).thenReturn(true);
+        when(shardingRule.isBroadcastTable("t_order")).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class,
                 () -> new ShardingRenameTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }

@@ -45,7 +45,7 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     private static final String MODEL_FILE = "file:";
     
     private static final Pattern PATTERN = Pattern.compile("jdbc:h2:((?<modelMem>mem|~)[:/](?<catalog>[\\w\\-]+)|"
-            + "(?<modelSslOrTcp>ssl:|tcp:)(//)?(?<hostname>[\\w\\-.]+)(:(?<port>[0-9]{1,4})/)?[/~\\w\\-.]+/(?<name>[\\-\\w]*)|"
+            + "(?<modelSslOrTcp>ssl:|tcp:)(//)?(?<hostname>[\\w\\-.]+)(:(?<port>\\d{1,4})/)?[/~\\w\\-.]+/(?<name>[\\-\\w]*)|"
             + "(?<modelFile>file:)[/~\\w\\-]+/(?<fileName>[\\-\\w]*));?\\S*", Pattern.CASE_INSENSITIVE);
     
     private final String hostname;
