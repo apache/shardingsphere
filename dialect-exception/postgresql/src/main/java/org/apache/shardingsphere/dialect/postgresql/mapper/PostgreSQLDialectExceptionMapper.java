@@ -23,6 +23,7 @@ import org.apache.shardingsphere.dialect.exception.data.InsertColumnsAndValuesMi
 import org.apache.shardingsphere.dialect.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.DatabaseCreateExistsException;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
+import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsException;
 import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.dialect.postgresql.exception.PostgreSQLException;
@@ -54,6 +55,9 @@ public final class PostgreSQLDialectExceptionMapper implements SQLDialectExcepti
         }
         if (sqlDialectException instanceof DatabaseCreateExistsException) {
             return new PostgreSQLException(new ServerErrorMessage(FATAL_SEVERITY, PostgreSQLVendorError.DUPLICATE_DATABASE, ((DatabaseCreateExistsException) sqlDialectException).getDatabaseName()));
+        }
+        if (sqlDialectException instanceof TableExistsException) {
+            return new PostgreSQLException(new ServerErrorMessage(ERROR_SEVERITY, PostgreSQLVendorError.DUPLICATE_TABLE, ((TableExistsException) sqlDialectException).getTableName()));
         }
         if (sqlDialectException instanceof InTransactionException) {
             return new PostgreSQLException(new ServerErrorMessage(ERROR_SEVERITY, PostgreSQLVendorError.TRANSACTION_STATE_INVALID));
