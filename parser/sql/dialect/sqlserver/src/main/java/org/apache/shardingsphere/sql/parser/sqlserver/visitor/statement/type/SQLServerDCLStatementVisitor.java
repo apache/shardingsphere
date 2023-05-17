@@ -71,8 +71,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerSetUserStatement;
 import org.apache.shardingsphere.sql.parser.sqlserver.visitor.statement.SQLServerStatementVisitor;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * DCL statement visitor for SQLServer.
@@ -83,9 +82,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     public ASTNode visitGrant(final GrantContext ctx) {
         SQLServerGrantStatement result = new SQLServerGrantStatement();
         if (null != ctx.grantClassPrivilegesClause()) {
-            for (SimpleTableSegment each : getTableFromGrantPrivilegeClause(ctx.grantClassPrivilegesClause())) {
-                result.getTables().add(each);
-            }
+            findTableSegment(ctx.grantClassPrivilegesClause()).ifPresent(optional -> result.getTables().add(optional));
             if (null != ctx.grantClassPrivilegesClause().classPrivileges().columnNames()) {
                 for (ColumnNamesContext each : ctx.grantClassPrivilegesClause().classPrivileges().columnNames()) {
                     result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(each)).getValue());
@@ -93,28 +90,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
             }
         }
         if (null != ctx.grantClassTypePrivilegesClause()) {
-            for (SimpleTableSegment each : getTableFromGrantTypePrivilegeClause(ctx.grantClassTypePrivilegesClause())) {
-                result.getTables().add(each);
-            }
-        }
-        return result;
-    }
-    
-    private Collection<SimpleTableSegment> getTableFromGrantPrivilegeClause(final GrantClassPrivilegesClauseContext ctx) {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        if (null != ctx.onClassClause()) {
-            if (null != ctx.onClassClause().classItem() && null != ctx.onClassClause().classItem().OBJECT()
-                    || null != ctx.classPrivileges().privilegeType().get(0).objectPermission() || null != ctx.classPrivileges().privilegeType().get(0).PRIVILEGES()) {
-                result.add((SimpleTableSegment) visit(ctx.onClassClause().securable()));
-            }
-        }
-        return result;
-    }
-    
-    private Collection<SimpleTableSegment> getTableFromGrantTypePrivilegeClause(final GrantClassTypePrivilegesClauseContext ctx) {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        if (null != ctx.onClassTypeClause() && null != ctx.onClassTypeClause().classType() && null != ctx.onClassTypeClause().classType().OBJECT()) {
-            result.add((SimpleTableSegment) visit(ctx.onClassTypeClause().securable()));
+            findTableSegment(ctx.grantClassTypePrivilegesClause()).ifPresent(optional -> result.getTables().add(optional));
         }
         return result;
     }
@@ -123,9 +99,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     public ASTNode visitRevoke(final RevokeContext ctx) {
         SQLServerRevokeStatement result = new SQLServerRevokeStatement();
         if (null != ctx.revokeClassPrivilegesClause()) {
-            for (SimpleTableSegment each : getTableFromRevokeClassPrivilegesClause(ctx.revokeClassPrivilegesClause())) {
-                result.getTables().add(each);
-            }
+            findTableSegment(ctx.revokeClassPrivilegesClause()).ifPresent(optional -> result.getTables().add(optional));
             if (null != ctx.revokeClassPrivilegesClause().classPrivileges().columnNames()) {
                 for (ColumnNamesContext each : ctx.revokeClassPrivilegesClause().classPrivileges().columnNames()) {
                     result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(each)).getValue());
@@ -133,28 +107,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
             }
         }
         if (null != ctx.revokeClassTypePrivilegesClause()) {
-            for (SimpleTableSegment each : getTableFromRevokeClassTypePrivilegesClause(ctx.revokeClassTypePrivilegesClause())) {
-                result.getTables().add(each);
-            }
-        }
-        return result;
-    }
-    
-    private Collection<SimpleTableSegment> getTableFromRevokeClassPrivilegesClause(final RevokeClassPrivilegesClauseContext ctx) {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        if (null != ctx.onClassClause()) {
-            if (null != ctx.onClassClause().classItem() && null != ctx.onClassClause().classItem().OBJECT()
-                    || null != ctx.classPrivileges().privilegeType().get(0).objectPermission() || null != ctx.classPrivileges().privilegeType().get(0).PRIVILEGES()) {
-                result.add((SimpleTableSegment) visit(ctx.onClassClause().securable()));
-            }
-        }
-        return result;
-    }
-    
-    private Collection<SimpleTableSegment> getTableFromRevokeClassTypePrivilegesClause(final RevokeClassTypePrivilegesClauseContext ctx) {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        if (null != ctx.onClassTypeClause() && null != ctx.onClassTypeClause().classType() && null != ctx.onClassTypeClause().classType().OBJECT()) {
-            result.add((SimpleTableSegment) visit(ctx.onClassTypeClause().securable()));
+            findTableSegment(ctx.revokeClassTypePrivilegesClause()).ifPresent(optional -> result.getTables().add(optional));
         }
         return result;
     }
@@ -219,7 +172,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitCreateUserLoginWindowsPrincipalClause(final CreateUserLoginWindowsPrincipalClauseContext ctx) {
-        return null != ctx.userName() ? (UserSegment) visit(ctx.userName()) : (UserSegment) visit(ctx.windowsPrincipal(0));
+        return null == ctx.userName() ? (UserSegment) visit(ctx.windowsPrincipal(0)) : (UserSegment) visit(ctx.userName());
     }
     
     @Override
@@ -233,9 +186,7 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
     public ASTNode visitDeny(final DenyContext ctx) {
         SQLServerDenyUserStatement result = new SQLServerDenyUserStatement();
         if (null != ctx.denyClassPrivilegesClause()) {
-            for (SimpleTableSegment each : getTableFromDenyClassPrivilegesClause(ctx.denyClassPrivilegesClause())) {
-                result.setTable(each);
-            }
+            findTableSegment(ctx.denyClassPrivilegesClause()).ifPresent(result::setTable);
             if (null != ctx.denyClassPrivilegesClause().classPrivileges().columnNames()) {
                 for (ColumnNamesContext each : ctx.denyClassPrivilegesClause().classPrivileges().columnNames()) {
                     result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(each)).getValue());
@@ -243,30 +194,60 @@ public final class SQLServerDCLStatementVisitor extends SQLServerStatementVisito
             }
         }
         if (null != ctx.denyClassTypePrivilegesClause()) {
-            for (SimpleTableSegment each : getTableFromDenyClassTypePrivilegesClause(ctx.denyClassTypePrivilegesClause())) {
-                result.setTable(each);
-            }
+            findTableSegment(ctx.denyClassTypePrivilegesClause()).ifPresent(result::setTable);
         }
         return result;
     }
     
-    private Collection<SimpleTableSegment> getTableFromDenyClassPrivilegesClause(final DenyClassPrivilegesClauseContext ctx) {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        if (null != ctx.onClassClause()) {
-            if (null != ctx.onClassClause().classItem() && null != ctx.onClassClause().classItem().OBJECT()
-                    || null != ctx.classPrivileges().privilegeType().get(0).objectPermission() || null != ctx.classPrivileges().privilegeType().get(0).PRIVILEGES()) {
-                result.add((SimpleTableSegment) visit(ctx.onClassClause().securable()));
-            }
+    private Optional<SimpleTableSegment> findTableSegment(final GrantClassPrivilegesClauseContext ctx) {
+        if (null == ctx.onClassClause()) {
+            return Optional.empty();
         }
-        return result;
+        if (null != ctx.onClassClause().classItem() && null != ctx.onClassClause().classItem().OBJECT()
+                || null != ctx.classPrivileges().privilegeType().get(0).objectPermission() || null != ctx.classPrivileges().privilegeType().get(0).PRIVILEGES()) {
+            return Optional.of((SimpleTableSegment) visit(ctx.onClassClause().securable()));
+        }
+        return Optional.empty();
     }
     
-    private Collection<SimpleTableSegment> getTableFromDenyClassTypePrivilegesClause(final DenyClassTypePrivilegesClauseContext ctx) {
-        Collection<SimpleTableSegment> result = new LinkedList<>();
-        if (null != ctx.onClassTypeClause() && null != ctx.onClassTypeClause().classType() && null != ctx.onClassTypeClause().classType().OBJECT()) {
-            result.add((SimpleTableSegment) visit(ctx.onClassTypeClause().securable()));
+    private Optional<SimpleTableSegment> findTableSegment(final GrantClassTypePrivilegesClauseContext ctx) {
+        return null != ctx.onClassTypeClause() && null != ctx.onClassTypeClause().classType() && null != ctx.onClassTypeClause().classType().OBJECT()
+                ? Optional.of((SimpleTableSegment) visit(ctx.onClassTypeClause().securable()))
+                : Optional.empty();
+    }
+    
+    private Optional<SimpleTableSegment> findTableSegment(final RevokeClassPrivilegesClauseContext ctx) {
+        if (null == ctx.onClassClause()) {
+            return Optional.empty();
         }
-        return result;
+        if (null != ctx.onClassClause().classItem() && null != ctx.onClassClause().classItem().OBJECT()
+                || null != ctx.classPrivileges().privilegeType().get(0).objectPermission() || null != ctx.classPrivileges().privilegeType().get(0).PRIVILEGES()) {
+            return Optional.of((SimpleTableSegment) visit(ctx.onClassClause().securable()));
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<SimpleTableSegment> findTableSegment(final RevokeClassTypePrivilegesClauseContext ctx) {
+        return null != ctx.onClassTypeClause() && null != ctx.onClassTypeClause().classType() && null != ctx.onClassTypeClause().classType().OBJECT()
+                ? Optional.of((SimpleTableSegment) visit(ctx.onClassTypeClause().securable()))
+                : Optional.empty();
+    }
+    
+    private Optional<SimpleTableSegment> findTableSegment(final DenyClassPrivilegesClauseContext ctx) {
+        if (null == ctx.onClassClause()) {
+            return Optional.empty();
+        }
+        if (null != ctx.onClassClause().classItem() && null != ctx.onClassClause().classItem().OBJECT()
+                || null != ctx.classPrivileges().privilegeType().get(0).objectPermission() || null != ctx.classPrivileges().privilegeType().get(0).PRIVILEGES()) {
+            return Optional.of((SimpleTableSegment) visit(ctx.onClassClause().securable()));
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<SimpleTableSegment> findTableSegment(final DenyClassTypePrivilegesClauseContext ctx) {
+        return null != ctx.onClassTypeClause() && null != ctx.onClassTypeClause().classType() && null != ctx.onClassTypeClause().classType().OBJECT()
+                ? Optional.of((SimpleTableSegment) visit(ctx.onClassTypeClause().securable()))
+                : Optional.empty();
     }
     
     @Override
