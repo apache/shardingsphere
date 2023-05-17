@@ -40,7 +40,7 @@ public final class MySQLXAConnectionWrapper implements XAConnectionWrapper {
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
         return createXAConnection(xaDataSource, connection.unwrap(jdbcConnectionClass));
     }
-
+    
     @Override
     public void init(final Properties props) {
         loadReflection();

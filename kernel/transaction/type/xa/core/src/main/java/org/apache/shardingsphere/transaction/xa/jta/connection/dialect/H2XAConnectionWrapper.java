@@ -47,12 +47,12 @@ public final class H2XAConnectionWrapper implements XAConnectionWrapper {
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
         return createXAConnection(connection.unwrap(jdbcConnectionClass));
     }
-
+    
     @Override
     public void init(final Properties props) {
         loadReflection();
     }
-
+    
     private void loadReflection() {
         jdbcConnectionClass = getJDBCConnectionClass();
         xaConnectionConstructor = getXAConnectionConstructor();

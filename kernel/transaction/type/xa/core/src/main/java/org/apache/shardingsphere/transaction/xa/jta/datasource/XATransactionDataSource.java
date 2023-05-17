@@ -55,7 +55,7 @@ public final class XATransactionDataSource implements AutoCloseable {
     private final DataSource dataSource;
     
     private XADataSource xaDataSource;
-
+    
     private XAConnectionWrapper xaConnectionWrapper;
     
     private XATransactionManagerProvider xaTransactionManagerProvider;
