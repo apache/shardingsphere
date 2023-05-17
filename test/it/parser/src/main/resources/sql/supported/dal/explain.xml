@@ -27,6 +27,7 @@
     <sql-case id="explain_create_remote_table_as_select" value="EXPLAIN CREATE REMOTE TABLE t_order_new AT ('Data Source = ds_0, 3306; User ID = ROOT; Password = 123456;') AS SELECT i.* FROM t_order_item i JOIN t_order o ON i.order_id = o.order_id" db-types="SQLServer" />
     <sql-case id="explain_with_analyze" value="EXPLAIN ANALYZE SELECT * FROM t_order WHERE order_id > 8" db-types="MySQL" />
     <sql-case id="explain_with_analyze_format" value="EXPLAIN ANALYZE FORMAT = TREE SELECT * FROM t_order WHERE order_id > 8" db-types="MySQL" />
+    <sql-case id="explain_with_analyze_delete" value="EXPLAIN ANALYZE DELETE FROM t_order" db-types="MySQL" />
     <sql-case id="explain_table" value="EXPLAIN TABLE t_order ORDER BY order_id LIMIT 1 OFFSET 2" db-types="MySQL" />
     <sql-case id="desc_table" value="DESC tableName" db-types="MySQL" />
     <sql-case id="desc_table_with_col_name" value="DESC tableName colName" db-types="MySQL" />
