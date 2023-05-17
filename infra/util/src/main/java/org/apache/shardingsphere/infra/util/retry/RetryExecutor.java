@@ -40,7 +40,7 @@ public final class RetryExecutor {
      * @param predicate predicate to be executed
      * @param arg argument
      * @param <T> argument type
-     * @return execute result
+     * @return execute result success or not
      */
     public <T> boolean execute(final Predicate<T> predicate, final T arg) {
         do {
