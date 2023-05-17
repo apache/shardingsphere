@@ -90,14 +90,16 @@ class MySQLDataSourceCheckerTest {
     @Test
     void assertCheckVariableSuccess() throws SQLException {
         when(resultSet.next()).thenReturn(true, true);
+        when(resultSet.getString(1)).thenReturn("LOG_BIN", "BINLOG_FORMAT", "BINLOG_ROW_IMAGE");
         when(resultSet.getString(2)).thenReturn("ON", "ROW", "FULL");
         new MySQLDataSourceChecker().checkVariable(dataSources);
-        verify(preparedStatement, times(3)).executeQuery();
+        verify(preparedStatement, times(1)).executeQuery();
     }
     
     @Test
     void assertCheckVariableWithWrongVariable() throws SQLException {
         when(resultSet.next()).thenReturn(true, true);
+        when(resultSet.getString(1)).thenReturn("LOG_BIN", "BINLOG_FORMAT");
         when(resultSet.getString(2)).thenReturn("OFF", "ROW");
         assertThrows(PrepareJobWithInvalidSourceDataSourceException.class, () -> new MySQLDataSourceChecker().checkVariable(dataSources));
     }
