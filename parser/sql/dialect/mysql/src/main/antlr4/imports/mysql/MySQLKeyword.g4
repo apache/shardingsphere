@@ -2275,6 +2275,14 @@ SIGNED
     : S I G N E D
     ;
 
+SIGNED_INT
+    : SIGNED ' ' INT
+    ;
+
+SIGNED_INTEGER
+    : SIGNED ' ' INTEGER
+    ;
+
 SIMPLE
     : S I M P L E
     ;
@@ -2681,6 +2689,14 @@ UNLOCK
 
 UNSIGNED
     : U N S I G N E D
+    ;
+
+UNSIGNED_INT
+    : UNSIGNED ' ' INT
+    ;
+
+UNSIGNED_INTEGER
+    : UNSIGNED ' ' INTEGER
     ;
 
 UNTIL
