@@ -238,6 +238,11 @@
             </where>
         </select>
     </describe>
+    <describe sql-case-id="explain_with_analyze_delete">
+        <delete>
+            <table name="t_order" start-index="28" stop-index="34" />
+        </delete>
+    </describe>
     <describe sql-case-id="desc_table">
         <simple-table name="tableName" start-index="5" stop-index="13" />
     </describe>
