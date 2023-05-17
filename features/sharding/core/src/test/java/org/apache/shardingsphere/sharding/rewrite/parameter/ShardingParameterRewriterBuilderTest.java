@@ -38,7 +38,6 @@ import static org.mockito.Mockito.when;
 
 class ShardingParameterRewriterBuilderTest {
     
-    @SuppressWarnings("rawtypes")
     @Test
     void assertGetParameterRewritersWhenPaginationIsNeedRewrite() {
         SelectStatementContext statementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
