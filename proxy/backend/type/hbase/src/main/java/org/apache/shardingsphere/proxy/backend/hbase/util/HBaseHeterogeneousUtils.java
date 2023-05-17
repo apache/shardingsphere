@@ -79,6 +79,6 @@ public final class HBaseHeterogeneousUtils {
      * @return is use shorthand projection
      */
     public static boolean isUseShorthandProjection(final SelectStatementContext statementContext) {
-        return statementContext.getProjectionsContext().getProjections().stream().anyMatch(each -> each instanceof ShorthandProjection);
+        return statementContext.getProjectionsContext().getProjections().stream().anyMatch(ShorthandProjection.class::isInstance);
     }
 }

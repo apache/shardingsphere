@@ -122,7 +122,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     private Map<String, String> getTheDefaultRowData() {
         Map<String, String> result;
         Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
-        if (projections.stream().anyMatch(each -> each instanceof ShorthandProjectionSegment)) {
+        if (projections.stream().anyMatch(ShorthandProjectionSegment.class::isInstance)) {
             result = Stream.of(CATALOG_NAME, SCHEMA_NAME, DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME, SQL_PATH, DEFAULT_ENCRYPTION).collect(Collectors.toMap(each -> each, each -> ""));
         } else {
             result = projections.stream().map(each -> ((ColumnProjectionSegment) each).getColumn().getIdentifier())
