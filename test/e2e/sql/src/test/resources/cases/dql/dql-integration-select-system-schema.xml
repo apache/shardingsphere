@@ -716,4 +716,8 @@
     <test-case sql="SELECT * FROM performance_schema.variables_by_thread" db-types="MySQL" scenario-types="db">
         <assertion expected-data-file="select_mysql_performance_schema_variables_by_thread.xml" />
     </test-case>
+
+    <test-case sql="SELECT * FROM pg_catalog.pg_aggregate" db-types="PostgreSQL" scenario-types="db">
+        <assertion expected-data-file="select_postgresql_pg_catalog_pg_aggregate.xml" />
+    </test-case>
 </integration-test-cases>
