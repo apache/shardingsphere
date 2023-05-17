@@ -1162,7 +1162,7 @@ dataType
     | dataTypeName = SIGNED (INTEGER | INT)?
     | dataTypeName = BINARY fieldLength?
     | (dataTypeName = CHAR_VARYING | dataTypeName = CHARACTER_VARYING | dataTypeName = VARCHAR) fieldLength charsetWithOptBinary?
-    | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL_CHAR VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
+    | (dataTypeName = NATIONAL VARCHAR | dataTypeName = NVARCHAR | dataTypeName = NCHAR VARCHAR | dataTypeName = NATIONAL_CHAR_VARYING | dataTypeName = NCHAR VARYING) fieldLength BINARY?
     | dataTypeName = VARBINARY fieldLength?
     | dataTypeName = YEAR fieldLength? fieldOptions?
     | dataTypeName = DATE
@@ -1174,7 +1174,7 @@ dataType
     | dataTypeName = BLOB fieldLength?
     | dataTypeName = (MEDIUMBLOB | LONGBLOB)
     | dataTypeName = LONG VARBINARY
-    | dataTypeName = LONG (CHAR VARYING | VARCHAR)? charsetWithOptBinary?
+    | dataTypeName = (LONG_CHAR_VARYING | LONG_VARCHAR)? charsetWithOptBinary?
     | dataTypeName = TINYTEXT charsetWithOptBinary?
     | dataTypeName = TEXT fieldLength? charsetWithOptBinary?
     | dataTypeName = MEDIUMTEXT charsetWithOptBinary?
