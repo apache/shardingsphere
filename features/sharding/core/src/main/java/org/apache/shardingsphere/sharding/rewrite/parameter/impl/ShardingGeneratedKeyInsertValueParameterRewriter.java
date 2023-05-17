@@ -33,7 +33,7 @@ import java.util.List;
  * Sharding generated key insert value parameter rewriter.
  */
 @Setter
-public final class ShardingGeneratedKeyInsertValueParameterRewriter implements ParameterRewriter<InsertStatementContext> {
+public final class ShardingGeneratedKeyInsertValueParameterRewriter implements ParameterRewriter {
     
     @Override
     public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
@@ -44,7 +44,8 @@ public final class ShardingGeneratedKeyInsertValueParameterRewriter implements P
     }
     
     @Override
-    public void rewrite(final ParameterBuilder paramBuilder, final InsertStatementContext insertStatementContext, final List<Object> params) {
+    public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
+        InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
         if (!insertStatementContext.getGeneratedKeyContext().isPresent()) {
             return;
         }
