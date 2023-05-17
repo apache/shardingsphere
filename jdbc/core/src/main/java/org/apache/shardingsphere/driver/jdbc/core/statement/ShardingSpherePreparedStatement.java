@@ -268,8 +268,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
             List<ResultSet> resultSets = getResultSets();
-            Map<String, Integer> columnLabelAndIndexMap = null != this.columnLabelAndIndexMap ? this.columnLabelAndIndexMap
-                    : (this.columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData()));
+            if (null == columnLabelAndIndexMap) {
+                columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData());
+            }
             result = new ShardingSphereResultSet(resultSets, mergedResult, this, transparentStatement, executionContext, columnLabelAndIndexMap);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
@@ -547,8 +548,9 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 return currentResultSet;
             }
             MergedResult mergedResult = mergeQuery(getQueryResults(resultSets));
-            Map<String, Integer> columnLabelAndIndexMap = null != this.columnLabelAndIndexMap ? this.columnLabelAndIndexMap
-                    : (this.columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData()));
+            if (null == columnLabelAndIndexMap) {
+                columnLabelAndIndexMap = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(sqlStatementContext, resultSets.get(0).getMetaData());
+            }
             currentResultSet = new ShardingSphereResultSet(resultSets, mergedResult, this, transparentStatement, executionContext, columnLabelAndIndexMap);
         }
         return currentResultSet;
