@@ -33,7 +33,7 @@ class RetryExecutorTest {
     
     @Test
     void assertExecuteTimeout() {
-        assertFalse(new RetryExecutor(5L, 2L).execute(value -> false, -1));
+        assertFalse(new RetryExecutor(5L, 2L).execute(value -> value > 0, -1));
     }
     
     @Test
