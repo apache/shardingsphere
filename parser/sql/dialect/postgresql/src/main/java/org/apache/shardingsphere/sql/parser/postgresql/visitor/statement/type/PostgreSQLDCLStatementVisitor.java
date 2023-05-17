@@ -70,7 +70,7 @@ public final class PostgreSQLDCLStatementVisitor extends PostgreSQLStatementVisi
     }
     
     private boolean containsTableSegment(final PrivilegeClauseContext ctx) {
-        return null == ctx || null == ctx.onObjectClause() || null == ctx.onObjectClause().privilegeLevel() || null == ctx.onObjectClause().privilegeLevel().tableNames();
+        return null != ctx && null != ctx.onObjectClause() && null != ctx.onObjectClause().privilegeLevel() && null != ctx.onObjectClause().privilegeLevel().tableNames();
     }
     
     @SuppressWarnings("unchecked")
