@@ -56,11 +56,11 @@ public final class AlterShardingTableRuleStatementAssert {
         if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             if (expected instanceof AlterShardingAutoTableRuleStatementTestCase) {
                 AlterShardingAutoTableRuleStatementTestCase autoTableRuleStatementTestCase = (AlterShardingAutoTableRuleStatementTestCase) expected;
-                Collection<AutoTableRuleSegment> actualAutoTableRules = actual.getRules().stream().map(each -> (AutoTableRuleSegment) each).collect(Collectors.toList());
+                Collection<AutoTableRuleSegment> actualAutoTableRules = actual.getRules().stream().map(AutoTableRuleSegment.class::cast).collect(Collectors.toList());
                 assertShardingAutoTableRules(assertContext, actualAutoTableRules, autoTableRuleStatementTestCase.getRules());
             } else {
                 AlterShardingTableRuleStatementTestCase tableRuleStatementTestCase = (AlterShardingTableRuleStatementTestCase) expected;
-                Collection<TableRuleSegment> actualTableRules = actual.getRules().stream().map(each -> (TableRuleSegment) each).collect(Collectors.toList());
+                Collection<TableRuleSegment> actualTableRules = actual.getRules().stream().map(TableRuleSegment.class::cast).collect(Collectors.toList());
                 assertShardingTableRules(assertContext, actualTableRules, tableRuleStatementTestCase.getRules());
             }
         }

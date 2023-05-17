@@ -93,7 +93,7 @@ public final class GenericSchemaBuilder {
     }
     
     private static Collection<String> getAllTableNames(final Collection<ShardingSphereRule> rules) {
-        return rules.stream().filter(each -> each instanceof TableContainedRule).flatMap(each -> ((TableContainedRule) each).getTables().stream()).collect(Collectors.toSet());
+        return rules.stream().filter(TableContainedRule.class::isInstance).flatMap(each -> ((TableContainedRule) each).getTables().stream()).collect(Collectors.toSet());
     }
     
     private static Map<String, SchemaMetaData> loadSchemas(final Collection<String> tableNames, final GenericSchemaBuilderMaterial material) throws SQLException {
@@ -119,7 +119,7 @@ public final class GenericSchemaBuilder {
     
     private static Map<String, ShardingSphereSchema> revise(final Map<String, SchemaMetaData> schemaMetaDataMap, final GenericSchemaBuilderMaterial material) {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>(schemaMetaDataMap);
-        result.putAll(new MetaDataReviseEngine(material.getRules().stream().filter(each -> each instanceof TableContainedRule).collect(Collectors.toList())).revise(result, material));
+        result.putAll(new MetaDataReviseEngine(material.getRules().stream().filter(TableContainedRule.class::isInstance).collect(Collectors.toList())).revise(result, material));
         return convertToSchemaMap(result, material);
     }
     

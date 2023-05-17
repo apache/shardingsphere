@@ -143,7 +143,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         Collection<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
         ShardingSphereSchema schema = getSchema(selectStatementContext);
         Map<String, String> columnToTableMap = selectStatementContext.getTablesContext()
-                .findTableNamesByColumnProjection(projections.stream().filter(each -> each instanceof ColumnProjection).map(each -> (ColumnProjection) each).collect(Collectors.toList()), schema);
+                .findTableNamesByColumnProjection(projections.stream().filter(ColumnProjection.class::isInstance).map(ColumnProjection.class::cast).collect(Collectors.toList()), schema);
         Collection<DatabasePacket<?>> result = new ArrayList<>(projections.size());
         for (Projection each : projections) {
             // TODO Calculate column definition flag for other projection types

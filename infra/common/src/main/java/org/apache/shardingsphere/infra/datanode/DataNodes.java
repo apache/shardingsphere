@@ -65,7 +65,7 @@ public final class DataNodes {
     }
     
     private Optional<DataNodeContainedRule> findDataNodeContainedRule(final String tableName) {
-        return rules.stream().filter(each -> isDataNodeContainedRuleContainsTable(each, tableName)).findFirst().map(optional -> (DataNodeContainedRule) optional);
+        return rules.stream().filter(each -> isDataNodeContainedRuleContainsTable(each, tableName)).findFirst().map(DataNodeContainedRule.class::cast);
     }
     
     private boolean isDataNodeContainedRuleContainsTable(final ShardingSphereRule each, final String tableName) {

@@ -60,7 +60,7 @@ public final class PgClassTableCollector implements ShardingSphereDataCollector 
     }
     
     private Collection<ShardingSphereRowData> decorateTableName(final Collection<ShardingSphereRowData> rows, final ShardingSphereTable table, final Collection<ShardingSphereRule> rules) {
-        Optional<DataNodeContainedRule> dataNodeContainedRule = rules.stream().filter(rule -> rule instanceof DataNodeContainedRule).map(rule -> (DataNodeContainedRule) rule).findFirst();
+        Optional<DataNodeContainedRule> dataNodeContainedRule = rules.stream().filter(DataNodeContainedRule.class::isInstance).map(DataNodeContainedRule.class::cast).findFirst();
         if (!dataNodeContainedRule.isPresent()) {
             return rows;
         }

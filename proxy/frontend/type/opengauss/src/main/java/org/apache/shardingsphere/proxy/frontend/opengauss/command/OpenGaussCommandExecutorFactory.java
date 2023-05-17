@@ -77,7 +77,7 @@ public final class OpenGaussCommandExecutorFactory {
             return getCommandExecutor(commandPacketType, commandPacket, connectionSession, portalContext);
         }
         PostgreSQLAggregatedCommandPacket aggregatedCommandPacket = (PostgreSQLAggregatedCommandPacket) commandPacket;
-        if (aggregatedCommandPacket.isContainsBatchedStatements() && aggregatedCommandPacket.getPackets().stream().noneMatch(each -> each instanceof OpenGaussComBatchBindPacket)) {
+        if (aggregatedCommandPacket.isContainsBatchedStatements() && aggregatedCommandPacket.getPackets().stream().noneMatch(OpenGaussComBatchBindPacket.class::isInstance)) {
             return new PostgreSQLAggregatedCommandExecutor(getExecutorsOfAggregatedBatchedStatements(aggregatedCommandPacket, connectionSession, portalContext));
         }
         List<CommandExecutor> result = new ArrayList<>(aggregatedCommandPacket.getPackets().size());

@@ -214,7 +214,7 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private Optional<DataNodeContainedRule> findDataNodeContainedRule() {
-        return rules.stream().filter(each -> each instanceof DataNodeContainedRule).findFirst().map(each -> (DataNodeContainedRule) each);
+        return rules.stream().filter(DataNodeContainedRule.class::isInstance).findFirst().map(DataNodeContainedRule.class::cast);
     }
     
     private ResultSet createDatabaseMetaDataResultSet(final ResultSet resultSet) throws SQLException {
