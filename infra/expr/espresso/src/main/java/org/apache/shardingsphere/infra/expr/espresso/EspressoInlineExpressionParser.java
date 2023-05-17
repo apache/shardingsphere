@@ -25,6 +25,7 @@ import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.TypeLiteral;
 import org.graalvm.polyglot.Value;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,10 +45,8 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
         JAVA_HOME = System.getenv("JAVA_HOME");
         URL resource = EspressoInlineExpressionParser.class.getClassLoader().getResource("espresso-need-libs");
         String dir = null != resource ? resource.getPath() : null;
-        JAVA_CLASSPATH = Stream.of("groovy.jar", "guava.jar", "shardingsphere-infra-expr-hotsopt.jar",
-                "shardingsphere-infra-expr-spi.jar", "shardingsphere-infra-util.jar")
-                .map(s -> dir + "/" + s)
-                .collect(Collectors.joining(":"));
+        JAVA_CLASSPATH = Stream.of("groovy.jar", "guava.jar", "shardingsphere-infra-expr-hotsopt.jar", "shardingsphere-infra-expr-spi.jar", "shardingsphere-infra-util.jar")
+                .map(each -> dir + File.separator + each).collect(Collectors.joining(":"));
     }
     
     @Override
