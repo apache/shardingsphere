@@ -43,11 +43,7 @@ public final class DataNodeUtils {
     public static Map<String, List<DataNode>> getDataNodeGroups(final Collection<DataNode> dataNodes) {
         Map<String, List<DataNode>> result = new LinkedHashMap<>(dataNodes.size(), 1);
         for (DataNode each : dataNodes) {
-            String dataSourceName = each.getDataSourceName();
-            if (!result.containsKey(dataSourceName)) {
-                result.put(dataSourceName, new LinkedList<>());
-            }
-            result.get(dataSourceName).add(each);
+            result.computeIfAbsent(each.getDataSourceName(), unused -> new LinkedList<>()).add(each);
         }
         return result;
     }
