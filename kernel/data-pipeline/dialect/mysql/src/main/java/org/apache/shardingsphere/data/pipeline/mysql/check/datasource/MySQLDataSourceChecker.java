@@ -100,13 +100,14 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
                 preparedStatement.setString(parameterIndex++, entry.getKey());
             }
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    String key = resultSet.getString(1);
-                    String toBeCheckedValue = REQUIRED_VARIABLES.get(key);
-                    String actualValue = resultSet.getString(2);
-                    ShardingSpherePreconditions.checkState(toBeCheckedValue.equalsIgnoreCase(actualValue),
-                            () -> new PrepareJobWithInvalidSourceDataSourceException(key, toBeCheckedValue, actualValue));
+                if (!resultSet.next()) {
+                    return;
                 }
+                String key = resultSet.getString(1).toUpperCase();
+                String toBeCheckedValue = REQUIRED_VARIABLES.get(key);
+                String actualValue = resultSet.getString(2);
+                ShardingSpherePreconditions.checkState(toBeCheckedValue.equalsIgnoreCase(actualValue),
+                        () -> new PrepareJobWithInvalidSourceDataSourceException(key, toBeCheckedValue, actualValue));
             }
         } catch (final SQLException ex) {
             throw new PrepareJobWithCheckPrivilegeFailedException(ex);
