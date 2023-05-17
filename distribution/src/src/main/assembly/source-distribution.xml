@@ -49,7 +49,6 @@
                 <exclude>release.properties</exclude>
                 <exclude>**/dependency-reduced-pom.xml</exclude>
                 <exclude>**/pom.xml.releaseBackup</exclude>
-                <exclude>**/cobertura.ser</exclude>
                 <exclude>*.gpg</exclude>
                 
                 <!-- eclipse ignore -->
