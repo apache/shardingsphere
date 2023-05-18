@@ -54,9 +54,8 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     }
     
     private String getAlgorithmExpression(final Properties props) {
-        String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY);
-        ShardingSpherePreconditions.checkState(null != expression && !expression.isEmpty(),
-                () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression cannot be null or empty"));
+        String expression = props.getProperty(ALGORITHM_EXPRESSION_KEY, "");
+        ShardingSpherePreconditions.checkState(!expression.isEmpty(), () -> new ShardingAlgorithmInitializationException(getType(), "Inline sharding algorithm expression cannot be null or empty"));
         return InlineExpressionParserFactory.newInstance().handlePlaceHolder(expression.trim());
     }
     
