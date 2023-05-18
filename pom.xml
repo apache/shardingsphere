@@ -747,10 +747,6 @@
                     <version>${maven-surefire-plugin.version}</version>
                     <configuration>
                         <trimStackTrace>false</trimStackTrace>
-                        <argLine>${argLine} -Dfile.encoding=UTF-8</argLine>
-                        <includes>
-                            <include>**/*Test.java</include>
-                        </includes>
                     </configuration>
                 </plugin>
                 <plugin>
