@@ -106,11 +106,11 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
                 ShardingSpherePreconditions.checkState(!isCanceling(), () -> new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName()));
                 ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                 int columnCount = resultSetMetaData.getColumnCount();
-                Collection<Object> record = new LinkedList<>();
+                Collection<Object> columnRecord = new LinkedList<>();
                 for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
-                    record.add(columnValueReader.readValue(resultSet, resultSetMetaData, columnIndex));
+                    columnRecord.add(columnValueReader.readValue(resultSet, resultSetMetaData, columnIndex));
                 }
-                records.add(record);
+                records.add(columnRecord);
                 maxUniqueKeyValue = columnValueReader.readValue(resultSet, resultSetMetaData, param.getUniqueKey().getOrdinalPosition());
                 if (records.size() == chunkSize) {
                     break;

@@ -84,7 +84,7 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
         }
         
         private void calculateIfNecessary() {
-            if (!nextResult.get().isPresent()) {
+            if (null == nextResult.get()) {
                 nextResult.set(calculateChunk(param));
             }
         }
