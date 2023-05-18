@@ -29,7 +29,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public final class ColumnAssignmentSegment extends AssignmentSegment {
+public final class ColumnAssignmentSegment implements AssignmentSegment {
     
     private final int startIndex;
     
