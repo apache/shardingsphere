@@ -37,9 +37,9 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLInformationSchemaExecutorFactory {
     
-    public static final String SCHEMATA_TABLE = "SCHEMATA";
+    private static final String SCHEMATA_TABLE = "SCHEMATA";
     
-    public static final Collection<String> DEFAULT_EXECUTOR_TABLES = new HashSet<>(Arrays.asList("ENGINES", "FILES", "VIEWS", "TRIGGERS", "PARTITIONS"));
+    private static final Collection<String> DEFAULT_EXECUTOR_TABLES = new HashSet<>(Arrays.asList("ENGINES", "FILES", "VIEWS", "TRIGGERS", "PARTITIONS"));
     
     /**
      * Create executor.
