@@ -35,13 +35,13 @@ public final class H2XAConnectionWrapper implements XAConnectionWrapper {
     
     private static final int XA_DATA_SOURCE_TRACE_TYPE_ID = 13;
     
-    private static Class<Connection> jdbcConnectionClass;
+    private Class<Connection> jdbcConnectionClass;
     
-    private static Constructor<?> xaConnectionConstructor;
+    private Constructor<?> xaConnectionConstructor;
     
-    private static Method nextIdMethod;
+    private Method nextIdMethod;
     
-    private static Object dataSourceFactory;
+    private Object dataSourceFactory;
     
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {

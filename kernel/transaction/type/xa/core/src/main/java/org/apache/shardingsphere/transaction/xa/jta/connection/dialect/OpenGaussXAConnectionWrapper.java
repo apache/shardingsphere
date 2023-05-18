@@ -32,9 +32,9 @@ import java.util.Properties;
  */
 public final class OpenGaussXAConnectionWrapper implements XAConnectionWrapper {
     
-    private static Class<Connection> jdbcConnectionClass;
+    private Class<Connection> jdbcConnectionClass;
     
-    private static Constructor<?> xaConnectionConstructor;
+    private Constructor<?> xaConnectionConstructor;
     
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {

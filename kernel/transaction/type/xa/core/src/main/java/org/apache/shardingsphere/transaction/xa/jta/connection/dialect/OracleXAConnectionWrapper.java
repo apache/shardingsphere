@@ -32,9 +32,9 @@ import java.util.Properties;
  */
 public final class OracleXAConnectionWrapper implements XAConnectionWrapper {
     
-    private static volatile Class<Connection> jdbcConnectionClass;
+    private Class<Connection> jdbcConnectionClass;
     
-    private static volatile Constructor<?> xaConnectionConstructor;
+    private Constructor<?> xaConnectionConstructor;
     
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
