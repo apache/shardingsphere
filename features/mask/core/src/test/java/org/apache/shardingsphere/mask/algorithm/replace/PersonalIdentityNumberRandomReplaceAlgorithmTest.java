@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class PersonalIdentityNumberRandomReplaceAlgorithmTest {
@@ -43,5 +44,15 @@ class PersonalIdentityNumberRandomReplaceAlgorithmTest {
         assertThat(maskAlgorithm.mask("1234567891011121314"), is("1234567891011121314"));
         assertThat(maskAlgorithm.mask("123456"), is("123456"));
         assertThat(maskAlgorithm.mask(""), is(""));
+        assertThat(maskAlgorithm.mask(null), is(nullValue()));
+    }
+
+    @Test
+    void assertMaskWithDifferentCountryCode() {
+        PersonalIdentityNumberRandomReplaceAlgorithm maskAlgorithmCN = new PersonalIdentityNumberRandomReplaceAlgorithm();
+        maskAlgorithmCN.init(PropertiesBuilder.build(new Property("alpha-two-country-area-code", "CN")));
+        PersonalIdentityNumberRandomReplaceAlgorithm maskAlgorithmJP = new PersonalIdentityNumberRandomReplaceAlgorithm();
+        maskAlgorithmJP.init(PropertiesBuilder.build(new Property("alpha-two-country-area-code", "JP")));
+        assertThat(maskAlgorithmCN.mask("372928198312103215"), not(maskAlgorithmJP.mask("372928198312103215")));
     }
 }

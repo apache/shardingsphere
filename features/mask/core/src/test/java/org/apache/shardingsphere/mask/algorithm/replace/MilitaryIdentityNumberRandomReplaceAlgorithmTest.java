@@ -17,15 +17,20 @@
 
 package org.apache.shardingsphere.mask.algorithm.replace;
 
+import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
+import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MilitaryIdentityNumberRandomReplaceAlgorithmTest {
     
@@ -42,5 +47,11 @@ class MilitaryIdentityNumberRandomReplaceAlgorithmTest {
         assertThat(maskAlgorithm.mask("军字第1234567号"), not("军字第1234567号"));
         assertThat(maskAlgorithm.mask(""), is(""));
         assertNull(maskAlgorithm.mask(null));
+    }
+
+    @Test
+    void testMaskWithInvalidProps() {
+        MaskAlgorithm algorithm = new MilitaryIdentityNumberRandomReplaceAlgorithm();
+        assertThrows(MaskAlgorithmInitializationException.class, () -> algorithm.init(new Properties()));
     }
 }

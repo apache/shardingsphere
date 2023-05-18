@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.mask.algorithm;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 
 import java.util.Properties;
@@ -38,12 +40,10 @@ public final class MaskAlgorithmPropsChecker {
      * @throws MaskAlgorithmInitializationException mask algorithm initialization exception
      */
     public static void checkSingleCharConfig(final Properties props, final String singleCharConfigKey, final String maskType) {
-        if (!props.containsKey(singleCharConfigKey)) {
-            throw new MaskAlgorithmInitializationException(maskType, String.format("%s can not be null", singleCharConfigKey));
-        }
-        if (1 != props.getProperty(singleCharConfigKey).length()) {
-            throw new MaskAlgorithmInitializationException(maskType, String.format("%s's length must be one", singleCharConfigKey));
-        }
+        ShardingSpherePreconditions.checkState(props.containsKey(singleCharConfigKey),
+                () -> new MaskAlgorithmInitializationException(maskType, String.format("%s can not be null", singleCharConfigKey)));
+        ShardingSpherePreconditions.checkState(1 == props.getProperty(singleCharConfigKey).length(),
+                () -> new MaskAlgorithmInitializationException(maskType, String.format("%s's length must be one", singleCharConfigKey)));
     }
     
     /**
@@ -55,30 +55,46 @@ public final class MaskAlgorithmPropsChecker {
      * @throws MaskAlgorithmInitializationException mask algorithm initialization exception
      */
     public static void checkAtLeastOneCharConfig(final Properties props, final String atLeastOneCharConfigKey, final String maskType) {
-        if (!props.containsKey(atLeastOneCharConfigKey)) {
-            throw new MaskAlgorithmInitializationException(maskType, String.format("%s can not be null", atLeastOneCharConfigKey));
-        }
-        if (0 == props.getProperty(atLeastOneCharConfigKey).length()) {
-            throw new MaskAlgorithmInitializationException(maskType, String.format("%s's length must be at least one", atLeastOneCharConfigKey));
-        }
+        ShardingSpherePreconditions.checkState(props.containsKey(atLeastOneCharConfigKey),
+                () -> new MaskAlgorithmInitializationException(maskType, String.format("%s can not be null", atLeastOneCharConfigKey)));
+        ShardingSpherePreconditions.checkState(props.getProperty(atLeastOneCharConfigKey).length() > 0,
+                () -> new MaskAlgorithmInitializationException(maskType, String.format("%s's length must be at least one", atLeastOneCharConfigKey)));
     }
-    
+
     /**
-     * Check integer type config.
+     * Check required property config.
      *
      * @param props props
-     * @param integerTypeConfigKey integer type config key
+     * @param requiredPropertyConfigKey required property config key
      * @param maskType mask type
      * @throws MaskAlgorithmInitializationException mask algorithm initialization exception
      */
-    public static void checkIntegerTypeConfig(final Properties props, final String integerTypeConfigKey, final String maskType) {
-        if (!props.containsKey(integerTypeConfigKey)) {
-            throw new MaskAlgorithmInitializationException(maskType, String.format("%s can not be null", integerTypeConfigKey));
+    public static void checkRequiredPropertyConfig(final Properties props, final String requiredPropertyConfigKey, final String maskType) {
+        if (!props.containsKey(requiredPropertyConfigKey)) {
+            throw new MaskAlgorithmInitializationException(maskType, String.format("%s is required", requiredPropertyConfigKey));
         }
+    }
+
+    /**
+     * Check required property config.
+     *
+     * @param props props
+     * @param positiveIntegerTypeConfigKey positive integer type config key
+     * @param maskType mask type
+     * @throws MaskAlgorithmInitializationException mask algorithm initialization exception
+     */
+    public static void checkPositiveIntegerConfig(final Properties props, final String positiveIntegerTypeConfigKey, final String maskType) {
+        ShardingSpherePreconditions.checkState(props.containsKey(positiveIntegerTypeConfigKey),
+                () -> new MaskAlgorithmInitializationException(maskType, String.format("%s can not be null", positiveIntegerTypeConfigKey)));
         try {
-            Integer.parseInt(props.getProperty(integerTypeConfigKey));
-        } catch (final NumberFormatException ignored) {
-            throw new MaskAlgorithmInitializationException(maskType, String.format("%s must be a valid integer number", integerTypeConfigKey));
+            Integer.parseInt(props.getProperty(positiveIntegerTypeConfigKey));
+        } catch (final NumberFormatException ex) {
+            throw new MaskAlgorithmInitializationException(maskType, String.format("%s must be a valid integer number", positiveIntegerTypeConfigKey));
+        }
+        if (!Strings.isNullOrEmpty(positiveIntegerTypeConfigKey)) {
+            int integerValue = Integer.parseInt(props.getProperty(positiveIntegerTypeConfigKey));
+            ShardingSpherePreconditions.checkState(integerValue > 0,
+                    () -> new MaskAlgorithmInitializationException(maskType, String.format("%s must be a positive integer.", positiveIntegerTypeConfigKey)));
         }
     }
 }

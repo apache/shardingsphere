@@ -48,12 +48,12 @@ public final class KeepFirstNLastMMaskAlgorithm implements MaskAlgorithm<Object,
     }
     
     private Integer createFirstN(final Properties props) {
-        MaskAlgorithmPropsChecker.checkIntegerTypeConfig(props, FIRST_N, getType());
+        MaskAlgorithmPropsChecker.checkPositiveIntegerConfig(props, FIRST_N, getType());
         return Integer.parseInt(props.getProperty(FIRST_N));
     }
     
     private Integer createLastM(final Properties props) {
-        MaskAlgorithmPropsChecker.checkIntegerTypeConfig(props, LAST_M, getType());
+        MaskAlgorithmPropsChecker.checkPositiveIntegerConfig(props, LAST_M, getType());
         return Integer.parseInt(props.getProperty(LAST_M));
     }
     
