@@ -42,11 +42,11 @@ public final class UnusedAlgorithmFinder {
     public static Collection<String> find(final ShardingRuleConfiguration ruleConfig) {
         Collection<String> inUsedAlgorithms = ruleConfig.getTables().stream().map(each -> Arrays.asList(each.getTableShardingStrategy(), each.getDatabaseShardingStrategy()))
                 .flatMap(Collection::stream).filter(Objects::nonNull).map(ShardingStrategyConfiguration::getShardingAlgorithmName).collect(Collectors.toSet());
-        inUsedAlgorithms.addAll(ruleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getDatabaseShardingStrategy()))
+        inUsedAlgorithms.addAll(ruleConfig.getTables().stream().filter(each -> null != each.getDatabaseShardingStrategy())
                 .map(each -> each.getDatabaseShardingStrategy().getShardingAlgorithmName()).collect(Collectors.toSet()));
-        inUsedAlgorithms.addAll(ruleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getTableShardingStrategy()))
+        inUsedAlgorithms.addAll(ruleConfig.getTables().stream().filter(each -> null != each.getTableShardingStrategy())
                 .map(each -> each.getTableShardingStrategy().getShardingAlgorithmName()).collect(Collectors.toSet()));
-        inUsedAlgorithms.addAll(ruleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getShardingStrategy()))
+        inUsedAlgorithms.addAll(ruleConfig.getAutoTables().stream().filter(each -> null != each.getShardingStrategy())
                 .map(each -> each.getShardingStrategy().getShardingAlgorithmName()).collect(Collectors.toSet()));
         if (null != ruleConfig.getDefaultDatabaseShardingStrategy()) {
             inUsedAlgorithms.add(ruleConfig.getDefaultDatabaseShardingStrategy().getShardingAlgorithmName());

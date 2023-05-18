@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 
-import java.util.Objects;
-
 /**
  * YAML user swapper.
  */
@@ -33,7 +31,7 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
     
     @Override
     public YamlUserConfiguration swapToYamlConfiguration(final ShardingSphereUser data) {
-        if (Objects.isNull(data)) {
+        if (null == data) {
             return null;
         }
         YamlUserConfiguration result = new YamlUserConfiguration();
@@ -45,7 +43,7 @@ public final class YamlUserSwapper implements YamlConfigurationSwapper<YamlUserC
     
     @Override
     public ShardingSphereUser swapToObject(final YamlUserConfiguration yamlConfig) {
-        if (Objects.isNull(yamlConfig)) {
+        if (null == yamlConfig) {
             return null;
         }
         Grantee grantee = convertYamlUserToGrantee(yamlConfig.getUser());

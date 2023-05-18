@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -57,7 +56,7 @@ public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRul
     }
     
     private Collection<LocalDataQueryResultRow> buildData(final EncryptRuleConfiguration ruleConfig, final ShowEncryptRulesStatement sqlStatement) {
-        return ruleConfig.getTables().stream().filter(each -> Objects.isNull(sqlStatement.getTableName()) || each.getName().equals(sqlStatement.getTableName()))
+        return ruleConfig.getTables().stream().filter(each -> null == sqlStatement.getTableName() || each.getName().equals(sqlStatement.getTableName()))
                 .map(each -> buildColumnData(each, ruleConfig.getEncryptors()))
                 .flatMap(Collection::stream).collect(Collectors.toList());
     }
@@ -76,10 +75,10 @@ public final class ShowEncryptRuleExecutor implements RQLExecutor<ShowEncryptRul
                     each.getLikeQuery().map(EncryptColumnItemRuleConfiguration::getName).orElse(""),
                     encryptorAlgorithmConfig.getType(),
                     PropertiesConverter.convert(encryptorAlgorithmConfig.getProps()),
-                    Objects.isNull(assistedQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : assistedQueryEncryptorAlgorithmConfig.getType(),
-                    Objects.isNull(assistedQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : PropertiesConverter.convert(assistedQueryEncryptorAlgorithmConfig.getProps()),
-                    Objects.isNull(likeQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : likeQueryEncryptorAlgorithmConfig.getType(),
-                    Objects.isNull(likeQueryEncryptorAlgorithmConfig) ? nullToEmptyString(null) : PropertiesConverter.convert(likeQueryEncryptorAlgorithmConfig.getProps()))));
+                    null == assistedQueryEncryptorAlgorithmConfig ? nullToEmptyString(null) : assistedQueryEncryptorAlgorithmConfig.getType(),
+                    null == assistedQueryEncryptorAlgorithmConfig ? nullToEmptyString(null) : PropertiesConverter.convert(assistedQueryEncryptorAlgorithmConfig.getProps()),
+                    null == likeQueryEncryptorAlgorithmConfig ? nullToEmptyString(null) : likeQueryEncryptorAlgorithmConfig.getType(),
+                    null == likeQueryEncryptorAlgorithmConfig ? nullToEmptyString(null) : PropertiesConverter.convert(likeQueryEncryptorAlgorithmConfig.getProps()))));
         }
         return result;
     }

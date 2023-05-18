@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolPr
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -99,6 +98,6 @@ public final class HikariDataSourcePoolPropertiesValidator implements DataSource
     }
     
     private boolean checkValueExist(final DataSourceProperties dataSourceProps, final String key) {
-        return dataSourceProps.getAllLocalProperties().containsKey(key) && Objects.nonNull(dataSourceProps.getAllLocalProperties().get(key));
+        return dataSourceProps.getAllLocalProperties().containsKey(key) && null != dataSourceProps.getAllLocalProperties().get(key);
     }
 }
