@@ -91,8 +91,8 @@ class AdditionalDMLE2EIT extends BaseDMLE2EIT {
         }
     }
     
-    // TODO support execute update with column indexes in #23626
-    @Disabled
+    // TODO
+    @Disabled("support execute update with column indexes in #23626")
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
@@ -127,8 +127,8 @@ class AdditionalDMLE2EIT extends BaseDMLE2EIT {
         }
     }
     
-    // TODO support execute update with column names in #23626
-    @Disabled
+    // TODO
+    @Disabled("support execute update with column names in #23626")
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
@@ -248,8 +248,8 @@ class AdditionalDMLE2EIT extends BaseDMLE2EIT {
         }
     }
     
-    // TODO support execute with column indexes in #23626
-    @Disabled
+    // TODO
+    @Disabled("support execute with column indexes in #23626")
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
@@ -286,8 +286,8 @@ class AdditionalDMLE2EIT extends BaseDMLE2EIT {
         }
     }
     
-    // TODO support execute with column names in #23626
-    @Disabled
+    // TODO
+    @Disabled("support execute with column names in #23626")
     @ParameterizedTest(name = "{0}")
     @EnabledIf("isEnabled")
     @ArgumentsSource(E2ETestCaseArgumentsProvider.class)
