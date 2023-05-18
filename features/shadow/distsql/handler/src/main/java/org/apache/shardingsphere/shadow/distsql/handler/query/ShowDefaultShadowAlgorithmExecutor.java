@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -66,7 +65,7 @@ public final class ShowDefaultShadowAlgorithmExecutor implements RQLExecutor<Sho
     }
     
     private String convertToString(final Properties props) {
-        return Objects.nonNull(props) ? PropertiesConverter.convert(props) : "";
+        return null == props ? "" : PropertiesConverter.convert(props);
     }
     
     @Override

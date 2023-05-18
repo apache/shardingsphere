@@ -36,7 +36,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -163,7 +162,7 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
         Collection<ColumnShadowAlgorithm<Comparable<?>>> result = new LinkedList<>();
         Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> columnShadowAlgorithmNames = shadowTableRules.get(tableName).getColumnShadowAlgorithmNames();
         Collection<ShadowAlgorithmNameRule> names = columnShadowAlgorithmNames.get(shadowOperationType);
-        if (Objects.isNull(names)) {
+        if (null == names) {
             return result;
         }
         for (ShadowAlgorithmNameRule each : names) {
@@ -185,7 +184,7 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
         Collection<String> result = new LinkedList<>();
         Map<ShadowOperationType, Collection<ShadowAlgorithmNameRule>> columnShadowAlgorithmNames = shadowTableRules.get(tableName).getColumnShadowAlgorithmNames();
         Collection<ShadowAlgorithmNameRule> names = columnShadowAlgorithmNames.get(shadowOperationType);
-        if (Objects.isNull(names)) {
+        if (null == names) {
             return result;
         }
         for (ShadowAlgorithmNameRule each : names) {

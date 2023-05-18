@@ -39,7 +39,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -60,7 +59,7 @@ public final class ShowShardingTableRuleExecutor implements RQLExecutor<ShowShar
         String tableName = sqlStatement.getTableName();
         Iterator<ShardingTableRuleConfiguration> tables;
         Iterator<ShardingAutoTableRuleConfiguration> autoTables;
-        if (Objects.isNull(tableName)) {
+        if (null == tableName) {
             tables = config.getTables().iterator();
             autoTables = config.getAutoTables().iterator();
         } else {

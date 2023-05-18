@@ -35,7 +35,6 @@ import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -61,14 +60,14 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
     
     @Override
     public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        if (Objects.nonNull(xaRecoveryModule)) {
+        if (null != xaRecoveryModule) {
             xaRecoveryModule.addXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
         }
     }
     
     @Override
     public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        if (Objects.nonNull(xaRecoveryModule)) {
+        if (null != xaRecoveryModule) {
             xaRecoveryModule.removeXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
         }
     }

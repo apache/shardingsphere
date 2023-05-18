@@ -337,7 +337,7 @@ public final class NacosRepository implements ClusterPersistRepository {
             keyValues.removeIf(keyValue -> {
                 Collection<Instance> instances = instanceMap.get(keyValue.getKey());
                 String value = keyValue.getValue();
-                return CollectionUtils.isNotEmpty(instances) ? instances.stream().anyMatch(instance -> StringUtils.equals(NacosMetaDataUtils.getValue(instance), value)) : Objects.isNull(value);
+                return CollectionUtils.isNotEmpty(instances) ? instances.stream().anyMatch(instance -> StringUtils.equals(NacosMetaDataUtils.getValue(instance), value)) : null == value;
             });
         }
         return keyValues.isEmpty();
