@@ -99,7 +99,7 @@ class DataSourcePropertiesTest {
     
     @Test
     void assertNotEqualsWithNullValue() {
-        assertNotEquals(new DataSourceProperties(MockedDataSource.class.getName(), new HashMap<>()), null);
+        assertNotEquals(null, new DataSourceProperties(MockedDataSource.class.getName(), new HashMap<>()));
     }
     
     @Test

@@ -62,6 +62,7 @@ public final class ConnectionSession {
     
     private final ProxyDatabaseConnectionManager databaseConnectionManager;
     
+    @SuppressWarnings("rawtypes")
     private final ExecutorStatementManager statementManager;
     
     private final ServerPreparedStatementRegistry serverPreparedStatementRegistry = new ServerPreparedStatementRegistry();

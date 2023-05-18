@@ -56,7 +56,7 @@ class DataNodeTest {
         assertThat(dataNode, is(new DataNode("ds_0.tbl_0")));
         assertThat(dataNode, is(dataNode));
         assertThat(dataNode, not(new DataNode("ds_0.tbl_1")));
-        assertNotEquals(dataNode, null);
+        assertNotEquals(null, dataNode);
     }
     
     @Test
