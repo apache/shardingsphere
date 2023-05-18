@@ -51,7 +51,7 @@ public final class InstanceContext {
     
     private final ModeContextManager modeContextManager;
     
-    private final LockContext lockContext;
+    private final LockContext<?> lockContext;
     
     private final EventBusContext eventBusContext;
     
