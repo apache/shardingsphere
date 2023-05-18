@@ -76,11 +76,11 @@ public final class DockerContainerComposer extends BaseContainerComposer {
     }
     
     private URL getShardingSphereConfigResource(final TransactionTestParameter testParam) {
-        URL result = ShardingSphereJDBCContainer.class.getClassLoader().getResource(getScenarioResource(testParam));
+        URL result = Thread.currentThread().getContextClassLoader().getResource(getScenarioResource(testParam));
         if (null != result) {
             return result;
         }
-        result = ShardingSphereJDBCContainer.class.getClassLoader().getResource(getDefaultResource(testParam));
+        result = Thread.currentThread().getContextClassLoader().getResource(getDefaultResource(testParam));
         log.info("Transaction IT tests use the configuration file: {}", result);
         return result;
     }

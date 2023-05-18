@@ -53,8 +53,7 @@ public abstract class AbstractShadowDriverTest extends AbstractDriverTest {
     }
     
     private static File getFile() {
-        return new File(Objects.requireNonNull(
-                AbstractShadowDriverTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed.", CONFIG_FILE)).getFile());
+        return new File(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed.", CONFIG_FILE)).getFile());
     }
     
     protected final ShardingSphereDataSource getShadowDataSource() {
