@@ -59,6 +59,6 @@ public final class ShowVersionExecutor implements DatabaseAdminQueryExecutor {
     
     private String getLabel() {
         return sqlStatement.getProjections().getProjections().stream()
-                .filter(each -> each instanceof ExpressionProjectionSegment).findFirst().map(each -> ((ExpressionProjectionSegment) each).getAlias().orElse(FUNCTION_NAME)).orElse(FUNCTION_NAME);
+                .filter(ExpressionProjectionSegment.class::isInstance).findFirst().map(each -> ((ExpressionProjectionSegment) each).getAlias().orElse(FUNCTION_NAME)).orElse(FUNCTION_NAME);
     }
 }
