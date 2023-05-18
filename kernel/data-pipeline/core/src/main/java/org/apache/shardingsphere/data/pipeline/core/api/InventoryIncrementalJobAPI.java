@@ -59,15 +59,15 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     /**
      * Persist job offset info.
      *
-     * @param jobId job id
-     * @param jobOffsetInfo job offset info.
+     * @param jobId job ID
+     * @param jobOffsetInfo job offset info
      */
     void persistJobOffsetInfo(String jobId, JobOffsetInfo jobOffsetInfo);
     
     /**
      * Get job offset info.
      *
-     * @param jobId job id
+     * @param jobId job ID
      * @return job offset progress
      */
     JobOffsetInfo getJobOffsetInfo(String jobId);
@@ -86,7 +86,7 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     /**
      * Get job infos.
      *
-     * @param jobId job id
+     * @param jobId job ID
      * @return job item infos
      */
     List<InventoryIncrementalJobItemInfo> getJobItemInfos(String jobId);
@@ -122,24 +122,24 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     /**
      * Aggregate data consistency check results.
      *
-     * @param jobId job id
+     * @param jobId job ID
      * @param checkResults check results
      * @return check success or not
      */
     boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, DataConsistencyCheckResult> checkResults);
     
     /**
+     * Commit pipeline job.
+     *
+     * @param jobId job ID
+     */
+    void commit(String jobId);
+    
+    /**
      * Rollback pipeline job.
      *
-     * @param jobId job id
+     * @param jobId job ID
      * @throws SQLException when rollback underlying database data
      */
     void rollback(String jobId) throws SQLException;
-    
-    /**
-     * Commit pipeline job.
-     *
-     * @param jobId job id
-     */
-    void commit(String jobId);
 }
