@@ -62,7 +62,7 @@ public final class JDBCRepositorySQLLoader {
     }
     
     private static JDBCRepositorySQL loadFromDirectory(final String type) throws URISyntaxException, IOException {
-        Enumeration<URL> urls = JDBCRepositorySQLLoader.class.getClassLoader().getResources(ROOT_DIRECTORY);
+        Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(ROOT_DIRECTORY);
         if (null == urls) {
             return null;
         }
@@ -106,7 +106,7 @@ public final class JDBCRepositorySQLLoader {
                 if (!name.startsWith(ROOT_DIRECTORY) || !name.endsWith(FILE_EXTENSION)) {
                     continue;
                 }
-                final InputStream inputStream = JDBCRepositorySQLLoader.class.getClassLoader().getResourceAsStream(name);
+                final InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
                 JDBCRepositorySQL provider = (JDBCRepositorySQL) JAXBContext.newInstance(JDBCRepositorySQL.class).createUnmarshaller().unmarshal(inputStream);
                 if (Objects.equals(provider.isDefault(), true)) {
                     defaultProvider = provider;

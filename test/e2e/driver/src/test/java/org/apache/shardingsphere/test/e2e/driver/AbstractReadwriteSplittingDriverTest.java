@@ -54,7 +54,7 @@ public abstract class AbstractReadwriteSplittingDriverTest extends AbstractDrive
     
     private static File getFile() {
         return new File(Objects.requireNonNull(
-                AbstractReadwriteSplittingDriverTest.class.getClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed.", CONFIG_FILE)).getFile());
+                Thread.currentThread().getContextClassLoader().getResource(CONFIG_FILE), String.format("File `%s` is not existed.", CONFIG_FILE)).getFile());
     }
     
     protected final ShardingSphereDataSource getReadwriteSplittingDataSource() {

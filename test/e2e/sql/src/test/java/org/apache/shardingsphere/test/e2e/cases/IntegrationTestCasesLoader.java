@@ -72,7 +72,7 @@ public final class IntegrationTestCasesLoader {
     
     @SneakyThrows({IOException.class, URISyntaxException.class, JAXBException.class})
     private Collection<IntegrationTestCaseContext> loadIntegrationTestCaseContexts(final SQLCommandType sqlCommandType) {
-        URL url = Objects.requireNonNull(IntegrationTestCasesLoader.class.getClassLoader().getResource("cases/"));
+        URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("cases/"));
         return loadIntegrationTestCaseContexts(url, sqlCommandType);
     }
     

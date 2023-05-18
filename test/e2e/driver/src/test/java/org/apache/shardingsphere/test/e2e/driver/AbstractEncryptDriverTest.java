@@ -57,7 +57,7 @@ public abstract class AbstractEncryptDriverTest extends AbstractDriverTest {
     
     private static File getFile(final String fileName) {
         return new File(Objects.requireNonNull(
-                AbstractEncryptDriverTest.class.getClassLoader().getResource(fileName), String.format("File `%s` is not existed.", fileName)).getFile());
+                Thread.currentThread().getContextClassLoader().getResource(fileName), String.format("File `%s` is not existed.", fileName)).getFile());
     }
     
     private static Map<String, DataSource> getDataSourceMap() {
@@ -67,7 +67,7 @@ public abstract class AbstractEncryptDriverTest extends AbstractDriverTest {
     @BeforeEach
     void initTable() {
         try (Connection connection = queryWithCipherDataSource.getConnection()) {
-            RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractDriverTest.class.getClassLoader().getResourceAsStream("sql/encrypt_data.sql"))));
+            RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("sql/encrypt_data.sql"))));
         } catch (final SQLException ex) {
             throw new RuntimeException(ex);
         }

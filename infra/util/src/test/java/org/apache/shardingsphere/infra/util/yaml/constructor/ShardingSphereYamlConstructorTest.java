@@ -35,7 +35,7 @@ class ShardingSphereYamlConstructorTest {
     
     @Test
     void assertToObject() throws IOException {
-        try (InputStream inputStream = ShardingSphereYamlConstructorTest.class.getClassLoader().getResourceAsStream("yaml/customized-obj.yaml")) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("yaml/customized-obj.yaml")) {
             assertYamlObject(new Yaml(new ShardingSphereYamlConstructor(YamlConfigurationFixture.class)).loadAs(inputStream, YamlConfigurationFixture.class));
         }
     }
@@ -52,7 +52,7 @@ class ShardingSphereYamlConstructorTest {
     
     @Test
     void assertToObjectWithNotAcceptClass() throws IOException {
-        try (InputStream inputStream = ShardingSphereYamlConstructorTest.class.getClassLoader().getResourceAsStream("yaml/accepted-class.yaml")) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("yaml/accepted-class.yaml")) {
             assertThrows(ConstructorException.class, () -> new Yaml(new ShardingSphereYamlConstructor(Object.class)).loadAs(inputStream, Object.class));
         }
     }

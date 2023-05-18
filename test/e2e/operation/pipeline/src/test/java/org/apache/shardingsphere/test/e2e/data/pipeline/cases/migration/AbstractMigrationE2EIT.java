@@ -48,7 +48,7 @@ public abstract class AbstractMigrationE2EIT {
     private final MigrationDistSQLCommand migrationDistSQL;
     
     protected AbstractMigrationE2EIT() {
-        migrationDistSQL = JAXB.unmarshal(Objects.requireNonNull(AbstractMigrationE2EIT.class.getClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
+        migrationDistSQL = JAXB.unmarshal(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("env/common/migration-command.xml")), MigrationDistSQLCommand.class);
     }
     
     protected void addMigrationSourceResource(final PipelineContainerComposer containerComposer) throws SQLException {

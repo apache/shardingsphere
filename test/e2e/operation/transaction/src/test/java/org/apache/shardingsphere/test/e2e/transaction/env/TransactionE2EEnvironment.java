@@ -89,7 +89,7 @@ public final class TransactionE2EEnvironment {
     
     private Properties loadProperties() {
         Properties result = new Properties();
-        try (InputStream inputStream = TransactionE2EEnvironment.class.getClassLoader().getResourceAsStream("env/it-env.properties")) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("env/it-env.properties")) {
             result.load(inputStream);
         } catch (final IOException ex) {
             throw new RuntimeException(ex);

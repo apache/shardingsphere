@@ -86,7 +86,7 @@ public abstract class TransactionBaseE2EIT {
     }
     
     private CommonSQLCommand loadCommonSQLCommand() {
-        return JAXB.unmarshal(Objects.requireNonNull(TransactionBaseE2EIT.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
+        return JAXB.unmarshal(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
     }
     
     @ParameterizedTest(name = "{0}")
