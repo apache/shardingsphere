@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.Map.Entry;
 
 /**
- * MySQL ShardingSphere data Builder.
+ * ShardingSphere data builder for MySQL.
  */
 
 public final class MySQLShardingSphereDataBuilder implements ShardingSphereDataBuilder {

@@ -24,7 +24,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 /**
- * Postgre SQL Lexer Base.
+ * SQL lexer base for PostgreSQL.
  */
 public abstract class PostgreSQLLexerBase extends Lexer {
     
