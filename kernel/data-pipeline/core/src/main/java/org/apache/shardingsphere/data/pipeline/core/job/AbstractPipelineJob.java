@@ -108,7 +108,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
             return false;
         }
         String jobId = tasksRunner.getJobItemContext().getJobId();
-        PipelineJobProgressPersistService.addJobProgressPersistContext(jobId, shardingItem);
+        PipelineJobProgressPersistService.add(jobId, shardingItem);
         PipelineDistributedBarrier.getInstance(PipelineJobIdUtils.parseContextKey(jobId)).persistEphemeralChildrenNode(PipelineMetaDataNode.getJobBarrierEnablePath(jobId), shardingItem);
         return true;
     }
@@ -155,7 +155,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     private void innerClean() {
         tasksRunnerMap.clear();
-        PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
+        PipelineJobProgressPersistService.remove(jobId);
     }
     
     protected abstract void doClean();

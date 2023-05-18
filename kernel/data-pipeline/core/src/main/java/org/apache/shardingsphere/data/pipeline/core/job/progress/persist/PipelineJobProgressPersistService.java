@@ -48,65 +48,42 @@ public final class PipelineJobProgressPersistService {
     
     private static final ScheduledExecutorService JOB_PERSIST_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("pipeline-progress-persist-%d"));
     
-    private static final long DELAY_SECONDS = 1;
+    private static final long DELAY_SECONDS = 1L;
     
     static {
         JOB_PERSIST_EXECUTOR.scheduleWithFixedDelay(new PersistJobContextRunnable(), 0, DELAY_SECONDS, TimeUnit.SECONDS);
     }
     
     /**
-     * Remove job progress persist context.
+     * Add job progress persist context.
      *
-     * @param jobId job id
+     * @param jobId job ID
+     * @param shardingItem sharding item
      */
-    public static void removeJobProgressPersistContext(final String jobId) {
-        JOB_PROGRESS_PERSIST_MAP.remove(jobId);
+    public static void add(final String jobId, final int shardingItem) {
+        JOB_PROGRESS_PERSIST_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>()).put(shardingItem, new PipelineJobProgressPersistContext(jobId, shardingItem));
     }
     
     /**
-     * Add job progress persist context.
+     * Remove job progress persist context.
      *
-     * @param jobId job id
-     * @param shardingItem sharding item
+     * @param jobId job ID
      */
-    public static void addJobProgressPersistContext(final String jobId, final int shardingItem) {
-        JOB_PROGRESS_PERSIST_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>()).put(shardingItem, new PipelineJobProgressPersistContext(jobId, shardingItem));
+    public static void remove(final String jobId) {
+        JOB_PROGRESS_PERSIST_MAP.remove(jobId);
     }
     
     /**
      * Notify persist.
      *
-     * @param jobId job id
+     * @param jobId job ID
      * @param shardingItem sharding item
      */
     public static void notifyPersist(final String jobId, final int shardingItem) {
         Map<Integer, PipelineJobProgressPersistContext> persistContextMap = JOB_PROGRESS_PERSIST_MAP.getOrDefault(jobId, Collections.emptyMap());
         PipelineJobProgressPersistContext persistContext = persistContextMap.get(shardingItem);
-        if (null == persistContext) {
-            return;
-        }
-        persistContext.getHasNewEvents().set(true);
-    }
-    
-    private static void persist(final String jobId, final int shardingItem, final PipelineJobProgressPersistContext persistContext) {
-        Long beforePersistingProgressMillis = persistContext.getBeforePersistingProgressMillis().get();
-        if ((null == beforePersistingProgressMillis || System.currentTimeMillis() - beforePersistingProgressMillis < TimeUnit.SECONDS.toMillis(DELAY_SECONDS))
-                && !persistContext.getHasNewEvents().get()) {
-            return;
-        }
-        Optional<PipelineJobItemContext> jobItemContext = PipelineJobCenter.getJobItemContext(jobId, shardingItem);
-        if (!jobItemContext.isPresent()) {
-            return;
-        }
-        if (null == beforePersistingProgressMillis) {
-            persistContext.getBeforePersistingProgressMillis().set(System.currentTimeMillis());
-        }
-        persistContext.getHasNewEvents().set(false);
-        long startTimeMillis = System.currentTimeMillis();
-        TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobId).getTypeName()).persistJobItemProgress(jobItemContext.get());
-        persistContext.getBeforePersistingProgressMillis().set(null);
-        if (6 == ThreadLocalRandom.current().nextInt(100)) {
-            log.info("persist, jobId={}, shardingItem={}, cost {} ms", jobId, shardingItem, System.currentTimeMillis() - startTimeMillis);
+        if (null != persistContext) {
+            persistContext.getHasNewEvents().set(true);
         }
     }
     
@@ -116,6 +93,28 @@ public final class PipelineJobProgressPersistService {
         public void run() {
             for (Entry<String, Map<Integer, PipelineJobProgressPersistContext>> entry : JOB_PROGRESS_PERSIST_MAP.entrySet()) {
                 entry.getValue().forEach((shardingItem, persistContext) -> persist(entry.getKey(), shardingItem, persistContext));
+            }
+        }
+        
+        private void persist(final String jobId, final int shardingItem, final PipelineJobProgressPersistContext persistContext) {
+            Long beforePersistingProgressMillis = persistContext.getBeforePersistingProgressMillis().get();
+            if ((null == beforePersistingProgressMillis || System.currentTimeMillis() - beforePersistingProgressMillis < TimeUnit.SECONDS.toMillis(DELAY_SECONDS))
+                    && !persistContext.getHasNewEvents().get()) {
+                return;
+            }
+            Optional<PipelineJobItemContext> jobItemContext = PipelineJobCenter.getJobItemContext(jobId, shardingItem);
+            if (!jobItemContext.isPresent()) {
+                return;
+            }
+            if (null == beforePersistingProgressMillis) {
+                persistContext.getBeforePersistingProgressMillis().set(System.currentTimeMillis());
+            }
+            persistContext.getHasNewEvents().set(false);
+            long startTimeMillis = System.currentTimeMillis();
+            TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobId).getTypeName()).persistJobItemProgress(jobItemContext.get());
+            persistContext.getBeforePersistingProgressMillis().set(null);
+            if (6 == ThreadLocalRandom.current().nextInt(100)) {
+                log.info("persist, jobId={}, shardingItem={}, cost {} ms", jobId, shardingItem, System.currentTimeMillis() - startTimeMillis);
             }
         }
     }
