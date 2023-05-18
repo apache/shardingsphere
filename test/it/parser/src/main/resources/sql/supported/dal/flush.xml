@@ -20,4 +20,7 @@
     <sql-case id="flush_privileges" value="FLUSH PRIVILEGES" db-types="MySQL" />
     <sql-case id="flush_tables" value="FLUSH TABLES" db-types="MySQL" />
     <sql-case id="flush_tables_with_tables" value="FLUSH TABLES t_order,t_order_item" db-types="MySQL" />
+    <sql-case id="flush_table" value="FLUSH TABLE" db-types="MySQL" />
+    <sql-case id="flush_table_with_table" value="FLUSH TABLE t_order,t_order_item" db-types="MySQL" />
+    <sql-case id="flush_table_with_read_lock" value="FLUSH TABLE WITH READ LOCK" db-types="MySQL" />
 </sql-cases>
