@@ -42,8 +42,8 @@ public final class UnlabelComputeNodeUpdater implements RALUpdater<UnlabelComput
     @Override
     public void executeUpdate(final String databaseName, final UnlabelComputeNodeStatement sqlStatement) {
         MetaDataBasedPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
-        ShardingSpherePreconditions.checkState(null != persistService.getRepository() && persistService.getRepository() instanceof ClusterPersistRepository,
-                () -> new UnsupportedSQLOperationException("Labels can only be removed in cluster mode"));
+        ShardingSpherePreconditions.checkState(persistService.getRepository() instanceof ClusterPersistRepository,
+                () -> new UnsupportedSQLOperationException("Labels can only be removed in cluster mode."));
         String instanceId = sqlStatement.getInstanceId();
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
