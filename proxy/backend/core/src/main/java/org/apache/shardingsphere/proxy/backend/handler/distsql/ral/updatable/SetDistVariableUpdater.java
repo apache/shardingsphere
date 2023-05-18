@@ -128,13 +128,13 @@ public final class SetDistVariableUpdater implements ConnectionSessionRequiredRA
         VariableEnum variable = VariableEnum.getValueOf(sqlStatement.getName());
         if (variable == VariableEnum.TRANSACTION_TYPE) {
             ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-            Collection<RuleConfiguration> ruleConfigurations = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
+            Collection<RuleConfiguration> ruleConfigs = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations();
             TransactionRuleConfiguration currentRuleConfig = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getConfiguration();
             TransactionRuleConfiguration newRuleConfig =
-                    new TransactionRuleConfiguration(currentRuleConfig.getDefaultType(), getTransactionType(sqlStatement.getValue()).name(), currentRuleConfig.getProps());
-            ruleConfigurations.remove(currentRuleConfig);
-            ruleConfigurations.add(newRuleConfig);
-            contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(ruleConfigurations);
+                    new TransactionRuleConfiguration(getTransactionType(sqlStatement.getValue()).name(), null, currentRuleConfig.getProps());
+            ruleConfigs.remove(currentRuleConfig);
+            ruleConfigs.add(newRuleConfig);
+            contextManager.getInstanceContext().getModeContextManager().alterGlobalRuleConfiguration(ruleConfigs);
             connectionSession.getTransactionStatus().setTransactionType(getTransactionType(sqlStatement.getValue()));
         } else {
             throw new UnsupportedVariableException(sqlStatement.getName());
