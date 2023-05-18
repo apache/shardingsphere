@@ -187,8 +187,8 @@ class ProxyBackendHandlerFactoryTest {
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
     
-    // TODO Fix me
-    @Disabled
+    // TODO
+    @Disabled("FIX ME")
     @Test
     void assertNewInstanceWithQuery() throws SQLException {
         String sql = "SELECT * FROM t_order limit 1";
