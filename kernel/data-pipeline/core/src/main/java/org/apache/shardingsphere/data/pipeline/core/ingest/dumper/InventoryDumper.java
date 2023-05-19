@@ -152,7 +152,6 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                 dumpStatement.set(null);
                 log.info("Inventory dump done, rowCount={}", rowCount);
             }
-            
         }
     }
     

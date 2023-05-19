@@ -35,6 +35,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.EmptyAckCallback;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.SimpleMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateRowsEvent;
@@ -60,7 +61,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -73,6 +73,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
+@SuppressWarnings("unchecked")
 class MySQLIncrementalDumperTest {
     
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
@@ -80,8 +81,6 @@ class MySQLIncrementalDumperTest {
     private DumperConfiguration dumperConfig;
     
     private MySQLIncrementalDumper incrementalDumper;
-    
-    private SimpleMemoryPipelineChannel channel;
     
     private PipelineTableMetaData pipelineTableMetaData;
     
@@ -91,7 +90,7 @@ class MySQLIncrementalDumperTest {
         initTableData(dumperConfig);
         dumperConfig.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("mock:mysql://127.0.0.1:3306/test", "root", "root"));
         PipelineTableMetaDataLoader metaDataLoader = mock(PipelineTableMetaDataLoader.class);
-        channel = new SimpleMemoryPipelineChannel(10000, new EmptyAckCallback());
+        SimpleMemoryPipelineChannel channel = new SimpleMemoryPipelineChannel(10000, new EmptyAckCallback());
         incrementalDumper = new MySQLIncrementalDumper(dumperConfig, new BinlogPosition("binlog-000001", 4L, 0L), channel, metaDataLoader);
         pipelineTableMetaData = new PipelineTableMetaData("t_order", mockOrderColumnsMetaDataMap(), Collections.emptyList());
         when(metaDataLoader.getTableMetaData(any(), any())).thenReturn(pipelineTableMetaData);
@@ -214,9 +213,8 @@ class MySQLIncrementalDumperTest {
     
     @Test
     void assertPlaceholderEvent() throws ReflectiveOperationException {
-        Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", List.class), incrementalDumper,
-                Collections.singletonList(new PlaceholderEvent()));
-        List<Record> actual = channel.fetchRecords(1, 0, TimeUnit.SECONDS);
+        List<Record> actual = (List<Record>) Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", AbstractBinlogEvent.class),
+                incrementalDumper, new PlaceholderEvent());
         assertThat(actual.size(), is(1));
     }
     
@@ -226,8 +224,8 @@ class MySQLIncrementalDumperTest {
         rowsEvent.setDatabaseName("test");
         rowsEvent.setTableName("t_order");
         rowsEvent.setAfterRows(Collections.singletonList(new Serializable[]{1}));
-        Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", List.class), incrementalDumper, Collections.singletonList(rowsEvent));
-        List<Record> actual = channel.fetchRecords(1, 0, TimeUnit.SECONDS);
+        List<Record> actual = (List<Record>) Plugins.getMemberAccessor().invoke(MySQLIncrementalDumper.class.getDeclaredMethod("handleEvent", AbstractBinlogEvent.class),
+                incrementalDumper, rowsEvent);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0), instanceOf(DataRecord.class));
     }

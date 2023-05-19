@@ -102,42 +102,48 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         while (isRunning()) {
             List<AbstractBinlogEvent> events = client.poll();
-            if (null == events) {
+            if (events.isEmpty()) {
                 continue;
             }
-            handleEvent(events);
+            handleEvents(events);
         }
         channel.pushRecords(Collections.singletonList(new FinishedRecord(new FinishedPosition())));
     }
     
-    private void handleEvent(final List<AbstractBinlogEvent> events) {
+    private void handleEvents(final List<AbstractBinlogEvent> events) {
         List<Record> dataRecords = new LinkedList<>();
         for (AbstractBinlogEvent each : events) {
             if (!(each instanceof AbstractRowsEvent)) {
                 dataRecords.add(createPlaceholderRecord(each));
                 continue;
             }
-            AbstractRowsEvent rowsEvent = (AbstractRowsEvent) each;
-            if (!rowsEvent.getDatabaseName().equals(catalog) || !dumperConfig.containsTable(rowsEvent.getTableName())) {
-                continue;
-            }
-            PipelineTableMetaData tableMetaData = getPipelineTableMetaData(rowsEvent.getTableName());
-            if (each instanceof WriteRowsEvent) {
-                dataRecords.addAll(handleWriteRowsEvent((WriteRowsEvent) each, tableMetaData));
-                continue;
-            }
-            if (each instanceof UpdateRowsEvent) {
-                dataRecords.addAll(handleUpdateRowsEvent((UpdateRowsEvent) each, tableMetaData));
-                continue;
-            }
-            if (each instanceof DeleteRowsEvent) {
-                dataRecords.addAll(handleDeleteRowsEvent((DeleteRowsEvent) each, tableMetaData));
-            }
+            dataRecords.addAll(handleEvent(each));
         }
         if (dataRecords.isEmpty()) {
             return;
         }
         channel.pushRecords(dataRecords);
+    }
+    
+    private List<? extends Record> handleEvent(final AbstractBinlogEvent event) {
+        if (!(event instanceof AbstractRowsEvent)) {
+            return Collections.singletonList(createPlaceholderRecord(event));
+        }
+        AbstractRowsEvent rowsEvent = (AbstractRowsEvent) event;
+        if (!rowsEvent.getDatabaseName().equals(catalog) || !dumperConfig.containsTable(rowsEvent.getTableName())) {
+            return Collections.singletonList(createPlaceholderRecord(event));
+        }
+        PipelineTableMetaData tableMetaData = getPipelineTableMetaData(rowsEvent.getTableName());
+        if (event instanceof WriteRowsEvent) {
+            return handleWriteRowsEvent((WriteRowsEvent) event, tableMetaData);
+        }
+        if (event instanceof UpdateRowsEvent) {
+            return handleUpdateRowsEvent((UpdateRowsEvent) event, tableMetaData);
+        }
+        if (event instanceof DeleteRowsEvent) {
+            return handleDeleteRowsEvent((DeleteRowsEvent) event, tableMetaData);
+        }
+        return Collections.emptyList();
     }
     
     private PlaceholderRecord createPlaceholderRecord(final AbstractBinlogEvent event) {

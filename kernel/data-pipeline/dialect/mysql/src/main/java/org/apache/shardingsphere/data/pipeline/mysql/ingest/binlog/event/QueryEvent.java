@@ -18,22 +18,27 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Query event.
+ * Query event.This event is written into the binary log file for:
+ * 1. STATEMENT based replication (updating statements)
+ * 2. DDLs
+ * 3. COMMIT related to non transactional engines (MyISAM, BLACKHOLE etc).
+ *
+ * @see <a href="https://mariadb.com/kb/en/query_event/">QUERY_EVENT</a>
  */
 @Getter
-@Setter
+@RequiredArgsConstructor
 public final class QueryEvent extends AbstractBinlogEvent {
     
-    private long threadId;
+    private final long threadId;
     
-    private long executionTime;
+    private final long executionTime;
     
-    private int errorCode;
+    private final int errorCode;
     
-    private String databaseName;
+    private final String databaseName;
     
-    private String sql;
+    private final String sql;
 }

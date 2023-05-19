@@ -66,7 +66,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     
     private final boolean decodeWithTX;
     
-    private final List<AbstractRowEvent> walEvents = new LinkedList<>();
+    private List<AbstractRowEvent> walEvents = new LinkedList<>();
     
     public OpenGaussWALDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
                               final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
@@ -118,7 +118,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     
     private void processEventWithTX(final AbstractWALEvent event) {
         if (event instanceof BeginTXEvent) {
-            walEvents.clear();
+            walEvents = new LinkedList<>();
             return;
         }
         if (event instanceof AbstractRowEvent) {

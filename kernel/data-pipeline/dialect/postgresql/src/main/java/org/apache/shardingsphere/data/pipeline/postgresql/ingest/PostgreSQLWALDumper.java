@@ -46,6 +46,7 @@ import org.postgresql.replication.PGReplicationStream;
 import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,7 +68,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     
     private final boolean decodeWithTX;
     
-    private final List<AbstractWALEvent> walEvents = new LinkedList<>();
+    private List<AbstractRowEvent> rowEvents = new LinkedList<>();
     
     public PostgreSQLWALDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
                                final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
@@ -111,19 +112,19 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     
     private void processEventWithTX(final AbstractWALEvent event) {
         if (event instanceof BeginTXEvent) {
-            walEvents.clear();
+            rowEvents = new ArrayList<>();
             return;
         }
         if (event instanceof AbstractRowEvent) {
-            walEvents.add(event);
+            rowEvents.add((AbstractRowEvent) event);
             return;
         }
         if (event instanceof CommitTXEvent) {
-            walEvents.add(event);
             List<Record> records = new LinkedList<>();
-            for (AbstractWALEvent each : walEvents) {
+            for (AbstractWALEvent each : rowEvents) {
                 records.add(walEventConverter.convert(each));
             }
+            records.add(walEventConverter.convert(event));
             channel.pushRecords(records);
         }
     }

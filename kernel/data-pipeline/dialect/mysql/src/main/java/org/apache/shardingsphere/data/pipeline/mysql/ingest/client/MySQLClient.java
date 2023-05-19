@@ -235,10 +235,11 @@ public final class MySQLClient {
     public synchronized List<AbstractBinlogEvent> poll() {
         ShardingSpherePreconditions.checkState(running, BinlogSyncChannelAlreadyClosedException::new);
         try {
-            return blockingEventQueue.poll(100L, TimeUnit.MILLISECONDS);
+            List<AbstractBinlogEvent> result = blockingEventQueue.poll(100L, TimeUnit.MILLISECONDS);
+            return null == result ? Collections.emptyList() : result;
         } catch (final InterruptedException ignored) {
             Thread.currentThread().interrupt();
-            return null;
+            return Collections.emptyList();
         }
     }
     
@@ -324,6 +325,7 @@ public final class MySQLClient {
                 }
                 lastBinlogEvent.set(records.get(records.size() - 1));
                 blockingEventQueue.put(records);
+                return;
             }
             if (msg instanceof AbstractBinlogEvent) {
                 lastBinlogEvent.set((AbstractBinlogEvent) msg);

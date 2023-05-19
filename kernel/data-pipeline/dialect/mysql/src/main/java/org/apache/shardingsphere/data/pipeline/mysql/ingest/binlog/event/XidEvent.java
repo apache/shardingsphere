@@ -21,7 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Xid event.
+ * XID event is generated for a COMMIT of a transaction that modifies one or more tables of an XA-capable storage engine.
+ *
+ * @see <a href="https://mariadb.com/kb/en/xid_event/">XID_EVENT</a>
  */
 @RequiredArgsConstructor
 @Getter

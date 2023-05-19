@@ -99,7 +99,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
         int batchSize = importerConfig.getBatchSize();
         while (isRunning()) {
             List<Record> records = channel.fetchRecords(batchSize, 3, TimeUnit.SECONDS);
-            if (null != records && !records.isEmpty()) {
+            if (!records.isEmpty()) {
                 PipelineJobProgressUpdatedParameter updatedParam = flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
                 channel.ack(records);
                 jobProgressListener.onProgressUpdated(updatedParam);

@@ -55,9 +55,9 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     
     private final BinlogContext binlogContext;
     
-    private final List<AbstractBinlogEvent> records = new LinkedList<>();
-    
     private final boolean decodeWithTX;
+    
+    private List<AbstractBinlogEvent> records = new LinkedList<>();
     
     public MySQLBinlogEventPacketDecoder(final int checksumLength, final Map<Long, MySQLBinlogTableMapEventPacket> tableMap, final boolean decodeWithTX) {
         this.decodeWithTX = decodeWithTX;
@@ -83,10 +83,14 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 skipChecksum(binlogEventHeader.getEventType(), in);
                 return;
             }
-            if (decodeWithTX) {
-                processEventWithTX(binlogEvent, out);
+            if (binlogEvent instanceof PlaceholderEvent) {
+                out.add(binlogEvent);
             } else {
-                processEventIgnoreTX(binlogEvent, out);
+                if (decodeWithTX) {
+                    processEventWithTX(binlogEvent, out);
+                } else {
+                    processEventIgnoreTX(binlogEvent, out);
+                }
             }
             skipChecksum(binlogEventHeader.getEventType(), in);
         }
@@ -96,7 +100,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         if (binlogEvent instanceof QueryEvent) {
             QueryEvent queryEvent = (QueryEvent) binlogEvent;
             if (TX_BEGIN_SQL.equals(queryEvent.getSql())) {
-                records.clear();
+                records = new LinkedList<>();
             }
         } else if (binlogEvent instanceof XidEvent) {
             records.add(binlogEvent);
@@ -151,11 +155,12 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
             case XID_EVENT:
                 return decodeXidEvent(binlogEventHeader, payload);
             default:
+                PlaceholderEvent result = createPlaceholderEvent(binlogEventHeader);
                 int remainDataLength = binlogEventHeader.getEventSize() + 1 - binlogEventHeader.getChecksumLength() - payload.getByteBuf().readerIndex();
                 if (remainDataLength > 0) {
                     payload.skipReserved(remainDataLength);
                 }
-                return null;
+                return result;
         }
     }
     
@@ -230,17 +235,16 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     }
     
     private QueryEvent decodeQueryEvent(final int checksumLength, final MySQLPacketPayload payload) {
-        QueryEvent result = new QueryEvent();
-        result.setThreadId(payload.readInt4());
-        result.setExecutionTime(payload.readInt4());
+        int threadId = payload.readInt4();
+        int executionTime = payload.readInt4();
         // length of the name of the database
         payload.skipReserved(1);
-        result.setErrorCode(payload.readInt2());
+        int errorCode = payload.readInt2();
         // status variables block
         payload.skipReserved(payload.readInt2());
-        result.setDatabaseName(payload.readStringNul());
-        result.setSql(payload.readStringFix(payload.getByteBuf().readableBytes() - checksumLength));
-        return result;
+        String databaseName = payload.readStringNul();
+        String sql = payload.readStringFix(payload.getByteBuf().readableBytes() - checksumLength);
+        return new QueryEvent(threadId, executionTime, errorCode, databaseName, sql);
     }
     
     private XidEvent decodeXidEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {

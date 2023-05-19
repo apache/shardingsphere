@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -52,7 +52,7 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     // TODO thread-safe?
     @Override
     public List<Record> fetchRecords(final int batchSize, final int timeout, final TimeUnit timeUnit) {
-        List<Record> result = new ArrayList<>(batchSize);
+        List<Record> result = new LinkedList<>();
         long start = System.currentTimeMillis();
         int recordsCount = 0;
         while (batchSize > recordsCount) {
@@ -62,9 +62,6 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
             } else {
                 recordsCount += records.size();
                 result.addAll(records);
-            }
-            if (recordsCount >= batchSize) {
-                return result;
             }
             if (timeUnit.toMillis(timeout) <= System.currentTimeMillis() - start) {
                 break;

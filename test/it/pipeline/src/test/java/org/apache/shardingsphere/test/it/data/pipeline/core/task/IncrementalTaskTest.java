@@ -57,7 +57,7 @@ class IncrementalTaskTest {
         MigrationTaskConfiguration taskConfig = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
         taskConfig.getDumperConfig().setPosition(new PlaceholderPosition());
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(mock(PipelineDataSourceWrapper.class));
-        incrementalTask = new IncrementalTask(taskConfig.getDumperConfig(), taskConfig.getImporterConfig(),
+        incrementalTask = new IncrementalTask(3, taskConfig.getDumperConfig(), taskConfig.getImporterConfig(),
                 PipelineContextUtils.getPipelineChannelCreator(), new FixtureImporterConnector(), metaDataLoader, PipelineContextUtils.getExecuteEngine(),
                 new FixtureInventoryIncrementalJobItemContext());
     }

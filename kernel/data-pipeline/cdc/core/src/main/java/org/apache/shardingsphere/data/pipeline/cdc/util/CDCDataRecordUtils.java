@@ -92,24 +92,24 @@ public final class CDCDataRecordUtils {
         if (waitSortedMap.isEmpty()) {
             return Collections.emptyList();
         }
-        List<DataRecord> minRecords = null;
+        List<DataRecord> result = null;
         SocketSinkImporter belongImporter = null;
         for (Entry<SocketSinkImporter, List<DataRecord>> entry : waitSortedMap.entrySet()) {
-            if (null == minRecords) {
-                minRecords = entry.getValue();
+            if (null == result) {
+                result = entry.getValue();
                 belongImporter = entry.getKey();
                 continue;
             }
-            if (dataRecordComparator.compare(minRecords.get(0), entry.getValue().get(0)) > 0) {
-                minRecords = entry.getValue();
+            if (dataRecordComparator.compare(result.get(0), entry.getValue().get(0)) > 0) {
+                result = entry.getValue();
                 belongImporter = entry.getKey();
             }
         }
-        if (null == minRecords) {
+        if (null == result) {
             return Collections.emptyList();
         }
         incrementalRecordMap.get(belongImporter).poll();
-        saveAckPosition(cdcAckPositionMap, belongImporter, minRecords.get(minRecords.size() - 1));
-        return minRecords;
+        saveAckPosition(cdcAckPositionMap, belongImporter, result.get(result.size() - 1));
+        return result;
     }
 }
