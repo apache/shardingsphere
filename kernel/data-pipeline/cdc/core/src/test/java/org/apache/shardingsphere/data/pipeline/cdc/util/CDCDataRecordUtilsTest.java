@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.util;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.SocketSinkImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.DataRecordComparatorGenerator;
@@ -45,31 +42,30 @@ class CDCDataRecordUtilsTest {
     
     @Test
     void assertFindMinimumDataRecordAndSavePosition() throws InterruptedException {
-        final Map<SocketSinkImporter, BlockingQueue<List<Record>>> actualIncrementalRecordMap = new HashMap<>();
-        ArrayBlockingQueue<List<Record>> queueFirst = new ArrayBlockingQueue<>(5);
+        final Map<SocketSinkImporter, BlockingQueue<List<DataRecord>>> actualIncrementalRecordMap = new HashMap<>();
+        ArrayBlockingQueue<List<DataRecord>> queueFirst = new ArrayBlockingQueue<>(5);
         queueFirst.put(Collections.singletonList(generateDataRecord(0)));
         queueFirst.put(Collections.singletonList(generateDataRecord(2)));
         queueFirst.put(Collections.singletonList(generateDataRecord(4)));
         SocketSinkImporter mockSocketSinkImporterFirst = mock(SocketSinkImporter.class);
         actualIncrementalRecordMap.put(mockSocketSinkImporterFirst, queueFirst);
-        ArrayBlockingQueue<List<Record>> queueSecond = new ArrayBlockingQueue<>(5);
+        ArrayBlockingQueue<List<DataRecord>> queueSecond = new ArrayBlockingQueue<>(5);
         queueSecond.put(Collections.singletonList(generateDataRecord(1)));
         queueSecond.put(Collections.singletonList(generateDataRecord(3)));
         queueSecond.put(Collections.singletonList(generateDataRecord(5)));
-        queueSecond.put(Collections.singletonList(new FinishedRecord(new FinishedPosition())));
         SocketSinkImporter mockSocketSinkImporterSecond = mock(SocketSinkImporter.class);
         actualIncrementalRecordMap.put(mockSocketSinkImporterSecond, queueSecond);
         Comparator<DataRecord> dataRecordComparator = DataRecordComparatorGenerator.generatorIncrementalComparator(new OpenGaussDatabaseType());
         final Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap = new HashMap<>();
         for (long i = 0; i <= 5; i++) {
-            List<Record> minimumDataRecord = CDCDataRecordUtils.findMinimumDataRecordsAndSavePosition(actualIncrementalRecordMap, dataRecordComparator, cdcAckPositionMap);
+            List<DataRecord> minimumDataRecord = CDCDataRecordUtils.findMinimumDataRecordsAndSavePosition(actualIncrementalRecordMap, dataRecordComparator, cdcAckPositionMap);
             assertThat(minimumDataRecord.size(), is(1));
-            assertThat(((DataRecord) minimumDataRecord.get(0)).getCsn(), is(i));
+            assertThat(minimumDataRecord.get(0).getCsn(), is(i));
         }
         assertTrue(CDCDataRecordUtils.findMinimumDataRecordsAndSavePosition(actualIncrementalRecordMap, dataRecordComparator, cdcAckPositionMap).isEmpty());
     }
     
-    private Record generateDataRecord(final long csn) {
+    private DataRecord generateDataRecord(final long csn) {
         DataRecord dataRecord = new DataRecord(new PlaceholderPosition(), 0);
         dataRecord.setCsn(csn);
         return dataRecord;

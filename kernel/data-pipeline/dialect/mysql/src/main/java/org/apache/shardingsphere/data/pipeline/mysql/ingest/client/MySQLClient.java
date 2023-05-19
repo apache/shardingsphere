@@ -54,6 +54,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.net.InetSocketAddress;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -85,6 +86,8 @@ public final class MySQLClient {
     private volatile boolean running = true;
     
     private final AtomicInteger reconnectTimes = new AtomicInteger();
+    
+    private final boolean decodeWithTX;
     
     /**
      * Connect to MySQL.
@@ -207,7 +210,7 @@ public final class MySQLClient {
         channel.pipeline().remove(MySQLCommandPacketDecoder.class);
         channel.pipeline().remove(MySQLCommandResponseHandler.class);
         String tableKey = String.join(":", connectInfo.getHost(), String.valueOf(connectInfo.getPort()));
-        channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder(checksumLength, GlobalTableMapEventMapping.getTableMapEventMap(tableKey)));
+        channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder(checksumLength, GlobalTableMapEventMapping.getTableMapEventMap(tableKey), decodeWithTX));
         channel.pipeline().addLast(new MySQLBinlogEventHandler(getLastBinlogEvent(binlogFileName, binlogPosition)));
         resetSequenceID();
         channel.writeAndFlush(new MySQLComBinlogDumpCommandPacket((int) binlogPosition, connectInfo.getServerId(), binlogFileName));
@@ -312,6 +315,7 @@ public final class MySQLClient {
             if (!running) {
                 return;
             }
+            reconnectTimes.set(0);
             if (msg instanceof List) {
                 List<AbstractBinlogEvent> records = (List<AbstractBinlogEvent>) msg;
                 if (records.isEmpty()) {
@@ -320,7 +324,10 @@ public final class MySQLClient {
                 }
                 lastBinlogEvent.set(records.get(records.size() - 1));
                 blockingEventQueue.put(records);
-                reconnectTimes.set(0);
+            }
+            if (msg instanceof AbstractBinlogEvent) {
+                lastBinlogEvent.set((AbstractBinlogEvent) msg);
+                blockingEventQueue.put(Collections.singletonList(lastBinlogEvent.get()));
             }
         }
         

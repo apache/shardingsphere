@@ -78,7 +78,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
     
     private final Map<String, String> tableNameSchemaMap = new HashMap<>();
     
-    private final Map<SocketSinkImporter, BlockingQueue<List<Record>>> incrementalRecordMap = new ConcurrentHashMap<>();
+    private final Map<SocketSinkImporter, BlockingQueue<List<DataRecord>>> incrementalRecordMap = new ConcurrentHashMap<>();
     
     private final AtomicInteger runningIncrementalTaskCount = new AtomicInteger(0);
     
@@ -160,20 +160,21 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
     
     @SneakyThrows(InterruptedException.class)
     private void writeIntoQueue(final List<Record> dataRecords, final SocketSinkImporter socketSinkImporter) {
-        BlockingQueue<List<Record>> blockingQueue = incrementalRecordMap.get(socketSinkImporter);
+        BlockingQueue<List<DataRecord>> blockingQueue = incrementalRecordMap.get(socketSinkImporter);
         if (null == blockingQueue) {
             log.warn("not find the queue to write");
             return;
         }
-        Map<Long, List<Record>> recordsMap = new LinkedHashMap<>();
+        Map<Long, List<DataRecord>> recordsMap = new LinkedHashMap<>();
         for (Record each : dataRecords) {
             if (!(each instanceof DataRecord)) {
                 continue;
             }
             DataRecord dataRecord = (DataRecord) each;
+            // TODO need improve if support global transaction
             recordsMap.computeIfAbsent(dataRecord.getCsn(), ignored -> new LinkedList<>()).add(dataRecord);
         }
-        for (List<Record> each : recordsMap.values()) {
+        for (List<DataRecord> each : recordsMap.values()) {
             blockingQueue.put(each);
         }
     }
@@ -229,10 +230,10 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
         public void run() {
             while (incrementalTaskRunning) {
                 Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap = new HashMap<>();
-                List<Record> dataRecords = new LinkedList<>();
+                List<DataRecord> dataRecords = new LinkedList<>();
                 for (int i = 0; i < batchSize; i++) {
-                    List<Record> minimumRecords = CDCDataRecordUtils.findMinimumDataRecordsAndSavePosition(incrementalRecordMap, dataRecordComparator, cdcAckPositionMap);
-                    if (null == minimumRecords) {
+                    List<DataRecord> minimumRecords = CDCDataRecordUtils.findMinimumDataRecordsAndSavePosition(incrementalRecordMap, dataRecordComparator, cdcAckPositionMap);
+                    if (minimumRecords.isEmpty()) {
                         break;
                     }
                     dataRecords.addAll(minimumRecords);

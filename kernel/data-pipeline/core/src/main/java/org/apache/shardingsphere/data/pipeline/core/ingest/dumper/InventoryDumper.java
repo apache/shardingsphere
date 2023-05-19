@@ -133,11 +133,11 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                 List<Record> dataRecords = new LinkedList<>();
                 while (resultSet.next()) {
                     dataRecords.add(loadDataRecord(resultSet, resultSetMetaData, tableMetaData));
+                    ++rowCount;
                     if (dataRecords.size() >= batchSize) {
                         channel.pushRecords(dataRecords);
-                        dataRecords.clear();
+                        dataRecords = new LinkedList<>();
                     }
-                    ++rowCount;
                     if (!isRunning()) {
                         log.info("Broke because of inventory dump is not running.");
                         break;

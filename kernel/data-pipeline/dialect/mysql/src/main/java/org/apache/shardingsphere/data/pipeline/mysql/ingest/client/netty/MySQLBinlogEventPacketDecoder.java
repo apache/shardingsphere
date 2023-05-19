@@ -57,7 +57,10 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     
     private final List<AbstractBinlogEvent> records = new LinkedList<>();
     
-    public MySQLBinlogEventPacketDecoder(final int checksumLength, final Map<Long, MySQLBinlogTableMapEventPacket> tableMap) {
+    private final boolean decodeWithTX;
+    
+    public MySQLBinlogEventPacketDecoder(final int checksumLength, final Map<Long, MySQLBinlogTableMapEventPacket> tableMap, final boolean decodeWithTX) {
+        this.decodeWithTX = decodeWithTX;
         binlogContext = new BinlogContext(checksumLength, tableMap);
     }
     
@@ -80,19 +83,37 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 skipChecksum(binlogEventHeader.getEventType(), in);
                 return;
             }
-            if (binlogEvent instanceof QueryEvent) {
-                QueryEvent queryEvent = (QueryEvent) binlogEvent;
-                if (TX_BEGIN_SQL.equals(queryEvent.getSql())) {
-                    records.clear();
-                }
-            } else if (binlogEvent instanceof XidEvent) {
-                records.add(binlogEvent);
-                out.add(records);
+            if (decodeWithTX) {
+                processEventWithTX(binlogEvent, out);
             } else {
-                records.add(binlogEvent);
+                processEventIgnoreTX(binlogEvent, out);
             }
             skipChecksum(binlogEventHeader.getEventType(), in);
         }
+    }
+    
+    private void processEventWithTX(final AbstractBinlogEvent binlogEvent, final List<Object> out) {
+        if (binlogEvent instanceof QueryEvent) {
+            QueryEvent queryEvent = (QueryEvent) binlogEvent;
+            if (TX_BEGIN_SQL.equals(queryEvent.getSql())) {
+                records.clear();
+            }
+        } else if (binlogEvent instanceof XidEvent) {
+            records.add(binlogEvent);
+            out.add(records);
+        } else {
+            records.add(binlogEvent);
+        }
+    }
+    
+    private void processEventIgnoreTX(final AbstractBinlogEvent binlogEvent, final List<Object> out) {
+        if (binlogEvent instanceof QueryEvent) {
+            QueryEvent queryEvent = (QueryEvent) binlogEvent;
+            if (TX_BEGIN_SQL.equals(queryEvent.getSql())) {
+                return;
+            }
+        }
+        out.add(binlogEvent);
     }
     
     private AbstractBinlogEvent decodeEvent(final MySQLPacketPayload payload, final MySQLBinlogEventHeader binlogEventHeader) {

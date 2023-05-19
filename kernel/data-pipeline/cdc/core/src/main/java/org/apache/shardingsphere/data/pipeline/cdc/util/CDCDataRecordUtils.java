@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.cdc.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.SocketSinkImporter;
@@ -32,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
-import java.util.stream.Collectors;
 
 /**
  * CDC data record utility class.
@@ -48,8 +46,8 @@ public final class CDCDataRecordUtils {
      * @param cdcAckPositionMap CDC ack position map.
      * @return minimum data record
      */
-    public static List<Record> findMinimumDataRecordsAndSavePosition(final Map<SocketSinkImporter, BlockingQueue<List<Record>>> incrementalRecordMap,
-                                                                     final Comparator<DataRecord> dataRecordComparator, final Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap) {
+    public static List<DataRecord> findMinimumDataRecordsAndSavePosition(final Map<SocketSinkImporter, BlockingQueue<List<DataRecord>>> incrementalRecordMap,
+                                                                         final Comparator<DataRecord> dataRecordComparator, final Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap) {
         if (null == dataRecordComparator) {
             return findMinimumDataRecordWithoutComparator(incrementalRecordMap, cdcAckPositionMap);
         } else {
@@ -57,19 +55,16 @@ public final class CDCDataRecordUtils {
         }
     }
     
-    private static List<Record> findMinimumDataRecordWithoutComparator(final Map<SocketSinkImporter, BlockingQueue<List<Record>>> incrementalRecordMap,
-                                                                       final Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap) {
-        for (Entry<SocketSinkImporter, BlockingQueue<List<Record>>> entry : incrementalRecordMap.entrySet()) {
-            List<Record> records = entry.getValue().poll();
+    private static List<DataRecord> findMinimumDataRecordWithoutComparator(final Map<SocketSinkImporter, BlockingQueue<List<DataRecord>>> incrementalRecordMap,
+                                                                           final Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap) {
+        for (Entry<SocketSinkImporter, BlockingQueue<List<DataRecord>>> entry : incrementalRecordMap.entrySet()) {
+            List<DataRecord> records = entry.getValue().poll();
             if (null == records || records.isEmpty()) {
                 continue;
             }
-            Record lastRecord = records.get(records.size() - 1);
-            if (lastRecord instanceof FinishedRecord) {
-                continue;
-            }
+            DataRecord lastRecord = records.get(records.size() - 1);
             saveAckPosition(cdcAckPositionMap, entry.getKey(), lastRecord);
-            return records.stream().filter(each -> each instanceof DataRecord).collect(Collectors.toList());
+            return records;
         }
         return Collections.emptyList();
     }
@@ -84,16 +79,12 @@ public final class CDCDataRecordUtils {
         }
     }
     
-    private static List<Record> findMinimumDataRecordWithComparator(final Map<SocketSinkImporter, BlockingQueue<List<Record>>> incrementalRecordMap,
-                                                                    final Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap, final Comparator<DataRecord> dataRecordComparator) {
-        Map<SocketSinkImporter, List<Record>> waitSortedMap = new HashMap<>();
-        for (Entry<SocketSinkImporter, BlockingQueue<List<Record>>> entry : incrementalRecordMap.entrySet()) {
-            List<Record> peek = entry.getValue().peek();
+    private static List<DataRecord> findMinimumDataRecordWithComparator(final Map<SocketSinkImporter, BlockingQueue<List<DataRecord>>> incrementalRecordMap,
+                                                                        final Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap, final Comparator<DataRecord> dataRecordComparator) {
+        Map<SocketSinkImporter, List<DataRecord>> waitSortedMap = new HashMap<>();
+        for (Entry<SocketSinkImporter, BlockingQueue<List<DataRecord>>> entry : incrementalRecordMap.entrySet()) {
+            List<DataRecord> peek = entry.getValue().peek();
             if (null == peek) {
-                continue;
-            }
-            Record firstRecord = peek.get(0);
-            if (firstRecord instanceof FinishedRecord) {
                 continue;
             }
             waitSortedMap.put(entry.getKey(), peek);
@@ -101,15 +92,15 @@ public final class CDCDataRecordUtils {
         if (waitSortedMap.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Record> minRecords = null;
+        List<DataRecord> minRecords = null;
         SocketSinkImporter belongImporter = null;
-        for (Entry<SocketSinkImporter, List<Record>> entry : waitSortedMap.entrySet()) {
+        for (Entry<SocketSinkImporter, List<DataRecord>> entry : waitSortedMap.entrySet()) {
             if (null == minRecords) {
                 minRecords = entry.getValue();
                 belongImporter = entry.getKey();
                 continue;
             }
-            if (dataRecordComparator.compare((DataRecord) minRecords.get(0), (DataRecord) entry.getValue().get(0)) > 0) {
+            if (dataRecordComparator.compare(minRecords.get(0), entry.getValue().get(0)) > 0) {
                 minRecords = entry.getValue();
                 belongImporter = entry.getKey();
             }
