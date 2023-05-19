@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Pipeline task interface.
  */
-public interface PipelineTask {
+public interface PipelineTask extends AutoCloseable {
     
     /**
      * Start task.
