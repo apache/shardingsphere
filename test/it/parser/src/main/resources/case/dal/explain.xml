@@ -273,6 +273,36 @@
             </where>
         </delete>
     </describe>
+    <describe sql-case-id="explain_with_analyze_update">
+        <update>
+            <table start-index="7" stop-index="13">
+                <simple-table name="t_order" start-index="23" stop-index="29" />
+            </table>
+            <set start-index="31" stop-index="40" literal-stop-index="40">
+                <assignment start-index="35" stop-index="40" literal-stop-index="40">
+                    <column name="id" start-index="35" stop-index="36" />
+                    <assignment-value>
+                        <literal-expression value="1" start-index="40" stop-index="40" />
+                    </assignment-value>
+                </assignment>
+            </set>
+        </update>
+    </describe>
+    <describe sql-case-id="explain_with_analyze_insert">
+        <insert>
+            <table name="t_order" start-index="28" stop-index="34" />
+            <columns start-index="36" stop-index="45">
+                <column name="order_id" start-index="37" stop-index="44" />
+            </columns>
+            <values>
+                <value>
+                    <assignment-value>
+                        <literal-expression value="1" start-index="54" stop-index="54" />
+                    </assignment-value>
+                </value>
+            </values>
+        </insert>
+    </describe>
     <describe sql-case-id="desc_table">
         <simple-table name="tableName" start-index="5" stop-index="13" />
     </describe>
