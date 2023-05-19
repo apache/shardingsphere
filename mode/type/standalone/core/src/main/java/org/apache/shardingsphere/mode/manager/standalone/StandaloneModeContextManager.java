@@ -203,8 +203,8 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
                 .forEach(each -> each.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName)));
         contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getSchemas()
                 .forEach((schemaName, schema) -> contextManager.getMetaDataContexts().getPersistService().getDatabaseMetaDataService()
-                        .persist(contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName), schemaName, schema));
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().append(contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName),
+                        .persist(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().append(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(),
                 toBeRegisterStorageUnitProps);
         clearServiceCache();
     }
@@ -216,7 +216,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         contextManager.getMetaDataContexts().getMetaData().getDatabases().putAll(contextManager.createChangedDatabases(databaseName, true, switchingResource, null));
         contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class)
                 .forEach(each -> each.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName)));
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().append(contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName),
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().append(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(),
                 toBeUpdatedStorageUnitProps);
         switchingResource.closeStaleDataSources();
         clearServiceCache();
@@ -225,7 +225,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     @Override
     public void unregisterStorageUnits(final String databaseName, final Collection<String> toBeDroppedStorageUnitNames) throws SQLException {
         Map<String, DataSourceProperties> dataSourcePropsMap = contextManager.getMetaDataContexts().getPersistService().getDataSourceService()
-                .load(contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName));
+                .load(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName());
         Map<String, DataSourceProperties> toBeDeletedDataSourcePropsMap = getToBeDeletedDataSourcePropsMap(dataSourcePropsMap, toBeDroppedStorageUnitNames);
         SwitchingResource switchingResource =
                 new ResourceSwitchManager().createByDropResource(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData(), toBeDeletedDataSourcePropsMap);
@@ -236,7 +236,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
         contextManager.deletedSchemaNames(databaseName, reloadMetaDataContexts.getMetaData().getDatabase(databaseName), contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName));
         contextManager.renewMetaDataContexts(reloadMetaDataContexts);
         Map<String, DataSourceProperties> toBeReversedDataSourcePropsMap = getToBeReversedDataSourcePropsMap(dataSourcePropsMap, toBeDroppedStorageUnitNames);
-        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().persist(contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName),
+        contextManager.getMetaDataContexts().getPersistService().getDataSourceService().persist(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(),
                 toBeReversedDataSourcePropsMap);
         switchingResource.closeStaleDataSources();
         clearServiceCache();
@@ -254,7 +254,7 @@ public final class StandaloneModeContextManager implements ModeContextManager, C
     public void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
         contextManager.alterRuleConfiguration(databaseName, ruleConfigs);
         contextManager.getMetaDataContexts().getPersistService()
-                .getDatabaseRulePersistService().persist(contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName), ruleConfigs);
+                .getDatabaseRulePersistService().persist(contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName(), ruleConfigs);
         clearServiceCache();
     }
     

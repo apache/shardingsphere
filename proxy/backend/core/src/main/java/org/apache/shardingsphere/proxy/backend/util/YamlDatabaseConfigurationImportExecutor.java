@@ -196,7 +196,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         }
         ruleConfigsMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())
                 .forEach(each -> addRules(allRuleConfigs, ruleConfigsMap.get(each), database));
-        metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName),
+        metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(),
                 metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources(),
                 metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(), allRuleConfigs);
     }

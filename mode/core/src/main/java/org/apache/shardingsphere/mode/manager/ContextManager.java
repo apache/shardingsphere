@@ -143,8 +143,7 @@ public final class ContextManager implements AutoCloseable {
         if (!metaDataContexts.get().getMetaData().containsDatabase(databaseName)) {
             return;
         }
-        String actualDatabaseName = metaDataContexts.get().getMetaData().getActualDatabaseName(databaseName);
-        metaDataContexts.get().getMetaData().dropDatabase(actualDatabaseName);
+        metaDataContexts.get().getMetaData().dropDatabase(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName());
     }
     
     /**
@@ -286,7 +285,7 @@ public final class ContextManager implements AutoCloseable {
             // TODO Remove this logic when issue #22887 are finished.
             MetaDataContexts reloadMetaDataContexts = createMetaDataContexts(databaseName, false, switchingResource, null);
             reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getSchemas().forEach((schemaName, schema) -> reloadMetaDataContexts.getPersistService().getDatabaseMetaDataService()
-                    .persist(reloadMetaDataContexts.getMetaData().getActualDatabaseName(databaseName), schemaName, schema));
+                    .persist(reloadMetaDataContexts.getMetaData().getDatabase(databaseName).getName(), schemaName, schema));
             Optional.ofNullable(reloadMetaDataContexts.getShardingSphereData().getDatabaseData().get(databaseName))
                     .ifPresent(optional -> optional.getSchemaData().forEach((schemaName, schemaData) -> reloadMetaDataContexts.getPersistService().getShardingSphereDataPersistService()
                             .persist(databaseName, schemaName, schemaData, metaDataContexts.get().getMetaData().getDatabases())));
@@ -393,7 +392,7 @@ public final class ContextManager implements AutoCloseable {
                 : ruleConfigs;
         DatabaseConfiguration toBeCreatedDatabaseConfig =
                 new DataSourceProvidedDatabaseConfiguration(metaDataContexts.get().getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources(), toBeCreatedRuleConfigs);
-        ShardingSphereDatabase changedDatabase = MetaDataFactory.create(metaDataContexts.get().getMetaData().getActualDatabaseName(databaseName),
+        ShardingSphereDatabase changedDatabase = MetaDataFactory.create(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(),
                 internalLoadMetaData, metaDataContexts.get().getPersistService(), toBeCreatedDatabaseConfig, metaDataContexts.get().getMetaData().getProps(), instanceContext);
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(metaDataContexts.get().getMetaData().getDatabases());
         changedDatabase.getSchemas().putAll(newShardingSphereSchemas(changedDatabase));
@@ -500,11 +499,12 @@ public final class ContextManager implements AutoCloseable {
             ShardingSphereSchema reloadedSchema = loadSchema(databaseName, schemaName, dataSourceName);
             if (reloadedSchema.getTables().isEmpty()) {
                 metaDataContexts.get().getMetaData().getDatabase(databaseName).removeSchema(schemaName);
-                metaDataContexts.get().getPersistService().getDatabaseMetaDataService().dropSchema(metaDataContexts.get().getMetaData().getActualDatabaseName(databaseName), schemaName);
+                metaDataContexts.get().getPersistService().getDatabaseMetaDataService().dropSchema(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(),
+                        schemaName);
             } else {
                 metaDataContexts.get().getMetaData().getDatabase(databaseName).putSchema(schemaName, reloadedSchema);
                 metaDataContexts.get().getPersistService().getDatabaseMetaDataService()
-                        .compareAndPersist(metaDataContexts.get().getMetaData().getActualDatabaseName(databaseName), schemaName, reloadedSchema);
+                        .compareAndPersist(metaDataContexts.get().getMetaData().getDatabase(databaseName).getName(), schemaName, reloadedSchema);
             }
         } catch (final SQLException ex) {
             log.error("Reload meta data of database: {} schema: {} with data source: {} failed", databaseName, schemaName, dataSourceName, ex);
