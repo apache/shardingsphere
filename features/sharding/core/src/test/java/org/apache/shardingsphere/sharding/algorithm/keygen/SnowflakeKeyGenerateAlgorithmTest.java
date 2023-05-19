@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sharding.exception.algorithm.keygen.SnowflakeCl
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -47,6 +48,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -115,7 +117,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
     }
     
     @Test
-    void assertLastDigitalOfGenerateKeyDifferentMillisecond() throws InterruptedException {
+    void assertLastDigitalOfGenerateKeyDifferentMillisecond() {
         SnowflakeKeyGenerateAlgorithm.setTimeService(new TimeService());
         KeyGenerateAlgorithm algorithm = TypedSPILoader.getService(KeyGenerateAlgorithm.class, "SNOWFLAKE", PropertiesBuilder.build(new Property("max-vibration-offset", "3")));
         if (algorithm instanceof InstanceContextAware) {
@@ -123,16 +125,16 @@ class SnowflakeKeyGenerateAlgorithmTest {
         }
         String actualGenerateKey0 = Long.toBinaryString(Long.parseLong(algorithm.generateKey().toString()));
         assertThat(Integer.parseInt(actualGenerateKey0.substring(actualGenerateKey0.length() - 3), 2), is(0));
-        Thread.sleep(2L);
+        Awaitility.await().pollDelay(2L, TimeUnit.MILLISECONDS).until(() -> true);
         String actualGenerateKey1 = Long.toBinaryString(Long.parseLong(algorithm.generateKey().toString()));
         assertThat(Integer.parseInt(actualGenerateKey1.substring(actualGenerateKey1.length() - 3), 2), is(1));
-        Thread.sleep(2L);
+        Awaitility.await().pollDelay(2L, TimeUnit.MILLISECONDS).until(() -> true);
         String actualGenerateKey2 = Long.toBinaryString(Long.parseLong(algorithm.generateKey().toString()));
         assertThat(Integer.parseInt(actualGenerateKey2.substring(actualGenerateKey2.length() - 3), 2), is(2));
-        Thread.sleep(2L);
+        Awaitility.await().pollDelay(2L, TimeUnit.MILLISECONDS).until(() -> true);
         String actualGenerateKey3 = Long.toBinaryString(Long.parseLong(algorithm.generateKey().toString()));
         assertThat(Integer.parseInt(actualGenerateKey3.substring(actualGenerateKey3.length() - 3), 2), is(3));
-        Thread.sleep(2L);
+        Awaitility.await().pollDelay(2L, TimeUnit.MILLISECONDS).until(() -> true);
         String actualGenerateKey4 = Long.toBinaryString(Long.parseLong(algorithm.generateKey().toString()));
         assertThat(Integer.parseInt(actualGenerateKey4.substring(actualGenerateKey4.length() - 3), 2), is(0));
     }
