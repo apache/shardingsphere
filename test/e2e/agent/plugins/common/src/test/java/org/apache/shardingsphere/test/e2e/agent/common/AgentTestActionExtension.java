@@ -23,6 +23,7 @@ import org.apache.shardingsphere.test.e2e.agent.common.entity.OrderEntity;
 import org.apache.shardingsphere.test.e2e.agent.common.env.E2ETestEnvironment;
 import org.apache.shardingsphere.test.e2e.agent.common.util.JDBCAgentTestUtils;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -100,7 +101,7 @@ public final class AgentTestActionExtension implements BeforeEachCallback {
         if (!hasSleep) {
             log.info("Waiting to collect data ...");
             hasSleep = true;
-            TimeUnit.MILLISECONDS.sleep(getSleepMilliseconds());
+            Awaitility.await().pollDelay(getSleepMilliseconds(), TimeUnit.MILLISECONDS).until(() -> true);
         }
     }
     
