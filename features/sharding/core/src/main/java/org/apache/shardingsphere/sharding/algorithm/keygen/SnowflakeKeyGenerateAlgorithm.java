@@ -26,7 +26,9 @@ import org.apache.shardingsphere.sharding.exception.algorithm.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.exception.algorithm.keygen.SnowflakeClockMoveBackException;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -85,13 +87,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     private int maxTolerateTimeDifferenceMillis;
     
     static {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(2016, Calendar.NOVEMBER, 1);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        EPOCH = calendar.getTimeInMillis();
+        EPOCH = LocalDateTime.of(2016, 11, 1, 0, 0, 0).toInstant(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())).toEpochMilli();
     }
     
     @Override
