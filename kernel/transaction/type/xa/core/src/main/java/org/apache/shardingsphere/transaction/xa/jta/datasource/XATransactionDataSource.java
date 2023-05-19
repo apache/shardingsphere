@@ -112,6 +112,7 @@ public final class XATransactionDataSource implements AutoCloseable {
         } else {
             xaTransactionManagerProvider.removeRecoveryResource(resourceName, xaDataSource);
         }
+        enlistedTransactions.remove();
     }
     
     private void close(final DataSource dataSource) {
