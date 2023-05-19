@@ -128,7 +128,7 @@ jobs:
             ${{ env.CACHE_PREFIX }}-maven-third-party-
       - name: Aggregate checkstyle report
         run:
-          ./mvnw clean checkstyle:checkstyle-aggregate
+          ./mvnw clean verify checkstyle:checkstyle-aggregate
       - name: Upload checkstyle report to SonarCloud
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
