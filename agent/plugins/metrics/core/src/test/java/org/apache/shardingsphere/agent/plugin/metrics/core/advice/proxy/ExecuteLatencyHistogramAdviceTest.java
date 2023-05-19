@@ -44,7 +44,7 @@ class ExecuteLatencyHistogramAdviceTest {
     }
     
     @Test
-    void assertExecuteLatencyHistogram() throws InterruptedException {
+    void assertExecuteLatencyHistogram() {
         ExecuteLatencyHistogramAdvice advice = new ExecuteLatencyHistogramAdvice();
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
         Method method = mock(Method.class);

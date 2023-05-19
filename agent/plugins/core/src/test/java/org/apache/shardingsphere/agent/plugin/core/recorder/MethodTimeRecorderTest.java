@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 class MethodTimeRecorderTest {
     
     @Test
-    void assertGetElapsedTimeAndCleanWithRecorded() throws InterruptedException, NoSuchMethodException {
+    void assertGetElapsedTimeAndCleanWithRecorded() throws NoSuchMethodException {
         MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(AgentAdvice.class);
         methodTimeRecorder.recordNow(Object.class.getDeclaredMethod("toString"));
         Awaitility.await().atMost(5L, TimeUnit.MILLISECONDS);

@@ -43,7 +43,7 @@ class AbstractExecuteLatencyHistogramAdviceTest {
     }
     
     @Test
-    void assertWithStatement() throws InterruptedException {
+    void assertWithStatement() {
         StatementExecuteLatencyHistogramAdvice advice = new StatementExecuteLatencyHistogramAdvice();
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
         Method method = mock(Method.class);
@@ -54,7 +54,7 @@ class AbstractExecuteLatencyHistogramAdviceTest {
     }
     
     @Test
-    void assertWithPreparedStatement() throws InterruptedException {
+    void assertWithPreparedStatement() {
         PreparedStatementExecuteLatencyHistogramAdvice advice = new PreparedStatementExecuteLatencyHistogramAdvice();
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
         Method method = mock(Method.class);
