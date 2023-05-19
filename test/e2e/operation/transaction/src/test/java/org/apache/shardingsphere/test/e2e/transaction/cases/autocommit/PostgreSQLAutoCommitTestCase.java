@@ -58,8 +58,7 @@ public final class PostgreSQLAutoCommitTestCase extends BaseTransactionTestCase 
             assertFalse(executeQueryWithLog(connection2, "select * from account;").next());
             connection1.commit();
             Awaitility.await().atMost(1L, TimeUnit.SECONDS).pollDelay(200L, TimeUnit.MILLISECONDS).until(
-                    () -> executeQueryWithLog(connection2, "select * from account;").next()
-            );
+                    () -> executeQueryWithLog(connection2, "select * from account;").next());
             assertTrue(executeQueryWithLog(connection2, "select * from account;").next());
         }
     }
