@@ -55,9 +55,8 @@ public final class AlterSQLParserRuleStatementAssert {
             assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
             assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+            assertThat(actual.getInitialCapacity(), is(expected.getInitialCapacity()));
+            assertThat(actual.getMaximumSize(), is(expected.getMaximumSize()));
         }
-        assertNotNull(actual);
-        assertThat(actual.getInitialCapacity(), is(expected.getInitialCapacity()));
-        assertThat(actual.getMaximumSize(), is(expected.getMaximumSize()));
     }
 }
