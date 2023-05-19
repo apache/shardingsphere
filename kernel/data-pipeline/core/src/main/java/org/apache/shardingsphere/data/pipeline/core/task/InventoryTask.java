@@ -31,7 +31,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
@@ -90,32 +89,8 @@ public final class InventoryTask implements PipelineTask {
     @Override
     public Collection<CompletableFuture<?>> start() {
         Collection<CompletableFuture<?>> result = new LinkedList<>();
-        result.add(inventoryDumperExecuteEngine.submit(dumper, new ExecuteCallback() {
-            
-            @Override
-            public void onSuccess() {
-            }
-            
-            @Override
-            public void onFailure(final Throwable throwable) {
-                log.error("dumper onFailure, taskId={}", taskId);
-                stop();
-                close();
-            }
-        }));
-        result.add(inventoryImporterExecuteEngine.submit(importer, new ExecuteCallback() {
-            
-            @Override
-            public void onSuccess() {
-            }
-            
-            @Override
-            public void onFailure(final Throwable throwable) {
-                log.error("importer onFailure, taskId={}", taskId);
-                stop();
-                close();
-            }
-        }));
+        result.add(inventoryDumperExecuteEngine.submit(dumper, new TaskExecuteCallback(this)));
+        result.add(inventoryImporterExecuteEngine.submit(importer, new TaskExecuteCallback(this)));
         return result;
     }
     
