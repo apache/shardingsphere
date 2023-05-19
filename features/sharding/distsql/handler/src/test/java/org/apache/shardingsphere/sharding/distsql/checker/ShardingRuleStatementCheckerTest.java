@@ -84,13 +84,20 @@ class ShardingRuleStatementCheckerTest {
     }
     
     @Test
-    void assertCheckerAutoTableSuccess() {
+    void assertCheckCreatSuccess() {
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(createCompleteAutoTableRule());
         rules.add(createCompleteTableRule());
         ShardingTableRuleStatementChecker.checkCreation(database, rules, false, shardingRuleConfig);
-        rules.clear();
-        rules.add(new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1")));
+    }
+    
+    @Test
+    void assertCheckAlterSuccess() {
+        Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
+        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1"));
+        autoTableRuleSegment.setShardingColumn("order_id");
+        autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("CORE.AUTO.FIXTURE", PropertiesBuilder.build(new Property("sharding-count", "2"))));
+        rules.add(autoTableRuleSegment);
         ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig);
     }
     

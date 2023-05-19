@@ -40,7 +40,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.table.TableRule
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -76,11 +75,8 @@ public final class ShardingTableRuleStatementConverter {
     
     private static Map<String, AlgorithmConfiguration> createKeyGeneratorConfiguration(final AbstractTableRuleSegment rule) {
         Map<String, AlgorithmConfiguration> result = new HashMap<>();
-        Optional.ofNullable(rule.getKeyGenerateStrategySegment()).ifPresent(optional -> {
-            if (!optional.getKeyGenerateAlgorithmName().isPresent()) {
-                result.put(getKeyGeneratorName(rule.getLogicTable(), optional.getKeyGenerateAlgorithmSegment().getName()), createAlgorithmConfiguration(optional.getKeyGenerateAlgorithmSegment()));
-            }
-        });
+        Optional.ofNullable(rule.getKeyGenerateStrategySegment()).ifPresent(optional -> result.put(getKeyGeneratorName(rule.getLogicTable(), optional.getKeyGenerateAlgorithmSegment().getName()),
+                createAlgorithmConfiguration(optional.getKeyGenerateAlgorithmSegment())));
         return result;
     }
     
@@ -167,14 +163,11 @@ public final class ShardingTableRuleStatementConverter {
     }
     
     private static KeyGenerateStrategyConfiguration createKeyGenerateStrategyConfiguration(final String logicTable, final KeyGenerateStrategySegment segment) {
-        if (segment.getKeyGenerateAlgorithmName().isPresent()) {
-            return new KeyGenerateStrategyConfiguration(segment.getKeyGenerateColumn(), segment.getKeyGenerateAlgorithmName().get());
-        }
         return new KeyGenerateStrategyConfiguration(segment.getKeyGenerateColumn(), getKeyGeneratorName(logicTable, segment.getKeyGenerateAlgorithmSegment().getName()));
     }
     
     private static ShardingAuditStrategyConfiguration createShardingAuditStrategyConfiguration(final AuditStrategySegment segment) {
-        List<String> auditorNames = segment.getAuditorSegments().stream().map(ShardingAuditorSegment::getAuditorName).collect(Collectors.toList());
+        Collection<String> auditorNames = segment.getAuditorSegments().stream().map(ShardingAuditorSegment::getAuditorName).collect(Collectors.toList());
         return new ShardingAuditStrategyConfiguration(auditorNames, segment.isAllowHintDisable());
     }
     
