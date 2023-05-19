@@ -34,13 +34,13 @@ import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerato
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
 import org.apache.shardingsphere.data.pipeline.cdc.util.CDCDataRecordUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.util.DataRecordResultConvertUtils;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +78,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
     
     private final Map<String, String> tableNameSchemaMap = new HashMap<>();
     
-    private final Map<SocketSinkImporter, BlockingQueue<Record>> incrementalRecordMap = new ConcurrentHashMap<>();
+    private final Map<SocketSinkImporter, BlockingQueue<List<Record>>> incrementalRecordMap = new ConcurrentHashMap<>();
     
     private final AtomicInteger runningIncrementalTaskCount = new AtomicInteger(0);
     
@@ -120,7 +120,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
                 return;
             }
             Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
-            importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(RecordUtils.getLastNormalRecord(recordList), dataRecordCount));
+            importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(lastRecord, dataRecordCount));
             writeImmediately(recordList, importerDataRecordMap);
         } else if (ImporterType.INCREMENTAL == importerType) {
             writeIntoQueue(recordList, socketSinkImporter);
@@ -160,12 +160,20 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
     
     @SneakyThrows(InterruptedException.class)
     private void writeIntoQueue(final List<Record> dataRecords, final SocketSinkImporter socketSinkImporter) {
-        BlockingQueue<Record> blockingQueue = incrementalRecordMap.get(socketSinkImporter);
+        BlockingQueue<List<Record>> blockingQueue = incrementalRecordMap.get(socketSinkImporter);
         if (null == blockingQueue) {
             log.warn("not find the queue to write");
             return;
         }
+        Map<Long, List<Record>> recordsMap = new LinkedHashMap<>();
         for (Record each : dataRecords) {
+            if (!(each instanceof DataRecord)) {
+                continue;
+            }
+            DataRecord dataRecord = (DataRecord) each;
+            recordsMap.computeIfAbsent(dataRecord.getCsn(), ignored -> new LinkedList<>()).add(dataRecord);
+        }
+        for (List<Record> each : recordsMap.values()) {
             blockingQueue.put(each);
         }
     }
@@ -221,13 +229,13 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
         public void run() {
             while (incrementalTaskRunning) {
                 Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap = new HashMap<>();
-                List<DataRecord> dataRecords = new LinkedList<>();
+                List<Record> dataRecords = new LinkedList<>();
                 for (int i = 0; i < batchSize; i++) {
-                    DataRecord minimumDataRecord = CDCDataRecordUtils.findMinimumDataRecordAndSavePosition(incrementalRecordMap, dataRecordComparator, cdcAckPositionMap);
-                    if (null == minimumDataRecord) {
+                    List<Record> minimumRecords = CDCDataRecordUtils.findMinimumDataRecordsAndSavePosition(incrementalRecordMap, dataRecordComparator, cdcAckPositionMap);
+                    if (null == minimumRecords) {
                         break;
                     }
-                    dataRecords.add(minimumDataRecord);
+                    dataRecords.addAll(minimumRecords);
                 }
                 if (dataRecords.isEmpty()) {
                     Thread.sleep(200L);

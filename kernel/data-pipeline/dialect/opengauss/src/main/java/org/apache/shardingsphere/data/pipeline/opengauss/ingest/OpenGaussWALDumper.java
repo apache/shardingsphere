@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExe
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.wal.OpenGaussLogicalReplication;
@@ -44,6 +45,7 @@ import org.opengauss.replication.PGReplicationStream;
 
 import java.nio.ByteBuffer;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -64,7 +66,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     
     private final boolean decodeWithTX;
     
-    private final List<AbstractRowEvent> rowEvents = new LinkedList<>();
+    private final List<AbstractRowEvent> walEvents = new LinkedList<>();
     
     public OpenGaussWALDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
                               final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
@@ -115,29 +117,31 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     }
     
     private void processEventWithTX(final AbstractWALEvent event) {
-        if (event instanceof AbstractRowEvent) {
-            rowEvents.add((AbstractRowEvent) event);
+        if (event instanceof BeginTXEvent) {
+            walEvents.clear();
             return;
         }
-        if (event instanceof BeginTXEvent) {
-            rowEvents.clear();
+        if (event instanceof AbstractRowEvent) {
+            walEvents.add((AbstractRowEvent) event);
             return;
         }
         if (event instanceof CommitTXEvent) {
             Long csn = ((CommitTXEvent) event).getCsn();
-            for (AbstractRowEvent each : rowEvents) {
+            List<Record> records = new LinkedList<>();
+            for (AbstractRowEvent each : walEvents) {
                 each.setCsn(csn);
-                channel.pushRecord(walEventConverter.convert(each));
+                records.add(walEventConverter.convert(each));
             }
+            records.add(walEventConverter.convert(event));
+            channel.pushRecords(records);
         }
-        channel.pushRecord(walEventConverter.convert(event));
     }
     
     private void processEventIgnoreTX(final AbstractWALEvent event) {
-        if (event instanceof BeginTXEvent) {
+        if (event instanceof BeginTXEvent || event instanceof CommitTXEvent) {
             return;
         }
-        channel.pushRecord(walEventConverter.convert(event));
+        channel.pushRecords(Collections.singletonList(walEventConverter.convert(event)));
     }
     
     @Override

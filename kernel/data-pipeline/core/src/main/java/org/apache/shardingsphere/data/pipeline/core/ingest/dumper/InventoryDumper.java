@@ -33,6 +33,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPos
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
@@ -59,6 +60,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -108,7 +110,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
             log.error("Inventory dump, ex caught, msg={}.", ex.getMessage());
             throw new IngestException("Inventory dump failed on " + dumperConfig.getActualTableName(), ex);
         } finally {
-            channel.pushRecord(new FinishedRecord(new FinishedPosition()));
+            channel.pushRecords(Collections.singletonList(new FinishedRecord(new FinishedPosition())));
         }
     }
     
@@ -128,8 +130,13 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                 int rowCount = 0;
                 JobRateLimitAlgorithm rateLimitAlgorithm = dumperConfig.getRateLimitAlgorithm();
                 ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+                List<Record> dataRecords = new LinkedList<>();
                 while (resultSet.next()) {
-                    channel.pushRecord(loadDataRecord(resultSet, resultSetMetaData, tableMetaData));
+                    dataRecords.add(loadDataRecord(resultSet, resultSetMetaData, tableMetaData));
+                    if (dataRecords.size() >= batchSize) {
+                        channel.pushRecords(dataRecords);
+                        dataRecords.clear();
+                    }
                     ++rowCount;
                     if (!isRunning()) {
                         log.info("Broke because of inventory dump is not running.");
@@ -139,9 +146,13 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                         rateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
                     }
                 }
+                if (!dataRecords.isEmpty()) {
+                    channel.pushRecords(dataRecords);
+                }
                 dumpStatement.set(null);
                 log.info("Inventory dump done, rowCount={}", rowCount);
             }
+            
         }
     }
     

@@ -54,6 +54,7 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
@@ -77,7 +78,7 @@ public final class MySQLClient {
     
     private Promise<Object> responseCallback;
     
-    private final ArrayBlockingQueue<AbstractBinlogEvent> blockingEventQueue = new ArrayBlockingQueue<>(10000);
+    private final ArrayBlockingQueue<List<AbstractBinlogEvent>> blockingEventQueue = new ArrayBlockingQueue<>(200);
     
     private ServerInfo serverInfo;
     
@@ -228,7 +229,7 @@ public final class MySQLClient {
      *
      * @return binlog event
      */
-    public synchronized AbstractBinlogEvent poll() {
+    public synchronized List<AbstractBinlogEvent> poll() {
         ShardingSpherePreconditions.checkState(running, BinlogSyncChannelAlreadyClosedException::new);
         try {
             return blockingEventQueue.poll(100L, TimeUnit.MILLISECONDS);
@@ -305,14 +306,20 @@ public final class MySQLClient {
             this.lastBinlogEvent = new AtomicReference<>(lastBinlogEvent);
         }
         
+        @SuppressWarnings("unchecked")
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
             if (!running) {
                 return;
             }
-            if (msg instanceof AbstractBinlogEvent) {
-                lastBinlogEvent.set((AbstractBinlogEvent) msg);
-                blockingEventQueue.put(lastBinlogEvent.get());
+            if (msg instanceof List) {
+                List<AbstractBinlogEvent> records = (List<AbstractBinlogEvent>) msg;
+                if (records.isEmpty()) {
+                    log.warn("The records is empty");
+                    return;
+                }
+                lastBinlogEvent.set(records.get(records.size() - 1));
+                blockingEventQueue.put(records);
                 reconnectTimes.set(0);
             }
         }

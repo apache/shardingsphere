@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     
-    private final BlockingQueue<Record> queue;
+    private final BlockingQueue<List<Record>> queue;
     
     private final AckCallback ackCallback;
     
@@ -44,8 +44,8 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     
     @SneakyThrows(InterruptedException.class)
     @Override
-    public void pushRecord(final Record dataRecord) {
-        queue.put(dataRecord);
+    public void pushRecords(final List<Record> records) {
+        queue.put(records);
     }
     
     @SneakyThrows(InterruptedException.class)
@@ -54,13 +54,22 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     public List<Record> fetchRecords(final int batchSize, final int timeout, final TimeUnit timeUnit) {
         List<Record> result = new ArrayList<>(batchSize);
         long start = System.currentTimeMillis();
-        while (batchSize > queue.size()) {
+        int recordsCount = 0;
+        while (batchSize > recordsCount) {
+            List<Record> records = queue.poll();
+            if (null == records || records.isEmpty()) {
+                TimeUnit.MILLISECONDS.sleep(100L);
+            } else {
+                recordsCount += records.size();
+                result.addAll(records);
+            }
+            if (recordsCount >= batchSize) {
+                return result;
+            }
             if (timeUnit.toMillis(timeout) <= System.currentTimeMillis() - start) {
                 break;
             }
-            TimeUnit.MILLISECONDS.sleep(100L);
         }
-        queue.drainTo(result, batchSize);
         return result;
     }
     

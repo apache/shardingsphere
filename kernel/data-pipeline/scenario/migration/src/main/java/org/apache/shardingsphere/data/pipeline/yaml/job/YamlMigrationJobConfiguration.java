@@ -56,6 +56,7 @@ public final class YamlMigrationJobConfiguration implements YamlPipelineJobConfi
     
     private List<String> jobShardingDataNodes;
     
+    // TODO remove later
     private int concurrency = 3;
     
     private int retryTimes = 3;

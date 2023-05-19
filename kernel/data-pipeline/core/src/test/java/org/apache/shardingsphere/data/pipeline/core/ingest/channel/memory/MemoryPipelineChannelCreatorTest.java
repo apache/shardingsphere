@@ -48,9 +48,4 @@ class MemoryPipelineChannelCreatorTest {
     void assertCreateSimpleMemoryPipelineChannel() {
         assertThat(TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY").createPipelineChannel(1, mock(AckCallback.class)), instanceOf(SimpleMemoryPipelineChannel.class));
     }
-    
-    @Test
-    void assertCreateMultiplexMemoryPipelineChannel() {
-        assertThat(TypedSPILoader.getService(PipelineChannelCreator.class, "MEMORY").createPipelineChannel(2, mock(AckCallback.class)), instanceOf(MultiplexMemoryPipelineChannel.class));
-    }
 }

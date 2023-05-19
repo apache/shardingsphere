@@ -28,7 +28,6 @@ import org.apache.shardingsphere.data.pipeline.api.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
@@ -71,7 +70,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
     private final IncrementalTaskProgress taskProgress;
     
     // TODO simplify parameters
-    public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
+    public IncrementalTask(final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
                            final PipelineChannelCreator pipelineChannelCreator, final ImporterConnector importerConnector,
                            final PipelineTableMetaDataLoader sourceMetaDataLoader, final ExecuteEngine incrementalExecuteEngine,
                            final InventoryIncrementalJobItemContext jobItemContext) {
@@ -79,10 +78,10 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
         this.incrementalExecuteEngine = incrementalExecuteEngine;
         IngestPosition position = dumperConfig.getPosition();
         taskProgress = createIncrementalTaskProgress(position, jobItemContext.getInitProgress());
-        channel = createChannel(concurrency, pipelineChannelCreator, taskProgress);
+        channel = createChannel(pipelineChannelCreator, taskProgress);
         dumper = PipelineTypedSPILoader.getDatabaseTypedService(
                 IncrementalDumperCreator.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType()).createIncrementalDumper(dumperConfig, position, channel, sourceMetaDataLoader);
-        importers = createImporters(concurrency, importerConfig, importerConnector, channel, jobItemContext);
+        importers = createImporters(importerConfig, importerConnector, channel, jobItemContext);
     }
     
     private IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition position, final InventoryIncrementalJobItemProgress jobItemProgress) {
@@ -94,24 +93,19 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
         return result;
     }
     
-    private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
+    private Collection<Importer> createImporters(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
                                                  final PipelineJobProgressListener jobProgressListener) {
         Collection<Importer> result = new LinkedList<>();
-        for (int i = 0; i < concurrency; i++) {
-            result.add(TypedSPILoader.getService(ImporterCreator.class, importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener,
-                    ImporterType.INCREMENTAL));
-        }
+        result.add(TypedSPILoader.getService(ImporterCreator.class, importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener,
+                ImporterType.INCREMENTAL));
         return result;
     }
     
-    private PipelineChannel createChannel(final int concurrency, final PipelineChannelCreator pipelineChannelCreator, final IncrementalTaskProgress progress) {
-        return pipelineChannelCreator.createPipelineChannel(concurrency, records -> {
+    private PipelineChannel createChannel(final PipelineChannelCreator pipelineChannelCreator, final IncrementalTaskProgress progress) {
+        return pipelineChannelCreator.createPipelineChannel(1, records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
-            if (!(lastHandledRecord.getPosition() instanceof PlaceholderPosition)) {
-                progress.setPosition(lastHandledRecord.getPosition());
-                progress.getIncrementalTaskDelay().setLastEventTimestamps(lastHandledRecord.getCommitTime());
-            }
-            progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
+            progress.setPosition(lastHandledRecord.getPosition());
+            progress.getIncrementalTaskDelay().setLastEventTimestamps(lastHandledRecord.getCommitTime());
         });
     }
     
