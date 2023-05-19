@@ -103,3 +103,34 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
         run: ./mvnw -B sonar:sonar -Dsonar.projectKey=apache_shardingsphere -Dsonar.coverage.jacoco.xmlReportPaths=report/target/site/jacoco-aggregate/jacoco.xml -Dmaven.javadoc.skip=true -Drat.skip=true
+  
+  checkstyle-report-sonarcloud:
+    if: github.repository == 'apache/shardingsphere'
+    name: Checkstyle - SonarCloud
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: 'temurin'
+      - uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ env.CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ env.CACHE_PREFIX }}-maven-third-party-
+      - name: Aggregate checkstyle report
+        run:
+          ./mvnw clean checkstyle:checkstyle-aggregate
+      - name: Upload checkstyle report to SonarCloud
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+        run: ./mvnw -B sonar:sonar -Dsonar.projectKey=apache_shardingsphere -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
