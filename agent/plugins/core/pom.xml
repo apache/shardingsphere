@@ -31,6 +31,13 @@
         <target.directory>${project.basedir}/target/lib</target.directory>
     </properties>
     
+    <dependencies>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+        </dependency>
+    </dependencies>
+    
     <build>
         <plugins>
             <plugin>

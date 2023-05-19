@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.agent.plugin.core.recorder;
 
 import org.apache.shardingsphere.agent.api.advice.AgentAdvice;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,7 +33,7 @@ class MethodTimeRecorderTest {
     void assertGetElapsedTimeAndCleanWithRecorded() throws InterruptedException, NoSuchMethodException {
         MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(AgentAdvice.class);
         methodTimeRecorder.recordNow(Object.class.getDeclaredMethod("toString"));
-        Thread.sleep(5L);
+        Awaitility.await().atMost(5L, TimeUnit.MILLISECONDS);
         assertThat(methodTimeRecorder.getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), greaterThanOrEqualTo(5L));
     }
     
