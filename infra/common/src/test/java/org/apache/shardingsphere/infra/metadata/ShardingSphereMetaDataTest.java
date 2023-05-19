@@ -44,9 +44,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -109,12 +107,5 @@ class ShardingSphereMetaDataTest {
         ShardingSphereDatabase actual = ShardingSphereDatabase.create("foo_db", databaseType, Collections.singletonMap("", databaseType),
                 mock(DataSourceProvidedDatabaseConfiguration.class), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
         assertNotNull(actual.getSchema("foo_db"));
-    }
-    
-    @Test
-    void assertNullDatabaseName() {
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.emptyMap(), null, new ConfigurationProperties(new Properties()));
-        assertFalse(metaData.containsDatabase(null));
-        assertNull(metaData.getDatabase(null));
     }
 }

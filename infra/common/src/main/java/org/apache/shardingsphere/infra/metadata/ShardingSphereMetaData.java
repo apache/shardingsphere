@@ -78,7 +78,7 @@ public final class ShardingSphereMetaData {
      * @return contains database from meta data or not
      */
     public boolean containsDatabase(final String databaseName) {
-        return null != databaseName && databases.containsKey(databaseName.toLowerCase());
+        return databases.containsKey(databaseName.toLowerCase());
     }
     
     /**
@@ -88,7 +88,7 @@ public final class ShardingSphereMetaData {
      * @return meta data database
      */
     public ShardingSphereDatabase getDatabase(final String databaseName) {
-        return null == databaseName ? null : databases.get(databaseName.toLowerCase());
+        return databases.get(databaseName.toLowerCase());
     }
     
     /**
@@ -98,16 +98,6 @@ public final class ShardingSphereMetaData {
      */
     public void putDatabase(final ShardingSphereDatabase database) {
         databases.put(database.getName().toLowerCase(), database);
-    }
-    
-    /**
-     * Get actual database name.
-     *
-     * @param databaseName database name
-     * @return actual database name
-     */
-    public String getActualDatabaseName(final String databaseName) {
-        return getDatabase(databaseName).getName();
     }
     
     /**
