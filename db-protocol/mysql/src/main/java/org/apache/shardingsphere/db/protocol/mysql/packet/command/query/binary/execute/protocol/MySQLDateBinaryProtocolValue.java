@@ -51,11 +51,11 @@ public final class MySQLDateBinaryProtocolValue implements MySQLBinaryProtocolVa
     }
     
     private Timestamp getTimestampForDate(final MySQLPacketPayload payload) {
-        return Timestamp.valueOf(LocalDate.of(payload.readInt2(), payload.readInt1() - 1, payload.readInt1()).atStartOfDay());
+        return Timestamp.valueOf(LocalDate.of(payload.readInt2(), payload.readInt1(), payload.readInt1()).atStartOfDay());
     }
     
     private Timestamp getTimestampForDatetime(final MySQLPacketPayload payload) {
-        return Timestamp.valueOf(LocalDateTime.of(payload.readInt2(), payload.readInt1() - 1, payload.readInt1(), payload.readInt1(), payload.readInt1(), payload.readInt1()));
+        return Timestamp.valueOf(LocalDateTime.of(payload.readInt2(), payload.readInt1(), payload.readInt1(), payload.readInt1(), payload.readInt1(), payload.readInt1()));
     }
     
     @Override
