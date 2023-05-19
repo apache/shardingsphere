@@ -41,5 +41,4 @@
     <row values="sql_show| false" />
     <row values="sql_simple| false" />
     <row values="system_log_level| INFO" />
-    <row values="transaction_type| LOCAL" />
 </dataset>
