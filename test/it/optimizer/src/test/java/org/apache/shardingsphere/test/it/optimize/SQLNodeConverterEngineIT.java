@@ -214,6 +214,7 @@ class SQLNodeConverterEngineIT {
             result.add("select_where_with_expr_with_is");
             result.add("select_where_with_expr_with_is_not");
             result.add("select_where_with_expr_with_not");
+            result.add("select_where_with_expr_with_or_sign");
             return result;
         }
         // CHECKSTYLE:ON
