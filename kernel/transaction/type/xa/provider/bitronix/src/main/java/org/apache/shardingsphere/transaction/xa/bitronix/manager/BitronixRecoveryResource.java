@@ -42,9 +42,9 @@ public final class BitronixRecoveryResource extends ResourceBean implements XARe
     
     private final String resourceName;
     
-    private final XADataSource xaDataSource;
+    private final transient XADataSource xaDataSource;
     
-    private XAConnection xaConnection;
+    private transient XAConnection xaConnection;
     
     @Override
     public void init() {
