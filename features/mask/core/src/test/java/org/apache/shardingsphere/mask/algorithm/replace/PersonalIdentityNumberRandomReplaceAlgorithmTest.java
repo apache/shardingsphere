@@ -46,7 +46,7 @@ class PersonalIdentityNumberRandomReplaceAlgorithmTest {
         assertThat(maskAlgorithm.mask(""), is(""));
         assertThat(maskAlgorithm.mask(null), is(nullValue()));
     }
-
+    
     @Test
     void assertMaskWithDifferentCountryCode() {
         PersonalIdentityNumberRandomReplaceAlgorithm maskAlgorithmCN = new PersonalIdentityNumberRandomReplaceAlgorithm();

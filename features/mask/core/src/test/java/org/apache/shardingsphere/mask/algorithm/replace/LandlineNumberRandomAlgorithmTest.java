@@ -44,16 +44,16 @@ class LandlineNumberRandomAlgorithmTest {
         assertThat(maskAlgorithm.mask("0251234567"), not("0251234567"));
         assertThat(maskAlgorithm.mask("03101234567"), not("03101234567"));
     }
-
+    
     @Test
     void assertInitWhenConfigIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class, () -> maskAlgorithm.init(PropertiesBuilder.build()));
     }
-
+    
     @Test
     void assertMaskWithInvalidConfig() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> maskAlgorithm.init(PropertiesBuilder.build(new Property("landline-numbers", ""))));
     }
-
+    
 }

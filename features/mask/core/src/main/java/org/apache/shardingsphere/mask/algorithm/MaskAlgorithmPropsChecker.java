@@ -60,7 +60,7 @@ public final class MaskAlgorithmPropsChecker {
         ShardingSpherePreconditions.checkState(props.getProperty(atLeastOneCharConfigKey).length() > 0,
                 () -> new MaskAlgorithmInitializationException(maskType, String.format("%s's length must be at least one", atLeastOneCharConfigKey)));
     }
-
+    
     /**
      * Check required property config.
      *
@@ -74,7 +74,7 @@ public final class MaskAlgorithmPropsChecker {
             throw new MaskAlgorithmInitializationException(maskType, String.format("%s is required", requiredPropertyConfigKey));
         }
     }
-
+    
     /**
      * Check required property config.
      *

@@ -74,19 +74,19 @@ class MaskAfterSpecialCharsAlgorithmTest {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", ""))));
     }
-
+    
     @Test
     void assertInitWhenReplaceCharIsMissing() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build(new Property("special-chars", "d1"))));
     }
-
+    
     @Test
     void assertInitWhenPropertiesAreEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build()));
     }
-
+    
     @Test
     void assertInitWhenValidPropertiesAreSet() {
         MaskBeforeSpecialCharsAlgorithm algorithm = new MaskBeforeSpecialCharsAlgorithm();

@@ -48,7 +48,7 @@ class MilitaryIdentityNumberRandomReplaceAlgorithmTest {
         assertThat(maskAlgorithm.mask(""), is(""));
         assertNull(maskAlgorithm.mask(null));
     }
-
+    
     @Test
     void testMaskWithInvalidProps() {
         MaskAlgorithm algorithm = new MilitaryIdentityNumberRandomReplaceAlgorithm();
