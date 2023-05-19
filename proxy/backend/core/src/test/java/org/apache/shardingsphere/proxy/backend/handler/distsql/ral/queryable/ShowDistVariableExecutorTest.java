@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableExce
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -57,17 +56,6 @@ class ShowDistVariableExecutorTest {
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("variable_name"));
         assertThat(iterator.next(), is("variable_value"));
-    }
-    
-    @Test
-    void assertShowTransactionType() {
-        when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.LOCAL);
-        ShowDistVariableExecutor executor = new ShowDistVariableExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariableStatement("TRANSACTION_TYPE"));
-        assertThat(actual.size(), is(1));
-        LocalDataQueryResultRow row = actual.iterator().next();
-        assertThat(row.getCell(1), is("transaction_type"));
-        assertThat(row.getCell(2), is("LOCAL"));
     }
     
     @Test

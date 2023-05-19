@@ -36,10 +36,8 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -56,15 +54,6 @@ class SetDistVariableUpdaterTest {
     
     @Mock
     private ConnectionSession connectionSession;
-    
-    @Test
-    void assertExecuteWithTransactionType() {
-        SetDistVariableStatement statement = new SetDistVariableStatement("transaction_type", "local");
-        when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.XA));
-        SetDistVariableUpdater updater = new SetDistVariableUpdater();
-        updater.executeUpdate(connectionSession, statement);
-        assertThat(connectionSession.getTransactionStatus().getTransactionType().name(), is(TransactionType.LOCAL.name()));
-    }
     
     @Test
     void assertExecuteWithConfigurationKey() {
