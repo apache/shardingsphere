@@ -243,6 +243,36 @@
             <table name="t_order" start-index="28" stop-index="34" />
         </delete>
     </describe>
+    <describe sql-case-id="explain_with_analyze_delete_condition">
+        <delete>
+            <simple-table name="t" alias="t1" start-index="31" stop-index="34" />
+            <where start-index="42" stop-index="62">
+                <expr>
+                    <binary-operation-expression start-index="48" stop-index="62">
+                        <left>
+                            <column name="x" start-index="48" stop-index="51">
+                                <owner name="t1" start-index="48" stop-index="49" />
+                            </column>
+                        </left>
+                        <operator>=</operator>
+                        <right>
+                            <binary-operation-expression start-index="55" stop-index="62">
+                                <left>
+                                    <column name="x" start-index="55" stop-index="58">
+                                        <owner name="t2" start-index="55" stop-index="56" />
+                                    </column>
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <literal-expression value="1" start-index="62" stop-index="62" />
+                                </right>
+                            </binary-operation-expression>
+                        </right>
+                    </binary-operation-expression>
+                </expr>
+            </where>
+        </delete>
+    </describe>
     <describe sql-case-id="desc_table">
         <simple-table name="tableName" start-index="5" stop-index="13" />
     </describe>
