@@ -48,7 +48,7 @@ class AbstractExecuteLatencyHistogramAdviceTest {
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
         Method method = mock(Method.class);
         advice.beforeMethod(targetObject, method, new Object[]{}, "FIXTURE");
-        Awaitility.await().atMost(200L, TimeUnit.MILLISECONDS);
+        Awaitility.await().pollDelay(200L, TimeUnit.MILLISECONDS).until(() -> true);
         advice.afterMethod(targetObject, method, new Object[]{}, null, "FIXTURE");
         assertThat(Double.parseDouble(MetricsCollectorRegistry.get(config, "FIXTURE").toString()), greaterThanOrEqualTo(200d));
     }
@@ -59,7 +59,7 @@ class AbstractExecuteLatencyHistogramAdviceTest {
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
         Method method = mock(Method.class);
         advice.beforeMethod(targetObject, method, new Object[]{}, "FIXTURE");
-        Awaitility.await().atMost(200L, TimeUnit.MILLISECONDS);
+        Awaitility.await().pollDelay(200L, TimeUnit.MILLISECONDS).until(() -> true);
         advice.afterMethod(targetObject, method, new Object[]{}, null, "FIXTURE");
         assertThat(Double.parseDouble(MetricsCollectorRegistry.get(config, "FIXTURE").toString()), greaterThanOrEqualTo(200d));
     }

@@ -33,7 +33,7 @@ class MethodTimeRecorderTest {
     void assertGetElapsedTimeAndCleanWithRecorded() throws NoSuchMethodException {
         MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(AgentAdvice.class);
         methodTimeRecorder.recordNow(Object.class.getDeclaredMethod("toString"));
-        Awaitility.await().atMost(5L, TimeUnit.MILLISECONDS);
+        Awaitility.await().pollDelay(5L, TimeUnit.MILLISECONDS).until(() -> true);
         assertThat(methodTimeRecorder.getElapsedTimeAndClean(Object.class.getDeclaredMethod("toString")), greaterThanOrEqualTo(5L));
     }
     
