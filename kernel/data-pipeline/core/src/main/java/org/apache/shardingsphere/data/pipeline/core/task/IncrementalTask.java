@@ -30,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
@@ -52,7 +51,7 @@ import java.util.concurrent.CompletableFuture;
  * Incremental task.
  */
 @Slf4j
-@ToString(exclude = {"incrementalExecuteEngine", "channel", "dumper", "importers", "taskProgress"})
+@ToString(exclude = {"incrementalExecuteEngine", "channel", "dumper", "importer", "taskProgress"})
 public final class IncrementalTask implements PipelineTask, AutoCloseable {
     
     @Getter
@@ -64,7 +63,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
     
     private final Dumper dumper;
     
-    private final Collection<Importer> importers;
+    private final Importer importer;
     
     @Getter
     private final IncrementalTaskProgress taskProgress;
@@ -81,7 +80,8 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
         channel = createChannel(pipelineChannelCreator, taskProgress);
         dumper = PipelineTypedSPILoader.getDatabaseTypedService(
                 IncrementalDumperCreator.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType()).createIncrementalDumper(dumperConfig, position, channel, sourceMetaDataLoader);
-        importers = createImporters(importerConfig, importerConnector, channel, jobItemContext);
+        importer = TypedSPILoader.getService(ImporterCreator.class, importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobItemContext,
+                ImporterType.INCREMENTAL);
     }
     
     private IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition position, final InventoryIncrementalJobItemProgress jobItemProgress) {
@@ -90,14 +90,6 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
             Optional.ofNullable(jobItemProgress.getIncremental().getIncrementalTaskProgress())
                     .ifPresent(optional -> result.setIncrementalTaskDelay(jobItemProgress.getIncremental().getIncrementalTaskProgress().getIncrementalTaskDelay()));
         }
-        return result;
-    }
-    
-    private Collection<Importer> createImporters(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
-                                                 final PipelineJobProgressListener jobProgressListener) {
-        Collection<Importer> result = new LinkedList<>();
-        result.add(TypedSPILoader.getService(ImporterCreator.class, importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener,
-                ImporterType.INCREMENTAL));
         return result;
     }
     
@@ -114,16 +106,14 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
         taskProgress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         Collection<CompletableFuture<?>> result = new LinkedList<>();
         result.add(incrementalExecuteEngine.submit(dumper, new JobExecuteCallback(taskId, "incremental dumper")));
-        importers.forEach(each -> result.add(incrementalExecuteEngine.submit(each, new JobExecuteCallback(taskId, "importer"))));
+        result.add(incrementalExecuteEngine.submit(importer, new JobExecuteCallback(taskId, "incremental importer")));
         return result;
     }
     
     @Override
     public void stop() {
         dumper.stop();
-        for (Importer each : importers) {
-            each.stop();
-        }
+        importer.stop();
     }
     
     @Override
