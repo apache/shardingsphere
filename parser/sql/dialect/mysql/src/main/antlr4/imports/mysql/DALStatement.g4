@@ -372,8 +372,11 @@ flushOption
     ;
 
 tablesOption
-    : TABLES |TABLES tableName (COMMA_ tableName)* | TABLES WITH READ LOCK | TABLES tableName (COMMA_ tableName)* WITH READ LOCK
-    | TABLES tableName (COMMA_ tableName)* FOR EXPORT
+    : (TABLES | TABLE)
+    | (TABLES | TABLE) tableName (COMMA_ tableName)*
+    | (TABLES | TABLE) WITH READ LOCK
+    | (TABLES | TABLE) tableName (COMMA_ tableName)* WITH READ LOCK
+    | (TABLES | TABLE) tableName (COMMA_ tableName)* FOR EXPORT
     ;
 
 kill

@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.infra.util.retry;
 
-import org.apache.shardingsphere.infra.util.retry.fixture.RetryFunctionFixture;
 import org.junit.jupiter.api.Test;
+
+import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,42 +27,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class RetryExecutorTest {
     
     @Test
-    void assertExecuteForOnce() {
-        long timeout = 5L;
-        long target = 10L;
-        RetryFunctionFixture withFunc = new RetryFunctionFixture(target);
-        assertTrue(new RetryExecutor(timeout, 2L).execute(withFunc.moveAdd(), 12L));
-        RetryFunctionFixture withBiFunc = new RetryFunctionFixture(target);
-        assertTrue(new RetryExecutor(timeout, 2L).execute(withBiFunc.moveMulti(), 4L, 3L));
+    void assertExecute() {
+        assertTrue(new RetryExecutor(5L, 2L).execute(value -> value > 0, 1));
     }
     
     @Test
-    void assertExecuteForInProgress() {
-        long timeout = 5L;
-        long target = 20L;
-        RetryFunctionFixture withFunc = new RetryFunctionFixture(target);
-        assertTrue(new RetryExecutor(timeout, 2L).execute(withFunc.moveAdd(), 12L));
-        RetryFunctionFixture withBiFunc = new RetryFunctionFixture(target);
-        assertTrue(new RetryExecutor(timeout, 2L).execute(withBiFunc.moveMulti(), 4L, 3L));
+    void assertExecuteTimeout() {
+        assertFalse(new RetryExecutor(5L, 2L).execute(value -> value > 0, -1));
     }
     
     @Test
-    void assertExecuteForTimeout() {
-        long timeout = 5L;
-        long target = 100L;
-        RetryFunctionFixture withFunc = new RetryFunctionFixture(target);
-        assertFalse(new RetryExecutor(timeout, 2L).execute(withFunc.moveAdd(), 12L));
-        RetryFunctionFixture withBiFunc = new RetryFunctionFixture(target);
-        assertFalse(new RetryExecutor(timeout, 2L).execute(withBiFunc.moveMulti(), 4L, 3L));
-    }
-    
-    @Test
-    void assertExecuteForWait() {
-        long timeout = -1L;
-        long target = 100L;
-        RetryFunctionFixture withFunc = new RetryFunctionFixture(target);
-        assertTrue(new RetryExecutor(timeout, 2L).execute(withFunc.moveAdd(), 12L));
-        RetryFunctionFixture withBiFunc = new RetryFunctionFixture(target);
-        assertTrue(new RetryExecutor(timeout, 2L).execute(withBiFunc.moveMulti(), 4L, 3L));
+    void assertExecuteWithNeverTimeout() {
+        assertTrue(new RetryExecutor(-1L, 2L).execute(new Predicate<Integer>() {
+            
+            private int currentCount;
+            
+            @Override
+            public boolean test(final Integer value) {
+                return ++currentCount > 10;
+            }
+        }, null));
     }
 }

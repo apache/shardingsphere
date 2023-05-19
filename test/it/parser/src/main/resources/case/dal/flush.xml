@@ -23,4 +23,10 @@
         <table name="t_order" start-index="13" stop-index="19" />
         <table name="t_order_item" start-index="21" stop-index="32" />
     </flush>
+    <flush sql-case-id="flush_table" flush-table="true" />
+    <flush sql-case-id="flush_table_with_table" flush-table="true">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <table name="t_order_item" start-index="20" stop-index="31" />
+    </flush>
+    <flush sql-case-id="flush_table_with_read_lock" flush-table="true" />
 </sql-parser-test-cases>

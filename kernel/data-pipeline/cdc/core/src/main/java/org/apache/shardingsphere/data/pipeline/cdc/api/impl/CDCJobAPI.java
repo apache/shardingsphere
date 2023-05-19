@@ -342,7 +342,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     }
     
     @Override
-    public void rollback(final String jobId) throws SQLException {
+    public void commit(final String jobId) {
         CDCJobConfiguration jobConfig = getJobConfiguration(jobId);
         if (CDCSinkType.SOCKET == jobConfig.getSinkConfig().getSinkType()) {
             PipelineJobCenter.stop(jobId);
@@ -353,7 +353,7 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
     }
     
     @Override
-    public void commit(final String jobId) {
+    public void rollback(final String jobId) throws SQLException {
         CDCJobConfiguration jobConfig = getJobConfiguration(jobId);
         if (CDCSinkType.SOCKET == jobConfig.getSinkConfig().getSinkType()) {
             PipelineJobCenter.stop(jobId);

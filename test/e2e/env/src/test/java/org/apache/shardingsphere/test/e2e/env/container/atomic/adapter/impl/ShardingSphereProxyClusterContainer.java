@@ -29,7 +29,6 @@ import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
 import java.sql.DriverManager;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -78,7 +77,7 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     @Override
     public DataSource getTargetDataSource(final String serverLists) {
         DataSource dataSource = targetDataSourceProvider.get();
-        if (Objects.isNull(dataSource)) {
+        if (null == dataSource) {
             targetDataSourceProvider.set(StorageContainerUtils.generateDataSource(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), config.getProxyDataSourceName()),
                     ProxyContainerConstants.USERNAME, ProxyContainerConstants.PASSWORD));
         }

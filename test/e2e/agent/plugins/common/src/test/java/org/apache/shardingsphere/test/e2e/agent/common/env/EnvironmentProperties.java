@@ -40,7 +40,7 @@ public final class EnvironmentProperties {
     @SuppressWarnings("AccessOfSystemProperties")
     public static Properties loadProperties(final String propsFileName) {
         Properties result = new Properties();
-        try (InputStream inputStream = EnvironmentProperties.class.getClassLoader().getResourceAsStream(propsFileName)) {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(propsFileName)) {
             result.load(inputStream);
         } catch (final IOException ex) {
             throw new RuntimeException(ex);

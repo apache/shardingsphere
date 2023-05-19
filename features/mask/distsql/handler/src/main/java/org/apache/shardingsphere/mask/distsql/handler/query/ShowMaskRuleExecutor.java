@@ -31,7 +31,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,7 +50,7 @@ public final class ShowMaskRuleExecutor implements RQLExecutor<ShowMaskRulesStat
     }
     
     private Collection<LocalDataQueryResultRow> buildData(final MaskRuleConfiguration ruleConfig, final ShowMaskRulesStatement sqlStatement) {
-        return ruleConfig.getTables().stream().filter(each -> Objects.isNull(sqlStatement.getTableName()) || each.getName().equals(sqlStatement.getTableName()))
+        return ruleConfig.getTables().stream().filter(each -> null == sqlStatement.getTableName() || each.getName().equals(sqlStatement.getTableName()))
                 .map(each -> buildColumnData(each, ruleConfig.getMaskAlgorithms())).flatMap(Collection::stream).collect(Collectors.toList());
     }
     

@@ -49,6 +49,7 @@
         <module>test</module>
         
         <module>distribution</module>
+        <module>report</module>
     </modules>
     
     <properties>
@@ -942,6 +943,7 @@
                     </configuration>
                     <executions>
                         <execution>
+                            <id>prepare-agent</id>
                             <goals>
                                 <goal>prepare-agent</goal>
                             </goals>
@@ -951,7 +953,7 @@
                             <goals>
                                 <goal>report</goal>
                             </goals>
-                            <phase>test</phase>
+                            <phase>verify</phase>
                         </execution>
                     </executions>
                 </plugin>
@@ -1260,6 +1262,18 @@
                                 <phase>package</phase>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco-maven-plugin.version}</version>
                     </plugin>
                 </plugins>
             </build>

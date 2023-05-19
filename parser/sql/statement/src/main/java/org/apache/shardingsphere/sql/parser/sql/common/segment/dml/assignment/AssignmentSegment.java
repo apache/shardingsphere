@@ -26,19 +26,19 @@ import java.util.List;
 /**
  * Assignment segment.
  */
-public abstract class AssignmentSegment implements SQLSegment {
+public interface AssignmentSegment extends SQLSegment {
     
     /**
      * Get list of column segments.
      * 
      * @return list of ColumnSegment
      */
-    public abstract List<ColumnSegment> getColumns();
+    List<ColumnSegment> getColumns();
     
     /**
      * Get expression segment value.
      * 
      * @return ExpressionSegment
      */
-    public abstract ExpressionSegment getValue();
+    ExpressionSegment getValue();
 }

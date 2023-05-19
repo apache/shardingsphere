@@ -71,7 +71,7 @@ public final class IntegrationTestCasesLoader {
             return integrationTestCases;
         }
         integrationTestCases = new LinkedList<>();
-        URL url = Objects.requireNonNull(IntegrationTestCasesLoader.class.getClassLoader().getResource(String.format("cases/%s", adapter)));
+        URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(String.format("cases/%s", adapter)));
         Collection<File> files = getFiles(url);
         for (File each : files) {
             integrationTestCases.addAll(unmarshal(each.getPath()).getTestCases());

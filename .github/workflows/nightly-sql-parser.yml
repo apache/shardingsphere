@@ -55,7 +55,7 @@ jobs:
       - name: Build prod with Maven
         run: ./mvnw -T1C -B -ntp clean install
       - name: Run SQL parser
-        run: ./mvnw -nsu -B install -f sql-parser/dialect/${{ matrix.database }}/pom.xml -Dsql.parser.external.it.enabled=true
+        run: ./mvnw -nsu -B install -f parser/sql/dialect/${{ matrix.database }}/pom.xml -Dsql.parser.external.it.enabled=true
       - uses: actions/upload-artifact@v3
         with:
           name: sql-report

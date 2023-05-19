@@ -85,7 +85,7 @@ class CreateTableSQLGeneratorIT {
     void assertGenerateCreateTableSQL(final PipelineTestParameter testParam) throws SQLException {
         startStorageContainer(testParam.getDatabaseType(), testParam.getStorageContainerImage());
         CreateTableSQLGeneratorAssertionsRootEntity rootEntity = JAXB.unmarshal(
-                Objects.requireNonNull(CreateTableSQLGeneratorIT.class.getClassLoader().getResource(testParam.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
+                Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(testParam.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
         DataSource dataSource = storageContainer.createAccessDataSource(DEFAULT_DATABASE);
         try (
                 Connection connection = dataSource.getConnection();

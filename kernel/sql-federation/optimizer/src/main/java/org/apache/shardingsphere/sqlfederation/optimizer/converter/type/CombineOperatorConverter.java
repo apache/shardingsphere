@@ -24,7 +24,7 @@ import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.CombineType;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -33,7 +33,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CombineOperatorConverter {
     
-    private static final Map<CombineType, SqlOperator> REGISTRY = new HashMap<>();
+    private static final Map<CombineType, SqlOperator> REGISTRY = new EnumMap<>(CombineType.class);
     
     static {
         registerCombine();

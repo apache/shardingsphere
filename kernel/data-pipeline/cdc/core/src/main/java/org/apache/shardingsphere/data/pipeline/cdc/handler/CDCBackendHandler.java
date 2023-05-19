@@ -77,9 +77,9 @@ public final class CDCBackendHandler {
     private final CDCJobAPI jobAPI = new CDCJobAPI();
     
     /**
-     * Get database name by job id.
+     * Get database name by job ID.
      *
-     * @param jobId job id
+     * @param jobId job ID
      * @return database
      */
     public String getDatabaseNameByJobId(final String jobId) {
@@ -89,7 +89,7 @@ public final class CDCBackendHandler {
     /**
      * Stream data.
      *
-     * @param requestId request id
+     * @param requestId request ID
      * @param requestBody stream data request body
      * @param connectionContext connection context
      * @param channel channel
@@ -143,7 +143,7 @@ public final class CDCBackendHandler {
     /**
      * Start streaming.
      *
-     * @param jobId job id
+     * @param jobId job ID
      * @param channel channel
      * @param connectionContext connection context
      */
@@ -164,8 +164,8 @@ public final class CDCBackendHandler {
     /**
      * Stop streaming.
      *
-     * @param jobId job id
-     * @param channelId channel id
+     * @param jobId job ID
+     * @param channelId channel ID
      */
     public void stopStreaming(final String jobId, final ChannelId channelId) {
         if (Strings.isNullOrEmpty(jobId)) {
@@ -173,7 +173,7 @@ public final class CDCBackendHandler {
             return;
         }
         List<Integer> shardingItems = new ArrayList<>(PipelineJobCenter.getShardingItems(jobId));
-        if (0 == shardingItems.size()) {
+        if (shardingItems.isEmpty()) {
             return;
         }
         Optional<PipelineJobItemContext> jobItemContext = PipelineJobCenter.getJobItemContext(jobId, shardingItems.get(0));
@@ -194,8 +194,8 @@ public final class CDCBackendHandler {
     /**
      * Rollback streaming.
      *
-     * @param jobId job id.
-     * @throws SQLException sql exception
+     * @param jobId job ID
+     * @throws SQLException SQL exception
      */
     public void rollbackStreaming(final String jobId) throws SQLException {
         jobAPI.rollback(jobId);
@@ -204,10 +204,9 @@ public final class CDCBackendHandler {
     /**
      * Commit streaming.
      *
-     * @param jobId job id.
-     * @throws SQLException sql exception
+     * @param jobId job ID
      */
-    public void commitStreaming(final String jobId) throws SQLException {
+    public void commitStreaming(final String jobId) {
         jobAPI.commit(jobId);
     }
     

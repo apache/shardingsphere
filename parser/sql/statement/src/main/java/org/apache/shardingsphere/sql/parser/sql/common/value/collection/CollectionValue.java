@@ -28,6 +28,7 @@ import java.util.LinkedList;
  * 
  * @param <T> type of collection value 
  */
+@SuppressWarnings("rawtypes")
 @Getter
 public final class CollectionValue<T> implements ValueASTNode<Collection> {
     
