@@ -22,14 +22,14 @@ import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementBase
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.AlgorithmDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.AlterMaskRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.ColumnDefinitionContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.CountMaskRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.CreateMaskRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.DropMaskRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.MaskRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.PropertiesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.ShowMaskRulesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.CountMaskRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.MaskDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskColumnSegment;
 import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
@@ -43,7 +43,6 @@ import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -75,7 +74,7 @@ public final class MaskDistSQLStatementVisitor extends MaskDistSQLStatementBaseV
     
     @Override
     public ASTNode visitCountMaskRule(final CountMaskRuleContext ctx) {
-        return new CountMaskRuleStatement(Objects.nonNull(ctx.databaseName()) ? (DatabaseSegment) visit(ctx.databaseName()) : null);
+        return new CountMaskRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override

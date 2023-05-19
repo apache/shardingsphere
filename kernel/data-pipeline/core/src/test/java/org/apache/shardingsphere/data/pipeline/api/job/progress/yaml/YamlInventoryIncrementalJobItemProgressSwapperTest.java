@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class YamlInventoryIncrementalJobItemProgressSwapperTest {
@@ -41,7 +40,7 @@ class YamlInventoryIncrementalJobItemProgressSwapperTest {
         assertThat(actual.getSourceDatabaseType(), is("H2"));
         assertThat(actual.getDataSourceName(), is("ds_0"));
         assertThat(actual.getInventory().getFinished().length, is(2));
-        assertArrayEquals(actual.getInventory().getFinished(), new String[]{"ds0.t_2", "ds0.t_1"});
+        assertThat(actual.getInventory().getFinished(), is(new String[]{"ds0.t_2", "ds0.t_1"}));
         assertThat(actual.getInventory().getUnfinished().size(), is(2));
         assertThat(actual.getInventory().getUnfinished().get("ds1.t_2"), is("i,1,2"));
         assertThat(actual.getInventory().getUnfinished().get("ds1.t_1"), is(""));

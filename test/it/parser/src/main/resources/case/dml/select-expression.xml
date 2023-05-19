@@ -276,7 +276,17 @@
                             </left>
                             <operator>=</operator>
                             <right>
-                                <common-expression text="? || ?" literal-text="1 || 2" start-index="47" stop-index="52" />
+                                <binary-operation-expression start-index="47" stop-index="52">
+                                    <left>
+                                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47" />
+                                        <literal-expression value="1" start-index="47" stop-index="47" />
+                                    </left>
+                                    <operator>||</operator>
+                                    <right>
+                                        <parameter-marker-expression parameter-index="1" start-index="52" stop-index="52" />
+                                        <literal-expression value="2" start-index="52" stop-index="52" />
+                                    </right>
+                                </binary-operation-expression>
                             </right>
                         </binary-operation-expression>
                     </left>

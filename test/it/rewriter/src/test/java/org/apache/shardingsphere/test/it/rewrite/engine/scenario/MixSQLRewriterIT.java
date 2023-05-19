@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.it.rewrite.engine.scenario;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -40,6 +39,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -49,8 +49,7 @@ class MixSQLRewriterIT extends SQLRewriterIT {
     
     @Override
     protected YamlRootConfiguration createRootConfiguration(final SQLRewriteEngineTestParameters testParams) throws IOException {
-        URL url = MixSQLRewriterIT.class.getClassLoader().getResource(testParams.getRuleFile());
-        Preconditions.checkNotNull(url, "Can not find rewrite rule yaml configurations");
+        URL url = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource(testParams.getRuleFile()), "Can not find rewrite rule yaml configurations");
         return YamlEngine.unmarshal(new File(url.getFile()), YamlRootConfiguration.class);
     }
     

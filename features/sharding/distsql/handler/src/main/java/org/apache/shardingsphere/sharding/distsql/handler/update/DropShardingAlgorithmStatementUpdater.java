@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingA
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -71,14 +70,14 @@ public final class DropShardingAlgorithmStatementUpdater implements RuleDefiniti
     private Collection<String> getAllOfAlgorithmsInUsed(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> result = new LinkedHashSet<>();
         shardingRuleConfig.getTables().forEach(each -> {
-            if (Objects.nonNull(each.getDatabaseShardingStrategy())) {
+            if (null != each.getDatabaseShardingStrategy()) {
                 result.add(each.getDatabaseShardingStrategy().getShardingAlgorithmName());
             }
-            if (Objects.nonNull(each.getTableShardingStrategy())) {
+            if (null != each.getTableShardingStrategy()) {
                 result.add(each.getTableShardingStrategy().getShardingAlgorithmName());
             }
         });
-        shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getShardingStrategy())).forEach(each -> result.add(each.getShardingStrategy().getShardingAlgorithmName()));
+        shardingRuleConfig.getAutoTables().stream().filter(each -> null != each.getShardingStrategy()).forEach(each -> result.add(each.getShardingStrategy().getShardingAlgorithmName()));
         ShardingStrategyConfiguration tableShardingStrategy = shardingRuleConfig.getDefaultTableShardingStrategy();
         if (null != tableShardingStrategy && !tableShardingStrategy.getShardingAlgorithmName().isEmpty()) {
             result.add(tableShardingStrategy.getShardingAlgorithmName());

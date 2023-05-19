@@ -62,7 +62,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -171,7 +170,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitCountShadowRule(final CountShadowRuleContext ctx) {
-        return new CountShadowRuleStatement(Objects.nonNull(ctx.databaseName()) ? (DatabaseSegment) visit(ctx.databaseName()) : null);
+        return new CountShadowRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     private Collection<ShadowRuleSegment> autoCreateAlgorithmName(final Collection<ShadowRuleSegment> shadowRuleSegments) {

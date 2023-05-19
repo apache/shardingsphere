@@ -124,9 +124,9 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
     private void dropUnusedKeyGenerator(final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedKeyGenerators = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getKeyGenerateStrategy).filter(Objects::nonNull)
                 .map(KeyGenerateStrategyConfiguration::getKeyGeneratorName).collect(Collectors.toSet());
-        inUsedKeyGenerators.addAll(currentRuleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy()))
+        inUsedKeyGenerators.addAll(currentRuleConfig.getTables().stream().filter(each -> null != each.getKeyGenerateStrategy())
                 .map(each -> each.getKeyGenerateStrategy().getKeyGeneratorName()).collect(Collectors.toSet()));
-        inUsedKeyGenerators.addAll(currentRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy()))
+        inUsedKeyGenerators.addAll(currentRuleConfig.getAutoTables().stream().filter(each -> null != each.getKeyGenerateStrategy())
                 .map(each -> each.getKeyGenerateStrategy().getKeyGeneratorName()).collect(Collectors.toSet()));
         if (null != currentRuleConfig.getDefaultKeyGenerateStrategy()) {
             inUsedKeyGenerators.add(currentRuleConfig.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
@@ -138,9 +138,9 @@ public final class DropShardingTableRuleStatementUpdater implements RuleDefiniti
     private void dropUnusedAuditor(final ShardingRuleConfiguration currentRuleConfig) {
         Collection<String> inUsedAuditors = currentRuleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getAuditStrategy).filter(Objects::nonNull)
                 .flatMap(each -> each.getAuditorNames().stream()).collect(Collectors.toSet());
-        inUsedAuditors.addAll(currentRuleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getAuditStrategy()))
+        inUsedAuditors.addAll(currentRuleConfig.getTables().stream().filter(each -> null != each.getAuditStrategy())
                 .flatMap(each -> each.getAuditStrategy().getAuditorNames().stream()).collect(Collectors.toSet()));
-        inUsedAuditors.addAll(currentRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getAuditStrategy()))
+        inUsedAuditors.addAll(currentRuleConfig.getAutoTables().stream().filter(each -> null != each.getAuditStrategy())
                 .flatMap(each -> each.getAuditStrategy().getAuditorNames().stream()).collect(Collectors.toSet()));
         if (null != currentRuleConfig.getDefaultAuditStrategy()) {
             inUsedAuditors.addAll(currentRuleConfig.getDefaultAuditStrategy().getAuditorNames());

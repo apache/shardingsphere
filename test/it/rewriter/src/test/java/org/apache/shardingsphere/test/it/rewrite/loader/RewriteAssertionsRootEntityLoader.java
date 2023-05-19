@@ -37,7 +37,7 @@ public final class RewriteAssertionsRootEntityLoader {
      */
     @SneakyThrows(JAXBException.class)
     public RewriteAssertionsRootEntity load(final String file) {
-        InputStream inputStream = RewriteAssertionsRootEntityLoader.class.getClassLoader().getResourceAsStream(file);
+        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(file);
         return null == inputStream ? new RewriteAssertionsRootEntity()
                 : (RewriteAssertionsRootEntity) JAXBContext.newInstance(RewriteAssertionsRootEntity.class).createUnmarshaller().unmarshal(inputStream);
     }

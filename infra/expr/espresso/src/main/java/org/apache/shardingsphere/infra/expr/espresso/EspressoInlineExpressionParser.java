@@ -43,7 +43,7 @@ public final class EspressoInlineExpressionParser implements InlineExpressionPar
     
     static {
         JAVA_HOME = System.getenv("JAVA_HOME");
-        URL resource = EspressoInlineExpressionParser.class.getClassLoader().getResource("espresso-need-libs");
+        URL resource = Thread.currentThread().getContextClassLoader().getResource("espresso-need-libs");
         String dir = null != resource ? resource.getPath() : null;
         JAVA_CLASSPATH = Stream.of("groovy.jar", "guava.jar", "shardingsphere-infra-expr-hotsopt.jar", "shardingsphere-infra-expr-spi.jar", "shardingsphere-infra-util.jar")
                 .map(each -> dir + File.separator + each).collect(Collectors.joining(":"));

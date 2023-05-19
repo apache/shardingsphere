@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -39,6 +40,9 @@ class SystemSchemaBuilderRuleTest {
         SystemSchemaBuilderRule actualPerformanceSchema = SystemSchemaBuilderRule.valueOf(new MySQLDatabaseType().getType(), "performance_schema");
         assertThat(actualPerformanceSchema, is(SystemSchemaBuilderRule.MYSQL_PERFORMANCE_SCHEMA));
         assertThat(actualPerformanceSchema.getTables().size(), is(87));
+        SystemSchemaBuilderRule actualPgCatalog = SystemSchemaBuilderRule.valueOf(new PostgreSQLDatabaseType().getType(), "pg_catalog");
+        assertThat(actualPgCatalog, is(SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG));
+        assertThat(actualPgCatalog.getTables().size(), is(7));
     }
     
     @Test
@@ -50,6 +54,7 @@ class SystemSchemaBuilderRuleTest {
     void assertIsisSystemTable() {
         assertTrue(SystemSchemaBuilderRule.isSystemTable("information_schema", "columns"));
         assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_database"));
+        assertTrue(SystemSchemaBuilderRule.isSystemTable("pg_catalog", "pg_aggregate"));
         assertFalse(SystemSchemaBuilderRule.isSystemTable("sharding_db", "t_order"));
     }
 }

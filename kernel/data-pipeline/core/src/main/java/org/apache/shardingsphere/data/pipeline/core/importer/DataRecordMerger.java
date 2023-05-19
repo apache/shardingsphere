@@ -55,11 +55,7 @@ public final class DataRecordMerger {
             }
             tableNames.add(each.getTableName());
             Key key = getKeyFromDataRecord(each);
-            if (duplicateKeyMap.containsKey(key)) {
-                duplicateKeyMap.put(key, true);
-                continue;
-            }
-            duplicateKeyMap.put(key, false);
+            duplicateKeyMap.put(key, duplicateKeyMap.containsKey(key));
         }
         List<GroupedDataRecord> result = new ArrayList<>(100);
         if (insertCount == dataRecords.size()) {

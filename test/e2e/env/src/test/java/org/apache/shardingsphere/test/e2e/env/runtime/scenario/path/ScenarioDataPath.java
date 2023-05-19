@@ -67,7 +67,7 @@ public final class ScenarioDataPath {
     
     private String getFile(final Type type, final String fileName) {
         String path = String.join("/", getBasicPath(type), fileName);
-        URL url = ScenarioDataPath.class.getClassLoader().getResource(path);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(path);
         assertNotNull(url, String.format("File `%s` must exist.", path));
         return url.getFile();
     }
@@ -82,7 +82,7 @@ public final class ScenarioDataPath {
     public String getInitSQLFile(final Type type, final DatabaseType databaseType) {
         String initSQLFileName = String.join("-", "01", type.name().toLowerCase(), BASIC_INIT_SQL_FILE);
         String initSQLResourceFile = String.join("/", getInitSQLResourcePath(type, databaseType), initSQLFileName);
-        URL url = ScenarioDataPath.class.getClassLoader().getResource(initSQLResourceFile);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(initSQLResourceFile);
         assertNotNull(url, String.format("File `%s` must exist.", initSQLResourceFile));
         return url.getFile();
     }
@@ -100,7 +100,7 @@ public final class ScenarioDataPath {
     
     private boolean isActualDatabaseInitSQLFileExisted(final String databaseName, final DatabaseType databaseType) {
         String initSQLResourceFile = getActualDatabaseInitSQLResourceFile(databaseName, databaseType);
-        return null != ScenarioDataPath.class.getClassLoader().getResource(initSQLResourceFile);
+        return null != Thread.currentThread().getContextClassLoader().getResource(initSQLResourceFile);
     }
     
     private String getActualDatabaseInitSQLResourceFile(final String databaseName, final DatabaseType databaseType) {
@@ -110,7 +110,7 @@ public final class ScenarioDataPath {
     
     private String getActualDatabaseInitSQLFile(final String databaseName, final DatabaseType databaseType) {
         String resourceFile = getActualDatabaseInitSQLResourceFile(databaseName, databaseType);
-        URL url = ScenarioDataPath.class.getClassLoader().getResource(resourceFile);
+        URL url = Thread.currentThread().getContextClassLoader().getResource(resourceFile);
         assertNotNull(url, String.format("File `%s` must exist.", resourceFile));
         return url.getFile();
     }

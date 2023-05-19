@@ -50,22 +50,22 @@ public final class XATransactionDataSource implements AutoCloseable {
     
     private final ThreadLocal<Map<Transaction, Connection>> enlistedTransactions = ThreadLocal.withInitial(HashMap::new);
     
-    private final DatabaseType databaseType;
-    
     private final String resourceName;
     
     private final DataSource dataSource;
     
     private XADataSource xaDataSource;
     
+    private XAConnectionWrapper xaConnectionWrapper;
+    
     private XATransactionManagerProvider xaTransactionManagerProvider;
     
     public XATransactionDataSource(final DatabaseType databaseType, final String resourceName, final DataSource dataSource, final XATransactionManagerProvider xaTransactionManagerProvider) {
-        this.databaseType = databaseType;
         this.resourceName = resourceName;
         this.dataSource = dataSource;
         if (!CONTAINER_DATASOURCE_NAMES.contains(dataSource.getClass().getSimpleName())) {
             xaDataSource = new DataSourceSwapper(TypedSPILoader.getService(XADataSourceDefinition.class, databaseType.getType())).swap(dataSource);
+            xaConnectionWrapper = TypedSPILoader.getService(XAConnectionWrapper.class, databaseType.getType());
             this.xaTransactionManagerProvider = xaTransactionManagerProvider;
             xaTransactionManagerProvider.registerRecoveryResource(resourceName, xaDataSource);
         }
@@ -86,7 +86,7 @@ public final class XATransactionDataSource implements AutoCloseable {
         Transaction transaction = xaTransactionManagerProvider.getTransactionManager().getTransaction();
         if (!enlistedTransactions.get().containsKey(transaction)) {
             Connection connection = dataSource.getConnection();
-            XAConnection xaConnection = TypedSPILoader.getService(XAConnectionWrapper.class, databaseType.getType()).wrap(xaDataSource, connection);
+            XAConnection xaConnection = xaConnectionWrapper.wrap(xaDataSource, connection);
             transaction.enlistResource(new SingleXAResource(resourceName, xaConnection.getXAResource()));
             transaction.registerSynchronization(new Synchronization() {
                 

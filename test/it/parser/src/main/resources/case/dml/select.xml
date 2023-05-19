@@ -3412,7 +3412,7 @@
                             <column name="order_id" start-index="20" stop-index="27" />
                         </parameter>
                         <parameter>
-                            <data-type value="SIGNED" start-index="32" stop-index="41" />
+                            <data-type value="SIGNED INT" start-index="32" stop-index="41" />
                         </parameter>
                     </function>
                 </expr>
@@ -3432,7 +3432,7 @@
                             <column name="order_id" start-index="12" stop-index="19" />
                         </parameter>
                         <parameter>
-                            <data-type value="UNSIGNED" start-index="24" stop-index="35" />
+                            <data-type value="UNSIGNED INT" start-index="24" stop-index="35" />
                         </parameter>
                     </function>
                 </expr>
@@ -3454,7 +3454,7 @@
                             <column name="order_id" start-index="20" stop-index="27" />
                         </parameter>
                         <parameter>
-                            <data-type value="SIGNED" start-index="32" stop-index="45" />
+                            <data-type value="SIGNED INTEGER" start-index="32" stop-index="45" />
                         </parameter>
                     </function>
                 </expr>
@@ -3474,7 +3474,7 @@
                             <column name="order_id" start-index="12" stop-index="19" />
                         </parameter>
                         <parameter>
-                            <data-type value="UNSIGNED" start-index="24" stop-index="39" />
+                            <data-type value="UNSIGNED INTEGER" start-index="24" stop-index="39" />
                         </parameter>
                     </function>
                 </expr>

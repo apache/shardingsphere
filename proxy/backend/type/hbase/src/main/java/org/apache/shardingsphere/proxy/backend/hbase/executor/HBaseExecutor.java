@@ -19,16 +19,15 @@ package org.apache.shardingsphere.proxy.backend.hbase.executor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
+import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseAdminCallback;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseQueryCallback;
 import org.apache.shardingsphere.proxy.backend.hbase.result.HBaseUpdateCallback;
-import org.apache.shardingsphere.proxy.backend.hbase.context.HBaseContext;
-import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 
 import java.io.IOException;
 
@@ -38,7 +37,6 @@ import java.io.IOException;
  * <p>Do not cache table here.</p>
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@Slf4j
 public final class HBaseExecutor {
     
     /**
@@ -49,18 +47,17 @@ public final class HBaseExecutor {
      * @throws HBaseOperationException HBase operation exception
      */
     public static void executeUpdate(final String tableName, final HBaseUpdateCallback operation) {
-        TableName backendTableName = TableName.valueOf(tableName);
-        try (Table table = HBaseContext.getInstance().getConnection(tableName).getTable(backendTableName)) {
-            try {
-                operation.executeInHBase(table);
-            } catch (final IOException ex) {
-                log.info(String.format("Query HBase table: %s, execute HBase fail.", tableName));
-                log.error(ex.toString());
-                throw new HBaseOperationException(ex.getMessage());
-            }
+        try (Table table = HBaseContext.getInstance().getConnection(tableName).getTable(TableName.valueOf(tableName))) {
+            executeUpdate(table, operation);
         } catch (final IOException ex) {
-            log.info(String.format("Query HBase table: %s, execute HBase fail.", tableName));
-            log.error(ex.toString());
+            throw new HBaseOperationException(ex.getMessage());
+        }
+    }
+    
+    private static void executeUpdate(final Table table, final HBaseUpdateCallback operation) {
+        try {
+            operation.executeInHBase(table);
+        } catch (final IOException ex) {
             throw new HBaseOperationException(ex.getMessage());
         }
     }
@@ -77,11 +74,15 @@ public final class HBaseExecutor {
     public static <T> T executeQuery(final String tableName, final HBaseQueryCallback<T> operation) {
         TableName backendTableName = TableName.valueOf(tableName);
         try (Table table = HBaseContext.getInstance().getConnection(tableName).getTable(backendTableName)) {
-            try {
-                return operation.executeInHBase(table);
-            } catch (final IOException ex) {
-                throw new HBaseOperationException(ex.getMessage());
-            }
+            return executeQuery(table, operation);
+        } catch (final IOException ex) {
+            throw new HBaseOperationException(ex.getMessage());
+        }
+    }
+    
+    private static <T> T executeQuery(final Table table, final HBaseQueryCallback<T> operation) {
+        try {
+            return operation.executeInHBase(table);
         } catch (final IOException ex) {
             throw new HBaseOperationException(ex.getMessage());
         }
@@ -98,11 +99,15 @@ public final class HBaseExecutor {
      */
     public static <T> T executeAdmin(final Connection connection, final HBaseAdminCallback<T> operation) {
         try (Admin admin = connection.getAdmin()) {
-            try {
-                return operation.executeInHBase(admin);
-            } catch (final IOException ex) {
-                throw new HBaseOperationException(ex.getMessage());
-            }
+            return executeAdmin(admin, operation);
+        } catch (final IOException ex) {
+            throw new HBaseOperationException(ex.getMessage());
+        }
+    }
+    
+    private static <T> T executeAdmin(final Admin admin, final HBaseAdminCallback<T> operation) {
+        try {
+            return operation.executeInHBase(admin);
         } catch (final IOException ex) {
             throw new HBaseOperationException(ex.getMessage());
         }

@@ -402,7 +402,7 @@ public final class ShardingTableRuleStatementChecker {
         rules.stream().map(AbstractTableRuleSegment::getKeyGenerateStrategySegment).filter(Objects::nonNull)
                 .peek(each -> each.getKeyGenerateAlgorithmName()
                         .filter(optional -> null == currentRuleConfig || !currentRuleConfig.getKeyGenerators().containsKey(optional)).ifPresent(notExistKeyGenerator::add))
-                .filter(each -> !each.getKeyGenerateAlgorithmName().isPresent()).filter(each -> Objects.nonNull(each.getKeyGenerateAlgorithmSegment()))
+                .filter(each -> !each.getKeyGenerateAlgorithmName().isPresent()).filter(each -> null != each.getKeyGenerateAlgorithmSegment())
                 .forEach(each -> requiredKeyGenerators.add(each.getKeyGenerateAlgorithmSegment()));
         ShardingSpherePreconditions.checkState(notExistKeyGenerator.isEmpty(), () -> new MissingRequiredAlgorithmException("key generator", notExistKeyGenerator));
         requiredKeyGenerators.forEach(each -> TypedSPILoader.checkService(KeyGenerateAlgorithm.class, each.getName(), each.getProps()));

@@ -43,7 +43,7 @@ class PluginConfigurationLoaderTest {
     }
     
     private String getResourceURL() throws UnsupportedEncodingException {
-        return URLDecoder.decode(Objects.requireNonNull(PluginConfigurationLoader.class.getClassLoader().getResource("")).getFile(), "UTF8");
+        return URLDecoder.decode(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getFile(), "UTF8");
     }
     
     private void assertLoggingPluginConfiguration(final PluginConfiguration actual) {

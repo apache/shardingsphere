@@ -21,8 +21,6 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 import org.apache.shardingsphere.logging.logger.ShardingSphereAppender;
 import org.apache.shardingsphere.logging.yaml.config.YamlAppenderConfiguration;
 
-import java.util.Objects;
-
 /**
  * YAML appender swapper.
  */
@@ -30,7 +28,7 @@ public final class YamlAppenderSwapper implements YamlConfigurationSwapper<YamlA
     
     @Override
     public YamlAppenderConfiguration swapToYamlConfiguration(final ShardingSphereAppender data) {
-        if (Objects.isNull(data)) {
+        if (null == data) {
             return null;
         }
         YamlAppenderConfiguration result = new YamlAppenderConfiguration();
@@ -43,7 +41,7 @@ public final class YamlAppenderSwapper implements YamlConfigurationSwapper<YamlA
     
     @Override
     public ShardingSphereAppender swapToObject(final YamlAppenderConfiguration yamlConfig) {
-        if (Objects.isNull(yamlConfig)) {
+        if (null == yamlConfig) {
             return null;
         }
         ShardingSphereAppender result = new ShardingSphereAppender(yamlConfig.getAppenderName(), yamlConfig.getAppenderClass(), yamlConfig.getPattern());

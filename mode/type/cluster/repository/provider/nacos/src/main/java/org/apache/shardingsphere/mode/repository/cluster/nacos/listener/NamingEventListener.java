@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -92,13 +91,13 @@ public final class NamingEventListener implements EventListener {
     }
     
     private Type getEventChangedType(final Instance preInstance, final Instance instance) {
-        if (Objects.isNull(preInstance) && Objects.nonNull(instance)) {
+        if (null == preInstance && null != instance) {
             return DataChangedEvent.Type.ADDED;
         }
-        if (Objects.nonNull(preInstance) && Objects.nonNull(instance) && NacosMetaDataUtils.getTimestamp(preInstance) != NacosMetaDataUtils.getTimestamp(instance)) {
+        if (null != preInstance && null != instance && NacosMetaDataUtils.getTimestamp(preInstance) != NacosMetaDataUtils.getTimestamp(instance)) {
             return DataChangedEvent.Type.UPDATED;
         }
-        if (Objects.nonNull(preInstance) && Objects.isNull(instance)) {
+        if (null != preInstance && null == instance) {
             return DataChangedEvent.Type.DELETED;
         }
         return DataChangedEvent.Type.IGNORED;

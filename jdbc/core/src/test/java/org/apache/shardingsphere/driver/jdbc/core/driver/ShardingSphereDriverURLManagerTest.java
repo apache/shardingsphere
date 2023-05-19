@@ -56,7 +56,7 @@ class ShardingSphereDriverURLManagerTest {
     
     @Test
     void assertToAbsolutePathConfigurationFile() {
-        String absolutePath = Objects.requireNonNull(ShardingSphereDriverURLManagerTest.class.getClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
+        String absolutePath = Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("config/driver/foo-driver-fixture.yaml")).getPath();
         byte[] actual = ShardingSphereDriverURLManager.getContent("jdbc:shardingsphere:absolutepath:" + absolutePath);
         assertThat(actual.length, is(fooDriverConfigLength));
     }

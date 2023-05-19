@@ -76,7 +76,7 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
         stopped = true;
     }
     
-    protected abstract void doStop() throws Exception;
+    protected abstract void doStop() throws SQLException;
     
     protected final void cancelStatement(final Statement statement) throws SQLException {
         if (null == statement || statement.isClosed()) {

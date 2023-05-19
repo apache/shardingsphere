@@ -50,7 +50,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -350,7 +349,7 @@ class NacosRepositoryTest {
     private VoidAnswer2<String, EventListener> getListenerAnswer(final Instance preInstance, final Event event) {
         return (serviceName, listener) -> {
             MemberAccessor accessor = Plugins.getMemberAccessor();
-            if (Objects.nonNull(preInstance)) {
+            if (null != preInstance) {
                 Map<String, Instance> preInstances = new HashMap<>();
                 preInstances.put(NacosMetaDataUtils.getKey(preInstance), preInstance);
                 accessor.set(listener.getClass().getDeclaredField("preInstances"), listener, preInstances);

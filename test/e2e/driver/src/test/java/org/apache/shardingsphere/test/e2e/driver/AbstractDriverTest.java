@@ -49,13 +49,13 @@ public abstract class AbstractDriverTest {
     private static void initializeSchema(final String dataSourceName) throws SQLException {
         try (Connection connection = ACTUAL_DATA_SOURCES.get(dataSourceName).getConnection()) {
             if ("encrypt".equals(dataSourceName)) {
-                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractDriverTest.class.getClassLoader().getResourceAsStream("sql/jdbc_encrypt_init.sql"))));
+                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("sql/jdbc_encrypt_init.sql"))));
             } else if ("shadow_jdbc_0".equals(dataSourceName) || "shadow_jdbc_1".equals(dataSourceName)) {
-                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractDriverTest.class.getClassLoader().getResourceAsStream("sql/jdbc_shadow_init.sql"))));
+                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("sql/jdbc_shadow_init.sql"))));
             } else if ("single_jdbc".equals(dataSourceName)) {
-                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractDriverTest.class.getClassLoader().getResourceAsStream("sql/single_jdbc_init.sql"))));
+                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("sql/single_jdbc_init.sql"))));
             } else {
-                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(AbstractDriverTest.class.getClassLoader().getResourceAsStream("sql/jdbc_init.sql"))));
+                RunScript.execute(connection, new InputStreamReader(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream("sql/jdbc_init.sql"))));
             }
         }
     }

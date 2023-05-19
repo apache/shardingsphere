@@ -53,7 +53,7 @@ import java.util.Map;
  * Translatable table scan.
  */
 @Getter
-public class TranslatableTableScan extends TableScan implements EnumerableRel {
+public final class TranslatableTableScan extends TableScan implements EnumerableRel {
     
     private final FederationTranslatableTable translatableTable;
     
@@ -147,7 +147,7 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
     
     @Override
     public RelOptCost computeSelfCost(final RelOptPlanner planner, final RelMetadataQuery mq) {
-        return super.computeSelfCost(planner, mq).multiplyBy(((double) number + 2D) / ((double) table.getRowType().getFieldCount() + 2D));
+        return super.computeSelfCost(planner, mq).multiplyBy((number + 2D) / (table.getRowType().getFieldCount() + 2D));
     }
     
     @Override
@@ -182,10 +182,10 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
     
     private void addFilter(final List<RexNode> filters, final String[] filterValues) {
         int index = 0;
-        for (RexNode filter : filters) {
-            RexCall call = (RexCall) filter;
+        for (RexNode each : filters) {
+            RexCall call = (RexCall) each;
             String columnMap = generateColumnMap(call);
-            filterValues[index] = filter + columnMap;
+            filterValues[index] = each + columnMap;
             index++;
         }
     }
@@ -196,13 +196,13 @@ public class TranslatableTableScan extends TableScan implements EnumerableRel {
         return result.toString();
     }
     
-    private void traverseRexCall(final RexCall call, final Map columnMap) {
+    private void traverseRexCall(final RexCall call, final Map<Integer, Integer> columnMap) {
         for (RexNode each : call.getOperands()) {
             if (each instanceof RexInputRef) {
                 RexInputRef reference = (RexInputRef) each;
                 String referenceName = reference.getName();
-                Integer columnId = Integer.valueOf(referenceName.replace("$", ""));
-                Integer columnType = translatableTable.getColumnType(columnId);
+                int columnId = Integer.parseInt(referenceName.replace("$", ""));
+                int columnType = translatableTable.getColumnType(columnId);
                 columnMap.put(columnId, columnType);
             }
             if (each instanceof RexCall) {
