@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.e2e.env.container.atomic;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.env.container.atomic.governance.GovernanceContainer;
-import org.awaitility.Awaitility;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
@@ -29,7 +28,6 @@ import org.testcontainers.lifecycle.Startable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.concurrent.TimeUnit;
 
 /**
  * IT containers.
@@ -101,7 +99,11 @@ public final class ITContainers implements Startable {
                 })
                 .forEach(each -> {
                     while (!(each.isRunning() && each.isHealthy())) {
-                        Awaitility.await().pollDelay(500L, TimeUnit.MILLISECONDS).until(() -> true);
+                        try {
+                            Thread.sleep(500L);
+                        } catch (final InterruptedException ignored) {
+                            Thread.currentThread().interrupt();
+                        }
                     }
                 });
     }
