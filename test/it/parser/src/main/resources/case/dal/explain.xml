@@ -245,26 +245,26 @@
     </describe>
     <describe sql-case-id="explain_with_analyze_delete_condition">
         <delete>
-            <simple-table name="t" alias="t1" start-index="31" stop-index="34" />
-            <where start-index="42" stop-index="62">
+            <table name="t1" start-index="23" stop-index="24" />
+            <where start-index="54" stop-index="74">
                 <expr>
-                    <binary-operation-expression start-index="48" stop-index="62">
+                    <binary-operation-expression start-index="60" stop-index="74">
                         <left>
-                            <column name="x" start-index="48" stop-index="51">
-                                <owner name="t1" start-index="48" stop-index="49" />
+                            <column name="x" start-index="60" stop-index="63">
+                                <owner name="t1" start-index="60" stop-index="61" />
                             </column>
                         </left>
                         <operator>=</operator>
                         <right>
-                            <binary-operation-expression start-index="55" stop-index="62">
+                            <binary-operation-expression start-index="67" stop-index="74">
                                 <left>
-                                    <column name="x" start-index="55" stop-index="58">
-                                        <owner name="t2" start-index="55" stop-index="56" />
+                                    <column name="x" start-index="67" stop-index="70">
+                                        <owner name="t2" start-index="67" stop-index="68" />
                                     </column>
                                 </left>
                                 <operator>+</operator>
                                 <right>
-                                    <literal-expression value="1" start-index="62" stop-index="62" />
+                                    <literal-expression value="1" start-index="74" stop-index="74" />
                                 </right>
                             </binary-operation-expression>
                         </right>
