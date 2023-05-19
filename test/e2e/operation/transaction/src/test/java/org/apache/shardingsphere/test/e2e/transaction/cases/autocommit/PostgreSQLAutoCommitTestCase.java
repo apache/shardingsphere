@@ -24,10 +24,12 @@ import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionCon
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.test.e2e.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.transaction.api.TransactionType;
+import org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,7 +49,6 @@ public final class PostgreSQLAutoCommitTestCase extends BaseTransactionTestCase 
         assertAutoCommit();
     }
     
-    @SneakyThrows(InterruptedException.class)
     private void assertAutoCommit() throws SQLException {
         try (Connection connection1 = getDataSource().getConnection(); Connection connection2 = getDataSource().getConnection()) {
             executeWithLog(connection1, "set transaction isolation level read committed;");
@@ -57,7 +58,9 @@ public final class PostgreSQLAutoCommitTestCase extends BaseTransactionTestCase 
             executeWithLog(connection1, "insert into account(id, balance, transaction_id) values(1, 100, 1);");
             assertFalse(executeQueryWithLog(connection2, "select * from account;").next());
             connection1.commit();
-            Thread.sleep(1000L);
+            Awaitility.await().atMost(1L, TimeUnit.SECONDS).pollDelay(200L, TimeUnit.MILLISECONDS).until(
+                    () -> executeQueryWithLog(connection2, "select * from account;").next()
+            );
             assertTrue(executeQueryWithLog(connection2, "select * from account;").next());
         }
     }
