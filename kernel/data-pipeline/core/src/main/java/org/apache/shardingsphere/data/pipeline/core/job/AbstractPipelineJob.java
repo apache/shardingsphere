@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
@@ -41,6 +40,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Abstract pipeline job.
@@ -54,17 +55,33 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     @Getter(AccessLevel.PROTECTED)
     private final PipelineJobAPI jobAPI;
     
-    @Getter
-    private volatile boolean stopping;
+    private final AtomicBoolean stopping = new AtomicBoolean(false);
     
-    @Setter
-    private volatile JobBootstrap jobBootstrap;
+    private final AtomicReference<JobBootstrap> jobBootstrap = new AtomicReference<>();
     
     private final Map<Integer, PipelineTasksRunner> tasksRunnerMap = new ConcurrentHashMap<>();
     
     protected AbstractPipelineJob(final String jobId) {
         this.jobId = jobId;
         jobAPI = TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobId).getTypeName());
+    }
+    
+    /**
+     * Is stopping.
+     *
+     * @return whether job is stopping
+     */
+    public boolean isStopping() {
+        return stopping.get();
+    }
+    
+    /**
+     * Set job bootstrap.
+     *
+     * @param jobBootstrap job bootstrap
+     */
+    public void setJobBootstrap(final JobBootstrap jobBootstrap) {
+        this.jobBootstrap.set(jobBootstrap);
     }
     
     protected void prepare(final PipelineJobItemContext jobItemContext) {
@@ -124,15 +141,15 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     }
     
     private void innerStop() {
-        stopping = true;
+        stopping.set(true);
         log.info("stop tasks runner, jobId={}", jobId);
         for (PipelineTasksRunner each : tasksRunnerMap.values()) {
             each.stop();
         }
         Optional<ElasticJobListener> pipelineJobListener = ElasticJobServiceLoader.getCachedTypedServiceInstance(ElasticJobListener.class, PipelineElasticJobListener.class.getName());
         pipelineJobListener.ifPresent(jobListener -> awaitJobStopped((PipelineElasticJobListener) jobListener, jobId, TimeUnit.SECONDS.toMillis(2)));
-        if (null != jobBootstrap) {
-            jobBootstrap.shutdown();
+        if (null != jobBootstrap.get()) {
+            jobBootstrap.get().shutdown();
         }
     }
     
