@@ -89,7 +89,7 @@ public final class OpenGaussCommandExecutorFactory {
     }
     
     private static List<CommandExecutor<PostgreSQLPacket>> getExecutorsOfAggregatedBatchedStatements(final PostgreSQLAggregatedCommandPacket aggregatedCommandPacket,
-                                                                                   final ConnectionSession connectionSession, final PortalContext portalContext) throws SQLException {
+                                                                                                     final ConnectionSession connectionSession, final PortalContext portalContext) throws SQLException {
         List<PostgreSQLCommandPacket> packets = aggregatedCommandPacket.getPackets();
         int firstBindIndex = aggregatedCommandPacket.getFirstBindIndex();
         int lastExecuteIndex = aggregatedCommandPacket.getLastExecuteIndex();
