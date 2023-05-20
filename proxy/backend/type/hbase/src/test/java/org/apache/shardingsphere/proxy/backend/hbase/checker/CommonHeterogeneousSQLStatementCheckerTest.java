@@ -37,20 +37,23 @@ class CommonHeterogeneousSQLStatementCheckerTest {
     @Test
     void assertIsSinglePoint() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey = '1'");
-        new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).checkIsSinglePointQuery(sqlStatement.getWhere());
+        assertTrue(sqlStatement.getWhere().isPresent());
+        new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).checkIsSinglePointQuery(sqlStatement.getWhere().get());
     }
     
     @Test
     void assertIsSinglePointWithErrorKey() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where a = '1'");
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).checkIsSinglePointQuery(sqlStatement.getWhere()));
+        assertTrue(sqlStatement.getWhere().isPresent());
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).checkIsSinglePointQuery(sqlStatement.getWhere().get()));
         assertThat(ex.getMessage(), is("a is not a allowed key"));
     }
     
     @Test
     void assertIsSinglePointWithErrorOperation() {
         SelectStatement sqlStatement = (SelectStatement) HBaseSupportedSQLStatement.parseSQLStatement("select /*+ hbase */ * from t_order where rowKey between '1' and '2' ");
-        Exception ex = assertThrows(IllegalArgumentException.class, () -> new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).checkIsSinglePointQuery(sqlStatement.getWhere()));
+        assertTrue(sqlStatement.getWhere().isPresent());
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> new CommonHeterogeneousSQLStatementChecker<>(sqlStatement).checkIsSinglePointQuery(sqlStatement.getWhere().get()));
         assertThat(ex.getMessage(), is("Only Support BinaryOperationExpression"));
     }
     

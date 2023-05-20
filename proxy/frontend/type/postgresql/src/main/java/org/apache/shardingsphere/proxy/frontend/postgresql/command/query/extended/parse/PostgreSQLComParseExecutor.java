@@ -71,7 +71,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
                         sqlStatement, connectionSession.getDefaultDatabaseName());
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, paddedColumnTypes);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(packet.getStatementId(), serverPreparedStatement);
-        return Collections.singletonList(PostgreSQLParseCompletePacket.getInstance());
+        return Collections.singleton(PostgreSQLParseCompletePacket.getInstance());
     }
     
     private SQLParserEngine createShardingSphereSQLParserEngine(final String databaseName) {

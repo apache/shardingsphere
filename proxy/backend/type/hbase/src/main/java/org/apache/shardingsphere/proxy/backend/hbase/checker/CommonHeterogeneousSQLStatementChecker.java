@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Abstract checker.
@@ -50,12 +50,10 @@ public class CommonHeterogeneousSQLStatementChecker<T extends SQLStatement> impl
     
     @Override
     public void execute() {
-        
     }
     
-    protected void checkIsSinglePointQuery(final Optional<WhereSegment> whereSegment) {
-        Preconditions.checkArgument(whereSegment.isPresent(), "Must Have Where Segment");
-        ExpressionSegment whereExpr = whereSegment.get().getExpr();
+    protected final void checkIsSinglePointQuery(final WhereSegment whereSegment) {
+        ExpressionSegment whereExpr = whereSegment.getExpr();
         Preconditions.checkArgument(whereExpr instanceof BinaryOperationExpression, "Only Support BinaryOperationExpression");
         BinaryOperationExpression expression = (BinaryOperationExpression) whereExpr;
         Preconditions.checkArgument(!(expression.getLeft() instanceof BinaryOperationExpression), "Do not supported Multiple expressions");
@@ -70,10 +68,9 @@ public class CommonHeterogeneousSQLStatementChecker<T extends SQLStatement> impl
      * Check value is literal or parameter marker.
      * 
      * @param expressionSegment value segment
-     * 
      * @return is supported
      */
-    protected boolean isAllowExpressionSegment(final ExpressionSegment expressionSegment) {
+    protected final boolean isAllowExpressionSegment(final ExpressionSegment expressionSegment) {
         return expressionSegment instanceof LiteralExpressionSegment || expressionSegment instanceof ParameterMarkerExpressionSegment;
     }
     

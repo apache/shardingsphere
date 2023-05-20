@@ -25,6 +25,7 @@ import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertColumnsToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
@@ -47,8 +48,8 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator implements Col
     }
     
     @Override
-    public Collection<InsertColumnsToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
-        Collection<InsertColumnsToken> result = new LinkedList<>();
+    public Collection<SQLToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
+        Collection<SQLToken> result = new LinkedList<>();
         Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue());
         Preconditions.checkState(encryptTable.isPresent());
         for (ColumnSegment each : insertStatementContext.getSqlStatement().getColumns()) {

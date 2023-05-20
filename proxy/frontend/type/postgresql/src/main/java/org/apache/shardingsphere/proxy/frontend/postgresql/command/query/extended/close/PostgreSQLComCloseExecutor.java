@@ -54,6 +54,6 @@ public final class PostgreSQLComCloseExecutor implements CommandExecutor {
             default:
                 throw new UnsupportedSQLOperationException(packet.getType().name());
         }
-        return Collections.singletonList(new PostgreSQLCloseCompletePacket());
+        return Collections.singleton(new PostgreSQLCloseCompletePacket());
     }
 }

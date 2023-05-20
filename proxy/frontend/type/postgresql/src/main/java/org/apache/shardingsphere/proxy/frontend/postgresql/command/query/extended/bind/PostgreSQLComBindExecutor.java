@@ -51,6 +51,6 @@ public final class PostgreSQLComBindExecutor implements CommandExecutor {
         Portal portal = new Portal(packet.getPortal(), preparedStatement, packet.readParameters(preparedStatement.getParameterTypes()), packet.readResultFormats(), databaseConnectionManager);
         portalContext.add(portal);
         portal.bind();
-        return Collections.singletonList(PostgreSQLBindCompletePacket.getInstance());
+        return Collections.singleton(PostgreSQLBindCompletePacket.getInstance());
     }
 }

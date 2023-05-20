@@ -43,6 +43,6 @@ public final class PostgreSQLAggregatedCommandExecutor implements CommandExecuto
                 each.close();
             }
         }
-        return Collections.singletonList(new PostgreSQLAggregatedResponsesPacket(result));
+        return Collections.singleton(new PostgreSQLAggregatedResponsesPacket(result));
     }
 }

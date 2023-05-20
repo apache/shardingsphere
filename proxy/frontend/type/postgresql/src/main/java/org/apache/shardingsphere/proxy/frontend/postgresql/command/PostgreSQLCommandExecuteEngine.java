@@ -22,6 +22,7 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketFactory;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -47,7 +48,7 @@ import java.util.Optional;
 /**
  * Command execute engine for PostgreSQL.
  */
-public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngine {
+public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngine<PostgreSQLPacket> {
     
     @Override
     public PostgreSQLCommandPacketType getCommandPacketType(final PacketPayload payload) {
@@ -66,12 +67,12 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     }
     
     @Override
-    public DatabasePacket<?> getErrorPacket(final Exception cause) {
+    public PostgreSQLPacket getErrorPacket(final Exception cause) {
         return PostgreSQLErrPacketFactory.newInstance(cause);
     }
     
     @Override
-    public Optional<DatabasePacket<?>> getOtherPacket(final ConnectionSession connectionSession) {
+    public Optional<PostgreSQLPacket> getOtherPacket(final ConnectionSession connectionSession) {
         return Optional.of(connectionSession.getTransactionStatus().isInTransaction() ? PostgreSQLReadyForQueryPacket.TRANSACTION_FAILED : PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
     }
     

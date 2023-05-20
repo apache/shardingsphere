@@ -93,6 +93,6 @@ public final class ResponsePacketBuilder {
      * @return update response packets
      */
     public static Collection<DatabasePacket<?>> buildUpdateResponsePackets(final UpdateResponseHeader updateResponseHeader, final int serverStatusFlag) {
-        return Collections.singletonList(new MySQLOKPacket(updateResponseHeader.getUpdateCount(), updateResponseHeader.getLastInsertId(), serverStatusFlag));
+        return Collections.singleton(new MySQLOKPacket(updateResponseHeader.getUpdateCount(), updateResponseHeader.getLastInsertId(), serverStatusFlag));
     }
 }

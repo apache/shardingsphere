@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command;
 
 import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketTypeLoader;
@@ -45,7 +46,7 @@ import java.util.Optional;
 /**
  * Command execute engine for MySQL.
  */
-public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
+public final class MySQLCommandExecuteEngine implements CommandExecuteEngine<MySQLPacket> {
     
     @Override
     public MySQLCommandPacketType getCommandPacketType(final PacketPayload payload) {
@@ -65,12 +66,12 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     }
     
     @Override
-    public DatabasePacket<?> getErrorPacket(final Exception cause) {
+    public MySQLPacket getErrorPacket(final Exception cause) {
         return MySQLErrPacketFactory.newInstance(cause);
     }
     
     @Override
-    public Optional<DatabasePacket<?>> getOtherPacket(final ConnectionSession connectionSession) {
+    public Optional<MySQLPacket> getOtherPacket(final ConnectionSession connectionSession) {
         return Optional.empty();
     }
     

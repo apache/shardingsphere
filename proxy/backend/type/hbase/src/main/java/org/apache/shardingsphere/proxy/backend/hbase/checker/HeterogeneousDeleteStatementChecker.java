@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.hbase.checker;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
@@ -34,10 +35,11 @@ public class HeterogeneousDeleteStatementChecker extends CommonHeterogeneousSQLS
     @Override
     public void execute() {
         Optional<WhereSegment> whereSegment = getSqlStatement().getWhere();
-        if (whereSegment.isPresent() && whereSegment.get().getExpr() instanceof InExpression) {
+        Preconditions.checkArgument(whereSegment.isPresent(), "Must contain where segment.");
+        if (whereSegment.get().getExpr() instanceof InExpression) {
             checkInExpressionIsExpected(whereSegment.get().getExpr());
         } else {
-            checkIsSinglePointQuery(whereSegment);
+            checkIsSinglePointQuery(whereSegment.get());
         }
     }
 }

@@ -67,7 +67,7 @@ public class HeterogeneousSelectStatementChecker extends CommonHeterogeneousSQLS
         Preconditions.checkArgument(!selectStatement.getLock().isPresent(), "Do not supported lock segment");
         Optional<LimitSegment> limitSegment = selectStatement.getLimit();
         if (limitSegment.isPresent()) {
-            Preconditions.checkArgument(!selectStatement.getLimit().get().getOffset().isPresent(), "Do not supported offset segment");
+            Preconditions.checkArgument(!limitSegment.get().getOffset().isPresent(), "Do not supported offset segment");
             Optional<PaginationValueSegment> paginationSegment = selectStatement.getLimit().flatMap(LimitSegment::getRowCount);
             Long maxScanLimitSize = HBaseContext.getInstance().getProps().<Long>getValue(HBasePropertyKey.MAX_SCAN_LIMIT_SIZE);
             paginationSegment.ifPresent(valueSegment -> Preconditions.checkArgument(((NumberLiteralLimitValueSegment) valueSegment).getValue() <= maxScanLimitSize, "row count must less than 5000"));
@@ -90,7 +90,7 @@ public class HeterogeneousSelectStatementChecker extends CommonHeterogeneousSQLS
         }
         ExpressionSegment whereExpr = whereSegment.get().getExpr();
         if (whereExpr instanceof BinaryOperationExpression) {
-            checkIsSinglePointQuery(whereSegment);
+            checkIsSinglePointQuery(whereSegment.get());
         } else if (whereExpr instanceof InExpression) {
             checkInExpressionIsExpected(whereExpr);
         } else if (whereExpr instanceof BetweenExpression) {

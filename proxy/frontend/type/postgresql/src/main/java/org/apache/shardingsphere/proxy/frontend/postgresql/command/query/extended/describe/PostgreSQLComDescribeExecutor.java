@@ -94,7 +94,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
             case 'S':
                 return describePreparedStatement();
             case 'P':
-                return Collections.singletonList(portalContext.get(packet.getName()).describe());
+                return Collections.singleton(portalContext.get(packet.getName()).describe());
             default:
                 throw new UnsupportedSQLOperationException("Unsupported describe type: " + packet.getType());
         }
