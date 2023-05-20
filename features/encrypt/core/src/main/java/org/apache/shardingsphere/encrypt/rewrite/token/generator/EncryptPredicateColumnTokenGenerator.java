@@ -76,8 +76,8 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         return generateSQLTokens(columnSegments, columnExpressionTableNames, whereSegments);
     }
     
-    private Collection<SQLToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments, final Map<String, String> columnExpressionTableNames,
-                                                                       final Collection<WhereSegment> whereSegments) {
+    private Collection<SQLToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments,
+                                                   final Map<String, String> columnExpressionTableNames, final Collection<WhereSegment> whereSegments) {
         Collection<SQLToken> result = new LinkedHashSet<>();
         for (ColumnSegment each : columnSegments) {
             String tableName = Optional.ofNullable(columnExpressionTableNames.get(each.getExpression())).orElse("");
