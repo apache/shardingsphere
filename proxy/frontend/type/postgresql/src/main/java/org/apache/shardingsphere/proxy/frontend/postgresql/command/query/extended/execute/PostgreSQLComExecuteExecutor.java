@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.execute;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
@@ -32,15 +33,14 @@ import java.util.List;
  * Command execute executor for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLComExecuteExecutor implements CommandExecutor {
+public final class PostgreSQLComExecuteExecutor implements CommandExecutor<PostgreSQLPacket> {
     
     private final PortalContext portalContext;
     
     private final PostgreSQLComExecutePacket packet;
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public List execute() throws SQLException {
+    public List<PostgreSQLPacket> execute() throws SQLException {
         return portalContext.get(packet.getPortal()).execute(packet.getMaxRows());
     }
     
