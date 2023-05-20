@@ -54,7 +54,7 @@ class PostgreSQLRowDescriptionPacketTest {
     }
     
     @Test
-    void getMessageType() {
+    void assertGetIdentifier() {
         PostgreSQLRowDescriptionPacket packet = new PostgreSQLRowDescriptionPacket(Collections.emptyList());
         assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.ROW_DESCRIPTION));
     }

@@ -33,7 +33,7 @@ class ReadOnlyProxyStateTest {
     }
     
     @Test
-    void executeWithSupportedSQL() {
+    void assertExecuteWithSupportedSQL() {
         new ReadOnlyProxyState().check(mock(SelectStatement.class));
     }
 }

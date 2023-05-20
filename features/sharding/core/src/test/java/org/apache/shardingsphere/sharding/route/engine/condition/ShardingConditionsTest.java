@@ -55,13 +55,13 @@ class ShardingConditionsTest {
     }
     
     @Test
-    void isSameShardingConditionTrue() {
+    void assertIsSameShardingConditionTrue() {
         ShardingConditions shardingConditions = createSingleShardingConditions();
         assertTrue(shardingConditions.isSameShardingCondition());
     }
     
     @Test
-    void isSameShardingConditionFalse() {
+    void assertIsSameShardingConditionFalse() {
         ShardingConditions shardingConditions = createMultipleShardingConditions();
         assertFalse(shardingConditions.isSameShardingCondition());
     }

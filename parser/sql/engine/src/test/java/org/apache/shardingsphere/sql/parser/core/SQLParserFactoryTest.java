@@ -32,7 +32,7 @@ class SQLParserFactoryTest {
     private static final String SQL = "SELECT COUNT(*) FROM user";
     
     @Test
-    void newInstance() {
+    void assertNewInstance() {
         SQLLexer sqlLexer = mock(LexerFixture.class);
         SQLParser sqlParser = mock(ParserFixture.class);
         SQLParser result = SQLParserFactory.newInstance(SQL, sqlLexer.getClass(), sqlParser.getClass());

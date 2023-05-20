@@ -44,7 +44,7 @@ class YamlTrafficStrategyConfigurationSwapperTest {
     private final YamlTrafficStrategyConfigurationSwapper swapper = new YamlTrafficStrategyConfigurationSwapper();
     
     @Test
-    void swapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlTrafficStrategyConfiguration yamlStrategyConfig = swapper.swapToYamlConfiguration(createTrafficStrategyConfiguration());
         assertThat(yamlStrategyConfig.getName(), is(NAME));
         assertThat(yamlStrategyConfig.getLabels(), is(LABELS));
@@ -57,7 +57,7 @@ class YamlTrafficStrategyConfigurationSwapperTest {
     }
     
     @Test
-    void swapToObject() {
+    void assertSwapToObject() {
         TrafficStrategyConfiguration strategyConfig = swapper.swapToObject(createYamlTrafficStrategyConfiguration());
         assertThat(strategyConfig.getName(), is(NAME));
         assertThat(strategyConfig.getLabels(), is(LABELS));

@@ -43,7 +43,7 @@ class CircuitBreakerConnectionTest {
     }
     
     @Test
-    void setReadOnly() {
+    void assertSetReadOnly() {
         connection.setReadOnly(true);
         assertFalse(connection.isReadOnly());
     }

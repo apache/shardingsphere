@@ -153,7 +153,7 @@ class PostgreSQLCommandExecutorFactoryTest {
     }
     
     @Test
-    void asserAggregatedFlushPacket() throws SQLException {
+    void assertAggregatedFlushPacket() throws SQLException {
         PostgreSQLComFlushPacket flushPacket = mock(PostgreSQLComFlushPacket.class);
         when(flushPacket.getIdentifier()).thenReturn(PostgreSQLCommandPacketType.FLUSH_COMMAND);
         PostgreSQLComSyncPacket syncPacket = mock(PostgreSQLComSyncPacket.class);
