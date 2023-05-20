@@ -19,10 +19,10 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query;
 
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCharacterSet;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
+import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -126,7 +126,7 @@ class MySQLComQueryPacketExecutorTest {
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(MySQLComQueryPacketExecutor.class.getDeclaredField("proxyBackendHandler"), actual, proxyBackendHandler);
         when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(mock(SQLStatement.class)));
-        Collection<DatabasePacket<?>> actualPackets = actual.execute();
+        Collection<MySQLPacket> actualPackets = actual.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), instanceOf(MySQLOKPacket.class));
     }
