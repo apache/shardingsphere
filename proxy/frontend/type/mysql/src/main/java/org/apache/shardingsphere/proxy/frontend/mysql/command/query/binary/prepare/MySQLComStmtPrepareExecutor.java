@@ -120,7 +120,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor<MySQLP
     }
     
     private Collection<MySQLPacket> createParameterColumnDefinition41Packets(final SQLStatementContext sqlStatementContext, final int characterSet,
-                                                                                   final MySQLServerPreparedStatement serverPreparedStatement) {
+                                                                             final MySQLServerPreparedStatement serverPreparedStatement) {
         Map<ParameterMarkerSegment, ShardingSphereColumn> columnsOfParameterMarkers =
                 MySQLComStmtPrepareParameterMarkerExtractor.findColumnsOfParameterMarkers(sqlStatementContext.getSqlStatement(), getSchema(sqlStatementContext));
         Collection<ParameterMarkerSegment> parameterMarkerSegments = ((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getParameterMarkerSegments();

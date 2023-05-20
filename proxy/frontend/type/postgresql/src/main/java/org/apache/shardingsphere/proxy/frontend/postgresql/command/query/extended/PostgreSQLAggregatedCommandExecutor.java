@@ -32,7 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class PostgreSQLAggregatedCommandExecutor implements CommandExecutor<PostgreSQLPacket> {
     
-    private final List<CommandExecutor<?>> executors;
+    private final List<CommandExecutor<PostgreSQLPacket>> executors;
     
     @Override
     public Collection<PostgreSQLPacket> execute() throws SQLException {
