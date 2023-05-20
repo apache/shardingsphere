@@ -36,8 +36,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.timeservice.api.config.TimeServiceRuleConfiguration;
-import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
+import org.apache.shardingsphere.timeservice.api.config.TimestampServiceRuleConfiguration;
+import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,7 +79,7 @@ class InsertClauseShardingConditionEngineTest {
     void setUp() {
         ShardingSphereDatabase database = mockDatabase();
         InsertStatement insertStatement = mockInsertStatement();
-        shardingConditionEngine = new InsertClauseShardingConditionEngine(database, shardingRule, new TimeServiceRule(new TimeServiceRuleConfiguration("System", new Properties())));
+        shardingConditionEngine = new InsertClauseShardingConditionEngine(database, shardingRule, new TimestampServiceRule(new TimestampServiceRuleConfiguration("System", new Properties())));
         when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
         when(insertStatementContext.getColumnNames()).thenReturn(Collections.singletonList("foo_col_1"));
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(createInsertValueContext()));

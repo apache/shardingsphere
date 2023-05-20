@@ -15,31 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.core.rule.builder;
+package org.apache.shardingsphere.timeservice.type.system;
 
-import org.apache.shardingsphere.infra.rule.builder.global.DefaultGlobalRuleConfigurationBuilder;
-import org.apache.shardingsphere.timeservice.api.config.TimeServiceRuleConfiguration;
-import org.apache.shardingsphere.timeservice.core.rule.constant.TimeServiceOrder;
+import org.apache.shardingsphere.timeservice.spi.TimestampService;
 
-import java.util.Properties;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
- * Default time service rule configuration builder.
+ * System timestamp service.
  */
-public final class DefaultTimeServiceConfigurationBuilder implements DefaultGlobalRuleConfigurationBuilder<TimeServiceRuleConfiguration, TimeServiceRuleBuilder> {
+public final class SystemTimestampService implements TimestampService {
     
     @Override
-    public TimeServiceRuleConfiguration build() {
-        return new TimeServiceRuleConfiguration("System", new Properties());
+    public Timestamp getTimestamp() {
+        return Timestamp.valueOf(LocalDateTime.now());
     }
     
     @Override
-    public int getOrder() {
-        return TimeServiceOrder.ORDER;
+    public String getType() {
+        return "System";
     }
     
     @Override
-    public Class<TimeServiceRuleBuilder> getTypeClass() {
-        return TimeServiceRuleBuilder.class;
+    public boolean isDefault() {
+        return true;
     }
 }

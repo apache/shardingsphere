@@ -15,22 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.type.database.provider.dialect;
+package org.apache.shardingsphere.timeservice.core.rule.constant;
 
-import org.apache.shardingsphere.timeservice.type.database.provider.DatetimeLoadingSQLProvider;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Datetime loading SQL provider for SQLServer.
+ * Timestamp service order.
  */
-public final class SQLServerDatetimeLoadingSQLProvider implements DatetimeLoadingSQLProvider {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TimestampServiceOrder {
     
-    @Override
-    public String getDatetimeLoadingSQL() {
-        return "SELECT GETDATE()";
-    }
-    
-    @Override
-    public String getType() {
-        return "SQLServer";
-    }
+    /**
+     * Time service order.
+     */
+    public static final int ORDER = 1100;
 }

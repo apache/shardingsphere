@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.type.database.provider.dialect;
+package org.apache.shardingsphere.timeservice.spi;
 
-import org.apache.shardingsphere.timeservice.type.database.provider.DatetimeLoadingSQLProvider;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
+import java.sql.Timestamp;
 
 /**
- * Datetime loading SQL provider for MySQL.
+ * Timestamp service.
  */
-public final class MySQLDatetimeLoadingSQLProvider implements DatetimeLoadingSQLProvider {
+public interface TimestampService extends TypedSPI {
     
-    @Override
-    public String getDatetimeLoadingSQL() {
-        return "SELECT NOW()";
-    }
-    
-    @Override
-    public String getType() {
-        return "MySQL";
-    }
+    /**
+     * Get timestamp.
+     * 
+     * @return timestamp
+     */
+    Timestamp getTimestamp();
 }

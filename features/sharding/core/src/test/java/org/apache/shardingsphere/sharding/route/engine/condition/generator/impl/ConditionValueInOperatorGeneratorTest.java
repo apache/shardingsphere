@@ -26,8 +26,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpr
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.timeservice.api.config.TimeServiceRuleConfiguration;
-import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
+import org.apache.shardingsphere.timeservice.api.config.TimestampServiceRuleConfiguration;
+import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -48,14 +48,14 @@ class ConditionValueInOperatorGeneratorTest {
     
     private final Column column = new Column("id", "tbl");
     
-    private final TimeServiceRule timeServiceRule = new TimeServiceRule(new TimeServiceRuleConfiguration("System", new Properties()));
+    private final TimestampServiceRule timestampServiceRule = new TimestampServiceRule(new TimestampServiceRuleConfiguration("System", new Properties()));
     
     @Test
     void assertNowExpression() {
         ListExpression listExpression = new ListExpression(0, 0);
         listExpression.getItems().add(new CommonExpressionSegment(0, 0, "now()"));
         InExpression inExpression = new InExpression(0, 0, null, listExpression, false);
-        Optional<ShardingConditionValue> shardingConditionValue = generator.generate(inExpression, column, new LinkedList<>(), timeServiceRule);
+        Optional<ShardingConditionValue> shardingConditionValue = generator.generate(inExpression, column, new LinkedList<>(), timestampServiceRule);
         assertTrue(shardingConditionValue.isPresent());
         assertThat(((ListShardingConditionValue<?>) shardingConditionValue.get()).getValues().iterator().next(), instanceOf(Date.class));
         assertTrue(shardingConditionValue.get().getParameterMarkerIndexes().isEmpty());
@@ -68,7 +68,7 @@ class ConditionValueInOperatorGeneratorTest {
         ListExpression right = new ListExpression(0, 0);
         right.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 0));
         InExpression predicate = new InExpression(0, 0, left, right, false);
-        Optional<ShardingConditionValue> actual = generator.generate(predicate, column, Collections.singletonList(1), timeServiceRule);
+        Optional<ShardingConditionValue> actual = generator.generate(predicate, column, Collections.singletonList(1), timestampServiceRule);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ListShardingConditionValue.class));
         ListShardingConditionValue<Integer> conditionValue = (ListShardingConditionValue<Integer>) actual.get();
@@ -84,7 +84,7 @@ class ConditionValueInOperatorGeneratorTest {
         ListExpression right = new ListExpression(0, 0);
         right.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 0));
         InExpression predicate = new InExpression(0, 0, left, right, false);
-        Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>(), timeServiceRule);
+        Optional<ShardingConditionValue> actual = generator.generate(predicate, column, new LinkedList<>(), timestampServiceRule);
         assertFalse(actual.isPresent());
     }
 }

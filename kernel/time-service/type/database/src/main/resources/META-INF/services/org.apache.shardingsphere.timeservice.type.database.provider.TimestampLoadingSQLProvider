@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.timeservice.type.database.provider.dialect.PostgreSQLDatetimeLoadingSQLProvider
-org.apache.shardingsphere.timeservice.type.database.provider.dialect.MySQLDatetimeLoadingSQLProvider
-org.apache.shardingsphere.timeservice.type.database.provider.dialect.SQLServerDatetimeLoadingSQLProvider
-org.apache.shardingsphere.timeservice.type.database.provider.dialect.OracleDatetimeLoadingSQLProvider
+org.apache.shardingsphere.timeservice.type.database.provider.dialect.PostgreSQLTimestampLoadingSQLProvider
+org.apache.shardingsphere.timeservice.type.database.provider.dialect.MySQLTimestampLoadingSQLProvider
+org.apache.shardingsphere.timeservice.type.database.provider.dialect.SQLServerTimestampLoadingSQLProvider
+org.apache.shardingsphere.timeservice.type.database.provider.dialect.OracleTimestampLoadingSQLProvider
