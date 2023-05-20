@@ -33,7 +33,7 @@ class UnavailableProxyStateTest {
     }
     
     @Test
-    void executeWithSupportedSQL() {
+    void assertExecuteWithSupportedSQL() {
         new UnavailableProxyState().check(mock(ImportMetaDataStatement.class));
     }
 }

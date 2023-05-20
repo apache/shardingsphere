@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class IpUtilsTest {
     
     @Test
-    void getIp() {
+    void assertGetIp() {
         assertNotNull(IpUtils.getIp());
     }
 }

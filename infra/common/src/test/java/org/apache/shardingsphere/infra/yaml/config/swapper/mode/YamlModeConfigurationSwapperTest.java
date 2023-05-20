@@ -31,13 +31,13 @@ class YamlModeConfigurationSwapperTest {
     private final YamlModeConfigurationSwapper swapper = new YamlModeConfigurationSwapper();
     
     @Test
-    void swapToYamlConfiguration() {
+    void assertSwapToYamlConfiguration() {
         YamlModeConfiguration actual = swapper.swapToYamlConfiguration(new ModeConfiguration("TEST_TYPE", null));
         assertThat(actual.getType(), is(TEST_TYPE));
     }
     
     @Test
-    void swapToObject() {
+    void assertSwapToObject() {
         YamlModeConfiguration yamlConfig = new YamlModeConfiguration();
         yamlConfig.setType(TEST_TYPE);
         ModeConfiguration actual = swapper.swapToObject(yamlConfig);

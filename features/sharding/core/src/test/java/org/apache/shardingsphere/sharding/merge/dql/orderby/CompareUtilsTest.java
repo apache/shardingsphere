@@ -84,12 +84,12 @@ class CompareUtilsTest {
     }
     
     @Test
-    void assetCompareToStringWithCaseSensitive() {
+    void assertCompareToStringWithCaseSensitive() {
         assertThat(CompareUtils.compareTo("A", "a", OrderDirection.DESC, NullsOrderType.FIRST, caseSensitive), is(32));
     }
     
     @Test
-    void assetCompareToStringWithCaseInsensitive() {
+    void assertCompareToStringWithCaseInsensitive() {
         assertThat(CompareUtils.compareTo("A", "a", OrderDirection.DESC, NullsOrderType.FIRST, !caseSensitive), is(0));
     }
 }
