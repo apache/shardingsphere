@@ -885,7 +885,7 @@
 1. Scaling: Fix PostgreSQL xml data type consistency check
 1. Fix database discovery failed to modify cron configuration
 1. Fix single read data source use weight loadbalance algorithm error
-1. Fix create redundant data souce without memory mode
+1. Fix create redundant data source without memory mode
 1. Fix column value matching shadow algorithm data type conversion exception
 
 ### Change Log
