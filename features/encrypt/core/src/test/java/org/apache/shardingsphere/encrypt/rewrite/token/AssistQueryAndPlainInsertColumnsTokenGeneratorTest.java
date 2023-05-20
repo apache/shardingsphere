@@ -22,18 +22,17 @@ import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertColumnsToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -82,11 +81,9 @@ class AssistQueryAndPlainInsertColumnsTokenGeneratorTest {
     void assertGenerateSQLTokensExistColumns() {
         AssistQueryAndPlainInsertColumnsTokenGenerator tokenGenerator = new AssistQueryAndPlainInsertColumnsTokenGenerator();
         tokenGenerator.setEncryptRule(mockEncryptRule());
-        Collection<InsertColumnsToken> actual = tokenGenerator.generateSQLTokens(mockInsertStatementContext());
+        Collection<SQLToken> actual = tokenGenerator.generateSQLTokens(mockInsertStatementContext());
         assertThat(actual.size(), is(1));
-        Iterator<InsertColumnsToken> iterator = actual.iterator();
-        InsertColumnsToken insertColumnsToken = iterator.next();
-        assertThat(insertColumnsToken.getStartIndex(), is(1));
+        assertThat(actual.iterator().next().getStartIndex(), is(1));
     }
     
     private EncryptRule mockEncryptRule() {

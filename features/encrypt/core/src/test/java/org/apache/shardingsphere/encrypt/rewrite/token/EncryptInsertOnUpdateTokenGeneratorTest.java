@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptAssignmentTok
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -100,10 +101,10 @@ class EncryptInsertOnUpdateTokenGeneratorTest {
         when(insertStatement.getOnDuplicateKeyColumns()).thenReturn(Optional.of(onDuplicateKeyColumnsSegment));
         when(insertStatementContext.getSqlStatement()).thenReturn(insertStatement);
         when(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatementContext.getSqlStatement())).thenReturn(Optional.of(onDuplicateKeyColumnsSegment));
-        Iterator<EncryptAssignmentToken> actual = generator.generateSQLTokens(insertStatementContext).iterator();
-        assertEncryptAssignmentToken(actual.next(), "cipher_mobile = ?");
-        assertEncryptAssignmentToken(actual.next(), "cipher_mobile = VALUES(cipher_mobile)");
-        assertEncryptAssignmentToken(actual.next(), "cipher_mobile = 'encryptValue'");
+        Iterator<SQLToken> actual = generator.generateSQLTokens(insertStatementContext).iterator();
+        assertEncryptAssignmentToken((EncryptAssignmentToken) actual.next(), "cipher_mobile = ?");
+        assertEncryptAssignmentToken((EncryptAssignmentToken) actual.next(), "cipher_mobile = VALUES(cipher_mobile)");
+        assertEncryptAssignmentToken((EncryptAssignmentToken) actual.next(), "cipher_mobile = 'encryptValue'");
         assertFalse(actual.hasNext());
     }
     
