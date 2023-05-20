@@ -35,6 +35,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -106,8 +108,8 @@ class ConditionValueBetweenOperatorGeneratorTest {
     @SuppressWarnings("unchecked")
     @Test
     void assertGenerateOneNowConditionValue() {
-        Date date = new Date();
-        ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, date);
+        Timestamp timestamp = Timestamp.valueOf(LocalDateTime.now());
+        ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, timestamp);
         ExpressionSegment andSegment = new CommonExpressionSegment(0, 0, "now()");
         BetweenExpression value = new BetweenExpression(0, 0, null, betweenSegment, andSegment, false);
         Optional<ShardingConditionValue> shardingConditionValue = generator.generate(value, column, new LinkedList<>(), timestampServiceRule);
@@ -115,7 +117,7 @@ class ConditionValueBetweenOperatorGeneratorTest {
         RangeShardingConditionValue<Date> rangeShardingConditionValue = (RangeShardingConditionValue<Date>) shardingConditionValue.get();
         assertThat(rangeShardingConditionValue.getColumnName(), is(column.getName()));
         assertThat(rangeShardingConditionValue.getTableName(), is(column.getTableName()));
-        assertThat(rangeShardingConditionValue.getValueRange().lowerEndpoint(), is(date));
+        assertThat(rangeShardingConditionValue.getValueRange().lowerEndpoint(), is(timestamp));
         assertTrue(rangeShardingConditionValue.getParameterMarkerIndexes().isEmpty());
     }
     
