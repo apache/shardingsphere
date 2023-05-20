@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.api.config;
+package org.apache.shardingsphere.timeservice.type.database.provider.dialect;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
-
-import java.util.Properties;
+import org.apache.shardingsphere.timeservice.type.database.provider.TimestampLoadingSQLProvider;
 
 /**
- * Time service rule configuration.
+ * Timestamp loading SQL provider for Oracle.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TimeServiceRuleConfiguration implements GlobalRuleConfiguration {
+public final class OracleTimestampLoadingSQLProvider implements TimestampLoadingSQLProvider {
     
-    private final String type;
+    @Override
+    public String getTimestampLoadingSQL() {
+        return "SELECT sysdate FROM DUAL";
+    }
     
-    private final Properties props;
+    @Override
+    public String getType() {
+        return "Oracle";
+    }
 }

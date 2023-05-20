@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.type.system;
+package org.apache.shardingsphere.timeservice.type.database.provider.dialect;
 
-import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
-
-import java.util.Date;
+import org.apache.shardingsphere.timeservice.type.database.provider.TimestampLoadingSQLProvider;
 
 /**
- * System time service.
+ * Timestamp loading SQL provider for SQLServer.
  */
-public final class SystemTimeService implements ShardingSphereTimeService {
+public final class SQLServerTimestampLoadingSQLProvider implements TimestampLoadingSQLProvider {
     
     @Override
-    public Date getDatetime() {
-        return new Date();
+    public String getTimestampLoadingSQL() {
+        return "SELECT GETDATE()";
     }
     
     @Override
     public String getType() {
-        return "System";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
+        return "SQLServer";
     }
 }

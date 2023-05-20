@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.timeservice.type.database.provider.dialect;
 
-import org.apache.shardingsphere.timeservice.type.database.provider.DatetimeLoadingSQLProvider;
+import org.apache.shardingsphere.timeservice.type.database.provider.TimestampLoadingSQLProvider;
 
 /**
- * Datetime loading SQL provider for PostgreSQL.
+ * Timestamp loading SQL provider for PostgreSQL.
  */
-public final class PostgreSQLDatetimeLoadingSQLProvider implements DatetimeLoadingSQLProvider {
+public final class PostgreSQLTimestampLoadingSQLProvider implements TimestampLoadingSQLProvider {
     
     @Override
-    public String getDatetimeLoadingSQL() {
+    public String getTimestampLoadingSQL() {
         return "SELECT NOW()";
     }
     

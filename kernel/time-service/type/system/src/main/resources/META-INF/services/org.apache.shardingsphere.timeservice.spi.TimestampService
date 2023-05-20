@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.timeservice.type.system.SystemTimeService
+org.apache.shardingsphere.timeservice.type.system.SystemTimestampService

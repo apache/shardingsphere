@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.spi;
+package org.apache.shardingsphere.timeservice.type.system;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.timeservice.spi.TimestampService;
+import org.junit.jupiter.api.Test;
 
-import java.util.Date;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * ShardingSphere time service.
- */
-public interface ShardingSphereTimeService extends TypedSPI {
+class SystemTimestampServiceTest {
     
-    /**
-     * Get datetime.
-     * 
-     * @return datetime
-     */
-    Date getDatetime();
+    @Test
+    void assertGetTimestamp() {
+        long currentTime = System.currentTimeMillis();
+        assertTrue(TypedSPILoader.getService(TimestampService.class, null).getTimestamp().getTime() >= currentTime);
+    }
 }

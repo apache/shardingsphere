@@ -20,29 +20,29 @@ package org.apache.shardingsphere.timeservice.core.rule.builder;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
-import org.apache.shardingsphere.timeservice.api.config.TimeServiceRuleConfiguration;
-import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
-import org.apache.shardingsphere.timeservice.core.rule.constant.TimeServiceOrder;
+import org.apache.shardingsphere.timeservice.api.config.TimestampServiceRuleConfiguration;
+import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
+import org.apache.shardingsphere.timeservice.core.rule.constant.TimestampServiceOrder;
 
 import java.util.Map;
 
 /**
- * Time service rule builder.
+ * Timestamp service rule builder.
  */
-public final class TimeServiceRuleBuilder implements GlobalRuleBuilder<TimeServiceRuleConfiguration> {
+public final class TimestampServiceRuleBuilder implements GlobalRuleBuilder<TimestampServiceRuleConfiguration> {
     
     @Override
-    public TimeServiceRule build(final TimeServiceRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
-        return new TimeServiceRule(ruleConfig);
+    public TimestampServiceRule build(final TimestampServiceRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
+        return new TimestampServiceRule(ruleConfig);
     }
     
     @Override
     public int getOrder() {
-        return TimeServiceOrder.ORDER;
+        return TimestampServiceOrder.ORDER;
     }
     
     @Override
-    public Class<TimeServiceRuleConfiguration> getTypeClass() {
-        return TimeServiceRuleConfiguration.class;
+    public Class<TimestampServiceRuleConfiguration> getTypeClass() {
+        return TimestampServiceRuleConfiguration.class;
     }
 }

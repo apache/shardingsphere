@@ -22,8 +22,8 @@ import org.apache.shardingsphere.sharding.api.config.cache.ShardingCacheConfigur
 import org.apache.shardingsphere.sharding.cache.checker.ShardingRouteCacheableChecker;
 import org.apache.shardingsphere.sharding.cache.route.cache.ShardingRouteCache;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
-import org.apache.shardingsphere.timeservice.core.rule.builder.DefaultTimeServiceConfigurationBuilder;
+import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
+import org.apache.shardingsphere.timeservice.core.rule.builder.DefaultTimestampServiceConfigurationBuilder;
 
 /**
  * <strong>EXPERIMENTAL</strong> Sharding cache.
@@ -35,7 +35,7 @@ public final class ShardingCache {
     
     private final ShardingRule shardingRule;
     
-    private final TimeServiceRule timeServiceRule;
+    private final TimestampServiceRule timestampServiceRule;
     
     private final ShardingRouteCacheableChecker routeCacheableChecker;
     
@@ -44,7 +44,7 @@ public final class ShardingCache {
     public ShardingCache(final ShardingCacheConfiguration configuration, final ShardingRule shardingRule) {
         this.configuration = configuration;
         this.shardingRule = shardingRule;
-        timeServiceRule = new TimeServiceRule(new DefaultTimeServiceConfigurationBuilder().build());
+        timestampServiceRule = new TimestampServiceRule(new DefaultTimestampServiceConfigurationBuilder().build());
         routeCacheableChecker = new ShardingRouteCacheableChecker(this);
         routeCache = new ShardingRouteCache(configuration.getRouteCache());
     }
