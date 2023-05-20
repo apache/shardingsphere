@@ -61,6 +61,7 @@ concurrency:
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
   REPOSITORY_NAME: shardingsphere
+  SEGMENT_DOWNLOAD_TIMEOUT_MINS: 1
 
 jobs:
   build-e2e-image:
