@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,8 +51,8 @@ class EncryptPredicateColumnTokenGeneratorTest {
     void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         generator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
         generator.setSchemas(Collections.emptyMap());
-        Collection<SubstitutableColumnNameToken> substitutableColumnNameTokens = generator.generateSQLTokens(EncryptGeneratorFixtureBuilder.createUpdateStatementContext());
+        Collection<SQLToken> substitutableColumnNameTokens = generator.generateSQLTokens(EncryptGeneratorFixtureBuilder.createUpdateStatementContext());
         assertThat(substitutableColumnNameTokens.size(), is(1));
-        assertThat(substitutableColumnNameTokens.iterator().next().toString(null), is("pwd_assist"));
+        assertThat(((SubstitutableColumnNameToken) substitutableColumnNameTokens.iterator().next()).toString(null), is("pwd_assist"));
     }
 }

@@ -42,7 +42,7 @@ public final class ShardingRemoveTokenGenerator implements CollectionSQLTokenGen
     }
     
     @Override
-    public Collection<? extends SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
         if (isContainsAggregationDistinctProjection(sqlStatementContext)) {
             ((SelectStatementContext) sqlStatementContext).getSqlStatement().getGroupBy().ifPresent(optional -> result.add(new RemoveToken(optional.getStartIndex(), optional.getStopIndex())));

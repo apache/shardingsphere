@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
@@ -50,14 +50,14 @@ import java.util.List;
  * PostgreSQL command parse executor.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLComParseExecutor implements CommandExecutor {
+public final class PostgreSQLComParseExecutor implements CommandExecutor<PostgreSQLPacket> {
     
     private final PostgreSQLComParsePacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket<?>> execute() {
+    public Collection<PostgreSQLPacket> execute() {
         SQLParserEngine sqlParserEngine = createShardingSphereSQLParserEngine(connectionSession.getDatabaseName());
         String sql = packet.getSql();
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, true);
@@ -71,7 +71,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
                         sqlStatement, connectionSession.getDefaultDatabaseName());
         PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, paddedColumnTypes);
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(packet.getStatementId(), serverPreparedStatement);
-        return Collections.singletonList(PostgreSQLParseCompletePacket.getInstance());
+        return Collections.singleton(PostgreSQLParseCompletePacket.getInstance());
     }
     
     private SQLParserEngine createShardingSphereSQLParserEngine(final String databaseName) {

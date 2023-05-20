@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.opengauss;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.opengauss.codec.OpenGaussPacketCodecEngine;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.dialect.exception.transaction.InTransactionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.opengauss.authentication.OpenGaussAuthenticationEngine;
@@ -31,7 +32,7 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
  * Frontend engine for openGauss.
  */
 @Getter
-public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEngine {
+public final class OpenGaussFrontendEngine implements DatabaseProtocolFrontendEngine<PostgreSQLPacket> {
     
     @Getter(AccessLevel.NONE)
     private final PostgreSQLFrontendEngine postgreSQLFrontendEngine = new PostgreSQLFrontendEngine();

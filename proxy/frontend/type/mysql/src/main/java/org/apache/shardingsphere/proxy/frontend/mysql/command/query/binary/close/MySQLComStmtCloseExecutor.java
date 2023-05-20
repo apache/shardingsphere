@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.close;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
@@ -30,14 +30,14 @@ import java.util.Collections;
  * COM_STMT_CLOSE command executor for MySQL.
  */
 @RequiredArgsConstructor
-public final class MySQLComStmtCloseExecutor implements CommandExecutor {
+public final class MySQLComStmtCloseExecutor implements CommandExecutor<MySQLPacket> {
     
     private final MySQLComStmtClosePacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket<?>> execute() {
+    public Collection<MySQLPacket> execute() {
         connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
         return Collections.emptyList();
     }

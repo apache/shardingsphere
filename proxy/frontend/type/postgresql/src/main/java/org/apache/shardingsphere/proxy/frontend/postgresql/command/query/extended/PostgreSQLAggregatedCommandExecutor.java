@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedResponsesPacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
@@ -29,20 +30,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 @RequiredArgsConstructor
-public final class PostgreSQLAggregatedCommandExecutor implements CommandExecutor {
+public final class PostgreSQLAggregatedCommandExecutor implements CommandExecutor<PostgreSQLPacket> {
     
-    private final List<CommandExecutor> executors;
+    private final List<CommandExecutor<PostgreSQLPacket>> executors;
     
     @Override
-    public Collection<DatabasePacket<?>> execute() throws SQLException {
+    public Collection<PostgreSQLPacket> execute() throws SQLException {
         List<DatabasePacket<?>> result = new LinkedList<>();
-        for (CommandExecutor each : executors) {
+        for (CommandExecutor<?> each : executors) {
             try {
                 result.addAll(each.execute());
             } finally {
                 each.close();
             }
         }
-        return Collections.singletonList(new PostgreSQLAggregatedResponsesPacket(result));
+        return Collections.singleton(new PostgreSQLAggregatedResponsesPacket(result));
     }
 }

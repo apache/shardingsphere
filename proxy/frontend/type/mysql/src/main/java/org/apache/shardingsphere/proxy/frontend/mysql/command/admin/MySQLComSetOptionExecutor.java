@@ -19,9 +19,9 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
+import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
@@ -33,15 +33,15 @@ import java.util.Collections;
  * COM_SET_OPTION command executor for MySQL.
  */
 @RequiredArgsConstructor
-public final class MySQLComSetOptionExecutor implements CommandExecutor {
+public final class MySQLComSetOptionExecutor implements CommandExecutor<MySQLPacket> {
     
     private final MySQLComSetOptionPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket<?>> execute() {
+    public Collection<MySQLPacket> execute() {
         connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS).set(packet.getValue());
-        return Collections.singletonList(new MySQLOKPacket(ServerStatusFlagCalculator.calculateFor(connectionSession)));
+        return Collections.singleton(new MySQLOKPacket(ServerStatusFlagCalculator.calculateFor(connectionSession)));
     }
 }

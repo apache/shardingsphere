@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.describe;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
@@ -26,7 +25,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
 import org.apache.shardingsphere.dialect.postgresql.exception.metadata.ColumnNotFoundException;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.connection.kernel.KernelProcessor;
@@ -37,6 +35,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -78,7 +77,7 @@ import java.util.stream.Collectors;
  * Command describe for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
+public final class PostgreSQLComDescribeExecutor implements CommandExecutor<PostgreSQLPacket> {
     
     private static final String ANONYMOUS_COLUMN_NAME = "?column?";
     
@@ -89,19 +88,19 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket<?>> execute() throws SQLException {
+    public Collection<PostgreSQLPacket> execute() throws SQLException {
         switch (packet.getType()) {
             case 'S':
                 return describePreparedStatement();
             case 'P':
-                return Collections.singletonList(portalContext.get(packet.getName()).describe());
+                return Collections.singleton(portalContext.get(packet.getName()).describe());
             default:
                 throw new UnsupportedSQLOperationException("Unsupported describe type: " + packet.getType());
         }
     }
     
-    private List<DatabasePacket<?>> describePreparedStatement() throws SQLException {
-        List<DatabasePacket<?>> result = new ArrayList<>(2);
+    private List<PostgreSQLPacket> describePreparedStatement() throws SQLException {
+        List<PostgreSQLPacket> result = new ArrayList<>(2);
         PostgreSQLServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getName());
         result.add(preparedStatement.describeParameters());
         Optional<PostgreSQLPacket> rowDescription = preparedStatement.describeRows();

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse;
 
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
@@ -83,7 +83,7 @@ class PostgreSQLComParseExecutorTest {
         when(parsePacket.getStatementId()).thenReturn(statementId);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        Collection<DatabasePacket<?>> actualPackets = executor.execute();
+        Collection<PostgreSQLPacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
         PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
@@ -105,7 +105,7 @@ class PostgreSQLComParseExecutorTest {
         Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        Collection<DatabasePacket<?>> actualPackets = executor.execute();
+        Collection<PostgreSQLPacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
         PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);
@@ -123,7 +123,7 @@ class PostgreSQLComParseExecutorTest {
         when(parsePacket.getStatementId()).thenReturn(statementId);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        Collection<DatabasePacket<?>> actualPackets = executor.execute();
+        Collection<PostgreSQLPacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
         PostgreSQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(statementId);

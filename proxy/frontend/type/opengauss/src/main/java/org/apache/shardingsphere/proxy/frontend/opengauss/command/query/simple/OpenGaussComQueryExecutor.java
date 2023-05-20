@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.frontend.opengauss.command.query.simple;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
@@ -53,12 +52,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Command query executor for openGauss.
  */
-public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
+public final class OpenGaussComQueryExecutor implements QueryCommandExecutor<PostgreSQLPacket> {
     
     private final PortalContext portalContext;
     
@@ -73,7 +71,7 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     }
     
     @Override
-    public Collection<DatabasePacket<?>> execute() throws SQLException {
+    public Collection<PostgreSQLPacket> execute() throws SQLException {
         ResponseHeader responseHeader = proxyBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
             return Collections.singleton(createRowDescriptionPacket((QueryResponseHeader) responseHeader));
@@ -96,7 +94,7 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
         return result;
     }
     
-    private List<DatabasePacket<?>> createUpdatePacket(final UpdateResponseHeader updateResponseHeader) throws SQLException {
+    private Collection<PostgreSQLPacket> createUpdatePacket(final UpdateResponseHeader updateResponseHeader) throws SQLException {
         SQLStatement sqlStatement = updateResponseHeader.getSqlStatement();
         if (sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement) {
             portalContext.closeAll();
@@ -108,8 +106,8 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
                 : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(PostgreSQLCommand::getTag).orElse(""), updateResponseHeader.getUpdateCount()));
     }
     
-    private List<DatabasePacket<?>> createParameterStatusResponse(final SetStatement sqlStatement) {
-        List<DatabasePacket<?>> result = new ArrayList<>(2);
+    private Collection<PostgreSQLPacket> createParameterStatusResponse(final SetStatement sqlStatement) {
+        Collection<PostgreSQLPacket> result = new ArrayList<>(2);
         result.add(new PostgreSQLCommandCompletePacket("SET", 0));
         for (VariableAssignSegment each : sqlStatement.getVariableAssigns()) {
             result.add(new PostgreSQLParameterStatusPacket(each.getVariable().getVariable(), IdentifierValue.getQuotedContent(each.getAssignValue())));

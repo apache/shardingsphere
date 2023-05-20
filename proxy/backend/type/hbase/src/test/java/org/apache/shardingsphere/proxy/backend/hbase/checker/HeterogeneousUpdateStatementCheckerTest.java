@@ -47,7 +47,7 @@ class HeterogeneousUpdateStatementCheckerTest {
         String sql = "update /*+ hbase */ t_test_order set age = 10 where rowKey > 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Only Supported `=` operator"));
+        assertThat(ex.getMessage(), is("Only Supported `=` operator."));
     }
     
     @Test
@@ -55,7 +55,7 @@ class HeterogeneousUpdateStatementCheckerTest {
         String sql = "update /*+ hbase */ t_test_order set age = 10 where age = 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("age is not a allowed key"));
+        assertThat(ex.getMessage(), is("age is not a allowed key."));
     }
     
     @Test
@@ -63,7 +63,7 @@ class HeterogeneousUpdateStatementCheckerTest {
         String sql = "update /*+ hbase */ t_test_order set age = 10 where 1 = 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("left segment must is ColumnSegment"));
+        assertThat(ex.getMessage(), is("Left segment must column segment."));
     }
     
     @Test
@@ -71,7 +71,7 @@ class HeterogeneousUpdateStatementCheckerTest {
         String sql = "update /*+ hbase */ t_test_order set age = 10 WHERE order_id = ? AND user_id = ? AND status=?";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Do not supported Multiple expressions"));
+        assertThat(ex.getMessage(), is("Do not supported multiple expressions."));
     }
     
     @Test
@@ -79,7 +79,7 @@ class HeterogeneousUpdateStatementCheckerTest {
         String sql = "update /*+ hbase */ t_test_order set age = 10 ";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Must Have Where Segment"));
+        assertThat(ex.getMessage(), is("Must contain where segment."));
     }
     
     @Test

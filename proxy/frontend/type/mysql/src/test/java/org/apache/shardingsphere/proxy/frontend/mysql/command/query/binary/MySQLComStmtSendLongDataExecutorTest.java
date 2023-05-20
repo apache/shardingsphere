@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary;
 
+import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLComStmtSendLongDataPacket;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
@@ -47,7 +47,7 @@ class MySQLComStmtSendLongDataExecutorTest {
         MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("insert into t (b) values (?)", mock(SQLStatementContext.class), Collections.emptyList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, preparedStatement);
         MySQLComStmtSendLongDataExecutor executor = new MySQLComStmtSendLongDataExecutor(packet, connectionSession);
-        Collection<DatabasePacket<?>> actual = executor.execute();
+        Collection<MySQLPacket> actual = executor.execute();
         assertThat(actual, is(Collections.emptyList()));
         assertThat(preparedStatement.getLongData(), is(Collections.singletonMap(0, data)));
     }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.rewrite.token;
 
 import org.apache.shardingsphere.infra.binder.statement.ddl.AlterTableStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateDatabaseStatementContext;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.ConstraintTokenGenerator;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ConstraintToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -62,9 +63,13 @@ class ConstraintTokenGeneratorTest {
         when(alterTableStatementContext.getConstraints()).thenReturn(Collections.singleton(constraintSegment));
         ConstraintTokenGenerator generator = new ConstraintTokenGenerator();
         generator.setShardingRule(mock(ShardingRule.class));
-        Collection<ConstraintToken> actual = generator.generateSQLTokens(alterTableStatementContext);
+        Collection<SQLToken> actual = generator.generateSQLTokens(alterTableStatementContext);
         assertThat(actual.size(), is(1));
-        assertThat((new LinkedList<>(actual)).get(0).getStartIndex(), is(1));
-        assertThat((new LinkedList<>(actual)).get(0).getStopIndex(), is(3));
+        assertConstraintToken((ConstraintToken) actual.iterator().next());
+    }
+    
+    private static void assertConstraintToken(final ConstraintToken actual) {
+        assertThat(actual.getStartIndex(), is(1));
+        assertThat(actual.getStopIndex(), is(3));
     }
 }

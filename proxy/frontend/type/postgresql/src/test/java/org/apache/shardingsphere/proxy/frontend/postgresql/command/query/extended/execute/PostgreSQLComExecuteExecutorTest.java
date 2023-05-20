@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.execute;
 
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
@@ -70,7 +69,7 @@ class PostgreSQLComExecuteExecutorTest {
     void assertExecute() throws SQLException {
         PostgreSQLPacket expectedPacket = mock(PostgreSQLPacket.class);
         when(portal.execute(anyInt())).thenReturn(Collections.singletonList(expectedPacket));
-        List<DatabasePacket<?>> actualPackets = executor.execute();
+        List<PostgreSQLPacket> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(expectedPacket));
     }

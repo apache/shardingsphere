@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.admin.quit;
 
+import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
 import java.util.Collection;
@@ -27,10 +27,10 @@ import java.util.Collections;
 /**
  * COM_QUIT executor for MySQL.
  */
-public final class MySQLComQuitExecutor implements CommandExecutor {
+public final class MySQLComQuitExecutor implements CommandExecutor<MySQLPacket> {
     
     @Override
-    public Collection<DatabasePacket<?>> execute() {
-        return Collections.singletonList(new MySQLOKPacket(0));
+    public Collection<MySQLPacket> execute() {
+        return Collections.singleton(new MySQLOKPacket(0));
     }
 }

@@ -19,9 +19,9 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.admin;
 
 import io.netty.util.Attribute;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
+import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,7 +57,7 @@ class MySQLComSetOptionExecutorTest {
     void assertExecute() {
         when(packet.getValue()).thenReturn(MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON);
         when(connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS)).thenReturn(attribute);
-        Collection<DatabasePacket<?>> actual = executor.execute();
+        Collection<MySQLPacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(MySQLOKPacket.class));
         verify(attribute).set(MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON);

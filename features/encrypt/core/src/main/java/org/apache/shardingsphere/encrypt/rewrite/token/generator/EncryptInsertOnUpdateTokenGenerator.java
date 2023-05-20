@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
@@ -62,8 +63,8 @@ public final class EncryptInsertOnUpdateTokenGenerator implements CollectionSQLT
     }
     
     @Override
-    public Collection<EncryptAssignmentToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
-        Collection<EncryptAssignmentToken> result = new LinkedList<>();
+    public Collection<SQLToken> generateSQLTokens(final InsertStatementContext insertStatementContext) {
+        Collection<SQLToken> result = new LinkedList<>();
         InsertStatement insertStatement = insertStatementContext.getSqlStatement();
         Preconditions.checkState(InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement).isPresent());
         OnDuplicateKeyColumnsSegment onDuplicateKeyColumnsSegment = InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement).get();

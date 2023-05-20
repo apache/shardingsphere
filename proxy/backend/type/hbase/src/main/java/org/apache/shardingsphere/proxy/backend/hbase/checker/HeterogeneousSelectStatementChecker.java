@@ -43,7 +43,7 @@ import java.util.Optional;
 /**
  * Checker for select statement.
  */
-public class HeterogeneousSelectStatementChecker extends CommonHeterogeneousSQLStatementChecker<SelectStatement> {
+public final class HeterogeneousSelectStatementChecker extends CommonHeterogeneousSQLStatementChecker<SelectStatement> {
     
     public HeterogeneousSelectStatementChecker(final SelectStatement sqlStatement) {
         super(sqlStatement);
@@ -58,19 +58,18 @@ public class HeterogeneousSelectStatementChecker extends CommonHeterogeneousSQLS
     }
     
     private void checkDoNotSupportedSegment() {
-        Preconditions.checkArgument(getSqlStatement().getFrom() instanceof SimpleTableSegment, "Only supported SimpleTableSegment");
-        Preconditions.checkArgument(!getSqlStatement().getHaving().isPresent(), "Do not supported having segment");
-        Preconditions.checkArgument(!getSqlStatement().getGroupBy().isPresent(), "Do not supported group by segment");
-        
+        Preconditions.checkArgument(getSqlStatement().getFrom() instanceof SimpleTableSegment, "Only supported simple table segment.");
+        Preconditions.checkArgument(!getSqlStatement().getHaving().isPresent(), "Do not supported having segment.");
+        Preconditions.checkArgument(!getSqlStatement().getGroupBy().isPresent(), "Do not supported group by segment.");
         MySQLSelectStatement selectStatement = (MySQLSelectStatement) getSqlStatement();
-        Preconditions.checkArgument(!selectStatement.getWindow().isPresent(), "Do not supported window segment");
-        Preconditions.checkArgument(!selectStatement.getLock().isPresent(), "Do not supported lock segment");
+        Preconditions.checkArgument(!selectStatement.getWindow().isPresent(), "Do not supported window segment.");
+        Preconditions.checkArgument(!selectStatement.getLock().isPresent(), "Do not supported lock segment.");
         Optional<LimitSegment> limitSegment = selectStatement.getLimit();
         if (limitSegment.isPresent()) {
-            Preconditions.checkArgument(!selectStatement.getLimit().get().getOffset().isPresent(), "Do not supported offset segment");
+            Preconditions.checkArgument(!limitSegment.get().getOffset().isPresent(), "Do not supported offset segment.");
             Optional<PaginationValueSegment> paginationSegment = selectStatement.getLimit().flatMap(LimitSegment::getRowCount);
             Long maxScanLimitSize = HBaseContext.getInstance().getProps().<Long>getValue(HBasePropertyKey.MAX_SCAN_LIMIT_SIZE);
-            paginationSegment.ifPresent(valueSegment -> Preconditions.checkArgument(((NumberLiteralLimitValueSegment) valueSegment).getValue() <= maxScanLimitSize, "row count must less than 5000"));
+            paginationSegment.ifPresent(valueSegment -> Preconditions.checkArgument(((NumberLiteralLimitValueSegment) valueSegment).getValue() <= maxScanLimitSize, "Row count must less than 5000."));
         }
     }
     
@@ -78,7 +77,7 @@ public class HeterogeneousSelectStatementChecker extends CommonHeterogeneousSQLS
         for (ProjectionSegment projectionSegment : getSqlStatement().getProjections().getProjections()) {
             if (!(projectionSegment instanceof ShorthandProjectionSegment || projectionSegment instanceof ColumnProjectionSegment || HBaseHeterogeneousUtils.isCrcProjectionSegment(
                     projectionSegment))) {
-                throw new IllegalArgumentException("Only supported ShorthandProjection and ColumnProjection and crc32ExpressionProjection");
+                throw new IllegalArgumentException("Only supported shorthand, column and crc32 expression projections.");
             }
         }
     }
@@ -90,7 +89,7 @@ public class HeterogeneousSelectStatementChecker extends CommonHeterogeneousSQLS
         }
         ExpressionSegment whereExpr = whereSegment.get().getExpr();
         if (whereExpr instanceof BinaryOperationExpression) {
-            checkIsSinglePointQuery(whereSegment);
+            checkIsSinglePointQuery(whereSegment.get());
         } else if (whereExpr instanceof InExpression) {
             checkInExpressionIsExpected(whereExpr);
         } else if (whereExpr instanceof BetweenExpression) {
@@ -102,15 +101,13 @@ public class HeterogeneousSelectStatementChecker extends CommonHeterogeneousSQLS
     
     private void checkBetweenExpressionIsExpected(final ExpressionSegment whereExpr) {
         BetweenExpression expression = (BetweenExpression) whereExpr;
-        
-        Preconditions.checkArgument(expression.getLeft() instanceof ColumnSegment, "left segment must is ColumnSegment");
+        Preconditions.checkArgument(expression.getLeft() instanceof ColumnSegment, "Left segment must column segment.");
         String rowKey = ((ColumnSegment) expression.getLeft()).getIdentifier().getValue();
         boolean isAllowKey = ALLOW_KEYS.stream().anyMatch(each -> each.equalsIgnoreCase(rowKey));
-        Preconditions.checkArgument(isAllowKey, String.format("%s is not a allowed key", rowKey));
-        
+        Preconditions.checkArgument(isAllowKey, String.format("%s is not a allowed key.", rowKey));
         Preconditions.checkArgument(!expression.isNot(), "Do not supported `not between...and...`");
-        Preconditions.checkArgument(isAllowExpressionSegment(expression.getBetweenExpr()), "between expr must is literal or parameter marker");
-        Preconditions.checkArgument(isAllowExpressionSegment(expression.getAndExpr()), "between expr must is literal or parameter marker");
+        Preconditions.checkArgument(isAllowExpressionSegment(expression.getBetweenExpr()), "Between expr must literal or parameter marker.");
+        Preconditions.checkArgument(isAllowExpressionSegment(expression.getAndExpr()), "Between expr must literal or parameter marker.");
     }
     
     private void checkSupportedOrderBySegment() {
@@ -119,12 +116,11 @@ public class HeterogeneousSelectStatementChecker extends CommonHeterogeneousSQLS
         }
         for (OrderByItemSegment orderByItemSegment : getSqlStatement().getOrderBy().get().getOrderByItems()) {
             if (!(orderByItemSegment instanceof ColumnOrderByItemSegment)) {
-                throw new IllegalArgumentException("Only simple rowKey order by");
+                throw new IllegalArgumentException("Only simple row key order by.");
             }
             if (!"rowKey".equalsIgnoreCase(((ColumnOrderByItemSegment) orderByItemSegment).getColumn().getIdentifier().getValue())) {
-                throw new IllegalArgumentException("Only simple rowKey order by");
+                throw new IllegalArgumentException("Only simple row key order by.");
             }
         }
     }
-    
 }
