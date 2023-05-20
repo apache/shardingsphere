@@ -65,11 +65,11 @@ class ShardingRuleStatementConverterTest {
         assertThat(tableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_snowflake"));
         assertThat(tableRule.getKeyGenerateStrategy().getColumn(), is("order_id"));
         autoTableRule = autoTableConfigs.next();
-        assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("snowflake_algorithm"));
+        assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_2_snowflake"));
         assertThat(config.getShardingAlgorithms().size(), is(4));
         assertThat(config.getShardingAlgorithms().get("t_order_mod").getType(), is("mod"));
         assertThat(config.getShardingAlgorithms().get("t_order_mod").getProps().getProperty("sharding_count"), is("2"));
-        assertThat(config.getKeyGenerators().size(), is(1));
+        assertThat(config.getKeyGenerators().size(), is(2));
         assertThat(config.getKeyGenerators().get("t_order_snowflake").getType(), is("snowflake"));
         assertThat(config.getKeyGenerators().get("t_order_snowflake").getProps().getProperty(""), is(""));
         assertThat(config.getAuditors().get("sharding_key_required_auditor").getType(), is("DML_SHARDING_CONDITIONS"));
@@ -103,7 +103,7 @@ class ShardingRuleStatementConverterTest {
         AutoTableRuleSegment autoTableRuleSegment2 = new AutoTableRuleSegment("t_order_2", Arrays.asList("ds0", "ds1"));
         autoTableRuleSegment2.setShardingColumn("order_id");
         autoTableRuleSegment2.setShardingAlgorithmSegment(new AlgorithmSegment("MOD", PropertiesBuilder.build(new Property("sharding_count", "2"))));
-        autoTableRuleSegment2.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("order_id", "snowflake_algorithm"));
+        autoTableRuleSegment2.setKeyGenerateStrategySegment(new KeyGenerateStrategySegment("order_id", new AlgorithmSegment("snowflake", new Properties())));
         autoTableRuleSegment2.setAuditStrategySegment(new AuditStrategySegment(Collections.singleton(new ShardingAuditorSegment("sharding_key_required_auditor",
                 new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()))), true));
         TableRuleSegment tableRuleSegment = new TableRuleSegment("t_order", Arrays.asList("ds0", "ds1"),
