@@ -39,7 +39,7 @@ class HeterogeneousDeleteStatementCheckerTest {
         String sql = "delete /*+ hbase */ from t_test_order where rowKey > 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Only Supported `=` operator"));
+        assertThat(ex.getMessage(), is("Only Supported `=` operator."));
     }
     
     @Test
@@ -47,7 +47,7 @@ class HeterogeneousDeleteStatementCheckerTest {
         String sql = "delete /*+ hbase */ from t_test_order where age = 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("age is not a allowed key"));
+        assertThat(ex.getMessage(), is("age is not a allowed key."));
     }
     
     @Test
@@ -55,7 +55,7 @@ class HeterogeneousDeleteStatementCheckerTest {
         String sql = "delete /*+ hbase */ from t_test_order where 1 = 1";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("left segment must is ColumnSegment"));
+        assertThat(ex.getMessage(), is("Left segment must column segment."));
     }
     
     @Test
@@ -63,7 +63,7 @@ class HeterogeneousDeleteStatementCheckerTest {
         String sql = "DELETE /*+ hbase */ FROM t_order WHERE order_id = ? AND user_id = ? AND status=?";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Do not supported Multiple expressions"));
+        assertThat(ex.getMessage(), is("Do not supported multiple expressions."));
     }
     
     @Test
@@ -71,7 +71,7 @@ class HeterogeneousDeleteStatementCheckerTest {
         String sql = "DELETE /*+ hbase */ FROM t_order WHERE rowKey between 1 and 5";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Only Support BinaryOperationExpression"));
+        assertThat(ex.getMessage(), is("Only support binary operation expression."));
     }
     
     @Test
@@ -79,6 +79,6 @@ class HeterogeneousDeleteStatementCheckerTest {
         String sql = "DELETE /*+ hbase */ FROM t_order";
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         Exception ex = assertThrows(IllegalArgumentException.class, () -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
-        assertThat(ex.getMessage(), is("Must Have Where Segment"));
+        assertThat(ex.getMessage(), is("Must contain where segment."));
     }
 }

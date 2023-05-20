@@ -54,14 +54,14 @@ public class CommonHeterogeneousSQLStatementChecker<T extends SQLStatement> impl
     
     protected final void checkIsSinglePointQuery(final WhereSegment whereSegment) {
         ExpressionSegment whereExpr = whereSegment.getExpr();
-        Preconditions.checkArgument(whereExpr instanceof BinaryOperationExpression, "Only Support BinaryOperationExpression");
+        Preconditions.checkArgument(whereExpr instanceof BinaryOperationExpression, "Only support binary operation expression.");
         BinaryOperationExpression expression = (BinaryOperationExpression) whereExpr;
-        Preconditions.checkArgument(!(expression.getLeft() instanceof BinaryOperationExpression), "Do not supported Multiple expressions");
-        Preconditions.checkArgument(expression.getLeft() instanceof ColumnSegment, "left segment must is ColumnSegment");
-        Preconditions.checkArgument("=".equals(expression.getOperator()), "Only Supported `=` operator");
+        Preconditions.checkArgument(!(expression.getLeft() instanceof BinaryOperationExpression), "Do not supported multiple expressions.");
+        Preconditions.checkArgument(expression.getLeft() instanceof ColumnSegment, "Left segment must column segment.");
+        Preconditions.checkArgument("=".equals(expression.getOperator()), "Only Supported `=` operator.");
         String rowKey = ((ColumnSegment) expression.getLeft()).getIdentifier().getValue();
         boolean isAllowKey = ALLOW_KEYS.stream().anyMatch(each -> each.equalsIgnoreCase(rowKey));
-        Preconditions.checkArgument(isAllowKey, String.format("%s is not a allowed key", rowKey));
+        Preconditions.checkArgument(isAllowKey, String.format("%s is not a allowed key.", rowKey));
     }
     
     /**
@@ -81,11 +81,11 @@ public class CommonHeterogeneousSQLStatementChecker<T extends SQLStatement> impl
      */
     protected void checkInExpressionIsExpected(final ExpressionSegment whereExpr) {
         InExpression expression = (InExpression) whereExpr;
-        Preconditions.checkArgument(expression.getLeft() instanceof ColumnSegment, "left segment must is ColumnSegment");
+        Preconditions.checkArgument(expression.getLeft() instanceof ColumnSegment, "Left segment must column segment.");
         String rowKey = ((ColumnSegment) expression.getLeft()).getIdentifier().getValue();
         boolean isAllowKey = ALLOW_KEYS.stream().anyMatch(each -> each.equalsIgnoreCase(rowKey));
-        Preconditions.checkArgument(isAllowKey, String.format("%s is not a allowed key", rowKey));
-        Preconditions.checkArgument(!expression.isNot(), "Do not supported `not in`");
-        Preconditions.checkArgument(expression.getRight() instanceof ListExpression, "Only supported ListExpression");
+        Preconditions.checkArgument(isAllowKey, String.format("%s is not a allowed key.", rowKey));
+        Preconditions.checkArgument(!expression.isNot(), "Do not supported `not in`.");
+        Preconditions.checkArgument(expression.getRight() instanceof ListExpression, "Only supported list expression.");
     }
 }
