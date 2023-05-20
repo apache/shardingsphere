@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -87,7 +87,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     private int maxTolerateTimeDifferenceMillis;
     
     static {
-        EPOCH = LocalDateTime.of(2016, 11, 1, 0, 0, 0).toInstant(ZoneOffset.systemDefault().getRules().getOffset(Instant.now())).toEpochMilli();
+        EPOCH = LocalDateTime.of(2016, 11, 1, 0, 0, 0).toInstant(ZoneId.systemDefault().getRules().getOffset(Instant.now())).toEpochMilli();
     }
     
     @Override
