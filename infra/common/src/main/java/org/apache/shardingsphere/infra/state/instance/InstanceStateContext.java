@@ -39,7 +39,7 @@ public final class InstanceStateContext {
         if (on) {
             currentState.push(state);
         } else {
-            if (getCurrentState().equals(state)) {
+            if (getCurrentState() == state) {
                 recoverState();
             }
         }

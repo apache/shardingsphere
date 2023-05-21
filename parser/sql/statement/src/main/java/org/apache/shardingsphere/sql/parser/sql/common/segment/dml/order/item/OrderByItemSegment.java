@@ -60,8 +60,8 @@ public abstract class OrderByItemSegment implements SQLSegment {
             return nullsOrderType;
         }
         if ("PostgreSQL".equals(databaseType) || "openGauss".equals(databaseType) || "Oracle".equals(databaseType)) {
-            return OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.LAST : NullsOrderType.FIRST;
+            return OrderDirection.ASC == orderDirection ? NullsOrderType.LAST : NullsOrderType.FIRST;
         }
-        return OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.FIRST : NullsOrderType.LAST;
+        return OrderDirection.ASC == orderDirection ? NullsOrderType.FIRST : NullsOrderType.LAST;
     }
 }

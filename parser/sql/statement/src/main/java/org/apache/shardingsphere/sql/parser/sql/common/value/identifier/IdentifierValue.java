@@ -65,7 +65,7 @@ public final class IdentifierValue implements ValueASTNode<String> {
             return text;
         }
         QuoteCharacter quoteCharacter = QuoteCharacter.getQuoteCharacter(text);
-        if (quoteCharacter.equals(QuoteCharacter.NONE)) {
+        if (QuoteCharacter.NONE == quoteCharacter) {
             return text.trim();
         }
         return text.substring(1, text.length() - 1);

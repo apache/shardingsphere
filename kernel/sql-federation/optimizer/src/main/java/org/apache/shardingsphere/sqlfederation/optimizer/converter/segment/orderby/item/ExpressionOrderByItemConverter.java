@@ -42,7 +42,7 @@ public final class ExpressionOrderByItemConverter implements SQLSegmentConverter
             return Optional.empty();
         }
         if (segment.getNullsOrderType().isPresent()) {
-            SqlPostfixOperator nullsOrderType = NullsOrderType.FIRST.equals(segment.getNullsOrderType().get()) ? SqlStdOperatorTable.NULLS_FIRST : SqlStdOperatorTable.NULLS_LAST;
+            SqlPostfixOperator nullsOrderType = NullsOrderType.FIRST == segment.getNullsOrderType().get() ? SqlStdOperatorTable.NULLS_FIRST : SqlStdOperatorTable.NULLS_LAST;
             result = Optional.of(new SqlBasicCall(nullsOrderType, Collections.singletonList(result.get()), SqlParserPos.ZERO));
         }
         return result;

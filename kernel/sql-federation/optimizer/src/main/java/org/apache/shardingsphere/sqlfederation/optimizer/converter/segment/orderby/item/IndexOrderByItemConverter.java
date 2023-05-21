@@ -39,11 +39,11 @@ public final class IndexOrderByItemConverter implements SQLSegmentConverter<Inde
     @Override
     public Optional<SqlNode> convert(final IndexOrderByItemSegment segment) {
         SqlNode result = SqlLiteral.createExactNumeric(String.valueOf(segment.getColumnIndex()), SqlParserPos.ZERO);
-        if (OrderDirection.DESC.equals(segment.getOrderDirection())) {
+        if (OrderDirection.DESC == segment.getOrderDirection()) {
             result = new SqlBasicCall(SqlStdOperatorTable.DESC, Collections.singletonList(result), SqlParserPos.ZERO);
         }
         if (segment.getNullsOrderType().isPresent()) {
-            SqlPostfixOperator nullsOrderType = NullsOrderType.FIRST.equals(segment.getNullsOrderType().get()) ? SqlStdOperatorTable.NULLS_FIRST : SqlStdOperatorTable.NULLS_LAST;
+            SqlPostfixOperator nullsOrderType = NullsOrderType.FIRST == segment.getNullsOrderType().get() ? SqlStdOperatorTable.NULLS_FIRST : SqlStdOperatorTable.NULLS_LAST;
             result = new SqlBasicCall(nullsOrderType, Collections.singletonList(result), SqlParserPos.ZERO);
         }
         return Optional.of(result);
