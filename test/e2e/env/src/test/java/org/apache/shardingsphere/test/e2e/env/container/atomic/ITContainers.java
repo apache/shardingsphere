@@ -99,7 +99,11 @@ public final class ITContainers implements Startable {
                         return false;
                     }
                 })
-                .forEach(each -> Awaitility.await().atMost(500L, TimeUnit.MILLISECONDS).until(() -> each.isRunning() && each.isHealthy()));
+                .forEach(each -> {
+                    while (!(each.isRunning() && each.isHealthy())) {
+                        Awaitility.await().pollDelay(500L, TimeUnit.MILLISECONDS).until(() -> true);
+                    }
+                });
     }
     
     @Override
