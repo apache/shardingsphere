@@ -53,11 +53,16 @@ public final class OrderByItemAssert {
      * @param assertContext assert context
      * @param actual actual order by segments
      * @param expected expected order by
-     * @param type type of assertion, should be Order by or Group by
+     * @param type type of assertion, should be order by or group by
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext,
-                                final Collection<OrderByItemSegment> actual, final ExpectedOrderByClause expected, final String type) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final Collection<OrderByItemSegment> actual, final ExpectedOrderByClause expected, final String type) {
         assertThat(assertContext.getText(String.format("%s items size assertion error: ", type)), actual.size(), is(expected.getItemSize()));
+        assertColumnOrderByItems(assertContext, actual, expected, type);
+        assertIndexOrderByItems(assertContext, actual, expected, type);
+        assertExpressionOrderByItems(assertContext, actual, expected, type);
+    }
+    
+    private static void assertColumnOrderByItems(final SQLCaseAssertContext assertContext, final Collection<OrderByItemSegment> actual, final ExpectedOrderByClause expected, final String type) {
         int count = 0;
         for (OrderByItemSegment each : actual) {
             if (each instanceof ColumnOrderByItemSegment) {
@@ -66,7 +71,10 @@ public final class OrderByItemAssert {
                 count++;
             }
         }
-        count = 0;
+    }
+    
+    private static void assertIndexOrderByItems(final SQLCaseAssertContext assertContext, final Collection<OrderByItemSegment> actual, final ExpectedOrderByClause expected, final String type) {
+        int count = 0;
         for (OrderByItemSegment each : actual) {
             if (each instanceof IndexOrderByItemSegment) {
                 assertOrderInfo(assertContext, each, expected.getIndexItems().get(count), type);
@@ -74,7 +82,10 @@ public final class OrderByItemAssert {
                 count++;
             }
         }
-        count = 0;
+    }
+    
+    private static void assertExpressionOrderByItems(final SQLCaseAssertContext assertContext, final Collection<OrderByItemSegment> actual, final ExpectedOrderByClause expected, final String type) {
+        int count = 0;
         for (OrderByItemSegment each : actual) {
             if (each instanceof ExpressionOrderByItemSegment) {
                 assertOrderInfo(assertContext, each, expected.getExpressionItems().get(count), type);
