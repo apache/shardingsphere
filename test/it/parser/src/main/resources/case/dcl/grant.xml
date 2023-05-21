@@ -54,6 +54,8 @@
     </grant>
     
     <grant sql-case-id="grant_select_to_local_user" />
+    <grant sql-case-id="grant_create_to_local_user" />
+    <grant sql-case-id="grant_proxy_to_local_user" />
     <grant sql-case-id="grant_crud" />
     <grant sql-case-id="grant_all" />
     

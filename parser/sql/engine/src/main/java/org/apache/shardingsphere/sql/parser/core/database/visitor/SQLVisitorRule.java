@@ -311,7 +311,7 @@ public enum SQLVisitorRule {
     
     GRANT_ROLE_OR_PRIVILEGE_ON_TO("GrantRoleOrPrivilegeOnTo", SQLStatementType.DCL),
     
-    GRANT_PROXY("GrantPROXY", SQLStatementType.DCL),
+    GRANT_PROXY("GrantProxy", SQLStatementType.DCL),
     
     REVOKE("Revoke", SQLStatementType.DCL),
     
