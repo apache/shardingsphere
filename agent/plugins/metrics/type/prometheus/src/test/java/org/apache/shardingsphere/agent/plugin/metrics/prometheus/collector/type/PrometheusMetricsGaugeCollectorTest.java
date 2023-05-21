@@ -36,8 +36,8 @@ class PrometheusMetricsGaugeCollectorTest {
                 MetricCollectorType.GAUGE, "foo_help", Collections.emptyList(), Collections.emptyMap()));
         collector.inc();
         Gauge gauge = (Gauge) Plugins.getMemberAccessor().get(PrometheusMetricsGaugeCollector.class.getDeclaredField("gauge"), collector);
-        assertThat(gauge.get(), is(1d));
+        assertThat(gauge.get(), is(1D));
         collector.dec();
-        assertThat(gauge.get(), is(0d));
+        assertThat(gauge.get(), is(0D));
     }
 }

@@ -51,6 +51,6 @@ class PostgreSQLFloatBinaryProtocolValueTest {
     @Test
     void assertWrite() {
         new PostgreSQLFloatBinaryProtocolValue().write(new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8), 1F);
-        verify(byteBuf).writeFloat(1.0f);
+        verify(byteBuf).writeFloat(1.0F);
     }
 }

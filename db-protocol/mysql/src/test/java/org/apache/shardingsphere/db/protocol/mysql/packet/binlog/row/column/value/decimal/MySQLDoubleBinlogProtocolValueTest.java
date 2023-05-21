@@ -44,8 +44,8 @@ class MySQLDoubleBinlogProtocolValueTest {
     @Test
     void assertRead() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readDoubleLE()).thenReturn(1.1d);
+        when(byteBuf.readDoubleLE()).thenReturn(1.1D);
         MySQLDoubleBinlogProtocolValue actual = new MySQLDoubleBinlogProtocolValue();
-        assertThat(actual.read(columnDef, payload), is(1.1d));
+        assertThat(actual.read(columnDef, payload), is(1.1D));
     }
 }

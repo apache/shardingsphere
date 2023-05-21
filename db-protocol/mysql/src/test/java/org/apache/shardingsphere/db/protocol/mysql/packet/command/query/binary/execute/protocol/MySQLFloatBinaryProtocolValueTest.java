@@ -39,13 +39,13 @@ class MySQLFloatBinaryProtocolValueTest {
     
     @Test
     void assertRead() {
-        when(byteBuf.readFloatLE()).thenReturn(1.0f);
-        assertThat(new MySQLFloatBinaryProtocolValue().read(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8), false), is(1.0f));
+        when(byteBuf.readFloatLE()).thenReturn(1.0F);
+        assertThat(new MySQLFloatBinaryProtocolValue().read(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8), false), is(1.0F));
     }
     
     @Test
     void assertWrite() {
-        new MySQLFloatBinaryProtocolValue().write(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8), 1.0f);
-        verify(byteBuf).writeFloatLE(1.0f);
+        new MySQLFloatBinaryProtocolValue().write(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8), 1.0F);
+        verify(byteBuf).writeFloatLE(1.0F);
     }
 }
