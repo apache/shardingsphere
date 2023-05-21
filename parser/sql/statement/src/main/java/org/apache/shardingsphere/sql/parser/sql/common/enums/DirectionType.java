@@ -20,10 +20,8 @@ package org.apache.shardingsphere.sql.parser.sql.common.enums;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.EnumSet;
 
 /**
  * Direction type enum.
@@ -60,12 +58,11 @@ public enum DirectionType {
     
     BACKWARD_ALL("BACKWARD ALL");
     
-    private static final Set<DirectionType> ALL_DIRECTION_TYPES = new HashSet<>(Arrays.asList(ALL, FORWARD_ALL, BACKWARD_ALL));
+    private static final Collection<DirectionType> ALL_DIRECTION_TYPES = EnumSet.of(ALL, FORWARD_ALL, BACKWARD_ALL);
     
-    private static final Collection<DirectionType> FORWARD_COUNT_DIRECTION_TYPES =
-            new HashSet<>(Arrays.asList(DirectionType.NEXT, DirectionType.COUNT, DirectionType.FORWARD, DirectionType.FORWARD_COUNT));
+    private static final Collection<DirectionType> FORWARD_COUNT_DIRECTION_TYPES = EnumSet.of(DirectionType.NEXT, DirectionType.COUNT, DirectionType.FORWARD, DirectionType.FORWARD_COUNT);
     
-    private static final Collection<DirectionType> BACKWARD_COUNT_DIRECTION_TYPES = new HashSet<>(Arrays.asList(DirectionType.PRIOR, DirectionType.BACKWARD, DirectionType.BACKWARD_COUNT));
+    private static final Collection<DirectionType> BACKWARD_COUNT_DIRECTION_TYPES = EnumSet.of(DirectionType.PRIOR, DirectionType.BACKWARD, DirectionType.BACKWARD_COUNT);
     
     private final String name;
     
