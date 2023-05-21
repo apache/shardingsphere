@@ -174,12 +174,12 @@ class UnsupportedOperationResultSetTest {
     }
     
     @Test
-    void getNCharacterStreamForColumnIndex() {
+    void assertGetNCharacterStreamForColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getNCharacterStream(1));
     }
     
     @Test
-    void getNCharacterStreamForColumnLabel() {
+    void assertGetNCharacterStreamForColumnLabel() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> shardingSphereResultSet.getNCharacterStream("label"));
     }
     
