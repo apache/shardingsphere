@@ -34,6 +34,7 @@ import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -100,7 +101,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         }
     }
     
-    protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws Exception;
+    protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws SQLException;
     
     private void processFailed(final PipelineJobItemContext jobItemContext, final Exception ex) {
         String jobId = jobItemContext.getJobId();

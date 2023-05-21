@@ -1123,7 +1123,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         }
         result.setStartIndex(startIndex);
         result.setStopIndex(stopIndex);
-        result = visitJoinedTable(ctx.joinedTable(), result);
+        visitJoinedTable(ctx.joinedTable(), result);
         result.setAlias(alias);
         return result;
     }
@@ -1133,7 +1133,7 @@ public abstract class PostgreSQLStatementVisitor extends PostgreSQLStatementPars
         tableSegment.setRight(right);
         tableSegment.setJoinType(getJoinType(ctx));
         tableSegment.setNatural(null != ctx.naturalJoinType());
-        return null != ctx.joinQual() ? visitJoinQual(ctx.joinQual(), tableSegment) : tableSegment;
+        return null == ctx.joinQual() ? tableSegment : visitJoinQual(ctx.joinQual(), tableSegment);
     }
     
     private String getJoinType(final JoinedTableContext ctx) {
