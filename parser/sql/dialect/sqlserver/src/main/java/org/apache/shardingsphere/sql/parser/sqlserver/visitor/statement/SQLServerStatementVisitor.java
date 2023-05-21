@@ -738,7 +738,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
             result.setHaving((HavingSegment) visit(ctx.havingClause()));
         }
         if (null != ctx.orderByClause()) {
-            result = visitOrderBy(result, ctx.orderByClause());
+            visitOrderBy(result, ctx.orderByClause());
         }
         return result;
     }
