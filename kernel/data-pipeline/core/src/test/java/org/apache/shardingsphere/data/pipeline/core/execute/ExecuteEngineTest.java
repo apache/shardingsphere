@@ -25,6 +25,7 @@ import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -35,7 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTimeout;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -62,19 +63,20 @@ class ExecuteEngineTest {
         ExecuteCallback callback = mock(ExecuteCallback.class);
         ExecuteEngine executeEngine = ExecuteEngine.newCachedThreadInstance(ExecuteEngineTest.class.getSimpleName());
         Future<?> future = executeEngine.submit(lifecycleExecutor, callback);
-        Throwable actualCause = null;
-        try {
-            // TODO assertTimeout
-            future.get();
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            fail();
-        } catch (final ExecutionException ex) {
-            actualCause = ex.getCause();
-        }
-        assertThat(actualCause, is(expectedException));
+        Optional<Throwable> actualCause = assertTimeout(Duration.ofSeconds(30L), () -> execute(future));
+        assertTrue(actualCause.isPresent());
+        assertThat(actualCause.get(), is(expectedException));
         shutdownAndAwaitTerminal(executeEngine);
         verify(callback).onFailure(expectedException);
+    }
+    
+    private Optional<Throwable> execute(final Future<?> future) throws InterruptedException {
+        try {
+            future.get();
+            return Optional.empty();
+        } catch (final ExecutionException ex) {
+            return Optional.of(ex.getCause());
+        }
     }
     
     @SneakyThrows({ReflectiveOperationException.class, InterruptedException.class})
