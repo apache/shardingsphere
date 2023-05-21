@@ -88,17 +88,17 @@ class UnsupportedGeneratedKeysResultSetTest {
     }
     
     @Test
-    void getTimeWithColumnLabelAndCalendar() {
+    void assertGetTimeWithColumnLabelAndCalendar() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> actual.getTime("", null));
     }
     
     @Test
-    void getTimestampWithColumnIndex() {
+    void assertGetTimestampWithColumnIndex() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> actual.getTimestamp(1));
     }
     
     @Test
-    void getTimestampWithColumnIndexAndCalendar() {
+    void assertGetTimestampWithColumnIndexAndCalendar() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> actual.getTimestamp(1, null));
     }
     
@@ -208,7 +208,7 @@ class UnsupportedGeneratedKeysResultSetTest {
     }
     
     @Test
-    void getFetchDirection() {
+    void assertGetFetchDirection() {
         assertThrows(SQLFeatureNotSupportedException.class, () -> actual.getFetchDirection());
     }
     
