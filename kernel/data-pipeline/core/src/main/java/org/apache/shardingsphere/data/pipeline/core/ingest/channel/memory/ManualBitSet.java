@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory;
 
+import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -28,7 +28,7 @@ public final class ManualBitSet {
     
     private static final int BIT_SET_SIZE = 1024;
     
-    private final List<BitSet> bitSets = new LinkedList<>();
+    private final List<BitSet> bitSets = new ArrayList<>();
     
     private long startIndex;
     
