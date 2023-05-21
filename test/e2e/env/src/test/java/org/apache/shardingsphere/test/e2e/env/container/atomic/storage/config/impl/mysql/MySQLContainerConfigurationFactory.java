@@ -62,7 +62,7 @@ public final class MySQLContainerConfigurationFactory {
     }
     
     private static Map<String, String> getContainerEnvironments() {
-        Map<String, String> result = new HashMap<>(2, 1);
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.put("LANG", "C.UTF-8");
         result.put("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
         return result;

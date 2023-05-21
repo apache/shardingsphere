@@ -100,7 +100,7 @@ public final class DataSetEnvironmentManager {
     }
     
     private Map<DataNode, List<DataSetRow>> getDataSetRowMap() {
-        Map<DataNode, List<DataSetRow>> result = new LinkedHashMap<>(dataSet.getRows().size(), 1);
+        Map<DataNode, List<DataSetRow>> result = new LinkedHashMap<>(dataSet.getRows().size(), 1F);
         for (DataSetRow each : dataSet.getRows()) {
             DataNode dataNode = new DataNode(each.getDataNode());
             if (!result.containsKey(dataNode)) {

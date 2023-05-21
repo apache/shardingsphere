@@ -51,7 +51,7 @@ class YamlShardingSphereDataSourceFactoryTest {
     
     @Test
     void assertCreateDataSourceWithFileForExternalDataSources() throws Exception {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(getYamlFileUrl().toURI())));
@@ -64,7 +64,7 @@ class YamlShardingSphereDataSourceFactoryTest {
     
     @Test
     void assertCreateDataSourceWithBytesForExternalDataSources() throws Exception {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, readFile(getYamlFileUrl()).getBytes()));

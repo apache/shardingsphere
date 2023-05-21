@@ -48,7 +48,7 @@ class PostgreSQLComStartupPacketTest {
     }
     
     private Map<String, String> createParametersMap() {
-        Map<String, String> result = new LinkedHashMap<>(2, 1);
+        Map<String, String> result = new LinkedHashMap<>(2, 1F);
         result.put("database", "test_db");
         result.put("user", "postgres");
         result.put("client_encoding", "UTF8");

@@ -57,7 +57,7 @@ public final class TableMetaDataPersistService implements SchemaMetaDataPersistS
     }
     
     private Map<String, ShardingSphereTable> getTableMetaDataByTableNames(final String databaseName, final String schemaName, final Collection<String> tableNames) {
-        Map<String, ShardingSphereTable> result = new LinkedHashMap<>(tableNames.size(), 1);
+        Map<String, ShardingSphereTable> result = new LinkedHashMap<>(tableNames.size(), 1F);
         tableNames.forEach(each -> {
             String table = repository.getDirectly(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, each));
             if (!Strings.isNullOrEmpty(table)) {

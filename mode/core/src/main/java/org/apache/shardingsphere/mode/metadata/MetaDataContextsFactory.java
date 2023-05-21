@@ -114,7 +114,7 @@ public final class MetaDataContextsFactory {
     private static Map<String, DatabaseConfiguration> createEffectiveDatabaseConfigurations(final Collection<String> databaseNames,
                                                                                             final Map<String, DatabaseConfiguration> databaseConfigs, final MetaDataPersistService persistService) {
         return databaseNames.stream().collect(
-                Collectors.toMap(each -> each, each -> createEffectiveDatabaseConfiguration(each, databaseConfigs, persistService), (a, b) -> b, () -> new HashMap<>(databaseNames.size(), 1)));
+                Collectors.toMap(each -> each, each -> createEffectiveDatabaseConfiguration(each, databaseConfigs, persistService), (a, b) -> b, () -> new HashMap<>(databaseNames.size(), 1F)));
     }
     
     private static DatabaseConfiguration createEffectiveDatabaseConfiguration(final String databaseName,
@@ -134,7 +134,7 @@ public final class MetaDataContextsFactory {
     }
     
     private static Map<String, DataSourceState> getStorageDataSourceStates(final Map<String, StorageNodeDataSource> storageDataSourceStates) {
-        Map<String, DataSourceState> result = new HashMap<>(storageDataSourceStates.size(), 1);
+        Map<String, DataSourceState> result = new HashMap<>(storageDataSourceStates.size(), 1F);
         storageDataSourceStates.forEach((key, value) -> {
             List<String> values = Splitter.on(".").splitToList(key);
             Preconditions.checkArgument(3 == values.size(), "Illegal data source of storage node.");

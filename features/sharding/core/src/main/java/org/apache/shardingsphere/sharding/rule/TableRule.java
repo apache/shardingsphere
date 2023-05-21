@@ -92,7 +92,7 @@ public final class TableRule {
     
     public TableRule(final Collection<String> dataSourceNames, final String logicTableName) {
         logicTable = logicTableName;
-        dataNodeIndexMap = new HashMap<>(dataSourceNames.size(), 1);
+        dataNodeIndexMap = new HashMap<>(dataSourceNames.size(), 1F);
         actualDataNodes = generateDataNodes(logicTableName, dataSourceNames);
         actualTables = getActualTables();
         databaseShardingStrategyConfig = null;
@@ -107,7 +107,7 @@ public final class TableRule {
     public TableRule(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
         logicTable = tableRuleConfig.getLogicTable();
         List<String> dataNodes = InlineExpressionParserFactory.newInstance().splitAndEvaluate(tableRuleConfig.getActualDataNodes());
-        dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
+        dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1F);
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
         databaseShardingStrategyConfig = tableRuleConfig.getDatabaseShardingStrategy();
@@ -128,7 +128,7 @@ public final class TableRule {
         tableShardingStrategyConfig = tableRuleConfig.getShardingStrategy();
         auditStrategyConfig = tableRuleConfig.getAuditStrategy();
         List<String> dataNodes = getDataNodes(tableRuleConfig, shardingAutoTableAlgorithm, dataSourceNames);
-        dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
+        dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1F);
         actualDataNodes = isEmptyDataNodes(dataNodes) ? generateDataNodes(tableRuleConfig.getLogicTable(), dataSourceNames) : generateDataNodes(dataNodes, dataSourceNames);
         actualTables = getActualTables();
         KeyGenerateStrategyConfiguration keyGeneratorConfig = tableRuleConfig.getKeyGenerateStrategy();

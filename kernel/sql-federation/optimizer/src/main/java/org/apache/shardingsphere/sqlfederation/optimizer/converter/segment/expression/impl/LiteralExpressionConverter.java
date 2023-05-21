@@ -36,9 +36,9 @@ import java.util.Optional;
  */
 public final class LiteralExpressionConverter implements SQLSegmentConverter<LiteralExpressionSegment, SqlNode> {
     
-    private static final Collection<String> TRIM_FUNCTION_FLAGS = new HashSet<>(3, 1);
+    private static final Collection<String> TRIM_FUNCTION_FLAGS = new HashSet<>(3, 1F);
     
-    private static final Collection<String> TIME_UNIT_NAMES = new HashSet<>(6, 1);
+    private static final Collection<String> TIME_UNIT_NAMES = new HashSet<>(6, 1F);
     
     static {
         TRIM_FUNCTION_FLAGS.add("BOTH");

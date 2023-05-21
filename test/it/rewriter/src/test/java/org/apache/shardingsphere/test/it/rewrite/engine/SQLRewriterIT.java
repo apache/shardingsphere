@@ -126,7 +126,7 @@ public abstract class SQLRewriterIT {
         databaseRules.add(sqlParserRule);
         databaseRules.add(timestampServiceRule);
         ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resourceMetaData, new ShardingSphereRuleMetaData(databaseRules), mockSchemas(schemaName));
-        Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1);
+        Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1F);
         databases.put(schemaName, database);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(createShardingSphereMetaData(databases), sqlStatement, schemaName);
         if (sqlStatementContext instanceof ParameterAware) {
@@ -152,7 +152,7 @@ public abstract class SQLRewriterIT {
     }
     
     private Map<String, DatabaseType> createStorageTypes(final DatabaseConfiguration databaseConfig, final DatabaseType databaseType) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1);
+        Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1F);
         for (Entry<String, DataSource> entry : databaseConfig.getDataSources().entrySet()) {
             result.put(entry.getKey(), databaseType);
         }

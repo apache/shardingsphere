@@ -75,7 +75,7 @@ class DefaultDatabaseMetaDataExecutorTest {
     
     @Test
     void assertExecuteWithAlias() throws SQLException {
-        Map<String, String> expectedResultSetMap = new HashMap<>(2, 1);
+        Map<String, String> expectedResultSetMap = new HashMap<>(2, 1F);
         expectedResultSetMap.put("sn", "foo_ds");
         expectedResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4");
         String sql = "SELECT SCHEMA_NAME AS sn, DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA";

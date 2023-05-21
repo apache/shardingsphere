@@ -1691,7 +1691,7 @@ public final class RootSQLParserTestCases {
     }
     
     private Map<String, SQLParserTestCase> getTestCaseMap(final List<? extends SQLParserTestCase> cases) {
-        Map<String, SQLParserTestCase> result = new HashMap<>(cases.size(), 1);
+        Map<String, SQLParserTestCase> result = new HashMap<>(cases.size(), 1F);
         for (SQLParserTestCase each : cases) {
             checkDuplicatedTestCase(each, result);
             result.put(each.getSqlCaseId(), each);

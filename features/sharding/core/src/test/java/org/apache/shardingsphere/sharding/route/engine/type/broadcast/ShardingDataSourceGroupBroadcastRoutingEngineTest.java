@@ -60,7 +60,7 @@ class ShardingDataSourceGroupBroadcastRoutingEngineTest {
     
     private TableRule mockTableRule(final List<String> dataSources) {
         TableRule result = mock(TableRule.class);
-        Map<String, List<DataNode>> dataNodeGroups = new HashMap<>(dataSources.size(), 1);
+        Map<String, List<DataNode>> dataNodeGroups = new HashMap<>(dataSources.size(), 1F);
         for (String each : dataSources) {
             dataNodeGroups.put(each, null);
         }

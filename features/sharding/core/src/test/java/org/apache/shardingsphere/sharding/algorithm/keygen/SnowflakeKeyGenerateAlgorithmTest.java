@@ -80,7 +80,7 @@ class SnowflakeKeyGenerateAlgorithmTest {
         if (algorithm instanceof InstanceContextAware) {
             ((InstanceContextAware) algorithm).setInstanceContext(INSTANCE);
         }
-        Set<Comparable<?>> actual = new HashSet<>(taskNumber, 1);
+        Set<Comparable<?>> actual = new HashSet<>(taskNumber, 1F);
         for (int i = 0; i < taskNumber; i++) {
             actual.add(executor.submit((Callable<Comparable<?>>) algorithm::generateKey).get());
         }

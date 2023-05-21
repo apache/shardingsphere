@@ -40,7 +40,7 @@ class YamlJdbcConfigurationTest {
     }
     
     private Map<String, String> getDataSourcePropsWithUrl() {
-        Map<String, String> result = new HashMap<>(3, 1);
+        Map<String, String> result = new HashMap<>(3, 1F);
         result.put("url", JDBC_URL);
         result.put("username", USERNAME);
         result.put("password", PASSWORD);

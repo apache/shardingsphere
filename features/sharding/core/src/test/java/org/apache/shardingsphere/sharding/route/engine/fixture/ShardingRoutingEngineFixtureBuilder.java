@@ -309,7 +309,7 @@ public final class ShardingRoutingEngineFixtureBuilder {
     
     @SneakyThrows(SQLException.class)
     private static Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(3, 1);
+        Map<String, DataSource> result = new HashMap<>(3, 1F);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:h2:mem:db");
         result.put("ds_0", new MockedDataSource(connection));

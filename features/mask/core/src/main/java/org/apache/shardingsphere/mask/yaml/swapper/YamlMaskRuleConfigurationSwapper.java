@@ -67,7 +67,7 @@ public final class YamlMaskRuleConfigurationSwapper implements YamlRuleConfigura
     }
     
     private Map<String, AlgorithmConfiguration> swapMaskAlgorithm(final YamlMaskRuleConfiguration yamlConfig) {
-        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>(yamlConfig.getMaskAlgorithms().size(), 1);
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>(yamlConfig.getMaskAlgorithms().size(), 1F);
         for (Entry<String, YamlAlgorithmConfiguration> entry : yamlConfig.getMaskAlgorithms().entrySet()) {
             result.put(entry.getKey(), algorithmSwapper.swapToObject(entry.getValue()));
         }

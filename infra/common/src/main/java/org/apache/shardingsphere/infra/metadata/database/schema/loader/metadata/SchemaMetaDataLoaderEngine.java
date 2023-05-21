@@ -56,7 +56,7 @@ public final class SchemaMetaDataLoaderEngine {
      * @throws SQLException SQL exception
      */
     public static Map<String, SchemaMetaData> load(final Collection<SchemaMetaDataLoaderMaterial> materials) throws SQLException {
-        Map<String, SchemaMetaData> result = new LinkedHashMap<>(materials.size(), 1);
+        Map<String, SchemaMetaData> result = new LinkedHashMap<>(materials.size(), 1F);
         Collection<Future<Collection<SchemaMetaData>>> futures = new LinkedList<>();
         for (SchemaMetaDataLoaderMaterial each : materials) {
             futures.add(EXECUTOR_SERVICE.submit(() -> load(each)));

@@ -78,7 +78,7 @@ public final class DataSourceSwapper {
     }
     
     private Map<String, Object> getDatabaseAccessConfiguration(final DataSource dataSource) {
-        Map<String, Object> result = new HashMap<>(3, 1);
+        Map<String, Object> result = new HashMap<>(3, 1F);
         DataSourcePropertyProvider provider = TypedSPILoader.getService(DataSourcePropertyProvider.class, dataSource.getClass().getName());
         try {
             result.put("url", findGetterMethod(dataSource, provider.getURLPropertyName()).invoke(dataSource));

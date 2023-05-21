@@ -39,7 +39,7 @@ public final class OptimizerPlannerContextFactory {
      * @return created optimizer planner context map
      */
     public static Map<String, OptimizerPlannerContext> create(final Map<String, ShardingSphereDatabase> databases) {
-        Map<String, OptimizerPlannerContext> result = new ConcurrentHashMap<>(databases.size(), 1);
+        Map<String, OptimizerPlannerContext> result = new ConcurrentHashMap<>(databases.size(), 1F);
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             result.put(entry.getKey(), new OptimizerPlannerContext(SQLFederationPlannerUtils.createHepPlanner()));
         }

@@ -90,7 +90,7 @@ public final class AdviceExecutorFactory {
     
     @SuppressWarnings("unchecked")
     private <T extends AgentAdvice> Map<String, Collection<T>> convert(final Map<String, Collection<AgentAdvice>> advices) {
-        Map<String, Collection<T>> result = new HashMap<>(advices.size(), 1);
+        Map<String, Collection<T>> result = new HashMap<>(advices.size(), 1F);
         for (Entry<String, Collection<AgentAdvice>> entry : advices.entrySet()) {
             result.put(entry.getKey(), new LinkedList<>());
             for (AgentAdvice each : entry.getValue()) {

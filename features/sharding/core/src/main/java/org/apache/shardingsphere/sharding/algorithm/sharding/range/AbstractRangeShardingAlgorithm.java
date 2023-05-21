@@ -56,7 +56,7 @@ public abstract class AbstractRangeShardingAlgorithm implements StandardSharding
     
     @Override
     public final Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
-        Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
+        Collection<String> result = new LinkedHashSet<>(availableTargetNames.size(), 1F);
         int firstPartition = getFirstPartition(shardingValue.getValueRange());
         int lastPartition = getLastPartition(shardingValue.getValueRange());
         for (int partition = firstPartition; partition <= lastPartition; partition++) {

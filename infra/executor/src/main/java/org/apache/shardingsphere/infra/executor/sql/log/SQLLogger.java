@@ -52,7 +52,7 @@ public final class SQLLogger {
     }
     
     private static void logSimpleMode(final Collection<ExecutionUnit> executionUnits) {
-        Set<String> dataSourceNames = new HashSet<>(executionUnits.size());
+        Set<String> dataSourceNames = new HashSet<>(executionUnits.size(), 1F);
         for (ExecutionUnit each : executionUnits) {
             dataSourceNames.add(each.getDataSourceName());
         }

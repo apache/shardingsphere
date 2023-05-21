@@ -49,7 +49,7 @@ class YamlDataSourcePropertiesSwapperTest {
     
     @Test
     void assertSwapToDataSourceProperties() {
-        Map<String, Object> yamlConfig = new HashMap<>(3, 1);
+        Map<String, Object> yamlConfig = new HashMap<>(3, 1F);
         yamlConfig.put("dataSourceClassName", MockedDataSource.class.getName());
         yamlConfig.put("url", "xx:xxx");
         yamlConfig.put("username", "root");
@@ -68,21 +68,21 @@ class YamlDataSourcePropertiesSwapperTest {
     }
     
     private Map<String, Object> createProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(2, 1);
+        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         result.put("url", "xx:xxx");
         result.put("username", "root");
         return result;
     }
     
     private Map<String, Map<String, Object>> createYamlConfig() {
-        Map<String, Map<String, Object>> result = new LinkedHashMap<>(2, 1);
+        Map<String, Map<String, Object>> result = new LinkedHashMap<>(2, 1F);
         result.put("ds_0", createPropertyMap("ds_0"));
         result.put("ds_1", createPropertyMap("ds_1"));
         return result;
     }
     
     private Map<String, Object> createPropertyMap(final String name) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1);
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("dataSourceClassName", MockedDataSource.class.getName());
         result.put("url", String.format("jdbc:mock://127.0.0.1/%s", name));
         result.put("username", "root");

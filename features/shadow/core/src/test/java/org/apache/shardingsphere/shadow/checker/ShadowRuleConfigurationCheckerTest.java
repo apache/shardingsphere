@@ -42,7 +42,7 @@ class ShadowRuleConfigurationCheckerTest {
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
         result.put("ds", mock(DataSource.class));
         result.put("ds_shadow", mock(DataSource.class));
         return result;

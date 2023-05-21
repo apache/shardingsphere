@@ -31,11 +31,11 @@ import java.util.Map;
  */
 public final class C3P0DataSourcePoolMetaData implements DataSourcePoolMetaData {
     
-    private static final Map<String, Object> DEFAULT_PROPS = new HashMap<>(6, 1);
+    private static final Map<String, Object> DEFAULT_PROPS = new HashMap<>(6, 1F);
     
-    private static final Map<String, Object> INVALID_PROPS = new HashMap<>(2, 1);
+    private static final Map<String, Object> INVALID_PROPS = new HashMap<>(2, 1F);
     
-    private static final Map<String, String> PROP_SYNONYMS = new HashMap<>(5, 1);
+    private static final Map<String, String> PROP_SYNONYMS = new HashMap<>(5, 1F);
     
     private static final Collection<String> TRANSIENT_FIELD_NAMES = new LinkedList<>();
     

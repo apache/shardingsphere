@@ -61,13 +61,13 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
     private final Map<Character, String> fields;
     
     public OpenGaussErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
-        fields = new LinkedHashMap<>(13, 1);
+        fields = new LinkedHashMap<>(13, 1F);
         fillFieldsByServerErrorMessage(serverErrorMessage);
         fillRequiredFieldsIfNecessary();
     }
     
     public OpenGaussErrorResponsePacket(final String severityLevel, final String sqlState, final String message) {
-        fields = new LinkedHashMap<>(4, 1);
+        fields = new LinkedHashMap<>(4, 1F);
         fields.put(FIELD_TYPE_SEVERITY, severityLevel);
         fields.put(FIELD_TYPE_CODE, sqlState);
         fields.put(FIELD_TYPE_MESSAGE, message);

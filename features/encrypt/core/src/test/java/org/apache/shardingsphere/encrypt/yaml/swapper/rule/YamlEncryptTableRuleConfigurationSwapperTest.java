@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -65,8 +65,7 @@ class YamlEncryptTableRuleConfigurationSwapperTest {
     
     @Test
     void assertSwapToObject() {
-        Map<String, YamlEncryptColumnRuleConfiguration> columns = new LinkedHashMap<>(1);
-        columns.put("test_column", buildYamlEncryptColumnRuleConfiguration());
+        Map<String, YamlEncryptColumnRuleConfiguration> columns = Collections.singletonMap("test_column", buildYamlEncryptColumnRuleConfiguration());
         YamlEncryptTableRuleConfiguration yamlEncryptTableRuleConfig = new YamlEncryptTableRuleConfiguration();
         yamlEncryptTableRuleConfig.setName("test_table");
         yamlEncryptTableRuleConfig.setColumns(columns);

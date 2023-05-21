@@ -117,7 +117,7 @@ public final class DataSourceStateManager {
     }
     
     private Map<String, DataSource> filterDisabledDataSources(final String databaseName, final Map<String, DataSource> dataSources) {
-        Map<String, DataSource> result = new LinkedHashMap<>(dataSources.size(), 1);
+        Map<String, DataSource> result = new LinkedHashMap<>(dataSources.size(), 1F);
         dataSources.forEach((key, value) -> {
             DataSourceState dataSourceState = dataSourceStates.get(getCacheKey(databaseName, key));
             if (DataSourceState.DISABLED != dataSourceState) {

@@ -43,7 +43,7 @@ public final class TableNameSchemaNameMapping {
     }
     
     private Map<LogicTableName, String> getLogicTableNameMap(final Map<String, String> tableSchemaMap) {
-        Map<LogicTableName, String> result = new HashMap<>(tableSchemaMap.size(), 1);
+        Map<LogicTableName, String> result = new HashMap<>(tableSchemaMap.size(), 1F);
         for (Entry<String, String> entry : tableSchemaMap.entrySet()) {
             String tableName = entry.getKey();
             String schemaName = entry.getValue();

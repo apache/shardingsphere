@@ -34,21 +34,21 @@ public final class PrometheusMetricsGaugeCollector implements GaugeMetricsCollec
     
     @Override
     public void inc() {
-        gauge.inc(1d);
+        gauge.inc(1D);
     }
     
     @Override
     public void inc(final String... labels) {
-        gauge.labels(labels).inc(1d);
+        gauge.labels(labels).inc(1D);
     }
     
     @Override
     public void dec() {
-        gauge.dec(1d);
+        gauge.dec(1D);
     }
     
     @Override
     public void dec(final String... labels) {
-        gauge.labels(labels).dec(1d);
+        gauge.labels(labels).dec(1D);
     }
 }

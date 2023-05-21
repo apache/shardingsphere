@@ -104,7 +104,7 @@ public final class EncryptConditionEngine {
     }
     
     private void addEncryptConditions(final Collection<EncryptCondition> encryptConditions, final Collection<ExpressionSegment> predicates, final Map<String, String> expressionTableNames) {
-        Collection<Integer> stopIndexes = new HashSet<>(predicates.size(), 1);
+        Collection<Integer> stopIndexes = new HashSet<>(predicates.size(), 1F);
         for (ExpressionSegment each : predicates) {
             if (stopIndexes.add(each.getStopIndex())) {
                 addEncryptConditions(encryptConditions, each, expressionTableNames);

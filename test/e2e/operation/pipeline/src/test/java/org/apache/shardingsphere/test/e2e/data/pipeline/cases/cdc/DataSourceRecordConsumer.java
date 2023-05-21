@@ -104,7 +104,7 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            Map<String, TableColumn> afterMap = new LinkedHashMap<>(record.getBeforeList().size(), 1);
+            Map<String, TableColumn> afterMap = new LinkedHashMap<>(record.getBeforeList().size(), 1F);
             record.getAfterList().forEach(each -> afterMap.put(each.getName(), each));
             switch (record.getDataChangeType()) {
                 case INSERT:

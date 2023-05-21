@@ -35,7 +35,7 @@ class DataNodeUtilsTest {
     
     @Test
     void assertGetDataNodeGroups() {
-        Map<String, List<DataNode>> expected = new LinkedHashMap<>(2, 1);
+        Map<String, List<DataNode>> expected = new LinkedHashMap<>(2, 1F);
         expected.put("ds_0", Arrays.asList(new DataNode("ds_0.tbl_0"), new DataNode("ds_0.tbl_1")));
         expected.put("ds_1", Arrays.asList(new DataNode("ds_1.tbl_0"), new DataNode("ds_1.tbl_1")));
         List<DataNode> dataNodes = new LinkedList<>();

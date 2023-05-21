@@ -73,7 +73,7 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLIdentifier
     
     public static final char FIELD_TYPE_ROUTINE = 'R';
     
-    private final Map<Character, String> fields = new LinkedHashMap<>(16, 1);
+    private final Map<Character, String> fields = new LinkedHashMap<>(16, 1F);
     
     private PostgreSQLErrorResponsePacket(final Map<Character, String> fields) {
         this.fields.putAll(fields);
@@ -130,7 +130,7 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLIdentifier
     
     public static final class Builder {
         
-        private final Map<Character, String> fields = new LinkedHashMap<>(16, 1);
+        private final Map<Character, String> fields = new LinkedHashMap<>(16, 1F);
         
         private Builder(final String severity, final String sqlState, final String message) {
             Preconditions.checkArgument(null != severity, "The severity is always present!");

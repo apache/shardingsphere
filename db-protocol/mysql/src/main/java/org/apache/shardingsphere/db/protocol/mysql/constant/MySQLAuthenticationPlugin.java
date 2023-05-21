@@ -40,7 +40,7 @@ public enum MySQLAuthenticationPlugin {
     
     SHA256_AUTHENTICATION("sha256_password");
     
-    private static final Map<String, MySQLAuthenticationPlugin> VALUE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1);
+    private static final Map<String, MySQLAuthenticationPlugin> VALUE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
     
     static {
         for (MySQLAuthenticationPlugin each : values()) {

@@ -196,7 +196,7 @@ class MigrationJobAPITest {
         DataConsistencyCountCheckResult equalCountCheckResult = new DataConsistencyCountCheckResult(100, 100);
         DataConsistencyCountCheckResult notEqualCountCheckResult = new DataConsistencyCountCheckResult(100, 95);
         DataConsistencyContentCheckResult equalContentCheckResult = new DataConsistencyContentCheckResult(false);
-        Map<String, DataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1);
+        Map<String, DataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1F);
         checkResults.put("foo_tbl", new DataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
         checkResults.put("bar_tbl", new DataConsistencyCheckResult(notEqualCountCheckResult, equalContentCheckResult));
         assertFalse(jobAPI.aggregateDataConsistencyCheckResults("foo_job", checkResults));
@@ -207,7 +207,7 @@ class MigrationJobAPITest {
         DataConsistencyCountCheckResult equalCountCheckResult = new DataConsistencyCountCheckResult(100, 100);
         DataConsistencyContentCheckResult equalContentCheckResult = new DataConsistencyContentCheckResult(true);
         DataConsistencyContentCheckResult notEqualContentCheckResult = new DataConsistencyContentCheckResult(false);
-        Map<String, DataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1);
+        Map<String, DataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1F);
         checkResults.put("foo_tbl", new DataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
         checkResults.put("bar_tbl", new DataConsistencyCheckResult(equalCountCheckResult, notEqualContentCheckResult));
         assertFalse(jobAPI.aggregateDataConsistencyCheckResults("foo_job", checkResults));
@@ -217,7 +217,7 @@ class MigrationJobAPITest {
     void assertAggregateSameDataConsistencyCheckResults() {
         DataConsistencyCountCheckResult equalCountCheckResult = new DataConsistencyCountCheckResult(100, 100);
         DataConsistencyContentCheckResult equalContentCheckResult = new DataConsistencyContentCheckResult(true);
-        Map<String, DataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1);
+        Map<String, DataConsistencyCheckResult> checkResults = new LinkedHashMap<>(2, 1F);
         checkResults.put("foo_tbl", new DataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
         checkResults.put("bar_tbl", new DataConsistencyCheckResult(equalCountCheckResult, equalContentCheckResult));
         assertTrue(jobAPI.aggregateDataConsistencyCheckResults("foo_job", checkResults));

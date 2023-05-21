@@ -101,7 +101,7 @@ class SchemaMetaDataUtilsTest {
     }
     
     private Map<String, DataSource> mockDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
+        Map<String, DataSource> result = new HashMap<>(2, 1F);
         result.put("ds_0", new MockedDataSource());
         result.put("ds_1", new MockedDataSource());
         return result;

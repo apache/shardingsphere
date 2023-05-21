@@ -48,7 +48,7 @@ public final class VolumeBasedRangeShardingAlgorithm extends AbstractRangeShardi
         long volume = Long.parseLong(props.getProperty(SHARDING_VOLUME_KEY));
         ShardingSpherePreconditions.checkState(upper - lower >= volume, () -> new ShardingAlgorithmInitializationException(getType(), "Range can not be smaller than volume."));
         int partitionSize = Math.toIntExact(LongMath.divide(upper - lower, volume, RoundingMode.CEILING));
-        Map<Integer, Range<Comparable<?>>> result = new HashMap<>(partitionSize + 2, 1);
+        Map<Integer, Range<Comparable<?>>> result = new HashMap<>(partitionSize + 2, 1F);
         result.put(0, Range.lessThan(lower));
         for (int i = 0; i < partitionSize; i++) {
             result.put(i + 1, Range.closedOpen(lower + i * volume, Math.min(lower + (i + 1) * volume, upper)));

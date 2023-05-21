@@ -77,7 +77,7 @@ class PoolPropertySynonymsTest {
     }
     
     private Map<String, Object> createStandardProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(6, 1);
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("connectionTimeoutMilliseconds", 30000);
         result.put("idleTimeoutMilliseconds", 180000);
         result.put("maxLifetimeMilliseconds", 180000);
@@ -88,7 +88,7 @@ class PoolPropertySynonymsTest {
     }
     
     private Map<String, Object> createLocalProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(6, 1);
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("connectionTimeout", 30000);
         result.put("idleTimeout", 180000);
         result.put("maxLifetime", 180000);
@@ -99,7 +99,7 @@ class PoolPropertySynonymsTest {
     }
     
     private Map<String, String> createPropertySynonyms() {
-        Map<String, String> result = new LinkedHashMap<>(5, 1);
+        Map<String, String> result = new LinkedHashMap<>(5, 1F);
         result.put("connectionTimeoutMilliseconds", "connectionTimeout");
         result.put("idleTimeoutMilliseconds", "idleTimeout");
         result.put("maxLifetimeMilliseconds", "maxLifetime");

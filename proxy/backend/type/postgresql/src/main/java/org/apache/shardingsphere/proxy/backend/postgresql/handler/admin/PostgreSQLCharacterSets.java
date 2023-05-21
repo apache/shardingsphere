@@ -76,7 +76,7 @@ public enum PostgreSQLCharacterSets {
     private static final Map<String, PostgreSQLCharacterSets> CHARACTER_SETS_MAP;
     
     static {
-        Map<String, PostgreSQLCharacterSets> map = new HashMap<>(128);
+        Map<String, PostgreSQLCharacterSets> map = new HashMap<>(128, 1F);
         for (PostgreSQLCharacterSets each : values()) {
             map.put(each.name(), each);
             for (String eachAlias : each.aliases) {

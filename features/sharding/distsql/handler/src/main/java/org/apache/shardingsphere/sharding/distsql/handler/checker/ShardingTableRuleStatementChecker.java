@@ -156,7 +156,7 @@ public final class ShardingTableRuleStatementChecker {
     
     private static boolean check(final ShardingRuleConfiguration checkedConfig, final Collection<String> dataSourceNames) {
         Collection<String> allDataSourceNames = getDataSourceNames(checkedConfig.getTables(), checkedConfig.getAutoTables(), dataSourceNames);
-        Map<String, ShardingAlgorithm> shardingAlgorithms = new HashMap<>(checkedConfig.getShardingAlgorithms().size(), 1);
+        Map<String, ShardingAlgorithm> shardingAlgorithms = new HashMap<>(checkedConfig.getShardingAlgorithms().size(), 1F);
         Map<String, TableRule> tableRules = new HashMap<>();
         checkedConfig.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, TypedSPILoader.getService(ShardingAlgorithm.class, value.getType(), value.getProps())));
         tableRules.putAll(createTableRules(checkedConfig.getTables(), checkedConfig.getDefaultKeyGenerateStrategy(), allDataSourceNames));

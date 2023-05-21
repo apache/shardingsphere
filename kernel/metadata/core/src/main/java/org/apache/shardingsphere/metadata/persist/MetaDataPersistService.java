@@ -107,7 +107,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     }
     
     private Map<String, DataSourceProperties> getDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(dataSourceMap.size(), 1);
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(dataSourceMap.size(), 1F);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             result.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
         }
@@ -130,7 +130,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
     }
     
     private Map<String, DataSource> mergeEffectiveDataSources(final Map<String, DataSourceProperties> persistedDataSourcePropsMap, final Map<String, DataSource> localConfiguredDataSources) {
-        Map<String, DataSource> result = new LinkedHashMap<>(persistedDataSourcePropsMap.size(), 1);
+        Map<String, DataSource> result = new LinkedHashMap<>(persistedDataSourcePropsMap.size(), 1F);
         for (Entry<String, DataSourceProperties> entry : persistedDataSourcePropsMap.entrySet()) {
             String dataSourceName = entry.getKey();
             DataSourceProperties persistedDataSourceProps = entry.getValue();

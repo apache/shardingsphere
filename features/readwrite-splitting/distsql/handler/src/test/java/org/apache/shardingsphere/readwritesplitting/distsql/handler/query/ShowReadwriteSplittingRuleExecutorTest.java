@@ -98,7 +98,7 @@ class ShowReadwriteSplittingRuleExecutorTest {
     }
     
     private Map<String, Object> createExportedData() {
-        Map<String, Object> result = new HashMap<>(2, 1);
+        Map<String, Object> result = new HashMap<>(2, 1F);
         result.put(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, Collections.emptyMap());
         result.put(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, Collections.emptyMap());
         return result;
@@ -150,14 +150,14 @@ class ShowReadwriteSplittingRuleExecutorTest {
     }
     
     private Map<String, Object> getExportData() {
-        Map<String, Object> result = new HashMap<>(2, 1);
+        Map<String, Object> result = new HashMap<>(2, 1F);
         result.put(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, exportStaticDataSources());
         return result;
     }
     
     private Map<String, Map<String, String>> exportStaticDataSources() {
         Map<String, Map<String, String>> result = new LinkedHashMap<>();
-        Map<String, String> staticRule = new LinkedHashMap<>(2, 1);
+        Map<String, String> staticRule = new LinkedHashMap<>(2, 1F);
         staticRule.put(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME, "ds_0");
         staticRule.put(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, "ds_1");
         result.put("static_rule_1", staticRule);

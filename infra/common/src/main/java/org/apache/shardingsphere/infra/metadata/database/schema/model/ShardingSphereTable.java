@@ -63,7 +63,7 @@ public final class ShardingSphereTable {
     }
     
     private Map<String, ShardingSphereColumn> createColumns(final Collection<ShardingSphereColumn> columns) {
-        Map<String, ShardingSphereColumn> result = new LinkedHashMap<>(columns.size(), 1);
+        Map<String, ShardingSphereColumn> result = new LinkedHashMap<>(columns.size(), 1F);
         for (ShardingSphereColumn each : columns) {
             String lowerColumnName = each.getName().toLowerCase();
             result.put(lowerColumnName, each);
@@ -79,7 +79,7 @@ public final class ShardingSphereTable {
     }
     
     private Map<String, ShardingSphereIndex> createIndexes(final Collection<ShardingSphereIndex> indexes) {
-        Map<String, ShardingSphereIndex> result = new LinkedHashMap<>(indexes.size(), 1);
+        Map<String, ShardingSphereIndex> result = new LinkedHashMap<>(indexes.size(), 1F);
         for (ShardingSphereIndex each : indexes) {
             result.put(each.getName().toLowerCase(), each);
         }
@@ -87,7 +87,7 @@ public final class ShardingSphereTable {
     }
     
     private Map<String, ShardingSphereConstraint> createConstraints(final Collection<ShardingSphereConstraint> constraints) {
-        Map<String, ShardingSphereConstraint> result = new LinkedHashMap<>(constraints.size(), 1);
+        Map<String, ShardingSphereConstraint> result = new LinkedHashMap<>(constraints.size(), 1F);
         for (ShardingSphereConstraint each : constraints) {
             result.put(each.getName().toLowerCase(), each);
         }

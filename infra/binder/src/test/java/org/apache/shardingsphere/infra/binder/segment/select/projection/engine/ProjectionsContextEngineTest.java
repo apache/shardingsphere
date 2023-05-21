@@ -235,7 +235,7 @@ class ProjectionsContextEngineTest {
     }
     
     private Map<String, ShardingSphereSchema> mockSchemas() {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(2, 1);
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(2, 1F);
         result.put(DefaultDatabase.LOGIC_NAME, schema);
         result.put("public", schema);
         return result;

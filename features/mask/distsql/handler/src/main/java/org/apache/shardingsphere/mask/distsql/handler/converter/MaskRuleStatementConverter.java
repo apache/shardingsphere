@@ -62,7 +62,7 @@ public final class MaskRuleStatementConverter {
     }
     
     private static Map<String, AlgorithmConfiguration> createMaskAlgorithmConfigurations(final MaskRuleSegment ruleSegment) {
-        Map<String, AlgorithmConfiguration> result = new HashMap<>(ruleSegment.getColumns().size(), 1);
+        Map<String, AlgorithmConfiguration> result = new HashMap<>(ruleSegment.getColumns().size(), 1F);
         for (MaskColumnSegment each : ruleSegment.getColumns()) {
             result.put(getAlgorithmName(ruleSegment.getTableName(), each), new AlgorithmConfiguration(each.getAlgorithm().getName(), each.getAlgorithm().getProps()));
         }

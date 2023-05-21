@@ -101,7 +101,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         }
         YamlDataConsistencyCheckResultSwapper swapper = new YamlDataConsistencyCheckResultSwapper();
         Map<String, String> yamlCheckResultMap = YamlEngine.unmarshal(yamlCheckResultMapText, Map.class, true);
-        Map<String, DataConsistencyCheckResult> result = new HashMap<>(yamlCheckResultMap.size(), 1);
+        Map<String, DataConsistencyCheckResult> result = new HashMap<>(yamlCheckResultMap.size(), 1F);
         for (Entry<String, String> entry : yamlCheckResultMap.entrySet()) {
             result.put(entry.getKey(), swapper.swapToObject(entry.getValue()));
         }

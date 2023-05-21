@@ -236,7 +236,7 @@ class ContextManagerTest {
     
     private ShardingSphereResourceMetaData createOriginalResource() {
         ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
-        Map<String, DataSource> originalDataSources = new LinkedHashMap<>(2, 1);
+        Map<String, DataSource> originalDataSources = new LinkedHashMap<>(2, 1F);
         originalDataSources.put("ds_1", new MockedDataSource());
         originalDataSources.put("ds_2", new MockedDataSource());
         when(result.getDataSources()).thenReturn(originalDataSources);
@@ -287,7 +287,7 @@ class ContextManagerTest {
     }
     
     private Map<String, Object> createProperties(final String username, final String password) {
-        Map<String, Object> result = new HashMap<>(3, 1);
+        Map<String, Object> result = new HashMap<>(3, 1F);
         result.putIfAbsent("url", "jdbc:mock://127.0.0.1/foo_ds");
         result.putIfAbsent("username", username);
         result.putIfAbsent("password", password);

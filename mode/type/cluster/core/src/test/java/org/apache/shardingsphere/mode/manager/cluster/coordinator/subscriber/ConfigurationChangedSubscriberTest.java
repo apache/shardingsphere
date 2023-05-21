@@ -143,7 +143,7 @@ class ConfigurationChangedSubscriberTest {
     
     private Map<String, DataSourceProperties> createChangedDataSourcePropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1);
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1F);
         result.put("primary_ds", DataSourcePropertiesCreator.create(dataSource));
         result.put("ds_1", DataSourcePropertiesCreator.create(dataSource));
         result.put("ds_2", DataSourcePropertiesCreator.create(dataSource));
@@ -201,7 +201,7 @@ class ConfigurationChangedSubscriberTest {
     }
     
     private Map<String, DataSource> getDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(3, 1);
+        Map<String, DataSource> result = new LinkedHashMap<>(3, 1F);
         result.put("ds_0", new MockedDataSource());
         result.put("ds_1", new MockedDataSource());
         result.put("db", new MockedDataSource());
@@ -209,7 +209,7 @@ class ConfigurationChangedSubscriberTest {
     }
     
     private Map<String, DataSourceProperties> getVersionChangedDataSourcePropertiesMap() {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1);
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1F);
         result.put("primary_ds", DataSourcePropertiesCreator.create(new MockedDataSource()));
         result.put("ds_0", DataSourcePropertiesCreator.create(new MockedDataSource()));
         result.put("ds_1", DataSourcePropertiesCreator.create(getChangedDataSource()));

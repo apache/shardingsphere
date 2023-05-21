@@ -118,7 +118,7 @@ class ResourceMetaDataChangedSubscriberTest {
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1);
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1F);
         result.put("primary_ds", DataSourcePropertiesCreator.create(dataSource));
         result.put("replica_ds_0", DataSourcePropertiesCreator.create(dataSource));
         result.put("replica_ds_1", DataSourcePropertiesCreator.create(dataSource));

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,28 +51,22 @@ class PostgreSQLShardingSphereDataBuilderTest {
     }
     
     private Map<String, ShardingSphereDatabase> mockDatabaseMap() {
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         Map<String, ShardingSphereSchema> schemaMap = mockSchemaMap();
         when(database.getSchemas()).thenReturn(schemaMap);
-        result.put("logic_db", database);
-        return result;
+        return Collections.singletonMap("logic_db", database);
     }
     
     private Map<String, ShardingSphereSchema> mockSchemaMap() {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(1);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         Map<String, ShardingSphereTable> tableMap = mockTableMap();
         when(schema.getTables()).thenReturn(tableMap);
-        result.put("pg_catalog", schema);
-        return result;
+        return Collections.singletonMap("pg_catalog", schema);
     }
     
     private Map<String, ShardingSphereTable> mockTableMap() {
-        Map<String, ShardingSphereTable> result = new LinkedHashMap<>(1);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(table.getName()).thenReturn("pg_class");
-        result.put("pg_class", table);
-        return result;
+        return Collections.singletonMap("pg_class", table);
     }
 }

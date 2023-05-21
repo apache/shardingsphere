@@ -96,7 +96,7 @@ public final class ShowStorageUnitExecutor implements RQLExecutor<ShowStorageUni
     }
     
     private Map<String, DataSourceProperties> getDataSourcePropsMap(final ShardingSphereDatabase database, final ShowStorageUnitsStatement sqlStatement) {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(database.getResourceMetaData().getDataSources().size(), 1);
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(database.getResourceMetaData().getDataSources().size(), 1F);
         Optional<Integer> usageCountOptional = sqlStatement.getUsageCount();
         if (usageCountOptional.isPresent()) {
             Multimap<String, String> inUsedMultiMap = getInUsedResources(database.getRuleMetaData());

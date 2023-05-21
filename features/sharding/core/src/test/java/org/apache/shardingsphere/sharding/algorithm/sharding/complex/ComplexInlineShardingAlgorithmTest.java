@@ -56,7 +56,7 @@ class ComplexInlineShardingAlgorithmTest {
     }
     
     private ComplexKeysShardingValue<Comparable<?>> createComplexKeysShardingValue(final List<Comparable<?>> values) {
-        Map<String, Collection<Comparable<?>>> sharingValues = new HashMap<>(2, 1);
+        Map<String, Collection<Comparable<?>>> sharingValues = new HashMap<>(2, 1F);
         sharingValues.put("type", values);
         sharingValues.put("order_id", values);
         return new ComplexKeysShardingValue<>("t_order", sharingValues, Collections.emptyMap());

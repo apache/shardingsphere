@@ -60,7 +60,7 @@ class ShardingStrategyTest {
     
     @Test
     void assertDoShardingForMultipleKeys() {
-        Collection<String> expected = new HashSet<>(3, 1);
+        Collection<String> expected = new HashSet<>(3, 1F);
         expected.add("1");
         expected.add("2");
         expected.add("3");

@@ -52,7 +52,7 @@ public final class ShardingSphereMetaData {
     }
     
     public ShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
-        this.databases = new ConcurrentHashMap<>(databases.size(), 1);
+        this.databases = new ConcurrentHashMap<>(databases.size(), 1F);
         databases.forEach((key, value) -> this.databases.put(key.toLowerCase(), value));
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
