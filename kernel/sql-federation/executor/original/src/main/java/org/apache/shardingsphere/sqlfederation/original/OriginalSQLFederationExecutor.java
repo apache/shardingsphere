@@ -47,7 +47,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Original sql federation executor.
+ * Original SQL federation executor.
  */
 @RequiredArgsConstructor
 public final class OriginalSQLFederationExecutor implements SQLFederationExecutor {

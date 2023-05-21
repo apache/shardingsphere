@@ -37,7 +37,7 @@ public final class MockedDriver implements Driver {
         try {
             DriverManager.registerDriver(new MockedDriver());
         } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
+            throw new IllegalStateException(ex);
         }
     }
     
