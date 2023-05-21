@@ -109,9 +109,9 @@ public abstract class AbstractCosIdIntervalShardingAlgorithm<T extends Comparabl
         }
         if (shardingValue.hasLowerBound()) {
             LocalDateTime lower = localDateTimeConvertor.toLocalDateTime(shardingValue.lowerEndpoint());
-            return BoundType.OPEN.equals(shardingValue.lowerBoundType()) ? Range.greaterThan(lower) : Range.atLeast(lower);
+            return BoundType.OPEN == shardingValue.lowerBoundType() ? Range.greaterThan(lower) : Range.atLeast(lower);
         }
         LocalDateTime upper = localDateTimeConvertor.toLocalDateTime(shardingValue.upperEndpoint());
-        return BoundType.OPEN.equals(shardingValue.upperBoundType()) ? Range.lessThan(upper) : Range.atMost(upper);
+        return BoundType.OPEN == shardingValue.upperBoundType() ? Range.lessThan(upper) : Range.atMost(upper);
     }
 }

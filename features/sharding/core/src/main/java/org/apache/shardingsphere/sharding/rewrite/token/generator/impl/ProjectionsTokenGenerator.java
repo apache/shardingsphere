@@ -141,8 +141,8 @@ public final class ProjectionsTokenGenerator implements OptionalSQLTokenGenerato
     
     private NullsOrderType generateNewNullsOrderType(final DatabaseType databaseType, final OrderDirection orderDirection) {
         if (databaseType instanceof SchemaSupportedDatabaseType || databaseType instanceof OracleDatabaseType) {
-            return OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.LAST : NullsOrderType.FIRST;
+            return OrderDirection.ASC == orderDirection ? NullsOrderType.LAST : NullsOrderType.FIRST;
         }
-        return OrderDirection.ASC.equals(orderDirection) ? NullsOrderType.FIRST : NullsOrderType.LAST;
+        return OrderDirection.ASC == orderDirection ? NullsOrderType.FIRST : NullsOrderType.LAST;
     }
 }
