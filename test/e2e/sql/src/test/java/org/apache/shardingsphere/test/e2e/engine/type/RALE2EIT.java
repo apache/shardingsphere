@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.engine.type;
 
 import com.google.common.base.Splitter;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.e2e.cases.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.e2e.cases.dataset.metadata.DataSetMetaData;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.test.e2e.framework.param.model.AssertionTestPar
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,6 +41,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -90,7 +91,7 @@ class RALE2EIT {
                 preparedStatement.executeUpdate();
             }
         }
-        waitCompleted(1000L);
+        Awaitility.await().pollDelay(1L, TimeUnit.SECONDS).until(() -> true);
     }
     
     private void tearDown(final SingleE2EContainerComposer containerComposer) throws SQLException {
@@ -110,7 +111,7 @@ class RALE2EIT {
                 preparedStatement.executeUpdate();
             }
         }
-        waitCompleted(1000L);
+        Awaitility.await().pollDelay(1L, TimeUnit.SECONDS).until(() -> true);
     }
     
     private void assertResultSet(final SingleE2EContainerComposer containerComposer, final Statement statement) throws SQLException {
@@ -118,7 +119,7 @@ class RALE2EIT {
             assertResultSet(containerComposer, statement, containerComposer.getSQL());
         } else {
             statement.execute(containerComposer.getSQL());
-            waitCompleted(2000L);
+            Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
             assertResultSet(containerComposer, statement, containerComposer.getAssertion().getAssertionSQL().getSql());
         }
     }
@@ -183,11 +184,6 @@ class RALE2EIT {
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
         assertThat(String.valueOf(actual.getObject(columnIndex)).trim(), is(expected));
         assertThat(String.valueOf(actual.getObject(columnLabel)).trim(), is(expected));
-    }
-    
-    @SneakyThrows(InterruptedException.class)
-    private void waitCompleted(final long timeoutMillis) {
-        Thread.sleep(timeoutMillis);
     }
     
     private static boolean isEnabled() {
