@@ -91,7 +91,7 @@ class ShowDatabasesExecutorTest {
     }
     
     private Collection<String> getActual(final ShowDatabasesExecutor executor) throws SQLException {
-        Map<String, String> result = new ConcurrentHashMap<>(10, 1);
+        Map<String, String> result = new ConcurrentHashMap<>(10, 1F);
         while (executor.getMergedResult().next()) {
             String value = executor.getMergedResult().getValue(1, Object.class).toString();
             result.put(value, value);
@@ -100,7 +100,7 @@ class ShowDatabasesExecutorTest {
     }
     
     private Collection<String> getExpected() {
-        Map<String, String> result = new ConcurrentHashMap<>(10, 1);
+        Map<String, String> result = new ConcurrentHashMap<>(10, 1F);
         for (int i = 0; i < 10; i++) {
             String value = String.format(DATABASE_PATTERN, i);
             result.put(value, value);
@@ -187,7 +187,7 @@ class ShowDatabasesExecutorTest {
     }
     
     private Map<String, ShardingSphereDatabase> getDatabases() {
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1);
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1F);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());

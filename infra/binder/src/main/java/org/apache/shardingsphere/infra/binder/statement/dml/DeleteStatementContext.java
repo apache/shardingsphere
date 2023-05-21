@@ -72,7 +72,7 @@ public final class DeleteStatementContext extends CommonSQLStatementContext impl
     }
     
     private Map<String, SimpleTableSegment> getAliasAndTableSegmentMap(final Collection<SimpleTableSegment> tableSegments) {
-        Map<String, SimpleTableSegment> result = new HashMap<>(tableSegments.size(), 1);
+        Map<String, SimpleTableSegment> result = new HashMap<>(tableSegments.size(), 1F);
         for (SimpleTableSegment each : tableSegments) {
             each.getAlias().ifPresent(optional -> result.putIfAbsent(optional, each));
         }

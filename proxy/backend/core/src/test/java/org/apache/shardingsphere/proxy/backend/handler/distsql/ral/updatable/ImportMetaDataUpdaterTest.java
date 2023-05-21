@@ -67,7 +67,7 @@ class ImportMetaDataUpdaterTest {
     
     private ImportMetaDataUpdater importMetaDataUpdater;
     
-    private final Map<String, String> featureMap = new HashMap<>(1, 1);
+    private final Map<String, String> featureMap = new HashMap<>(1, 1F);
     
     @BeforeEach
     void setup() {
@@ -116,7 +116,7 @@ class ImportMetaDataUpdaterTest {
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
         result.put("ds_0", new MockedDataSource());
         result.put("ds_1", new MockedDataSource());
         return result;

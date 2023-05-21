@@ -43,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>, C> extends AbstractExecutionPrepareEngine<T> {
     
     @SuppressWarnings("rawtypes")
-    private static final Map<String, SQLExecutionUnitBuilder> TYPE_TO_BUILDER_MAP = new ConcurrentHashMap<>(8, 1);
+    private static final Map<String, SQLExecutionUnitBuilder> TYPE_TO_BUILDER_MAP = new ConcurrentHashMap<>(8, 1F);
     
     private final DatabaseConnectionManager<C> databaseConnectionManager;
     

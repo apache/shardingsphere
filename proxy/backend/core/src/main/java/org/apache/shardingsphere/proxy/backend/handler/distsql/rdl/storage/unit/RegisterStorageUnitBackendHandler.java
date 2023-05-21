@@ -91,7 +91,7 @@ public final class RegisterStorageUnitBackendHandler extends StorageUnitDefiniti
     }
     
     private void checkDuplicatedDataSourceNames(final String databaseName, final Collection<String> dataSourceNames, final RegisterStorageUnitStatement sqlStatement) {
-        Collection<String> duplicatedDataSourceNames = new HashSet<>(sqlStatement.getStorageUnits().size(), 1);
+        Collection<String> duplicatedDataSourceNames = new HashSet<>(sqlStatement.getStorageUnits().size(), 1F);
         for (DataSourceSegment each : sqlStatement.getStorageUnits()) {
             if (dataSourceNames.contains(each.getName()) || getCurrentStorageUnitNames(databaseName).contains(each.getName())) {
                 duplicatedDataSourceNames.add(each.getName());

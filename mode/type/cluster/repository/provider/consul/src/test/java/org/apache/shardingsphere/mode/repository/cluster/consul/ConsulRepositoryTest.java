@@ -110,7 +110,7 @@ class ConsulRepositoryTest {
     private void setProperties() {
         MemberAccessor accessor = Plugins.getMemberAccessor();
         accessor.set(repository.getClass().getDeclaredField("consulProps"), repository, new ConsulProperties(new Properties()));
-        accessor.set(repository.getClass().getDeclaredField("watchKeyMap"), repository, new HashMap<>(4));
+        accessor.set(repository.getClass().getDeclaredField("watchKeyMap"), repository, new HashMap<>(4, 1F));
     }
     
     @Test

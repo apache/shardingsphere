@@ -154,7 +154,7 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
     
     POSTGRESQL_TYPE_REF_CURSOR_ARRAY(2201);
     
-    private static final Map<Integer, PostgreSQLColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1);
+    private static final Map<Integer, PostgreSQLColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
     
     private final int value;
     

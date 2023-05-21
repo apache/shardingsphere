@@ -41,7 +41,7 @@ public final class SpringNamespaceJdbcExampleScenario implements FrameworkExampl
     
     @Override
     public Map<String, String> getResourceTemplateMap() {
-        Map<String, String> result = new HashMap<>(2, 1);
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.put("resources/xml/application.ftl", "application.xml");
         result.put("resources/yaml/config.ftl", "config.yaml");
         return result;

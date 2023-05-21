@@ -67,7 +67,7 @@ public final class YamlEncryptRuleConfigurationSwapper implements YamlRuleConfig
     }
     
     private Map<String, AlgorithmConfiguration> swapEncryptAlgorithm(final YamlEncryptRuleConfiguration yamlConfig) {
-        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>(yamlConfig.getEncryptors().size(), 1);
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>(yamlConfig.getEncryptors().size(), 1F);
         for (Entry<String, YamlAlgorithmConfiguration> entry : yamlConfig.getEncryptors().entrySet()) {
             result.put(entry.getKey(), algorithmSwapper.swapToObject(entry.getValue()));
         }

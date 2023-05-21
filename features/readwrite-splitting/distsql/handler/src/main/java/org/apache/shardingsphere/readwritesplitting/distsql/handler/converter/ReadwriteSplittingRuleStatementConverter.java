@@ -44,7 +44,7 @@ public final class ReadwriteSplittingRuleStatementConverter {
      */
     public static ReadwriteSplittingRuleConfiguration convert(final Collection<ReadwriteSplittingRuleSegment> ruleSegments) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
-        Map<String, AlgorithmConfiguration> loadBalancers = new HashMap<>(ruleSegments.size(), 1);
+        Map<String, AlgorithmConfiguration> loadBalancers = new HashMap<>(ruleSegments.size(), 1F);
         for (ReadwriteSplittingRuleSegment each : ruleSegments) {
             if (null == each.getLoadBalancer()) {
                 dataSources.add(createDataSourceRuleConfiguration(each, null));

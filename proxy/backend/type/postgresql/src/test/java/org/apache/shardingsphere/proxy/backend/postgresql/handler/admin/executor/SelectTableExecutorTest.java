@@ -120,7 +120,7 @@ class SelectTableExecutorTest {
     }
     
     private Map<String, String> createExpectedResultSetMap() {
-        Map<String, String> result = new LinkedHashMap<>(3, 1);
+        Map<String, String> result = new LinkedHashMap<>(3, 1F);
         result.put("tablename", "t_order_1");
         result.put("c.oid", "0000");
         result.put("schemaname", "public");

@@ -43,7 +43,7 @@ public final class DataSourceSegmentsConverter {
      * @return data source properties map
      */
     public static Map<String, DataSourceProperties> convert(final DatabaseType databaseType, final Collection<DataSourceSegment> dataSourceSegments) {
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(dataSourceSegments.size(), 1);
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(dataSourceSegments.size(), 1F);
         for (DataSourceSegment each : dataSourceSegments) {
             result.put(each.getName(), new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", createProperties(databaseType, each)));
         }

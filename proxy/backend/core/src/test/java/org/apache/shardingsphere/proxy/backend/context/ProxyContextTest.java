@@ -131,7 +131,7 @@ class ProxyContextTest {
     }
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1);
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1F);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.getName()).thenReturn(String.format(SCHEMA_PATTERN, i));

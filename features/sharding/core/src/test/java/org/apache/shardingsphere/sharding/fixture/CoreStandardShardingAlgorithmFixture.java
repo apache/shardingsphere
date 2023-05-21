@@ -38,7 +38,7 @@ public final class CoreStandardShardingAlgorithmFixture implements StandardShard
     
     @Override
     public Collection<String> doSharding(final Collection<String> availableTargetNames, final RangeShardingValue<Integer> shardingValue) {
-        Collection<String> result = new HashSet<>(2);
+        Collection<String> result = new HashSet<>(2, 1F);
         for (int i = shardingValue.getValueRange().lowerEndpoint(); i <= shardingValue.getValueRange().upperEndpoint(); i++) {
             for (String each : availableTargetNames) {
                 if (each.endsWith(String.valueOf(i % 2))) {

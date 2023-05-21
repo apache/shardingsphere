@@ -61,8 +61,8 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
     protected List<MemoryQueryResultRow> init(final ShardingRule shardingRule, final ShardingSphereSchema schema,
                                               final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-        Map<GroupByValue, MemoryQueryResultRow> dataMap = new HashMap<>(1024);
-        Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap = new HashMap<>(1024);
+        Map<GroupByValue, MemoryQueryResultRow> dataMap = new HashMap<>(1024, 1F);
+        Map<GroupByValue, Map<AggregationProjection, AggregationUnit>> aggregationMap = new HashMap<>(1024, 1F);
         for (QueryResult each : queryResults) {
             while (each.next()) {
                 GroupByValue groupByValue = new GroupByValue(each, selectStatementContext.getGroupByContext().getItems());

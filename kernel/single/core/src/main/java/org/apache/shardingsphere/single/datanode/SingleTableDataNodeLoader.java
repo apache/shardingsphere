@@ -56,7 +56,7 @@ public final class SingleTableDataNodeLoader {
             Map<String, Collection<DataNode>> dataNodeMap = load(databaseName, databaseType, entry.getKey(), entry.getValue(), excludedTables);
             for (Entry<String, Collection<DataNode>> each : dataNodeMap.entrySet()) {
                 Collection<DataNode> addedDataNodes = each.getValue();
-                Collection<DataNode> existDataNodes = result.getOrDefault(each.getKey().toLowerCase(), new LinkedHashSet<>(addedDataNodes.size(), 1));
+                Collection<DataNode> existDataNodes = result.getOrDefault(each.getKey().toLowerCase(), new LinkedHashSet<>(addedDataNodes.size(), 1F));
                 existDataNodes.addAll(addedDataNodes);
                 result.putIfAbsent(each.getKey().toLowerCase(), existDataNodes);
             }

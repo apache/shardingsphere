@@ -70,7 +70,7 @@ public final class DataSourceProperties {
      */
     public Map<String, Object> getAllStandardProperties() {
         Map<String, Object> result = new LinkedHashMap<>(
-                connectionPropertySynonyms.getStandardProperties().size() + poolPropertySynonyms.getStandardProperties().size() + customDataSourceProperties.getProperties().size(), 1);
+                connectionPropertySynonyms.getStandardProperties().size() + poolPropertySynonyms.getStandardProperties().size() + customDataSourceProperties.getProperties().size(), 1F);
         result.putAll(connectionPropertySynonyms.getStandardProperties());
         result.putAll(poolPropertySynonyms.getStandardProperties());
         result.putAll(customDataSourceProperties.getProperties());
@@ -84,7 +84,7 @@ public final class DataSourceProperties {
      */
     public Map<String, Object> getAllLocalProperties() {
         Map<String, Object> result = new LinkedHashMap<>(
-                connectionPropertySynonyms.getLocalProperties().size() + poolPropertySynonyms.getLocalProperties().size() + customDataSourceProperties.getProperties().size(), 1);
+                connectionPropertySynonyms.getLocalProperties().size() + poolPropertySynonyms.getLocalProperties().size() + customDataSourceProperties.getProperties().size(), 1F);
         result.putAll(connectionPropertySynonyms.getLocalProperties());
         result.putAll(poolPropertySynonyms.getLocalProperties());
         result.putAll(customDataSourceProperties.getProperties());

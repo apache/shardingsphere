@@ -99,7 +99,7 @@ class SelectInformationSchemataExecutorTest {
     
     @Test
     void assertExecuteWithAuthorizedDatabase() throws SQLException {
-        Map<String, String> expectedResultSetMap = new HashMap<>(2, 1);
+        Map<String, String> expectedResultSetMap = new HashMap<>(2, 1F);
         expectedResultSetMap.put("SCHEMA_NAME", "foo_ds");
         expectedResultSetMap.put("DEFAULT_COLLATION_NAME", "utf8mb4");
         ShardingSphereDatabase database = createDatabase(expectedResultSetMap);

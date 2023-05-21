@@ -36,7 +36,7 @@ public abstract class AbstractDriverTest {
     
     private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "single_jdbc", "shadow_jdbc_0", "shadow_jdbc_1", "encrypt", "test_primary_ds", "test_replica_ds");
     
-    private static final Map<String, DataSource> ACTUAL_DATA_SOURCES = new HashMap<>(ACTUAL_DATA_SOURCE_NAMES.size(), 1);
+    private static final Map<String, DataSource> ACTUAL_DATA_SOURCES = new HashMap<>(ACTUAL_DATA_SOURCE_NAMES.size(), 1F);
     
     @BeforeAll
     static synchronized void initializeDataSource() throws SQLException {

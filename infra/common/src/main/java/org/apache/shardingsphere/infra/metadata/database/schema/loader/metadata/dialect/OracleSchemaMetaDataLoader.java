@@ -74,8 +74,8 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
-        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 1);
-        Map<String, Collection<IndexMetaData>> indexMetaDataMap = new HashMap<>(tables.size(), 1);
+        Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>(tables.size(), 1F);
+        Map<String, Collection<IndexMetaData>> indexMetaDataMap = new HashMap<>(tables.size(), 1F);
         try (Connection connection = new MetaDataLoaderConnectionAdapter(TypedSPILoader.getService(DatabaseType.class, "Oracle"), dataSource.getConnection())) {
             for (List<String> each : Lists.partition(new ArrayList<>(tables), MAX_EXPRESSION_SIZE)) {
                 columnMetaDataMap.putAll(loadColumnMetaDataMap(connection, each));
@@ -91,7 +91,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     }
     
     private Map<String, Collection<ColumnMetaData>> loadColumnMetaDataMap(final Connection connection, final Collection<String> tables) throws SQLException {
-        Map<String, Collection<ColumnMetaData>> result = new HashMap<>(tables.size(), 1);
+        Map<String, Collection<ColumnMetaData>> result = new HashMap<>(tables.size(), 1F);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getTableMetaDataSQL(tables, connection.getMetaData()))) {
             Map<String, Integer> dataTypes = new DataTypeLoader().load(connection.getMetaData(), TypedSPILoader.getService(DatabaseType.class, getType()));
             Map<String, Collection<String>> tablePrimaryKeys = loadTablePrimaryKeys(connection, tables);
@@ -153,7 +153,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     }
     
     private Map<String, Collection<IndexMetaData>> loadIndexMetaData(final Connection connection, final Collection<String> tableNames) throws SQLException {
-        Map<String, Collection<IndexMetaData>> result = new HashMap<>(tableNames.size(), 1);
+        Map<String, Collection<IndexMetaData>> result = new HashMap<>(tableNames.size(), 1F);
         try (PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
             preparedStatement.setString(1, connection.getSchema());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

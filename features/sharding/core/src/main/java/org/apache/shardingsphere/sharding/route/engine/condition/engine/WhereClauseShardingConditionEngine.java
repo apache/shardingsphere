@@ -108,7 +108,7 @@ public final class WhereClauseShardingConditionEngine {
     
     private Map<Column, Collection<ShardingConditionValue>> createShardingConditionValueMap(final Collection<ExpressionSegment> predicates,
                                                                                             final List<Object> params, final Map<String, String> columnTableNames) {
-        Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1);
+        Map<Column, Collection<ShardingConditionValue>> result = new HashMap<>(predicates.size(), 1F);
         for (ExpressionSegment each : predicates) {
             for (ColumnSegment columnSegment : ColumnExtractor.extract(each)) {
                 Optional<String> tableName = Optional.ofNullable(columnTableNames.get(columnSegment.getExpression()));

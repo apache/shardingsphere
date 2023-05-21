@@ -157,7 +157,7 @@ public final class TablesContext {
         if (ownerTableNames.size() == columns.size() || subqueryTables.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<String, String> result = new LinkedHashMap<>(columns.size(), 1);
+        Map<String, String> result = new LinkedHashMap<>(columns.size(), 1F);
         for (ColumnSegment each : columns) {
             if (ownerTableNames.containsKey(each.getExpression())) {
                 continue;
@@ -177,7 +177,7 @@ public final class TablesContext {
         if (ownerTableNames.size() == columns.size() || subqueryTables.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<String, String> result = new LinkedHashMap<>(columns.size(), 1);
+        Map<String, String> result = new LinkedHashMap<>(columns.size(), 1F);
         for (ColumnProjection each : columns) {
             if (ownerTableNames.containsKey(each.getExpression())) {
                 continue;
@@ -253,7 +253,7 @@ public final class TablesContext {
         if (noOwnerColumnNames.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<String, String> result = new LinkedHashMap<>(noOwnerColumnNames.size(), 1);
+        Map<String, String> result = new LinkedHashMap<>(noOwnerColumnNames.size(), 1F);
         for (SimpleTableSegment each : tables) {
             String tableName = each.getTableName().getIdentifier().getValue();
             for (String columnName : schema.getAllColumnNames(tableName)) {

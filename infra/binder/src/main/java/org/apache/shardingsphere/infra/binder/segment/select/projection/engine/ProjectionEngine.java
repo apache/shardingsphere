@@ -262,7 +262,7 @@ public final class ProjectionEngine {
     
     private Collection<String> getUsingColumnNamesByNaturalJoin(final Collection<Projection> actualProjections) {
         Collection<String> result = new LinkedHashSet<>();
-        Map<String, Projection> uniqueProjections = new LinkedHashMap<>(actualProjections.size(), 1);
+        Map<String, Projection> uniqueProjections = new LinkedHashMap<>(actualProjections.size(), 1F);
         for (Projection each : actualProjections) {
             Projection previousProjection = uniqueProjections.put(each.getColumnLabel().toLowerCase(), each);
             if (null != previousProjection) {

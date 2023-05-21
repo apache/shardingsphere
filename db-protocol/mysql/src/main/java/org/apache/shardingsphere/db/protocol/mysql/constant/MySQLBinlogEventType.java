@@ -118,7 +118,7 @@ public enum MySQLBinlogEventType {
     
     HEARTBEAT_LOG_EVENT_V2(41);
     
-    private static final Map<Integer, MySQLBinlogEventType> VALUE_AND_EVENT_TYPE_MAP = new HashMap<>(values().length, 1);
+    private static final Map<Integer, MySQLBinlogEventType> VALUE_AND_EVENT_TYPE_MAP = new HashMap<>(values().length, 1F);
     
     private final int value;
     

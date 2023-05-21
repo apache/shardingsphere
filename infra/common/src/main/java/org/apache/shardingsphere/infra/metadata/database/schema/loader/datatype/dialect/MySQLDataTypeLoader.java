@@ -31,7 +31,7 @@ public final class MySQLDataTypeLoader implements DialectDataTypeLoader {
     
     @Override
     public Map<String, Integer> load() throws SQLException {
-        Map<String, Integer> result = new HashMap<>(10, 1);
+        Map<String, Integer> result = new HashMap<>(10, 1F);
         result.putIfAbsent("JSON", Types.LONGVARCHAR);
         result.putIfAbsent("GEOMETRY", Types.BINARY);
         result.putIfAbsent("GEOMETRYCOLLECTION", Types.BINARY);

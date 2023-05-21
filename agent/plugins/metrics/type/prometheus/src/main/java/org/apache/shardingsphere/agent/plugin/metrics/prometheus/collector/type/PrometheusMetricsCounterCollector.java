@@ -34,11 +34,11 @@ public final class PrometheusMetricsCounterCollector implements CounterMetricsCo
     
     @Override
     public void inc() {
-        counter.inc(1d);
+        counter.inc(1D);
     }
     
     @Override
     public void inc(final String... labels) {
-        counter.labels(labels).inc(1d);
+        counter.labels(labels).inc(1D);
     }
 }

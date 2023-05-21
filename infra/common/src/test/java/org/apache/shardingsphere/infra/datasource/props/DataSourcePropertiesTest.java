@@ -80,7 +80,7 @@ class DataSourcePropertiesTest {
     }
     
     private Map<String, Object> getProperties() {
-        Map<String, Object> result = new HashMap<>(7, 1);
+        Map<String, Object> result = new HashMap<>(7, 1F);
         result.put("driverClassName", MockedDataSource.class.getName());
         result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("username", "root");
@@ -133,14 +133,14 @@ class DataSourcePropertiesTest {
     }
     
     private Map<String, Object> createUserProperties(final String username) {
-        Map<String, Object> result = new LinkedHashMap<>(2, 1);
+        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         result.put("username", username);
         result.put("dataSourceProperties", getDataSourceProperties());
         return result;
     }
     
     private Map<String, String> getDataSourceProperties() {
-        Map<String, String> result = new LinkedHashMap<>(3, 1);
+        Map<String, String> result = new LinkedHashMap<>(3, 1F);
         result.put("maintainTimeStats", "false");
         result.put("rewriteBatchedStatements", "true");
         result.put("useLocalSessionState", "true");

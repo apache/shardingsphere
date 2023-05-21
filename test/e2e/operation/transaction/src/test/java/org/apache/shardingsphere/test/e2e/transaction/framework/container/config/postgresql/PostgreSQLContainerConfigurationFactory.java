@@ -47,7 +47,7 @@ public final class PostgreSQLContainerConfigurationFactory {
     }
     
     private static Map<String, String> getContainerEnvironments() {
-        Map<String, String> result = new HashMap<>(2, 1);
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.put("POSTGRES_HOST", StorageContainerConstants.USERNAME);
         result.put("POSTGRES_PASSWORD", StorageContainerConstants.PASSWORD);
         return result;

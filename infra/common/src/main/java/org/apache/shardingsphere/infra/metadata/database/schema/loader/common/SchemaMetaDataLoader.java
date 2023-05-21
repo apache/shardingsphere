@@ -63,7 +63,7 @@ public final class SchemaMetaDataLoader {
     public static Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DatabaseType databaseType, final DataSource dataSource) throws SQLException {
         try (MetaDataLoaderConnectionAdapter connectionAdapter = new MetaDataLoaderConnectionAdapter(databaseType, dataSource.getConnection())) {
             Collection<String> schemaNames = loadSchemaNames(connectionAdapter, databaseType);
-            Map<String, Collection<String>> result = new HashMap<>(schemaNames.size(), 1);
+            Map<String, Collection<String>> result = new HashMap<>(schemaNames.size(), 1F);
             for (String each : schemaNames) {
                 String schemaName = databaseType instanceof SchemaSupportedDatabaseType ? each : databaseName;
                 result.put(schemaName, loadTableNames(connectionAdapter, each));

@@ -93,7 +93,7 @@ public final class ShardingRouteAssert {
     }
     
     private static Map<String, ShardingSphereSchema> buildSchemas() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1);
+        Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1F);
         tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false),
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false)), Collections.emptyList(), Collections.emptyList()));

@@ -147,7 +147,7 @@ class XAShardingSphereTransactionManagerTest {
     }
     
     private Map<String, DataSource> createDataSources(final DatabaseType databaseType) {
-        Map<String, DataSource> result = new LinkedHashMap<>(3, 1);
+        Map<String, DataSource> result = new LinkedHashMap<>(3, 1F);
         result.put("sharding_db.ds_0", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_0"));
         result.put("sharding_db.ds_1", DataSourceUtils.build(HikariDataSource.class, databaseType, "demo_ds_1"));
         result.put("sharding_db.ds_2", DataSourceUtils.build(AtomikosDataSourceBean.class, databaseType, "demo_ds_2"));
@@ -155,7 +155,7 @@ class XAShardingSphereTransactionManagerTest {
     }
     
     private Map<String, DatabaseType> createDatabaseTypes(final DatabaseType databaseType) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(3, 1);
+        Map<String, DatabaseType> result = new LinkedHashMap<>(3, 1F);
         result.put("sharding_db.ds_0", databaseType);
         result.put("sharding_db.ds_1", databaseType);
         result.put("sharding_db.ds_2", databaseType);

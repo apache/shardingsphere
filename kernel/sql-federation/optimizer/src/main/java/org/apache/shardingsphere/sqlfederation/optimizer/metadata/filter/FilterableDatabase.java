@@ -45,7 +45,7 @@ public final class FilterableDatabase extends AbstractSchema {
     }
     
     private Map<String, Schema> createSubSchemaMap(final ShardingSphereDatabase database, final JavaTypeFactory javaTypeFactory, final TableScanExecutor executor) {
-        Map<String, Schema> result = new LinkedHashMap<>(database.getSchemas().size(), 1);
+        Map<String, Schema> result = new LinkedHashMap<>(database.getSchemas().size(), 1F);
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
             result.put(entry.getKey(), new FilterableSchema(entry.getKey(), entry.getValue(), database.getProtocolType(), javaTypeFactory, executor));
         }

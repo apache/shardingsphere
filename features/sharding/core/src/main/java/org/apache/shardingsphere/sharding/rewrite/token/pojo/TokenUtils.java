@@ -44,7 +44,7 @@ public final class TokenUtils {
      */
     public static Map<String, String> getLogicAndActualTableMap(final RouteUnit routeUnit, final SQLStatementContext sqlStatementContext, final ShardingRule shardingRule) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
-        Map<String, String> result = new HashMap<>(tableNames.size(), 1);
+        Map<String, String> result = new HashMap<>(tableNames.size(), 1F);
         for (RouteMapper each : routeUnit.getTableMappers()) {
             result.put(each.getLogicName().toLowerCase(), each.getActualName());
             result.putAll(shardingRule.getLogicAndActualTablesFromBindingTable(routeUnit.getDataSourceMapper().getLogicName(), each.getLogicName(), each.getActualName(), tableNames));

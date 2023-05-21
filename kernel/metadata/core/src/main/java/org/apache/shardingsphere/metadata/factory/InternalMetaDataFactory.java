@@ -70,7 +70,7 @@ public final class InternalMetaDataFactory {
     
     private static Map<String, ShardingSphereDatabase> createDatabases(final MetaDataBasedPersistService persistService, final Map<String, DatabaseConfiguration> databaseConfigMap,
                                                                        final DatabaseType protocolType, final ConfigurationProperties props, final InstanceContext instanceContext) {
-        Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databaseConfigMap.size(), 1);
+        Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databaseConfigMap.size(), 1F);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
             if (entry.getValue().getDataSources().isEmpty()) {

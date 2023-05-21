@@ -75,7 +75,7 @@ public abstract class AbstractExecutionPrepareEngine<T> implements ExecutionPrep
     protected abstract List<ExecutionGroup<T>> group(String dataSourceName, List<List<SQLUnit>> sqlUnitGroups, ConnectionMode connectionMode) throws SQLException;
     
     private Map<String, List<SQLUnit>> aggregateSQLUnitGroups(final Collection<ExecutionUnit> executionUnits) {
-        Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1);
+        Map<String, List<SQLUnit>> result = new LinkedHashMap<>(executionUnits.size(), 1F);
         for (ExecutionUnit each : executionUnits) {
             if (!result.containsKey(each.getDataSourceName())) {
                 result.put(each.getDataSourceName(), new LinkedList<>());

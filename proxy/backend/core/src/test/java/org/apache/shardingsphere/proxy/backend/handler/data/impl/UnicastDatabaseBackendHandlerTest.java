@@ -133,7 +133,7 @@ class UnicastDatabaseBackendHandlerTest {
     }
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
-        Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
+        Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1F);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.containsDataSource()).thenReturn(true);

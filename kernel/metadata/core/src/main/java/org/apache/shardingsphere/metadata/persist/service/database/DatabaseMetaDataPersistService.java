@@ -153,7 +153,7 @@ public final class DatabaseMetaDataPersistService implements DatabaseMetaDataBas
     @Override
     public Map<String, ShardingSphereSchema> loadSchemas(final String databaseName) {
         Collection<String> schemaNames = loadAllSchemaNames(databaseName);
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(schemaNames.size(), 1);
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(schemaNames.size(), 1F);
         schemaNames.forEach(each -> result.put(each.toLowerCase(),
                 new ShardingSphereSchema(tableMetaDataPersistService.load(databaseName, each), viewMetaDataPersistService.load(databaseName, each))));
         return result;

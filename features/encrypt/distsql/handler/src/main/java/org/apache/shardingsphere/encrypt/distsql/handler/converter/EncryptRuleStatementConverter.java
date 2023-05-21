@@ -75,7 +75,7 @@ public final class EncryptRuleStatementConverter {
     }
     
     private static Map<String, AlgorithmConfiguration> createEncryptorConfigurations(final EncryptRuleSegment ruleSegment) {
-        Map<String, AlgorithmConfiguration> result = new HashMap<>(ruleSegment.getColumns().size(), 1);
+        Map<String, AlgorithmConfiguration> result = new HashMap<>(ruleSegment.getColumns().size(), 1F);
         for (EncryptColumnSegment each : ruleSegment.getColumns()) {
             result.put(getEncryptorName(ruleSegment.getTableName(), each.getName()), createEncryptorConfiguration(each));
             if (null != each.getAssistedQueryEncryptor()) {

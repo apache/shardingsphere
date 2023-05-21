@@ -66,7 +66,7 @@ class SingleRuleTest {
     
     @BeforeEach
     void setUp() throws SQLException {
-        dataSourceMap = new LinkedHashMap<>(2, 1);
+        dataSourceMap = new LinkedHashMap<>(2, 1F);
         dataSourceMap.put("foo_ds", mockDataSource("foo_ds", Arrays.asList("employee", "t_order_0")));
         dataSourceMap.put("bar_ds", mockDataSource("bar_ds", Arrays.asList("student", "t_order_1")));
     }

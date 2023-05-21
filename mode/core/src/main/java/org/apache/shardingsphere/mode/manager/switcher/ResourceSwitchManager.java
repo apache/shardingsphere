@@ -98,7 +98,7 @@ public final class ResourceSwitchManager {
     }
     
     private Map<String, DataSource> getStaleDataSources(final ShardingSphereResourceMetaData resourceMetaData, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
-        Map<String, DataSource> result = new LinkedHashMap<>(resourceMetaData.getDataSources().size(), 1);
+        Map<String, DataSource> result = new LinkedHashMap<>(resourceMetaData.getDataSources().size(), 1F);
         result.putAll(getToBeChangedDataSources(resourceMetaData, toBeChangedDataSourceProps));
         return result;
     }
