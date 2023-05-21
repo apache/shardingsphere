@@ -56,17 +56,17 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
     
     @Override
     public boolean next() throws SQLException {
-        return "RECOVER".equals(tclStatement.getOp()) && backendHandler.next();
+        return "RECOVER".equals(tclStatement.getOperator()) && backendHandler.next();
     }
     
     @Override
     public QueryResponseRow getRowData() throws SQLException {
-        return "RECOVER".equals(tclStatement.getOp()) ? backendHandler.getRowData() : new QueryResponseRow(Collections.emptyList());
+        return "RECOVER".equals(tclStatement.getOperator()) ? backendHandler.getRowData() : new QueryResponseRow(Collections.emptyList());
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        switch (tclStatement.getOp()) {
+        switch (tclStatement.getOperator()) {
             case "START":
             case "BEGIN":
                 return begin();
@@ -78,13 +78,12 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
             case "ROLLBACK":
                 return finish();
             default:
-                throw new SQLFeatureNotSupportedException(String.format("unrecognized XA statement `%s`", tclStatement.getOp()));
+                throw new SQLFeatureNotSupportedException(String.format("unrecognized XA statement `%s`", tclStatement.getOperator()));
         }
     }
     
     /*
-     * We have to let session occupy the thread when doing xa transaction.
-     * According to https://dev.mysql.com/doc/refman/5.7/en/xa-states.html XA and local transactions are mutually exclusive.
+     * We have to let session occupy the thread when doing xa transaction. According to https://dev.mysql.com/doc/refman/5.7/en/xa-states.html XA and local transactions are mutually exclusive.
      */
     private ResponseHeader begin() throws SQLException {
         ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction(), XATransactionNestedBeginException::new);

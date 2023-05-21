@@ -66,6 +66,8 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
             if (checkEventIntegrity(in, binlogEventHeader)) {
                 decodeEvent(binlogEventHeader, payload).ifPresent(out::add);
                 skipChecksum(binlogEventHeader.getEventType(), in);
+            } else {
+                break;
             }
         }
     }

@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * XA statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public abstract class XAStatement extends AbstractSQLStatement implements TCLStatement {
     
-    private String op;
+    private final String operator;
     
-    private String xid;
+    private final String xid;
 }

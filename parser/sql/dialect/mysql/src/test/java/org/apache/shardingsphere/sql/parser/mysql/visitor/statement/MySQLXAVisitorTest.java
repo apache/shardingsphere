@@ -47,7 +47,7 @@ class MySQLXAVisitorTest {
         MySQLTCLStatementVisitor visitor = new MySQLTCLStatementVisitor();
         MySQLXAStatement xaStatement = (MySQLXAStatement) visitor.visitXa(parser.xa());
         assertThat("XA parse error.", parser.getNumberOfSyntaxErrors(), is(0));
-        assertThat("XA operation error.", xaStatement.getOp(), is(operation));
+        assertThat("XA operation error.", xaStatement.getOperator(), is(operation));
         assertThat("XA xid error.", xaStatement.getXid(), is(xid));
     }
     

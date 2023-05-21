@@ -63,16 +63,6 @@ releaseSavepoint
     : RELEASE SAVEPOINT identifier
     ;
 
-xa
-    : XA ((START | BEGIN) xid (JOIN | RESUME)?
-        | END xid (SUSPEND (FOR MIGRATE)?)?
-        | PREPARE xid
-        | COMMIT xid (ONE PHASE)?
-        | ROLLBACK xid
-        | RECOVER (CONVERT XID)?
-    )
-    ;
-
 optionChain
     : AND NO? CHAIN
     ;
@@ -87,6 +77,16 @@ tableLock
 
 lockOption
     : READ LOCAL? | LOW_PRIORITY? WRITE
+    ;
+
+xa
+    : XA ((START | BEGIN) xid (JOIN | RESUME)?
+        | END xid (SUSPEND (FOR MIGRATE)?)?
+        | PREPARE xid
+        | COMMIT xid (ONE PHASE)?
+        | ROLLBACK xid
+        | RECOVER (CONVERT XID)?
+    )
     ;
 
 xid
