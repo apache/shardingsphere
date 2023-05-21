@@ -48,46 +48,46 @@ public final class MySQLJsonValueDecoder {
         return result.toString();
     }
     
-    private static void decodeValue(final int type, final int offset, final ByteBuf byteBuf, final StringBuilder result) {
+    private static void decodeValue(final int type, final int offset, final ByteBuf byteBuf, final StringBuilder stringBuilder) {
         int oldOffset = byteBuf.readerIndex();
         byteBuf.readerIndex(offset);
         try {
             switch (type) {
                 case JsonValueTypes.SMALL_JSON_OBJECT:
-                    decodeJsonObject(true, byteBuf.slice(), result);
+                    decodeJsonObject(true, byteBuf.slice(), stringBuilder);
                     break;
                 case JsonValueTypes.LARGE_JSON_OBJECT:
-                    decodeJsonObject(false, byteBuf.slice(), result);
+                    decodeJsonObject(false, byteBuf.slice(), stringBuilder);
                     break;
                 case JsonValueTypes.SMALL_JSON_ARRAY:
-                    decodeJsonArray(true, byteBuf.slice(), result);
+                    decodeJsonArray(true, byteBuf.slice(), stringBuilder);
                     break;
                 case JsonValueTypes.LARGE_JSON_ARRAY:
-                    decodeJsonArray(false, byteBuf.slice(), result);
+                    decodeJsonArray(false, byteBuf.slice(), stringBuilder);
                     break;
                 case JsonValueTypes.INT16:
-                    result.append(byteBuf.readShortLE());
+                    stringBuilder.append(byteBuf.readShortLE());
                     break;
                 case JsonValueTypes.UINT16:
-                    result.append(byteBuf.readUnsignedShortLE());
+                    stringBuilder.append(byteBuf.readUnsignedShortLE());
                     break;
                 case JsonValueTypes.INT32:
-                    result.append(byteBuf.readIntLE());
+                    stringBuilder.append(byteBuf.readIntLE());
                     break;
                 case JsonValueTypes.UINT32:
-                    result.append(byteBuf.readUnsignedIntLE());
+                    stringBuilder.append(byteBuf.readUnsignedIntLE());
                     break;
                 case JsonValueTypes.INT64:
-                    result.append(byteBuf.readLongLE());
+                    stringBuilder.append(byteBuf.readLongLE());
                     break;
                 case JsonValueTypes.UINT64:
-                    result.append(readUnsignedLongLE(byteBuf));
+                    stringBuilder.append(readUnsignedLongLE(byteBuf));
                     break;
                 case JsonValueTypes.DOUBLE:
-                    result.append(byteBuf.readDoubleLE());
+                    stringBuilder.append(byteBuf.readDoubleLE());
                     break;
                 case JsonValueTypes.STRING:
-                    outputString(decodeString(byteBuf.slice()), result);
+                    outputString(decodeString(byteBuf.slice()), stringBuilder);
                     break;
                 default:
                     throw new UnsupportedSQLOperationException(String.valueOf(type));
@@ -102,8 +102,8 @@ public final class MySQLJsonValueDecoder {
         return 0 <= value ? BigInteger.valueOf(value) : MAX_BIG_INTEGER_VALUE.add(BigInteger.valueOf(1 + value));
     }
     
-    private static void decodeJsonObject(final boolean isSmall, final ByteBuf byteBuf, final StringBuilder result) {
-        result.append('{');
+    private static void decodeJsonObject(final boolean isSmall, final ByteBuf byteBuf, final StringBuilder stringBuilder) {
+        stringBuilder.append('{');
         int count = getIntBasedObjectSize(byteBuf, isSmall);
         getIntBasedObjectSize(byteBuf, isSmall);
         String[] keys = new String[count];
@@ -112,25 +112,25 @@ public final class MySQLJsonValueDecoder {
         }
         for (int i = 0; i < count; i++) {
             if (0 < i) {
-                result.append(',');
+                stringBuilder.append(',');
             }
-            result.append('"').append(keys[i]).append("\":");
-            decodeValueEntry(isSmall, byteBuf, result);
+            stringBuilder.append('"').append(keys[i]).append("\":");
+            decodeValueEntry(isSmall, byteBuf, stringBuilder);
         }
-        result.append('}');
+        stringBuilder.append('}');
     }
     
-    private static void decodeJsonArray(final boolean isSmall, final ByteBuf byteBuf, final StringBuilder result) {
-        result.append('[');
+    private static void decodeJsonArray(final boolean isSmall, final ByteBuf byteBuf, final StringBuilder stringBuilder) {
+        stringBuilder.append('[');
         int count = getIntBasedObjectSize(byteBuf, isSmall);
         getIntBasedObjectSize(byteBuf, isSmall);
         for (int i = 0; i < count; i++) {
             if (0 < i) {
-                result.append(',');
+                stringBuilder.append(',');
             }
-            decodeValueEntry(isSmall, byteBuf, result);
+            decodeValueEntry(isSmall, byteBuf, stringBuilder);
         }
-        result.append(']');
+        stringBuilder.append(']');
     }
     
     private static String decodeKeyEntry(final boolean isSmall, final ByteBuf byteBuf) {
