@@ -91,7 +91,7 @@ class MySQLComStmtPrepareCheckerTest {
                 new MySQLShowErrorsStatement(), new MySQLShowBinlogEventsStatement(), new MySQLShowCreateProcedureStatement(), new MySQLShowCreateFunctionStatement(),
                 new MySQLShowCreateEventStatement(),
                 new MySQLShowCreateTableStatement(), new MySQLShowCreateViewStatement(), new MySQLShowBinaryLogsStatement(), new MySQLShowStatusStatement(), new MySQLStartSlaveStatement(),
-                new MySQLStopSlaveStatement(), new MySQLTruncateStatement(), new MySQLUninstallPluginStatement(), new MySQLUpdateStatement(), new MySQLXAStatement());
+                new MySQLStopSlaveStatement(), new MySQLTruncateStatement(), new MySQLUninstallPluginStatement(), new MySQLUpdateStatement(), new MySQLXAStatement("END", null));
         for (SQLStatement each : sqlStatements) {
             assertTrue(MySQLComStmtPrepareChecker.isStatementAllowed(each));
         }
