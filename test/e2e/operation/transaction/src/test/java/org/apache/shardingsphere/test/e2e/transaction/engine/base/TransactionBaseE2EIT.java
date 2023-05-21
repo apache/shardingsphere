@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.transaction.engine.base;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -44,6 +43,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
@@ -62,6 +62,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -222,16 +223,15 @@ public abstract class TransactionBaseE2EIT {
                 && Objects.equals(transactionRuleMap.get(TransactionTestConstants.PROVIDER_TYPE), expectedProviderType);
     }
     
-    @SneakyThrows(InterruptedException.class)
     private boolean waitExpectedTransactionRule(final TransactionType expectedTransType, final String expectedProviderType, final TransactionContainerComposer containerComposer) throws SQLException {
-        Thread.sleep(5000L);
+        Awaitility.await().pollDelay(5L, TimeUnit.SECONDS).until(() -> true);
         try (Connection connection = containerComposer.getDataSource().getConnection()) {
             int waitTimes = 0;
             do {
                 if (isExpectedTransactionRule(connection, expectedTransType, expectedProviderType)) {
                     return true;
                 }
-                Thread.sleep(2000L);
+                Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
                 waitTimes++;
             } while (waitTimes <= 3);
             return false;
@@ -260,7 +260,6 @@ public abstract class TransactionBaseE2EIT {
      * @param containerComposer container composer
      * @throws SQLException SQL exception
      */
-    @SneakyThrows(InterruptedException.class)
     public void addResource(final Connection connection, final String databaseName, final TransactionContainerComposer containerComposer) throws SQLException {
         String addSourceResource = commonSQL.getSourceAddNewResourceTemplate()
                 .replace("${user}", ENV.getActualDataSourceUsername(containerComposer.getDatabaseType()))
@@ -268,7 +267,7 @@ public abstract class TransactionBaseE2EIT {
                 .replace("${ds2}", getActualJdbcUrlTemplate(databaseName, containerComposer));
         executeWithLog(connection, addSourceResource);
         int resourceCount = countWithLog("SHOW STORAGE UNITS FROM sharding_db", containerComposer);
-        Thread.sleep(5000L);
+        Awaitility.await().pollDelay(5L, TimeUnit.SECONDS).until(() -> true);
         assertThat(resourceCount, is(3));
     }
     
@@ -294,14 +293,12 @@ public abstract class TransactionBaseE2EIT {
         assertThat(countWithLog("SHOW SHARDING TABLE RULES FROM sharding_db;", containerComposer), is(3));
     }
     
-    @SneakyThrows(InterruptedException.class)
     private void executeWithLog(final Connection connection, final String sql) throws SQLException {
         log.info("Connection execute:{}.", sql);
         connection.createStatement().execute(sql);
-        Thread.sleep(1000L);
+        Awaitility.await().pollDelay(1L, TimeUnit.SECONDS).until(() -> true);
     }
     
-    @SneakyThrows(InterruptedException.class)
     private int countWithLog(final String sql, final TransactionContainerComposer containerComposer) throws SQLException {
         try (Connection connection = containerComposer.getDataSource().getConnection()) {
             int retryNumber = 0;
@@ -317,7 +314,7 @@ public abstract class TransactionBaseE2EIT {
                 } catch (final SQLException ex) {
                     log.error("Data access error.", ex);
                 }
-                Thread.sleep(2000L);
+                Awaitility.await().pollDelay(2L, TimeUnit.SECONDS).until(() -> true);
                 retryNumber++;
             }
         }
