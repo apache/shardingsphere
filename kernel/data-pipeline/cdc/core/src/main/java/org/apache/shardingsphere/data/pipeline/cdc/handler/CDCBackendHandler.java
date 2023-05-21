@@ -123,12 +123,10 @@ public final class CDCBackendHandler {
     }
     
     private Map<String, List<DataNode>> buildDataNodesMap(final ShardingSphereDatabase database, final Collection<String> tableNames) {
-        Map<String, List<DataNode>> result = new HashMap<>();
         Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         Optional<SingleRule> singleRule = database.getRuleMetaData().findSingleRule(SingleRule.class);
-        if (!shardingRule.isPresent() && !singleRule.isPresent()) {
-            throw new NoAnyRuleExistsException(database.getName());
-        }
+        ShardingSpherePreconditions.checkState(shardingRule.isPresent() || singleRule.isPresent(), () -> new NoAnyRuleExistsException(database.getName()));
+        Map<String, List<DataNode>> result = new HashMap<>();
         // TODO support virtual data source name
         for (String each : tableNames) {
             if (singleRule.isPresent() && singleRule.get().getAllDataNodes().containsKey(each)) {
