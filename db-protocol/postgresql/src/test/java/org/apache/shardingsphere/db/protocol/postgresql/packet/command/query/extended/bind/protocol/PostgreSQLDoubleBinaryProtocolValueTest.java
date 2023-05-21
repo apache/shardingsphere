@@ -51,6 +51,6 @@ class PostgreSQLDoubleBinaryProtocolValueTest {
     @Test
     void assertWrite() {
         new PostgreSQLDoubleBinaryProtocolValue().write(new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8), 1D);
-        verify(byteBuf).writeDouble(1.0d);
+        verify(byteBuf).writeDouble(1.0D);
     }
 }

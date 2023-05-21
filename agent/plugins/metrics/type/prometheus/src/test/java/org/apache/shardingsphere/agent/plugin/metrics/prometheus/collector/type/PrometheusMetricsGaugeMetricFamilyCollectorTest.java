@@ -34,7 +34,7 @@ class PrometheusMetricsGaugeMetricFamilyCollectorTest {
     void assertCreate() throws ReflectiveOperationException {
         PrometheusMetricsGaugeMetricFamilyCollector collector = new PrometheusMetricsGaugeMetricFamilyCollector(new MetricConfiguration("foo_gauge_metric_family",
                 MetricCollectorType.GAUGE_METRIC_FAMILY, "foo_help", Collections.emptyList(), Collections.emptyMap()));
-        collector.addMetric(Collections.emptyList(), 1d);
+        collector.addMetric(Collections.emptyList(), 1D);
         assertThat(Plugins.getMemberAccessor().get(PrometheusMetricsGaugeMetricFamilyCollector.class.getDeclaredField("gaugeMetricFamily"), collector), instanceOf(GaugeMetricFamily.class));
     }
 }

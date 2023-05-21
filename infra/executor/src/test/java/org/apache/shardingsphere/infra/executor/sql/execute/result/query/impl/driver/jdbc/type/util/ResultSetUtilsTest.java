@@ -80,8 +80,8 @@ class ResultSetUtilsTest {
         assertThat(ResultSetUtils.convertValue((short) 1, short.class), is((short) 1));
         assertThat(ResultSetUtils.convertValue(new BigDecimal("1"), int.class), is(1));
         assertThat(ResultSetUtils.convertValue(new BigDecimal("1"), long.class), is(1L));
-        assertThat(ResultSetUtils.convertValue(new BigDecimal("1"), double.class), is(1.0d));
-        assertThat(ResultSetUtils.convertValue(new BigDecimal("1"), float.class), is(1.0f));
+        assertThat(ResultSetUtils.convertValue(new BigDecimal("1"), double.class), is(1.0D));
+        assertThat(ResultSetUtils.convertValue(new BigDecimal("1"), float.class), is(1.0F));
         assertThat(ResultSetUtils.convertValue(new BigDecimal("1"), BigDecimal.class), is(new BigDecimal("1")));
         assertThat(ResultSetUtils.convertValue((short) 1, BigDecimal.class), is(new BigDecimal("1")));
         assertThat(ResultSetUtils.convertValue(new Date(0L), Date.class), is(new Date(0L)));
@@ -137,8 +137,8 @@ class ResultSetUtilsTest {
         assertThat(ResultSetUtils.convertValue(Shorts.toByteArray((short) 1), short.class), is((short) 1));
         assertThat(ResultSetUtils.convertValue(Ints.toByteArray(1), int.class), is(1));
         assertThat(ResultSetUtils.convertValue(Longs.toByteArray(1L), long.class), is(1L));
-        assertThat(ResultSetUtils.convertValue(Longs.toByteArray(1L), double.class), is(1.0d));
-        assertThat(ResultSetUtils.convertValue(Longs.toByteArray(1L), float.class), is(1.0f));
+        assertThat(ResultSetUtils.convertValue(Longs.toByteArray(1L), double.class), is(1.0D));
+        assertThat(ResultSetUtils.convertValue(Longs.toByteArray(1L), float.class), is(1.0F));
         assertThat(ResultSetUtils.convertValue(Longs.toByteArray(1L), BigDecimal.class), is(new BigDecimal("1")));
     }
     
