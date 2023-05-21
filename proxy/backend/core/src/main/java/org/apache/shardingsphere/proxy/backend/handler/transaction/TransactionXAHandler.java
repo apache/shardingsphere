@@ -36,8 +36,8 @@ import java.util.Collections;
 
 /**
  * XA transaction handler.
- * TODO Currently XA transaction started with `XA START` doesn't support for database with multiple datasource, a flag should be added for this both in init progress and add datasource from DistSQL.
  */
+// TODO Currently XA transaction started with `XA START` doesn't support for database with multiple datasource, a flag should be added for this both in init progress and add datasource from DistSQL.
 @RequiredArgsConstructor
 public final class TransactionXAHandler implements ProxyBackendHandler {
     
@@ -48,20 +48,20 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
     private final DatabaseConnector backendHandler;
     
     public TransactionXAHandler(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
-        this.tclStatement = (XAStatement) sqlStatementContext.getSqlStatement();
+        tclStatement = (XAStatement) sqlStatementContext.getSqlStatement();
         this.connectionSession = connectionSession;
-        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, Collections.emptyList());
-        backendHandler = DatabaseConnectorFactory.getInstance().newInstance(queryContext, connectionSession.getDatabaseConnectionManager(), false);
+        backendHandler = DatabaseConnectorFactory.getInstance().newInstance(
+                new QueryContext(sqlStatementContext, sql, Collections.emptyList()), connectionSession.getDatabaseConnectionManager(), false);
     }
     
     @Override
     public boolean next() throws SQLException {
-        return "RECOVER".equals(this.tclStatement.getOp()) && backendHandler.next();
+        return "RECOVER".equals(tclStatement.getOp()) && backendHandler.next();
     }
     
     @Override
     public QueryResponseRow getRowData() throws SQLException {
-        return "RECOVER".equals(this.tclStatement.getOp()) ? backendHandler.getRowData() : new QueryResponseRow(Collections.emptyList());
+        return "RECOVER".equals(tclStatement.getOp()) ? backendHandler.getRowData() : new QueryResponseRow(Collections.emptyList());
     }
     
     @Override
@@ -69,28 +69,36 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
         switch (tclStatement.getOp()) {
             case "START":
             case "BEGIN":
-                /*
-                 * we have to let session occupy the thread when doing xa transaction. according to https://dev.mysql.com/doc/refman/5.7/en/xa-states.html XA and local transactions are mutually
-                 * exclusive
-                 */
-                ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction(), XATransactionNestedBeginException::new);
-                ResponseHeader header = backendHandler.execute();
-                connectionSession.getConnectionContext().getTransactionContext().setInTransaction(true);
-                return header;
+                return begin();
             case "END":
             case "PREPARE":
             case "RECOVER":
                 return backendHandler.execute();
             case "COMMIT":
             case "ROLLBACK":
-                try {
-                    return backendHandler.execute();
-                } finally {
-                    connectionSession.getConnectionContext().clearTransactionConnectionContext();
-                    connectionSession.getConnectionContext().clearCursorConnectionContext();
-                }
+                return finish();
             default:
                 throw new SQLFeatureNotSupportedException(String.format("unrecognized XA statement `%s`", tclStatement.getOp()));
+        }
+    }
+    
+    /*
+     * We have to let session occupy the thread when doing xa transaction.
+     * According to https://dev.mysql.com/doc/refman/5.7/en/xa-states.html XA and local transactions are mutually exclusive.
+     */
+    private ResponseHeader begin() throws SQLException {
+        ShardingSpherePreconditions.checkState(!connectionSession.getTransactionStatus().isInTransaction(), XATransactionNestedBeginException::new);
+        ResponseHeader result = backendHandler.execute();
+        connectionSession.getConnectionContext().getTransactionContext().setInTransaction(true);
+        return result;
+    }
+    
+    private ResponseHeader finish() throws SQLException {
+        try {
+            return backendHandler.execute();
+        } finally {
+            connectionSession.getConnectionContext().clearTransactionConnectionContext();
+            connectionSession.getConnectionContext().clearCursorConnectionContext();
         }
     }
 }
