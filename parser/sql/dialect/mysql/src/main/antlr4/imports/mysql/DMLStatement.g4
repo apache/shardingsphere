@@ -48,7 +48,7 @@ insertSelectClause
     ;
 
 onDuplicateKeyClause
-    : ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
+    : (AS identifier)? ON DUPLICATE KEY UPDATE assignment (COMMA_ assignment)*
     ;
 
 valueReference
