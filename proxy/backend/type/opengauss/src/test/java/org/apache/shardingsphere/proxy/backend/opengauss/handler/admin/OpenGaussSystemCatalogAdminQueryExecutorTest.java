@@ -71,6 +71,10 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
     @Test
     void assertExecuteSelectVersion() throws SQLException {
         when(ProxyContext.getInstance()).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
+        ShardingSphereRuleMetaData shardingSphereRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
+        when(shardingSphereRuleMetaData.getSingleRule(AuthorityRule.class)).thenReturn(mock(AuthorityRule.class));
+        when(shardingSphereRuleMetaData.getSingleRule(AuthorityRule.class).getConfiguration()).thenReturn(mock(AuthorityRuleConfiguration.class));
         OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select VERSION()");
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(new OpenGaussDatabaseType());
@@ -86,6 +90,10 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
     @Test
     void assertExecuteSelectGsPasswordDeadlineAndIntervalToNum() throws SQLException {
         when(ProxyContext.getInstance()).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
+        ShardingSphereRuleMetaData shardingSphereRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
+        when(shardingSphereRuleMetaData.getSingleRule(AuthorityRule.class)).thenReturn(mock(AuthorityRule.class));
+        when(shardingSphereRuleMetaData.getSingleRule(AuthorityRule.class).getConfiguration()).thenReturn(mock(AuthorityRuleConfiguration.class));
         OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select intervaltonum(gs_password_deadline())");
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(new OpenGaussDatabaseType());
@@ -101,6 +109,10 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
     @Test
     void assertExecuteSelectGsPasswordNotifyTime() throws SQLException {
         when(ProxyContext.getInstance()).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
+        ShardingSphereRuleMetaData shardingSphereRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
+        when(shardingSphereRuleMetaData.getSingleRule(AuthorityRule.class)).thenReturn(mock(AuthorityRule.class));
+        when(shardingSphereRuleMetaData.getSingleRule(AuthorityRule.class).getConfiguration()).thenReturn(mock(AuthorityRuleConfiguration.class));
         OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select gs_password_notifytime()");
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(new OpenGaussDatabaseType());
