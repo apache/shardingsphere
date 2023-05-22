@@ -102,7 +102,7 @@ jobs:
           MAVEN_OPTS: "-XX:+UseG1GC -XX:InitialHeapSize=2g -XX:MaxHeapSize=6g -XX:+UseStringDeduplication"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-        run: ./mvnw -B sonar:sonar -Dsonar.projectKey=apache_shardingsphere -Dsonar.coverage.jacoco.xmlReportPaths=report/target/site/jacoco-aggregate/jacoco.xml -Dmaven.javadoc.skip=true -Drat.skip=true
+        run: ./mvnw -B sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.projectKey=apache_shardingsphere -Dsonar.coverage.jacoco.xmlReportPaths=report/target/site/jacoco-aggregate/jacoco.xml -Dmaven.javadoc.skip=true -Drat.skip=true
   
   checkstyle-report-sonarcloud:
     if: github.repository == 'apache/shardingsphere'
