@@ -38,7 +38,7 @@ public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProt
     }
     
     @Override
-    public CommandExecuteEngine<DatabasePacket<?>> getCommandExecuteEngine() {
+    public CommandExecuteEngine getCommandExecuteEngine() {
         return null;
     }
     
