@@ -71,15 +71,15 @@ public final class JDBCRepositorySQLLoader {
         if (null == resources) {
             return null;
         }
-        JDBCRepositorySQL jdbcRepositorySQL = null;
+        JDBCRepositorySQL result = null;
         while (resources.hasMoreElements()) {
             URL resource = resources.nextElement();
-            jdbcRepositorySQL = isJarURL(resource) ? loadFromJar(resource, type) : loadFromDirectory(resource, type);
-            if (null != jdbcRepositorySQL && Objects.equals(jdbcRepositorySQL.isDefault(), false)) {
+            result = isJarURL(resource) ? loadFromJar(resource, type) : loadFromDirectory(resource, type);
+            if (null != result && Objects.equals(result.isDefault(), false)) {
                 break;
             }
         }
-        return jdbcRepositorySQL;
+        return result;
     }
     
     private static boolean isJarURL(final URL url) {
