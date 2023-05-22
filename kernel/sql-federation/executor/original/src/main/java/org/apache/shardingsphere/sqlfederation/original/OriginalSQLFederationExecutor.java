@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.data.ShardingSphereData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
+import org.apache.shardingsphere.sqlfederation.exception.SQLFederationDriverRegisterException;
 import org.apache.shardingsphere.sqlfederation.executor.FilterableTableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.executor.TableScanExecutorContext;
 import org.apache.shardingsphere.sqlfederation.optimizer.context.OptimizerContext;
@@ -75,6 +76,14 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     private Connection connection;
     
     private PreparedStatement statement;
+
+    static {
+        try {
+            Class.forName(DRIVER_NAME);
+        } catch (final ClassNotFoundException ex) {
+            throw new SQLFederationDriverRegisterException(ex.getMessage());
+        }
+    }
     
     @Override
     public void init(final String databaseName, final String schemaName, final ShardingSphereMetaData metaData, final ShardingSphereData data, final JDBCExecutor jdbcExecutor) {
@@ -89,7 +98,7 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     
     @Override
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                  final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) throws SQLException, ClassNotFoundException {
+                                  final JDBCExecutorCallback<? extends ExecuteResult> callback, final SQLFederationExecutorContext federationContext) throws SQLException {
         connection = createConnection(prepareEngine, callback, federationContext);
         statement = connection.prepareStatement(SQLUtils.trimSemicolon(federationContext.getQueryContext().getSql()));
         setParameters(statement, federationContext.getQueryContext().getParameters());
@@ -98,8 +107,7 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     
     private Connection createConnection(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                         final JDBCExecutorCallback<? extends ExecuteResult> callback,
-                                        final SQLFederationExecutorContext federationContext) throws SQLException, ClassNotFoundException {
-        Class.forName(DRIVER_NAME);
+                                        final SQLFederationExecutorContext federationContext) throws SQLException {
         Connection result = DriverManager.getConnection(CONNECTION_URL, optimizerContext.getParserContext(databaseName).getDialectProps());
         addSchema(result.unwrap(CalciteConnection.class), prepareEngine, callback, federationContext);
         return result;
