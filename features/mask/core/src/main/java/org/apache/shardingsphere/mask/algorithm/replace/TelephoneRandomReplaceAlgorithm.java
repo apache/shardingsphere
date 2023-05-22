@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 

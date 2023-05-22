@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mask.algorithm;
 
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
