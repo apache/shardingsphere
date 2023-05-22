@@ -28,7 +28,7 @@ alterTransactionRule
     ;
 
 transactionRuleDefinition
-    : LP_ DEFAULT EQ_ defaultType (COMMA_ providerDefinition)?
+    : LP_ DEFAULT EQ_ defaultType (COMMA_ providerDefinition)? RP_
     ;
 
 providerDefinition
