@@ -13,7 +13,7 @@ weight = 6
 {{% tab name="语法" %}}
 ```sql
 SetDistVariable ::=
-  'SET' 'DIST' 'VARIABLE' (proxyPropertyName '=' proxyPropertyValue | 'agent_plugins_enabled' '=' agentPluginsEnable)
+  'SET' 'DIST' 'VARIABLE' (proxyPropertyName '=' proxyPropertyValue | 'agent_plugins_enabled' '=' agentPluginsEnabled)
 
 proxyPropertyName ::= 
   identifier
@@ -24,7 +24,7 @@ proxyPropertyValue ::=
 transactionType ::=
   string
 
-agentPluginsEnable ::=
+agentPluginsEnabled ::=
   boolean
 ```
 {{% /tab %}}
