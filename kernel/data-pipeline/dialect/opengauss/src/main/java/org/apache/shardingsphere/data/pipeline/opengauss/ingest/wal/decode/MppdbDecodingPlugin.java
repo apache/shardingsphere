@@ -21,7 +21,6 @@ import com.google.common.base.Preconditions;
 import lombok.AllArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
-import org.apache.shardingsphere.data.pipeline.core.util.JsonUtils;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.BaseTimestampUtils;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.DecodingException;
@@ -34,6 +33,7 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.Delet
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.WriteRowEvent;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.opengauss.util.PGInterval;
 import org.opengauss.util.PGobject;
 
@@ -96,7 +96,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     
     private AbstractRowEvent readTableEvent(final String mppData) {
         MppTableData mppTableData;
-        mppTableData = JsonUtils.readJson(mppData, MppTableData.class);
+        mppTableData = JsonUtils.readValue(mppData, MppTableData.class);
         AbstractRowEvent result;
         String rowEventType = mppTableData.getOpType();
         switch (rowEventType) {

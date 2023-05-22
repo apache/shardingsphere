@@ -78,12 +78,7 @@
             <artifactId>HikariCP</artifactId>
             <scope>compile</scope>
         </dependency>
-        
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        
+
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-test-util</artifactId>

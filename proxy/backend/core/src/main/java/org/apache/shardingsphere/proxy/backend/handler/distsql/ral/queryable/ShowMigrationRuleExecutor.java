@@ -21,10 +21,10 @@ import org.apache.shardingsphere.data.pipeline.api.config.process.PipelineProces
 import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
-import org.apache.shardingsphere.data.pipeline.core.util.JsonUtils;
 import org.apache.shardingsphere.distsql.handler.ral.query.QueryableRALExecutor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowMigrationRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Arrays;
@@ -46,7 +46,7 @@ public final class ShowMigrationRuleExecutor implements QueryableRALExecutor<Sho
     }
     
     private String getString(final Object obj) {
-        return null == obj ? "" : JsonUtils.toJson(obj);
+        return null == obj ? "" : JsonUtils.toJsonString(obj);
     }
     
     @Override
