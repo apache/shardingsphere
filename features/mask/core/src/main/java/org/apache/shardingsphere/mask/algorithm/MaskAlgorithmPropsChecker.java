@@ -87,14 +87,11 @@ public final class MaskAlgorithmPropsChecker {
         ShardingSpherePreconditions.checkState(props.containsKey(positiveIntegerTypeConfigKey),
                 () -> new MaskAlgorithmInitializationException(maskType, String.format("%s can not be null", positiveIntegerTypeConfigKey)));
         try {
-            Integer.parseInt(props.getProperty(positiveIntegerTypeConfigKey));
-        } catch (final NumberFormatException ex) {
-            throw new MaskAlgorithmInitializationException(maskType, String.format("%s must be a valid integer number", positiveIntegerTypeConfigKey));
-        }
-        if (!Strings.isNullOrEmpty(positiveIntegerTypeConfigKey)) {
             int integerValue = Integer.parseInt(props.getProperty(positiveIntegerTypeConfigKey));
             ShardingSpherePreconditions.checkState(integerValue > 0,
                     () -> new MaskAlgorithmInitializationException(maskType, String.format("%s must be a positive integer.", positiveIntegerTypeConfigKey)));
+        } catch (final NumberFormatException ex) {
+            throw new MaskAlgorithmInitializationException(maskType, String.format("%s must be a valid integer number", positiveIntegerTypeConfigKey));
         }
     }
 }

@@ -51,8 +51,6 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
     }
     
     private List<String> createNetworkNumbers(final Properties props) {
-        ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(NETWORK_NUMBERS),
-                () -> new MaskAlgorithmInitializationException(getType(), String.format("%s can not be empty", NETWORK_NUMBERS)));
         String networkNumbers = props.getProperty(NETWORK_NUMBERS, initDefaultNetworkNumbers());
         return Splitter.on(",").trimResults().splitToList(networkNumbers).stream().map(this::getNetworkNumber).distinct().collect(Collectors.toList());
     }
