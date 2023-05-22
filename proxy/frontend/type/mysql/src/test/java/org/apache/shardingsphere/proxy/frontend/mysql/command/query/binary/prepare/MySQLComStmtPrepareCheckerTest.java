@@ -18,6 +18,12 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prepare;
 
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XABeginStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XACommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XAEndStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XAPrepareStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARecoveryStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLAnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCacheIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLChecksumTableStatement;
@@ -67,7 +73,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQL
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStartSlaveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStopSlaveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXAStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -91,9 +96,10 @@ class MySQLComStmtPrepareCheckerTest {
                 new MySQLShowErrorsStatement(), new MySQLShowBinlogEventsStatement(), new MySQLShowCreateProcedureStatement(), new MySQLShowCreateFunctionStatement(),
                 new MySQLShowCreateEventStatement(),
                 new MySQLShowCreateTableStatement(), new MySQLShowCreateViewStatement(), new MySQLShowBinaryLogsStatement(), new MySQLShowStatusStatement(), new MySQLStartSlaveStatement(),
-                new MySQLStopSlaveStatement(), new MySQLTruncateStatement(), new MySQLUninstallPluginStatement(), new MySQLUpdateStatement(), new MySQLXAStatement("END", null));
+                new MySQLStopSlaveStatement(), new MySQLTruncateStatement(), new MySQLUninstallPluginStatement(), new MySQLUpdateStatement(),
+                new XABeginStatement("1"), new XAPrepareStatement("1"), new XACommitStatement("1"), new XARollbackStatement("1"), new XAEndStatement("1"), new XARecoveryStatement());
         for (SQLStatement each : sqlStatements) {
-            assertTrue(MySQLComStmtPrepareChecker.isStatementAllowed(each));
+            assertTrue(MySQLComStmtPrepareChecker.isAllowedStatement(each));
         }
     }
 }

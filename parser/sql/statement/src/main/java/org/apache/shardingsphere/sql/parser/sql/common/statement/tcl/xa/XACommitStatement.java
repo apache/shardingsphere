@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * XA statement.
+ * XA commit statement.
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class XAStatement extends AbstractSQLStatement implements TCLStatement {
-    
-    private final String operator;
+public final class XACommitStatement extends AbstractSQLStatement implements XAStatement {
     
     private final String xid;
 }

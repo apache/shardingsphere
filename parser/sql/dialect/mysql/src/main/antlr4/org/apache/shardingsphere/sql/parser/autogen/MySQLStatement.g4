@@ -114,7 +114,12 @@ execute
     | renameTable
     | uninstall
     | unlock
-    | xa
+    | xaBegin
+    | xaPrepare
+    | xaCommit
+    | xaRollback
+    | xaEnd
+    | xaRecovery
     | createLoadableFunction
     | createTablespace
     | alterTablespace

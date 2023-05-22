@@ -15,17 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * MySQL XA statement.
+ * XA rollback statement.
  */
-public final class MySQLXAStatement extends XAStatement implements MySQLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class XARollbackStatement extends AbstractSQLStatement implements XAStatement {
     
-    public MySQLXAStatement(final String operator, final String xid) {
-        super(operator, xid);
-    }
+    private final String xid;
 }

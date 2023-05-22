@@ -20,6 +20,12 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XABeginStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XACommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XAEndStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XAPrepareStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARecoveryStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLAnalyzeTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCacheIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLChecksumTableStatement;
@@ -69,7 +75,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQL
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStartSlaveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.rl.MySQLStopSlaveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXAStatement;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -83,10 +88,10 @@ import java.util.HashSet;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLComStmtPrepareChecker {
     
-    private static final Collection<Class<?>> SQL_STATEMENTS_ALLOWED = new HashSet<>();
+    private static final Collection<Class<?>> ALLOWED_SQL_STATEMENTS = new HashSet<>();
     
     static {
-        SQL_STATEMENTS_ALLOWED.addAll(Arrays.asList(MySQLAlterTableStatement.class, MySQLAlterUserStatement.class, MySQLAnalyzeTableStatement.class,
+        ALLOWED_SQL_STATEMENTS.addAll(Arrays.asList(MySQLAlterTableStatement.class, MySQLAlterUserStatement.class, MySQLAnalyzeTableStatement.class,
                 MySQLCacheIndexStatement.class, MySQLCallStatement.class, MySQLChangeMasterStatement.class, MySQLChecksumTableStatement.class, MySQLCommitStatement.class,
                 MySQLCreateIndexStatement.class, MySQLDropIndexStatement.class, MySQLCreateDatabaseStatement.class, MySQLDropDatabaseStatement.class,
                 MySQLCreateTableStatement.class, MySQLDropTableStatement.class, MySQLCreateUserStatement.class, MySQLRenameUserStatement.class, MySQLDropUserStatement.class,
@@ -96,7 +101,8 @@ public final class MySQLComStmtPrepareChecker {
                 MySQLRevokeStatement.class, MySQLSelectStatement.class, MySQLSetStatement.class, MySQLShowWarningsStatement.class, MySQLShowErrorsStatement.class,
                 MySQLShowBinlogEventsStatement.class, MySQLShowCreateProcedureStatement.class, MySQLShowCreateFunctionStatement.class, MySQLShowCreateEventStatement.class,
                 MySQLShowCreateTableStatement.class, MySQLShowCreateViewStatement.class, MySQLShowBinaryLogsStatement.class, MySQLShowStatusStatement.class,
-                MySQLStartSlaveStatement.class, MySQLStopSlaveStatement.class, MySQLTruncateStatement.class, MySQLUninstallPluginStatement.class, MySQLUpdateStatement.class, MySQLXAStatement.class));
+                MySQLStartSlaveStatement.class, MySQLStopSlaveStatement.class, MySQLTruncateStatement.class, MySQLUninstallPluginStatement.class, MySQLUpdateStatement.class,
+                XABeginStatement.class, XAPrepareStatement.class, XACommitStatement.class, XARollbackStatement.class, XAEndStatement.class, XARecoveryStatement.class));
     }
     
     /**
@@ -105,7 +111,7 @@ public final class MySQLComStmtPrepareChecker {
      * @param sqlStatement SQL statement
      * @return SQL statement is allowed or not
      */
-    public static boolean isStatementAllowed(final SQLStatement sqlStatement) {
-        return SQL_STATEMENTS_ALLOWED.contains(sqlStatement.getClass());
+    public static boolean isAllowedStatement(final SQLStatement sqlStatement) {
+        return ALLOWED_SQL_STATEMENTS.contains(sqlStatement.getClass());
     }
 }
