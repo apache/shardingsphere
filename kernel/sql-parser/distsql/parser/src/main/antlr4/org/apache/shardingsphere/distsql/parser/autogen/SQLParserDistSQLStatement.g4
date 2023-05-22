@@ -22,5 +22,5 @@ import Symbol, RALStatement;
 execute
     : (showSQLParserRule
     | alterSQLParserRule
-    ) SEMI?
+    ) SEMI_? EOF
     ;

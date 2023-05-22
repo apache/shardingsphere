@@ -54,5 +54,5 @@ execute
     | alterMigrationRule
     | lockCluster
     | unlockCluster
-    ) SEMI?
+    ) SEMI_? EOF
     ;
