@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpe
 public final class SQLFederationDriverRegisterException extends ConnectionSQLException {
     
     private static final long serialVersionUID = -2853184636838700216L;
-
+    
     public SQLFederationDriverRegisterException(final String message) {
         super(XOpenSQLState.CONNECTION_EXCEPTION, 1, "Can not register SQL federation driver, reason is: %s", message);
     }
