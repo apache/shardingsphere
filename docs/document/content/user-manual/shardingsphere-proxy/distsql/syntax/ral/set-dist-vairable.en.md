@@ -20,9 +20,6 @@ proxyPropertyName ::=
 proxyPropertyValue ::=
   literal
 
-transactionType ::=
-  string
-
 agentPluginsEnabled ::=
   boolean
 ```
