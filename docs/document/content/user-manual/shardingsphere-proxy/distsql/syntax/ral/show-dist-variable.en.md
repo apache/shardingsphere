@@ -63,16 +63,14 @@ mysql> SHOW DIST VARIABLES;
 | proxy_frontend_ssl_cipher             |                 |
 | proxy_frontend_ssl_enabled            | false           |
 | proxy_frontend_ssl_version            | TLSv1.2,TLSv1.3 |
-| proxy_instance_type                   | Proxy           |
 | proxy_meta_data_collector_enabled     | true            |
 | proxy_netty_backlog                   | 1024            |
 | sql_federation_type                   | NONE            |
 | sql_show                              | false           |
 | sql_simple                            | false           |
 | system_log_level                      | INFO            |
-| transaction_type                      | LOCAL           |
 +---------------------------------------+-----------------+
-23 rows in set (0.01 sec)
+21 rows in set (0.01 sec)
 ```
 - Query specified system variable configuration of `PROXY`
 
