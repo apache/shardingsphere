@@ -50,7 +50,7 @@ public final class TelephoneRandomReplaceAlgorithm implements MaskAlgorithm<Obje
     }
     
     private List<String> createNetworkNumbers(final Properties props) {
-        String networkNumbers = props.getProperty(NETWORK_NUMBERS, initDefaultNetworkNumbers());
+        String networkNumbers = props.containsKey(NETWORK_NUMBERS) && !Strings.isNullOrEmpty(props.getProperty(NETWORK_NUMBERS)) ? props.getProperty(NETWORK_NUMBERS) : initDefaultNetworkNumbers();
         return Splitter.on(",").trimResults().splitToList(networkNumbers).stream().map(this::getNetworkNumber).distinct().collect(Collectors.toList());
     }
     
