@@ -33,7 +33,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
@@ -51,13 +50,13 @@ class OpenGaussSystemCatalogAdminQueryExecutorTest {
     void assertExecuteSelectFromPgDatabase() throws SQLException {
         when(ProxyContext.getInstance()).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Arrays.asList("foo", "bar", "sharding_db", "other_db"));
-        OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select datname, datcompatibility from pg_database where datname = 'sharding_db'");
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getProtocolType()).thenReturn(new OpenGaussDatabaseType());
         ShardingSphereRuleMetaData shardingSphereRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
         when(shardingSphereRuleMetaData.getSingleRule(AuthorityRule.class)).thenReturn(mock(AuthorityRule.class));
         when(shardingSphereRuleMetaData.getSingleRule(AuthorityRule.class).getConfiguration()).thenReturn(mock(AuthorityRuleConfiguration.class));
+        OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select datname, datcompatibility from pg_database where datname = 'sharding_db'");
         executor.execute(connectionSession);
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(2));
