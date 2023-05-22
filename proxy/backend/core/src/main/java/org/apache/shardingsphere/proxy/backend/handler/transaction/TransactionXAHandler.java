@@ -27,11 +27,14 @@ import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XABeginStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XACommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARecoveryStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARollbackStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XAStatement;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XATransactionNestedBeginException;
 
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collections;
 
 /**
@@ -41,14 +44,14 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public final class TransactionXAHandler implements ProxyBackendHandler {
     
-    private final XAStatement tclStatement;
+    private final XAStatement xaStatement;
     
     private final ConnectionSession connectionSession;
     
     private final DatabaseConnector backendHandler;
     
     public TransactionXAHandler(final SQLStatementContext sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
-        tclStatement = (XAStatement) sqlStatementContext.getSqlStatement();
+        xaStatement = (XAStatement) sqlStatementContext.getSqlStatement();
         this.connectionSession = connectionSession;
         backendHandler = DatabaseConnectorFactory.getInstance().newInstance(
                 new QueryContext(sqlStatementContext, sql, Collections.emptyList()), connectionSession.getDatabaseConnectionManager(), false);
@@ -56,30 +59,23 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
     
     @Override
     public boolean next() throws SQLException {
-        return "RECOVER".equals(tclStatement.getOperator()) && backendHandler.next();
+        return xaStatement instanceof XARecoveryStatement && backendHandler.next();
     }
     
     @Override
     public QueryResponseRow getRowData() throws SQLException {
-        return "RECOVER".equals(tclStatement.getOperator()) ? backendHandler.getRowData() : new QueryResponseRow(Collections.emptyList());
+        return xaStatement instanceof XARecoveryStatement ? backendHandler.getRowData() : new QueryResponseRow(Collections.emptyList());
     }
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        switch (tclStatement.getOperator()) {
-            case "START":
-            case "BEGIN":
-                return begin();
-            case "END":
-            case "PREPARE":
-            case "RECOVER":
-                return backendHandler.execute();
-            case "COMMIT":
-            case "ROLLBACK":
-                return finish();
-            default:
-                throw new SQLFeatureNotSupportedException(String.format("unrecognized XA statement `%s`", tclStatement.getOperator()));
+        if (xaStatement instanceof XABeginStatement) {
+            return begin();
         }
+        if (xaStatement instanceof XACommitStatement || xaStatement instanceof XARollbackStatement) {
+            return finish();
+        }
+        return backendHandler.execute();
     }
     
     /*

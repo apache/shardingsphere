@@ -30,7 +30,12 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetAuto
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.TableLockContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UnlockContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaBeginContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaCommitContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaEndContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaPrepareContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaRecoveryContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.XaRollbackContext;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.OperationScope;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionAccessType;
@@ -38,6 +43,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolatio
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.tcl.AutoCommitSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XABeginStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XACommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XAEndStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XAPrepareStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARecoveryStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XARollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLCommitStatement;
@@ -48,7 +59,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetAutoCommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLSetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLUnlockStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLXAStatement;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -142,8 +152,33 @@ public final class MySQLTCLStatementVisitor extends MySQLStatementVisitor implem
     }
     
     @Override
-    public ASTNode visitXa(final XaContext ctx) {
-        return new MySQLXAStatement(ctx.getChild(1).getText().toUpperCase(), null == ctx.xid() ? null : ctx.xid().getText());
+    public ASTNode visitXaBegin(final XaBeginContext ctx) {
+        return new XABeginStatement(ctx.xid().getText());
+    }
+    
+    @Override
+    public ASTNode visitXaPrepare(final XaPrepareContext ctx) {
+        return new XAPrepareStatement(ctx.xid().getText());
+    }
+    
+    @Override
+    public ASTNode visitXaCommit(final XaCommitContext ctx) {
+        return new XACommitStatement(ctx.xid().getText());
+    }
+    
+    @Override
+    public ASTNode visitXaRollback(final XaRollbackContext ctx) {
+        return new XARollbackStatement(ctx.xid().getText());
+    }
+    
+    @Override
+    public ASTNode visitXaEnd(final XaEndContext ctx) {
+        return new XAEndStatement(ctx.xid().getText());
+    }
+    
+    @Override
+    public ASTNode visitXaRecovery(final XaRecoveryContext ctx) {
+        return new XARecoveryStatement();
     }
     
     @Override
