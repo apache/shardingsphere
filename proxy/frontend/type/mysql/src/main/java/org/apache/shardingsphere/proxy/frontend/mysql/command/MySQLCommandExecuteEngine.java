@@ -46,7 +46,7 @@ import java.util.Optional;
 /**
  * Command execute engine for MySQL.
  */
-public final class MySQLCommandExecuteEngine implements CommandExecuteEngine<MySQLPacket> {
+public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
     
     @Override
     public MySQLCommandPacketType getCommandPacketType(final PacketPayload payload) {
@@ -71,7 +71,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine<MyS
     }
     
     @Override
-    public Optional<MySQLPacket> getOtherPacket(final ConnectionSession connectionSession) {
+    public Optional<DatabasePacket<?>> getOtherPacket(final ConnectionSession connectionSession) {
         return Optional.empty();
     }
     

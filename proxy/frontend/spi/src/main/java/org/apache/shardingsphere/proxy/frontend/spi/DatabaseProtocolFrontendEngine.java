@@ -59,7 +59,7 @@ public interface DatabaseProtocolFrontendEngine<T extends DatabasePacket<?>> ext
      * 
      * @return command execute engine
      */
-    CommandExecuteEngine<T> getCommandExecuteEngine();
+    CommandExecuteEngine getCommandExecuteEngine();
     
     /**
      * Release resource.
