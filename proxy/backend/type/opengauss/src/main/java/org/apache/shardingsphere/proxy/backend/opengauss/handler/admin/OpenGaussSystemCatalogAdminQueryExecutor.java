@@ -100,12 +100,12 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
         Collection<String> allDatabaseNames = ProxyContext.getInstance().getAllDatabaseNames();
         OpenGaussDatabase[] openGaussDatabases = new OpenGaussDatabase[allDatabaseNames.size()];
         List<OpenGaussTables> openGaussTables = new LinkedList<>();
-        Set<OpenGaussRoles> openGaussRoles = new HashSet<>();
+        List<OpenGaussRoles> openGaussRoles = new LinkedList<>();
+        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class)
+                .getConfiguration().getUsers().stream().map(user -> user.getGrantee().getUsername())
+                .forEach(userName -> openGaussRoles.add(new OpenGaussRoles(userName)));
         int index = 0;
         for (String databaseName : allDatabaseNames) {
-            ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class)
-                    .getConfiguration().getUsers().stream().map(user -> user.getGrantee().getUsername())
-                    .forEach(userName -> openGaussRoles.add(new OpenGaussRoles(userName)));
             for (Map.Entry<String, ShardingSphereSchema> schema : ProxyContext.getInstance().getDatabase(databaseName).getSchemas().entrySet()) {
                 String schemaName = schema.getKey();
                 for (String tableName : schema.getValue().getAllTableNames()) {
