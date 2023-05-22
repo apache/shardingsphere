@@ -29,9 +29,9 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLReadyForQueryPacket implements PostgreSQLPacket {
     
-    public static final PostgreSQLReadyForQueryPacket NOT_IN_TRANSACTION = new PostgreSQLReadyForQueryPacket((byte) 'I');
-    
     public static final PostgreSQLReadyForQueryPacket IN_TRANSACTION = new PostgreSQLReadyForQueryPacket((byte) 'T');
+    
+    public static final PostgreSQLReadyForQueryPacket NOT_IN_TRANSACTION = new PostgreSQLReadyForQueryPacket((byte) 'I');
     
     public static final PostgreSQLReadyForQueryPacket TRANSACTION_FAILED = new PostgreSQLReadyForQueryPacket((byte) 'E');
     
