@@ -12,7 +12,7 @@ The `SET DIST VARIABLE` syntax is used to set system variables.
 {{% tab name="Grammar" %}}
 ```sql
 SetDistVariable ::=
-  'SET' 'DIST' 'VARIABLE' (proxyPropertyName '=' proxyPropertyValue | 'transaction_type' '=' transactionType | 'agent_plugins_enable' '=' agentPluginsEnable)
+  'SET' 'DIST' 'VARIABLE' (proxyPropertyName '=' proxyPropertyValue | 'agent_plugins_enable' '=' agentPluginsEnable)
 
 proxyPropertyName ::= 
   identifier
@@ -36,8 +36,6 @@ agentPluginsEnable ::=
 
 - `proxy_property_name` is one of [properties configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/) of `PROXY`, name is split by underscore
 
-- `transaction_type` is use to set transaction types for current connection, supports `LOCAL`, `XA`, `BASE`
-
 - `agent_plugins_enable` is use to set the `agent` plugins enable status, the default value is `FALSE`
 
 - `system_log_level` is the system log level, only affects the log printing of `PROXY`, the default value is `INFO`
@@ -48,12 +46,6 @@ agentPluginsEnable ::=
 
 ```sql
 SET DIST VARIABLE sql_show = true;
-```
-
-- Set transaction type for current connection
-
-```sql
-SET DIST VARIABLE transaction_type = “XA”;
 ```
 
 - Set `agent` plugin enable status
