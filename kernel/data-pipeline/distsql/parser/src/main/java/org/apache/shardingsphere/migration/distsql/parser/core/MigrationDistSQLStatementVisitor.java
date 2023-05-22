@@ -140,7 +140,7 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     }
     
     private String getIdentifierValue(final ParseTree context) {
-        return null == context ? null : new IdentifierValue(context.getText()).getValue();
+        return new IdentifierValue(context.getText()).getValue();
     }
     
     @Override

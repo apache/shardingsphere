@@ -53,7 +53,5 @@ public final class SubqueryProjectionSegment implements ProjectionSegment, Alias
     @Override
     public int getStopIndex() {
         return subquery.getStopIndex();
-        // TODO
-        // return null == alias ? alias.getStopIndex() : column.getStopIndex();
     }
 }
