@@ -20,6 +20,8 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sys
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
+import org.apache.shardingsphere.dialect.mysql.exception.ErrorGlobalVariableException;
+import org.apache.shardingsphere.dialect.mysql.exception.ErrorLocalVariableException;
 import org.apache.shardingsphere.dialect.mysql.exception.IncorrectGlobalLocalVariableException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.provider.TransactionIsolationValueProvider;
@@ -88,19 +90,19 @@ public enum MySQLSystemVariable {
     
     BINLOG_CACHE_SIZE(Flag.GLOBAL, "32768"),
     
-    // BINLOG_CHECKSUM(Flag.GLOBAL | Flag.PERSIST_AS_READ_ONLY, "TODO"),
+    BINLOG_CHECKSUM(Flag.GLOBAL | Flag.PERSIST_AS_READ_ONLY, "CRC32"),
     
     BINLOG_DIRECT_NON_TRANSACTIONAL_UPDATES(Flag.SESSION, "0"),
     
     BINLOG_ENCRYPTION(Flag.GLOBAL | Flag.PERSIST_AS_READ_ONLY, "0"),
     
-    // BINLOG_ERROR_ACTION(Flag.GLOBAL, "TODO"),
+    BINLOG_ERROR_ACTION(Flag.GLOBAL, "ABORT_SERVER"),
     
     BINLOG_EXPIRE_LOGS_AUTO_PURGE(Flag.GLOBAL, "1"),
     
     BINLOG_EXPIRE_LOGS_SECONDS(Flag.GLOBAL, "2592000"),
     
-    // BINLOG_FORMAT(Flag.SESSION, "TODO"),
+    BINLOG_FORMAT(Flag.SESSION, "ROW"),
     
     BINLOG_GROUP_COMMIT_SYNC_DELAY(Flag.GLOBAL, "0"),
     
@@ -116,11 +118,11 @@ public enum MySQLSystemVariable {
     
     BINLOG_ROW_EVENT_MAX_SIZE(Flag.GLOBAL | Flag.READONLY, "8192"),
     
-    // BINLOG_ROW_IMAGE(Flag.SESSION, "TODO"),
+    BINLOG_ROW_IMAGE(Flag.SESSION, "FULL"),
     
-    // BINLOG_ROW_METADATA(Flag.GLOBAL, "TODO"),
+    BINLOG_ROW_METADATA(Flag.GLOBAL, "MINIMAL"),
     
-    // BINLOG_ROW_VALUE_OPTIONS(Flag.SESSION, "TODO"),
+    BINLOG_ROW_VALUE_OPTIONS(Flag.SESSION, ""),
     
     BINLOG_ROWS_QUERY_LOG_EVENTS(Flag.SESSION, "0"),
     
@@ -132,9 +134,9 @@ public enum MySQLSystemVariable {
     
     BINLOG_TRANSACTION_DEPENDENCY_HISTORY_SIZE(Flag.GLOBAL, "25000"),
     
-    // BINLOG_TRANSACTION_DEPENDENCY_TRACKING(Flag.GLOBAL, "TODO"),
+    BINLOG_TRANSACTION_DEPENDENCY_TRACKING(Flag.GLOBAL, "COMMIT_ORDER"),
     
-    // BLOCK_ENCRYPTION_MODE(Flag.SESSION, "TODO"),
+    BLOCK_ENCRYPTION_MODE(Flag.SESSION, "aes-128-ecb"),
     
     BUILD_ID(Flag.GLOBAL | Flag.READONLY, ""),
     
@@ -165,9 +167,9 @@ public enum MySQLSystemVariable {
     
     COLLATION_SERVER(Flag.SESSION, "utf8mb4_unicode_ci"),
     
-    // COMPLETION_TYPE(Flag.SESSION, "TODO"),
+    COMPLETION_TYPE(Flag.SESSION, "NO_CHAIN"),
     
-    // CONCURRENT_INSERT(Flag.GLOBAL, "TODO"),
+    CONCURRENT_INSERT(Flag.GLOBAL, "AUTO"),
     
     CONNECT_TIMEOUT(Flag.GLOBAL, "10"),
     
@@ -191,7 +193,7 @@ public enum MySQLSystemVariable {
     
     DEFAULT_AUTHENTICATION_PLUGIN(Flag.GLOBAL | Flag.READONLY, "caching_sha2_password"),
     
-    DEFAULT_COLLATION_FOR_UTF8MB4(Flag.SESSION, "�"),
+    DEFAULT_COLLATION_FOR_UTF8MB4(Flag.SESSION, "utf8mb4_unicode_ci"),
     
     DEFAULT_PASSWORD_LIFETIME(Flag.GLOBAL, "0"),
     
@@ -203,7 +205,7 @@ public enum MySQLSystemVariable {
     
     DEFAULT_WEEK_FORMAT(Flag.SESSION, "0"),
     
-    // DELAY_KEY_WRITE(Flag.GLOBAL, "TODO"),
+    DELAY_KEY_WRITE(Flag.GLOBAL, "ON"),
     
     DELAYED_INSERT_LIMIT(Flag.GLOBAL, "100"),
     
@@ -225,7 +227,7 @@ public enum MySQLSystemVariable {
     
     ERROR_COUNT(Flag.ONLY_SESSION | Flag.READONLY, "0"),
     
-    // EVENT_SCHEDULER(Flag.GLOBAL, "TODO"),
+    EVENT_SCHEDULER(Flag.GLOBAL, "ON"),
     
     EXPIRE_LOGS_DAYS(Flag.GLOBAL, "0"),
     
@@ -1105,16 +1107,29 @@ public enum MySQLSystemVariable {
      * @return value
      */
     public String getValue(final Scope scope, final ConnectionSession connectionSession) {
-        validateScope(scope);
+        validateGetScope(scope);
         return variableValueProvider.get(scope, connectionSession, this);
     }
     
-    private void validateScope(final Scope scope) {
+    private void validateGetScope(final Scope scope) {
         if (Scope.GLOBAL == scope) {
             ShardingSpherePreconditions.checkState(0 == (Flag.ONLY_SESSION & scope()), () -> new IncorrectGlobalLocalVariableException(name().toLowerCase(), Scope.SESSION.name()));
         }
         if (Scope.SESSION == scope) {
             ShardingSpherePreconditions.checkState(0 != ((Flag.SESSION | Flag.ONLY_SESSION) & scope()), () -> new IncorrectGlobalLocalVariableException(name().toLowerCase(), Scope.GLOBAL.name()));
+        }
+    }
+    
+    /**
+     * Validate scope of set operation.
+     * @param scope set scope
+     */
+    public void validateSetTargetScope(final Scope scope) {
+        if (Scope.GLOBAL == scope) {
+            ShardingSpherePreconditions.checkState(0 == (Flag.ONLY_SESSION & scope()), () -> new ErrorLocalVariableException(name().toLowerCase()));
+        }
+        if (Scope.SESSION == scope) {
+            ShardingSpherePreconditions.checkState(0 != ((Flag.SESSION | Flag.ONLY_SESSION) & scope()), () -> new ErrorGlobalVariableException(name().toLowerCase()));
         }
     }
     
