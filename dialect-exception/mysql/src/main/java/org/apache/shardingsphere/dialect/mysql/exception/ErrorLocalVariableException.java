@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
+package org.apache.shardingsphere.dialect.mysql.exception;
 
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.MySQLSessionVariableHandler;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
-public final class TestFixtureSessionVariableHandler implements MySQLSessionVariableHandler {
+/**
+ * Error local variable exception.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class ErrorLocalVariableException extends SQLDialectException {
     
-    @Override
-    public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
-        connectionSession.setCurrentDatabase(assignValue);
-    }
+    private static final long serialVersionUID = -1999295415845348324L;
     
-    @Override
-    public String getType() {
-        return "test_fixture";
-    }
+    private final String variableName;
 }

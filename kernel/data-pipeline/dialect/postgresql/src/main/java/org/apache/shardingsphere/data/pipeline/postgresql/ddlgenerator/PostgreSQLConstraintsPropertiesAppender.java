@@ -200,12 +200,9 @@ public final class PostgreSQLConstraintsPropertiesAppender extends AbstractPostg
     private void setRemoteName(final Map<String, Object> foreignKey, final Collection<Map<String, Object>> columns) {
         Map<String, Object> params = new HashMap<>();
         params.put("tid", columns.iterator().next().get("references"));
-        Collection<Map<String, Object>> parents = executeByTemplate(params, "component/foreign_key/%s/get_parent.ftl");
-        for (Map<String, Object> each : parents) {
-            foreignKey.put("remote_schema", each.get("schema"));
-            foreignKey.put("remote_table", each.get("table"));
-            break;
-        }
+        Map<String, Object> parents = executeByTemplateForSingleRow(params, "component/foreign_key/%s/get_parent.ftl");
+        foreignKey.put("remote_schema", parents.get("schema"));
+        foreignKey.put("remote_table", parents.get("table"));
     }
     
     private Collection<Map<String, Object>> getForeignKeysCols(final Long tid, final Map<String, Object> foreignKeyProps) {

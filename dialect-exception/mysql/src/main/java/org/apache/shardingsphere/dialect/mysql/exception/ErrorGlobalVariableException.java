@@ -15,29 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums;
+package org.apache.shardingsphere.dialect.mysql.exception;
 
-import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * Variable enum.
+ * Error global variable exception.
  */
-public enum VariableEnum {
+@RequiredArgsConstructor
+@Getter
+public final class ErrorGlobalVariableException extends SQLDialectException {
     
-    CACHED_CONNECTIONS;
+    private static final long serialVersionUID = 8418631258139404282L;
     
-    /**
-     * Returns the variable constant of the specified variable name.
-     * 
-     * @param variableName variable name
-     * @return variable constant
-     * @throws UnsupportedVariableException unsupported variable exception
-     */
-    public static VariableEnum getValueOf(final String variableName) {
-        try {
-            return valueOf(variableName.toUpperCase());
-        } catch (final IllegalArgumentException ignored) {
-            throw new UnsupportedVariableException(variableName);
-        }
-    }
+    private final String variableName;
 }
