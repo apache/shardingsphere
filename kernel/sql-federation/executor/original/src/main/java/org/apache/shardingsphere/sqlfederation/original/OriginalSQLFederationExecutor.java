@@ -76,7 +76,7 @@ public final class OriginalSQLFederationExecutor implements SQLFederationExecuto
     private Connection connection;
     
     private PreparedStatement statement;
-
+    
     static {
         try {
             Class.forName(DRIVER_NAME);
