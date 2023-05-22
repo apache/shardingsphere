@@ -126,7 +126,7 @@ class BatchPreparedStatementExecutorTest {
     }
     
     private Map<String, DataSource> mockDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
         DataSource dataSource = mock(DataSource.class, RETURNS_DEEP_STUBS);
         result.put("ds_0", dataSource);
         result.put("ds_1", dataSource);

@@ -19,22 +19,17 @@ package org.apache.shardingsphere.proxy.frontend.ssl;
 
 import org.junit.jupiter.api.Test;
 
-import java.security.InvalidKeyException;
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.SignatureException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
-import java.util.Calendar;
+import java.time.Instant;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class SSLUtilsTest {
     
@@ -48,23 +43,12 @@ class SSLUtilsTest {
     }
     
     @Test
-    void assertGenerateSelfSignedX509Certificate() {
+    void assertGenerateSelfSignedX509Certificate() throws GeneralSecurityException {
         KeyPair keyPair = SSLUtils.generateRSAKeyPair();
         X509Certificate actual = SSLUtils.generateSelfSignedX509Certificate(keyPair);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.YEAR, 99);
-        try {
-            actual.checkValidity(new Date());
-            actual.checkValidity(calendar.getTime());
-        } catch (CertificateExpiredException | CertificateNotYetValidException ex) {
-            fail(ex);
-        }
-        try {
-            actual.verify(keyPair.getPublic());
-        } catch (CertificateException | NoSuchAlgorithmException | InvalidKeyException | NoSuchProviderException | SignatureException ex) {
-            fail(ex);
-        }
+        actual.checkValidity(new Date());
+        actual.checkValidity(Date.from(Instant.ofEpochMilli(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(365 * 99))));
+        actual.verify(keyPair.getPublic());
         assertThrows(SignatureException.class, () -> actual.verify(SSLUtils.generateRSAKeyPair().getPublic()));
     }
 }

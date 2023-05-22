@@ -58,10 +58,10 @@ public final class FetchDirectionToken extends SQLToken implements Substitutable
         if (DirectionType.isBackwardCountDirectionType(directionType)) {
             return " BACKWARD " + actualFetchCount + " ";
         }
-        if (DirectionType.ABSOLUTE_COUNT.equals(directionType)) {
+        if (DirectionType.ABSOLUTE_COUNT == directionType) {
             return " ABSOLUTE " + actualFetchCount + " ";
         }
-        if (DirectionType.RELATIVE_COUNT.equals(directionType)) {
+        if (DirectionType.RELATIVE_COUNT == directionType) {
             return " RELATIVE " + actualFetchCount + " ";
         }
         return directionType.getName();

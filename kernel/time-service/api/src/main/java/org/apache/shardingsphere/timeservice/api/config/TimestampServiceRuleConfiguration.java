@@ -15,21 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.type.database.provider;
+package org.apache.shardingsphere.timeservice.api.config;
 
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
+
+import java.util.Properties;
 
 /**
- * Datetime loading SQL provider.
+ * Timestamp service rule configuration.
  */
-@SingletonSPI
-public interface DatetimeLoadingSQLProvider extends TypedSPI {
+@RequiredArgsConstructor
+@Getter
+public final class TimestampServiceRuleConfiguration implements GlobalRuleConfiguration {
     
-    /**
-     * Get SQL for datetime loading.
-     *
-     * @return SQL for datetime loading
-     */
-    String getDatetimeLoadingSQL();
+    private final String type;
+    
+    private final Properties props;
 }

@@ -47,7 +47,7 @@ class AdvancedSQLFederationExecutorTest {
     
     @BeforeEach
     void init() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
+        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1F);
         tables.put("t_order_federate", createOrderTableMetaData());
         tables.put("t_user_info", createUserInfoTableMetaData());
         String schemaName = "federate_jdbc";

@@ -22,10 +22,12 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollecto
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -41,24 +43,24 @@ class AbstractExecuteLatencyHistogramAdviceTest {
     }
     
     @Test
-    void assertWithStatement() throws InterruptedException {
+    void assertWithStatement() {
         StatementExecuteLatencyHistogramAdvice advice = new StatementExecuteLatencyHistogramAdvice();
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
         Method method = mock(Method.class);
         advice.beforeMethod(targetObject, method, new Object[]{}, "FIXTURE");
-        Thread.sleep(200L);
+        Awaitility.await().pollDelay(200L, TimeUnit.MILLISECONDS).until(() -> true);
         advice.afterMethod(targetObject, method, new Object[]{}, null, "FIXTURE");
-        assertThat(Double.parseDouble(MetricsCollectorRegistry.get(config, "FIXTURE").toString()), greaterThanOrEqualTo(200d));
+        assertThat(Double.parseDouble(MetricsCollectorRegistry.get(config, "FIXTURE").toString()), greaterThanOrEqualTo(200D));
     }
     
     @Test
-    void assertWithPreparedStatement() throws InterruptedException {
+    void assertWithPreparedStatement() {
         PreparedStatementExecuteLatencyHistogramAdvice advice = new PreparedStatementExecuteLatencyHistogramAdvice();
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
         Method method = mock(Method.class);
         advice.beforeMethod(targetObject, method, new Object[]{}, "FIXTURE");
-        Thread.sleep(200L);
+        Awaitility.await().pollDelay(200L, TimeUnit.MILLISECONDS).until(() -> true);
         advice.afterMethod(targetObject, method, new Object[]{}, null, "FIXTURE");
-        assertThat(Double.parseDouble(MetricsCollectorRegistry.get(config, "FIXTURE").toString()), greaterThanOrEqualTo(200d));
+        assertThat(Double.parseDouble(MetricsCollectorRegistry.get(config, "FIXTURE").toString()), greaterThanOrEqualTo(200D));
     }
 }

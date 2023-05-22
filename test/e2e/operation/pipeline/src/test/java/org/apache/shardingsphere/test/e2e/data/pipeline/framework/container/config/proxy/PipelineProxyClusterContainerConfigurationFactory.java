@@ -51,7 +51,7 @@ public final class PipelineProxyClusterContainerConfigurationFactory {
     }
     
     private static Map<String, String> getMountedResource(final DatabaseType databaseType, final String storageContainerImage) {
-        Map<String, String> result = new HashMap<>(2, 1);
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.putAll(ProxyClusterContainerConfigurationFactory.newInstance().getMountedResources());
         if (DatabaseTypeUtils.isMySQL(databaseType)) {
             String majorVersion = DatabaseTypeUtils.parseMajorVersion(storageContainerImage);

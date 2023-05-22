@@ -53,7 +53,7 @@ class TransactionRuleBuilderTest {
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
+        Map<String, DataSource> result = new HashMap<>(2, 1F);
         result.put("not_change", new MockedDataSource());
         result.put("replace", new MockedDataSource());
         return result;

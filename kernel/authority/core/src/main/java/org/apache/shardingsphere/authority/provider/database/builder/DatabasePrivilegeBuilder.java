@@ -67,7 +67,7 @@ public final class DatabasePrivilegeBuilder {
     
     private static Map<ShardingSphereUser, ShardingSpherePrivileges> buildPrivileges(final Collection<ShardingSphereUser> users, final String mappingProp) {
         Map<ShardingSphereUser, Collection<String>> userDatabaseMappings = convertDatabases(mappingProp);
-        Map<ShardingSphereUser, ShardingSpherePrivileges> result = new HashMap<>(users.size(), 1);
+        Map<ShardingSphereUser, ShardingSpherePrivileges> result = new HashMap<>(users.size(), 1F);
         users.forEach(each -> result.put(each, new DatabasePermittedPrivileges(new HashSet<>(getUserDatabases(each, userDatabaseMappings)))));
         return result;
     }
@@ -80,7 +80,7 @@ public final class DatabasePrivilegeBuilder {
      */
     private static Map<ShardingSphereUser, Collection<String>> convertDatabases(final String mappingProp) {
         String[] mappings = mappingProp.split(",");
-        Map<ShardingSphereUser, Collection<String>> result = new HashMap<>(mappings.length, 1);
+        Map<ShardingSphereUser, Collection<String>> result = new HashMap<>(mappings.length, 1F);
         Arrays.asList(mappings).forEach(each -> {
             String[] userDatabasePair = each.trim().split("=");
             String yamlUser = userDatabasePair[0];

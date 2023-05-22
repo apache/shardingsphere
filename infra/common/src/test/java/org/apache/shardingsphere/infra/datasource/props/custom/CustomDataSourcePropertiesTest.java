@@ -45,7 +45,7 @@ class CustomDataSourcePropertiesTest {
     }
     
     private Map<String, Object> createProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(8, 1);
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("user", "root");
         result.put("password", "root");
         result.put("closed", false);

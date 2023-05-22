@@ -146,7 +146,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     }
     
     private Map<String, Collection<DataNode>> createShardingTableDataNodes(final Map<String, TableRule> tableRules) {
-        Map<String, Collection<DataNode>> result = new HashMap<>(tableRules.size(), 1);
+        Map<String, Collection<DataNode>> result = new HashMap<>(tableRules.size(), 1F);
         for (TableRule each : tableRules.values()) {
             result.put(each.getLogicTable().toLowerCase(), each.getActualDataNodes());
         }
@@ -718,8 +718,8 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private boolean isJoinConditionContainsShardingColumns(final ShardingSphereSchema schema, final SelectStatementContext select,
                                                            final Collection<String> tableNames, final Collection<WhereSegment> whereSegments) {
-        Collection<String> databaseJoinConditionTables = new HashSet<>(tableNames.size());
-        Collection<String> tableJoinConditionTables = new HashSet<>(tableNames.size());
+        Collection<String> databaseJoinConditionTables = new HashSet<>(tableNames.size(), 1F);
+        Collection<String> tableJoinConditionTables = new HashSet<>(tableNames.size(), 1F);
         for (WhereSegment each : whereSegments) {
             Collection<AndPredicate> andPredicates = ExpressionExtractUtils.getAndPredicates(each.getExpr());
             if (andPredicates.size() > 1) {

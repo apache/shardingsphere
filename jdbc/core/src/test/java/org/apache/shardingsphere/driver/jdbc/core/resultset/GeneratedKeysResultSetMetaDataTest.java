@@ -94,7 +94,7 @@ class GeneratedKeysResultSetMetaDataTest {
     }
     
     @Test
-    void getSchemaName() throws SQLException {
+    void assertGetSchemaName() throws SQLException {
         assertThat(actualMetaData.getSchemaName(1), is(""));
     }
     

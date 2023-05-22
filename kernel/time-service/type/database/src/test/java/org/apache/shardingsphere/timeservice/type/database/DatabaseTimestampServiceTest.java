@@ -15,19 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.type.system;
+package org.apache.shardingsphere.timeservice.type.database;
 
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
+import org.apache.shardingsphere.test.util.PropertiesBuilder;
+import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
+import org.apache.shardingsphere.timeservice.spi.TimestampService;
 import org.junit.jupiter.api.Test;
+
+import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class SystemTimeServiceTest {
+class DatabaseTimestampServiceTest {
     
     @Test
-    void assertGetDatetime() {
+    void assertTimestamp() {
+        Properties props = PropertiesBuilder.build(
+                new Property("dataSourceClassName", "com.zaxxer.hikari.HikariDataSource"),
+                new Property("jdbcUrl", "jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL"),
+                new Property("username", "sa"),
+                new Property("password", ""),
+                new Property("maximumPoolSize", "1"));
         long currentTime = System.currentTimeMillis();
-        assertTrue(TypedSPILoader.getService(ShardingSphereTimeService.class, null).getDatetime().getTime() >= currentTime);
+        assertTrue(TypedSPILoader.getService(TimestampService.class, "Database", props).getTimestamp().getTime() >= currentTime);
     }
 }

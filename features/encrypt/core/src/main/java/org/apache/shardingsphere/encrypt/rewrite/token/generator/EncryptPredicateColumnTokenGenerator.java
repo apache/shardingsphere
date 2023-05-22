@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -62,7 +63,7 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
     }
     
     @Override
-    public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<ColumnSegment> columnSegments = Collections.emptyList();
         Collection<WhereSegment> whereSegments = Collections.emptyList();
         if (sqlStatementContext instanceof WhereAvailable) {
@@ -75,9 +76,9 @@ public final class EncryptPredicateColumnTokenGenerator implements CollectionSQL
         return generateSQLTokens(columnSegments, columnExpressionTableNames, whereSegments);
     }
     
-    private Collection<SubstitutableColumnNameToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments, final Map<String, String> columnExpressionTableNames,
-                                                                       final Collection<WhereSegment> whereSegments) {
-        Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
+    private Collection<SQLToken> generateSQLTokens(final Collection<ColumnSegment> columnSegments,
+                                                   final Map<String, String> columnExpressionTableNames, final Collection<WhereSegment> whereSegments) {
+        Collection<SQLToken> result = new LinkedHashSet<>();
         for (ColumnSegment each : columnSegments) {
             String tableName = Optional.ofNullable(columnExpressionTableNames.get(each.getExpression())).orElse("");
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);

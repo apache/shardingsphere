@@ -70,30 +70,55 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         while (in.readableBytes() >= 1 + MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH) {
             in.markReaderIndex();
             MySQLPacketPayload payload = new MySQLPacketPayload(in, ctx.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
-            checkError(payload);
+            checkPayload(payload);
             MySQLBinlogEventHeader binlogEventHeader = new MySQLBinlogEventHeader(payload, binlogContext.getChecksumLength());
-            // make sure event has complete body
-            if (in.readableBytes() < binlogEventHeader.getEventSize() - MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH) {
-                log.debug("the event body is not complete, event size={}, readable bytes={}", binlogEventHeader.getEventSize(), in.readableBytes());
-                in.resetReaderIndex();
+            if (checkEventIntegrity(in, binlogEventHeader)) {
+                AbstractBinlogEvent binlogEvent = decodeEvent(payload, binlogEventHeader);
+                if (null == binlogEvent) {
+                    skipChecksum(binlogEventHeader.getEventType(), in);
+                    return;
+                }
+                if (binlogEvent instanceof PlaceholderEvent) {
+                    out.add(binlogEvent);
+                } else {
+                    if (decodeWithTX) {
+                        processEventWithTX(binlogEvent, out);
+                    } else {
+                        processEventIgnoreTX(binlogEvent, out);
+                    }
+                }
+                decodeEvent(binlogEventHeader, payload).ifPresent(out::add);
+                skipChecksum(binlogEventHeader.getEventType(), in);
+            } else {
                 break;
             }
-            AbstractBinlogEvent binlogEvent = decodeEvent(payload, binlogEventHeader);
-            if (null == binlogEvent) {
-                skipChecksum(binlogEventHeader.getEventType(), in);
-                return;
-            }
-            if (binlogEvent instanceof PlaceholderEvent) {
-                out.add(binlogEvent);
-            } else {
-                if (decodeWithTX) {
-                    processEventWithTX(binlogEvent, out);
-                } else {
-                    processEventIgnoreTX(binlogEvent, out);
-                }
-            }
-            skipChecksum(binlogEventHeader.getEventType(), in);
         }
+    }
+    
+    private void checkPayload(final MySQLPacketPayload payload) {
+        int statusCode = payload.readInt1();
+        if (255 == statusCode) {
+            int errorNo = payload.readInt2();
+            payload.skipReserved(1);
+            String sqlState = payload.readStringFix(5);
+            throw new PipelineInternalException("Decode binlog event failed, errorCode: %d, sqlState: %s, errorMessage: %s", errorNo, sqlState, payload.readStringEOF());
+        }
+        if (0 != statusCode) {
+            log.debug("Illegal binlog status code {}, remaining packet \n{}", statusCode, readRemainPacket(payload));
+        }
+    }
+    
+    private String readRemainPacket(final MySQLPacketPayload payload) {
+        return ByteBufUtil.hexDump(payload.readStringFixByBytes(payload.getByteBuf().readableBytes()));
+    }
+    
+    private boolean checkEventIntegrity(final ByteBuf in, final MySQLBinlogEventHeader binlogEventHeader) {
+        if (in.readableBytes() < binlogEventHeader.getEventSize() - MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH) {
+            log.debug("the event body is not complete, event size={}, readable bytes={}", binlogEventHeader.getEventSize(), in.readableBytes());
+            in.resetReaderIndex();
+            return false;
+        }
+        return true;
     }
     
     private void processEventWithTX(final AbstractBinlogEvent binlogEvent, final List<Object> out) {
@@ -120,108 +145,82 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         out.add(binlogEvent);
     }
     
-    private AbstractBinlogEvent decodeEvent(final MySQLPacketPayload payload, final MySQLBinlogEventHeader binlogEventHeader) {
-        MySQLBinlogEventType eventType = MySQLBinlogEventType.valueOf(binlogEventHeader.getEventType()).orElse(MySQLBinlogEventType.UNKNOWN_EVENT);
-        switch (eventType) {
+    private Optional<AbstractBinlogEvent> decodeEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+        switch (MySQLBinlogEventType.valueOf(binlogEventHeader.getEventType()).orElse(MySQLBinlogEventType.UNKNOWN_EVENT)) {
             case ROTATE_EVENT:
                 decodeRotateEvent(binlogEventHeader, payload);
-                return null;
+                return Optional.empty();
             case FORMAT_DESCRIPTION_EVENT:
-                MySQLBinlogFormatDescriptionEventPacket formatDescriptionEventPacket = new MySQLBinlogFormatDescriptionEventPacket(binlogEventHeader, payload);
-                // MySQL mgr checksum length is 0, but the event ends up with 4 extra bytes, need to skip them.
-                int readableBytes = payload.getByteBuf().readableBytes();
-                if (binlogEventHeader.getChecksumLength() <= 0 && readableBytes > 0) {
-                    if (readableBytes != 4) {
-                        log.warn("the format description event has extra bytes, readable bytes length={}, binlogEventHeader={}, formatDescriptionEvent={}", readableBytes, binlogEventHeader,
-                                formatDescriptionEventPacket);
-                    }
-                    payload.getByteBuf().skipBytes(readableBytes);
-                }
-                return null;
+                decodeFormatDescriptionEvent(binlogEventHeader, payload);
+                return Optional.empty();
             case TABLE_MAP_EVENT:
                 decodeTableMapEvent(binlogEventHeader, payload);
-                return null;
+                return Optional.empty();
             case WRITE_ROWS_EVENT_V1:
             case WRITE_ROWS_EVENT_V2:
-                return decodeWriteRowsEventV2(binlogEventHeader, payload);
+                return Optional.of(decodeWriteRowsEventV2(binlogEventHeader, payload));
             case UPDATE_ROWS_EVENT_V1:
             case UPDATE_ROWS_EVENT_V2:
-                return decodeUpdateRowsEventV2(binlogEventHeader, payload);
+                return Optional.of(decodeUpdateRowsEventV2(binlogEventHeader, payload));
             case DELETE_ROWS_EVENT_V1:
             case DELETE_ROWS_EVENT_V2:
-                return decodeDeleteRowsEventV2(binlogEventHeader, payload);
+                return Optional.of(decodeDeleteRowsEventV2(binlogEventHeader, payload));
             case QUERY_EVENT:
                 return decodeQueryEvent(binlogEventHeader.getChecksumLength(), payload);
             case XID_EVENT:
                 return decodeXidEvent(binlogEventHeader, payload);
             default:
-                PlaceholderEvent result = createPlaceholderEvent(binlogEventHeader);
-                int remainDataLength = binlogEventHeader.getEventSize() + 1 - binlogEventHeader.getChecksumLength() - payload.getByteBuf().readerIndex();
-                if (remainDataLength > 0) {
-                    payload.skipReserved(remainDataLength);
-                }
-                return result;
-        }
-    }
-    
-    private void checkError(final MySQLPacketPayload payload) {
-        int statusCode = payload.readInt1();
-        if (255 == statusCode) {
-            int errorNo = payload.readInt2();
-            payload.skipReserved(1);
-            String sqlState = payload.readStringFix(5);
-            throw new PipelineInternalException(String.format("Decode binlog event failed, errorCode: %d, sqlState: %s, errorMessage: %s", errorNo, sqlState, payload.readStringEOF()));
-        }
-        if (0 != statusCode && log.isDebugEnabled()) {
-            log.debug("Illegal binlog status code {}, remaining packet \n{}", statusCode, readRemainPacket(payload));
-        }
-    }
-    
-    private String readRemainPacket(final MySQLPacketPayload payload) {
-        return ByteBufUtil.hexDump(payload.readStringFixByBytes(payload.getByteBuf().readableBytes()));
-    }
-    
-    private void skipChecksum(final int eventType, final ByteBuf in) {
-        if (0 < binlogContext.getChecksumLength() && MySQLBinlogEventType.FORMAT_DESCRIPTION_EVENT.getValue() != eventType) {
-            in.skipBytes(binlogContext.getChecksumLength());
+                return Optional.of(decodePlaceholderEvent(binlogEventHeader, payload));
         }
     }
     
     private void decodeRotateEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
-        MySQLBinlogRotateEventPacket rotateEventPacket = new MySQLBinlogRotateEventPacket(binlogEventHeader, payload);
-        binlogContext.setFileName(rotateEventPacket.getNextBinlogName());
+        MySQLBinlogRotateEventPacket packet = new MySQLBinlogRotateEventPacket(binlogEventHeader, payload);
+        binlogContext.setFileName(packet.getNextBinlogName());
+    }
+    
+    private void decodeFormatDescriptionEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+        MySQLBinlogFormatDescriptionEventPacket packet = new MySQLBinlogFormatDescriptionEventPacket(binlogEventHeader, payload);
+        // MySQL MGR checksum length is 0, but the event ends up with 4 extra bytes, need to skip them.
+        int readableBytes = payload.getByteBuf().readableBytes();
+        if (binlogEventHeader.getChecksumLength() <= 0 && readableBytes > 0) {
+            if (readableBytes != 4) {
+                log.warn("the format description event has extra bytes, readable bytes length={}, binlogEventHeader={}, formatDescriptionEvent={}", readableBytes, binlogEventHeader, packet);
+            }
+            payload.getByteBuf().skipBytes(readableBytes);
+        }
     }
     
     private void decodeTableMapEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
-        MySQLBinlogTableMapEventPacket tableMapEventPacket = new MySQLBinlogTableMapEventPacket(binlogEventHeader, payload);
-        binlogContext.putTableMapEvent(tableMapEventPacket.getTableId(), tableMapEventPacket);
+        MySQLBinlogTableMapEventPacket packet = new MySQLBinlogTableMapEventPacket(binlogEventHeader, payload);
+        binlogContext.putTableMapEvent(packet.getTableId(), packet);
     }
     
-    private DeleteRowsEvent decodeDeleteRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
-        MySQLBinlogRowsEventPacket rowsEventPacket = new MySQLBinlogRowsEventPacket(binlogEventHeader, payload);
-        rowsEventPacket.readRows(binlogContext.getTableMapEvent(rowsEventPacket.getTableId()), payload);
-        DeleteRowsEvent result = new DeleteRowsEvent();
-        initRowsEvent(result, binlogEventHeader, rowsEventPacket.getTableId());
-        result.setBeforeRows(rowsEventPacket.getRows());
+    private WriteRowsEvent decodeWriteRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+        MySQLBinlogRowsEventPacket packet = new MySQLBinlogRowsEventPacket(binlogEventHeader, payload);
+        packet.readRows(binlogContext.getTableMapEvent(packet.getTableId()), payload);
+        WriteRowsEvent result = new WriteRowsEvent();
+        initRowsEvent(result, binlogEventHeader, packet.getTableId());
+        result.setAfterRows(packet.getRows());
         return result;
     }
     
     private UpdateRowsEvent decodeUpdateRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
-        MySQLBinlogRowsEventPacket rowsEventPacket = new MySQLBinlogRowsEventPacket(binlogEventHeader, payload);
-        rowsEventPacket.readRows(binlogContext.getTableMapEvent(rowsEventPacket.getTableId()), payload);
+        MySQLBinlogRowsEventPacket packet = new MySQLBinlogRowsEventPacket(binlogEventHeader, payload);
+        packet.readRows(binlogContext.getTableMapEvent(packet.getTableId()), payload);
         UpdateRowsEvent result = new UpdateRowsEvent();
-        initRowsEvent(result, binlogEventHeader, rowsEventPacket.getTableId());
-        result.setBeforeRows(rowsEventPacket.getRows());
-        result.setAfterRows(rowsEventPacket.getRows2());
+        initRowsEvent(result, binlogEventHeader, packet.getTableId());
+        result.setBeforeRows(packet.getRows());
+        result.setAfterRows(packet.getRows2());
         return result;
     }
     
-    private WriteRowsEvent decodeWriteRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
-        MySQLBinlogRowsEventPacket rowsEventPacket = new MySQLBinlogRowsEventPacket(binlogEventHeader, payload);
-        rowsEventPacket.readRows(binlogContext.getTableMapEvent(rowsEventPacket.getTableId()), payload);
-        WriteRowsEvent result = new WriteRowsEvent();
-        initRowsEvent(result, binlogEventHeader, rowsEventPacket.getTableId());
-        result.setAfterRows(rowsEventPacket.getRows());
+    private DeleteRowsEvent decodeDeleteRowsEventV2(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+        MySQLBinlogRowsEventPacket packet = new MySQLBinlogRowsEventPacket(binlogEventHeader, payload);
+        packet.readRows(binlogContext.getTableMapEvent(packet.getTableId()), payload);
+        DeleteRowsEvent result = new DeleteRowsEvent();
+        initRowsEvent(result, binlogEventHeader, packet.getTableId());
+        result.setBeforeRows(packet.getRows());
         return result;
     }
     
@@ -232,6 +231,15 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         rowsEvent.setPosition(binlogEventHeader.getLogPos());
         rowsEvent.setTimestamp(binlogEventHeader.getTimestamp());
         rowsEvent.setServerId(binlogEventHeader.getServerId());
+    }
+    
+    private PlaceholderEvent decodePlaceholderEvent(final MySQLBinlogEventHeader binlogEventHeader, final MySQLPacketPayload payload) {
+        PlaceholderEvent result = createPlaceholderEvent(binlogEventHeader);
+        int remainDataLength = binlogEventHeader.getEventSize() + 1 - binlogEventHeader.getChecksumLength() - payload.getByteBuf().readerIndex();
+        if (remainDataLength > 0) {
+            payload.skipReserved(remainDataLength);
+        }
+        return result;
     }
     
     private QueryEvent decodeQueryEvent(final int checksumLength, final MySQLPacketPayload payload) {
@@ -263,5 +271,11 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
         result.setPosition(binlogEventHeader.getLogPos());
         result.setTimestamp(binlogEventHeader.getTimestamp());
         return result;
+    }
+    
+    private void skipChecksum(final int eventType, final ByteBuf in) {
+        if (0 < binlogContext.getChecksumLength() && MySQLBinlogEventType.FORMAT_DESCRIPTION_EVENT.getValue() != eventType) {
+            in.skipBytes(binlogContext.getChecksumLength());
+        }
     }
 }

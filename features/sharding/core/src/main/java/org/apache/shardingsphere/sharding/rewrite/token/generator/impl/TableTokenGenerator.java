@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -54,12 +55,12 @@ public final class TableTokenGenerator implements CollectionSQLTokenGenerator<SQ
     }
     
     @Override
-    public Collection<TableToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof TableAvailable ? generateSQLTokens((TableAvailable) sqlStatementContext) : Collections.emptyList();
     }
     
-    private Collection<TableToken> generateSQLTokens(final TableAvailable sqlStatementContext) {
-        Collection<TableToken> result = new LinkedList<>();
+    private Collection<SQLToken> generateSQLTokens(final TableAvailable sqlStatementContext) {
+        Collection<SQLToken> result = new LinkedList<>();
         for (SimpleTableSegment each : sqlStatementContext.getAllTables()) {
             TableNameSegment tableName = each.getTableName();
             if (shardingRule.findTableRule(tableName.getIdentifier().getValue()).isPresent()) {

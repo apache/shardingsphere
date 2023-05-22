@@ -90,7 +90,7 @@ class NacosRepositoryTest {
         List<Instance> instances = new LinkedList<>();
         for (int count = 1; count <= total; count++) {
             Instance instance = new Instance();
-            Map<String, String> metaDataMap = new HashMap<>(2, 1);
+            Map<String, String> metaDataMap = new HashMap<>(2, 1F);
             metaDataMap.put(key, "value" + count);
             metaDataMap.put(NacosMetaDataUtils.UTC_ZONE_OFFSET.toString(), String.valueOf(count));
             instance.setMetadata(metaDataMap);
@@ -167,7 +167,7 @@ class NacosRepositoryTest {
         final String key = "/test/children/keys/ephemeral/1";
         final Instance instance = new Instance();
         instance.setEphemeral(true);
-        Map<String, String> metaDataMap = new HashMap<>(4, 1);
+        Map<String, String> metaDataMap = new HashMap<>(4, 1F);
         metaDataMap.put(PreservedMetadataKeys.HEART_BEAT_INTERVAL, String.valueOf(2000));
         metaDataMap.put(PreservedMetadataKeys.HEART_BEAT_TIMEOUT, String.valueOf(4000));
         metaDataMap.put(PreservedMetadataKeys.IP_DELETE_TIMEOUT, String.valueOf(6000));

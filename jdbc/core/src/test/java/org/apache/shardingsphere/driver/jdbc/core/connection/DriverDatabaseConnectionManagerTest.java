@@ -87,7 +87,7 @@ class DriverDatabaseConnectionManagerTest {
     }
     
     private Map<String, DataSource> mockDataSourceMap() throws SQLException {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
+        Map<String, DataSource> result = new HashMap<>(2, 1F);
         result.put("ds", new MockedDataSource());
         DataSource invalidDataSource = mock(DataSource.class);
         when(invalidDataSource.getConnection()).thenThrow(new SQLException());
@@ -104,7 +104,7 @@ class DriverDatabaseConnectionManagerTest {
     }
     
     private Map<String, Object> createProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1);
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("jdbcUrl", "jdbc:mysql://127.0.0.1:3306/demo_ds_0?serverTimezone=UTC&useSSL=false");
         result.put("username", "root");
         result.put("password", "123456");

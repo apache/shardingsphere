@@ -85,7 +85,7 @@ class PostgreSQLDataSourceCheckerTest {
     }
     
     @Test
-    void asserCheckNoPrivilege() throws SQLException {
+    void assertCheckNoPrivilege() throws SQLException {
         PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
         when(resultSet.getString("rolsuper")).thenReturn("f");
         when(resultSet.getString("rolreplication")).thenReturn("f");

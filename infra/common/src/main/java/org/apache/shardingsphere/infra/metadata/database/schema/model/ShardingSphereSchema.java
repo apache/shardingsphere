@@ -43,8 +43,8 @@ public final class ShardingSphereSchema {
     }
     
     public ShardingSphereSchema(final Map<String, ShardingSphereTable> tables, final Map<String, ShardingSphereView> views) {
-        this.tables = new ConcurrentHashMap<>(tables.size(), 1);
-        this.views = new ConcurrentHashMap<>(views.size(), 1);
+        this.tables = new ConcurrentHashMap<>(tables.size(), 1F);
+        this.views = new ConcurrentHashMap<>(views.size(), 1F);
         tables.forEach((key, value) -> this.tables.put(key.toLowerCase(), value));
         views.forEach((key, value) -> this.views.put(key.toLowerCase(), value));
     }

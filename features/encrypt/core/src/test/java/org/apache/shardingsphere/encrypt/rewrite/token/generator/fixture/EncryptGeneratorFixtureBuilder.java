@@ -77,7 +77,7 @@ public final class EncryptGeneratorFixtureBuilder {
      * @return created encrypt rule
      */
     public static EncryptRule createEncryptRule() {
-        Map<String, AlgorithmConfiguration> encryptors = new LinkedHashMap<>(2, 1);
+        Map<String, AlgorithmConfiguration> encryptors = new LinkedHashMap<>(2, 1F);
         encryptors.put("standard_encryptor", new AlgorithmConfiguration("CORE.FIXTURE", new Properties()));
         encryptors.put("assisted_encryptor", new AlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties()));
         encryptors.put("like_encryptor", new AlgorithmConfiguration("CORE.QUERY_LIKE.FIXTURE", new Properties()));

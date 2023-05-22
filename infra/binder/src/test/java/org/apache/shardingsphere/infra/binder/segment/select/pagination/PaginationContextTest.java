@@ -139,27 +139,27 @@ class PaginationContextTest {
     }
     
     @Test
-    void getRevisedRowCountForMySQL() {
+    void assertGetRevisedRowCountForMySQL() {
         getRevisedRowCount(new MySQLSelectStatement());
     }
     
     @Test
-    void getRevisedRowCountForOracle() {
+    void assertGetRevisedRowCountForOracle() {
         getRevisedRowCount(new OracleSelectStatement());
     }
     
     @Test
-    void getRevisedRowCountForPostgreSQL() {
+    void assertGetRevisedRowCountForPostgreSQL() {
         getRevisedRowCount(new PostgreSQLSelectStatement());
     }
     
     @Test
-    void getRevisedRowCountForSQL92() {
+    void assertGetRevisedRowCountForSQL92() {
         getRevisedRowCount(new SQL92SelectStatement());
     }
     
     @Test
-    void getRevisedRowCountForSQLServer() {
+    void assertGetRevisedRowCountForSQLServer() {
         getRevisedRowCount(new SQLServerSelectStatement());
     }
     
@@ -172,27 +172,27 @@ class PaginationContextTest {
     }
     
     @Test
-    void getRevisedRowCountWithMaxForMySQL() {
+    void assertGetRevisedRowCountWithMaxForMySQL() {
         getRevisedRowCountWithMax(new MySQLSelectStatement());
     }
     
     @Test
-    void getRevisedRowCountWithMaxForOracle() {
+    void assertGetRevisedRowCountWithMaxForOracle() {
         getRevisedRowCountWithMax(new OracleSelectStatement());
     }
     
     @Test
-    void getRevisedRowCountWithMaxForPostgreSQL() {
+    void assertGetRevisedRowCountWithMaxForPostgreSQL() {
         getRevisedRowCountWithMax(new PostgreSQLSelectStatement());
     }
     
     @Test
-    void getRevisedRowCountWithMaxForSQL92() {
+    void assertGetRevisedRowCountWithMaxForSQL92() {
         getRevisedRowCountWithMax(new SQL92SelectStatement());
     }
     
     @Test
-    void getRevisedRowCountWithMaxForSQLServer() {
+    void assertGetRevisedRowCountWithMaxForSQLServer() {
         getRevisedRowCountWithMax(new SQLServerSelectStatement());
     }
     

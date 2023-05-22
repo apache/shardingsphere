@@ -37,7 +37,7 @@ import java.util.Optional;
 public final class ShardingMetaDataReviseEntry implements MetaDataReviseEntry<ShardingRule> {
     
     @Override
-    public Optional<? extends SchemaTableAggregationReviser<ShardingRule>> getSchemaTableAggregationReviser(final ConfigurationProperties props) {
+    public Optional<SchemaTableAggregationReviser<ShardingRule>> getSchemaTableAggregationReviser(final ConfigurationProperties props) {
         return Optional.of(new ShardingSchemaTableAggregationReviser(props.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED)));
     }
     

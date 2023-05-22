@@ -56,7 +56,7 @@ class ShardingSphereResultSetUtilsTest {
         projections.add(new ColumnProjection(null, "col1", null));
         projections.add(new ColumnProjection(null, "col2", null));
         when(selectStatementContext.getProjectionsContext()).thenReturn(new ProjectionsContext(0, 0, false, projections));
-        Map<String, Integer> expected = new HashMap<>(2, 1);
+        Map<String, Integer> expected = new HashMap<>(2, 1F);
         expected.put("col1", 1);
         expected.put("col2", 2);
         Map<String, Integer> actual = ShardingSphereResultSetUtils.createColumnLabelAndIndexMap(selectStatementContext, null);

@@ -32,8 +32,10 @@ import java.util.Optional;
 
 /**
  * Command execute engine.
+ * 
+ * @param <T> type of database packet
  */
-public interface CommandExecuteEngine {
+public interface CommandExecuteEngine<T extends DatabasePacket<?>> {
     
     /**
      * Get command packet type.
@@ -70,7 +72,7 @@ public interface CommandExecuteEngine {
      * @param cause cause of error
      * @return error packet
      */
-    DatabasePacket<?> getErrorPacket(Exception cause);
+    T getErrorPacket(Exception cause);
     
     /**
      * Get other packet.
@@ -78,7 +80,7 @@ public interface CommandExecuteEngine {
      * @param connectionSession connection session
      * @return other packet
      */
-    Optional<DatabasePacket<?>> getOtherPacket(ConnectionSession connectionSession);
+    Optional<T> getOtherPacket(ConnectionSession connectionSession);
     
     /**
      * Write query data.

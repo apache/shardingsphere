@@ -20,13 +20,13 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.prep
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
+import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinitionFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPrepareOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
@@ -65,14 +65,14 @@ import java.util.stream.Collectors;
  * COM_STMT_PREPARE command executor for MySQL.
  */
 @RequiredArgsConstructor
-public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
+public final class MySQLComStmtPrepareExecutor implements CommandExecutor<MySQLPacket> {
     
     private final MySQLComStmtPreparePacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket<?>> execute() {
+    public Collection<MySQLPacket> execute() {
         failedIfContainsMultiStatements();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
@@ -97,8 +97,8 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         }
     }
     
-    private Collection<DatabasePacket<?>> createPackets(final SQLStatementContext sqlStatementContext, final int statementId, final MySQLServerPreparedStatement serverPreparedStatement) {
-        Collection<DatabasePacket<?>> result = new LinkedList<>();
+    private Collection<MySQLPacket> createPackets(final SQLStatementContext sqlStatementContext, final int statementId, final MySQLServerPreparedStatement serverPreparedStatement) {
+        Collection<MySQLPacket> result = new LinkedList<>();
         List<Projection> projections = getProjections(sqlStatementContext);
         int parameterCount = sqlStatementContext.getSqlStatement().getParameterCount();
         result.add(new MySQLComStmtPrepareOKPacket(statementId, projections.size(), parameterCount, 0));
@@ -119,12 +119,12 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         return sqlStatementContext instanceof SelectStatementContext ? ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections() : Collections.emptyList();
     }
     
-    private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final SQLStatementContext sqlStatementContext, final int characterSet,
-                                                                                   final MySQLServerPreparedStatement serverPreparedStatement) {
+    private Collection<MySQLPacket> createParameterColumnDefinition41Packets(final SQLStatementContext sqlStatementContext, final int characterSet,
+                                                                             final MySQLServerPreparedStatement serverPreparedStatement) {
         Map<ParameterMarkerSegment, ShardingSphereColumn> columnsOfParameterMarkers =
                 MySQLComStmtPrepareParameterMarkerExtractor.findColumnsOfParameterMarkers(sqlStatementContext.getSqlStatement(), getSchema(sqlStatementContext));
         Collection<ParameterMarkerSegment> parameterMarkerSegments = ((AbstractSQLStatement) sqlStatementContext.getSqlStatement()).getParameterMarkerSegments();
-        Collection<DatabasePacket<?>> result = new ArrayList<>(parameterMarkerSegments.size());
+        Collection<MySQLPacket> result = new ArrayList<>(parameterMarkerSegments.size());
         for (ParameterMarkerSegment each : parameterMarkerSegments) {
             ShardingSphereColumn column = columnsOfParameterMarkers.get(each);
             if (null != column) {
@@ -139,12 +139,12 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         return result;
     }
     
-    private Collection<DatabasePacket<?>> createProjectionColumnDefinition41Packets(final SelectStatementContext selectStatementContext, final int characterSet) {
+    private Collection<MySQLPacket> createProjectionColumnDefinition41Packets(final SelectStatementContext selectStatementContext, final int characterSet) {
         Collection<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
         ShardingSphereSchema schema = getSchema(selectStatementContext);
         Map<String, String> columnToTableMap = selectStatementContext.getTablesContext()
                 .findTableNamesByColumnProjection(projections.stream().filter(ColumnProjection.class::isInstance).map(ColumnProjection.class::cast).collect(Collectors.toList()), schema);
-        Collection<DatabasePacket<?>> result = new ArrayList<>(projections.size());
+        Collection<MySQLPacket> result = new ArrayList<>(projections.size());
         for (Projection each : projections) {
             // TODO Calculate column definition flag for other projection types
             if (each instanceof ColumnProjection) {

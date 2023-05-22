@@ -20,8 +20,8 @@ package org.apache.shardingsphere.sharding.rewrite.token;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.generator.impl.AggregationDistinctTokenGenerator;
-import org.apache.shardingsphere.sharding.rewrite.token.pojo.AggregationDistinctToken;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -30,8 +30,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -60,7 +60,7 @@ class AggregationDistinctTokenGeneratorTest {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getProjectionsContext().getAggregationDistinctProjections()).thenReturn(Collections.singletonList(aggregationDistinctProjection));
         AggregationDistinctTokenGenerator aggregationDistinctTokenGenerator = new AggregationDistinctTokenGenerator();
-        List<AggregationDistinctToken> generateSQLTokensResult = new ArrayList<>(aggregationDistinctTokenGenerator.generateSQLTokens(selectStatementContext));
+        List<SQLToken> generateSQLTokensResult = new ArrayList<>(aggregationDistinctTokenGenerator.generateSQLTokens(selectStatementContext));
         assertThat(generateSQLTokensResult.get(0).toString(), is(testDistinctInnerExpression + " AS " + testAlias));
         when(aggregationDistinctProjection.getAlias()).thenReturn(Optional.of("TEST_ERROR_ALIAS"));
         generateSQLTokensResult = new ArrayList<>(aggregationDistinctTokenGenerator.generateSQLTokens(selectStatementContext));

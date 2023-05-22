@@ -40,7 +40,7 @@ public final class RuleExportEngine {
      */
     public Map<String, Object> export(final Collection<String> keys) {
         Map<String, Object> exportMethods = rule.getExportData();
-        Map<String, Object> result = new HashMap<>(keys.size(), 1);
+        Map<String, Object> result = new HashMap<>(keys.size(), 1F);
         keys.forEach(each -> {
             if (exportMethods.containsKey(each)) {
                 result.put(each, exportMethods.get(each));

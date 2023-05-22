@@ -39,7 +39,7 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     @Override
     public Map<String, Object> getInvalidProperties() {
-        Map<String, Object> result = new HashMap<>(2, 1);
+        Map<String, Object> result = new HashMap<>(2, 1F);
         result.put("maxPoolSize", -1);
         result.put("minPoolSize", -1);
         return result;
@@ -47,7 +47,7 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     @Override
     public Map<String, String> getPropertySynonyms() {
-        Map<String, String> result = new HashMap<>(2, 1);
+        Map<String, String> result = new HashMap<>(2, 1F);
         result.put("maxPoolSize", "maxPoolSize");
         result.put("minPoolSize", "minPoolSize");
         return result;

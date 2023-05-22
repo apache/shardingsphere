@@ -45,7 +45,7 @@ class ShardingSphereYamlRepresenterTest {
         YamlConfigurationFixture actual = new YamlConfigurationFixture();
         actual.setValue("value");
         actual.setCollection(Arrays.asList("value1", "value2"));
-        Map<String, String> map = new LinkedHashMap<>(2, 1);
+        Map<String, String> map = new LinkedHashMap<>(2, 1F);
         map.put("key1", "value1");
         map.put("key2", "value2");
         actual.setMap(map);

@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.timeservice.type.database.provider.dialect;
 
-import org.apache.shardingsphere.timeservice.type.database.provider.DatetimeLoadingSQLProvider;
+import org.apache.shardingsphere.timeservice.type.database.provider.TimestampLoadingSQLProvider;
 
 /**
- * Datetime loading SQL provider for Oracle.
+ * Timestamp loading SQL provider for MySQL.
  */
-public final class OracleDatetimeLoadingSQLProvider implements DatetimeLoadingSQLProvider {
+public final class MySQLTimestampLoadingSQLProvider implements TimestampLoadingSQLProvider {
     
     @Override
-    public String getDatetimeLoadingSQL() {
-        return "SELECT sysdate FROM DUAL";
+    public String getTimestampLoadingSQL() {
+        return "SELECT NOW()";
     }
     
     @Override
     public String getType() {
-        return "Oracle";
+        return "MySQL";
     }
 }

@@ -125,7 +125,7 @@ class ReadwriteSplittingRuleConfigurationCheckerTest {
     }
     
     private Map<String, DataSource> mockDataSources() {
-        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
         result.put("read_ds_0", mock(DataSource.class));
         result.put("read_ds_1", mock(DataSource.class));
         result.put("write_ds_0", mock(DataSource.class));

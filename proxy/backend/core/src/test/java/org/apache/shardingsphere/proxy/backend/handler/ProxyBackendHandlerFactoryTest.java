@@ -118,10 +118,10 @@ class ProxyBackendHandlerFactoryTest {
     
     @Test
     void assertNewInstanceWithDistSQL() throws SQLException {
-        String sql = "set dist variable transaction_type='LOCAL'";
+        String sql = "set dist variable sql_show='true'";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(UpdatableRALBackendHandler.class));
-        sql = "show dist variable where name = transaction_type";
+        sql = "show dist variable where name = sql_show";
         actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
         sql = "show dist variables";

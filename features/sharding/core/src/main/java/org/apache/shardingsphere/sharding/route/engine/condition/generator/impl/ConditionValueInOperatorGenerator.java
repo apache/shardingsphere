@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShard
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
-import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
+import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -38,7 +38,7 @@ import java.util.Optional;
 public final class ConditionValueInOperatorGenerator implements ConditionValueGenerator<InExpression> {
     
     @Override
-    public Optional<ShardingConditionValue> generate(final InExpression predicate, final Column column, final List<Object> params, final TimeServiceRule timeServiceRule) {
+    public Optional<ShardingConditionValue> generate(final InExpression predicate, final Column column, final List<Object> params, final TimestampServiceRule timestampServiceRule) {
         List<Comparable<?>> shardingConditionValues = new LinkedList<>();
         List<Integer> parameterMarkerIndexes = new ArrayList<>(predicate.getExpressionList().size());
         for (ExpressionSegment each : predicate.getExpressionList()) {
@@ -50,7 +50,7 @@ public final class ConditionValueInOperatorGenerator implements ConditionValueGe
                 continue;
             }
             if (ExpressionConditionUtils.isNowExpression(each)) {
-                shardingConditionValues.add(timeServiceRule.getDatetime());
+                shardingConditionValues.add(timestampServiceRule.getTimestamp());
             }
         }
         return shardingConditionValues.isEmpty() ? Optional.empty()

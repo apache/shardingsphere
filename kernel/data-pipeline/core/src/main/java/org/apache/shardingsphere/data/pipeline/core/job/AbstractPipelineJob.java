@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
@@ -35,12 +34,15 @@ import org.apache.shardingsphere.elasticjob.infra.spi.ElasticJobServiceLoader;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.JobBootstrap;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Abstract pipeline job.
@@ -54,17 +56,33 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     @Getter(AccessLevel.PROTECTED)
     private final PipelineJobAPI jobAPI;
     
-    @Getter
-    private volatile boolean stopping;
+    private final AtomicBoolean stopping = new AtomicBoolean(false);
     
-    @Setter
-    private volatile JobBootstrap jobBootstrap;
+    private final AtomicReference<JobBootstrap> jobBootstrap = new AtomicReference<>();
     
     private final Map<Integer, PipelineTasksRunner> tasksRunnerMap = new ConcurrentHashMap<>();
     
     protected AbstractPipelineJob(final String jobId) {
         this.jobId = jobId;
         jobAPI = TypedSPILoader.getService(PipelineJobAPI.class, PipelineJobIdUtils.parseJobType(jobId).getTypeName());
+    }
+    
+    /**
+     * Is stopping.
+     *
+     * @return whether job is stopping
+     */
+    public boolean isStopping() {
+        return stopping.get();
+    }
+    
+    /**
+     * Set job bootstrap.
+     *
+     * @param jobBootstrap job bootstrap
+     */
+    public void setJobBootstrap(final JobBootstrap jobBootstrap) {
+        this.jobBootstrap.set(jobBootstrap);
     }
     
     protected void prepare(final PipelineJobItemContext jobItemContext) {
@@ -83,7 +101,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
         }
     }
     
-    protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws Exception;
+    protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws SQLException;
     
     private void processFailed(final PipelineJobItemContext jobItemContext, final Exception ex) {
         String jobId = jobItemContext.getJobId();
@@ -124,15 +142,15 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     }
     
     private void innerStop() {
-        stopping = true;
+        stopping.set(true);
         log.info("stop tasks runner, jobId={}", jobId);
         for (PipelineTasksRunner each : tasksRunnerMap.values()) {
             each.stop();
         }
         Optional<ElasticJobListener> pipelineJobListener = ElasticJobServiceLoader.getCachedTypedServiceInstance(ElasticJobListener.class, PipelineElasticJobListener.class.getName());
         pipelineJobListener.ifPresent(jobListener -> awaitJobStopped((PipelineElasticJobListener) jobListener, jobId, TimeUnit.SECONDS.toMillis(2)));
-        if (null != jobBootstrap) {
-            jobBootstrap.shutdown();
+        if (null != jobBootstrap.get()) {
+            jobBootstrap.get().shutdown();
         }
     }
     

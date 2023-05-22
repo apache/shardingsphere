@@ -28,7 +28,7 @@ public enum LogicalOperator {
     
     AND, OR;
     
-    private static final Map<String, LogicalOperator> MAPS = new HashMap<>(16, 1);
+    private static final Map<String, LogicalOperator> MAPS = new HashMap<>(16, 1F);
     
     static {
         MAPS.put("and", AND);

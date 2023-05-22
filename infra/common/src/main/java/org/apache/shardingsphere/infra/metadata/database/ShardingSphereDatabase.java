@@ -66,7 +66,7 @@ public final class ShardingSphereDatabase {
         this.protocolType = protocolType;
         this.resourceMetaData = resourceMetaData;
         this.ruleMetaData = ruleMetaData;
-        this.schemas = new ConcurrentHashMap<>(schemas.size(), 1);
+        this.schemas = new ConcurrentHashMap<>(schemas.size(), 1F);
         schemas.forEach((key, value) -> this.schemas.put(key.toLowerCase(), value));
     }
     

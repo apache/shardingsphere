@@ -147,27 +147,27 @@ class ProjectionsContextEngineTest {
     }
     
     @Test
-    void createProjectionsContextWhenOrderByContextOrderItemsPresentForMySQL() {
+    void assertCreateProjectionsContextWhenOrderByContextOrderItemsPresentForMySQL() {
         createProjectionsContextWhenOrderByContextOrderItemsPresent(new MySQLSelectStatement());
     }
     
     @Test
-    void createProjectionsContextWhenOrderByContextOrderItemsPresentForOracle() {
+    void assertCreateProjectionsContextWhenOrderByContextOrderItemsPresentForOracle() {
         createProjectionsContextWhenOrderByContextOrderItemsPresent(new OracleSelectStatement());
     }
     
     @Test
-    void createProjectionsContextWhenOrderByContextOrderItemsPresentForPostgreSQL() {
+    void assertCreateProjectionsContextWhenOrderByContextOrderItemsPresentForPostgreSQL() {
         createProjectionsContextWhenOrderByContextOrderItemsPresent(new PostgreSQLSelectStatement());
     }
     
     @Test
-    void createProjectionsContextWhenOrderByContextOrderItemsPresentForSQL92() {
+    void assertCreateProjectionsContextWhenOrderByContextOrderItemsPresentForSQL92() {
         createProjectionsContextWhenOrderByContextOrderItemsPresent(new SQL92SelectStatement());
     }
     
     @Test
-    void createProjectionsContextWhenOrderByContextOrderItemsPresentForSQLServer() {
+    void assertCreateProjectionsContextWhenOrderByContextOrderItemsPresentForSQLServer() {
         createProjectionsContextWhenOrderByContextOrderItemsPresent(new SQLServerSelectStatement());
     }
     
@@ -235,7 +235,7 @@ class ProjectionsContextEngineTest {
     }
     
     private Map<String, ShardingSphereSchema> mockSchemas() {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(2, 1);
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(2, 1F);
         result.put(DefaultDatabase.LOGIC_NAME, schema);
         result.put("public", schema);
         return result;

@@ -110,7 +110,7 @@ public final class CoreAutoShardingAlgorithmFixture implements StandardShardingA
     }
     
     private Collection<String> getAvailableTargetNames(final Collection<String> availableTargetNames, final RangeShardingValue<Comparable<?>> shardingValue) {
-        Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
+        Collection<String> result = new LinkedHashSet<>(availableTargetNames.size(), 1F);
         BigInteger lower = new BigInteger(shardingValue.getValueRange().lowerEndpoint().toString());
         BigInteger upper = new BigInteger(shardingValue.getValueRange().upperEndpoint().toString());
         BigInteger shardingCountBigInter = new BigInteger(String.valueOf(shardingCount));

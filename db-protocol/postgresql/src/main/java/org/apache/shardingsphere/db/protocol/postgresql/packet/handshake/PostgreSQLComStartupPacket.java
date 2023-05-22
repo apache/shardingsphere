@@ -58,7 +58,7 @@ public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
     }
     
     /**
-     * Get user name.
+     * Get username.
      * 
      * @return username
      */

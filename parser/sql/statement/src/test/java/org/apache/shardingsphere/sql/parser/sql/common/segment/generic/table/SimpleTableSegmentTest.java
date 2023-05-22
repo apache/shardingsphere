@@ -27,13 +27,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class SimpleTableSegmentTest {
     
     @Test
-    void getStartIndexWithoutOwner() {
+    void assertGetStartIndexWithoutOwner() {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl")));
         assertThat(tableSegment.getStartIndex(), is(10));
     }
     
     @Test
-    void getStartIndexWithOwner() {
+    void assertGetStartIndexWithOwner() {
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 13, new IdentifierValue("tbl")));
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("o")));
         assertThat(tableSegment.getStartIndex(), is(7));

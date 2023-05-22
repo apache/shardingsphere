@@ -39,7 +39,7 @@ public final class ConnectionSavepointManager {
     
     private static final ConnectionSavepointManager INSTANCE = new ConnectionSavepointManager();
     
-    private static final Map<Connection, Map<String, Savepoint>> CONNECTION_SAVEPOINT_MAP = new ConcurrentHashMap<>(128);
+    private static final Map<Connection, Map<String, Savepoint>> CONNECTION_SAVEPOINT_MAP = new ConcurrentHashMap<>(128, 1F);
     
     /**
      * Get instance of connection savepoint manager.

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableExce
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -99,14 +98,9 @@ public final class ShowDistVariableExecutor implements ConnectionSessionRequired
     
     private String getSpecialValue(final ConnectionSession connectionSession, final String variableName) {
         VariableEnum variable = VariableEnum.getValueOf(variableName);
-        switch (variable) {
-            case CACHED_CONNECTIONS:
-                int connectionSize = connectionSession.getDatabaseConnectionManager().getConnectionSize();
-                return String.valueOf(connectionSize);
-            case TRANSACTION_TYPE:
-                TransactionType transactionType = connectionSession.getTransactionStatus().getTransactionType();
-                return transactionType.name();
-            default:
+        if (variable == VariableEnum.CACHED_CONNECTIONS) {
+            int connectionSize = connectionSession.getDatabaseConnectionManager().getConnectionSize();
+            return String.valueOf(connectionSize);
         }
         throw new UnsupportedVariableException(variableName);
     }

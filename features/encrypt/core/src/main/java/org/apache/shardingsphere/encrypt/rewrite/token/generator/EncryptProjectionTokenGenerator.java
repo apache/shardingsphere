@@ -67,9 +67,9 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     }
     
     @Override
-    public Collection<SubstitutableColumnNameToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Preconditions.checkState(sqlStatementContext instanceof SelectStatementContext);
-        Collection<SubstitutableColumnNameToken> result = new LinkedHashSet<>();
+        Collection<SQLToken> result = new LinkedHashSet<>();
         SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
         addGenerateSQLTokens(result, selectStatementContext);
         for (SelectStatementContext each : selectStatementContext.getSubqueryContexts().values()) {
@@ -78,7 +78,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         return result;
     }
     
-    private void addGenerateSQLTokens(final Collection<SubstitutableColumnNameToken> result, final SelectStatementContext selectStatementContext) {
+    private void addGenerateSQLTokens(final Collection<SQLToken> result, final SelectStatementContext selectStatementContext) {
         Map<String, String> columnTableNames = getColumnTableNames(selectStatementContext);
         for (ProjectionSegment projection : selectStatementContext.getSqlStatement().getProjections().getProjections()) {
             SubqueryType subqueryType = selectStatementContext.getSubqueryType();
@@ -147,11 +147,11 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     private Collection<ColumnProjection> generateProjections(final String tableName, final ColumnProjection column, final SubqueryType subqueryType, final boolean shorthand,
                                                              final ShorthandProjectionSegment segment) {
         Collection<ColumnProjection> result = new LinkedList<>();
-        if (SubqueryType.PREDICATE_SUBQUERY.equals(subqueryType)) {
+        if (SubqueryType.PREDICATE_SUBQUERY == subqueryType) {
             result.add(distinctOwner(generatePredicateSubqueryProjection(tableName, column), shorthand));
-        } else if (SubqueryType.TABLE_SUBQUERY.equals(subqueryType)) {
+        } else if (SubqueryType.TABLE_SUBQUERY == subqueryType) {
             result.addAll(generateTableSubqueryProjections(tableName, column, shorthand));
-        } else if (SubqueryType.EXISTS_SUBQUERY.equals(subqueryType)) {
+        } else if (SubqueryType.EXISTS_SUBQUERY == subqueryType) {
             result.addAll(generateExistsSubqueryProjections(tableName, column, shorthand));
         } else {
             result.add(distinctOwner(generateCommonProjection(tableName, column, segment), shorthand));

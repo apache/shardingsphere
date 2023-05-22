@@ -31,7 +31,7 @@ class PipelineDataSourceFactoryTest {
     
     @Test
     void assertNewInstance() {
-        Map<String, Object> yamlDataSourceConfig = new HashMap<>(3, 1);
+        Map<String, Object> yamlDataSourceConfig = new HashMap<>(3, 1F);
         yamlDataSourceConfig.put("url", "jdbc:mysql://localhost:3306/database");
         yamlDataSourceConfig.put("username", "username");
         yamlDataSourceConfig.put("password", "password");

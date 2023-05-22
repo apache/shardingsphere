@@ -60,7 +60,7 @@ class SingleTableDataNodeLoaderTest {
     
     @BeforeEach
     void setUp() throws SQLException {
-        dataSourceMap = new LinkedHashMap<>(2, 1);
+        dataSourceMap = new LinkedHashMap<>(2, 1F);
         dataSourceMap.put("ds0", mockDataSource("ds0", Arrays.asList("employee", "dept", "salary")));
         dataSourceMap.put("ds1", mockDataSource("ds1", Arrays.asList("student", "teacher", "class", "salary")));
     }

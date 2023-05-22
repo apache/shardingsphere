@@ -101,11 +101,11 @@ class TransactionRuleTest {
     
     private ShardingSphereResourceMetaData createResourceMetaData() {
         ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
-        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1);
+        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         when(result.getDataSources()).thenReturn(dataSourceMap);
-        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1);
+        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
         databaseTypes.put("ds_0", new PostgreSQLDatabaseType());
         databaseTypes.put("ds_1", new OpenGaussDatabaseType());
         when(result.getStorageTypes()).thenReturn(databaseTypes);
@@ -122,11 +122,11 @@ class TransactionRuleTest {
     
     private ShardingSphereResourceMetaData createAddResourceMetaData() {
         ShardingSphereResourceMetaData result = mock(ShardingSphereResourceMetaData.class);
-        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1);
+        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         when(result.getDataSources()).thenReturn(dataSourceMap);
-        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1);
+        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(2, 1F);
         databaseTypes.put("ds_0", new PostgreSQLDatabaseType());
         databaseTypes.put("ds_1", new OpenGaussDatabaseType());
         when(result.getStorageTypes()).thenReturn(databaseTypes);

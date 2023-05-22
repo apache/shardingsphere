@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.timeservice.core.rule.constant;
+package org.apache.shardingsphere.timeservice.type.database.provider;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
- * Time service order.
+ * Timestamp loading SQL provider.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TimeServiceOrder {
+@SingletonSPI
+public interface TimestampLoadingSQLProvider extends TypedSPI {
     
     /**
-     * Time service order.
+     * Get SQL for timestamp loading.
+     *
+     * @return SQL for timestamp loading
      */
-    public static final int ORDER = 1100;
+    String getTimestampLoadingSQL();
 }

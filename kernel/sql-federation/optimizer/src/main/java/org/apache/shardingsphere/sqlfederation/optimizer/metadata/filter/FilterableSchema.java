@@ -52,7 +52,7 @@ public final class FilterableSchema extends AbstractSchema {
     }
     
     private Map<String, Table> createTableMap(final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory, final TableScanExecutor executor) {
-        Map<String, Table> result = new LinkedHashMap<>(schema.getTables().size(), 1);
+        Map<String, Table> result = new LinkedHashMap<>(schema.getTables().size(), 1F);
         for (ShardingSphereTable each : schema.getTables().values()) {
             if (schema.containsView(each.getName())) {
                 result.put(each.getName(), getViewTable(schema, protocolType, each, javaTypeFactory));

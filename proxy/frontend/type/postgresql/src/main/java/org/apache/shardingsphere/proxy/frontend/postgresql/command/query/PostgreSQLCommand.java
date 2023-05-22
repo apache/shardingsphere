@@ -132,7 +132,7 @@ public enum PostgreSQLCommand {
     CLOSE_CURSOR(CloseStatement.class),
     SUCCESS(DistSQLStatement.class);
     
-    private static final Map<Class<? extends SQLStatement>, CachedResult> COMPUTED_STATEMENTS = new ConcurrentHashMap<>(64, 1);
+    private static final Map<Class<? extends SQLStatement>, CachedResult> COMPUTED_STATEMENTS = new ConcurrentHashMap<>(64);
     
     private final Collection<Class<? extends SQLStatement>> sqlStatementClasses;
     

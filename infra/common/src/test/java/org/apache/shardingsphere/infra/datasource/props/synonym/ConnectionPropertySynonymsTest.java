@@ -64,7 +64,7 @@ class ConnectionPropertySynonymsTest {
     }
     
     private Map<String, Object> createStandardProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1);
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("username", "root");
         result.put("password", "root");
@@ -72,7 +72,7 @@ class ConnectionPropertySynonymsTest {
     }
     
     private Map<String, Object> createLocalProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1);
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("user", "root");
         result.put("password", "root");
@@ -80,7 +80,7 @@ class ConnectionPropertySynonymsTest {
     }
     
     private Map<String, String> createPropertySynonyms() {
-        Map<String, String> result = new LinkedHashMap<>(2, 1);
+        Map<String, String> result = new LinkedHashMap<>(2, 1F);
         result.put("url", "jdbcUrl");
         result.put("username", "user");
         return result;

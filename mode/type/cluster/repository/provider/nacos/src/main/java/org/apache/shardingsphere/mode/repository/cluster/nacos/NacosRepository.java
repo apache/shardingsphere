@@ -233,7 +233,7 @@ public final class NacosRepository implements ClusterPersistRepository {
         instance.setIp(serviceMetaData.getIp());
         instance.setPort(serviceMetaData.getPort());
         instance.setEphemeral(ephemeral);
-        Map<String, String> metadataMap = new HashMap<>(5, 1);
+        Map<String, String> metadataMap = new HashMap<>(5, 1F);
         if (ephemeral) {
             fillEphemeralMetaData(metadataMap);
         }
@@ -266,7 +266,7 @@ public final class NacosRepository implements ClusterPersistRepository {
             instance.setIp(persistentService.getIp());
             instance.setPort(persistentService.getPort());
             instance.setEphemeral(false);
-            Map<String, String> metaDataMap = new HashMap<>(2, 1);
+            Map<String, String> metaDataMap = new HashMap<>(2, 1F);
             metaDataMap.put(key, "");
             metaDataMap.put(NacosMetaDataUtils.UTC_ZONE_OFFSET.toString(), String.valueOf(NacosMetaDataUtils.getTimestamp()));
             instance.setMetadata(metaDataMap);

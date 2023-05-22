@@ -40,7 +40,7 @@ public final class ResourceDataSource {
     
     public ResourceDataSource(final String originalName, final DataSource dataSource) {
         String[] databaseAndDataSourceName = originalName.split("\\.");
-        Preconditions.checkState(2 == databaseAndDataSourceName.length, String.format("Database and data source name must be provided,`%s`.", originalName));
+        Preconditions.checkState(2 == databaseAndDataSourceName.length, "Database and data source name must be provided together by `%s`.", originalName);
         this.originalName = originalName;
         this.dataSource = dataSource;
         uniqueResourceName = ResourceIdGenerator.getInstance().nextId() + databaseAndDataSourceName[1];

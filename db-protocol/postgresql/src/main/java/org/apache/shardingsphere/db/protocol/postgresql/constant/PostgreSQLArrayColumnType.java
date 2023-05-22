@@ -30,7 +30,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLArrayColumnType {
     
-    private static final Map<String, Integer> COLUMN_TYPE_NAME_OID_MAP = new HashMap<>(128, 1);
+    private static final Map<String, Integer> COLUMN_TYPE_NAME_OID_MAP = new HashMap<>(128, 1F);
     
     // CHECKSTYLE:OFF
     static {

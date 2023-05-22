@@ -251,7 +251,10 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         Optional<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleForShardingRule(ruleMetaData.findRules(DataNodeContainedRule.class));
         Collection<ColumnContainedRule> columnContainedRules = ruleMetaData.findRules(ColumnContainedRule.class);
         for (String each : sqlStatementContext.getTablesContext().getTableNames()) {
-            return (!dataNodeContainedRule.isPresent() || !dataNodeContainedRule.get().getAllTables().contains(each)) && !containsInColumnContainedRule(each, columnContainedRules);
+            if ((!dataNodeContainedRule.isPresent() || !dataNodeContainedRule.get().getAllTables().contains(each)) && !containsInColumnContainedRule(each, columnContainedRules)) {
+                continue;
+            }
+            return false;
         }
         return true;
     }
@@ -267,7 +270,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     
     private boolean containsInColumnContainedRule(final String tableName, final Collection<ColumnContainedRule> columnContainedRules) {
         for (ColumnContainedRule each : columnContainedRules) {
-            return each.getTables().contains(tableName);
+            if (each.getTables().contains(tableName)) {
+                return true;
+            }
         }
         return false;
     }

@@ -36,6 +36,6 @@ class PrometheusMetricsCounterCollectorTest {
                 MetricCollectorType.COUNTER, "foo_help", Collections.emptyList(), Collections.emptyMap()));
         collector.inc();
         Counter counter = (Counter) Plugins.getMemberAccessor().get(PrometheusMetricsCounterCollector.class.getDeclaredField("counter"), collector);
-        assertThat(counter.get(), is(1d));
+        assertThat(counter.get(), is(1D));
     }
 }

@@ -47,7 +47,7 @@ class ResourceSwitchManagerTest {
     
     @Test
     void assertCreateByAlterDataSourceProps() {
-        Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
+        Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         SwitchingResource actual = new ResourceSwitchManager().createByAlterDataSourceProps(new ShardingSphereResourceMetaData("sharding_db", dataSourceMap), Collections.emptyMap());
@@ -59,14 +59,14 @@ class ResourceSwitchManagerTest {
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(3, 1);
+        Map<String, DataSource> result = new HashMap<>(3, 1F);
         result.put("not_change", new MockedDataSource());
         result.put("replace", new MockedDataSource());
         return result;
     }
     
     private Map<String, DataSourceProperties> createToBeChangedDataSourcePropsMap() {
-        Map<String, DataSourceProperties> result = new HashMap<>(3, 1);
+        Map<String, DataSourceProperties> result = new HashMap<>(3, 1F);
         result.put("new", new DataSourceProperties(MockedDataSource.class.getName(), Collections.emptyMap()));
         result.put("not_change", new DataSourceProperties(MockedDataSource.class.getName(), Collections.emptyMap()));
         result.put("replace", new DataSourceProperties(MockedDataSource.class.getName(), Collections.singletonMap("password", "new_pwd")));

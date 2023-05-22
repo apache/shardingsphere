@@ -41,8 +41,8 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
-import org.apache.shardingsphere.timeservice.api.config.TimeServiceRuleConfiguration;
-import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
+import org.apache.shardingsphere.timeservice.api.config.TimestampServiceRuleConfiguration;
+import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -303,13 +303,13 @@ public final class ShardingRoutingEngineFixtureBuilder {
      *
      * @return created time service rule
      */
-    public static TimeServiceRule createTimeServiceRule() {
-        return new TimeServiceRule(new TimeServiceRuleConfiguration("System", new Properties()));
+    public static TimestampServiceRule createTimeServiceRule() {
+        return new TimestampServiceRule(new TimestampServiceRuleConfiguration("System", new Properties()));
     }
     
     @SneakyThrows(SQLException.class)
     private static Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(3, 1);
+        Map<String, DataSource> result = new HashMap<>(3, 1F);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:h2:mem:db");
         result.put("ds_0", new MockedDataSource(connection));

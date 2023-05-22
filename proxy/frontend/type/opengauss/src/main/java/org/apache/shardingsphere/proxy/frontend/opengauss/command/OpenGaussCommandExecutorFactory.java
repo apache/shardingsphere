@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.OpenGaussCommandPacketType;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.query.extended.bind.OpenGaussComBatchBindPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedCommandPacket;
@@ -70,8 +71,8 @@ public final class OpenGaussCommandExecutorFactory {
      * @return created instance
      * @throws SQLException SQL exception
      */
-    public static CommandExecutor newInstance(final CommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,
-                                              final ConnectionSession connectionSession, final PortalContext portalContext) throws SQLException {
+    public static CommandExecutor<PostgreSQLPacket> newInstance(final CommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,
+                                                                final ConnectionSession connectionSession, final PortalContext portalContext) throws SQLException {
         log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
         if (!(commandPacket instanceof PostgreSQLAggregatedCommandPacket)) {
             return getCommandExecutor(commandPacketType, commandPacket, connectionSession, portalContext);
@@ -80,19 +81,19 @@ public final class OpenGaussCommandExecutorFactory {
         if (aggregatedCommandPacket.isContainsBatchedStatements() && aggregatedCommandPacket.getPackets().stream().noneMatch(OpenGaussComBatchBindPacket.class::isInstance)) {
             return new PostgreSQLAggregatedCommandExecutor(getExecutorsOfAggregatedBatchedStatements(aggregatedCommandPacket, connectionSession, portalContext));
         }
-        List<CommandExecutor> result = new ArrayList<>(aggregatedCommandPacket.getPackets().size());
+        List<CommandExecutor<PostgreSQLPacket>> result = new ArrayList<>(aggregatedCommandPacket.getPackets().size());
         for (PostgreSQLCommandPacket each : aggregatedCommandPacket.getPackets()) {
             result.add(getCommandExecutor((CommandPacketType) each.getIdentifier(), each, connectionSession, portalContext));
         }
         return new PostgreSQLAggregatedCommandExecutor(result);
     }
     
-    private static List<CommandExecutor> getExecutorsOfAggregatedBatchedStatements(final PostgreSQLAggregatedCommandPacket aggregatedCommandPacket,
-                                                                                   final ConnectionSession connectionSession, final PortalContext portalContext) throws SQLException {
+    private static List<CommandExecutor<PostgreSQLPacket>> getExecutorsOfAggregatedBatchedStatements(final PostgreSQLAggregatedCommandPacket aggregatedCommandPacket,
+                                                                                                     final ConnectionSession connectionSession, final PortalContext portalContext) throws SQLException {
         List<PostgreSQLCommandPacket> packets = aggregatedCommandPacket.getPackets();
         int firstBindIndex = aggregatedCommandPacket.getFirstBindIndex();
         int lastExecuteIndex = aggregatedCommandPacket.getLastExecuteIndex();
-        List<CommandExecutor> result = new ArrayList<>(firstBindIndex + packets.size() - lastExecuteIndex);
+        List<CommandExecutor<PostgreSQLPacket>> result = new ArrayList<>(firstBindIndex + packets.size() - lastExecuteIndex);
         for (int i = 0; i < firstBindIndex; i++) {
             PostgreSQLCommandPacket each = packets.get(i);
             result.add(getCommandExecutor((CommandPacketType) each.getIdentifier(), each, connectionSession, portalContext));
@@ -105,8 +106,8 @@ public final class OpenGaussCommandExecutorFactory {
         return result;
     }
     
-    private static CommandExecutor getCommandExecutor(final CommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket, final ConnectionSession connectionSession,
-                                                      final PortalContext portalContext) throws SQLException {
+    private static CommandExecutor<PostgreSQLPacket> getCommandExecutor(final CommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,
+                                                                        final ConnectionSession connectionSession, final PortalContext portalContext) throws SQLException {
         if (OpenGaussCommandPacketType.BATCH_BIND_COMMAND == commandPacketType) {
             return new OpenGaussComBatchBindExecutor((OpenGaussComBatchBindPacket) commandPacket, connectionSession);
         }

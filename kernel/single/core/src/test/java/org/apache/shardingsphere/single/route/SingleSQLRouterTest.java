@@ -122,7 +122,7 @@ class SingleSQLRouterTest {
     }
     
     private Map<String, DataSource> createMultiDataSourceMap() throws SQLException {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
+        Map<String, DataSource> result = new HashMap<>(2, 1F);
         Connection connection = mockConnection();
         result.put("ds_0", new MockedDataSource(connection));
         result.put("ds_1", new MockedDataSource(connection));
@@ -143,7 +143,7 @@ class SingleSQLRouterTest {
     
     private ShardingSphereDatabase mockDatabaseWithMultipleResources() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1F);
         dataSourceMap.put("ds_0", new MockedDataSource());
         dataSourceMap.put("ds_1", new MockedDataSource());
         when(result.getResourceMetaData().getDataSources()).thenReturn(dataSourceMap);

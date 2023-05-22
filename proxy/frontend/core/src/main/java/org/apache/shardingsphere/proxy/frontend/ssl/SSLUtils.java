@@ -23,7 +23,6 @@ import lombok.SneakyThrows;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -40,7 +39,9 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -75,15 +76,13 @@ public final class SSLUtils {
     @SneakyThrows({OperatorCreationException.class, CertificateException.class})
     public static X509Certificate generateSelfSignedX509Certificate(final KeyPair keyPair) {
         long now = System.currentTimeMillis();
-        Date startDate = new Date(now - TimeUnit.DAYS.toMillis(1));
+        Date startDate = Date.from(LocalDateTime.ofInstant(Instant.ofEpochMilli(now - TimeUnit.DAYS.toMillis(1)), ZoneId.systemDefault()).atZone(ZoneId.systemDefault()).toInstant());
         X500Name dnName = new X500NameBuilder(BCStyle.INSTANCE)
                 .addRDN(BCStyle.CN, "").addRDN(BCStyle.OU, "").addRDN(BCStyle.O, "").addRDN(BCStyle.L, "").addRDN(BCStyle.ST, "").addRDN(BCStyle.C, "").addRDN(BCStyle.E, "").build();
         BigInteger certSerialNumber = new BigInteger(Long.toString(now));
-        Calendar endCalendar = Calendar.getInstance();
-        endCalendar.setTime(startDate);
-        endCalendar.add(Calendar.YEAR, 100);
+        Date endDate = Date.from(
+                LocalDateTime.ofInstant(Instant.ofEpochMilli(startDate.getTime() + TimeUnit.DAYS.toMillis(365 * 100L)), ZoneId.systemDefault()).atZone(ZoneId.systemDefault()).toInstant());
         ContentSigner contentSigner = new JcaContentSignerBuilder("SHA256WithRSA").build(keyPair.getPrivate());
-        X509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(dnName, certSerialNumber, startDate, endCalendar.getTime(), dnName, keyPair.getPublic());
-        return new JcaX509CertificateConverter().getCertificate(builder.build(contentSigner));
+        return new JcaX509CertificateConverter().getCertificate(new JcaX509v3CertificateBuilder(dnName, certSerialNumber, startDate, endDate, dnName, keyPair.getPublic()).build(contentSigner));
     }
 }

@@ -22,25 +22,25 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
+import org.apache.shardingsphere.timeservice.spi.TimestampService;
 import org.apache.shardingsphere.timeservice.type.database.exception.DatetimeLoadingException;
-import org.apache.shardingsphere.timeservice.type.database.provider.DatetimeLoadingSQLProvider;
+import org.apache.shardingsphere.timeservice.type.database.provider.TimestampLoadingSQLProvider;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Database time service.
+ * Database timestamp service.
  */
-public final class DatabaseTimeService implements ShardingSphereTimeService {
+public final class DatabaseTimestampService implements TimestampService {
     
     private DataSource dataSource;
     
@@ -54,21 +54,21 @@ public final class DatabaseTimeService implements ShardingSphereTimeService {
     }
     
     @Override
-    public Date getDatetime() {
+    public Timestamp getTimestamp() {
         try {
-            return loadDatetime(dataSource, TypedSPILoader.getService(DatetimeLoadingSQLProvider.class, DatabaseTypeEngine.getTrunkDatabaseTypeName(storageType)).getDatetimeLoadingSQL());
+            return loadDatetime(dataSource, TypedSPILoader.getService(TimestampLoadingSQLProvider.class, DatabaseTypeEngine.getTrunkDatabaseTypeName(storageType)).getTimestampLoadingSQL());
         } catch (final SQLException ex) {
             throw new DatetimeLoadingException(ex);
         }
     }
     
-    private Date loadDatetime(final DataSource dataSource, final String datetimeLoadingSQL) throws SQLException {
+    private Timestamp loadDatetime(final DataSource dataSource, final String datetimeLoadingSQL) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(datetimeLoadingSQL)) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 resultSet.next();
-                return (Date) resultSet.getObject(1);
+                return (Timestamp) resultSet.getObject(1);
             }
         }
     }

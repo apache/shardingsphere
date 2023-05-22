@@ -22,6 +22,7 @@ import org.apache.shardingsphere.test.e2e.showprocesslist.container.composer.Clu
 import org.apache.shardingsphere.test.e2e.showprocesslist.env.ShowProcessListEnvironment;
 import org.apache.shardingsphere.test.e2e.showprocesslist.env.enums.ShowProcessListEnvTypeEnum;
 import org.apache.shardingsphere.test.e2e.showprocesslist.parameter.ShowProcessListTestParameter;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,6 +38,7 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -56,7 +58,7 @@ class ShowProcessListE2EIT {
         try (ClusterShowProcessListContainerComposer containerComposer = new ClusterShowProcessListContainerComposer(testParam)) {
             containerComposer.start();
             CompletableFuture<Void> executeSelectSleep = CompletableFuture.runAsync(getExecuteSleepThread("proxy", containerComposer));
-            Thread.sleep(5000L);
+            Awaitility.await().pollDelay(5L, TimeUnit.SECONDS).until(() -> true);
             try (
                     Connection connection = containerComposer.getProxyDataSource().getConnection();
                     Statement statement = connection.createStatement()) {

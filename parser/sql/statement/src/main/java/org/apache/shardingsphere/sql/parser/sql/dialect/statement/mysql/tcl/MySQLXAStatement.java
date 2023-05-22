@@ -24,4 +24,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
  * MySQL XA statement.
  */
 public final class MySQLXAStatement extends XAStatement implements MySQLStatement {
+    
+    public MySQLXAStatement(final String operator, final String xid) {
+        super(operator, xid);
+    }
 }

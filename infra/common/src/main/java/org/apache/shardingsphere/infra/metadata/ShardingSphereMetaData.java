@@ -52,7 +52,7 @@ public final class ShardingSphereMetaData {
     }
     
     public ShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
-        this.databases = new ConcurrentHashMap<>(databases.size(), 1);
+        this.databases = new ConcurrentHashMap<>(databases.size(), 1F);
         databases.forEach((key, value) -> this.databases.put(key.toLowerCase(), value));
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
@@ -78,7 +78,7 @@ public final class ShardingSphereMetaData {
      * @return contains database from meta data or not
      */
     public boolean containsDatabase(final String databaseName) {
-        return null != databaseName && databases.containsKey(databaseName.toLowerCase());
+        return databases.containsKey(databaseName.toLowerCase());
     }
     
     /**
@@ -88,7 +88,7 @@ public final class ShardingSphereMetaData {
      * @return meta data database
      */
     public ShardingSphereDatabase getDatabase(final String databaseName) {
-        return null != databaseName ? databases.get(databaseName.toLowerCase()) : null;
+        return databases.get(databaseName.toLowerCase());
     }
     
     /**
@@ -98,16 +98,6 @@ public final class ShardingSphereMetaData {
      */
     public void putDatabase(final ShardingSphereDatabase database) {
         databases.put(database.getName().toLowerCase(), database);
-    }
-    
-    /**
-     * Get actual database name.
-     *
-     * @param databaseName database name
-     * @return actual database name
-     */
-    public String getActualDatabaseName(final String databaseName) {
-        return getDatabase(databaseName).getName();
     }
     
     /**

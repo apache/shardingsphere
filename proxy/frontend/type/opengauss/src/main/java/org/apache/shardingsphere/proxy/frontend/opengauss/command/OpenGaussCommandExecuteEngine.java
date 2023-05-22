@@ -22,8 +22,8 @@ import org.apache.shardingsphere.db.protocol.opengauss.packet.command.OpenGaussC
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.OpenGaussCommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
@@ -32,8 +32,8 @@ import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.opengauss.err.OpenGaussErrorPacketFactory;
-import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLCommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLPortalContextRegistry;
 
 import java.sql.SQLException;
@@ -42,7 +42,7 @@ import java.util.Optional;
 /**
  * Command execute engine for openGauss.
  */
-public final class OpenGaussCommandExecuteEngine implements CommandExecuteEngine {
+public final class OpenGaussCommandExecuteEngine implements CommandExecuteEngine<PostgreSQLPacket> {
     
     private final PostgreSQLCommandExecuteEngine postgreSQLCommandExecuteEngine = new PostgreSQLCommandExecuteEngine();
     
@@ -63,12 +63,12 @@ public final class OpenGaussCommandExecuteEngine implements CommandExecuteEngine
     }
     
     @Override
-    public DatabasePacket<?> getErrorPacket(final Exception cause) {
+    public PostgreSQLPacket getErrorPacket(final Exception cause) {
         return OpenGaussErrorPacketFactory.newInstance(cause);
     }
     
     @Override
-    public Optional<DatabasePacket<?>> getOtherPacket(final ConnectionSession connectionSession) {
+    public Optional<PostgreSQLPacket> getOtherPacket(final ConnectionSession connectionSession) {
         return postgreSQLCommandExecuteEngine.getOtherPacket(connectionSession);
     }
     

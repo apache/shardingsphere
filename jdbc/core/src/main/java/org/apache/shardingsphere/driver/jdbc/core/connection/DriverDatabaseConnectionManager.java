@@ -94,7 +94,7 @@ public final class DriverDatabaseConnectionManager implements DatabaseConnection
             return Collections.emptyMap();
         }
         MetaDataBasedPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
-        String actualDatabaseName = contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName);
+        String actualDatabaseName = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getName();
         Map<String, DataSourceProperties> dataSourcePropsMap = persistService.getDataSourceService().load(actualDatabaseName);
         Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
         DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();

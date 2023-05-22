@@ -42,7 +42,7 @@ public final class SQLParserTestCaseLoaderCallback implements CaseLoaderCallback
     
     @Override
     public Map<String, SQLParserTestCase> loadFromJar(final File jarFile, final String rootDirectory) throws JAXBException {
-        Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
+        Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1F);
         for (String each : CaseFileLoader.loadFileNamesFromJar(jarFile, rootDirectory)) {
             Map<String, SQLParserTestCase> testCases = createTestCases(Thread.currentThread().getContextClassLoader().getResourceAsStream(each));
             checkDuplicatedTestCases(testCases, result);
@@ -53,7 +53,7 @@ public final class SQLParserTestCaseLoaderCallback implements CaseLoaderCallback
     
     @Override
     public Map<String, SQLParserTestCase> loadFromDirectory(final String rootDirectory) throws IOException, JAXBException {
-        Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1);
+        Map<String, SQLParserTestCase> result = new HashMap<>(Short.MAX_VALUE, 1F);
         for (File each : CaseFileLoader.loadFilesFromDirectory(rootDirectory)) {
             try (InputStream inputStream = Files.newInputStream(Paths.get(each.toURI()))) {
                 Map<String, SQLParserTestCase> testCases = createTestCases(inputStream);

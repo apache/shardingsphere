@@ -86,8 +86,11 @@ public final class MySQLSystemVariableQueryExecutor implements DatabaseAdminQuer
         List<ExpressionProjectionSegment> expressionProjectionSegments = new ArrayList<>(projections.size());
         List<MySQLSystemVariable> variables = new ArrayList<>(projections.size());
         for (ProjectionSegment each : projections) {
-            ExpressionProjectionSegment expression;
-            if (!(each instanceof ExpressionProjectionSegment) || !((expression = (ExpressionProjectionSegment) each).getExpr() instanceof VariableSegment)) {
+            if (!(each instanceof ExpressionProjectionSegment)) {
+                return Optional.empty();
+            }
+            ExpressionProjectionSegment expression = (ExpressionProjectionSegment) each;
+            if (!(expression.getExpr() instanceof VariableSegment)) {
                 return Optional.empty();
             }
             expressionProjectionSegments.add(expression);

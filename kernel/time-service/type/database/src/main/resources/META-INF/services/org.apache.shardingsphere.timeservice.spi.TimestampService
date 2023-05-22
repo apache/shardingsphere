@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.timeservice.type.database.DatabaseTimeService
+org.apache.shardingsphere.timeservice.type.database.DatabaseTimestampService

@@ -44,8 +44,8 @@ class MySQLFloatBinlogProtocolValueTest {
     @Test
     void assertRead() {
         when(payload.getByteBuf()).thenReturn(byteBuf);
-        when(byteBuf.readFloatLE()).thenReturn(1.1f);
+        when(byteBuf.readFloatLE()).thenReturn(1.1F);
         MySQLFloatBinlogProtocolValue actual = new MySQLFloatBinlogProtocolValue();
-        assertThat(actual.read(columnDef, payload), is(1.1f));
+        assertThat(actual.read(columnDef, payload), is(1.1F));
     }
 }

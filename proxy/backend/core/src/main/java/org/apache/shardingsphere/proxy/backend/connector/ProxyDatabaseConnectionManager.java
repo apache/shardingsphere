@@ -125,20 +125,25 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
         }
         String databaseType = connections.iterator().next().getMetaData().getDatabaseProductName();
         List<String> setSQLs = connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType);
-        SQLException sqlException = null;
+        try {
+            executeSetSessionVariables(connections, setSQLs);
+        } catch (final SQLException ex) {
+            releaseConnection(connections, ex);
+            throw ex;
+        }
+    }
+    
+    private void executeSetSessionVariables(final List<Connection> connections, final List<String> setSQLs) throws SQLException {
         for (Connection each : connections) {
             try (Statement statement = each.createStatement()) {
                 for (String eachSetSQL : setSQLs) {
                     statement.execute(eachSetSQL);
                 }
-            } catch (final SQLException ex) {
-                sqlException = ex;
-                break;
             }
         }
-        if (null == sqlException) {
-            return;
-        }
+    }
+    
+    private void releaseConnection(final List<Connection> connections, final SQLException sqlException) {
         for (Connection each : connections) {
             try {
                 each.close();
@@ -146,7 +151,6 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
                 sqlException.setNextException(ex);
             }
         }
-        throw sqlException;
     }
     
     private void replayMethodsInvocation(final Connection target) throws SQLException {

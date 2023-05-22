@@ -173,7 +173,7 @@ class EncryptRuleTest {
     
     private Map<String, AlgorithmConfiguration> getEncryptors(final AlgorithmConfiguration standardEncryptConfig, final AlgorithmConfiguration queryAssistedEncryptConfig,
                                                               final AlgorithmConfiguration queryLikeEncryptConfig) {
-        Map<String, AlgorithmConfiguration> result = new HashMap<>(2, 1);
+        Map<String, AlgorithmConfiguration> result = new HashMap<>(2, 1F);
         result.put("standard_encryptor", standardEncryptConfig);
         result.put("assisted_encryptor", queryAssistedEncryptConfig);
         result.put("like_encryptor", queryLikeEncryptConfig);

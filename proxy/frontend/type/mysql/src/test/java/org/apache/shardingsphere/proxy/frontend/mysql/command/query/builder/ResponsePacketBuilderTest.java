@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder;
 
 import io.netty.buffer.Unpooled;
+import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLFieldCountPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
@@ -51,7 +52,7 @@ class ResponsePacketBuilderTest {
         QueryHeader queryHeader2 = new QueryHeader("schema2", "table2", "columnLabel2", "columnName2", 8, "VARCHAR", 7, 9, false, true, true, true);
         List<QueryHeader> queryHeaders = Arrays.asList(queryHeader1, queryHeader2);
         QueryResponseHeader queryResponseHeader = new QueryResponseHeader(queryHeaders);
-        Collection<DatabasePacket<?>> actual = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, 255, 0);
+        Collection<MySQLPacket> actual = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, 255, 0);
         assertTrue(actual.stream().findAny().isPresent());
         assertThat(actual.stream().findAny().get(), anyOf(instanceOf(MySQLFieldCountPacket.class), instanceOf(MySQLColumnDefinition41Packet.class), instanceOf(MySQLEofPacket.class)));
     }
@@ -61,7 +62,7 @@ class ResponsePacketBuilderTest {
         UpdateResponseHeader updateResponseHeader = mock(UpdateResponseHeader.class);
         when(updateResponseHeader.getUpdateCount()).thenReturn(10L);
         when(updateResponseHeader.getLastInsertId()).thenReturn(100L);
-        Collection<DatabasePacket<?>> actual = ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader, 0);
+        Collection<MySQLPacket> actual = ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader, 0);
         assertTrue(actual.stream().findAny().isPresent());
         MySQLOKPacket actualItem = (MySQLOKPacket) actual.stream().findAny().get();
         assertThat(actualItem, instanceOf(MySQLOKPacket.class));

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.e2e.transaction.cases.base.BaseTransaction
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionBaseE2EIT;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionContainerComposer;
 import org.apache.shardingsphere.test.e2e.transaction.engine.base.TransactionTestCase;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -32,6 +33,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -64,7 +66,7 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
             int sum = getBalanceSum();
             assertThat(String.format("Balance sum is %s, should be 100.", sum), sum, is(100));
         }
-        Thread.sleep(3000L);
+        Awaitility.await().pollDelay(3L, TimeUnit.SECONDS).until(() -> true);
         int sum = getBalanceSum();
         assertThat(String.format("Balance sum is %s, should be 100.", sum), sum, is(100));
         for (Thread task : tasks) {
@@ -97,10 +99,10 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
                 Statement statement1 = connection.createStatement();
                 statement1.execute("UPDATE account SET balance = balance - 1 WHERE transaction_id = 2;");
                 Statement statement2 = connection.createStatement();
-                Thread.sleep(1000L);
+                Awaitility.await().pollDelay(1L, TimeUnit.SECONDS).until(() -> true);
                 statement2.execute("UPDATE account SET balance = balance + 1 WHERE transaction_id = 1;");
                 connection.commit();
-            } catch (final SQLException | InterruptedException ignored) {
+            } catch (final SQLException ignored) {
             }
         }
     }

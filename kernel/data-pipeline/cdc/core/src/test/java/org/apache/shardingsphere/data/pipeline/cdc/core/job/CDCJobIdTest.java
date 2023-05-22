@@ -33,7 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 class CDCJobIdTest {
     
     @Test
-    void parseJobType() {
+    void assertParseJobType() {
         PipelineContextKey contextKey = PipelineContextKey.build("sharding_db", InstanceType.PROXY);
         CDCJobId pipelineJobId = new CDCJobId(contextKey, Arrays.asList("test", "t_order"), false, CDCSinkType.SOCKET.name());
         String jobId = PipelineJobIdUtils.marshalJobIdCommonPrefix(pipelineJobId) + "abcd";

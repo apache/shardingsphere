@@ -62,7 +62,7 @@ class ShowCreateTableMergedResultTest {
     }
     
     private ShardingSphereSchema createSchema() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
+        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1F);
         tables.put("t_order",
                 new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.singleton(new ShardingSphereConstraint("t_order_foreign_key", "t_user"))));
         tables.put("t_user", new ShardingSphereTable("t_user", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));

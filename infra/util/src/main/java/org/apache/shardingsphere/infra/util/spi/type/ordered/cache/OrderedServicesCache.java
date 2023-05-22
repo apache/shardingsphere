@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OrderedServicesCache {
     
-    private static volatile SoftReference<Map<Key, Map<?, ?>>> cache = new SoftReference<>(new ConcurrentHashMap<>(128));
+    private static volatile SoftReference<Map<Key, Map<?, ?>>> cache = new SoftReference<>(new ConcurrentHashMap<>(128, 1F));
     
     /**
      * Find cached services.
@@ -60,7 +60,7 @@ public final class OrderedServicesCache {
             synchronized (OrderedServicesCache.class) {
                 cache = OrderedServicesCache.cache.get();
                 if (null == cache) {
-                    cache = new ConcurrentHashMap<>(128);
+                    cache = new ConcurrentHashMap<>(128, 1F);
                     OrderedServicesCache.cache = new SoftReference<>(cache);
                 }
             }

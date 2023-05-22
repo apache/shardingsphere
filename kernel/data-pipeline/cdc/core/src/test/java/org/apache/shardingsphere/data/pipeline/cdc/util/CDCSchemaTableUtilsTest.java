@@ -65,14 +65,14 @@ class CDCSchemaTableUtilsTest {
     }
     
     private ShardingSphereSchema mockedPublicSchema() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
+        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1F);
         tables.put("t_order", mock(ShardingSphereTable.class));
         tables.put("t_order2", mock(ShardingSphereTable.class));
         return new ShardingSphereSchema(tables, Collections.emptyMap());
     }
     
     private ShardingSphereSchema mockedTestSchema() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
+        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1F);
         tables.put("t_order_item", mock(ShardingSphereTable.class));
         tables.put("t_order_item2", mock(ShardingSphereTable.class));
         return new ShardingSphereSchema(tables, Collections.emptyMap());

@@ -20,38 +20,38 @@ package org.apache.shardingsphere.timeservice.core.rule;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.timeservice.api.config.TimeServiceRuleConfiguration;
-import org.apache.shardingsphere.timeservice.spi.ShardingSphereTimeService;
+import org.apache.shardingsphere.timeservice.api.config.TimestampServiceRuleConfiguration;
+import org.apache.shardingsphere.timeservice.spi.TimestampService;
 
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.Properties;
 
 /**
- * Time service rule.
+ * Timestamp service rule.
  */
-public final class TimeServiceRule implements GlobalRule {
+public final class TimestampServiceRule implements GlobalRule {
     
     @Getter
-    private final TimeServiceRuleConfiguration configuration;
+    private final TimestampServiceRuleConfiguration configuration;
     
-    private final ShardingSphereTimeService timeService;
+    private final TimestampService timestampService;
     
-    public TimeServiceRule(final TimeServiceRuleConfiguration ruleConfig) {
+    public TimestampServiceRule(final TimestampServiceRuleConfiguration ruleConfig) {
         configuration = ruleConfig;
-        timeService = TypedSPILoader.getService(ShardingSphereTimeService.class, ruleConfig.getType(), null == ruleConfig.getProps() ? new Properties() : ruleConfig.getProps());
+        timestampService = TypedSPILoader.getService(TimestampService.class, ruleConfig.getType(), null == ruleConfig.getProps() ? new Properties() : ruleConfig.getProps());
     }
     
     /**
-     * Get datetime.
+     * Get timestamp.
      *
-     * @return datetime
+     * @return timestamp
      */
-    public Date getDatetime() {
-        return timeService.getDatetime();
+    public Timestamp getTimestamp() {
+        return timestampService.getTimestamp();
     }
     
     @Override
     public String getType() {
-        return TimeServiceRule.class.getSimpleName();
+        return TimestampServiceRule.class.getSimpleName();
     }
 }

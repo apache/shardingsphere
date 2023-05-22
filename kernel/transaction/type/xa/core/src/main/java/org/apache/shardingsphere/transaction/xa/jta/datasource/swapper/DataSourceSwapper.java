@@ -20,7 +20,6 @@ package org.apache.shardingsphere.transaction.xa.jta.datasource.swapper;
 import com.google.common.base.CaseFormat;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.exception.XADataSourceInitializeException;
@@ -30,8 +29,6 @@ import javax.sql.XADataSource;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -61,17 +58,13 @@ public final class DataSourceSwapper {
     }
     
     private XADataSource createXADataSource() {
-        XADataSource result = null;
-        List<ReflectiveOperationException> exceptions = new LinkedList<>();
         for (String each : xaDataSourceDefinition.getXADriverClassNames()) {
             try {
-                result = loadXADataSource(each);
-            } catch (final ReflectiveOperationException ex) {
-                exceptions.add(ex);
+                return loadXADataSource(each);
+            } catch (final ReflectiveOperationException ignored) {
             }
         }
-        ShardingSpherePreconditions.checkState(null != result || exceptions.isEmpty(), () -> new XADataSourceInitializeException(xaDataSourceDefinition));
-        return result;
+        throw new XADataSourceInitializeException(xaDataSourceDefinition);
     }
     
     private XADataSource loadXADataSource(final String xaDataSourceClassName) throws ReflectiveOperationException {
@@ -85,7 +78,7 @@ public final class DataSourceSwapper {
     }
     
     private Map<String, Object> getDatabaseAccessConfiguration(final DataSource dataSource) {
-        Map<String, Object> result = new HashMap<>(3, 1);
+        Map<String, Object> result = new HashMap<>(3, 1F);
         DataSourcePropertyProvider provider = TypedSPILoader.getService(DataSourcePropertyProvider.class, dataSource.getClass().getName());
         try {
             result.put("url", findGetterMethod(dataSource, provider.getURLPropertyName()).invoke(dataSource));

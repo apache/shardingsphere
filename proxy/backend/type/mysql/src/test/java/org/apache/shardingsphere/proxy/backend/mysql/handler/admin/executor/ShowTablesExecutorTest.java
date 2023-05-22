@@ -199,7 +199,7 @@ class ShowTablesExecutorTest {
     }
     
     private Map<String, ShardingSphereDatabase> getDatabases() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(4, 1);
+        Map<String, ShardingSphereTable> tables = new HashMap<>(4, 1F);
         tables.put("t_account", new ShardingSphereTable("t_account", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_account_bak", new ShardingSphereTable("t_account_bak", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         tables.put("t_account_detail", new ShardingSphereTable("t_account_detail", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
@@ -209,7 +209,7 @@ class ShowTablesExecutorTest {
         when(database.getSchema(String.format(DATABASE_PATTERN, 0))).thenReturn(schema);
         when(database.isComplete()).thenReturn(true);
         when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
-        Map<String, ShardingSphereDatabase> result = new HashMap<>(2, 1);
+        Map<String, ShardingSphereDatabase> result = new HashMap<>(2, 1F);
         result.put(String.format(DATABASE_PATTERN, 0), database);
         ShardingSphereDatabase uncompletedDatabase = mock(ShardingSphereDatabase.class);
         result.put("uncompleted", uncompletedDatabase);

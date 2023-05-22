@@ -59,7 +59,7 @@ public final class ShardingCartesianRoutingEngine implements ShardingRouteEngine
     
     private Map<String, Set<String>> getDataSourceLogicTablesMap() {
         Collection<String> intersectionDataSources = getIntersectionDataSources();
-        Map<String, Set<String>> result = new HashMap<>(routeContexts.size());
+        Map<String, Set<String>> result = new HashMap<>(routeContexts.size(), 1F);
         for (RouteContext each : routeContexts) {
             for (Entry<String, Set<String>> entry : each.getDataSourceLogicTablesMap(intersectionDataSources).entrySet()) {
                 if (result.containsKey(entry.getKey())) {

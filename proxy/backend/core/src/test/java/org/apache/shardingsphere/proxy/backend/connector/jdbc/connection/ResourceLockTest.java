@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.connection;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -40,11 +42,7 @@ class ResourceLockTest {
         long startTime = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         executorService.submit(() -> {
-            try {
-                Thread.sleep(50L);
-            } catch (final InterruptedException ignored) {
-                Thread.currentThread().interrupt();
-            }
+            Awaitility.await().pollDelay(50L, TimeUnit.MILLISECONDS).until(() -> true);
             resourceLock.doNotify();
         });
         resourceLock.doAwait();

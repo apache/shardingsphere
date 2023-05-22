@@ -116,7 +116,7 @@ public final class AdvancedSQLFederationExecutor implements SQLFederationExecuto
     }
     
     private Map<String, Object> createParameters(final List<Object> params) {
-        Map<String, Object> result = new HashMap<>(params.size(), 1);
+        Map<String, Object> result = new HashMap<>(params.size(), 1F);
         int index = 0;
         for (Object each : params) {
             result.put("?" + index++, each);

@@ -44,7 +44,7 @@ public final class MySQLDataSourceChecker extends AbstractDataSourceChecker {
     
     private static final String[][] REQUIRED_PRIVILEGES = {{"ALL PRIVILEGES", "ON *.*"}, {"REPLICATION SLAVE", "REPLICATION CLIENT", "ON *.*"}};
     
-    private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(3, 1);
+    private static final Map<String, String> REQUIRED_VARIABLES = new HashMap<>(3, 1F);
     
     private static final String SHOW_VARIABLES_SQL;
     

@@ -41,7 +41,7 @@ class PasswordEncryptionTest {
     
     @SneakyThrows(NoSuchAlgorithmException.class)
     @Test
-    void encryptEncryptWithSha2() {
+    void assertEncryptEncryptWithSha2() {
         assertThat(PasswordEncryption.encryptWithSha2("123456".getBytes(), getRandomSeed()), is(getSha2ExpectedPassword()));
     }
     

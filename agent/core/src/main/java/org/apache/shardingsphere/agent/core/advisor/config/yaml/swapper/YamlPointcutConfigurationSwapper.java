@@ -40,7 +40,7 @@ public final class YamlPointcutConfigurationSwapper {
      * @param yamlConfig YAML pointcut configuration
      * @return method pointcut
      */
-    public static Optional<ElementMatcher<? super MethodDescription>> swap(final YamlPointcutConfiguration yamlConfig) {
+    public static Optional<ElementMatcher<MethodDescription>> swap(final YamlPointcutConfiguration yamlConfig) {
         if ("constructor".equals(yamlConfig.getType())) {
             return Optional.of(appendParameters(yamlConfig, ElementMatchers.isConstructor()));
         }
@@ -50,8 +50,8 @@ public final class YamlPointcutConfigurationSwapper {
         return Optional.empty();
     }
     
-    private static ElementMatcher<? super MethodDescription> appendParameters(final YamlPointcutConfiguration yamlConfig, final Junction<? super MethodDescription> pointcut) {
-        Junction<? super MethodDescription> result = pointcut;
+    private static ElementMatcher<MethodDescription> appendParameters(final YamlPointcutConfiguration yamlConfig, final Junction<MethodDescription> pointcut) {
+        Junction<MethodDescription> result = pointcut;
         for (YamlPointcutParameterConfiguration each : yamlConfig.getParams()) {
             result = result.and(ElementMatchers.takesArgument(each.getIndex(), ElementMatchers.named(each.getType())));
         }

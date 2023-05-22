@@ -42,11 +42,11 @@ public final class ColumnOrderByItemConverter implements SQLSegmentConverter<Col
         if (!result.isPresent()) {
             return Optional.empty();
         }
-        if (OrderDirection.DESC.equals(segment.getOrderDirection())) {
+        if (OrderDirection.DESC == segment.getOrderDirection()) {
             result = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, Collections.singletonList(result.get()), SqlParserPos.ZERO));
         }
         if (segment.getNullsOrderType().isPresent()) {
-            SqlPostfixOperator nullsOrderType = NullsOrderType.FIRST.equals(segment.getNullsOrderType().get()) ? SqlStdOperatorTable.NULLS_FIRST : SqlStdOperatorTable.NULLS_LAST;
+            SqlPostfixOperator nullsOrderType = NullsOrderType.FIRST == segment.getNullsOrderType().get() ? SqlStdOperatorTable.NULLS_FIRST : SqlStdOperatorTable.NULLS_LAST;
             result = Optional.of(new SqlBasicCall(nullsOrderType, Collections.singletonList(result.get()), SqlParserPos.ZERO));
         }
         return result;

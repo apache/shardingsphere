@@ -45,10 +45,10 @@ public final class CompareUtils {
             return 0;
         }
         if (null == thisValue) {
-            return NullsOrderType.FIRST.equals(nullsOrderType) ? -1 : 1;
+            return NullsOrderType.FIRST == nullsOrderType ? -1 : 1;
         }
         if (null == otherValue) {
-            return NullsOrderType.FIRST.equals(nullsOrderType) ? 1 : -1;
+            return NullsOrderType.FIRST == nullsOrderType ? 1 : -1;
         }
         if (!caseSensitive && thisValue instanceof String && otherValue instanceof String) {
             return compareToCaseInsensitiveString((String) thisValue, (String) otherValue, orderDirection);

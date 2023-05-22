@@ -29,7 +29,9 @@ import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstant
 import org.apache.shardingsphere.sharding.exception.ShardingPluginException;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Properties;
 
 /**
@@ -52,13 +54,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     private long epoch;
     
     static {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(2016, Calendar.NOVEMBER, 1);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        DEFAULT_EPOCH = calendar.getTimeInMillis();
+        DEFAULT_EPOCH = LocalDateTime.of(2016, 11, 1, 0, 0, 0).toInstant(ZoneId.systemDefault().getRules().getOffset(Instant.now())).toEpochMilli();
     }
     
     @Override

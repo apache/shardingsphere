@@ -103,9 +103,9 @@ public enum MySQLBinaryColumnType implements BinaryColumnType {
     
     MYSQL_TYPE_GEOMETRY(0xff);
     
-    private static final Map<Integer, MySQLBinaryColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1);
+    private static final Map<Integer, MySQLBinaryColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
     
-    private static final Map<Integer, MySQLBinaryColumnType> VALUE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1);
+    private static final Map<Integer, MySQLBinaryColumnType> VALUE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
     
     private final int value;
     
