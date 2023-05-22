@@ -98,7 +98,7 @@ public final class JDBCRepositorySQLLoader {
                 if (file.toString().endsWith(FILE_EXTENSION)) {
                     JDBCRepositorySQL provider = (JDBCRepositorySQL) JAXBContext.newInstance(JDBCRepositorySQL.class).createUnmarshaller()
                             .unmarshal(Files.newInputStream(file.toFile().toPath()));
-                    if (Objects.equals(provider.isDefault(), true)) {
+                    if (provider.isDefault()) {
                         result[0] = provider;
                     }
                     if (Objects.equals(provider.getType(), type)) {
@@ -123,7 +123,7 @@ public final class JDBCRepositorySQLLoader {
                 }
                 final InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
                 JDBCRepositorySQL provider = (JDBCRepositorySQL) JAXBContext.newInstance(JDBCRepositorySQL.class).createUnmarshaller().unmarshal(inputStream);
-                if (Objects.equals(provider.isDefault(), true)) {
+                if (provider.isDefault()) {
                     defaultProvider = provider;
                 }
                 if (Objects.equals(provider.getType(), type)) {
