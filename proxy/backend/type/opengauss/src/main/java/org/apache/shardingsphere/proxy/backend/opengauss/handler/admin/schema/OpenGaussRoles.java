@@ -17,20 +17,17 @@
 
 package org.apache.shardingsphere.proxy.backend.opengauss.handler.admin.schema;
 
+import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 
 /**
- * TODO we should refactor this with our federation modules.
- * System catalog schema of openGauss.
+ * System table which maintains tables in openGauss system catalog schema.
  */
+@EqualsAndHashCode
 @RequiredArgsConstructor
-public final class OpenGaussSystemCatalog {
+public final class OpenGaussRoles {
     
     // CHECKSTYLE:OFF
-    public final OpenGaussDatabase[] pg_database;
-    
-    public final OpenGaussTables[] pg_tables;
-    
-    public final OpenGaussRoles[] pg_roles;
+    public final String rolname;
     // CHECKSTYLE:ON
 }

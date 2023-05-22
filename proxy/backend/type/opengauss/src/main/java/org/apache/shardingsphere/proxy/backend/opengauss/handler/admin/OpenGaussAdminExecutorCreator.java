@@ -38,13 +38,16 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     
     private static final Set<String> SYSTEM_CATALOG_QUERY_EXPRESSIONS = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     
+    private static final Set<String> SYSTEM_CATALOG_TABLES = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    
     static {
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("VERSION()");
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("intervaltonum(gs_password_deadline())");
         SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("gs_password_notifytime()");
+        SYSTEM_CATALOG_TABLES.add("pg_database");
+        SYSTEM_CATALOG_TABLES.add("pg_tables");
+        SYSTEM_CATALOG_TABLES.add("pg_roles");
     }
-    
-    private static final String OG_DATABASE = "pg_database";
     
     private final PostgreSQLAdminExecutorCreator delegated = new PostgreSQLAdminExecutorCreator();
     
@@ -62,7 +65,7 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     }
     
     private boolean isSystemCatalogQuery(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext.getTablesContext().getTableNames().contains(OG_DATABASE)) {
+        if (sqlStatementContext.getTablesContext().getTableNames().stream().anyMatch(SYSTEM_CATALOG_TABLES::contains)) {
             return true;
         }
         if (!(sqlStatementContext.getSqlStatement() instanceof SelectStatement)) {
