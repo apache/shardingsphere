@@ -57,24 +57,24 @@ public final class PostgreSQLTablePropertiesLoader extends AbstractPostgreSQLDDL
     private void fetchDataBaseId(final Map<String, Object> context) throws SQLException {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("databaseName", getConnection().getCatalog());
-        appendFirstRow(executeByTemplate(params, "component/table/%s/get_database_id.ftl"), context);
+        context.putAll(executeByTemplateForSingleRow(params, "component/table/%s/get_database_id.ftl"));
     }
     
     private void fetchTableId(final Map<String, Object> context) {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("schemaName", schemaName);
         params.put("tableName", tableName);
-        appendFirstRow(executeByTemplate(params, "component/table/%s/get_table_id.ftl"), context);
+        context.putAll(executeByTemplateForSingleRow(params, "component/table/%s/get_table_id.ftl"));
     }
     
     private void fetchSchemaId(final Map<String, Object> context) {
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("schemaName", schemaName);
-        appendFirstRow(executeByTemplate(params, "component/table/%s/get_schema_id.ftl"), context);
+        context.putAll(executeByTemplateForSingleRow(params, "component/table/%s/get_schema_id.ftl"));
     }
     
     private void fetchTableProperties(final Map<String, Object> context) throws SQLException {
-        appendFirstRow(executeByTemplate(context, "component/table/%s/properties.ftl"), context);
+        context.putAll(executeByTemplateForSingleRow(context, "component/table/%s/properties.ftl"));
         updateAutovacuumProperties(context);
         checkRlspolicySupport(context);
         formatSecurityLabels(context);
@@ -135,12 +135,5 @@ public final class PostgreSQLTablePropertiesLoader extends AbstractPostgreSQLDDL
             }
         }
         return false;
-    }
-    
-    private void appendFirstRow(final Collection<Map<String, Object>> rows, final Map<String, Object> context) {
-        for (Map<String, Object> each : rows) {
-            context.putAll(each);
-            break;
-        }
     }
 }
