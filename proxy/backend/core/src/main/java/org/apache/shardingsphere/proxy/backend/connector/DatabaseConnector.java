@@ -102,9 +102,9 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
     
     private final ProxySQLExecutor proxySQLExecutor;
     
-    private final Collection<Statement> cachedStatements = new CopyOnWriteArrayList<>();
+    private final Collection<Statement> cachedStatements = new LinkedList<>();
     
-    private final Collection<ResultSet> cachedResultSets = new CopyOnWriteArrayList<>();
+    private final Collection<ResultSet> cachedResultSets = new LinkedList<>();
     
     private final String driverType;
     
