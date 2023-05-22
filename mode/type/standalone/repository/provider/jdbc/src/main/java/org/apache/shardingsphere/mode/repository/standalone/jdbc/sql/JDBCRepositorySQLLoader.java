@@ -23,9 +23,9 @@ import lombok.SneakyThrows;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileVisitResult;
@@ -49,6 +49,16 @@ public final class JDBCRepositorySQLLoader {
     
     private static final String FILE_EXTENSION = ".xml";
     
+    private static final String URL_PROTOCOL_JAR = "jar";
+    
+    private static final String URL_PROTOCOL_WAR = "war";
+    
+    private static final String URL_PROTOCOL_ZIP = "zip";
+    
+    private static final String URL_PROTOCOL_WSJAR = "wsjar";
+    
+    private static final String URL_PROTOCOL_VFSZIP = "vfszip";
+    
     /**
      * Load JDBC repository SQL.
      *
@@ -57,49 +67,54 @@ public final class JDBCRepositorySQLLoader {
      */
     @SneakyThrows({JAXBException.class, IOException.class, URISyntaxException.class})
     public static JDBCRepositorySQL load(final String type) {
-        File file = new File(JDBCRepositorySQLLoader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-        return file.isFile() ? loadFromJar(file, type) : loadFromDirectory(type);
-    }
-    
-    private static JDBCRepositorySQL loadFromDirectory(final String type) throws URISyntaxException, IOException {
-        Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(ROOT_DIRECTORY);
-        if (null == urls) {
+        Enumeration<URL> resources = Thread.currentThread().getContextClassLoader().getResources(ROOT_DIRECTORY);
+        if (null == resources) {
             return null;
         }
-        final JDBCRepositorySQL[] result = new JDBCRepositorySQL[1];
-        final boolean[] gotIt = new boolean[1];
-        while (urls.hasMoreElements()) {
-            URL url = urls.nextElement();
-            Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
-                
-                @SneakyThrows(JAXBException.class)
-                @Override
-                public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes) throws IOException {
-                    if (file.toString().endsWith(FILE_EXTENSION)) {
-                        JDBCRepositorySQL provider = (JDBCRepositorySQL) JAXBContext.newInstance(JDBCRepositorySQL.class).createUnmarshaller()
-                                .unmarshal(Files.newInputStream(file.toFile().toPath()));
-                        if (Objects.equals(provider.isDefault(), true)) {
-                            result[0] = provider;
-                        }
-                        if (Objects.equals(provider.getType(), type)) {
-                            result[0] = provider;
-                            gotIt[0] = true;
-                            return FileVisitResult.TERMINATE;
-                        }
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-            if (gotIt[0]) {
-                return result[0];
+        JDBCRepositorySQL result = null;
+        while (resources.hasMoreElements()) {
+            URL resource = resources.nextElement();
+            result = isJarURL(resource) ? loadFromJar(resource, type) : loadFromDirectory(resource, type);
+            if (null != result && Objects.equals(result.isDefault(), false)) {
+                break;
             }
         }
+        return result;
+    }
+    
+    private static boolean isJarURL(final URL url) {
+        String protocol = url.getProtocol();
+        return URL_PROTOCOL_JAR.equals(protocol) || URL_PROTOCOL_WAR.equals(protocol) || URL_PROTOCOL_ZIP.equals(protocol)
+                || URL_PROTOCOL_VFSZIP.equals(protocol) || URL_PROTOCOL_WSJAR.equals(protocol);
+    }
+    
+    private static JDBCRepositorySQL loadFromDirectory(final URL url, final String type) throws URISyntaxException, IOException {
+        final JDBCRepositorySQL[] result = new JDBCRepositorySQL[1];
+        Files.walkFileTree(Paths.get(url.toURI()), new SimpleFileVisitor<Path>() {
+            
+            @SneakyThrows(JAXBException.class)
+            @Override
+            public FileVisitResult visitFile(final Path file, final BasicFileAttributes attributes) throws IOException {
+                if (file.toString().endsWith(FILE_EXTENSION)) {
+                    JDBCRepositorySQL provider = (JDBCRepositorySQL) JAXBContext.newInstance(JDBCRepositorySQL.class).createUnmarshaller()
+                            .unmarshal(Files.newInputStream(file.toFile().toPath()));
+                    if (provider.isDefault()) {
+                        result[0] = provider;
+                    }
+                    if (Objects.equals(provider.getType(), type)) {
+                        result[0] = provider;
+                        return FileVisitResult.TERMINATE;
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
         return result[0];
     }
     
-    private static JDBCRepositorySQL loadFromJar(final File file, final String type) throws JAXBException, IOException {
+    private static JDBCRepositorySQL loadFromJar(final URL url, final String type) throws JAXBException, IOException {
         JDBCRepositorySQL defaultProvider = null;
-        try (JarFile jar = new JarFile(file)) {
+        try (JarFile jar = ((JarURLConnection) url.openConnection()).getJarFile()) {
             Enumeration<JarEntry> entries = jar.entries();
             while (entries.hasMoreElements()) {
                 String name = entries.nextElement().getName();
@@ -108,7 +123,7 @@ public final class JDBCRepositorySQLLoader {
                 }
                 final InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
                 JDBCRepositorySQL provider = (JDBCRepositorySQL) JAXBContext.newInstance(JDBCRepositorySQL.class).createUnmarshaller().unmarshal(inputStream);
-                if (Objects.equals(provider.isDefault(), true)) {
+                if (provider.isDefault()) {
                     defaultProvider = provider;
                 }
                 if (Objects.equals(provider.getType(), type)) {
