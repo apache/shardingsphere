@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 
-
 /**
  * Fixture distributed rule configuration.
  */
