@@ -32,7 +32,7 @@ import java.util.Collection;
 /**
  * Text result set row packet for MySQL.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-ProtocolText::ResultsetRow">ResultsetRow</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_query_response_text_resultset_row.html">Text Resultset Row</a>
  */
 @RequiredArgsConstructor
 @Getter

@@ -24,8 +24,6 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 /**
  * COM_QUERY response field count packet for MySQL.
- * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html">COM_QUERY field count</a>
  */
 @RequiredArgsConstructor
 @Getter

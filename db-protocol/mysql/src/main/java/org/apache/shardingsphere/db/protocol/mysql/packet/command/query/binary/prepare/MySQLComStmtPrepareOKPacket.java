@@ -24,7 +24,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 /**
  * COM_STMT_PREPARE_OK packet for MySQL.
  * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-prepare-response.html#packet-COM_STMT_PREPARE_OK">COM_STMT_PREPARE_OK</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_stmt_prepare.html#sect_protocol_com_stmt_prepare_response_ok">COM_STMT_PREPARE_OK</a>
  */
 @RequiredArgsConstructor
 public final class MySQLComStmtPrepareOKPacket implements MySQLPacket {

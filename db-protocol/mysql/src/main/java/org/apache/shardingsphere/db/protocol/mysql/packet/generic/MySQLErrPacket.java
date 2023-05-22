@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.Vendor
 /**
  * ERR packet protocol for MySQL.
  * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/packet-ERR_Packet.html">ERR Packet</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_basic_err_packet.html">ERR Packet</a>
  */
 @RequiredArgsConstructor
 @Getter
