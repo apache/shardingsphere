@@ -79,7 +79,7 @@ public final class MySQLClient {
     
     private Promise<Object> responseCallback;
     
-    private final ArrayBlockingQueue<List<AbstractBinlogEvent>> blockingEventQueue = new ArrayBlockingQueue<>(200);
+    private final ArrayBlockingQueue<List<AbstractBinlogEvent>> blockingEventQueue = new ArrayBlockingQueue<>(2500);
     
     private ServerInfo serverInfo;
     

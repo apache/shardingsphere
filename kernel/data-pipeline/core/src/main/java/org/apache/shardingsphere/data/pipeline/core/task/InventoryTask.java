@@ -75,7 +75,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
         taskId = generateTaskId(inventoryDumperConfig);
         this.inventoryDumperExecuteEngine = inventoryDumperExecuteEngine;
         this.inventoryImporterExecuteEngine = inventoryImporterExecuteEngine;
-        channel = createChannel(pipelineChannelCreator);
+        channel = createChannel(pipelineChannelCreator, importerConfig.getBatchSize());
         dumper = new InventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
         importer = TypedSPILoader.getService(ImporterCreator.class,
                 importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener, ImporterType.INVENTORY);
@@ -119,8 +119,8 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
         return result;
     }
     
-    private PipelineChannel createChannel(final PipelineChannelCreator pipelineChannelCreator) {
-        return pipelineChannelCreator.createPipelineChannel(1, records -> {
+    private PipelineChannel createChannel(final PipelineChannelCreator pipelineChannelCreator, final int batchSize) {
+        return pipelineChannelCreator.createPipelineChannel(1, batchSize, records -> {
             Record lastRecord = records.get(records.size() - 1);
             position.set(lastRecord.getPosition());
         });

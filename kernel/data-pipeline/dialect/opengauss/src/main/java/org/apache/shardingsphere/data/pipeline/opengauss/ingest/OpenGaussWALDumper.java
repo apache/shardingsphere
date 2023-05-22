@@ -66,7 +66,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     
     private final boolean decodeWithTX;
     
-    private List<AbstractRowEvent> walEvents = new LinkedList<>();
+    private List<AbstractRowEvent> rowEvents = new LinkedList<>();
     
     public OpenGaussWALDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
                               final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
@@ -118,27 +118,27 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     
     private void processEventWithTX(final AbstractWALEvent event) {
         if (event instanceof BeginTXEvent) {
-            walEvents = new LinkedList<>();
             return;
         }
         if (event instanceof AbstractRowEvent) {
-            walEvents.add((AbstractRowEvent) event);
+            rowEvents.add((AbstractRowEvent) event);
             return;
         }
         if (event instanceof CommitTXEvent) {
             Long csn = ((CommitTXEvent) event).getCsn();
             List<Record> records = new LinkedList<>();
-            for (AbstractRowEvent each : walEvents) {
+            for (AbstractRowEvent each : rowEvents) {
                 each.setCsn(csn);
                 records.add(walEventConverter.convert(each));
             }
             records.add(walEventConverter.convert(event));
             channel.pushRecords(records);
+            rowEvents = new LinkedList<>();
         }
     }
     
     private void processEventIgnoreTX(final AbstractWALEvent event) {
-        if (event instanceof BeginTXEvent || event instanceof CommitTXEvent) {
+        if (event instanceof BeginTXEvent) {
             return;
         }
         channel.pushRecords(Collections.singletonList(walEventConverter.convert(event)));

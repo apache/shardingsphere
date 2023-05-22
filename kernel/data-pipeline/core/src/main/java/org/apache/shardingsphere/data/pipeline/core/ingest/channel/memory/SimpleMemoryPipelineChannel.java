@@ -58,7 +58,7 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
         while (batchSize > recordsCount) {
             List<Record> records = queue.poll();
             if (null == records || records.isEmpty()) {
-                TimeUnit.MILLISECONDS.sleep(100L);
+                TimeUnit.MILLISECONDS.sleep(Math.min(100, timeUnit.toMillis(timeout)));
             } else {
                 recordsCount += records.size();
                 result.addAll(records);
