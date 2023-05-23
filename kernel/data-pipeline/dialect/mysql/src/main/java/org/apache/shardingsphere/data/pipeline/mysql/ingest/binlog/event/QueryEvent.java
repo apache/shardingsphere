@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
  * 2. DDLs
  * 3. COMMIT related to non transactional engines (MyISAM, BLACKHOLE etc).
  *
- * @see <a href="https://mariadb.com/kb/en/query_event/">QUERY_EVENT</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_replication_binlog_event.html#sect_protocol_replication_event_query">QUERY_EVENT</a>
  */
 @Getter
 @RequiredArgsConstructor

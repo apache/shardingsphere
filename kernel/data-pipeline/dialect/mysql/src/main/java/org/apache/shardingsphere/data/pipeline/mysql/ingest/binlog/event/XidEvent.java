@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * XID event is generated for a COMMIT of a transaction that modifies one or more tables of an XA-capable storage engine.
  *
- * @see <a href="https://mariadb.com/kb/en/xid_event/">XID_EVENT</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_replication_binlog_event.html#sect_protocol_replication_event_xid">XID_EVENT</a>
  */
 @RequiredArgsConstructor
 @Getter
