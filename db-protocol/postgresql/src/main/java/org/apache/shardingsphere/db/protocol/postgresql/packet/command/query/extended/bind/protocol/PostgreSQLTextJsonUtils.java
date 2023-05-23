@@ -33,18 +33,18 @@ public final class PostgreSQLTextJsonUtils {
     /**
      * Parse json in PostgreSQL text format.
      *
-     * @param textValue text value to be parsed
+     * @param jsonText text value to be parsed
      * @return json pgobject
      * @throws SQLWrapperException thrown if value is invalid for json type
      */
-    public static PGobject parse(final String textValue) {
+    public static PGobject parse(final String jsonText) {
         try {
-            PGobject jsonObject = new PGobject();
-            jsonObject.setType("json");
-            jsonObject.setValue(textValue);
-            return jsonObject;
-        } catch (final SQLException e) {
-            throw new SQLWrapperException(e);
+            PGobject result = new PGobject();
+            result.setType("json");
+            result.setValue(jsonText);
+            return result;
+        } catch (final SQLException ex) {
+            throw new SQLWrapperException(ex);
         }
     }
 }
