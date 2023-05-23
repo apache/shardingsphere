@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm;
+package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.DataMatchDataConsistencyCalculateAlgorithm.CalculatedResult;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -37,15 +36,15 @@ class DataMatchCalculatedResultTest {
     
     @Test
     void assertEmptyRecordsEquals() {
-        CalculatedResult actual = new CalculatedResult(0, 0, Collections.emptyList());
-        CalculatedResult expected = new CalculatedResult(0, 0, Collections.emptyList());
+        DataMatchCalculatedResult actual = new DataMatchCalculatedResult(0, 0, Collections.emptyList());
+        DataMatchCalculatedResult expected = new DataMatchCalculatedResult(0, 0, Collections.emptyList());
         assertThat(actual, is(expected));
     }
     
     @Test
     void assertFullTypeRecordsEquals() {
-        CalculatedResult actual = new CalculatedResult(1000, 2, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
-        CalculatedResult expected = new CalculatedResult(1000, 2, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
+        DataMatchCalculatedResult actual = new DataMatchCalculatedResult(1000, 2, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
+        DataMatchCalculatedResult expected = new DataMatchCalculatedResult(1000, 2, Arrays.asList(buildFixedFullTypeRecord(), buildFixedFullTypeRecord()));
         assertThat(actual, is(expected));
     }
     
@@ -56,7 +55,7 @@ class DataMatchCalculatedResultTest {
     
     @Test
     void assertFullTypeRecordsEqualsWithDifferentDecimalScale() {
-        CalculatedResult expected = new CalculatedResult(1000, 1, Collections.singletonList(buildFixedFullTypeRecord()));
+        DataMatchCalculatedResult expected = new DataMatchCalculatedResult(1000, 1, Collections.singletonList(buildFixedFullTypeRecord()));
         List<Object> record = buildFixedFullTypeRecord();
         for (int index = 0; index < record.size(); index++) {
             if (record.get(index) instanceof BigDecimal) {
@@ -64,30 +63,30 @@ class DataMatchCalculatedResultTest {
                 record.set(index, decimal.setScale(decimal.scale() + 1, RoundingMode.CEILING));
             }
         }
-        CalculatedResult actual = new CalculatedResult(1000, 1, Collections.singletonList(record));
+        DataMatchCalculatedResult actual = new DataMatchCalculatedResult(1000, 1, Collections.singletonList(record));
         assertThat(actual, is(expected));
     }
     
     @Test
     void assertRecordsCountNotEquals() {
-        CalculatedResult result1 = new CalculatedResult(1000, 1, Collections.emptyList());
-        CalculatedResult result2 = new CalculatedResult(1000, 0, Collections.emptyList());
+        DataMatchCalculatedResult result1 = new DataMatchCalculatedResult(1000, 1, Collections.emptyList());
+        DataMatchCalculatedResult result2 = new DataMatchCalculatedResult(1000, 0, Collections.emptyList());
         assertNotEquals(result1, result2);
     }
     
     @Test
     void assertMaxUniqueKeyValueNotEquals() {
-        CalculatedResult result1 = new CalculatedResult(1000, 1, Collections.emptyList());
-        CalculatedResult result2 = new CalculatedResult(1001, 1, Collections.emptyList());
+        DataMatchCalculatedResult result1 = new DataMatchCalculatedResult(1000, 1, Collections.emptyList());
+        DataMatchCalculatedResult result2 = new DataMatchCalculatedResult(1001, 1, Collections.emptyList());
         assertNotEquals(result1, result2);
     }
     
     @Test
     void assertRandomColumnValueNotEquals() {
         List<Object> record = buildFixedFullTypeRecord();
-        CalculatedResult result1 = new CalculatedResult(1000, 1, Collections.singletonList(record));
+        DataMatchCalculatedResult result1 = new DataMatchCalculatedResult(1000, 1, Collections.singletonList(record));
         for (int index = 0; index < record.size(); index++) {
-            CalculatedResult result2 = new CalculatedResult(1000, 1, Collections.singletonList(modifyColumnValueRandomly(buildFixedFullTypeRecord(), index)));
+            DataMatchCalculatedResult result2 = new DataMatchCalculatedResult(1000, 1, Collections.singletonList(modifyColumnValueRandomly(buildFixedFullTypeRecord(), index)));
             assertNotEquals(result1, result2);
         }
     }
