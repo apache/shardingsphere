@@ -21,26 +21,26 @@
 # 
 ######################################################################################################
 
-mode:
-  type: Cluster
-  repository:
-    type: ZooKeeper
-    props:
-      namespace: ss
-      server-lists: localhost:2181
-      retryIntervalMilliseconds: 500
-      timeToLiveSeconds: 60
-      maxRetries: 3
-      operationTimeoutMilliseconds: 500
-
-authority:
-  users:
-    - user: root@%
-      password: root
-    - user: sharding
-      password: sharding
-  privilege:
-    type: ALL_PERMITTED
+#mode:
+#  type: Cluster
+#  repository:
+#    type: ZooKeeper
+#    props:
+#      namespace: governance_ds
+#      server-lists: localhost:2181
+#      retryIntervalMilliseconds: 500
+#      timeToLiveSeconds: 60
+#      maxRetries: 3
+#      operationTimeoutMilliseconds: 500
+#
+#authority:
+#  users:
+#    - user: root@%
+#      password: root
+#    - user: sharding
+#      password: sharding
+#  privilege:
+#    type: ALL_PERMITTED
 #
 #transaction:
 #  defaultType: XA
@@ -63,8 +63,7 @@ authority:
 #    props:
 #      enable: false
 #
-props:
-  proxy-frontend-database-protocol-type: openGauss
+#props:
 #  system-log-level: INFO
 #  max-connections-size-per-query: 1
 #  kernel-executor-size: 16  # Infinite by default.
