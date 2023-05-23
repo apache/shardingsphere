@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -65,6 +66,8 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
     @RequiredArgsConstructor
     private final class ResultIterator implements Iterator<DataConsistencyCalculatedResult> {
         
+        private final AtomicBoolean currentChunkCalculated = new AtomicBoolean();
+        
         private final AtomicReference<Optional<DataConsistencyCalculatedResult>> nextResult = new AtomicReference<>();
         
         private final DataConsistencyCalculateParameter param;
@@ -78,14 +81,16 @@ public abstract class AbstractStreamingDataConsistencyCalculateAlgorithm extends
         @Override
         public DataConsistencyCalculatedResult next() {
             calculateIfNecessary();
-            Optional<DataConsistencyCalculatedResult> nextCalculatedResult = this.nextResult.get();
-            this.nextResult.set(null);
-            return nextCalculatedResult.orElseThrow(NoSuchElementException::new);
+            Optional<DataConsistencyCalculatedResult> result = nextResult.get();
+            nextResult.set(null);
+            currentChunkCalculated.set(false);
+            return result.orElseThrow(NoSuchElementException::new);
         }
         
         private void calculateIfNecessary() {
-            if (null == nextResult.get()) {
+            if (!currentChunkCalculated.get()) {
                 nextResult.set(calculateChunk(param));
+                currentChunkCalculated.set(true);
             }
         }
     }
