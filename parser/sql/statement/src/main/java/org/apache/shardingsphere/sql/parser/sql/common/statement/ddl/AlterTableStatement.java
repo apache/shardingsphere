@@ -68,7 +68,7 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
     private final Collection<DropConstraintDefinitionSegment> dropConstraintDefinitions = new LinkedList<>();
     
     private final Collection<DropIndexDefinitionSegment> dropIndexDefinitions = new LinkedList<>();
-
+    
     private final Collection<RenameColumnSegment> renameColumnDefinitions = new LinkedList<>();
     
     private final Collection<RenameIndexDefinitionSegment> renameIndexDefinitions = new LinkedList<>();
