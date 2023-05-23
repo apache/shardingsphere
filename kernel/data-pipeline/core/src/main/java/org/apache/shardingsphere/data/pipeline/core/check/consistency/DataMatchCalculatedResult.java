@@ -65,49 +65,56 @@ public final class DataMatchCalculatedResult implements DataConsistencyCalculate
             return true;
         }
         if (!(o instanceof DataMatchCalculatedResult)) {
-            log.warn("DataMatchCalculatedResult type not match, o.className={}", o.getClass().getName());
+            log.warn("DataMatchCalculatedResult type not match, o.className={}.", o.getClass().getName());
             return false;
         }
         final DataMatchCalculatedResult that = (DataMatchCalculatedResult) o;
         if (recordsCount != that.recordsCount || !Objects.equals(maxUniqueKeyValue, that.maxUniqueKeyValue)) {
-            log.warn("recordCount or maxUniqueKeyValue not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}",
+            log.warn("Record count or max unique key value not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}.",
                     recordsCount, that.recordsCount, maxUniqueKeyValue, that.maxUniqueKeyValue);
             return false;
         }
         EqualsBuilder equalsBuilder = new EqualsBuilder();
-        Iterator<Collection<Object>> thisIterator = records.iterator();
-        Iterator<Collection<Object>> thatIterator = that.records.iterator();
-        while (thisIterator.hasNext() && thatIterator.hasNext()) {
+        Iterator<Collection<Object>> thisRecordsIterator = records.iterator();
+        Iterator<Collection<Object>> thatRecordsIterator = that.records.iterator();
+        while (thisRecordsIterator.hasNext() && thatRecordsIterator.hasNext()) {
             equalsBuilder.reset();
-            Collection<Object> thisNext = thisIterator.next();
-            Collection<Object> thatNext = thatIterator.next();
-            if (thisNext.size() != thatNext.size()) {
-                log.warn("record column size not match, size1={}, size2={}, record1={}, record2={}", thisNext.size(), thatNext.size(), thisNext, thatNext);
+            Collection<Object> thisRecord = thisRecordsIterator.next();
+            Collection<Object> thatRecord = thatRecordsIterator.next();
+            if (thisRecord.size() != thatRecord.size()) {
+                log.warn("Record column size not match, size1={}, size2={}, record1={}, record2={}.", thisRecord.size(), thatRecord.size(), thisRecord, thatRecord);
                 return false;
             }
-            Iterator<Object> thisNextIterator = thisNext.iterator();
-            Iterator<Object> thatNextIterator = thatNext.iterator();
-            int columnIndex = 0;
-            while (thisNextIterator.hasNext() && thatNextIterator.hasNext()) {
-                ++columnIndex;
-                Object thisResult = thisNextIterator.next();
-                Object thatResult = thatNextIterator.next();
-                boolean matched;
-                if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
-                    matched = ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
-                } else if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
-                    matched = DataConsistencyCheckUtils.isBigDecimalEquals((BigDecimal) thisResult, (BigDecimal) thatResult);
-                } else if (thisResult instanceof Array && thatResult instanceof Array) {
-                    matched = Objects.deepEquals(((Array) thisResult).getArray(), ((Array) thatResult).getArray());
-                } else {
-                    matched = equalsBuilder.append(thisResult, thatResult).isEquals();
-                }
-                if (!matched) {
-                    log.warn("record column value not match, columnIndex={}, value1={}, value2={}, value1.class={}, value2.class={}, record1={}, record2={}", columnIndex, thisResult, thatResult,
-                            null != thisResult ? thisResult.getClass().getName() : "", null != thatResult ? thatResult.getClass().getName() : "",
-                            thisNext, thatNext);
-                    return false;
-                }
+            if (!recordsEquals(thisRecord, thatRecord, equalsBuilder)) {
+                log.warn("Records not equals, record1={}, record2={}.", thatRecord, thatRecord);
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean recordsEquals(final Collection<Object> thisRecord, final Collection<Object> thatRecord, final EqualsBuilder equalsBuilder) throws SQLException {
+        Iterator<Object> thisRecordIterator = thisRecord.iterator();
+        Iterator<Object> thatRecordIterator = thatRecord.iterator();
+        int columnIndex = 0;
+        while (thisRecordIterator.hasNext() && thatRecordIterator.hasNext()) {
+            ++columnIndex;
+            Object thisColumnValue = thisRecordIterator.next();
+            Object thatColumnValue = thatRecordIterator.next();
+            boolean matched;
+            if (thisColumnValue instanceof SQLXML && thatColumnValue instanceof SQLXML) {
+                matched = ((SQLXML) thisColumnValue).getString().equals(((SQLXML) thatColumnValue).getString());
+            } else if (thisColumnValue instanceof BigDecimal && thatColumnValue instanceof BigDecimal) {
+                matched = DataConsistencyCheckUtils.isBigDecimalEquals((BigDecimal) thisColumnValue, (BigDecimal) thatColumnValue);
+            } else if (thisColumnValue instanceof Array && thatColumnValue instanceof Array) {
+                matched = Objects.deepEquals(((Array) thisColumnValue).getArray(), ((Array) thatColumnValue).getArray());
+            } else {
+                matched = equalsBuilder.append(thisColumnValue, thatColumnValue).isEquals();
+            }
+            if (!matched) {
+                log.warn("Record column value not match, columnIndex={}, value1={}, value2={}, value1.class={}, value2.class={}.", columnIndex, thisColumnValue, thatColumnValue,
+                        null != thisColumnValue ? thisColumnValue.getClass().getName() : "", null != thatColumnValue ? thatColumnValue.getClass().getName() : "");
+                return false;
             }
         }
         return true;
