@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     
-    private final BlockingQueue<Record> queue;
+    private final BlockingQueue<List<Record>> queue;
     
     private final AckCallback ackCallback;
     
@@ -44,23 +44,29 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
     
     @SneakyThrows(InterruptedException.class)
     @Override
-    public void pushRecord(final Record dataRecord) {
-        queue.put(dataRecord);
+    public void pushRecords(final List<Record> records) {
+        queue.put(records);
     }
     
     @SneakyThrows(InterruptedException.class)
     // TODO thread-safe?
     @Override
     public List<Record> fetchRecords(final int batchSize, final int timeout, final TimeUnit timeUnit) {
-        List<Record> result = new ArrayList<>(batchSize);
+        List<Record> result = new LinkedList<>();
         long start = System.currentTimeMillis();
-        while (batchSize > queue.size()) {
+        int recordsCount = 0;
+        while (batchSize > recordsCount) {
+            List<Record> records = queue.poll();
+            if (null == records || records.isEmpty()) {
+                TimeUnit.MILLISECONDS.sleep(Math.min(100, timeUnit.toMillis(timeout)));
+            } else {
+                recordsCount += records.size();
+                result.addAll(records);
+            }
             if (timeUnit.toMillis(timeout) <= System.currentTimeMillis() - start) {
                 break;
             }
-            TimeUnit.MILLISECONDS.sleep(100L);
         }
-        queue.drainTo(result, batchSize);
         return result;
     }
     

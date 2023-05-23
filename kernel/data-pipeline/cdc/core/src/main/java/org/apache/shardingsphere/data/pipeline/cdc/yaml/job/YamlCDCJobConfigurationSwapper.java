@@ -53,7 +53,7 @@ public final class YamlCDCJobConfigurationSwapper implements YamlConfigurationSw
         result.setDecodeWithTX(data.isDecodeWithTX());
         result.setSinkConfig(swapToYamlSinkConfiguration(data.getSinkConfig()));
         result.setConcurrency(data.getConcurrency());
-        result.setRetryTimes(0);
+        result.setRetryTimes(data.getRetryTimes());
         return result;
     }
     

@@ -23,6 +23,8 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginTXEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitTXEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.DeleteRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.PlaceholderEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.UpdateRowEvent;
@@ -45,7 +47,14 @@ public final class TestDecodingPlugin implements DecodingPlugin {
     
     @Override
     public AbstractWALEvent decode(final ByteBuffer data, final BaseLogSequenceNumber logSequenceNumber) {
-        AbstractWALEvent result = "table".equals(readEventType(data)) ? readTableEvent(data) : new PlaceholderEvent();
+        String type = readEventType(data);
+        if (type.startsWith("BEGIN")) {
+            return new BeginTXEvent(Long.parseLong(readNextSegment(data)));
+        }
+        if (type.startsWith("COMMIT")) {
+            return new CommitTXEvent(Long.parseLong(readNextSegment(data)), null);
+        }
+        AbstractWALEvent result = "table".equals(type) ? readTableEvent(data) : new PlaceholderEvent();
         result.setLogSequenceNumber(logSequenceNumber);
         return result;
     }

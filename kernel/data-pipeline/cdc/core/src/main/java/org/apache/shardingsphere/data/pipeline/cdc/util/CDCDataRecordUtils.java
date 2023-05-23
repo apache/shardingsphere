@@ -24,8 +24,10 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.SocketSinkImporter;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
@@ -44,8 +46,8 @@ public final class CDCDataRecordUtils {
      * @param cdcAckPositionMap CDC ack position map.
      * @return minimum data record
      */
-    public static DataRecord findMinimumDataRecordAndSavePosition(final Map<SocketSinkImporter, BlockingQueue<Record>> incrementalRecordMap, final Comparator<DataRecord> dataRecordComparator,
-                                                                  final Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap) {
+    public static List<DataRecord> findMinimumDataRecordsAndSavePosition(final Map<SocketSinkImporter, BlockingQueue<List<DataRecord>>> incrementalRecordMap,
+                                                                         final Comparator<DataRecord> dataRecordComparator, final Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap) {
         if (null == dataRecordComparator) {
             return findMinimumDataRecordWithoutComparator(incrementalRecordMap, cdcAckPositionMap);
         } else {
@@ -53,17 +55,18 @@ public final class CDCDataRecordUtils {
         }
     }
     
-    private static DataRecord findMinimumDataRecordWithoutComparator(final Map<SocketSinkImporter, BlockingQueue<Record>> incrementalRecordMap,
-                                                                     final Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap) {
-        for (Entry<SocketSinkImporter, BlockingQueue<Record>> entry : incrementalRecordMap.entrySet()) {
-            Record record = entry.getValue().poll();
-            if (!(record instanceof DataRecord)) {
+    private static List<DataRecord> findMinimumDataRecordWithoutComparator(final Map<SocketSinkImporter, BlockingQueue<List<DataRecord>>> incrementalRecordMap,
+                                                                           final Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap) {
+        for (Entry<SocketSinkImporter, BlockingQueue<List<DataRecord>>> entry : incrementalRecordMap.entrySet()) {
+            List<DataRecord> records = entry.getValue().poll();
+            if (null == records || records.isEmpty()) {
                 continue;
             }
-            saveAckPosition(cdcAckPositionMap, entry.getKey(), record);
-            return (DataRecord) record;
+            DataRecord lastRecord = records.get(records.size() - 1);
+            saveAckPosition(cdcAckPositionMap, entry.getKey(), lastRecord);
+            return records;
         }
-        return null;
+        return Collections.emptyList();
     }
     
     private static void saveAckPosition(final Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap, final SocketSinkImporter socketSinkImporter, final Record record) {
@@ -76,39 +79,37 @@ public final class CDCDataRecordUtils {
         }
     }
     
-    private static DataRecord findMinimumDataRecordWithComparator(final Map<SocketSinkImporter, BlockingQueue<Record>> incrementalRecordMap,
-                                                                  final Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap, final Comparator<DataRecord> dataRecordComparator) {
-        Map<SocketSinkImporter, DataRecord> waitSortedMap = new HashMap<>();
-        for (Entry<SocketSinkImporter, BlockingQueue<Record>> entry : incrementalRecordMap.entrySet()) {
-            Record peek = entry.getValue().peek();
+    private static List<DataRecord> findMinimumDataRecordWithComparator(final Map<SocketSinkImporter, BlockingQueue<List<DataRecord>>> incrementalRecordMap,
+                                                                        final Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap, final Comparator<DataRecord> dataRecordComparator) {
+        Map<SocketSinkImporter, List<DataRecord>> waitSortedMap = new HashMap<>();
+        for (Entry<SocketSinkImporter, BlockingQueue<List<DataRecord>>> entry : incrementalRecordMap.entrySet()) {
+            List<DataRecord> peek = entry.getValue().peek();
             if (null == peek) {
                 continue;
             }
-            if (peek instanceof DataRecord) {
-                waitSortedMap.put(entry.getKey(), (DataRecord) peek);
-            }
+            waitSortedMap.put(entry.getKey(), peek);
         }
         if (waitSortedMap.isEmpty()) {
-            return null;
+            return Collections.emptyList();
         }
-        DataRecord minRecord = null;
+        List<DataRecord> result = null;
         SocketSinkImporter belongImporter = null;
-        for (Entry<SocketSinkImporter, DataRecord> entry : waitSortedMap.entrySet()) {
-            if (null == minRecord) {
-                minRecord = entry.getValue();
+        for (Entry<SocketSinkImporter, List<DataRecord>> entry : waitSortedMap.entrySet()) {
+            if (null == result) {
+                result = entry.getValue();
                 belongImporter = entry.getKey();
                 continue;
             }
-            if (dataRecordComparator.compare(minRecord, entry.getValue()) > 0) {
-                minRecord = entry.getValue();
+            if (dataRecordComparator.compare(result.get(0), entry.getValue().get(0)) > 0) {
+                result = entry.getValue();
                 belongImporter = entry.getKey();
             }
         }
-        if (null == minRecord) {
-            return null;
+        if (null == result) {
+            return Collections.emptyList();
         }
         incrementalRecordMap.get(belongImporter).poll();
-        saveAckPosition(cdcAckPositionMap, belongImporter, minRecord);
-        return minRecord;
+        saveAckPosition(cdcAckPositionMap, belongImporter, result.get(result.size() - 1));
+        return result;
     }
 }

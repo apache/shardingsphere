@@ -34,7 +34,6 @@ import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskPr
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumper;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
@@ -76,7 +75,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
         taskId = generateTaskId(inventoryDumperConfig);
         this.inventoryDumperExecuteEngine = inventoryDumperExecuteEngine;
         this.inventoryImporterExecuteEngine = inventoryImporterExecuteEngine;
-        channel = createChannel(pipelineChannelCreator);
+        channel = createChannel(pipelineChannelCreator, importerConfig.getBatchSize());
         dumper = new InventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
         importer = TypedSPILoader.getService(ImporterCreator.class,
                 importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener, ImporterType.INVENTORY);
@@ -120,12 +119,10 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
         return result;
     }
     
-    private PipelineChannel createChannel(final PipelineChannelCreator pipelineChannelCreator) {
-        return pipelineChannelCreator.createPipelineChannel(1, records -> {
-            Record lastNormalRecord = RecordUtils.getLastNormalRecord(records);
-            if (null != lastNormalRecord) {
-                position.set(lastNormalRecord.getPosition());
-            }
+    private PipelineChannel createChannel(final PipelineChannelCreator pipelineChannelCreator, final int batchSize) {
+        return pipelineChannelCreator.createPipelineChannel(1, batchSize, records -> {
+            Record lastRecord = records.get(records.size() - 1);
+            position.set(lastRecord.getPosition());
         });
     }
     

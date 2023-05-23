@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.ingest.channel;
+package org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.AckCallback;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Pipeline channel creator.
+ * XID event is generated for a COMMIT of a transaction that modifies one or more tables of an XA-capable storage engine.
+ *
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_replication_binlog_event.html#sect_protocol_replication_event_xid">XID_EVENT</a>
  */
-public interface PipelineChannelCreator extends TypedSPI {
+@RequiredArgsConstructor
+@Getter
+public final class XidEvent extends AbstractBinlogEvent {
     
-    /**
-     * Create pipeline channel.
-     *
-     * @param outputConcurrency output concurrency
-     * @param averageElementSize average element size, affect the size of the queue
-     * @param ackCallback ack callback
-     * @return {@link PipelineChannel}
-     */
-    PipelineChannel createPipelineChannel(int outputConcurrency, int averageElementSize, AckCallback ackCallback);
+    private final long xid;
 }
