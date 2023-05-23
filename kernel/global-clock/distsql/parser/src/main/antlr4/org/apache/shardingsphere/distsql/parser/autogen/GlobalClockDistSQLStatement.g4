@@ -22,5 +22,5 @@ import Symbol, RALStatement;
 execute
     : (showGlobalClockRule
     | alterGlobalClockRule
-    ) SEMI?
+    ) SEMI_? EOF
     ;

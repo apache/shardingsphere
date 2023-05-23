@@ -60,6 +60,8 @@ public enum MySQLVendorError implements VendorError {
     
     ER_WRONG_VALUE_COUNT_ON_ROW(XOpenSQLState.MISMATCH_INSERT_VALUES_AND_COLUMNS, 1136, "Column count doesn't match value count at row %d"),
     
+    ER_UNKNOWN_SYSTEM_VARIABLE(XOpenSQLState.GENERAL_ERROR, 1193, "Unknown system variable '%s'"),
+    
     ER_LOCAL_VARIABLE(XOpenSQLState.GENERAL_ERROR, 1228, "Variable '%s' is a SESSION variable and can't be used with SET GLOBAL"),
     
     ER_GLOBAL_VARIABLE(XOpenSQLState.GENERAL_ERROR, 1229, "Variable '%s' is a GLOBAL variable and should be set with SET GLOBAL"),

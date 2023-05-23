@@ -82,8 +82,8 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     
     @Override
     public ASTNode visitMigrateTable(final MigrateTableContext ctx) {
-        List<String> source = Splitter.on('.').splitToList(getIdentifierValue(ctx.sourceTableName()));
-        List<String> target = Splitter.on('.').splitToList(getIdentifierValue(ctx.targetTableName()));
+        List<String> source = Splitter.on('.').splitToList(getRequiredIdentifierValue(ctx.sourceTableName()));
+        List<String> target = Splitter.on('.').splitToList(getRequiredIdentifierValue(ctx.targetTableName()));
         String sourceResourceName = source.get(0);
         String sourceSchemaName = 3 == source.size() ? source.get(1) : null;
         String sourceTableName = source.get(source.size() - 1);
@@ -94,6 +94,10 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
         return new MigrateTableStatement(Collections.singletonList(sourceTargetEntry), targetDatabaseName);
     }
     
+    private String getRequiredIdentifierValue(final ParseTree context) {
+        return new IdentifierValue(context.getText()).getValue();
+    }
+    
     @Override
     public ASTNode visitShowMigrationList(final ShowMigrationListContext ctx) {
         return new ShowMigrationListStatement();
@@ -101,32 +105,32 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     
     @Override
     public ASTNode visitShowMigrationStatus(final ShowMigrationStatusContext ctx) {
-        return new ShowMigrationStatusStatement(getIdentifierValue(ctx.jobId()));
+        return new ShowMigrationStatusStatement(getRequiredIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitStartMigration(final StartMigrationContext ctx) {
-        return new StartMigrationStatement(getIdentifierValue(ctx.jobId()));
+        return new StartMigrationStatement(getRequiredIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitStopMigration(final StopMigrationContext ctx) {
-        return new StopMigrationStatement(getIdentifierValue(ctx.jobId()));
+        return new StopMigrationStatement(getRequiredIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitRollbackMigration(final RollbackMigrationContext ctx) {
-        return new RollbackMigrationStatement(getIdentifierValue(ctx.jobId()));
+        return new RollbackMigrationStatement(getRequiredIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitCommitMigration(final CommitMigrationContext ctx) {
-        return new CommitMigrationStatement(getIdentifierValue(ctx.jobId()));
+        return new CommitMigrationStatement(getRequiredIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitCheckMigration(final CheckMigrationContext ctx) {
-        return new CheckMigrationStatement(getIdentifierValue(ctx.jobId()), null == ctx.algorithmDefinition() ? null : (AlgorithmSegment) visit(ctx.algorithmDefinition()));
+        return new CheckMigrationStatement(getRequiredIdentifierValue(ctx.jobId()), null == ctx.algorithmDefinition() ? null : (AlgorithmSegment) visit(ctx.algorithmDefinition()));
     }
     
     @Override
@@ -140,7 +144,7 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     }
     
     private String getIdentifierValue(final ParseTree context) {
-        return null == context ? null : new IdentifierValue(context.getText()).getValue();
+        return new IdentifierValue(context.getText()).getValue();
     }
     
     @Override
@@ -190,21 +194,21 @@ public final class MigrationDistSQLStatementVisitor extends MigrationDistSQLStat
     
     @Override
     public ASTNode visitShowMigrationCheckStatus(final ShowMigrationCheckStatusContext ctx) {
-        return new ShowMigrationCheckStatusStatement(getIdentifierValue(ctx.jobId()));
+        return new ShowMigrationCheckStatusStatement(getRequiredIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitStartMigrationCheck(final StartMigrationCheckContext ctx) {
-        return new StartMigrationCheckStatement(getIdentifierValue(ctx.jobId()));
+        return new StartMigrationCheckStatement(getRequiredIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitStopMigrationCheck(final StopMigrationCheckContext ctx) {
-        return new StopMigrationCheckStatement(getIdentifierValue(ctx.jobId()));
+        return new StopMigrationCheckStatement(getRequiredIdentifierValue(ctx.jobId()));
     }
     
     @Override
     public ASTNode visitDropMigrationCheck(final DropMigrationCheckContext ctx) {
-        return new DropMigrationCheckStatement(getIdentifierValue(ctx.jobId()));
+        return new DropMigrationCheckStatement(getRequiredIdentifierValue(ctx.jobId()));
     }
 }

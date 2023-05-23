@@ -34,7 +34,8 @@ import java.util.stream.Collectors;
 /**
  * Character set of MySQL.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/character-set.html#packet-Protocol::CharacterSet">Character Set</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_basic_character_set.html">Character Set</a>
+ * @see <a href="https://dev.mysql.com/doc/refman/8.0/en/charset-charsets.html">Character Set</a>
  */
 @Getter
 public enum MySQLCharacterSet {

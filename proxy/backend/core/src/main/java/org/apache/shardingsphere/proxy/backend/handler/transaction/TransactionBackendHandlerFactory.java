@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoComm
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa.XAStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
 
 import java.util.Collections;

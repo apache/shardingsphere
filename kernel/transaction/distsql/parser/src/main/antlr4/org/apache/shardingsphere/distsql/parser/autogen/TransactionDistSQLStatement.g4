@@ -22,5 +22,5 @@ import Symbol, RALStatement;
 execute
     : (showTransactionRule
     | alterTransactionRule
-    ) SEMI?
+    ) SEMI_? EOF
     ;

@@ -26,7 +26,7 @@ import java.sql.SQLException;
 /**
  * Status flags are a bit-field for MySQL.
  * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/status-flags.html#packet-Protocol::StatusFlags">StatusFlags</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/mysql__com_8h.html#a1d854e841086925be1883e4d7b4e8cad">Server Status Flags</a>
  */
 @RequiredArgsConstructor
 @Getter

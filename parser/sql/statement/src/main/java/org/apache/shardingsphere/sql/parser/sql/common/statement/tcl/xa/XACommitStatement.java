@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.xa;
 
-import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.MySQLSessionVariableHandler;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-public final class TestFixtureSessionVariableHandler implements MySQLSessionVariableHandler {
+/**
+ * XA commit statement.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class XACommitStatement extends AbstractSQLStatement implements XAStatement {
     
-    @Override
-    public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
-        connectionSession.setCurrentDatabase(assignValue);
-    }
-    
-    @Override
-    public String getType() {
-        return "test_fixture";
-    }
+    private final String xid;
 }

@@ -29,10 +29,13 @@ import org.apache.shardingsphere.dialect.exception.syntax.table.TableExistsExcep
 import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTransactionException;
 import org.apache.shardingsphere.dialect.mysql.exception.AccessDeniedException;
 import org.apache.shardingsphere.dialect.mysql.exception.DatabaseAccessDeniedException;
+import org.apache.shardingsphere.dialect.mysql.exception.ErrorGlobalVariableException;
+import org.apache.shardingsphere.dialect.mysql.exception.ErrorLocalVariableException;
 import org.apache.shardingsphere.dialect.mysql.exception.HandshakeException;
 import org.apache.shardingsphere.dialect.mysql.exception.IncorrectGlobalLocalVariableException;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownCollationException;
+import org.apache.shardingsphere.dialect.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.VendorError;
@@ -78,6 +81,9 @@ class MySQLDialectExceptionMapperTest {
                     Arguments.of(HandshakeException.class, MySQLVendorError.ER_HANDSHAKE_ERROR),
                     Arguments.of(AccessDeniedException.class, MySQLVendorError.ER_ACCESS_DENIED_ERROR),
                     Arguments.of(DatabaseAccessDeniedException.class, MySQLVendorError.ER_DBACCESS_DENIED_ERROR),
+                    Arguments.of(UnknownSystemVariableException.class, MySQLVendorError.ER_UNKNOWN_SYSTEM_VARIABLE),
+                    Arguments.of(ErrorLocalVariableException.class, MySQLVendorError.ER_LOCAL_VARIABLE),
+                    Arguments.of(ErrorGlobalVariableException.class, MySQLVendorError.ER_GLOBAL_VARIABLE),
                     Arguments.of(IncorrectGlobalLocalVariableException.class, MySQLVendorError.ER_INCORRECT_GLOBAL_LOCAL_VAR));
         }
     }

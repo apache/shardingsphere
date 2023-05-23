@@ -43,7 +43,6 @@ import org.slf4j.MDC;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -137,8 +136,7 @@ public final class CommandExecutorTask implements Runnable {
             log.error("Exception occur: ", cause);
         }
         context.write(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(cause));
-        Optional<DatabasePacket<?>> databasePacket = databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket(connectionSession);
-        databasePacket.ifPresent(context::write);
+        databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket(connectionSession).ifPresent(context::write);
         context.flush();
     }
     

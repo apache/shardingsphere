@@ -20,5 +20,5 @@ grammar AuthorityDistSQLStatement;
 import Symbol, RALStatement;
 
 execute
-    : (showAuthorityRule) SEMI?
+    : (showAuthorityRule) SEMI_? EOF
     ;

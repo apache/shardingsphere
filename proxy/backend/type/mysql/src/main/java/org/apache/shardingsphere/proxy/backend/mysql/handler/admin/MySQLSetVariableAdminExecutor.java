@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.mysql.handler.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.dialect.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -29,12 +30,15 @@ import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnectorFactor
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.MySQLSystemVariable;
+import org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor.sysvar.Scope;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -53,6 +57,7 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         Map<String, String> sessionVariables = extractSessionVariables();
+        validateSessionVariables(sessionVariables.keySet());
         Map<String, MySQLSessionVariableHandler> handlers = sessionVariables.keySet().stream()
                 .collect(Collectors.toMap(Function.identity(), value -> TypedSPILoader.getService(MySQLSessionVariableHandler.class, value)));
         for (Entry<String, MySQLSessionVariableHandler> entry : handlers.entrySet()) {
@@ -66,9 +71,11 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
                 .collect(Collectors.toMap(each -> each.getVariable().getVariable(), VariableAssignSegment::getAssignValue));
     }
     
-    private Map<String, String> extractGlobalVariables() {
-        return setStatement.getVariableAssigns().stream().filter(each -> "global".equalsIgnoreCase(each.getVariable().getScope().orElse("")))
-                .collect(Collectors.toMap(each -> each.getVariable().getVariable(), VariableAssignSegment::getAssignValue, (oldValue, newValue) -> newValue, LinkedHashMap::new));
+    private void validateSessionVariables(final Collection<String> sessionVariables) {
+        for (String each : sessionVariables) {
+            MySQLSystemVariable systemVariable = MySQLSystemVariable.findSystemVariable(each).orElseThrow(() -> new UnknownSystemVariableException(each));
+            systemVariable.validateSetTargetScope(Scope.SESSION);
+        }
     }
     
     private void executeSetGlobalVariablesIfPresent(final ConnectionSession connectionSession) throws SQLException {
@@ -93,5 +100,10 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
         } finally {
             databaseBackendHandler.close();
         }
+    }
+    
+    private Map<String, String> extractGlobalVariables() {
+        return setStatement.getVariableAssigns().stream().filter(each -> "global".equalsIgnoreCase(each.getVariable().getScope().orElse("")))
+                .collect(Collectors.toMap(each -> each.getVariable().getVariable(), VariableAssignSegment::getAssignValue, (oldValue, newValue) -> newValue, LinkedHashMap::new));
     }
 }

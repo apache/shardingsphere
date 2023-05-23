@@ -24,9 +24,7 @@ import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableExce
  */
 public enum VariableEnum {
     
-    CACHED_CONNECTIONS,
-    
-    TRANSACTION_TYPE;
+    CACHED_CONNECTIONS;
     
     /**
      * Returns the variable constant of the specified variable name.

@@ -48,7 +48,7 @@ import java.util.Optional;
 /**
  * Command execute engine for PostgreSQL.
  */
-public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngine<PostgreSQLPacket> {
+public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngine {
     
     @Override
     public PostgreSQLCommandPacketType getCommandPacketType(final PacketPayload payload) {
@@ -72,7 +72,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     }
     
     @Override
-    public Optional<PostgreSQLPacket> getOtherPacket(final ConnectionSession connectionSession) {
+    public Optional<DatabasePacket<?>> getOtherPacket(final ConnectionSession connectionSession) {
         return Optional.of(connectionSession.getTransactionStatus().isInTransaction() ? PostgreSQLReadyForQueryPacket.TRANSACTION_FAILED : PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
     }
     

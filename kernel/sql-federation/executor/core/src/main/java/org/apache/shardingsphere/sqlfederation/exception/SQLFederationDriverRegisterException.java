@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
+package org.apache.shardingsphere.sqlfederation.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.infra.exception.ConnectionSQLException;
+import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
 
 /**
- * XA statement.
+ * SQL federation driver register exception.
  */
-@RequiredArgsConstructor
-@Getter
-public abstract class XAStatement extends AbstractSQLStatement implements TCLStatement {
+public final class SQLFederationDriverRegisterException extends ConnectionSQLException {
     
-    private final String operator;
+    private static final long serialVersionUID = -2853184636838700216L;
     
-    private final String xid;
+    public SQLFederationDriverRegisterException(final String message) {
+        super(XOpenSQLState.CONNECTION_EXCEPTION, 1, "Can not register SQL federation driver, reason is: %s", message);
+    }
 }

@@ -15,17 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl;
+package org.apache.shardingsphere.dialect.mysql.exception;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.dialect.exception.SQLDialectException;
 
 /**
- * MySQL XA statement.
+ * Error local variable exception.
  */
-public final class MySQLXAStatement extends XAStatement implements MySQLStatement {
+@RequiredArgsConstructor
+@Getter
+public final class ErrorLocalVariableException extends SQLDialectException {
     
-    public MySQLXAStatement(final String operator, final String xid) {
-        super(operator, xid);
-    }
+    private static final long serialVersionUID = -1999295415845348324L;
+    
+    private final String variableName;
 }

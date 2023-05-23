@@ -18,15 +18,11 @@
 package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculateParameter;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCheckUtils;
+import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataMatchCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineSQLException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
@@ -41,18 +37,13 @@ import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.annotation.SPIDescription;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
-import java.math.BigDecimal;
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLXML;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
@@ -119,7 +110,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             if (records.isEmpty()) {
                 calculationContext.close();
             }
-            return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
+            return records.isEmpty() ? Optional.empty() : Optional.of(new DataMatchCalculatedResult(maxUniqueKeyValue, records.size(), records));
         } catch (final PipelineSQLException ex) {
             calculationContext.close();
             throw ex;
@@ -212,7 +203,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         
         /**
          * Set prepared statement.
-         * 
+         *
          * @param preparedStatement prepared statement
          */
         public void setPreparedStatement(final PreparedStatement preparedStatement) {
@@ -221,7 +212,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
         
         /**
          * Set result set.
-         * 
+         *
          * @param resultSet result set
          */
         public void setResultSet(final ResultSet resultSet) {
@@ -233,89 +224,6 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             CloseUtils.closeQuietly(resultSet.get());
             CloseUtils.closeQuietly(preparedStatement.get());
             CloseUtils.closeQuietly(connection);
-        }
-    }
-    
-    /**
-     * Calculated result.
-     */
-    @RequiredArgsConstructor
-    @Getter
-    public static final class CalculatedResult implements DataConsistencyCalculatedResult {
-        
-        @NonNull
-        private final Object maxUniqueKeyValue;
-        
-        private final int recordsCount;
-        
-        private final Collection<Collection<Object>> records;
-        
-        @Override
-        public Optional<Object> getMaxUniqueKeyValue() {
-            return Optional.of(maxUniqueKeyValue);
-        }
-        
-        @SneakyThrows(SQLException.class)
-        @Override
-        public boolean equals(final Object o) {
-            if (null == o) {
-                return false;
-            }
-            if (this == o) {
-                return true;
-            }
-            if (!(o instanceof CalculatedResult)) {
-                log.warn("CalculatedResult type not match, o.className={}", o.getClass().getName());
-                return false;
-            }
-            final CalculatedResult that = (CalculatedResult) o;
-            if (recordsCount != that.recordsCount || !Objects.equals(maxUniqueKeyValue, that.maxUniqueKeyValue)) {
-                log.warn("recordCount or maxUniqueKeyValue not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}",
-                        recordsCount, that.recordsCount, maxUniqueKeyValue, that.maxUniqueKeyValue);
-                return false;
-            }
-            EqualsBuilder equalsBuilder = new EqualsBuilder();
-            Iterator<Collection<Object>> thisIterator = records.iterator();
-            Iterator<Collection<Object>> thatIterator = that.records.iterator();
-            while (thisIterator.hasNext() && thatIterator.hasNext()) {
-                equalsBuilder.reset();
-                Collection<Object> thisNext = thisIterator.next();
-                Collection<Object> thatNext = thatIterator.next();
-                if (thisNext.size() != thatNext.size()) {
-                    log.warn("record column size not match, size1={}, size2={}, record1={}, record2={}", thisNext.size(), thatNext.size(), thisNext, thatNext);
-                    return false;
-                }
-                Iterator<Object> thisNextIterator = thisNext.iterator();
-                Iterator<Object> thatNextIterator = thatNext.iterator();
-                int columnIndex = 0;
-                while (thisNextIterator.hasNext() && thatNextIterator.hasNext()) {
-                    ++columnIndex;
-                    Object thisResult = thisNextIterator.next();
-                    Object thatResult = thatNextIterator.next();
-                    boolean matched;
-                    if (thisResult instanceof SQLXML && thatResult instanceof SQLXML) {
-                        matched = ((SQLXML) thisResult).getString().equals(((SQLXML) thatResult).getString());
-                    } else if (thisResult instanceof BigDecimal && thatResult instanceof BigDecimal) {
-                        matched = DataConsistencyCheckUtils.isBigDecimalEquals((BigDecimal) thisResult, (BigDecimal) thatResult);
-                    } else if (thisResult instanceof Array && thatResult instanceof Array) {
-                        matched = Objects.deepEquals(((Array) thisResult).getArray(), ((Array) thatResult).getArray());
-                    } else {
-                        matched = equalsBuilder.append(thisResult, thatResult).isEquals();
-                    }
-                    if (!matched) {
-                        log.warn("record column value not match, columnIndex={}, value1={}, value2={}, value1.class={}, value2.class={}, record1={}, record2={}", columnIndex, thisResult, thatResult,
-                                null != thisResult ? thisResult.getClass().getName() : "", null != thatResult ? thatResult.getClass().getName() : "",
-                                thisNext, thatNext);
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder(17, 37).append(getMaxUniqueKeyValue().orElse(null)).append(getRecordsCount()).append(getRecords()).toHashCode();
         }
     }
 }

@@ -92,7 +92,7 @@
     </set-parameter>
     <set-parameter sql-case-id="set_names">
         <parameter-assign value="'utf8'">
-            <parameter name="charset" />
+            <parameter name="character_set_client" />
         </parameter-assign>
     </set-parameter>
     <set-resource-group sql-case-id="set_resource_group">
@@ -100,7 +100,7 @@
     </set-resource-group>
     <set-parameter sql-case-id="set_charset_mysql">
         <parameter-assign value="'utf8'">
-            <parameter name="charset" />
+            <parameter name="character_set_client" />
         </parameter-assign>
     </set-parameter>
     <set-parameter sql-case-id="set_charset_postgresql">

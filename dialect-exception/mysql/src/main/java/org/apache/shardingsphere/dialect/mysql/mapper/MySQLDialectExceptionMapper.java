@@ -30,10 +30,13 @@ import org.apache.shardingsphere.dialect.exception.transaction.TableModifyInTran
 import org.apache.shardingsphere.dialect.mapper.SQLDialectExceptionMapper;
 import org.apache.shardingsphere.dialect.mysql.exception.AccessDeniedException;
 import org.apache.shardingsphere.dialect.mysql.exception.DatabaseAccessDeniedException;
+import org.apache.shardingsphere.dialect.mysql.exception.ErrorGlobalVariableException;
+import org.apache.shardingsphere.dialect.mysql.exception.ErrorLocalVariableException;
 import org.apache.shardingsphere.dialect.mysql.exception.HandshakeException;
 import org.apache.shardingsphere.dialect.mysql.exception.IncorrectGlobalLocalVariableException;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownCharsetException;
 import org.apache.shardingsphere.dialect.mysql.exception.UnknownCollationException;
+import org.apache.shardingsphere.dialect.mysql.exception.UnknownSystemVariableException;
 import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.dialect.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
@@ -96,6 +99,15 @@ public final class MySQLDialectExceptionMapper implements SQLDialectExceptionMap
         if (sqlDialectException instanceof DatabaseAccessDeniedException) {
             DatabaseAccessDeniedException ex = (DatabaseAccessDeniedException) sqlDialectException;
             return toSQLException(MySQLVendorError.ER_DBACCESS_DENIED_ERROR, ex.getUsername(), ex.getHostname(), ex.getDatabaseName());
+        }
+        if (sqlDialectException instanceof UnknownSystemVariableException) {
+            return toSQLException(MySQLVendorError.ER_UNKNOWN_SYSTEM_VARIABLE, ((UnknownSystemVariableException) sqlDialectException).getVariableName());
+        }
+        if (sqlDialectException instanceof ErrorLocalVariableException) {
+            return toSQLException(MySQLVendorError.ER_LOCAL_VARIABLE, ((ErrorLocalVariableException) sqlDialectException).getVariableName());
+        }
+        if (sqlDialectException instanceof ErrorGlobalVariableException) {
+            return toSQLException(MySQLVendorError.ER_GLOBAL_VARIABLE, ((ErrorGlobalVariableException) sqlDialectException).getVariableName());
         }
         if (sqlDialectException instanceof IncorrectGlobalLocalVariableException) {
             IncorrectGlobalLocalVariableException ex = (IncorrectGlobalLocalVariableException) sqlDialectException;

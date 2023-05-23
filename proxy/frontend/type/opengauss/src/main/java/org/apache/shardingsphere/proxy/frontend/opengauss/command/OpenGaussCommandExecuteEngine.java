@@ -22,6 +22,7 @@ import org.apache.shardingsphere.db.protocol.opengauss.packet.command.OpenGaussC
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.OpenGaussCommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
@@ -42,7 +43,7 @@ import java.util.Optional;
 /**
  * Command execute engine for openGauss.
  */
-public final class OpenGaussCommandExecuteEngine implements CommandExecuteEngine<PostgreSQLPacket> {
+public final class OpenGaussCommandExecuteEngine implements CommandExecuteEngine {
     
     private final PostgreSQLCommandExecuteEngine postgreSQLCommandExecuteEngine = new PostgreSQLCommandExecuteEngine();
     
@@ -68,7 +69,7 @@ public final class OpenGaussCommandExecuteEngine implements CommandExecuteEngine
     }
     
     @Override
-    public Optional<PostgreSQLPacket> getOtherPacket(final ConnectionSession connectionSession) {
+    public Optional<DatabasePacket<?>> getOtherPacket(final ConnectionSession connectionSession) {
         return postgreSQLCommandExecuteEngine.getOtherPacket(connectionSession);
     }
     
