@@ -24,5 +24,5 @@ execute
     | showStreamingStatus
     | rollbackStreaming
     | commitStreaming
-    ) SEMI?
+    ) SEMI_? EOF
     ;

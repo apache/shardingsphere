@@ -23,5 +23,5 @@ execute
     : (previewSQL 
     | parseSQL
     | formatSQL
-    ) SEMI?
+    ) SEMI_? EOF
     ;
