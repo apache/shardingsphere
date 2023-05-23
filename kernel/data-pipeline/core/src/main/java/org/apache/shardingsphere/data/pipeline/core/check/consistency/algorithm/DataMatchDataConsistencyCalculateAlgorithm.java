@@ -119,7 +119,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             if (records.isEmpty()) {
                 calculationContext.close();
             }
-            return records.isEmpty() ? Optional.empty() : Optional.of(new CalculatedResult(maxUniqueKeyValue, records.size(), records));
+            return records.isEmpty() ? Optional.empty() : Optional.of(new DataMatchCalculatedResult(maxUniqueKeyValue, records.size(), records));
         } catch (final PipelineSQLException ex) {
             calculationContext.close();
             throw ex;
@@ -241,7 +241,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
      */
     @RequiredArgsConstructor
     @Getter
-    public static final class CalculatedResult implements DataConsistencyCalculatedResult {
+    public static final class DataMatchCalculatedResult implements DataConsistencyCalculatedResult {
         
         @NonNull
         private final Object maxUniqueKeyValue;
@@ -264,11 +264,11 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             if (this == o) {
                 return true;
             }
-            if (!(o instanceof CalculatedResult)) {
-                log.warn("CalculatedResult type not match, o.className={}", o.getClass().getName());
+            if (!(o instanceof DataMatchCalculatedResult)) {
+                log.warn("DataMatchCalculatedResult type not match, o.className={}", o.getClass().getName());
                 return false;
             }
-            final CalculatedResult that = (CalculatedResult) o;
+            final DataMatchCalculatedResult that = (DataMatchCalculatedResult) o;
             if (recordsCount != that.recordsCount || !Objects.equals(maxUniqueKeyValue, that.maxUniqueKeyValue)) {
                 log.warn("recordCount or maxUniqueKeyValue not match, recordCount1={}, recordCount2={}, maxUniqueKeyValue1={}, maxUniqueKeyValue2={}",
                         recordsCount, that.recordsCount, maxUniqueKeyValue, that.maxUniqueKeyValue);

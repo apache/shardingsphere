@@ -110,7 +110,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
                 return true;
             }
             if (getClass() != o.getClass()) {
-                log.warn("CalculatedResult type not match, o.className={}", o.getClass().getName());
+                log.warn("DataMatchCalculatedResult type not match, o.className={}", o.getClass().getName());
                 return false;
             }
             final CalculatedResult that = (CalculatedResult) o;
