@@ -24,11 +24,14 @@ import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContex
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
+import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
+import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
@@ -45,13 +48,13 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     @Getter
     private final PipelineJobItemContext jobItemContext;
     
-    private final Collection<InventoryTask> inventoryTasks;
+    private final Collection<PipelineTask> inventoryTasks;
     
-    private final Collection<IncrementalTask> incrementalTasks;
+    private final Collection<PipelineTask> incrementalTasks;
     
     private final PipelineJobAPI jobAPI;
     
-    public InventoryIncrementalTasksRunner(final PipelineJobItemContext jobItemContext, final Collection<InventoryTask> inventoryTasks, final Collection<IncrementalTask> incrementalTasks) {
+    public InventoryIncrementalTasksRunner(final PipelineJobItemContext jobItemContext, final Collection<PipelineTask> inventoryTasks, final Collection<PipelineTask> incrementalTasks) {
         this.jobItemContext = jobItemContext;
         this.inventoryTasks = inventoryTasks;
         this.incrementalTasks = incrementalTasks;
@@ -61,13 +64,13 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     @Override
     public void stop() {
         jobItemContext.setStopping(true);
-        for (InventoryTask each : inventoryTasks) {
+        for (PipelineTask each : inventoryTasks) {
             each.stop();
-            each.close();
+            CloseUtils.closeQuietly(each);
         }
-        for (IncrementalTask each : incrementalTasks) {
+        for (PipelineTask each : incrementalTasks) {
             each.stop();
-            each.close();
+            CloseUtils.closeQuietly(each);
         }
     }
     
@@ -88,8 +91,8 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
     private synchronized void executeInventoryTask() {
         updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
-        for (InventoryTask each : inventoryTasks) {
-            if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
+        for (PipelineTask each : inventoryTasks) {
+            if (((InventoryTaskProgress) (each.getTaskProgress())).getPosition() instanceof FinishedPosition) {
                 continue;
             }
             futures.addAll(each.start());
@@ -113,8 +116,8 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         }
         updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
-        for (IncrementalTask each : incrementalTasks) {
-            if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
+        for (PipelineTask each : incrementalTasks) {
+            if (((IncrementalTaskProgress) (each.getTaskProgress())).getPosition() instanceof FinishedPosition) {
                 continue;
             }
             futures.addAll(each.start());
