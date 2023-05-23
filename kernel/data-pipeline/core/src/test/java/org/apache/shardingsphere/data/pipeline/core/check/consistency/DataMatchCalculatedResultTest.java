@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm;
+package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.core.check.consistency.algorithm.DataMatchDataConsistencyCalculateAlgorithm.DataMatchCalculatedResult;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
