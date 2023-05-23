@@ -26,10 +26,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 
-import java.math.BigDecimal;
-import java.sql.Array;
 import java.sql.SQLException;
-import java.sql.SQLXML;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
@@ -85,35 +82,8 @@ public final class DataMatchCalculatedResult implements DataConsistencyCalculate
                 log.warn("Record column size not match, size1={}, size2={}, record1={}, record2={}.", thisRecord.size(), thatRecord.size(), thisRecord, thatRecord);
                 return false;
             }
-            if (!recordsEquals(thisRecord, thatRecord, equalsBuilder)) {
+            if (!DataConsistencyCheckUtils.recordsEquals(thisRecord, thatRecord, equalsBuilder)) {
                 log.warn("Records not equals, record1={}, record2={}.", thatRecord, thatRecord);
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    private boolean recordsEquals(final Collection<Object> thisRecord, final Collection<Object> thatRecord, final EqualsBuilder equalsBuilder) throws SQLException {
-        Iterator<Object> thisRecordIterator = thisRecord.iterator();
-        Iterator<Object> thatRecordIterator = thatRecord.iterator();
-        int columnIndex = 0;
-        while (thisRecordIterator.hasNext() && thatRecordIterator.hasNext()) {
-            ++columnIndex;
-            Object thisColumnValue = thisRecordIterator.next();
-            Object thatColumnValue = thatRecordIterator.next();
-            boolean matched;
-            if (thisColumnValue instanceof SQLXML && thatColumnValue instanceof SQLXML) {
-                matched = ((SQLXML) thisColumnValue).getString().equals(((SQLXML) thatColumnValue).getString());
-            } else if (thisColumnValue instanceof BigDecimal && thatColumnValue instanceof BigDecimal) {
-                matched = DataConsistencyCheckUtils.isBigDecimalEquals((BigDecimal) thisColumnValue, (BigDecimal) thatColumnValue);
-            } else if (thisColumnValue instanceof Array && thatColumnValue instanceof Array) {
-                matched = Objects.deepEquals(((Array) thisColumnValue).getArray(), ((Array) thatColumnValue).getArray());
-            } else {
-                matched = equalsBuilder.append(thisColumnValue, thatColumnValue).isEquals();
-            }
-            if (!matched) {
-                log.warn("Record column value not match, columnIndex={}, value1={}, value2={}, value1.class={}, value2.class={}.", columnIndex, thisColumnValue, thatColumnValue,
-                        null != thisColumnValue ? thisColumnValue.getClass().getName() : "", null != thatColumnValue ? thatColumnValue.getClass().getName() : "");
                 return false;
             }
         }
