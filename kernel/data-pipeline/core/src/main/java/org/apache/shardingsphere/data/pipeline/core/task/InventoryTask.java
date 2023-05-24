@@ -27,11 +27,11 @@ import org.apache.shardingsphere.data.pipeline.api.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.ingest.channel.AckCallbacks;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
@@ -96,8 +96,7 @@ public final class InventoryTask implements PipelineTask {
     
     private PipelineChannel createChannel(final PipelineChannelCreator pipelineChannelCreator, final int batchSize) {
         return pipelineChannelCreator.createPipelineChannel(1, batchSize, records -> {
-            Record lastRecord = records.get(records.size() - 1);
-            position.set(lastRecord.getPosition());
+            AckCallbacks.inventoryCallback(records, position);
         });
     }
     
