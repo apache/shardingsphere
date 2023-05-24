@@ -27,13 +27,11 @@ import org.apache.shardingsphere.data.pipeline.api.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.AckCallbacks;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
@@ -43,7 +41,6 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -75,20 +72,11 @@ public final class IncrementalTask implements PipelineTask {
         taskId = dumperConfig.getDataSourceName();
         this.incrementalExecuteEngine = incrementalExecuteEngine;
         IngestPosition position = dumperConfig.getPosition();
-        taskProgress = createIncrementalTaskProgress(position, jobItemContext.getInitProgress());
-        channel = createChannel(concurrency, pipelineChannelCreator, taskProgress);
+        taskProgress = PipelineTaskUtils.createIncrementalTaskProgress(position, jobItemContext.getInitProgress());
+        channel = PipelineTaskUtils.createIncrementalChannel(concurrency, pipelineChannelCreator, taskProgress);
         dumper = PipelineTypedSPILoader.getDatabaseTypedService(
                 IncrementalDumperCreator.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType()).createIncrementalDumper(dumperConfig, position, channel, sourceMetaDataLoader);
         importers = createImporters(concurrency, importerConfig, importerConnector, channel, jobItemContext);
-    }
-    
-    private IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition position, final InventoryIncrementalJobItemProgress jobItemProgress) {
-        IncrementalTaskProgress result = new IncrementalTaskProgress(position);
-        if (null != jobItemProgress && null != jobItemProgress.getIncremental()) {
-            Optional.ofNullable(jobItemProgress.getIncremental().getIncrementalTaskProgress())
-                    .ifPresent(optional -> result.setIncrementalTaskDelay(jobItemProgress.getIncremental().getIncrementalTaskProgress().getIncrementalTaskDelay()));
-        }
-        return result;
     }
     
     private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
@@ -99,12 +87,6 @@ public final class IncrementalTask implements PipelineTask {
                     ImporterType.INCREMENTAL));
         }
         return result;
-    }
-    
-    private PipelineChannel createChannel(final int concurrency, final PipelineChannelCreator pipelineChannelCreator, final IncrementalTaskProgress progress) {
-        return pipelineChannelCreator.createPipelineChannel(concurrency, 5, records -> {
-            AckCallbacks.incrementalCallback(records, progress);
-        });
     }
     
     @Override

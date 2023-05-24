@@ -31,7 +31,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.Pipelin
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.AckCallbacks;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
@@ -58,32 +57,27 @@ public final class InventoryTask implements PipelineTask {
     
     private final ExecuteEngine inventoryImporterExecuteEngine;
     
+    private final AtomicReference<IngestPosition> position;
+    
     private final PipelineChannel channel;
     
     private final Dumper dumper;
     
     private final Importer importer;
     
-    private final AtomicReference<IngestPosition> position;
-    
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
                          final PipelineChannelCreator pipelineChannelCreator, final ImporterConnector importerConnector,
                          final DataSource sourceDataSource, final PipelineTableMetaDataLoader sourceMetaDataLoader,
                          final ExecuteEngine inventoryDumperExecuteEngine, final ExecuteEngine inventoryImporterExecuteEngine,
                          final PipelineJobProgressListener jobProgressListener) {
-        taskId = generateTaskId(inventoryDumperConfig);
+        taskId = PipelineTaskUtils.generateInventoryTaskId(inventoryDumperConfig);
         this.inventoryDumperExecuteEngine = inventoryDumperExecuteEngine;
         this.inventoryImporterExecuteEngine = inventoryImporterExecuteEngine;
-        channel = createChannel(pipelineChannelCreator, importerConfig.getBatchSize());
+        position = new AtomicReference<>(inventoryDumperConfig.getPosition());
+        channel = PipelineTaskUtils.createInventoryChannel(pipelineChannelCreator, importerConfig.getBatchSize(), position);
         dumper = new InventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
         importer = TypedSPILoader.getService(ImporterCreator.class,
                 importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener, ImporterType.INVENTORY);
-        position = new AtomicReference<>(inventoryDumperConfig.getPosition());
-    }
-    
-    private String generateTaskId(final InventoryDumperConfiguration inventoryDumperConfig) {
-        String result = String.format("%s.%s", inventoryDumperConfig.getDataSourceName(), inventoryDumperConfig.getActualTableName());
-        return null == inventoryDumperConfig.getShardingItem() ? result : result + "#" + inventoryDumperConfig.getShardingItem();
     }
     
     @Override
@@ -92,12 +86,6 @@ public final class InventoryTask implements PipelineTask {
         result.add(inventoryDumperExecuteEngine.submit(dumper, new TaskExecuteCallback(this)));
         result.add(inventoryImporterExecuteEngine.submit(importer, new TaskExecuteCallback(this)));
         return result;
-    }
-    
-    private PipelineChannel createChannel(final PipelineChannelCreator pipelineChannelCreator, final int batchSize) {
-        return pipelineChannelCreator.createPipelineChannel(1, batchSize, records -> {
-            AckCallbacks.inventoryCallback(records, position);
-        });
     }
     
     @Override
