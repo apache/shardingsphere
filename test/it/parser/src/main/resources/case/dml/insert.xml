@@ -332,7 +332,73 @@
             </assignment>
         </set>
     </insert>
-
+    <insert sql-case-id="insert_duplicate_key_update">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <set start-index="20" stop-index="34" literal-stop-index="34">
+            <assignment>
+                <column name="b" start-index="24" stop-index="24" />
+                <assignment-value>
+                    <literal-expression value="11" literal-start-index="26" literal-stop-index="29" />
+                </assignment-value>
+            </assignment>
+            <assignment>
+                <column name="a" start-index="32" stop-index="32" />
+                <assignment-value>
+                    <literal-expression value="0" literal-start-index="34" literal-stop-index="34" />
+                </assignment-value>
+            </assignment>
+        </set>
+        <on-duplicate-key-columns start-index="43" stop-index="76" literal-start-index="36" literal-stop-index="76">
+            <assignment start-index="65" stop-index="69">
+                <column name="b" start-index="65" stop-index="65"  />
+                <assignment-value>
+                    <common-expression literal-text="n.a" start-index="67" stop-index="69" />
+                </assignment-value>
+            </assignment>
+            <assignment start-index="72" stop-index="76">
+                <column name="a" start-index="72" stop-index="72"  />
+                <assignment-value>
+                    <common-expression literal-text="n.b" start-index="74" stop-index="76" />
+                </assignment-value>
+            </assignment>
+        </on-duplicate-key-columns>
+    </insert>
+    <insert sql-case-id="insert_with_underscore_charset">
+        <table name="t_order" start-index="12" stop-index="18" />
+        <columns start-index="19" stop-index="19" />
+        <values>
+            <value>
+                <assignment-value>
+                    <common-expression literal-text="_utf160x1EC2" start-index="27" stop-index="39" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <common-expression literal-text="_utf160x1EC3" start-index="44" stop-index="56" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <common-expression literal-text="_utf160x1EC5" start-index="61" stop-index="73" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <common-expression literal-text="_utf160x1EC0" start-index="78" stop-index="90" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <common-expression literal-text="_utf160x1EC7" start-index="95" stop-index="107" />
+                </assignment-value>
+            </value>
+            <value>
+                <assignment-value>
+                    <common-expression literal-text="_Utf160x1EBF" start-index="112" stop-index="124" />
+                </assignment-value>
+            </value>
+        </values>
+    </insert>
     <insert sql-case-id="insert_with_partial_placeholders" parameters="1, 1">
         <table name="t_order" start-index="12" stop-index="18" />
         <columns start-index="20" stop-index="46">
