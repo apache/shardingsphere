@@ -57,7 +57,6 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     
     @Override
     protected void decode(final ChannelHandlerContext ctx, final ByteBuf in, final List<Object> out) {
-        // readable bytes must greater + statusCode(1b) + header-length(19b) +
         while (in.readableBytes() >= 1 + MySQLBinlogEventHeader.MYSQL_BINLOG_EVENT_HEADER_LENGTH) {
             in.markReaderIndex();
             MySQLPacketPayload payload = new MySQLPacketPayload(in, ctx.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());

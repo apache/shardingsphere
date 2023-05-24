@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * MySQL binlog table map event packet.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/table-map-event.html">TABLE_MAP_EVENT</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/classbinary__log_1_1Table__map__event.html">TABLE_MAP_EVENT</a>
  */
 @Getter
 public final class MySQLBinlogTableMapEventPacket extends AbstractMySQLBinlogEventPacket {

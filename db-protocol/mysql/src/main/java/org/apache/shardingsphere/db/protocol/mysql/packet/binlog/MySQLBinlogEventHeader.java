@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 /**
  * MySQL binlog event header.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/binlog-event-header.html">Binlog Event header</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_replication_binlog_event.html#sect_protocol_replication_binlog_event_header">Binlog Event header</a>
  */
 @RequiredArgsConstructor
 @Getter
