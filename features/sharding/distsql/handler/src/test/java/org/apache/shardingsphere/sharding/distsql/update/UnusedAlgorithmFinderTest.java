@@ -49,28 +49,22 @@ class UnusedAlgorithmFinderTest {
     @Test
     void assertFind() {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        
-        ShardingTableRuleConfiguration shardingTableRuleConfiguration = getShardingTableRuleConfiguration();
-        Map<String, AlgorithmConfiguration> allAlgorithms = getAlgorithms();
-        
-        ruleConfig.getTables().add(shardingTableRuleConfiguration);
-        ruleConfig.getShardingAlgorithms().putAll(allAlgorithms);
+        ShardingTableRuleConfiguration shardingTableRuleConfig = getShardingTableRuleConfiguration();
+        ruleConfig.getTables().add(shardingTableRuleConfig);
+        ruleConfig.getShardingAlgorithms().putAll(getAlgorithms());
         ruleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", USED_DATABASE_SHARDING_DEFAULT_ALGORITHM));
         ruleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", USED_TABLE_SHARDING_DEFAULT_ALGORITHM));
-        
-        Collection<String> unusedAlgorithmsCollection = UnusedAlgorithmFinder.find(ruleConfig);
-        
-        assertNotNull(unusedAlgorithmsCollection);
-        assertThat(unusedAlgorithmsCollection.size(), is(1));
-        assertTrue(unusedAlgorithmsCollection.contains(UNUSED_ALGORITHM));
+        Collection<String> actual = UnusedAlgorithmFinder.find(ruleConfig);
+        assertNotNull(actual);
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.contains(UNUSED_ALGORITHM));
     }
     
     private ShardingTableRuleConfiguration getShardingTableRuleConfiguration() {
-        ShardingTableRuleConfiguration shardingTableRuleConfiguration = new ShardingTableRuleConfiguration("t_order", null);
-        shardingTableRuleConfiguration.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", USED_TABLE_SHARDING_ALGORITHM));
-        shardingTableRuleConfiguration.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", USED_DATABASE_SHARDING_ALGORITHM));
-        
-        return shardingTableRuleConfiguration;
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", null);
+        result.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", USED_TABLE_SHARDING_ALGORITHM));
+        result.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", USED_DATABASE_SHARDING_ALGORITHM));
+        return result;
     }
     
     private Map<String, AlgorithmConfiguration> getAlgorithms() {
