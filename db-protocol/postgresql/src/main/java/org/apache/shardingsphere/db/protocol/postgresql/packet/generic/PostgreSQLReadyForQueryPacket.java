@@ -27,7 +27,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * Ready for query packet for PostgreSQL.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PostgreSQLReadyForQueryPacket implements PostgreSQLPacket {
+public final class PostgreSQLReadyForQueryPacket extends PostgreSQLPacket {
     
     public static final PostgreSQLReadyForQueryPacket IN_TRANSACTION = new PostgreSQLReadyForQueryPacket((byte) 'T');
     
@@ -40,7 +40,7 @@ public final class PostgreSQLReadyForQueryPacket implements PostgreSQLPacket {
     private final byte status;
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         payload.getByteBuf().writeBytes(PREFIX);
         payload.getByteBuf().writeByte(status);
     }

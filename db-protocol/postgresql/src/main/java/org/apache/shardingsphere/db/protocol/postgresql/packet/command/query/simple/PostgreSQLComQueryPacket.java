@@ -39,7 +39,7 @@ public final class PostgreSQLComQueryPacket extends PostgreSQLCommandPacket {
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
     }
     
     @Override

@@ -30,7 +30,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
  * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_binary_resultset.html#sect_protocol_binary_resultset_row">Binary Protocol Resultset Row</a>
  */
 @RequiredArgsConstructor
-public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
+public final class MySQLBinaryResultSetRowPacket extends MySQLPacket {
     
     private static final int PACKET_HEADER = 0x00;
     
@@ -39,7 +39,7 @@ public final class MySQLBinaryResultSetRowPacket implements MySQLPacket {
     private final BinaryRow row;
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         payload.writeInt1(PACKET_HEADER);
         writeNullBitmap(payload);
         writeValues(payload);

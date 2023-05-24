@@ -25,10 +25,10 @@ import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.test.fixture.infra.database.type.MockedDatabaseType;
 
-public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProtocolFrontendEngine<DatabasePacket<?>> {
+public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProtocolFrontendEngine<DatabasePacket> {
     
     @Override
-    public DatabasePacketCodecEngine<DatabasePacket<?>> getCodecEngine() {
+    public DatabasePacketCodecEngine<DatabasePacket> getCodecEngine() {
         return null;
     }
     

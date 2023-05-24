@@ -26,7 +26,7 @@ import java.sql.SQLException;
  * 
  * @param <T> type of database packet
  */
-public interface QueryCommandExecutor<T extends DatabasePacket<?>> extends CommandExecutor<T> {
+public interface QueryCommandExecutor<T extends DatabasePacket> extends CommandExecutor<T> {
     
     /**
      * Get response type.

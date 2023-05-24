@@ -77,7 +77,7 @@ class ResponsePacketBuilderTest {
         QueryHeader binaryHeader = new QueryHeader("s", "t", "columnLabel2", "columnName2", 8, "VARBINARY", 1, 1, false, false, false, false);
         List<QueryHeader> queryHeaders = Arrays.asList(nonBinaryHeader, binaryHeader);
         QueryResponseHeader queryResponseHeader = new QueryResponseHeader(queryHeaders);
-        List<DatabasePacket<MySQLPacketPayload>> actual = new ArrayList(ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, 255, 0));
+        List<DatabasePacket> actual = new ArrayList(ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, 255, 0));
         assertThat(actual.size(), is(4));
         byte[] actualNonBinaryData = new byte[48];
         actual.get(1).write(new MySQLPacketPayload(Unpooled.wrappedBuffer(actualNonBinaryData).writerIndex(0), StandardCharsets.UTF_8));

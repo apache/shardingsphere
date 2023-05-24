@@ -23,5 +23,5 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 /**
  * Command packet for PostgreSQL.
  */
-public abstract class PostgreSQLCommandPacket implements PostgreSQLIdentifierPacket, CommandPacket {
+public abstract class PostgreSQLCommandPacket extends PostgreSQLIdentifierPacket implements CommandPacket {
 }

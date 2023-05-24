@@ -27,7 +27,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * Parse complete packet for PostgreSQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PostgreSQLParseCompletePacket implements PostgreSQLPacket {
+public final class PostgreSQLParseCompletePacket extends PostgreSQLPacket {
     
     private static final byte[] VALUE = {(byte) PostgreSQLMessagePacketType.PARSE_COMPLETE.getValue(), 0, 0, 0, 4};
     
@@ -43,7 +43,7 @@ public final class PostgreSQLParseCompletePacket implements PostgreSQLPacket {
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         payload.getByteBuf().writeBytes(VALUE);
     }
 }

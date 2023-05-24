@@ -265,7 +265,7 @@ class PostgreSQLComDescribeExecutorTest {
         verify(mockPayload).writeInt2(3);
         verify(mockPayload).writeInt4(23);
         verify(mockPayload, times(2)).writeInt4(18);
-        DatabasePacket<?> actualRowDescriptionPacket = actualPacketsIterator.next();
+        DatabasePacket actualRowDescriptionPacket = actualPacketsIterator.next();
         assertThat(actualRowDescriptionPacket, is(instanceOf(PostgreSQLRowDescriptionPacket.class)));
         assertRowDescriptions((PostgreSQLRowDescriptionPacket) actualRowDescriptionPacket);
     }

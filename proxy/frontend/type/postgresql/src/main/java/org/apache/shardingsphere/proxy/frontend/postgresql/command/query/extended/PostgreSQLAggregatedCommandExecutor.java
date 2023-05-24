@@ -36,7 +36,7 @@ public final class PostgreSQLAggregatedCommandExecutor implements CommandExecuto
     
     @Override
     public Collection<PostgreSQLPacket> execute() throws SQLException {
-        List<DatabasePacket<?>> result = new LinkedList<>();
+        List<DatabasePacket> result = new LinkedList<>();
         for (CommandExecutor<?> each : executors) {
             try {
                 result.addAll(each.execute());

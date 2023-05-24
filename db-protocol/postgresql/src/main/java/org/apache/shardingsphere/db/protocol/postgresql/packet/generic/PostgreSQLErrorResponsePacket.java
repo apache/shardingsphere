@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * 
  * @see <a href="https://www.postgresql.org/docs/12/protocol-message-formats.html">ErrorResponse (B)</a>
  */
-public final class PostgreSQLErrorResponsePacket implements PostgreSQLIdentifierPacket {
+public final class PostgreSQLErrorResponsePacket extends PostgreSQLIdentifierPacket {
     
     public static final char FIELD_TYPE_SEVERITY = 'S';
     
@@ -89,7 +89,7 @@ public final class PostgreSQLErrorResponsePacket implements PostgreSQLIdentifier
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         for (Entry<Character, String> entry : fields.entrySet()) {
             payload.writeInt1(entry.getKey());
             payload.writeStringNul(entry.getValue());

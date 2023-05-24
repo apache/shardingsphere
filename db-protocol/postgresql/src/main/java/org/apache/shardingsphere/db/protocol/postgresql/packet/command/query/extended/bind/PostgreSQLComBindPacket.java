@@ -58,7 +58,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     }
     
     /**
-     * Read parameters from Bind message.
+     * Read parameters from bind message.
      *
      * @param paramTypes parameter types
      * @return values of parameter
@@ -165,7 +165,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
     }
     
     @Override

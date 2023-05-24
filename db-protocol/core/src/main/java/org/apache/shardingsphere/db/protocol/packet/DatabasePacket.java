@@ -21,15 +21,13 @@ import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 
 /**
  * Database packet.
- *
- * @param <T> type of packet payload
  */
-public interface DatabasePacket<T extends PacketPayload> {
+public interface DatabasePacket {
     
     /**
      * Write packet to byte buffer.
      *
      * @param payload packet payload to be written
      */
-    void write(T payload);
+    void write(PacketPayload payload);
 }
