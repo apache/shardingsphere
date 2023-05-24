@@ -29,12 +29,12 @@ import java.util.Collection;
  * Row description packet for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLRowDescriptionPacket implements PostgreSQLIdentifierPacket {
+public final class PostgreSQLRowDescriptionPacket extends PostgreSQLIdentifierPacket {
     
     private final Collection<PostgreSQLColumnDescription> columnDescriptions;
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt2(columnDescriptions.size());
         for (PostgreSQLColumnDescription each : columnDescriptions) {
             payload.writeStringNul(each.getColumnName());

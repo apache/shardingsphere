@@ -34,7 +34,7 @@ public final class PostgreSQLComTerminationPacket extends PostgreSQLCommandPacke
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
     }
     
     @Override

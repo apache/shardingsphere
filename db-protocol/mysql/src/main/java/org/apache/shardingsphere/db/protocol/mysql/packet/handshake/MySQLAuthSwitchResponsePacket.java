@@ -29,7 +29,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLAuthSwitchResponsePacket implements MySQLPacket {
+public final class MySQLAuthSwitchResponsePacket extends MySQLPacket {
     
     private final byte[] authPluginResponse;
     
@@ -38,7 +38,7 @@ public final class MySQLAuthSwitchResponsePacket implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         payload.writeBytes(authPluginResponse);
     }
 }

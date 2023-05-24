@@ -33,7 +33,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
  * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_connection_phase_packets_protocol_handshake_v10.html">Handshake</a>
  */
 @Getter
-public final class MySQLHandshakePacket implements MySQLPacket {
+public final class MySQLHandshakePacket extends MySQLPacket {
     
     private final int protocolVersion = MySQLConstants.PROTOCOL_VERSION;
     
@@ -108,7 +108,7 @@ public final class MySQLHandshakePacket implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         payload.writeInt1(protocolVersion);
         payload.writeStringNul(serverVersion);
         payload.writeInt4(connectionId);

@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * Startup packet for PostgreSQL.
  */
-public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
+public final class PostgreSQLComStartupPacket extends PostgreSQLPacket {
     
     private static final String DATABASE_NAME_KEY = "database";
     
@@ -76,6 +76,6 @@ public final class PostgreSQLComStartupPacket implements PostgreSQLPacket {
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
     }
 }

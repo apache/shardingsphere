@@ -31,5 +31,5 @@ public interface DatabasePacket<T extends PacketPayload> {
      *
      * @param payload packet payload to be written
      */
-    void write(T payload);
+    void write(PacketPayload payload);
 }

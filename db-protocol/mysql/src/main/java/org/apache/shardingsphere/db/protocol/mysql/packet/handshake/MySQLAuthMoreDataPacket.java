@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLAuthMoreDataPacket implements MySQLPacket {
+public final class MySQLAuthMoreDataPacket extends MySQLPacket {
     
     /**
      * Header of MySQL auth more data packet.
@@ -46,7 +46,7 @@ public final class MySQLAuthMoreDataPacket implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         throw new UnsupportedSQLOperationException("MySQLAuthMoreDataPacket.write()");
     }
 }

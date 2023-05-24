@@ -30,7 +30,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
  * @see <a href="https://mariadb.com/kb/en/library/resultset/#column-definition-packet">Column definition packet</a>
  */
 @RequiredArgsConstructor
-public final class MySQLColumnDefinition41Packet implements MySQLPacket {
+public final class MySQLColumnDefinition41Packet extends MySQLPacket {
     
     private static final String CATALOG = "def";
     
@@ -87,7 +87,7 @@ public final class MySQLColumnDefinition41Packet implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         payload.writeStringLenenc(CATALOG);
         payload.writeStringLenenc(schema);
         payload.writeStringLenenc(table);

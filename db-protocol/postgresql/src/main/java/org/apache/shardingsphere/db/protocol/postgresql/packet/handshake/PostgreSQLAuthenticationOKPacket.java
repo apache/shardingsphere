@@ -25,10 +25,10 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Authentication OK packet for PostgreSQL.
  */
-public final class PostgreSQLAuthenticationOKPacket implements PostgreSQLIdentifierPacket {
+public final class PostgreSQLAuthenticationOKPacket extends PostgreSQLIdentifierPacket {
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt4(0);
     }
     

@@ -25,10 +25,10 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Empty query response packet for PostgreSQL.
  */
-public final class PostgreSQLEmptyQueryResponsePacket implements PostgreSQLIdentifierPacket {
+public final class PostgreSQLEmptyQueryResponsePacket extends PostgreSQLIdentifierPacket {
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
     }
     
     @Override

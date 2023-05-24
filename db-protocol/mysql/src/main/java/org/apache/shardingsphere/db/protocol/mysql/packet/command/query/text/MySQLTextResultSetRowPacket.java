@@ -36,7 +36,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLTextResultSetRowPacket implements MySQLPacket {
+public final class MySQLTextResultSetRowPacket extends MySQLPacket {
     
     private static final int NULL = 0xfb;
     
@@ -52,7 +52,7 @@ public final class MySQLTextResultSetRowPacket implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         for (Object each : data) {
             if (null == each) {
                 payload.writeInt1(NULL);

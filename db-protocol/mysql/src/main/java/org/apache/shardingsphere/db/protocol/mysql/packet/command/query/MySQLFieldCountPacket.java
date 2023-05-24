@@ -27,7 +27,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLFieldCountPacket implements MySQLPacket {
+public final class MySQLFieldCountPacket extends MySQLPacket {
     
     private final int columnCount;
     
@@ -36,7 +36,7 @@ public final class MySQLFieldCountPacket implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         payload.writeIntLenenc(columnCount);
     }
 }

@@ -27,14 +27,14 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * Parameter status packet for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLParameterStatusPacket implements PostgreSQLIdentifierPacket {
+public final class PostgreSQLParameterStatusPacket extends PostgreSQLIdentifierPacket {
     
     private final String key;
     
     private final String value;
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         payload.writeStringNul(key);
         payload.writeStringNul(value);
     }

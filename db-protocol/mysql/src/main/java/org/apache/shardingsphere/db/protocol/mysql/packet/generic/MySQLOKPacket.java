@@ -30,7 +30,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLOKPacket implements MySQLPacket {
+public final class MySQLOKPacket extends MySQLPacket {
     
     /**
      * Header of OK packet.
@@ -65,7 +65,7 @@ public final class MySQLOKPacket implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         payload.writeInt1(HEADER);
         payload.writeIntLenenc(affectedRows);
         payload.writeIntLenenc(lastInsertId);

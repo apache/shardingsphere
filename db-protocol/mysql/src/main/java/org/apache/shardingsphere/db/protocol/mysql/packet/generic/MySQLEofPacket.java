@@ -30,7 +30,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLEofPacket implements MySQLPacket {
+public final class MySQLEofPacket extends MySQLPacket {
     
     /**
      * Header of EOF packet.
@@ -52,7 +52,7 @@ public final class MySQLEofPacket implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         payload.writeInt1(HEADER);
         payload.writeInt2(warnings);
         payload.writeInt2(statusFlags);

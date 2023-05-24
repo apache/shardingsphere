@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.Vendor
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLErrPacket implements MySQLPacket {
+public final class MySQLErrPacket extends MySQLPacket {
     
     /**
      * Header of ERR packet.
@@ -59,7 +59,7 @@ public final class MySQLErrPacket implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         payload.writeInt1(HEADER);
         payload.writeInt2(errorCode);
         payload.writeStringFix(SQL_STATE_MARKER);
