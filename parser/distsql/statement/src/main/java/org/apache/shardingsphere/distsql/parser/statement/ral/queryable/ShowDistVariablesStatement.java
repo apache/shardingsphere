@@ -17,10 +17,25 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+
+import java.util.Optional;
 
 /**
  * Show dist variables statement.
  */
+@RequiredArgsConstructor
 public final class ShowDistVariablesStatement extends QueryableRALStatement {
+    
+    private final String likePattern;
+    
+    /**
+     * Get like pattern.
+     *
+     * @return like pattern
+     */
+    public Optional<String> getLikePattern() {
+        return Optional.ofNullable(likePattern);
+    }
 }

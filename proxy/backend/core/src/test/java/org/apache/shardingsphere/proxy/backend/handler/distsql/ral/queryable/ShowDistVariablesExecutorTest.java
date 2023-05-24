@@ -68,4 +68,18 @@ class ShowDistVariablesExecutorTest {
         assertThat(row.getCell(1), is("agent_plugins_enabled"));
         assertThat(row.getCell(2), is("true"));
     }
+    
+    @Test
+    void assertExecuteWithLike() {
+        when(metaData.getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system_log_level", "INFO"))));
+        when(metaData.getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
+        when(metaData.getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
+        ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariablesStatement("sql_%"));
+        assertThat(actual.size(), is(3));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        assertThat(iterator.next().getCell(1), is("sql_federation_type"));
+        assertThat(iterator.next().getCell(1), is("sql_show"));
+        assertThat(iterator.next().getCell(1), is("sql_simple"));
+    }
 }
