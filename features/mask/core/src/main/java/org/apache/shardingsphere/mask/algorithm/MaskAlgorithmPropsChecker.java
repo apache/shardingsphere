@@ -32,11 +32,10 @@ public final class MaskAlgorithmPropsChecker {
     
     /**
      * Check single char config.
-     *
+     * 
      * @param props props
      * @param singleCharConfigKey single char config key
      * @param maskType mask type
-     * @throws MaskAlgorithmInitializationException mask algorithm initialization exception
      */
     public static void checkSingleCharConfig(final Properties props, final String singleCharConfigKey, final String maskType) {
         ShardingSpherePreconditions.checkState(props.containsKey(singleCharConfigKey),
@@ -47,11 +46,10 @@ public final class MaskAlgorithmPropsChecker {
     
     /**
      * Check at least one char config.
-     *
+     * 
      * @param props props
      * @param atLeastOneCharConfigKey at least one char config key
      * @param maskType mask type
-     * @throws MaskAlgorithmInitializationException mask algorithm initialization exception
      */
     public static void checkAtLeastOneCharConfig(final Properties props, final String atLeastOneCharConfigKey, final String maskType) {
         ShardingSpherePreconditions.checkState(props.containsKey(atLeastOneCharConfigKey),
@@ -62,11 +60,10 @@ public final class MaskAlgorithmPropsChecker {
     
     /**
      * Check required property config.
-     *
+     * 
      * @param props props
      * @param requiredPropertyConfigKey required property config key
      * @param maskType mask type
-     * @throws MaskAlgorithmInitializationException mask algorithm initialization exception
      */
     public static void checkRequiredPropertyConfig(final Properties props, final String requiredPropertyConfigKey, final String maskType) {
         if (!props.containsKey(requiredPropertyConfigKey)) {
@@ -76,11 +73,10 @@ public final class MaskAlgorithmPropsChecker {
     
     /**
      * Check required property config.
-     *
+     * 
      * @param props props
      * @param positiveIntegerTypeConfigKey positive integer type config key
      * @param maskType mask type
-     * @throws MaskAlgorithmInitializationException mask algorithm initialization exception
      */
     public static void checkPositiveIntegerConfig(final Properties props, final String positiveIntegerTypeConfigKey, final String maskType) {
         ShardingSpherePreconditions.checkState(props.containsKey(positiveIntegerTypeConfigKey),
