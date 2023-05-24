@@ -24,6 +24,8 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.calcite.sql.SqlBinaryOperator;
+import org.apache.calcite.sql.SqlKind;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
@@ -106,6 +108,15 @@ public final class BinaryOperationExpressionConverter implements SQLSegmentConve
             } else if ("NOT FALSE".equalsIgnoreCase(literals)) {
                 operator = "IS NOT FALSE";
             }
+        }
+        if ("&".equalsIgnoreCase(operator)) {
+            return new SqlBinaryOperator("&", SqlKind.OTHER, 30, true, null, null, null);
+        }
+        if ("^".equalsIgnoreCase(operator)) {
+            return new SqlBinaryOperator("^", SqlKind.OTHER, 30, true, null, null, null);
+        }
+        if ("DIV".equalsIgnoreCase(operator)) {
+            return new SqlBinaryOperator("DIV", SqlKind.OTHER, 30, true, null, null, null);
         }
         Preconditions.checkState(REGISTRY.containsKey(operator), "Unsupported SQL operator: `%s`", operator);
         return REGISTRY.get(operator);
