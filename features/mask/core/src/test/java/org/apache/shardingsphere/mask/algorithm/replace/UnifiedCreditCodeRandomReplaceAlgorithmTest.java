@@ -49,4 +49,33 @@ class UnifiedCreditCodeRandomReplaceAlgorithmTest {
     void assertInitWhenConfigIsNull() {
         assertThrows(MaskAlgorithmInitializationException.class, () -> maskAlgorithm.init(PropertiesBuilder.build(new Property("registration-department-codes", "1,2,3,4"))));
     }
+    
+    @Test
+    void assertInitWhenConfigIsEmpty() {
+        assertThrows(MaskAlgorithmInitializationException.class, () -> maskAlgorithm.init(PropertiesBuilder.build()));
+    }
+    
+    @Test
+    void assertInitWhenRegistrationDepartmentCodesIsEmpty() {
+        assertThrows(MaskAlgorithmInitializationException.class, () -> maskAlgorithm.init(PropertiesBuilder.build(
+                new Property("registration-department-codes", ""),
+                new Property("category-codes", "1,2,3,4"),
+                new Property("administrative-division-codes", "100000,200000,300000"))));
+    }
+    
+    @Test
+    void assertInitWhenCategoryCodesIsEmpty() {
+        assertThrows(MaskAlgorithmInitializationException.class, () -> maskAlgorithm.init(PropertiesBuilder.build(
+                new Property("registration-department-codes", "1,2,3,4"),
+                new Property("category-codes", ""),
+                new Property("administrative-division-codes", "100000,200000,300000"))));
+    }
+    
+    @Test
+    void assertInitWhenAdministrativeDivisionCodesIsEmpty() {
+        assertThrows(MaskAlgorithmInitializationException.class, () -> maskAlgorithm.init(PropertiesBuilder.build(
+                new Property("registration-department-codes", "1,2,3,4"),
+                new Property("category-codes", "1,2,3,4"),
+                new Property("administrative-division-codes", ""))));
+    }
 }

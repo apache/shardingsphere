@@ -83,23 +83,23 @@ class MaskAlgorithmPropsCheckerTest {
     
     @Test
     void assertCheckIntegerTypeConfigWithInteger() {
-        MaskAlgorithmPropsChecker.checkIntegerTypeConfig(PropertiesBuilder.build(new Property("integerTypeConfigKey", "123")), "integerTypeConfigKey", "maskType");
+        MaskAlgorithmPropsChecker.checkPositiveIntegerConfig(PropertiesBuilder.build(new Property("integerTypeConfigKey", "123")), "integerTypeConfigKey", "maskType");
     }
     
     @Test
     void assertCheckIntegerTypeConfigWithDifferentKey() {
         assertThrows(MaskAlgorithmInitializationException.class,
-                () -> MaskAlgorithmPropsChecker.checkIntegerTypeConfig(PropertiesBuilder.build(new Property("integerTypeConfigKey", "123")), "integerTypeConfigKey1", "maskType"));
+                () -> MaskAlgorithmPropsChecker.checkPositiveIntegerConfig(PropertiesBuilder.build(new Property("integerTypeConfigKey", "123")), "integerTypeConfigKey1", "maskType"));
     }
     
     @Test
     void assertCheckIntegerTypeConfigWithNotInteger() {
         assertThrows(MaskAlgorithmInitializationException.class,
-                () -> MaskAlgorithmPropsChecker.checkIntegerTypeConfig(PropertiesBuilder.build(new Property("integerTypeConfigKey", "123abc")), "integerTypeConfigKey", "maskType"));
+                () -> MaskAlgorithmPropsChecker.checkPositiveIntegerConfig(PropertiesBuilder.build(new Property("integerTypeConfigKey", "123abc")), "integerTypeConfigKey", "maskType"));
     }
     
     @Test
     void assertCheckIntegerTypeConfigWithNull() {
-        assertThrows(MaskAlgorithmInitializationException.class, () -> MaskAlgorithmPropsChecker.checkIntegerTypeConfig(PropertiesBuilder.build(), "integerTypeConfigKey", "maskType"));
+        assertThrows(MaskAlgorithmInitializationException.class, () -> MaskAlgorithmPropsChecker.checkPositiveIntegerConfig(PropertiesBuilder.build(), "integerTypeConfigKey", "maskType"));
     }
 }
