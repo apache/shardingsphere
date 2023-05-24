@@ -55,5 +55,4 @@ class LandlineNumberRandomAlgorithmTest {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> maskAlgorithm.init(PropertiesBuilder.build(new Property("landline-numbers", ""))));
     }
-    
 }
