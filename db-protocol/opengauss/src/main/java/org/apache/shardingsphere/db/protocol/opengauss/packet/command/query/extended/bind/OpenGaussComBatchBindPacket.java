@@ -96,19 +96,19 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
                 result.add(null);
                 continue;
             }
-            Object parameterValue = isTextParameterValue(parameterFormats, paramIndex)
-                    ? getTextParameters(payload, paramValueLength, parameterTypes.get(paramIndex))
-                    : getBinaryParameters(payload, paramValueLength, parameterTypes.get(paramIndex));
+            Object parameterValue = isTextParameterValue(paramIndex)
+                    ? getTextParameters(paramValueLength, parameterTypes.get(paramIndex))
+                    : getBinaryParameters(paramValueLength, parameterTypes.get(paramIndex));
             result.add(parameterValue);
         }
         return result;
     }
     
-    private boolean isTextParameterValue(final List<Integer> paramFormats, final int paramIndex) {
-        return paramFormats.isEmpty() || 0 == paramFormats.get(paramIndex % paramFormats.size());
+    private boolean isTextParameterValue(final int paramIndex) {
+        return parameterFormats.isEmpty() || 0 == parameterFormats.get(paramIndex % parameterFormats.size());
     }
     
-    private Object getTextParameters(final PostgreSQLPacketPayload payload, final int paramValueLength, final PostgreSQLColumnType paramType) {
+    private Object getTextParameters(final int paramValueLength, final PostgreSQLColumnType paramType) {
         String value = payload.getByteBuf().readCharSequence(paramValueLength, payload.getCharset()).toString();
         return getTextParameters(value, paramType);
     }
@@ -148,7 +148,7 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
         }
     }
     
-    private Object getBinaryParameters(final PostgreSQLPacketPayload payload, final int paramValueLength, final PostgreSQLColumnType columnType) {
+    private Object getBinaryParameters(final int paramValueLength, final PostgreSQLColumnType columnType) {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(columnType);
         return binaryProtocolValue.read(payload, paramValueLength);
     }

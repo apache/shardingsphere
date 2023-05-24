@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
@@ -160,9 +161,9 @@ class PortalTest {
         PostgreSQLColumnDescription intColumnDescription = columnDescriptionIterator.next();
         assertThat(textColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.TEXT.getCode()));
         assertThat(intColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.BINARY.getCode()));
-        List<PostgreSQLPacket> actualPackets = portal.execute(0);
+        List<DatabasePacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.size(), is(3));
-        Iterator<PostgreSQLPacket> actualPacketsIterator = actualPackets.iterator();
+        Iterator<DatabasePacket> actualPacketsIterator = actualPackets.iterator();
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLCommandCompletePacket.class));
@@ -185,9 +186,9 @@ class PortalTest {
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, databaseConnectionManager);
         portal.bind();
         assertThat(portal.describe(), instanceOf(PostgreSQLRowDescriptionPacket.class));
-        List<PostgreSQLPacket> actualPackets = portal.execute(2);
+        List<DatabasePacket> actualPackets = portal.execute(2);
         assertThat(actualPackets.size(), is(3));
-        Iterator<PostgreSQLPacket> actualPacketsIterator = actualPackets.iterator();
+        Iterator<DatabasePacket> actualPacketsIterator = actualPackets.iterator();
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLPortalSuspendedPacket.class));
@@ -203,7 +204,7 @@ class PortalTest {
         Portal portal = new Portal("insert into t values (1)", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
-        List<PostgreSQLPacket> actualPackets = portal.execute(0);
+        List<DatabasePacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.iterator().next(), instanceOf(PostgreSQLCommandCompletePacket.class));
     }
     
@@ -215,7 +216,7 @@ class PortalTest {
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
-        List<PostgreSQLPacket> actualPackets = portal.execute(0);
+        List<DatabasePacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.iterator().next(), instanceOf(PostgreSQLEmptyQueryResponsePacket.class));
     }
     
@@ -231,7 +232,7 @@ class PortalTest {
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(sql, new UnknownSQLStatementContext(setStatement), Collections.emptyList());
         Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         portal.bind();
-        List<PostgreSQLPacket> actualPackets = portal.execute(0);
+        List<DatabasePacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.size(), is(2));
         assertThat(actualPackets.get(0), instanceOf(PostgreSQLCommandCompletePacket.class));
         assertThat(actualPackets.get(1), instanceOf(PostgreSQLParameterStatusPacket.class));

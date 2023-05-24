@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.opengauss.command.query.simple;
 
 import lombok.Getter;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
@@ -71,7 +72,7 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor<Pos
     }
     
     @Override
-    public Collection<PostgreSQLPacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() throws SQLException {
         ResponseHeader responseHeader = proxyBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
             return Collections.singleton(createRowDescriptionPacket((QueryResponseHeader) responseHeader));
@@ -94,7 +95,7 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor<Pos
         return result;
     }
     
-    private Collection<PostgreSQLPacket> createUpdatePacket(final UpdateResponseHeader updateResponseHeader) throws SQLException {
+    private Collection<DatabasePacket> createUpdatePacket(final UpdateResponseHeader updateResponseHeader) throws SQLException {
         SQLStatement sqlStatement = updateResponseHeader.getSqlStatement();
         if (sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement) {
             portalContext.closeAll();
@@ -106,8 +107,8 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor<Pos
                 : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(PostgreSQLCommand::getTag).orElse(""), updateResponseHeader.getUpdateCount()));
     }
     
-    private Collection<PostgreSQLPacket> createParameterStatusResponse(final SetStatement sqlStatement) {
-        Collection<PostgreSQLPacket> result = new ArrayList<>(2);
+    private Collection<DatabasePacket> createParameterStatusResponse(final SetStatement sqlStatement) {
+        Collection<DatabasePacket> result = new ArrayList<>(2);
         result.add(new PostgreSQLCommandCompletePacket("SET", 0));
         for (VariableAssignSegment each : sqlStatement.getVariableAssigns()) {
             result.add(new PostgreSQLParameterStatusPacket(each.getVariable().getVariable(), IdentifierValue.getQuotedContent(each.getAssignValue())));

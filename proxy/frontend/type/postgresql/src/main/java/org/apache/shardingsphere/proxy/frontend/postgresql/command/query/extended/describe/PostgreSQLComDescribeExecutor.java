@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.describe;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
@@ -77,7 +78,7 @@ import java.util.stream.Collectors;
  * Command describe for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLComDescribeExecutor implements CommandExecutor<PostgreSQLPacket> {
+public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
     private static final String ANONYMOUS_COLUMN_NAME = "?column?";
     
@@ -88,7 +89,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor<Post
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<PostgreSQLPacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() throws SQLException {
         switch (packet.getType()) {
             case 'S':
                 return describePreparedStatement();
@@ -99,8 +100,8 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor<Post
         }
     }
     
-    private List<PostgreSQLPacket> describePreparedStatement() throws SQLException {
-        List<PostgreSQLPacket> result = new ArrayList<>(2);
+    private List<DatabasePacket> describePreparedStatement() throws SQLException {
+        List<DatabasePacket> result = new ArrayList<>(2);
         PostgreSQLServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getName());
         result.add(preparedStatement.describeParameters());
         Optional<PostgreSQLPacket> rowDescription = preparedStatement.describeRows();

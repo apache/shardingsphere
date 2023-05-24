@@ -20,9 +20,9 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.admin.initdb;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb.MySQLComInitDbPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.dialect.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -38,14 +38,14 @@ import java.util.Collections;
  * COM_INIT_DB command executor for MySQL.
  */
 @RequiredArgsConstructor
-public final class MySQLComInitDbExecutor implements CommandExecutor<MySQLPacket> {
+public final class MySQLComInitDbExecutor implements CommandExecutor {
     
     private final MySQLComInitDbPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<MySQLPacket> execute() {
+    public Collection<DatabasePacket> execute() {
         String databaseName = SQLUtils.getExactlyValue(packet.getSchema());
         AuthorityRule authorityRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
         AuthorityChecker authorityChecker = new AuthorityChecker(authorityRule, connectionSession.getGrantee());

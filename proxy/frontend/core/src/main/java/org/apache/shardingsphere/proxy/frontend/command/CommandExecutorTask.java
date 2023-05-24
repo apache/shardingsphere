@@ -123,7 +123,7 @@ public final class CommandExecutorTask implements Runnable {
     
     private boolean doExecuteCommand(final ChannelHandlerContext context, final CommandExecuteEngine commandExecuteEngine, final CommandExecutor commandExecutor) throws SQLException {
         try {
-            Collection<DatabasePacket> responsePackets = commandExecutor.execute();
+            Collection<? extends DatabasePacket> responsePackets = commandExecutor.execute();
             if (responsePackets.isEmpty()) {
                 return false;
             }
