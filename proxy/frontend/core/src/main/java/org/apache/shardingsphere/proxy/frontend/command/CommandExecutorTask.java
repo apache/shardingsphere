@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.command;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -70,11 +71,12 @@ public final class CommandExecutorTask implements Runnable {
     public void run() {
         boolean isNeedFlush = false;
         boolean sqlShowEnabled = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW);
-        try (PacketPayload payload = databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get())) {
+        try {
             if (sqlShowEnabled) {
                 fillLogMDC();
             }
-            isNeedFlush = executeCommand(context, payload);
+            isNeedFlush = executeCommand(context,
+                    databaseProtocolFrontendEngine.getCodecEngine().createPacketPayload((ByteBuf) message, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -99,7 +101,16 @@ public final class CommandExecutorTask implements Runnable {
             if (sqlShowEnabled) {
                 clearLogMDC();
             }
+            if (message instanceof CompositeByteBuf) {
+                releaseCompositeByteBuf((CompositeByteBuf) message);
+            }
+            ((ByteBuf) message).release();
         }
+    }
+    
+    private void fillLogMDC() {
+        MDC.put(LogMDCConstants.DATABASE_KEY, connectionSession.getDatabaseName());
+        MDC.put(LogMDCConstants.USER_KEY, connectionSession.getGrantee().toString());
     }
     
     private boolean executeCommand(final ChannelHandlerContext context, final PacketPayload payload) throws SQLException {
@@ -151,12 +162,15 @@ public final class CommandExecutorTask implements Runnable {
         processException(ex);
     }
     
-    private void fillLogMDC() {
-        MDC.put(LogMDCConstants.DATABASE_KEY, connectionSession.getDatabaseName());
-        MDC.put(LogMDCConstants.USER_KEY, connectionSession.getGrantee().toString());
-    }
-    
     private void clearLogMDC() {
         MDC.clear();
+    }
+    
+    private void releaseCompositeByteBuf(final CompositeByteBuf compositeByteBuf) {
+        int remainBytes = compositeByteBuf.readableBytes();
+        if (remainBytes > 0) {
+            compositeByteBuf.skipBytes(remainBytes);
+        }
+        compositeByteBuf.discardReadComponents();
     }
 }
