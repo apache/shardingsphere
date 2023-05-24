@@ -20,8 +20,9 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor.RULExecutor;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -31,47 +32,52 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * SQL RUL backend handler.
+ * TODO Remove this class when #25868 is done
  *
  * @param <T> type of RUL statement
  */
-public final class SQLRULBackendHandler<T extends RULStatement> extends RULBackendHandler<T> {
+public abstract class AbstractSQLRULBackendHandler<T extends RULStatement> extends RULBackendHandler<T> {
     
     private List<QueryHeader> queryHeaders;
     
     private MergedResult mergedResult;
     
     @Override
-    public ResponseHeader execute() {
-        RULExecutor<T> executor = TypedSPILoader.getService(RULExecutor.class, getSqlStatement().getClass().getName());
-        queryHeaders = createQueryHeader(executor);
-        mergedResult = createMergedResult(executor);
+    public final ResponseHeader execute() throws SQLException {
+        queryHeaders = createQueryHeader();
+        mergedResult = createMergedResult();
         return new QueryResponseHeader(queryHeaders);
     }
     
-    private List<QueryHeader> createQueryHeader(final RULExecutor<T> executor) {
-        return executor.getColumnNames().stream().map(each -> new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
+    private List<QueryHeader> createQueryHeader() {
+        return getColumnNames().stream().map(each -> new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
     }
     
-    private MergedResult createMergedResult(final RULExecutor<T> executor) {
-        return new LocalDataMergedResult(executor.getRows(getConnectionSession(), getSqlStatement()));
+    private MergedResult createMergedResult() throws SQLException {
+        return new LocalDataMergedResult(getRows(ProxyContext.getInstance().getContextManager()));
     }
     
     @Override
-    public boolean next() throws SQLException {
+    public final boolean next() throws SQLException {
         return null != mergedResult && mergedResult.next();
     }
     
     @Override
-    public QueryResponseRow getRowData() throws SQLException {
+    public final QueryResponseRow getRowData() throws SQLException {
         List<QueryResponseCell> cells = new ArrayList<>(queryHeaders.size());
         for (int i = 0; i < queryHeaders.size(); i++) {
             cells.add(new QueryResponseCell(queryHeaders.get(i).getColumnType(), mergedResult.getValue(i + 1, Object.class)));
         }
         return new QueryResponseRow(cells);
     }
+    
+    protected abstract Collection<String> getColumnNames();
+    
+    protected abstract Collection<LocalDataQueryResultRow> getRows(ContextManager contextManager) throws SQLException;
 }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rul.sql.ParseStatement
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.SQLRULBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.AbstractSQLRULBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -32,7 +32,7 @@ import java.util.Collections;
 /**
  * Parse DistSQL handler.
  */
-public final class ParseDistSQLHandler extends SQLRULBackendHandler<ParseStatement> {
+public final class ParseDistSQLHandler extends AbstractSQLRULBackendHandler<ParseStatement> {
     
     private static final String PARSED_STATEMENT = "parsed_statement";
     

@@ -56,7 +56,7 @@ import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBack
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.SQLRULBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.AbstractSQLRULBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
@@ -76,7 +76,7 @@ import java.util.stream.Collectors;
 /**
  * Preview handler.
  */
-public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement> {
+public final class PreviewHandler extends AbstractSQLRULBackendHandler<PreviewStatement> {
     
     private static final String DATA_SOURCE_NAME = "data_source_name";
     
