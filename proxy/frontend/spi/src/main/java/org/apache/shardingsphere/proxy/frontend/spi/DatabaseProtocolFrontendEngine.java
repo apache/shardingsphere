@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
  * 
  * @param <T> type of database packet
  */
-public interface DatabaseProtocolFrontendEngine<T extends DatabasePacket<?>> extends TypedSPI {
+public interface DatabaseProtocolFrontendEngine<T extends DatabasePacket> extends TypedSPI {
     
     /**
      * Initialize channel.

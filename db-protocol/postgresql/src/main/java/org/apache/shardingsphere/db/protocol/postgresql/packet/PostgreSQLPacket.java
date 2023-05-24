@@ -24,7 +24,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Database packet for PostgreSQL.
  */
-public abstract class PostgreSQLPacket implements DatabasePacket<PostgreSQLPacketPayload> {
+public abstract class PostgreSQLPacket implements DatabasePacket {
     
     @Override
     public void write(final PacketPayload payload) {

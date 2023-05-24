@@ -70,7 +70,7 @@ public interface CommandExecuteEngine {
      * @param cause cause of error
      * @return error packet
      */
-    DatabasePacket<?> getErrorPacket(Exception cause);
+    DatabasePacket getErrorPacket(Exception cause);
     
     /**
      * Get other packet.
@@ -78,7 +78,7 @@ public interface CommandExecuteEngine {
      * @param connectionSession connection session
      * @return other packet
      */
-    default Optional<DatabasePacket<?>> getOtherPacket(ConnectionSession connectionSession) {
+    default Optional<DatabasePacket> getOtherPacket(ConnectionSession connectionSession) {
         return Optional.empty();
     }
     

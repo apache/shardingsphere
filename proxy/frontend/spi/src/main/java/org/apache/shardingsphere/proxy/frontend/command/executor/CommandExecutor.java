@@ -27,7 +27,7 @@ import java.util.Collection;
  * 
  * @param <T> type of database packet
  */
-public interface CommandExecutor<T extends DatabasePacket<?>> {
+public interface CommandExecutor<T extends DatabasePacket> {
     
     /**
      * Execute command.

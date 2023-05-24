@@ -72,7 +72,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     }
     
     @Override
-    public Optional<DatabasePacket<?>> getOtherPacket(final ConnectionSession connectionSession) {
+    public Optional<DatabasePacket> getOtherPacket(final ConnectionSession connectionSession) {
         return Optional.of(connectionSession.getTransactionStatus().isInTransaction() ? PostgreSQLReadyForQueryPacket.TRANSACTION_FAILED : PostgreSQLReadyForQueryPacket.NOT_IN_TRANSACTION);
     }
     
@@ -113,7 +113,7 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
                 context.flush();
                 databaseConnectionManager.getResourceLock().doAwait();
             }
-            DatabasePacket<?> resultValue = queryCommandExecutor.getQueryRowPacket();
+            DatabasePacket resultValue = queryCommandExecutor.getQueryRowPacket();
             context.write(resultValue);
             if (proxyFrontendFlushThreshold == flushCount) {
                 context.flush();

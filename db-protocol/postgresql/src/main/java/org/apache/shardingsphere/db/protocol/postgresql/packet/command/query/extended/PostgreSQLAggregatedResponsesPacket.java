@@ -32,12 +32,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class PostgreSQLAggregatedResponsesPacket extends PostgreSQLPacket {
     
-    private final List<DatabasePacket<?>> packets;
+    private final List<DatabasePacket> packets;
     
     @Override
     protected void write(final PostgreSQLPacketPayload payload) {
         ByteBuf byteBuf = payload.getByteBuf();
-        for (DatabasePacket<?> each : packets) {
+        for (DatabasePacket each : packets) {
             if (!(each instanceof PostgreSQLIdentifierPacket)) {
                 each.write(payload);
                 continue;

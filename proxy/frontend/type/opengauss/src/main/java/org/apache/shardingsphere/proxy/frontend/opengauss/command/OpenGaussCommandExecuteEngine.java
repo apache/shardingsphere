@@ -69,7 +69,7 @@ public final class OpenGaussCommandExecuteEngine implements CommandExecuteEngine
     }
     
     @Override
-    public Optional<DatabasePacket<?>> getOtherPacket(final ConnectionSession connectionSession) {
+    public Optional<DatabasePacket> getOtherPacket(final ConnectionSession connectionSession) {
         return postgreSQLCommandExecuteEngine.getOtherPacket(connectionSession);
     }
     

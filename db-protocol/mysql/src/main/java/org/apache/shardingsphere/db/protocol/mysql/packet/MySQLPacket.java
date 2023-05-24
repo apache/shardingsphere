@@ -24,7 +24,7 @@ import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 /**
  * Database packet for MySQL.
  */
-public abstract class MySQLPacket implements DatabasePacket<MySQLPacketPayload> {
+public abstract class MySQLPacket implements DatabasePacket {
     
     @Override
     public void write(final PacketPayload payload) {
