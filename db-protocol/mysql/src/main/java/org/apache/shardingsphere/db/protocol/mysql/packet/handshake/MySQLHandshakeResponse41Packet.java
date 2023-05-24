@@ -33,7 +33,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
+public final class MySQLHandshakeResponse41Packet extends MySQLPacket {
     
     private final int maxPacketSize;
     
@@ -100,7 +100,7 @@ public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         payload.writeInt4(capabilityFlags);
         payload.writeInt4(maxPacketSize);
         payload.writeInt1(characterSet);

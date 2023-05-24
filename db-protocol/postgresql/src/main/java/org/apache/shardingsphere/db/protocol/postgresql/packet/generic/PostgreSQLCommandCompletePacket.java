@@ -31,7 +31,7 @@ import java.util.HashSet;
  * Command complete packet for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLCommandCompletePacket implements PostgreSQLIdentifierPacket {
+public final class PostgreSQLCommandCompletePacket extends PostgreSQLIdentifierPacket {
     
     private static final Collection<String> TAGS_WITH_COUNT = new HashSet<>(Arrays.asList("INSERT", "SELECT", "UPDATE", "DELETE", "MOVE"));
     
@@ -40,7 +40,7 @@ public final class PostgreSQLCommandCompletePacket implements PostgreSQLIdentifi
     private final long rowCount;
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         if (!TAGS_WITH_COUNT.contains(sqlCommand)) {
             payload.writeStringNul(sqlCommand);
             return;

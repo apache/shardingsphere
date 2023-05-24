@@ -51,12 +51,12 @@ public final class MaskFromXToYMaskAlgorithm implements MaskAlgorithm<Object, St
     }
     
     private Integer createFromX(final Properties props) {
-        MaskAlgorithmPropsChecker.checkIntegerTypeConfig(props, FROM_X, getType());
+        MaskAlgorithmPropsChecker.checkPositiveIntegerConfig(props, FROM_X, getType());
         return Integer.parseInt(props.getProperty(FROM_X));
     }
     
     private Integer createToY(final Properties props) {
-        MaskAlgorithmPropsChecker.checkIntegerTypeConfig(props, TO_Y, getType());
+        MaskAlgorithmPropsChecker.checkPositiveIntegerConfig(props, TO_Y, getType());
         return Integer.parseInt(props.getProperty(TO_Y));
     }
     

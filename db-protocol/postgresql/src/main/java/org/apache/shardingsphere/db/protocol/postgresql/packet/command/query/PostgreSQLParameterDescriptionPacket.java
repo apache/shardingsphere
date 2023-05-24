@@ -30,12 +30,12 @@ import java.util.List;
  * Parameter description packet for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLParameterDescriptionPacket implements PostgreSQLIdentifierPacket {
+public final class PostgreSQLParameterDescriptionPacket extends PostgreSQLIdentifierPacket {
     
     private final List<PostgreSQLColumnType> parameterTypes;
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt2(parameterTypes.size());
         for (PostgreSQLColumnType each : parameterTypes) {
             payload.writeInt4(each.getValue());

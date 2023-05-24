@@ -90,6 +90,18 @@ class KeepFromXToYMaskAlgorithmTest {
     }
     
     @Test
+    void assertInitWhenFromXIsNotPositive() {
+        assertThrows(MaskAlgorithmInitializationException.class,
+                () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "-3"), new Property("to-y", "5"), new Property("replace-char", "*"))));
+    }
+    
+    @Test
+    void assertInitWhenToYIsNotPositive() {
+        assertThrows(MaskAlgorithmInitializationException.class,
+                () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "-5"), new Property("replace-char", "*"))));
+    }
+    
+    @Test
     void assertInitWhenFromXGreaterThanToY() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "5"), new Property("to-y", "2"), new Property("replace-char", ""))));

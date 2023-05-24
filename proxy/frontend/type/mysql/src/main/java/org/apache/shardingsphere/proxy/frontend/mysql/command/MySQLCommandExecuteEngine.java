@@ -83,7 +83,7 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
                 context.flush();
                 databaseConnectionManager.getResourceLock().doAwait();
             }
-            DatabasePacket<?> dataValue = queryCommandExecutor.getQueryRowPacket();
+            DatabasePacket dataValue = queryCommandExecutor.getQueryRowPacket();
             context.write(dataValue);
             if (flushThreshold == count) {
                 context.flush();

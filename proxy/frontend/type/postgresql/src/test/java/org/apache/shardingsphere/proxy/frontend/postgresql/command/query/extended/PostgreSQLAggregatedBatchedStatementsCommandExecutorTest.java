@@ -95,7 +95,7 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
         PostgreSQLAggregatedBatchedStatementsCommandExecutor executor = new PostgreSQLAggregatedBatchedStatementsCommandExecutor(connectionSession, createPackets());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        List<DatabasePacket<?>> actualPackets = new ArrayList<>(executor.execute());
+        List<DatabasePacket> actualPackets = new ArrayList<>(executor.execute());
         assertThat(actualPackets.size(), is(BATCH_SIZE * 3));
         for (int i = 0; i < BATCH_SIZE; i++) {
             assertThat(actualPackets.get(i * 3), is(PostgreSQLBindCompletePacket.getInstance()));
@@ -106,7 +106,6 @@ class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest {
     
     private ConnectionSession mockConnectionSession() throws SQLException {
         ConnectionSession result = mock(ConnectionSession.class);
-        @SuppressWarnings("rawtypes")
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(parserEngine.parse(SQL, false));
         when(result.getDatabaseName()).thenReturn("foo_db");

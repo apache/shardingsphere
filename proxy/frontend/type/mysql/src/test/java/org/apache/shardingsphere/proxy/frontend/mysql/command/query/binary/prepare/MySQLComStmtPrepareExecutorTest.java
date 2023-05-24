@@ -136,12 +136,12 @@ class MySQLComStmtPrepareExecutorTest {
         assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
         assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
         assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));
-        DatabasePacket<?> idColumnDefinitionPacket = actualIterator.next();
+        DatabasePacket idColumnDefinitionPacket = actualIterator.next();
         assertThat(idColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
         assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) idColumnDefinitionPacket),
                 is(MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue() | MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
         assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        DatabasePacket<?> ageColumnDefinitionPacket = actualIterator.next();
+        DatabasePacket ageColumnDefinitionPacket = actualIterator.next();
         assertThat(ageColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
         assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) ageColumnDefinitionPacket), is(MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
         assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
@@ -167,14 +167,14 @@ class MySQLComStmtPrepareExecutorTest {
         Iterator<MySQLPacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
         assertThat(actualIterator.next(), instanceOf(MySQLComStmtPrepareOKPacket.class));
         assertThat(actualIterator.next(), instanceOf(MySQLColumnDefinition41Packet.class));
-        DatabasePacket<?> firstAgeColumnDefinitionPacket = actualIterator.next();
+        DatabasePacket firstAgeColumnDefinitionPacket = actualIterator.next();
         assertThat(firstAgeColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
         assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) firstAgeColumnDefinitionPacket), is(MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
-        DatabasePacket<?> idColumnDefinitionPacket = actualIterator.next();
+        DatabasePacket idColumnDefinitionPacket = actualIterator.next();
         assertThat(idColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
         assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) idColumnDefinitionPacket),
                 is(MySQLColumnDefinitionFlag.PRIMARY_KEY.getValue() | MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
-        DatabasePacket<?> secondAgeColumnDefinitionPacket = actualIterator.next();
+        DatabasePacket secondAgeColumnDefinitionPacket = actualIterator.next();
         assertThat(secondAgeColumnDefinitionPacket, instanceOf(MySQLColumnDefinition41Packet.class));
         assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) secondAgeColumnDefinitionPacket), is(MySQLColumnDefinitionFlag.UNSIGNED.getValue()));
         assertThat(actualIterator.next(), instanceOf(MySQLEofPacket.class));

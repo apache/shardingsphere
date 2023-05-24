@@ -154,7 +154,7 @@ public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
     }
     
     @Override
