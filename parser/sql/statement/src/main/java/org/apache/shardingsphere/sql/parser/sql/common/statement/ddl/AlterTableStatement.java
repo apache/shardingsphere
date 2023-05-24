@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.DropColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter.RenameColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.AddConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
@@ -67,6 +68,8 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
     private final Collection<DropConstraintDefinitionSegment> dropConstraintDefinitions = new LinkedList<>();
     
     private final Collection<DropIndexDefinitionSegment> dropIndexDefinitions = new LinkedList<>();
+    
+    private final Collection<RenameColumnSegment> renameColumnDefinitions = new LinkedList<>();
     
     private final Collection<RenameIndexDefinitionSegment> renameIndexDefinitions = new LinkedList<>();
     

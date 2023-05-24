@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.definition;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.column.ExpectedColumn;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Rename column segment.
+ * Expected rename column definition.
  */
-@RequiredArgsConstructor
 @Getter
-public final class RenameColumnSegment implements AlterDefinitionSegment {
+@Setter
+public final class ExpectedRenameColumnDefinition extends AbstractExpectedSQLSegment {
     
-    private final int startIndex;
+    @XmlElement(name = "old-column-name")
+    private ExpectedColumn oldColumnName;
     
-    private final int stopIndex;
-    
-    private final ColumnSegment oldColumnName;
-    
-    private final ColumnSegment columnName;
+    @XmlElement(name = "column-name")
+    private ExpectedColumn columnName;
 }
