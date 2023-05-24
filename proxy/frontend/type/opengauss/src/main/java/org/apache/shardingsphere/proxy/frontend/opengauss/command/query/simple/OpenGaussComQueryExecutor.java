@@ -57,7 +57,7 @@ import java.util.LinkedList;
 /**
  * Command query executor for openGauss.
  */
-public final class OpenGaussComQueryExecutor implements QueryCommandExecutor<PostgreSQLPacket> {
+public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     
     private final PortalContext portalContext;
     

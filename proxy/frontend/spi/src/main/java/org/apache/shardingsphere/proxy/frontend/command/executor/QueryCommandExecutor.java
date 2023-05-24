@@ -23,10 +23,8 @@ import java.sql.SQLException;
 
 /**
  * Query command executor.
- * 
- * @param <T> type of database packet
  */
-public interface QueryCommandExecutor<T extends DatabasePacket> extends CommandExecutor {
+public interface QueryCommandExecutor extends CommandExecutor {
     
     /**
      * Get response type.
@@ -49,5 +47,5 @@ public interface QueryCommandExecutor<T extends DatabasePacket> extends CommandE
      * @return database packet of query row
      * @throws SQLException SQL exception
      */
-    T getQueryRowPacket() throws SQLException;
+    DatabasePacket getQueryRowPacket() throws SQLException;
 }

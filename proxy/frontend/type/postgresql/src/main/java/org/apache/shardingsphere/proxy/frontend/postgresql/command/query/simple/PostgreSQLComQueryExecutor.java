@@ -57,7 +57,7 @@ import java.util.LinkedList;
 /**
  * Command query executor for PostgreSQL.
  */
-public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor<PostgreSQLPacket> {
+public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private final PortalContext portalContext;
     
