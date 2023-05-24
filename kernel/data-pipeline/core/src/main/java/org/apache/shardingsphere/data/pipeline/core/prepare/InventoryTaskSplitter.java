@@ -81,7 +81,7 @@ public final class InventoryTaskSplitter {
         List<InventoryTask> result = new LinkedList<>();
         long startTimeMillis = System.currentTimeMillis();
         PipelineChannelCreator pipelineChannelCreator = jobItemContext.getJobProcessContext().getPipelineChannelCreator();
-        for (InventoryDumperConfiguration each : splitDumperConfig(jobItemContext, dumperConfig)) {
+        for (InventoryDumperConfiguration each : splitInventoryDumperConfig(jobItemContext)) {
             result.add(new InventoryTask(each, importerConfig, pipelineChannelCreator, jobItemContext.getImporterConnector(), sourceDataSource, jobItemContext.getSourceMetaDataLoader(),
                     jobItemContext.getJobProcessContext().getInventoryDumperExecuteEngine(), jobItemContext.getJobProcessContext().getInventoryImporterExecuteEngine(), jobItemContext));
         }
@@ -89,7 +89,13 @@ public final class InventoryTaskSplitter {
         return result;
     }
     
-    private Collection<InventoryDumperConfiguration> splitDumperConfig(final InventoryIncrementalJobItemContext jobItemContext, final InventoryDumperConfiguration dumperConfig) {
+    /**
+     * Split inventory dumper configuration.
+     *
+     * @param jobItemContext job item context
+     * @return inventory dumper configurations
+     */
+    public Collection<InventoryDumperConfiguration> splitInventoryDumperConfig(final InventoryIncrementalJobItemContext jobItemContext) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         for (InventoryDumperConfiguration each : splitByTable(dumperConfig)) {
             result.addAll(splitByPrimaryKey(each, jobItemContext, sourceDataSource));
