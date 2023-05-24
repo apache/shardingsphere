@@ -31,15 +31,15 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
-import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.DatabaseConnector;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.RQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.SQLRULBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.PreviewHandler;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -249,6 +249,6 @@ class ProxyBackendHandlerFactoryTest {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "PREVIEW INSERT INTO account VALUES(1, 1, 1)";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
-        assertThat(actual, instanceOf(SQLRULBackendHandler.class));
+        assertThat(actual, instanceOf(PreviewHandler.class));
     }
 }
