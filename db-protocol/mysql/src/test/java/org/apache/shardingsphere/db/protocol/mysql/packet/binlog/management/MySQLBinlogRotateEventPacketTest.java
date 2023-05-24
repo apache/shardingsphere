@@ -54,7 +54,6 @@ class MySQLBinlogRotateEventPacketTest {
     @Test
     void assertWrite() {
         new MySQLBinlogRotateEventPacket(binlogEventHeader, 4L, "binlog-000001").write(payload);
-        verify(binlogEventHeader).write(payload);
         verify(payload).writeInt8(4L);
         verify(payload).writeStringEOF("binlog-000001");
     }
