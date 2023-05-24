@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
@@ -41,17 +41,17 @@ import java.util.List;
  * Aggregated batched statements command executor for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLAggregatedBatchedStatementsCommandExecutor implements CommandExecutor<PostgreSQLPacket> {
+public final class PostgreSQLAggregatedBatchedStatementsCommandExecutor implements CommandExecutor {
     
     private final ConnectionSession connectionSession;
     
     private final List<PostgreSQLCommandPacket> packets;
     
     @Override
-    public Collection<PostgreSQLPacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement = getPreparedStatement();
         PostgreSQLBatchedStatementsExecutor executor = new PostgreSQLBatchedStatementsExecutor(connectionSession, preparedStatement, readParameterSets(preparedStatement.getParameterTypes()));
-        Collection<PostgreSQLPacket> result = new ArrayList<>(packets.size());
+        Collection<DatabasePacket> result = new ArrayList<>(packets.size());
         int totalInserted = executor.executeBatch();
         int executePacketCount = executePacketCount();
         for (PostgreSQLCommandPacket each : packets) {

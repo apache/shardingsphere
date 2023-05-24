@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.command.query.extende
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.query.extended.bind.OpenGaussComBatchBindPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -37,14 +37,14 @@ import java.util.Collection;
  * Command batch bind executor for openGauss.
  */
 @RequiredArgsConstructor
-public final class OpenGaussComBatchBindExecutor implements CommandExecutor<PostgreSQLPacket> {
+public final class OpenGaussComBatchBindExecutor implements CommandExecutor {
     
     private final OpenGaussComBatchBindPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<PostgreSQLPacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() throws SQLException {
         connectionSession.getDatabaseConnectionManager().handleAutoCommit();
         PostgreSQLServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
         int updateCount = new PostgreSQLBatchedStatementsExecutor(connectionSession, preparedStatement, packet.readParameterSets(preparedStatement.getParameterTypes())).executeBatch();

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.flush;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
 import java.sql.SQLException;
@@ -27,10 +27,10 @@ import java.util.Collections;
 /**
  * Command flush executor for PostgreSQL.
  **/
-public final class PostgreSQLComFlushExecutor implements CommandExecutor<PostgreSQLPacket> {
+public final class PostgreSQLComFlushExecutor implements CommandExecutor {
     
     @Override
-    public Collection<PostgreSQLPacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() throws SQLException {
         return Collections.emptyList();
     }
 }

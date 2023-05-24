@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedResponsesPacket;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
@@ -36,18 +37,17 @@ import static org.mockito.Mockito.when;
 
 class PostgreSQLAggregatedCommandExecutorTest {
     
-    @SuppressWarnings("unchecked")
     @Test
     void assertExecute() throws SQLException {
         int commandCount = 16;
-        List<CommandExecutor<PostgreSQLPacket>> executors = new ArrayList<>(commandCount);
+        List<CommandExecutor> executors = new ArrayList<>(commandCount);
         for (int i = 0; i < commandCount; i++) {
-            CommandExecutor<PostgreSQLPacket> executor = mock(CommandExecutor.class);
+            CommandExecutor executor = mock(CommandExecutor.class);
             when(executor.execute()).thenReturn(Collections.singleton(mock(PostgreSQLPacket.class)));
             executors.add(executor);
         }
         PostgreSQLAggregatedCommandExecutor actualExecutor = new PostgreSQLAggregatedCommandExecutor(executors);
-        Collection<PostgreSQLPacket> actualPackets = actualExecutor.execute();
+        Collection<DatabasePacket> actualPackets = actualExecutor.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), instanceOf(PostgreSQLAggregatedResponsesPacket.class));
     }

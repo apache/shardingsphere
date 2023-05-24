@@ -24,10 +24,8 @@ import java.util.Collection;
 
 /**
  * Command executor.
- * 
- * @param <T> type of database packet
  */
-public interface CommandExecutor<T extends DatabasePacket> {
+public interface CommandExecutor {
     
     /**
      * Execute command.
@@ -35,7 +33,7 @@ public interface CommandExecutor<T extends DatabasePacket> {
      * @return database packets to be sent
      * @throws SQLException SQL exception
      */
-    Collection<T> execute() throws SQLException;
+    Collection<DatabasePacket> execute() throws SQLException;
     
     /**
      * Close command executor.

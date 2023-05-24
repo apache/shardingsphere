@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
@@ -141,9 +142,9 @@ public final class Portal {
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public List<PostgreSQLPacket> execute(final int maxRows) throws SQLException {
+    public List<DatabasePacket> execute(final int maxRows) throws SQLException {
         int fetchSize = maxRows > 0 ? maxRows : Integer.MAX_VALUE;
-        List<PostgreSQLPacket> result = new LinkedList<>();
+        List<DatabasePacket> result = new LinkedList<>();
         for (int i = 0; i < fetchSize && hasNext(); i++) {
             result.add(nextPacket());
         }
