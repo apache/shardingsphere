@@ -53,6 +53,5 @@ class PostgreSQLPacketPayloadTest {
         assertThat(payload.bytesBeforeZero(), is(expectedString.length()));
         assertThat(payload.readStringNul(), is(expectedString));
         assertThat(payload.getByteBuf(), is(byteBuf));
-        payload.close();
     }
 }

@@ -406,9 +406,4 @@ public final class MySQLPacketPayload implements PacketPayload {
     public void writeReserved(final int length) {
         byteBuf.writeZero(length);
     }
-    
-    @Override
-    public void close() {
-        byteBuf.release();
-    }
 }
