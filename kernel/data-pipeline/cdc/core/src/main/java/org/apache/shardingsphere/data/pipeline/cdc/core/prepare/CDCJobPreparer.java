@@ -36,13 +36,13 @@ import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfigurat
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
 import org.apache.shardingsphere.data.pipeline.cdc.context.job.CDCJobItemContext;
 import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCIncrementalTask;
-import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCInventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PrepareJobWithGetBinlogPositionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.PipelineJobPreparerUtils;
+import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
@@ -118,7 +118,7 @@ public final class CDCJobPreparer {
             // TODO now Init importer
             // TypedSPILoader.getService(ImporterCreator.class, importerConnector.getType()).createImporter(importerConfig, channel, jobProgressListener, ImporterType.INVENTORY);
             Importer importer = null;
-            result.add(new CDCInventoryTask(PipelineTaskUtils.generateInventoryTaskId(each), processContext.getInventoryDumperExecuteEngine(),
+            result.add(new InventoryTask(PipelineTaskUtils.generateInventoryTaskId(each), processContext.getInventoryDumperExecuteEngine(),
                     processContext.getInventoryImporterExecuteEngine(), channel, dumper, importer, position));
         }
         log.info("splitInventoryData cost {} ms", System.currentTimeMillis() - startTimeMillis);

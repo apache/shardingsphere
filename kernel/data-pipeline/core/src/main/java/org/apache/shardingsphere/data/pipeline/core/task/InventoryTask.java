@@ -18,26 +18,16 @@
 package org.apache.shardingsphere.data.pipeline.core.task;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.api.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumper;
-import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
@@ -46,6 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Inventory task.
  */
+@RequiredArgsConstructor
 @ToString(exclude = {"inventoryDumperExecuteEngine", "inventoryImporterExecuteEngine", "channel", "dumper", "importer"})
 @Slf4j
 public final class InventoryTask implements PipelineTask {
@@ -57,28 +48,13 @@ public final class InventoryTask implements PipelineTask {
     
     private final ExecuteEngine inventoryImporterExecuteEngine;
     
-    private final AtomicReference<IngestPosition> position;
-    
     private final PipelineChannel channel;
     
     private final Dumper dumper;
     
     private final Importer importer;
     
-    public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
-                         final PipelineChannelCreator pipelineChannelCreator, final ImporterConnector importerConnector,
-                         final DataSource sourceDataSource, final PipelineTableMetaDataLoader sourceMetaDataLoader,
-                         final ExecuteEngine inventoryDumperExecuteEngine, final ExecuteEngine inventoryImporterExecuteEngine,
-                         final PipelineJobProgressListener jobProgressListener) {
-        taskId = PipelineTaskUtils.generateInventoryTaskId(inventoryDumperConfig);
-        this.inventoryDumperExecuteEngine = inventoryDumperExecuteEngine;
-        this.inventoryImporterExecuteEngine = inventoryImporterExecuteEngine;
-        position = new AtomicReference<>(inventoryDumperConfig.getPosition());
-        channel = PipelineTaskUtils.createInventoryChannel(pipelineChannelCreator, importerConfig.getBatchSize(), position);
-        dumper = new InventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
-        importer = TypedSPILoader.getService(ImporterCreator.class,
-                importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener, ImporterType.INVENTORY);
-    }
+    private final AtomicReference<IngestPosition> position;
     
     @Override
     public Collection<CompletableFuture<?>> start() {
