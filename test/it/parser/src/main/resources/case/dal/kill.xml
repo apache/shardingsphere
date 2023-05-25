@@ -18,4 +18,5 @@
 
 <sql-parser-test-cases>
     <kill sql-case-id="kill_process_id" process-id="abc" />
+    <kill sql-case-id="kill_process_with_id" process-id="@id" />
 </sql-parser-test-cases>
