@@ -36,24 +36,24 @@ public interface ShadowRouteEngine {
      * Route.
      *
      * @param routeContext route context
-     * @param shadowRule shadow rule
+     * @param rule shadow rule
      */
-    void route(RouteContext routeContext, ShadowRule shadowRule);
+    void route(RouteContext routeContext, ShadowRule rule);
     
     /**
      * Decorate route context.
      *
      * @param routeContext route context to be decorated
-     * @param shadowRule shadow rule
+     * @param rule shadow rule
      * @param shadowDataSourceMappings shadow data source mappings
      */
-    default void decorateRouteContext(final RouteContext routeContext, final ShadowRule shadowRule, final Map<String, String> shadowDataSourceMappings) {
+    default void decorateRouteContext(final RouteContext routeContext, final ShadowRule rule, final Map<String, String> shadowDataSourceMappings) {
         Collection<RouteUnit> toBeRemovedRouteUnit = new LinkedList<>();
         Collection<RouteUnit> toBeAddedRouteUnit = new LinkedList<>();
         for (RouteUnit each : routeContext.getRouteUnits()) {
             String logicName = each.getDataSourceMapper().getLogicName();
             String actualName = each.getDataSourceMapper().getActualName();
-            Optional<String> sourceDataSourceName = shadowRule.getSourceDataSourceName(actualName);
+            Optional<String> sourceDataSourceName = rule.getSourceDataSourceName(actualName);
             if (sourceDataSourceName.isPresent()) {
                 String shadowDataSourceName = shadowDataSourceMappings.get(sourceDataSourceName.get());
                 toBeRemovedRouteUnit.add(each);
