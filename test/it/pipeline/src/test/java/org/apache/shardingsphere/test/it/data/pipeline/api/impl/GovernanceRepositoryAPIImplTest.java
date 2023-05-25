@@ -63,9 +63,9 @@ class GovernanceRepositoryAPIImplTest {
     
     private static GovernanceRepositoryAPI governanceRepositoryAPI;
     
-    private static final AtomicReference<DataChangedEvent> eventReference = new AtomicReference<>();
+    private static final AtomicReference<DataChangedEvent> EVENT_ATOMIC_REFERENCE = new AtomicReference<>();
     
-    private static final CountDownLatch countDownLatch = new CountDownLatch(1);
+    private static final CountDownLatch COUNT_DOWN_LATCH = new CountDownLatch(1);
     
     @BeforeAll
     static void beforeClass() {
@@ -77,8 +77,8 @@ class GovernanceRepositoryAPIImplTest {
     private static void watch() {
         governanceRepositoryAPI.watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> {
             if ((DataPipelineConstants.DATA_PIPELINE_ROOT + "/1").equals(event.getKey())) {
-                eventReference.set(event);
-                countDownLatch.countDown();
+                EVENT_ATOMIC_REFERENCE.set(event);
+                COUNT_DOWN_LATCH.countDown();
             }
         });
     }
