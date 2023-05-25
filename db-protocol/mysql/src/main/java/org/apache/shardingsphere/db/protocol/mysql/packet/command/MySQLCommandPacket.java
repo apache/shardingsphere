@@ -26,12 +26,12 @@ import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
  * Command packet for MySQL.
  */
 @RequiredArgsConstructor
-public abstract class MySQLCommandPacket implements MySQLPacket, CommandPacket {
+public abstract class MySQLCommandPacket extends MySQLPacket implements CommandPacket {
     
     private final MySQLCommandPacketType type;
     
     @Override
-    public final void write(final MySQLPacketPayload payload) {
+    protected final void write(final MySQLPacketPayload payload) {
         payload.writeInt1(type.getValue());
         doWrite(payload);
     }

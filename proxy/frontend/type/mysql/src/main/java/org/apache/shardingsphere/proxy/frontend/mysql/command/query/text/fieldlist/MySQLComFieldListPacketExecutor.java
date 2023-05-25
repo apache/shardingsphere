@@ -20,10 +20,10 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.fieldl
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
-import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -49,7 +49,7 @@ import java.util.LinkedList;
  * COM_FIELD_LIST packet executor for MySQL.
  */
 @RequiredArgsConstructor
-public final class MySQLComFieldListPacketExecutor implements CommandExecutor<MySQLPacket> {
+public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     
     private static final String SQL = "SHOW COLUMNS FROM %s FROM %s";
     
@@ -60,7 +60,7 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor<My
     private DatabaseConnector databaseConnector;
     
     @Override
-    public Collection<MySQLPacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() throws SQLException {
         String databaseName = connectionSession.getDefaultDatabaseName();
         String sql = String.format(SQL, packet.getTable(), databaseName);
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
@@ -74,8 +74,8 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor<My
         return createColumnDefinition41Packets(databaseName);
     }
     
-    private Collection<MySQLPacket> createColumnDefinition41Packets(final String databaseName) throws SQLException {
-        Collection<MySQLPacket> result = new LinkedList<>();
+    private Collection<DatabasePacket> createColumnDefinition41Packets(final String databaseName) throws SQLException {
+        Collection<DatabasePacket> result = new LinkedList<>();
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
         while (databaseConnector.next()) {
             String columnName = databaseConnector.getRowData().getCells().iterator().next().getData().toString();

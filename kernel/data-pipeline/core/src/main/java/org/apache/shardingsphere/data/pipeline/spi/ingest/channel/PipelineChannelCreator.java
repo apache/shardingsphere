@@ -30,8 +30,9 @@ public interface PipelineChannelCreator extends TypedSPI {
      * Create pipeline channel.
      *
      * @param outputConcurrency output concurrency
+     * @param averageElementSize average element size, affect the size of the queue
      * @param ackCallback ack callback
      * @return {@link PipelineChannel}
      */
-    PipelineChannel createPipelineChannel(int outputConcurrency, AckCallback ackCallback);
+    PipelineChannel createPipelineChannel(int outputConcurrency, int averageElementSize, AckCallback ackCallback);
 }

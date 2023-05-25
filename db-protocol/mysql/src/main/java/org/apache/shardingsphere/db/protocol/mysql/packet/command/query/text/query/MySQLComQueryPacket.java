@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 /**
  * COM_QUERY command packet for MySQL.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-query.html">COM_QUERY</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_query.html">COM_QUERY</a>
  */
 @Getter
 @ToString

@@ -19,9 +19,11 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.di
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.distsql.PropertiesAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExceptedReadwriteSplittingRule;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -50,19 +52,30 @@ public final class ReadwriteSplittingRuleAssert {
             assertThat(assertContext.getText(String.format("`%s`'s readwrite-splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
             assertThat(assertContext.getText(String.format("`%s`'s readwrite-splitting rule segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getAutoAwareResource(), is(expected.getAutoAwareResource()));
-            assertThat(assertContext.getText(String.format("`%s`'s readwrite-splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getWriteDataSource(), is(expected.getWriteDataSource()));
             assertThat(assertContext.getText(String.format("`%s`'s readwrite-splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getReadDataSources(), is(expected.getReadDataSources()));
-            if (null == actual.getLoadBalancer()) {
-                assertNull(expected.getLoadBalancer(), String.format("`%s`'s readwrite-splitting rule segment assertion error: ",
-                        actual.getClass().getSimpleName()));
-            } else {
-                assertThat(assertContext.getText(String.format("`%s`'s readwrite-splitting rule segment assertion error: ",
-                        actual.getClass().getSimpleName())), actual.getLoadBalancer().getName(), is(expected.getLoadBalancer().getName()));
-                PropertiesAssert.assertIs(assertContext, actual.getLoadBalancer().getProps(), expected.getLoadBalancer().getProperties());
-            }
+            assertTransactionalReadQueryStrategy(assertContext, actual, expected);
+            assertLoadBalancer(assertContext, actual.getLoadBalancer(), expected.getLoadBalancer());
+        }
+    }
+    
+    private static void assertTransactionalReadQueryStrategy(final SQLCaseAssertContext assertContext, final ReadwriteSplittingRuleSegment actual, final ExceptedReadwriteSplittingRule expected) {
+        if (null == expected.getTransactionalReadQueryStrategy()) {
+            assertNull(actual.getTransactionalReadQueryStrategy(), assertContext.getText("Actual transactional read query strategy should not exist."));
+        } else {
+            assertNotNull(actual.getTransactionalReadQueryStrategy(), assertContext.getText("Actual transactional read query strategy should exist."));
+            assertThat(assertContext.getText("Transactional read query strategy assertion error"), actual.getTransactionalReadQueryStrategy(), is(expected.getTransactionalReadQueryStrategy()));
+        }
+    }
+    
+    private static void assertLoadBalancer(final SQLCaseAssertContext assertContext, final AlgorithmSegment actual, final ExpectedAlgorithm expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Actual load balancer should not exist."));
+        } else {
+            assertNotNull(actual, assertContext.getText("Actual load balancer should exist."));
+            assertThat(assertContext.getText("Load balancer assertion error"), actual.getName(), is(expected.getName()));
+            PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProperties());
         }
     }
 }

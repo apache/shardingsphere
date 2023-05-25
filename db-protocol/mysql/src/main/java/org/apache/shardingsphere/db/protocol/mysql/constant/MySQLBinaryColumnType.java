@@ -29,7 +29,6 @@ import java.util.Map;
 /**
  * Binary column type for MySQL.
  * 
- * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/namespacebinary__log.html">Column Type</a>
  * @see <a href="https://github.com/apache/shardingsphere/issues/4355"></a>
  */
 @RequiredArgsConstructor

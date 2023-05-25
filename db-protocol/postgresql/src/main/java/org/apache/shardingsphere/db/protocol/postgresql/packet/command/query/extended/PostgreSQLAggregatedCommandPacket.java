@@ -105,7 +105,7 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
     }
     
     @Override

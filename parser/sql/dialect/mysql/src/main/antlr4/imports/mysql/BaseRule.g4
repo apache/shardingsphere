@@ -665,6 +665,14 @@ constraintName
     : identifier
     ;
 
+oldColumn
+    : columnName
+    ;
+
+newColumn
+    : columnName
+    ;
+
 delimiterName
     : textOrIdentifier | ('\\'. | ~('\'' | '"' | '`' | '\\'))+
     ; 

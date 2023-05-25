@@ -105,7 +105,7 @@ public final class IncrementalTask implements PipelineTask, AutoCloseable {
     }
     
     private PipelineChannel createChannel(final int concurrency, final PipelineChannelCreator pipelineChannelCreator, final IncrementalTaskProgress progress) {
-        return pipelineChannelCreator.createPipelineChannel(concurrency, records -> {
+        return pipelineChannelCreator.createPipelineChannel(concurrency, 5, records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
             if (!(lastHandledRecord.getPosition() instanceof PlaceholderPosition)) {
                 progress.setPosition(lastHandledRecord.getPosition());

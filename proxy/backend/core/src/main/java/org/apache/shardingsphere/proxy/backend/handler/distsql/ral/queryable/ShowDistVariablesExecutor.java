@@ -28,6 +28,8 @@ import org.apache.shardingsphere.logging.util.LoggingUtils;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.util.RegularUtils;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -55,6 +57,10 @@ public final class ShowDistVariablesExecutor implements ConnectionSessionRequire
                 .collect(Collectors.toList()));
         result.add(new LocalDataQueryResultRow(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), connectionSession.getDatabaseConnectionManager().getConnectionSize()));
         addLoggingPropsRows(metaData, result);
+        if (sqlStatement.getLikePattern().isPresent()) {
+            String pattern = SQLUtils.convertLikePatternToRegex(sqlStatement.getLikePattern().get());
+            result = result.stream().filter(each -> RegularUtils.matchesCaseInsensitive(pattern, (String) each.getCell(1))).collect(Collectors.toList());
+        }
         return result.stream().sorted(Comparator.comparing(each -> each.getCell(1).toString())).collect(Collectors.toList());
     }
     

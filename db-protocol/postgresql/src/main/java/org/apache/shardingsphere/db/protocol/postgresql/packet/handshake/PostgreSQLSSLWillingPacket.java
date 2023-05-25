@@ -23,12 +23,12 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * SSL willing packet for PostgreSQL.
  */
-public final class PostgreSQLSSLWillingPacket implements PostgreSQLPacket {
+public final class PostgreSQLSSLWillingPacket extends PostgreSQLPacket {
     
     private static final char STATUS_CODE = 'S';
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt1(STATUS_CODE);
     }
 }

@@ -320,7 +320,7 @@
         <table>t_2</table>
     </create-broadcast-table-rule>
     
-    <create-readwrite-splitting-rule sql-case-id="create-static-readwrite-splitting-rule">
+    <create-readwrite-splitting-rule sql-case-id="create-readwrite-splitting-rule">
         <rule name="ms_group_0" write-data-source="primary_ds">
             <read-data-source>replica_ds_0</read-data-source>
             <read-data-source>replica_ds_1</read-data-source>
@@ -328,14 +328,22 @@
         </rule>
     </create-readwrite-splitting-rule>
     
-    <create-readwrite-splitting-rule sql-case-id="create-static-readwrite-splitting-rule-if-not-exists" if-not-exists="true">
+    <create-readwrite-splitting-rule sql-case-id="create-readwrite-splitting-rule-if-not-exists" if-not-exists="true">
         <rule name="ms_group_0" write-data-source="primary_ds">
             <read-data-source>replica_ds_0</read-data-source>
             <read-data-source>replica_ds_1</read-data-source>
             <load-balancer algorithm-name="random" />
         </rule>
     </create-readwrite-splitting-rule>
-
+    
+    <create-readwrite-splitting-rule sql-case-id="create-readwrite-splitting-rule-with-transactional-read-query-strategy">
+        <rule name="ms_group_0" write-data-source="primary_ds" transactional-read-query-strategy="DYNAMIC">
+            <read-data-source>replica_ds_0</read-data-source>
+            <read-data-source>replica_ds_1</read-data-source>
+            <load-balancer algorithm-name="random" />
+        </rule>
+    </create-readwrite-splitting-rule>
+    
     <create-readwrite-splitting-rule sql-case-id="create-readwrite-splitting-rule-with-quota">
         <rule name="ms_group_0" write-data-source="primary_ds">
             <read-data-source>replica_ds_0</read-data-source>

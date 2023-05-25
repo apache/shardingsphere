@@ -70,9 +70,7 @@ class MultiplexMemoryPipelineChannelTest {
         CountDownLatch countDownLatch = new CountDownLatch(recordCount);
         MultiplexMemoryPipelineChannel memoryChannel = new MultiplexMemoryPipelineChannel(CHANNEL_NUMBER, 10000, ackCallback);
         fetchWithMultiThreads(memoryChannel, countDownLatch);
-        for (Record record : records) {
-            memoryChannel.pushRecord(record);
-        }
+        memoryChannel.pushRecords(Arrays.asList(records));
         boolean awaitResult = countDownLatch.await(10, TimeUnit.SECONDS);
         assertTrue(awaitResult, "await failed");
         memoryChannel.close();

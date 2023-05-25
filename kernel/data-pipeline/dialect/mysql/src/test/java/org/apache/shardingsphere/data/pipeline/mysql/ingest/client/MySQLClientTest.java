@@ -69,7 +69,7 @@ class MySQLClientTest {
     @SuppressWarnings("unchecked")
     @BeforeEach
     void setUp() throws InterruptedException {
-        mysqlClient = new MySQLClient(new ConnectInfo(1, "host", 3306, "username", "password"));
+        mysqlClient = new MySQLClient(new ConnectInfo(1, "host", 3306, "username", "password"), false);
         when(channel.pipeline()).thenReturn(pipeline);
         when(channel.isOpen()).thenReturn(true);
         when(channel.close()).thenReturn(channelFuture);

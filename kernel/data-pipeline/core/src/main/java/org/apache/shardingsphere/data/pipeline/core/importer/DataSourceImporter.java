@@ -99,7 +99,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
         int batchSize = importerConfig.getBatchSize();
         while (isRunning()) {
             List<Record> records = channel.fetchRecords(batchSize, 3, TimeUnit.SECONDS);
-            if (null != records && !records.isEmpty()) {
+            if (!records.isEmpty()) {
                 PipelineJobProgressUpdatedParameter updatedParam = flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
                 channel.ack(records);
                 jobProgressListener.onProgressUpdated(updatedParam);
@@ -266,12 +266,13 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     
     private void executeBatchDelete(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
         DataRecord dataRecord = dataRecords.get(0);
-        List<Column> conditionColumns = RecordUtils.extractConditionColumns(dataRecord, importerConfig.getShardingColumns(dataRecord.getTableName()));
-        String deleteSQL = pipelineSqlBuilder.buildDeleteSQL(getSchemaName(dataRecord.getTableName()), dataRecord, conditionColumns);
+        String deleteSQL = pipelineSqlBuilder.buildDeleteSQL(getSchemaName(dataRecord.getTableName()), dataRecord,
+                RecordUtils.extractConditionColumns(dataRecord, importerConfig.getShardingColumns(dataRecord.getTableName())));
         try (PreparedStatement preparedStatement = connection.prepareStatement(deleteSQL)) {
             batchDeleteStatement.set(preparedStatement);
             preparedStatement.setQueryTimeout(30);
             for (DataRecord each : dataRecords) {
+                List<Column> conditionColumns = RecordUtils.extractConditionColumns(each, importerConfig.getShardingColumns(dataRecord.getTableName()));
                 for (int i = 0; i < conditionColumns.size(); i++) {
                     Object oldValue = conditionColumns.get(i).getOldValue();
                     if (null == oldValue) {
@@ -283,7 +284,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
             }
             int[] counts = preparedStatement.executeBatch();
             if (IntStream.of(counts).anyMatch(value -> 1 != value)) {
-                log.warn("batchDelete failed, counts={}, sql={}, conditionColumns={}", Arrays.toString(counts), deleteSQL, conditionColumns);
+                log.warn("batchDelete failed, counts={}, sql={}, dataRecords={}", Arrays.toString(counts), deleteSQL, dataRecords);
             }
         } finally {
             batchDeleteStatement.set(null);
@@ -295,20 +296,16 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
             return;
         }
         try (Connection connection = dataSource.getConnection()) {
-            sequentialFlush(connection, buffer);
+            // TODO it's better use transaction, but execute delete maybe not effect when open transaction of PostgreSQL sometimes
+            for (DataRecord each : buffer) {
+                try {
+                    doFlush(connection, each);
+                } catch (final SQLException ex) {
+                    throw new PipelineImporterJobWriteException(String.format("Write failed, record=%s", each), ex);
+                }
+            }
         } catch (final SQLException ex) {
             throw new PipelineImporterJobWriteException(ex);
-        }
-    }
-    
-    private void sequentialFlush(final Connection connection, final List<DataRecord> buffer) {
-        // TODO it's better use transaction, but execute delete maybe not effect when open transaction of PostgreSQL sometimes
-        for (DataRecord each : buffer) {
-            try {
-                doFlush(connection, each);
-            } catch (final SQLException ex) {
-                throw new PipelineImporterJobWriteException(String.format("Write failed, record=%s", each), ex);
-            }
         }
     }
     

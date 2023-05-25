@@ -23,7 +23,9 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,23 +50,35 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     }
     
     @Override
-    public void pushRecord(final Record record) {
-        if (FinishedRecord.class.equals(record.getClass())) {
-            for (int i = 0; i < channelNumber; i++) {
-                pushRecord(record, i);
-            }
-        } else if (DataRecord.class.equals(record.getClass())) {
-            pushRecord(record, Math.abs(record.hashCode() % channelNumber));
-        } else if (PlaceholderRecord.class.equals(record.getClass())) {
-            pushRecord(record, 0);
-        } else {
-            throw new UnsupportedOperationException("Unsupported record type: " + record.getClass().getName());
+    public void pushRecords(final List<Record> records) {
+        Record firstRecord = records.get(0);
+        if (1 == records.size()) {
+            pushRecord(firstRecord);
+            return;
+        }
+        long insertDataRecordsCount = records.stream().filter(DataRecord.class::isInstance).map(DataRecord.class::cast).filter(each -> IngestDataChangeType.INSERT.equals(each.getType())).count();
+        if (insertDataRecordsCount == records.size()) {
+            channels.get(Math.abs(firstRecord.hashCode() % channelNumber)).pushRecords(records);
+            return;
+        }
+        for (Record record : records) {
+            pushRecord(record);
         }
     }
     
-    private void pushRecord(final Record record, final int channelIndex) {
-        PipelineChannel channel = channels.get(channelIndex);
-        channel.pushRecord(record);
+    private void pushRecord(final Record record) {
+        List<Record> records = Collections.singletonList(record);
+        if (record instanceof FinishedRecord) {
+            for (int i = 0; i < channelNumber; i++) {
+                channels.get(i).pushRecords(records);
+            }
+        } else if (DataRecord.class.equals(record.getClass())) {
+            channels.get(Math.abs(record.hashCode() % channelNumber)).pushRecords(records);
+        } else if (PlaceholderRecord.class.equals(record.getClass())) {
+            channels.get(0).pushRecords(records);
+        } else {
+            throw new UnsupportedOperationException("Unsupported record type: " + record.getClass().getName());
+        }
     }
     
     @Override

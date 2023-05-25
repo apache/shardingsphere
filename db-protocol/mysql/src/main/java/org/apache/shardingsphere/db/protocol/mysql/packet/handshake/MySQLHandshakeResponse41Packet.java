@@ -28,12 +28,12 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 /**
  * Handshake response above MySQL 4.1 packet protocol.
  * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/connection-phase-packets.html#packet-Protocol::HandshakeResponse41">HandshakeResponse41</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_connection_phase_packets_protocol_handshake_response.html">HandshakeResponse41</a>
  */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
+public final class MySQLHandshakeResponse41Packet extends MySQLPacket {
     
     private final int maxPacketSize;
     
@@ -100,7 +100,7 @@ public final class MySQLHandshakeResponse41Packet implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         payload.writeInt4(capabilityFlags);
         payload.writeInt4(maxPacketSize);
         payload.writeInt1(characterSet);

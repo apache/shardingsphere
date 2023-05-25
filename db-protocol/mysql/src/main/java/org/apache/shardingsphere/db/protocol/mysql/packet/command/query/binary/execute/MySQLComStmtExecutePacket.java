@@ -40,7 +40,7 @@ import java.util.Set;
 /**
  * COM_STMT_EXECUTE command packet for MySQL.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-execute.html">COM_STMT_EXECUTE</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_stmt_execute.html">COM_STMT_EXECUTE</a>
  */
 @Getter
 @ToString(of = "statementId")

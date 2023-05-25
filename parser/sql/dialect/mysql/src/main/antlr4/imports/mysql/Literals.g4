@@ -36,7 +36,7 @@ NCHAR_TEXT
     ;
 
 UNDERSCORE_CHARSET
-    : UL_ [a-z0-9]+
+    : UL_ [a-z0-9A-Z]+
     ;
 
 NUMBER_

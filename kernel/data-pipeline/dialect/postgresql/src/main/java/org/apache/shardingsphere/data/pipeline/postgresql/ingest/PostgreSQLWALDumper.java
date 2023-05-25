@@ -24,6 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExe
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.ingest.exception.IngestException;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.PostgreSQLLogicalReplication;
@@ -33,7 +34,10 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.Deco
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLTimestampUtils;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.TestDecodingPlugin;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractRowEvent;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.AbstractWALEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.BeginTXEvent;
+import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.event.CommitTXEvent;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 import org.postgresql.jdbc.PgConnection;
@@ -42,6 +46,10 @@ import org.postgresql.replication.PGReplicationStream;
 import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * PostgreSQL WAL dumper.
@@ -58,6 +66,10 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     
     private final PostgreSQLLogicalReplication logicalReplication;
     
+    private final boolean decodeWithTX;
+    
+    private List<AbstractRowEvent> rowEvents = new LinkedList<>();
+    
     public PostgreSQLWALDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
                                final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
@@ -67,6 +79,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
         this.channel = channel;
         walEventConverter = new WALEventConverter(dumperConfig, metaDataLoader);
         logicalReplication = new PostgreSQLLogicalReplication();
+        this.decodeWithTX = dumperConfig.isDecodeWithTX();
     }
     
     @SneakyThrows(InterruptedException.class)
@@ -86,11 +99,41 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
                     continue;
                 }
                 AbstractWALEvent event = decodingPlugin.decode(message, new PostgreSQLLogSequenceNumber(stream.getLastReceiveLSN()));
-                channel.pushRecord(walEventConverter.convert(event));
+                if (decodeWithTX) {
+                    processEventWithTX(event);
+                } else {
+                    processEventIgnoreTX(event);
+                }
             }
         } catch (final SQLException ex) {
             throw new IngestException(ex);
         }
+    }
+    
+    private void processEventWithTX(final AbstractWALEvent event) {
+        if (event instanceof BeginTXEvent) {
+            rowEvents = new ArrayList<>();
+            return;
+        }
+        if (event instanceof AbstractRowEvent) {
+            rowEvents.add((AbstractRowEvent) event);
+            return;
+        }
+        if (event instanceof CommitTXEvent) {
+            List<Record> records = new LinkedList<>();
+            for (AbstractWALEvent each : rowEvents) {
+                records.add(walEventConverter.convert(each));
+            }
+            records.add(walEventConverter.convert(event));
+            channel.pushRecords(records);
+        }
+    }
+    
+    private void processEventIgnoreTX(final AbstractWALEvent event) {
+        if (event instanceof BeginTXEvent) {
+            return;
+        }
+        channel.pushRecords(Collections.singletonList(walEventConverter.convert(event)));
     }
     
     @Override

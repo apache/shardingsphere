@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mask.algorithm.replace;
 
+import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LandlineNumberRandomAlgorithmTest {
     
@@ -41,5 +43,16 @@ class LandlineNumberRandomAlgorithmTest {
         assertThat(maskAlgorithm.mask(""), is(""));
         assertThat(maskAlgorithm.mask("0251234567"), not("0251234567"));
         assertThat(maskAlgorithm.mask("03101234567"), not("03101234567"));
+    }
+    
+    @Test
+    void assertInitWhenConfigIsEmpty() {
+        assertThrows(MaskAlgorithmInitializationException.class, () -> maskAlgorithm.init(PropertiesBuilder.build()));
+    }
+    
+    @Test
+    void assertMaskWithInvalidConfig() {
+        assertThrows(MaskAlgorithmInitializationException.class,
+                () -> maskAlgorithm.init(PropertiesBuilder.build(new Property("landline-numbers", ""))));
     }
 }

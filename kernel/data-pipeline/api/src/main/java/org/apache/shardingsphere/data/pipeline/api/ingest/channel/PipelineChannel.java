@@ -30,9 +30,9 @@ public interface PipelineChannel {
     /**
      * Push {@code DataRecord} into channel.
      *
-     * @param dataRecord data
+     * @param dataRecords data records
      */
-    void pushRecord(Record dataRecord);
+    void pushRecords(List<Record> dataRecords);
     
     /**
      * Fetch {@code Record} list from channel.

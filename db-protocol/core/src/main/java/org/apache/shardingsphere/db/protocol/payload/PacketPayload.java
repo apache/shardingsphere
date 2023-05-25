@@ -24,7 +24,7 @@ import java.nio.charset.Charset;
 /**
  * Packet payload.
  */
-public interface PacketPayload extends AutoCloseable {
+public interface PacketPayload {
     
     /**
      * Get byte buf.

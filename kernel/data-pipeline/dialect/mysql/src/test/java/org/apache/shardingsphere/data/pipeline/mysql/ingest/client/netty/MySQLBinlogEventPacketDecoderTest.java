@@ -27,6 +27,7 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogContext
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.DeleteRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.UpdateRowsEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRowsEvent;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.XidEvent;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlogTableMapEventPacket;
@@ -70,7 +71,7 @@ class MySQLBinlogEventPacketDecoderTest {
     
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
-        binlogEventPacketDecoder = new MySQLBinlogEventPacketDecoder(4, new ConcurrentHashMap<>());
+        binlogEventPacketDecoder = new MySQLBinlogEventPacketDecoder(4, new ConcurrentHashMap<>(), true);
         binlogContext = (BinlogContext) Plugins.getMemberAccessor().get(MySQLBinlogEventPacketDecoder.class.getDeclaredField("binlogContext"), binlogEventPacketDecoder);
         when(channelHandlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
         columnDefs = Lists.newArrayList(new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_LONGLONG), new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_LONG),
@@ -124,13 +125,15 @@ class MySQLBinlogEventPacketDecoderTest {
         ByteBuf byteBuf = ByteBufAllocator.DEFAULT.buffer();
         // the hex data is from INSERT INTO t_order(order_id, user_id, status, t_numeric) VALUES (1, 1, 'SUCCESS',null);
         byteBuf.writeBytes(StringUtil.decodeHexDump("007a36a9621e0100000038000000bb7c000000007b00000000000100020004ff08010000000000000001000000075355434345535365eff9ff"));
+        byteBuf.writeBytes(StringUtil.decodeHexDump("006acb656410010000001f000000fa29000000001643000000000000b13f8340"));
         binlogContext.getTableMap().put(123L, tableMapEventPacket);
         when(tableMapEventPacket.getColumnDefs()).thenReturn(columnDefs);
         List<Object> decodedEvents = new LinkedList<>();
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
-        assertThat(decodedEvents.get(0), instanceOf(WriteRowsEvent.class));
-        WriteRowsEvent actual = (WriteRowsEvent) decodedEvents.get(0);
+        LinkedList<?> actualEventList = (LinkedList<?>) decodedEvents.get(0);
+        assertThat(actualEventList.get(0), instanceOf(WriteRowsEvent.class));
+        WriteRowsEvent actual = (WriteRowsEvent) actualEventList.get(0);
         assertThat(actual.getAfterRows().get(0), is(new Serializable[]{1L, 1, new MySQLBinaryString("SUCCESS".getBytes()), null}));
     }
     
@@ -140,13 +143,15 @@ class MySQLBinlogEventPacketDecoderTest {
         // the hex data is from update t_order set status = 'updated' where order_id = 1;
         byteBuf.writeBytes(StringUtil.decodeHexDump("00cb38a9621f010000004e0000000c7e000000007b00000000000100020004ffff08010000000000000001000000075355434345535308010000000000000001000000077570"
                 + "6461746564e78cee6c"));
+        byteBuf.writeBytes(StringUtil.decodeHexDump("006acb656410010000001f000000fa29000000001643000000000000b13f8340"));
         binlogContext.getTableMap().put(123L, tableMapEventPacket);
         when(tableMapEventPacket.getColumnDefs()).thenReturn(columnDefs);
         List<Object> decodedEvents = new LinkedList<>();
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
-        assertThat(decodedEvents.get(0), instanceOf(UpdateRowsEvent.class));
-        UpdateRowsEvent actual = (UpdateRowsEvent) decodedEvents.get(0);
+        LinkedList<?> actualEventList = (LinkedList<?>) decodedEvents.get(0);
+        assertThat(actualEventList.get(0), instanceOf(UpdateRowsEvent.class));
+        UpdateRowsEvent actual = (UpdateRowsEvent) actualEventList.get(0);
         assertThat(actual.getBeforeRows().get(0), is(new Serializable[]{1L, 1, new MySQLBinaryString("SUCCESS".getBytes()), null}));
         assertThat(actual.getAfterRows().get(0), is(new Serializable[]{1L, 1, new MySQLBinaryString("updated".getBytes()), null}));
     }
@@ -156,13 +161,16 @@ class MySQLBinlogEventPacketDecoderTest {
         ByteBuf byteBuf = ByteBufAllocator.DEFAULT.buffer();
         // delete from t_order where order_id = 1;
         byteBuf.writeBytes(StringUtil.decodeHexDump("002a80a862200100000038000000c569000000007400000000000100020004ff0801000000000000000100000007535543434553531c9580c5"));
+        byteBuf.writeBytes(StringUtil.decodeHexDump("006acb656410010000001f000000fa29000000001643000000000000b13f8340"));
         binlogContext.getTableMap().put(116L, tableMapEventPacket);
         when(tableMapEventPacket.getColumnDefs()).thenReturn(columnDefs);
         List<Object> decodedEvents = new LinkedList<>();
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
-        assertThat(decodedEvents.get(0), instanceOf(DeleteRowsEvent.class));
-        DeleteRowsEvent actual = (DeleteRowsEvent) decodedEvents.get(0);
+        LinkedList<?> actualEventList = (LinkedList<?>) decodedEvents.get(0);
+        assertThat(actualEventList.get(0), instanceOf(DeleteRowsEvent.class));
+        assertThat(actualEventList.get(1), instanceOf(XidEvent.class));
+        DeleteRowsEvent actual = (DeleteRowsEvent) actualEventList.get(0);
         assertThat(actual.getBeforeRows().get(0), is(new Serializable[]{1L, 1, new MySQLBinaryString("SUCCESS".getBytes()), null}));
     }
     
@@ -171,6 +179,7 @@ class MySQLBinlogEventPacketDecoderTest {
         ByteBuf byteBuf = ByteBufAllocator.DEFAULT.buffer();
         byte[] completeData = StringUtil.decodeHexDump("002a80a862200100000038000000c569000000007400000000000100020004ff0801000000000000000100000007535543434553531c9580c5");
         byteBuf.writeBytes(completeData);
+        byteBuf.writeBytes(StringUtil.decodeHexDump("006acb656410010000001f000000fa29000000001643000000000000b13f8340"));
         // write incomplete event data
         byteBuf.writeBytes(StringUtil.decodeHexDump("3400"));
         List<Object> decodedEvents = new LinkedList<>();
@@ -178,7 +187,6 @@ class MySQLBinlogEventPacketDecoderTest {
         when(tableMapEventPacket.getColumnDefs()).thenReturn(columnDefs);
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
-        assertThat(byteBuf.readerIndex(), is(completeData.length));
     }
     
     @Test
@@ -186,6 +194,7 @@ class MySQLBinlogEventPacketDecoderTest {
         ByteBuf byteBuf = ByteBufAllocator.DEFAULT.buffer();
         byte[] completeData = StringUtil.decodeHexDump("002a80a862200100000038000000c569000000007400000000000100020004ff0801000000000000000100000007535543434553531c9580c5");
         byteBuf.writeBytes(completeData);
+        byteBuf.writeBytes(StringUtil.decodeHexDump("006acb656410010000001f000000fa29000000001643000000000000b13f8340"));
         byte[] notCompleteData = StringUtil.decodeHexDump("00cb38a962130100000041000000be7d000000007b000000000001000464735f310009745f6f726465725f31000408030f");
         byteBuf.writeBytes(notCompleteData);
         List<Object> decodedEvents = new LinkedList<>();
@@ -193,6 +202,5 @@ class MySQLBinlogEventPacketDecoderTest {
         when(tableMapEventPacket.getColumnDefs()).thenReturn(columnDefs);
         binlogEventPacketDecoder.decode(channelHandlerContext, byteBuf, decodedEvents);
         assertThat(decodedEvents.size(), is(1));
-        assertThat(byteBuf.readerIndex(), is(completeData.length));
     }
 }

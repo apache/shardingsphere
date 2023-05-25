@@ -27,6 +27,7 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLNewParametersBo
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLBinaryResultSetRowPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -68,7 +69,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor<M
     private ResponseType responseType;
     
     @Override
-    public Collection<MySQLPacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() throws SQLException {
         MySQLServerPreparedStatement preparedStatement = updateAndGetPreparedStatement();
         List<Object> params = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet(), preparedStatement.getParameterColumnDefinitionFlags());
         preparedStatement.getLongData().forEach(params::set);
@@ -92,13 +93,13 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor<M
         return result;
     }
     
-    private Collection<MySQLPacket> processQuery(final QueryResponseHeader queryResponseHeader) {
+    private Collection<DatabasePacket> processQuery(final QueryResponseHeader queryResponseHeader) {
         responseType = ResponseType.QUERY;
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
         return ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet, ServerStatusFlagCalculator.calculateFor(connectionSession));
     }
     
-    private Collection<MySQLPacket> processUpdate(final UpdateResponseHeader updateResponseHeader) {
+    private Collection<DatabasePacket> processUpdate(final UpdateResponseHeader updateResponseHeader) {
         responseType = ResponseType.UPDATE;
         return ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader, ServerStatusFlagCalculator.calculateFor(connectionSession));
     }

@@ -20,13 +20,13 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rul;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
-import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.FormatSQLHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor.RULExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.ParseDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.PreviewHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -45,7 +45,6 @@ public final class RULBackendHandlerFactory {
     static {
         HANDLERS.put(ParseStatement.class, ParseDistSQLHandler.class);
         HANDLERS.put(PreviewStatement.class, PreviewHandler.class);
-        HANDLERS.put(FormatStatement.class, FormatSQLHandler.class);
     }
     
     /**
@@ -56,6 +55,11 @@ public final class RULBackendHandlerFactory {
      * @return created instance
      */
     public static ProxyBackendHandler newInstance(final RULStatement sqlStatement, final ConnectionSession connectionSession) {
+        if (TypedSPILoader.contains(RULExecutor.class, sqlStatement.getClass().getName())) {
+            RULBackendHandler<?> result = new SQLRULBackendHandler<>();
+            result.init(sqlStatement, connectionSession);
+            return result;
+        }
         return createRULBackendHandler(sqlStatement, connectionSession);
     }
     

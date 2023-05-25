@@ -67,6 +67,10 @@ READ_STORAGE_UNITS
     : R E A D UL_ S T O R A G E UL_ U N I T S
     ;
 
+TRANSACTIONAL_READ_QUERY_STRATEGY
+    : T R A N S A C T I O N A L UL_ R E A D UL_ Q U E R Y UL_ S T R A T E G Y
+    ;
+
 TYPE
     : T Y P E
     ;

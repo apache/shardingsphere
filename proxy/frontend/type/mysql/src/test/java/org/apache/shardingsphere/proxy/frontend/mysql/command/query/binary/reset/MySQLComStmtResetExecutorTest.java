@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.reset;
 
-import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.reset.MySQLComStmtResetPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRegistry;
@@ -51,7 +51,7 @@ class MySQLComStmtResetExecutorTest {
         MySQLComStmtResetPacket packet = mock(MySQLComStmtResetPacket.class);
         when(packet.getStatementId()).thenReturn(1);
         MySQLComStmtResetExecutor executor = new MySQLComStmtResetExecutor(packet, connectionSession);
-        Collection<MySQLPacket> actual = executor.execute();
+        Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(MySQLOKPacket.class));
         assertTrue(preparedStatement.getLongData().isEmpty());

@@ -32,11 +32,11 @@ import java.util.Collection;
 /**
  * Text result set row packet for MySQL.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-ProtocolText::ResultsetRow">ResultsetRow</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_query_response_text_resultset_row.html">Text Resultset Row</a>
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLTextResultSetRowPacket implements MySQLPacket {
+public final class MySQLTextResultSetRowPacket extends MySQLPacket {
     
     private static final int NULL = 0xfb;
     
@@ -52,7 +52,7 @@ public final class MySQLTextResultSetRowPacket implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         for (Object each : data) {
             if (null == each) {
                 payload.writeInt1(NULL);

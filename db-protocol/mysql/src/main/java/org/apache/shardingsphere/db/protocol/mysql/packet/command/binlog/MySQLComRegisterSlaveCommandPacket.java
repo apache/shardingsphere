@@ -26,8 +26,6 @@ import lombok.ToString;
 
 /**
  * COM_REGISTER_SLAVE command packet for MySQL.
- *
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-register-slave.html">COM_REGISTER_SLAVE</a>
  */
 @Getter
 @ToString

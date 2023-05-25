@@ -35,6 +35,6 @@ public final class PostgreSQLUnsupportedCommandPacket extends PostgreSQLCommandP
     private final PostgreSQLIdentifierTag identifier;
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
     }
 }

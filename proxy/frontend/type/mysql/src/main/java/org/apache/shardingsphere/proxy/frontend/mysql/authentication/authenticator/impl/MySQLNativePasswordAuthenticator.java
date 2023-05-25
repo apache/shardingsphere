@@ -30,7 +30,7 @@ import java.util.Arrays;
 /**
  * Native password authenticator for MySQL.
  * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/secure-password-authentication.html">Secure Password Authentication</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_connection_phase_authentication_methods_native_password_authentication.html">Native Authentication</a>
  */
 public final class MySQLNativePasswordAuthenticator implements MySQLAuthenticator {
     

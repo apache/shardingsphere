@@ -22,9 +22,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.transaction.TransactionalReadQueryStrategy;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -59,7 +59,10 @@ public final class ReadwriteSplittingRuleStatementConverter {
     
     private static ReadwriteSplittingDataSourceRuleConfiguration createDataSourceRuleConfiguration(final ReadwriteSplittingRuleSegment segment,
                                                                                                    final String loadBalancerName) {
-        return new ReadwriteSplittingDataSourceRuleConfiguration(segment.getName(), segment.getWriteDataSource(), new ArrayList<>(segment.getReadDataSources()), loadBalancerName);
+        return null == segment.getTransactionalReadQueryStrategy()
+                ? new ReadwriteSplittingDataSourceRuleConfiguration(segment.getName(), segment.getWriteDataSource(), new LinkedList<>(segment.getReadDataSources()), loadBalancerName)
+                : new ReadwriteSplittingDataSourceRuleConfiguration(segment.getName(), segment.getWriteDataSource(), new LinkedList<>(segment.getReadDataSources()),
+                        TransactionalReadQueryStrategy.valueOf(segment.getTransactionalReadQueryStrategy().toUpperCase()), loadBalancerName);
     }
     
     private static AlgorithmConfiguration createLoadBalancer(final ReadwriteSplittingRuleSegment ruleSegment) {

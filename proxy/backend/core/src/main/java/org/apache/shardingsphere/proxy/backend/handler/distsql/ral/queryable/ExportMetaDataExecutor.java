@@ -35,7 +35,7 @@ import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedClusterInf
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedMetaData;
 import org.apache.shardingsphere.proxy.backend.distsql.export.ExportedSnapshotInfo;
 import org.apache.shardingsphere.proxy.backend.util.ExportUtils;
-import org.apache.shardingsphere.proxy.backend.util.JsonUtils;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
