@@ -50,16 +50,23 @@ public final class RootSQLNodeConverterTestCases {
     public Map<String, SQLNodeConverterTestCase> getTestCases() {
         Map<String, SQLNodeConverterTestCase> result = new HashMap<>(testCases.size(), 1F);
         for (SQLNodeConverterTestCase each : testCases) {
-            Collection<String> sqlCaseTypes = Strings.isNullOrEmpty(each.getSqlCaseTypes()) ? Arrays.stream(SQLCaseType.values()).map(Enum::name).collect(Collectors.toList())
-                    : Splitter.on(",").trimResults().splitToList(each.getSqlCaseTypes());
-            Collection<String> databaseTypes = Strings.isNullOrEmpty(each.getDatabaseTypes()) ? Arrays.asList("MySQL", "PostgreSQL", "openGauss", "Oracle", "SQLServer")
-                    : Splitter.on(",").trimResults().splitToList(each.getDatabaseTypes());
-            for (String sqlCaseType : sqlCaseTypes) {
+            Collection<String> databaseTypes = getDatabaseTypes(each);
+            for (String sqlCaseType : getSQLCaseTypes(each)) {
                 for (String databaseType : databaseTypes) {
                     result.put(each.getSqlCaseId() + "_" + sqlCaseType + "_" + databaseType, each);
                 }
             }
         }
         return result;
+    }
+    
+    private static Collection<String> getDatabaseTypes(final SQLNodeConverterTestCase each) {
+        return Strings.isNullOrEmpty(each.getDatabaseTypes()) ? Arrays.asList("MySQL", "PostgreSQL", "openGauss", "Oracle", "SQLServer")
+                : Splitter.on(",").trimResults().splitToList(each.getDatabaseTypes());
+    }
+    
+    private static Collection<String> getSQLCaseTypes(final SQLNodeConverterTestCase each) {
+        return Strings.isNullOrEmpty(each.getSqlCaseTypes()) ? Arrays.stream(SQLCaseType.values()).map(Enum::name).collect(Collectors.toList())
+                : Splitter.on(",").trimResults().splitToList(each.getSqlCaseTypes());
     }
 }
