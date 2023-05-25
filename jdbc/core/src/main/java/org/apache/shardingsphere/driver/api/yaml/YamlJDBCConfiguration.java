@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * YAML root configuration.
+ * YAML JDBC configuration.
  */
 @Getter
 @Setter
