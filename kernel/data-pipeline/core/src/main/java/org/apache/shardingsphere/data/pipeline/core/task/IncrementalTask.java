@@ -18,26 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.core.task;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.api.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
-import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -46,6 +34,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Incremental task.
  */
+@RequiredArgsConstructor
 @Slf4j
 @ToString(exclude = {"incrementalExecuteEngine", "channel", "dumper", "importers", "taskProgress"})
 public final class IncrementalTask implements PipelineTask {
@@ -63,31 +52,6 @@ public final class IncrementalTask implements PipelineTask {
     
     @Getter
     private final IncrementalTaskProgress taskProgress;
-    
-    // TODO simplify parameters
-    public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
-                           final PipelineChannelCreator pipelineChannelCreator, final ImporterConnector importerConnector,
-                           final PipelineTableMetaDataLoader sourceMetaDataLoader, final ExecuteEngine incrementalExecuteEngine,
-                           final InventoryIncrementalJobItemContext jobItemContext) {
-        taskId = dumperConfig.getDataSourceName();
-        this.incrementalExecuteEngine = incrementalExecuteEngine;
-        IngestPosition position = dumperConfig.getPosition();
-        taskProgress = PipelineTaskUtils.createIncrementalTaskProgress(position, jobItemContext.getInitProgress());
-        channel = PipelineTaskUtils.createIncrementalChannel(concurrency, pipelineChannelCreator, taskProgress);
-        dumper = PipelineTypedSPILoader.getDatabaseTypedService(
-                IncrementalDumperCreator.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType()).createIncrementalDumper(dumperConfig, position, channel, sourceMetaDataLoader);
-        importers = createImporters(concurrency, importerConfig, importerConnector, channel, jobItemContext);
-    }
-    
-    private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
-                                                 final PipelineJobProgressListener jobProgressListener) {
-        Collection<Importer> result = new LinkedList<>();
-        for (int i = 0; i < concurrency; i++) {
-            result.add(TypedSPILoader.getService(ImporterCreator.class, importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener,
-                    ImporterType.INCREMENTAL));
-        }
-        return result;
-    }
     
     @Override
     public Collection<CompletableFuture<?>> start() {
