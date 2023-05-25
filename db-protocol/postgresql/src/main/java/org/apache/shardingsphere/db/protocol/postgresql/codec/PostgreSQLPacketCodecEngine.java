@@ -20,15 +20,15 @@ package org.apache.shardingsphere.db.protocol.postgresql.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.channel.ChannelHandlerContext;
-import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
-import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
+import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.apache.shardingsphere.dialect.postgresql.vendor.PostgreSQLVendorError;
 
 import java.nio.charset.Charset;
 import java.util.LinkedList;
@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * Database packet codec for PostgreSQL.
  */
-public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEngine<PostgreSQLPacket> {
+public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEngine {
     
     private static final int SSL_REQUEST_PAYLOAD_LENGTH = 8;
     
@@ -104,9 +104,9 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
     }
     
     @Override
-    public void encode(final ChannelHandlerContext context, final PostgreSQLPacket message, final ByteBuf out) {
-        boolean isPostgreSQLIdentifierPacket = message instanceof PostgreSQLIdentifierPacket;
-        if (isPostgreSQLIdentifierPacket) {
+    public void encode(final ChannelHandlerContext context, final DatabasePacket message, final ByteBuf out) {
+        boolean isIdentifierPacket = message instanceof PostgreSQLIdentifierPacket;
+        if (isIdentifierPacket) {
             prepareMessageHeader(out, ((PostgreSQLIdentifierPacket) message).getIdentifier().getValue());
         }
         PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(out, context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
@@ -119,11 +119,11 @@ public final class PostgreSQLPacketCodecEngine implements DatabasePacketCodecEng
             // TODO consider what severity to use
             PostgreSQLErrorResponsePacket errorResponsePacket = PostgreSQLErrorResponsePacket.newBuilder(
                     PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLVendorError.SYSTEM_ERROR, ex.getMessage()).build();
-            isPostgreSQLIdentifierPacket = true;
+            isIdentifierPacket = true;
             prepareMessageHeader(out, errorResponsePacket.getIdentifier().getValue());
             errorResponsePacket.write(payload);
         } finally {
-            if (isPostgreSQLIdentifierPacket) {
+            if (isIdentifierPacket) {
                 updateMessageLength(out);
             }
         }

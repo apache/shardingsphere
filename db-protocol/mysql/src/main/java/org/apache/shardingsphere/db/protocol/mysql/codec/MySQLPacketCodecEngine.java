@@ -23,9 +23,9 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
-import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnknownSQLException;
 
 import java.nio.charset.Charset;
@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Database packet codec for MySQL.
  */
-public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<MySQLPacket> {
+public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine {
     
     private static final int MAX_PACKET_LENGTH = 0xFFFFFF;
     
@@ -87,7 +87,7 @@ public final class MySQLPacketCodecEngine implements DatabasePacketCodecEngine<M
     }
     
     @Override
-    public void encode(final ChannelHandlerContext context, final MySQLPacket message, final ByteBuf out) {
+    public void encode(final ChannelHandlerContext context, final DatabasePacket message, final ByteBuf out) {
         MySQLPacketPayload payload = new MySQLPacketPayload(prepareMessageHeader(out).markWriterIndex(), context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get());
         try {
             message.write(payload);
