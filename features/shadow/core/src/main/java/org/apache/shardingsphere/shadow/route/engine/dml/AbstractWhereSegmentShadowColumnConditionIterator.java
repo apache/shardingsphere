@@ -21,49 +21,40 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
-import org.apache.shardingsphere.shadow.route.engine.util.ShadowExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
 
 /**
  * Abstract shadow column condition iterator of where segment.
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractWhereSegmentShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {
     
     @Getter(AccessLevel.PROTECTED)
-    private final String shadowColumn;
+    private final String shadowColumnName;
     
-    private final Iterator<ExpressionSegment> iterator;
+    private final Iterator<ExpressionSegment> expressions;
     
     @Override
     public boolean hasNext() {
-        return iterator.hasNext();
+        return expressions.hasNext();
     }
     
     @Override
     public Optional<ShadowColumnCondition> next() {
-        ExpressionSegment expressionSegment = iterator.next();
-        Optional<ColumnSegment> columnSegment = ShadowExtractor.extractColumn(expressionSegment);
-        if (!columnSegment.isPresent()) {
+        ExpressionSegment expression = expressions.next();
+        Collection<ColumnSegment> columns = ColumnExtractor.extract(expression);
+        if (1 != columns.size()) {
             return Optional.empty();
         }
-        String column = columnSegment.get().getIdentifier().getValue();
-        if (!shadowColumn.equals(column)) {
-            return Optional.empty();
-        }
-        return nextShadowColumnCondition(expressionSegment, columnSegment.get());
+        ColumnSegment column = columns.iterator().next();
+        return shadowColumnName.equals(column.getIdentifier().getValue()) ? next(expression, column) : Optional.empty();
     }
     
-    /**
-     * Next shadow column condition.
-     *
-     * @param expressionSegment expression segment
-     * @param columnSegment column segment
-     * @return shadow column condition
-     */
-    protected abstract Optional<ShadowColumnCondition> nextShadowColumnCondition(ExpressionSegment expressionSegment, ColumnSegment columnSegment);
+    protected abstract Optional<ShadowColumnCondition> next(ExpressionSegment expression, ColumnSegment column);
 }

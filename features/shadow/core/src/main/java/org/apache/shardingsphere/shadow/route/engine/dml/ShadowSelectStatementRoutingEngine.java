@@ -71,8 +71,8 @@ public final class ShadowSelectStatementRoutingEngine extends AbstractShadowDMLS
         }
         
         @Override
-        protected Optional<ShadowColumnCondition> nextShadowColumnCondition(final ExpressionSegment expressionSegment, final ColumnSegment columnSegment) {
-            return ShadowExtractor.extractValues(expressionSegment, parameters).map(values -> new ShadowColumnCondition(extractOwnerName(columnSegment), getShadowColumn(), values));
+        protected Optional<ShadowColumnCondition> next(final ExpressionSegment expression, final ColumnSegment column) {
+            return ShadowExtractor.extractValues(expression, parameters).map(values -> new ShadowColumnCondition(extractOwnerName(column), getShadowColumnName(), values));
         }
         
         private String extractOwnerName(final ColumnSegment columnSegment) {
