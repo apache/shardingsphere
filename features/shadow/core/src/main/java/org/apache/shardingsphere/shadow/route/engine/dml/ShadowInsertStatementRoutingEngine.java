@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.shadow.route.engine.dml;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
@@ -50,9 +52,8 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
         return sqlStatementContext.getInsertColumnNames();
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private final class ShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {
-        
-        private int index;
         
         private final String shadowColumn;
         
@@ -60,12 +61,7 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
         
         private final List<InsertValueContext> insertValueContexts;
         
-        private ShadowColumnConditionIterator(final String shadowColumn, final Iterator<String> iterator, final List<InsertValueContext> insertValueContexts) {
-            index = 0;
-            this.shadowColumn = shadowColumn;
-            this.iterator = iterator;
-            this.insertValueContexts = insertValueContexts;
-        }
+        private int index;
         
         @Override
         public boolean hasNext() {
