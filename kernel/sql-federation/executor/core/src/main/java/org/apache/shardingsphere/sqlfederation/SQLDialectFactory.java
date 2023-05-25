@@ -24,7 +24,6 @@ import org.apache.calcite.sql.dialect.MssqlSqlDialect;
 import org.apache.calcite.sql.dialect.MysqlSqlDialect;
 import org.apache.calcite.sql.dialect.OracleSqlDialect;
 import org.apache.calcite.sql.dialect.PostgresqlSqlDialect;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +52,7 @@ public final class SQLDialectFactory {
      * @param databaseType database type
      * @return SQL dialect
      */
-    public static SqlDialect getSQLDialect(final DatabaseType databaseType) {
-        return SQL_DIALECTS_REGISTRY.getOrDefault(databaseType.getType(), MysqlSqlDialect.DEFAULT);
+    public static SqlDialect getSQLDialect(final String databaseType) {
+        return SQL_DIALECTS_REGISTRY.getOrDefault(databaseType, MysqlSqlDialect.DEFAULT);
     }
 }
