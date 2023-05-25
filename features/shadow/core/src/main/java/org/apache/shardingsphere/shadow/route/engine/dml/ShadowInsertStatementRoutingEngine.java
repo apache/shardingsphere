@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.shadow.route.engine.dml;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -27,10 +25,8 @@ import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.exception.syntax.UnsupportedShadowInsertValueException;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Shadow insert statement routing engine.
@@ -45,50 +41,28 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
     }
     
     @Override
-    protected Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator(final String shadowColumn) {
-        return new ShadowColumnConditionIterator(shadowColumn, getColumnNames().iterator(), sqlStatementContext.getInsertValueContexts());
-    }
-    
-    private Collection<String> getColumnNames() {
-        return sqlStatementContext.getInsertColumnNames();
-    }
-    
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    private final class ShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {
-        
-        private final String shadowColumnName;
-        
-        private final Iterator<String> columnNames;
-        
-        private final List<InsertValueContext> insertValueContexts;
-        
-        private int columnIndex;
-        
-        @Override
-        public boolean hasNext() {
-            return columnNames.hasNext();
-        }
-        
-        @Override
-        public Optional<ShadowColumnCondition> next() {
-            String columnName = columnNames.next();
-            if (!shadowColumnName.equals(columnName)) {
+    protected Collection<ShadowColumnCondition> getShadowColumnConditions(final String shadowColumnName) {
+        Collection<ShadowColumnCondition> result = new LinkedList<>();
+        int columnIndex = 0;
+        for (String each : sqlStatementContext.getInsertColumnNames()) {
+            if (!shadowColumnName.equals(each)) {
                 columnIndex++;
-                return Optional.empty();
+                continue;
             }
-            Collection<Comparable<?>> columnValues = getColumnValues(insertValueContexts, columnIndex);
+            Collection<Comparable<?>> columnValues = getColumnValues(sqlStatementContext.getInsertValueContexts(), columnIndex);
             columnIndex++;
-            return Optional.of(new ShadowColumnCondition(getSingleTableName(), columnName, columnValues));
+            result.add(new ShadowColumnCondition(getSingleTableName(), each, columnValues));
         }
-        
-        private Collection<Comparable<?>> getColumnValues(final List<InsertValueContext> insertValueContexts, final int columnIndex) {
-            Collection<Comparable<?>> result = new LinkedList<>();
-            for (InsertValueContext each : insertValueContexts) {
-                Object columnValue = each.getLiteralValue(columnIndex).orElseThrow(() -> new UnsupportedShadowInsertValueException(columnIndex));
-                ShardingSpherePreconditions.checkState(columnValue instanceof Comparable<?>, () -> new UnsupportedShadowInsertValueException(columnIndex));
-                result.add((Comparable<?>) columnValue);
-            }
-            return result;
+        return result;
+    }
+    
+    private Collection<Comparable<?>> getColumnValues(final List<InsertValueContext> insertValueContexts, final int columnIndex) {
+        Collection<Comparable<?>> result = new LinkedList<>();
+        for (InsertValueContext each : insertValueContexts) {
+            Object columnValue = each.getLiteralValue(columnIndex).orElseThrow(() -> new UnsupportedShadowInsertValueException(columnIndex));
+            ShardingSpherePreconditions.checkState(columnValue instanceof Comparable<?>, () -> new UnsupportedShadowInsertValueException(columnIndex));
+            result.add((Comparable<?>) columnValue);
         }
+        return result;
     }
 }
