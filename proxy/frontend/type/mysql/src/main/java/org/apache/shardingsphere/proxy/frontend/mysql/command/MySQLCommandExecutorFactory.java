@@ -66,6 +66,7 @@ public final class MySQLCommandExecutorFactory {
      * @return created instance
      * @throws SQLException SQL exception
      */
+    @SuppressWarnings("DataFlowIssue")
     public static CommandExecutor newInstance(final MySQLCommandPacketType commandPacketType, final CommandPacket commandPacket, final ConnectionSession connectionSession) throws SQLException {
         if (commandPacket instanceof SQLAwarePacket) {
             log.debug("Execute packet type: {}, sql: {}", commandPacketType, ((SQLAwarePacket) commandPacket).getSQL());
