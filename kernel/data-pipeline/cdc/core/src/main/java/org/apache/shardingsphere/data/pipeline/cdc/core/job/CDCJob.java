@@ -34,7 +34,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncremental
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractSimplePipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.PipelineSink;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 
 import java.util.Optional;
@@ -45,7 +45,7 @@ import java.util.Optional;
 @Slf4j
 public final class CDCJob extends AbstractSimplePipelineJob {
     
-    private final ImporterConnector importerConnector;
+    private final PipelineSink pipelineSink;
     
     private final CDCJobAPI jobAPI = new CDCJobAPI();
     
@@ -53,9 +53,9 @@ public final class CDCJob extends AbstractSimplePipelineJob {
     
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
     
-    public CDCJob(final String jobId, final ImporterConnector importerConnector) {
+    public CDCJob(final String jobId, final PipelineSink pipelineSink) {
         super(jobId);
-        this.importerConnector = importerConnector;
+        this.pipelineSink = pipelineSink;
     }
     
     @Override
@@ -70,7 +70,7 @@ public final class CDCJob extends AbstractSimplePipelineJob {
         Optional<InventoryIncrementalJobItemProgress> initProgress = jobAPI.getJobItemProgress(shardingContext.getJobName(), shardingItem);
         CDCProcessContext jobProcessContext = jobAPI.buildPipelineProcessContext(jobConfig);
         CDCTaskConfiguration taskConfig = jobAPI.buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
-        return new CDCJobItemContext(jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, dataSourceManager, importerConnector);
+        return new CDCJobItemContext(jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, dataSourceManager, pipelineSink);
     }
     
     @Override
@@ -82,8 +82,8 @@ public final class CDCJob extends AbstractSimplePipelineJob {
     @Override
     protected void doClean() {
         dataSourceManager.close();
-        if (importerConnector instanceof AutoCloseable) {
-            CloseUtils.closeQuietly((AutoCloseable) importerConnector);
+        if (pipelineSink instanceof AutoCloseable) {
+            CloseUtils.closeQuietly((AutoCloseable) pipelineSink);
         }
     }
 }

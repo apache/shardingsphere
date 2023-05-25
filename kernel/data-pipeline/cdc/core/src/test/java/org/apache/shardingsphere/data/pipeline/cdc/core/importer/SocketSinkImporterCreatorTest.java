@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
 import io.netty.channel.Channel;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.cdc.core.connector.SocketSinkImporterConnector;
+import org.apache.shardingsphere.data.pipeline.cdc.core.connector.PipelineSocketSink;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -42,7 +42,7 @@ class SocketSinkImporterCreatorTest {
     
     @Test
     void assertCreateCDCImporter() {
-        SocketSinkImporterConnector importerConnector = new SocketSinkImporterConnector(mock(Channel.class), mock(ShardingSphereDatabase.class), 1, Collections.emptyList(), null);
+        PipelineSocketSink importerConnector = new PipelineSocketSink(mock(Channel.class), mock(ShardingSphereDatabase.class), 1, Collections.emptyList(), null);
         assertThat(TypedSPILoader.getService(ImporterCreator.class, "Socket").createImporter(importerConfig, importerConnector, null, null, null), instanceOf(SocketSinkImporter.class));
     }
 }

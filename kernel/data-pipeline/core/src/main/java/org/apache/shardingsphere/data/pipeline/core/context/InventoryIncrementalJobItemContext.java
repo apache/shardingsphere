@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncreme
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.PipelineSink;
 
 import java.util.Collection;
 
@@ -67,7 +67,7 @@ public interface InventoryIncrementalJobItemContext extends PipelineJobItemConte
      *
      * @return importer connector
      */
-    ImporterConnector getImporterConnector();
+    PipelineSink getImporterConnector();
     
     /**
      * Get processed record count.

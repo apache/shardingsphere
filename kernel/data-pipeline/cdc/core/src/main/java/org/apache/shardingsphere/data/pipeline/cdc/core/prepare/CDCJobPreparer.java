@@ -46,7 +46,7 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTaskUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
@@ -137,16 +137,16 @@ public final class CDCJobPreparer {
         Dumper dumper = PipelineTypedSPILoader.getDatabaseTypedService(IncrementalDumperCreator.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType())
                 .createIncrementalDumper(dumperConfig, dumperConfig.getPosition(), channel, sourceMetaDataLoader);
         // TODO now Remove importerConnector
-        Collection<Importer> importers = createImporters(importerConfig, jobItemContext.getImporterConnector(), channel, jobItemContext);
+        Collection<Importer> importers = createImporters(importerConfig, jobItemContext.getPipelineSink(), channel, jobItemContext);
         PipelineTask incrementalTask = new IncrementalTask(dumperConfig.getDataSourceName(), incrementalExecuteEngine, channel, dumper, importers, taskProgress);
         jobItemContext.getIncrementalTasks().add(incrementalTask);
     }
     
-    private Collection<Importer> createImporters(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
+    private Collection<Importer> createImporters(final ImporterConfiguration importerConfig, final PipelineSink pipelineSink, final PipelineChannel channel,
                                                  final PipelineJobProgressListener jobProgressListener) {
         Collection<Importer> result = new LinkedList<>();
         for (int i = 0; i < importerConfig.getConcurrency(); i++) {
-            result.add(TypedSPILoader.getService(ImporterCreator.class, importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener,
+            result.add(TypedSPILoader.getService(ImporterCreator.class, pipelineSink.getType()).createImporter(importerConfig, pipelineSink, channel, jobProgressListener,
                     ImporterType.INCREMENTAL));
         }
         return result;

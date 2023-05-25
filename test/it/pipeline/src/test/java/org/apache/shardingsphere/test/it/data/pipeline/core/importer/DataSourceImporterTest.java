@@ -32,8 +32,8 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.importer.DataSourceImporter;
-import org.apache.shardingsphere.data.pipeline.core.importer.connector.DataSourceImporterConnector;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.core.importer.connector.PipelineDataSourceSink;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.PipelineSink;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,8 +84,8 @@ class DataSourceImporterTest {
     
     @BeforeEach
     void setUp() throws SQLException {
-        ImporterConnector importerConnector = new DataSourceImporterConnector(dataSourceManager);
-        jdbcImporter = new DataSourceImporter(mockImporterConfiguration(), importerConnector, channel, new FixtureInventoryIncrementalJobItemContext());
+        PipelineSink pipelineSink = new PipelineDataSourceSink(dataSourceManager);
+        jdbcImporter = new DataSourceImporter(mockImporterConfiguration(), pipelineSink, channel, new FixtureInventoryIncrementalJobItemContext());
         when(dataSourceManager.getDataSource(dataSourceConfig)).thenReturn(dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
     }

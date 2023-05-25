@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.PipelineSink;
 
 /**
  * Socket sink importer creator.
@@ -32,9 +32,9 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterCo
 public final class SocketSinkImporterCreator implements ImporterCreator {
     
     @Override
-    public Importer createImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
+    public Importer createImporter(final ImporterConfiguration importerConfig, final PipelineSink pipelineSink, final PipelineChannel channel,
                                    final PipelineJobProgressListener jobProgressListener, final ImporterType importerType) {
-        return new SocketSinkImporter(importerConfig, importerConnector, channel, jobProgressListener, importerType);
+        return new SocketSinkImporter(importerConfig, pipelineSink, channel, jobProgressListener, importerType);
     }
     
     @Override

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.PipelineSink;
 
 /**
  * Data source importer creator.
@@ -32,9 +32,9 @@ public final class DataSourceImporterCreator implements ImporterCreator {
     
     @Override
     public Importer createImporter(final ImporterConfiguration importerConfig,
-                                   final ImporterConnector importerConnector, final PipelineChannel channel,
+                                   final PipelineSink pipelineSink, final PipelineChannel channel,
                                    final PipelineJobProgressListener jobProgressListener, final ImporterType importerType) {
-        return new DataSourceImporter(importerConfig, importerConnector, channel, jobProgressListener);
+        return new DataSourceImporter(importerConfig, pipelineSink, channel, jobProgressListener);
     }
     
     @Override

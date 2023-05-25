@@ -35,7 +35,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncremental
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.PipelineSink;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -65,7 +65,7 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     
     private final PipelineDataSourceManager dataSourceManager;
     
-    private final ImporterConnector importerConnector;
+    private final PipelineSink pipelineSink;
     
     private final Collection<PipelineTask> inventoryTasks = new LinkedList<>();
     
@@ -92,14 +92,14 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     };
     
     public CDCJobItemContext(final CDCJobConfiguration jobConfig, final int shardingItem, final InventoryIncrementalJobItemProgress initProgress, final CDCProcessContext jobProcessContext,
-                             final CDCTaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager, final ImporterConnector importerConnector) {
+                             final CDCTaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager, final PipelineSink pipelineSink) {
         this.jobConfig = jobConfig;
         this.shardingItem = shardingItem;
         this.initProgress = initProgress;
         this.jobProcessContext = jobProcessContext;
         this.taskConfig = taskConfig;
         this.dataSourceManager = dataSourceManager;
-        this.importerConnector = importerConnector;
+        this.pipelineSink = pipelineSink;
     }
     
     @Override
@@ -134,9 +134,8 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
         return sourceMetaDataLoaderLazyInitializer.get();
     }
     
-    @Override
-    public ImporterConnector getImporterConnector() {
-        return importerConnector;
+    public PipelineSink getPipelineSink() {
+        return pipelineSink;
     }
     
     @Override

@@ -34,9 +34,10 @@ import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerato
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
 import org.apache.shardingsphere.data.pipeline.cdc.util.CDCDataRecordUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.util.DataRecordResultConvertUtils;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.PipelineSink;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -57,7 +58,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Socket sink importer connector.
  */
 @Slf4j
-public final class SocketSinkImporterConnector implements ImporterConnector, AutoCloseable {
+public final class PipelineSocketSink implements PipelineSink {
     
     private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200L;
     
@@ -84,8 +85,8 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
     
     private Thread incrementalImporterTask;
     
-    public SocketSinkImporterConnector(final Channel channel, final ShardingSphereDatabase database, final int jobShardingCount, final Collection<String> schemaTableNames,
-                                       final Comparator<DataRecord> dataRecordComparator) {
+    public PipelineSocketSink(final Channel channel, final ShardingSphereDatabase database, final int jobShardingCount, final Collection<String> schemaTableNames,
+                              final Comparator<DataRecord> dataRecordComparator) {
         this.channel = channel;
         this.database = database;
         this.jobShardingCount = jobShardingCount;
@@ -216,7 +217,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
     }
     
     @Override
-    public void close() throws Exception {
+    public void close() throws IOException {
         channel.close();
     }
     

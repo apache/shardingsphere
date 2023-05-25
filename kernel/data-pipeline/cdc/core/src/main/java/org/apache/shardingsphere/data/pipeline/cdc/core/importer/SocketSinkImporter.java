@@ -33,8 +33,8 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.Pipelin
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckHolder;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
-import org.apache.shardingsphere.data.pipeline.cdc.core.connector.SocketSinkImporterConnector;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.cdc.core.connector.PipelineSocketSink;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 
 import java.util.Collections;
@@ -53,7 +53,7 @@ public final class SocketSinkImporter extends AbstractLifecycleExecutor implemen
     
     private final PipelineChannel channel;
     
-    private final SocketSinkImporterConnector importerConnector;
+    private final PipelineSocketSink importerConnector;
     
     private final PipelineJobProgressListener jobProgressListener;
     
@@ -62,12 +62,12 @@ public final class SocketSinkImporter extends AbstractLifecycleExecutor implemen
     
     private final JobRateLimitAlgorithm rateLimitAlgorithm;
     
-    public SocketSinkImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
+    public SocketSinkImporter(final ImporterConfiguration importerConfig, final PipelineSink pipelineSink, final PipelineChannel channel,
                               final PipelineJobProgressListener jobProgressListener, final ImporterType importerType) {
         this.importerConfig = importerConfig;
         rateLimitAlgorithm = null == importerConfig ? null : importerConfig.getRateLimitAlgorithm();
         this.channel = channel;
-        this.importerConnector = (SocketSinkImporterConnector) importerConnector;
+        this.importerConnector = (PipelineSocketSink) pipelineSink;
         this.jobProgressListener = jobProgressListener;
         this.importerType = importerType;
     }

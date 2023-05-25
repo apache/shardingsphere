@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.context.job.CDCJobItemContext;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckHolder;
-import org.apache.shardingsphere.data.pipeline.cdc.core.connector.SocketSinkImporterConnector;
+import org.apache.shardingsphere.data.pipeline.cdc.core.connector.PipelineSocketSink;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCExceptionWrapper;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCServerException;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.NotFindStreamDataSourceTableException;
@@ -155,7 +155,7 @@ public final class CDCBackendHandler {
         Comparator<DataRecord> dataRecordComparator = cdcJobConfig.isDecodeWithTX()
                 ? DataRecordComparatorGenerator.generatorIncrementalComparator(database.getProtocolType())
                 : null;
-        jobAPI.startJob(jobId, new SocketSinkImporterConnector(channel, database, cdcJobConfig.getJobShardingCount(), cdcJobConfig.getSchemaTableNames(), dataRecordComparator));
+        jobAPI.startJob(jobId, new PipelineSocketSink(channel, database, cdcJobConfig.getJobShardingCount(), cdcJobConfig.getSchemaTableNames(), dataRecordComparator));
         connectionContext.setJobId(jobId);
     }
     
@@ -179,8 +179,8 @@ public final class CDCBackendHandler {
             return;
         }
         CDCJobItemContext cdcJobItemContext = (CDCJobItemContext) jobItemContext.get();
-        if (cdcJobItemContext.getImporterConnector() instanceof SocketSinkImporterConnector) {
-            Channel channel = (Channel) cdcJobItemContext.getImporterConnector().getConnector();
+        if (cdcJobItemContext.getPipelineSink() instanceof PipelineSocketSink) {
+            Channel channel = (Channel) cdcJobItemContext.getPipelineSink().getConnector();
             if (channelId.equals(channel.id())) {
                 log.info("close CDC job, channel id: {}", channelId);
                 PipelineJobCenter.stop(jobId);

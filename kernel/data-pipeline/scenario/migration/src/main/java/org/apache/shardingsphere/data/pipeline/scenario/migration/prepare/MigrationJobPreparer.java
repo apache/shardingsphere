@@ -54,7 +54,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.config.Migrati
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumperCreator;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
@@ -201,11 +201,11 @@ public final class MigrationJobPreparer {
         jobItemContext.getIncrementalTasks().add(incrementalTask);
     }
     
-    private Collection<Importer> createImporters(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
+    private Collection<Importer> createImporters(final ImporterConfiguration importerConfig, final PipelineSink pipelineSink, final PipelineChannel channel,
                                                  final PipelineJobProgressListener jobProgressListener) {
         Collection<Importer> result = new LinkedList<>();
         for (int i = 0; i < importerConfig.getConcurrency(); i++) {
-            result.add(TypedSPILoader.getService(ImporterCreator.class, importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener,
+            result.add(TypedSPILoader.getService(ImporterCreator.class, pipelineSink.getType()).createImporter(importerConfig, pipelineSink, channel, jobProgressListener,
                     ImporterType.INCREMENTAL));
         }
         return result;

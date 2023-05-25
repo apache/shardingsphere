@@ -22,7 +22,7 @@ import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.PipelineSink;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
@@ -36,12 +36,12 @@ public interface ImporterCreator extends TypedSPI {
      * Create importer.
      *
      * @param importerConfig importer configuration
-     * @param importerConnector import connector
+     * @param pipelineSink import connector
      * @param channel channel
      * @param jobProgressListener job progress listener
      * @param importerType importer type
      * @return importer
      */
-    Importer createImporter(ImporterConfiguration importerConfig, ImporterConnector importerConnector, PipelineChannel channel, PipelineJobProgressListener jobProgressListener,
+    Importer createImporter(ImporterConfiguration importerConfig, PipelineSink pipelineSink, PipelineChannel channel, PipelineJobProgressListener jobProgressListener,
                             ImporterType importerType);
 }

@@ -71,7 +71,7 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDa
 import org.apache.shardingsphere.data.pipeline.core.prepare.PipelineJobPreparerUtils;
 import org.apache.shardingsphere.data.pipeline.core.sharding.ShardingColumnsExtractor;
 import org.apache.shardingsphere.data.pipeline.core.util.JobDataNodeLineConvertUtils;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -208,10 +208,10 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
      * Start job.
      *
      * @param jobId job id
-     * @param importerConnector importer connector
+     * @param pipelineSink importer connector
      */
-    public void startJob(final String jobId, final ImporterConnector importerConnector) {
-        CDCJob job = new CDCJob(jobId, importerConnector);
+    public void startJob(final String jobId, final PipelineSink pipelineSink) {
+        CDCJob job = new CDCJob(jobId, pipelineSink);
         PipelineJobCenter.addJob(jobId, job);
         updateJobConfigurationDisabled(jobId, false);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.PipelineSink;
 
-public final class FixtureImporterConnector implements ImporterConnector {
+public final class FixturePipelineSink implements PipelineSink {
     
     @Override
     public Object getConnector() {

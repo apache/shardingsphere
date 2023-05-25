@@ -38,7 +38,7 @@ import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineImporterJobWriteException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.spi.importer.connector.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
@@ -84,11 +84,11 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     
     private final AtomicReference<Statement> batchDeleteStatement = new AtomicReference<>();
     
-    public DataSourceImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
+    public DataSourceImporter(final ImporterConfiguration importerConfig, final PipelineSink pipelineSink, final PipelineChannel channel,
                               final PipelineJobProgressListener jobProgressListener) {
         this.importerConfig = importerConfig;
         rateLimitAlgorithm = importerConfig.getRateLimitAlgorithm();
-        this.dataSourceManager = (PipelineDataSourceManager) importerConnector.getConnector();
+        this.dataSourceManager = (PipelineDataSourceManager) pipelineSink.getConnector();
         this.channel = channel;
         pipelineSqlBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, importerConfig.getDataSourceConfig().getDatabaseType().getType());
         this.jobProgressListener = jobProgressListener;
