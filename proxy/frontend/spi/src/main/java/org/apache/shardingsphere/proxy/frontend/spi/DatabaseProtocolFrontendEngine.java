@@ -19,18 +19,15 @@ package org.apache.shardingsphere.proxy.frontend.spi;
 
 import io.netty.channel.Channel;
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Database protocol frontend engine.
- * 
- * @param <T> type of database packet
  */
-public interface DatabaseProtocolFrontendEngine<T extends DatabasePacket> extends TypedSPI {
+public interface DatabaseProtocolFrontendEngine extends TypedSPI {
     
     /**
      * Initialize channel.
@@ -45,7 +42,7 @@ public interface DatabaseProtocolFrontendEngine<T extends DatabasePacket> extend
      * 
      * @return database packet codec engine
      */
-    DatabasePacketCodecEngine<T> getCodecEngine();
+    DatabasePacketCodecEngine getCodecEngine();
     
     /**
      * Get authentication engine.
