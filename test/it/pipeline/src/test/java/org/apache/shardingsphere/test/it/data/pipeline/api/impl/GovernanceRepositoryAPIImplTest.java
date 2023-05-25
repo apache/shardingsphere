@@ -123,9 +123,9 @@ class GovernanceRepositoryAPIImplTest {
     void assertWatch() throws InterruptedException {
         String key = DataPipelineConstants.DATA_PIPELINE_ROOT + "/1";
         governanceRepositoryAPI.persist(key, "");
-        boolean awaitResult = countDownLatch.await(10, TimeUnit.SECONDS);
+        boolean awaitResult = COUNT_DOWN_LATCH.await(10, TimeUnit.SECONDS);
         assertTrue(awaitResult);
-        DataChangedEvent event = eventReference.get();
+        DataChangedEvent event = EVENT_ATOMIC_REFERENCE.get();
         assertNotNull(event);
         assertThat(event.getType(), anyOf(is(Type.ADDED), is(Type.UPDATED)));
     }
