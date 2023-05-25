@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.node.metadata;
+package org.apache.shardingsphere.metadata.persist.node.metadata.datasource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Database source node.
+ * Data source path processor.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourceNode {
+public final class DataSourcePathProcessor {
     
     private static final String ROOT_NODE = "data_sources";
     

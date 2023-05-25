@@ -19,10 +19,10 @@ package org.apache.shardingsphere.metadata.persist.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.metadata.persist.node.metadata.DataSourceNode;
+import org.apache.shardingsphere.metadata.persist.node.metadata.datasource.DataSourcePathProcessor;
 
+// TODO Rename DatabaseMetaDataNode when metadata structure adjustment completed. #25485
 /**
- * TODO Rename DatabaseMetaDataNode when metadata structure adjustment completed. #25485
  * New database meta data node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -37,7 +37,7 @@ public final class NewDatabaseMetaDataNode {
      * @return data sources path
      */
     public static String getDataSourcesPath(final String databaseName) {
-        return String.join("/", getMetaDataNodePath(), DataSourceNode.getDataSourcesPath(databaseName));
+        return String.join("/", getMetaDataNodePath(), DataSourcePathProcessor.getDataSourcesPath(databaseName));
     }
     
     /**
@@ -49,7 +49,7 @@ public final class NewDatabaseMetaDataNode {
      * @return data source path
      */
     public static String getDataSourcePath(final String databaseName, final String dataSourceName, final String version) {
-        return String.join("/", getMetaDataNodePath(), DataSourceNode.getDataSourcePath(databaseName, dataSourceName, version));
+        return String.join("/", getMetaDataNodePath(), DataSourcePathProcessor.getDataSourcePath(databaseName, dataSourceName, version));
     }
     
     /**
@@ -60,7 +60,7 @@ public final class NewDatabaseMetaDataNode {
      * @return data source active version path
      */
     public static String getDataSourceActiveVersionPath(final String databaseName, final String dataSourceName) {
-        return String.join("/", getMetaDataNodePath(), DataSourceNode.getActiveVersionPath(databaseName, dataSourceName));
+        return String.join("/", getMetaDataNodePath(), DataSourcePathProcessor.getActiveVersionPath(databaseName, dataSourceName));
     }
     
     /**
