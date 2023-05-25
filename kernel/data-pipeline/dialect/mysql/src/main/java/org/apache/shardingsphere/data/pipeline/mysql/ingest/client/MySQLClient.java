@@ -246,7 +246,7 @@ public final class MySQLClient {
     @SuppressWarnings("unchecked")
     private <T> T waitExpectedResponse(final Class<T> type) {
         try {
-            Object response = responseCallback.get(5, TimeUnit.SECONDS);
+            Object response = responseCallback.get(5L, TimeUnit.SECONDS);
             if (null == response) {
                 return null;
             }
