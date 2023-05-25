@@ -86,8 +86,8 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     
     @Override
     public ASTNode visitReadwriteSplittingRuleDefinition(final ReadwriteSplittingRuleDefinitionContext ctx) {
-        return new ReadwriteSplittingRuleSegment(getIdentifierValue(ctx.ruleName()), getIdentifierValue(ctx.writeStorageUnit().writeStorageUnitName()),
-                ctx.readStorageUnits().readStorageUnitsNames().storageUnitName().stream().map(this::getIdentifierValue).collect(Collectors.toList()),
+        return new ReadwriteSplittingRuleSegment(getIdentifierValue(ctx.ruleName()), getIdentifierValue(ctx.dataSourceDefinition().writeStorageUnit().writeStorageUnitName()),
+                ctx.dataSourceDefinition().readStorageUnits().readStorageUnitsNames().storageUnitName().stream().map(this::getIdentifierValue).collect(Collectors.toList()),
                 null == ctx.transactionalReadQueryStrategy() ? null : getIdentifierValue(ctx.transactionalReadQueryStrategy().transactionalReadQueryStrategyName()),
                 null == ctx.algorithmDefinition() ? null : (AlgorithmSegment) visitAlgorithmDefinition(ctx.algorithmDefinition()));
     }
