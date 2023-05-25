@@ -155,7 +155,7 @@ public final class CDCBackendHandler {
         Comparator<DataRecord> dataRecordComparator = cdcJobConfig.isDecodeWithTX()
                 ? DataRecordComparatorGenerator.generatorIncrementalComparator(database.getProtocolType())
                 : null;
-        jobAPI.startJob(jobId, new PipelineSocketSink(channel, database, cdcJobConfig.getJobShardingCount(), cdcJobConfig.getSchemaTableNames(), dataRecordComparator));
+        jobAPI.startJob(jobId, new PipelineSocketSink(channel, database, cdcJobConfig.getSchemaTableNames(), dataRecordComparator));
         connectionContext.setJobId(jobId);
     }
     

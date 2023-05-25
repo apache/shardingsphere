@@ -49,7 +49,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -73,23 +72,18 @@ public final class PipelineSocketSink implements PipelineSink {
     
     private final Channel channel;
     
-    private final int jobShardingCount;
-    
     private final Comparator<DataRecord> dataRecordComparator;
     
     private final Map<String, String> tableNameSchemaMap = new HashMap<>();
     
     private final Map<SocketSinkImporter, BlockingQueue<List<DataRecord>>> incrementalRecordMap = new ConcurrentHashMap<>();
     
-    private final AtomicInteger runningIncrementalTaskCount = new AtomicInteger(0);
-    
     private Thread incrementalImporterTask;
     
-    public PipelineSocketSink(final Channel channel, final ShardingSphereDatabase database, final int jobShardingCount, final Collection<String> schemaTableNames,
+    public PipelineSocketSink(final Channel channel, final ShardingSphereDatabase database, final Collection<String> schemaTableNames,
                               final Comparator<DataRecord> dataRecordComparator) {
         this.channel = channel;
         this.database = database;
-        this.jobShardingCount = jobShardingCount;
         schemaTableNames.stream().filter(each -> each.contains(".")).forEach(each -> {
             String[] split = each.split("\\.");
             tableNameSchemaMap.put(split[1], split[0]);
@@ -188,11 +182,8 @@ public final class PipelineSocketSink implements PipelineSink {
      */
     public void sendIncrementalStartEvent(final SocketSinkImporter socketSinkImporter, final int batchSize) {
         incrementalRecordMap.computeIfAbsent(socketSinkImporter, ignored -> new ArrayBlockingQueue<>(batchSize));
-        int count = runningIncrementalTaskCount.incrementAndGet();
-        if (count < jobShardingCount || null == dataRecordComparator) {
-            return;
-        }
         log.debug("start CDC incremental importer");
+        // TODO now Sync
         if (null == incrementalImporterTask) {
             incrementalImporterTask = new Thread(new CDCIncrementalImporterTask(batchSize));
             incrementalImporterTask.start();

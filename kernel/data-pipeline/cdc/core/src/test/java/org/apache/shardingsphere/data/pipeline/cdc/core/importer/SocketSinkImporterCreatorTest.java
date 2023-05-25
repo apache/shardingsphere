@@ -42,7 +42,7 @@ class SocketSinkImporterCreatorTest {
     
     @Test
     void assertCreateCDCImporter() {
-        PipelineSocketSink importerConnector = new PipelineSocketSink(mock(Channel.class), mock(ShardingSphereDatabase.class), 1, Collections.emptyList(), null);
+        PipelineSocketSink importerConnector = new PipelineSocketSink(mock(Channel.class), mock(ShardingSphereDatabase.class), Collections.emptyList(), null);
         assertThat(TypedSPILoader.getService(ImporterCreator.class, "Socket").createImporter(importerConfig, importerConnector, null, null, null), instanceOf(SocketSinkImporter.class));
     }
 }
