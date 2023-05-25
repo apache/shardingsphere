@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.importer.sink;
 
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
+
 import java.io.Closeable;
+import java.util.List;
 
 /**
  * Pipeline sink.
@@ -31,6 +35,14 @@ public interface PipelineSink extends Closeable {
      */
     // TODO now Remove getConnector()
     Object getConnector();
+    
+    /**
+     * Write data.
+     *
+     * @param records records
+     * @return job progress updated parameter
+     */
+    PipelineJobProgressUpdatedParameter write(List<Record> records);
     
     /**
      * Connector type.
