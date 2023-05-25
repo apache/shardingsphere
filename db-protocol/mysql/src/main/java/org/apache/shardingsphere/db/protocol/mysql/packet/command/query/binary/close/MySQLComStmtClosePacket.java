@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.close;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
  * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_stmt_close.html">COM_STMT_CLOSE</a>
  */
 @Getter
-@ToString
 public final class MySQLComStmtClosePacket extends MySQLCommandPacket {
     
     private final int statementId;

@@ -96,7 +96,7 @@ class MySQLCommandExecutorFactoryTest {
     @Test
     void assertNewInstanceWithComQuery() throws SQLException {
         MySQLComQueryPacket packet = mock(MySQLComQueryPacket.class);
-        when(packet.getSql()).thenReturn("");
+        when(packet.getSQL()).thenReturn("");
         assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_QUERY, packet, connectionSession), instanceOf(MySQLComQueryPacketExecutor.class));
     }
     

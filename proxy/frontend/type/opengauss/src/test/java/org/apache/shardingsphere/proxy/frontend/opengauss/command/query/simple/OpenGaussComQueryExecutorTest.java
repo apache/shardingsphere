@@ -68,7 +68,7 @@ class OpenGaussComQueryExecutorTest {
     void setUp() throws SQLException {
         PostgreSQLComQueryPacket queryPacket = mock(PostgreSQLComQueryPacket.class);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        when(queryPacket.getSql()).thenReturn("");
+        when(queryPacket.getSQL()).thenReturn("");
         queryExecutor = new OpenGaussComQueryExecutor(portalContext, queryPacket, connectionSession);
         setMockFieldIntoExecutor(queryExecutor);
     }

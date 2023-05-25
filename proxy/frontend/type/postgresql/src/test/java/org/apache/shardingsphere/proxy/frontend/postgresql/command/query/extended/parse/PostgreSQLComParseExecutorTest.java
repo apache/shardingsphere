@@ -79,7 +79,7 @@ class PostgreSQLComParseExecutorTest {
     void assertExecuteWithEmptySQL() {
         final String expectedSQL = "";
         final String statementId = "S_1";
-        when(parsePacket.getSql()).thenReturn(expectedSQL);
+        when(parsePacket.getSQL()).thenReturn(expectedSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -98,7 +98,7 @@ class PostgreSQLComParseExecutorTest {
         final String rawSQL = "/*$0*/insert into sbtest1 /* $1 */ -- $2 \n (id, k, c, pad) \r values \r\n($1, $2, 'apsbd$31a', '$99')/*$0*/ \n--$0";
         final String expectedSQL = "/*$0*/insert into sbtest1 /* $1 */ -- $2 \n (id, k, c, pad) \r values \r\n(?, ?, 'apsbd$31a', '$99')/*$0*/ \n--$0";
         final String statementId = "S_2";
-        when(parsePacket.getSql()).thenReturn(rawSQL);
+        when(parsePacket.getSQL()).thenReturn(rawSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
         when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
@@ -119,7 +119,7 @@ class PostgreSQLComParseExecutorTest {
     void assertExecuteWithDistSQL() {
         String sql = "SHOW DIST VARIABLE WHERE NAME = sql_show";
         String statementId = "";
-        when(parsePacket.getSql()).thenReturn(sql);
+        when(parsePacket.getSQL()).thenReturn(sql);
         when(parsePacket.getStatementId()).thenReturn(statementId);
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);

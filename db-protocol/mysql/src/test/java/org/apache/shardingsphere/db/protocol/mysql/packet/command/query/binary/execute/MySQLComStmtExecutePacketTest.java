@@ -86,6 +86,5 @@ class MySQLComStmtExecutePacketTest {
         assertThat(parameterTypes.get(0).getColumnType(), is(MySQLBinaryColumnType.MYSQL_TYPE_BLOB));
         assertThat(parameterTypes.get(0).getUnsignedFlag(), is(0));
         assertThat(actual.readParameters(parameterTypes, Collections.singleton(0), Collections.emptyList()), is(Collections.singletonList(null)));
-        assertThat(actual.toString(), is("MySQLComStmtExecutePacket(statementId=2)"));
     }
 }

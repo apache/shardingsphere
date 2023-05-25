@@ -77,14 +77,14 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         failedIfContainsMultiStatements();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL").getType()).parse(packet.getSql(), true);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL").getType()).parse(packet.getSQL(), true);
         if (!MySQLComStmtPrepareChecker.isAllowedStatement(sqlStatement)) {
             throw new UnsupportedPreparedStatementException();
         }
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
         int statementId = MySQLStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
-        MySQLServerPreparedStatement serverPreparedStatement = new MySQLServerPreparedStatement(packet.getSql(), sqlStatementContext, new CopyOnWriteArrayList<>());
+        MySQLServerPreparedStatement serverPreparedStatement = new MySQLServerPreparedStatement(packet.getSQL(), sqlStatementContext, new CopyOnWriteArrayList<>());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
         return createPackets(sqlStatementContext, statementId, serverPreparedStatement);
     }
@@ -93,7 +93,7 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         // TODO Multi statements should be identified by SQL Parser instead of checking if sql contains ";".
         if (connectionSession.getAttributeMap().hasAttr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS)
                 && MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON == connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS).get()
-                && packet.getSql().contains(";")) {
+                && packet.getSQL().contains(";")) {
             throw new UnsupportedPreparedStatementException();
         }
     }

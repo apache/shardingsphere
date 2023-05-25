@@ -98,7 +98,7 @@ class PostgreSQLCommandExecutorFactoryTest {
     private PostgreSQLCommandPacket preparePacket(final Class<? extends PostgreSQLCommandPacket> commandPacketClass) {
         PostgreSQLCommandPacket result = mock(commandPacketClass);
         if (result instanceof PostgreSQLComQueryPacket) {
-            when(((PostgreSQLComQueryPacket) result).getSql()).thenReturn("");
+            when(((PostgreSQLComQueryPacket) result).getSQL()).thenReturn("");
         }
         return result;
     }

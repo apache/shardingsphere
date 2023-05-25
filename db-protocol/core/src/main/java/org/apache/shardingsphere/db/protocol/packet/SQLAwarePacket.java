@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.quit;
-
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
+package org.apache.shardingsphere.db.protocol.packet;
 
 /**
- * COM_QUIT command packet for MySQL.
- * 
- * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_quit.html">COM_QUIT</a>
+ * SQL aware packet.
  */
-public final class MySQLComQuitPacket extends MySQLCommandPacket {
+public interface SQLAwarePacket {
     
-    public MySQLComQuitPacket() {
-        super(MySQLCommandPacketType.COM_QUIT);
-    }
+    /**
+     * Get SQL.
+     * 
+     * @return SQL.
+     */
+    String getSQL();
 }

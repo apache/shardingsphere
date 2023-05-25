@@ -19,7 +19,6 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
@@ -31,7 +30,6 @@ import java.util.List;
 import java.util.RandomAccess;
 
 @Getter
-@ToString
 public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPacket {
     
     private final List<PostgreSQLCommandPacket> packets;

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.postgresql.exception.PostgreSQLProtocolException;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
@@ -30,7 +29,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * Command close packet for PostgreSQL.
  */
 @Getter
-@ToString
 public final class PostgreSQLComClosePacket extends PostgreSQLCommandPacket {
     
     private final Type type;
