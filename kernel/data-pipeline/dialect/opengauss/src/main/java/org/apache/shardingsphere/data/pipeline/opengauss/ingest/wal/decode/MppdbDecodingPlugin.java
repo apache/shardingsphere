@@ -206,7 +206,7 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
             case "character":
             case "nvarchar2":
             default:
-                return decodeString(data);
+                return decodeString(data).replace("''", "'");
         }
     }
     
