@@ -63,10 +63,24 @@ class GovernanceRepositoryAPIImplTest {
     
     private static GovernanceRepositoryAPI governanceRepositoryAPI;
     
+    private static final AtomicReference<DataChangedEvent> EVENT_ATOMIC_REFERENCE = new AtomicReference<>();
+    
+    private static final CountDownLatch COUNT_DOWN_LATCH = new CountDownLatch(1);
+    
     @BeforeAll
     static void beforeClass() {
         PipelineContextUtils.mockModeConfigAndContextManager();
         governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey());
+        watch();
+    }
+    
+    private static void watch() {
+        governanceRepositoryAPI.watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> {
+            if ((DataPipelineConstants.DATA_PIPELINE_ROOT + "/1").equals(event.getKey())) {
+                EVENT_ATOMIC_REFERENCE.set(event);
+                COUNT_DOWN_LATCH.countDown();
+            }
+        });
     }
     
     @Test
@@ -107,19 +121,11 @@ class GovernanceRepositoryAPIImplTest {
     
     @Test
     void assertWatch() throws InterruptedException {
-        AtomicReference<DataChangedEvent> eventReference = new AtomicReference<>();
-        CountDownLatch countDownLatch = new CountDownLatch(1);
         String key = DataPipelineConstants.DATA_PIPELINE_ROOT + "/1";
-        governanceRepositoryAPI.watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> {
-            if (event.getKey().equals(key)) {
-                eventReference.set(event);
-                countDownLatch.countDown();
-            }
-        });
         governanceRepositoryAPI.persist(key, "");
-        boolean awaitResult = countDownLatch.await(10, TimeUnit.SECONDS);
+        boolean awaitResult = COUNT_DOWN_LATCH.await(10, TimeUnit.SECONDS);
         assertTrue(awaitResult);
-        DataChangedEvent event = eventReference.get();
+        DataChangedEvent event = EVENT_ATOMIC_REFERENCE.get();
         assertNotNull(event);
         assertThat(event.getType(), anyOf(is(Type.ADDED), is(Type.UPDATED)));
     }
