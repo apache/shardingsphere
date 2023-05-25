@@ -83,6 +83,7 @@ public final class ReadwriteSplittingRuleStatementChecker {
         checkRuleNamesExist(segments, currentRuleConfig, databaseName);
         checkDataSourcesExist(databaseName, segments, database);
         checkDuplicatedDataSourceNames(databaseName, segments, currentRuleConfig, false);
+        checkTransactionalReadQueryStrategy(segments);
         checkLoadBalancers(segments);
     }
     

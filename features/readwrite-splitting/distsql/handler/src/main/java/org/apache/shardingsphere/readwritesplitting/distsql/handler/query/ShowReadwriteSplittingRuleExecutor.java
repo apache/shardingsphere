@@ -63,8 +63,9 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
     
     private Collection<LocalDataQueryResultRow> buildData(final ReadwriteSplittingRule rule, final ShowReadwriteSplittingRulesStatement sqlStatement) {
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        ((ReadwriteSplittingRuleConfiguration) rule.getConfiguration()).getDataSources().forEach(each -> {
-            LocalDataQueryResultRow dataItem = buildDataItem(each, getLoadBalancers((ReadwriteSplittingRuleConfiguration) rule.getConfiguration()));
+        ReadwriteSplittingRuleConfiguration ruleConfig = (ReadwriteSplittingRuleConfiguration) rule.getConfiguration();
+        ruleConfig.getDataSources().forEach(each -> {
+            LocalDataQueryResultRow dataItem = buildDataItem(each, getLoadBalancers(ruleConfig));
             if (null == sqlStatement.getRuleName() || sqlStatement.getRuleName().equalsIgnoreCase(each.getName())) {
                 result.add(dataItem);
             }
@@ -79,6 +80,7 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
         return new LocalDataQueryResultRow(name,
                 getWriteDataSourceName(dataSourceRuleConfig, exportDataSources),
                 getReadDataSourceNames(dataSourceRuleConfig, exportDataSources),
+                dataSourceRuleConfig.getTransactionalReadQueryStrategy().name(),
                 loadBalancer.map(AlgorithmConfiguration::getType).orElse(""),
                 loadBalancer.map(each -> PropertiesConverter.convert(each.getProps())).orElse(""));
     }
@@ -100,7 +102,7 @@ public final class ShowReadwriteSplittingRuleExecutor implements RQLExecutor<Sho
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "write_storage_unit_name", "read_storage_unit_names", "load_balancer_type", "load_balancer_props");
+        return Arrays.asList("name", "write_storage_unit_name", "read_storage_unit_names", "transactional_read_query_strategy", "load_balancer_type", "load_balancer_props");
     }
     
     @Override
