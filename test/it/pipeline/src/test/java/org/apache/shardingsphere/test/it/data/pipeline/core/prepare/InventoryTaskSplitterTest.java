@@ -75,7 +75,7 @@ class InventoryTaskSplitterTest {
     private void initJobItemContext() {
         MigrationJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
         jobItemContext = PipelineContextUtils.mockMigrationJobItemContext(jobConfig);
-        dataSourceManager = (PipelineDataSourceManager) jobItemContext.getImporterConnector().getConnector();
+        dataSourceManager = jobItemContext.getDataSourceManager();
     }
     
     @AfterEach
