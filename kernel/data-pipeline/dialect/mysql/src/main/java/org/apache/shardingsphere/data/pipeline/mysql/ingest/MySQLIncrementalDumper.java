@@ -55,12 +55,12 @@ import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 
 import java.io.Serializable;
 import java.nio.charset.Charset;
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 
 /**
@@ -91,7 +91,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         YamlJdbcConfiguration jdbcConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getJdbcConfig();
         log.info("incremental dump, jdbcUrl={}", jdbcConfig.getUrl());
         DataSourceMetaData metaData = TypedSPILoader.getService(DatabaseType.class, "MySQL").getDataSourceMetaData(jdbcConfig.getUrl(), null);
-        ConnectInfo connectInfo = new ConnectInfo(new Random().nextInt(), metaData.getHostname(), metaData.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword());
+        ConnectInfo connectInfo = new ConnectInfo(new SecureRandom().nextInt(), metaData.getHostname(), metaData.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword());
         client = new MySQLClient(connectInfo, dumperConfig.isDecodeWithTX());
         catalog = metaData.getCatalog();
     }
