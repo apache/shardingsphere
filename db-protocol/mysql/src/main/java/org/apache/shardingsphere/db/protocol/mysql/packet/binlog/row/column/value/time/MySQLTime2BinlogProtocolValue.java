@@ -26,12 +26,14 @@ import java.time.LocalTime;
 
 /**
  * TIME2 type value of MySQL binlog protocol.
+ * Stored as 3-byte value The number of decimals for the fractional part is stored in the table metadata as a one byte value.
+ * The number of bytes that follow the 3 byte time value can be calculated with the following formula: (decimals + 1) / 2
  *
  * <p>
- *     TIME2 type applied after MySQL 5.6.4.
+ * TIME2 type applied after MySQL 5.6.4.
  * </p>
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/field__types_8h.html">field type</a>
  */
 public final class MySQLTime2BinlogProtocolValue implements MySQLBinlogProtocolValue {
     

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.binlog;
 /**
  * MySQL binlog event packet.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/binlog-event.html">Binlog Event</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_replication_binlog_event.html">Binlog Event</a>
  */
 public interface MySQLBinlogEventPacket {
     

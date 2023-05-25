@@ -28,7 +28,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 /**
  * MySQL binlog format description event packet.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/format-description-event.html">FORMAT_DESCRIPTION_EVENT</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/classbinary__log_1_1Format__description__event.html">FORMAT_DESCRIPTION_EVENT</a>
  * @see <a href="https://dev.mysql.com/worklog/task/?id=2540#tabs-2540-4">WL#2540: Replication event checksums</a>
  */
 @Getter

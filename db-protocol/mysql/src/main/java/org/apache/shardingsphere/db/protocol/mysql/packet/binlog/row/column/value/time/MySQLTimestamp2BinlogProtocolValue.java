@@ -26,8 +26,11 @@ import java.sql.Timestamp;
 
 /**
  * MySQL TIMESTAMP2 binlog protocol value.
+ * Stored as a 4 byte UNIX timestamp (number of seconds since 00:00, Jan 1 1970 UTC) followed by the fractional second parts.
+ * The number of decimals for the fractional part is stored in the table metadata as a one byte value.
+ * The number of bytes that follow the 4 byte timestamp can be calculated with the following formula: (decimals + 1) / 2
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/field__types_8h.html">field type</a>
  */
 public final class MySQLTimestamp2BinlogProtocolValue implements MySQLBinlogProtocolValue {
     

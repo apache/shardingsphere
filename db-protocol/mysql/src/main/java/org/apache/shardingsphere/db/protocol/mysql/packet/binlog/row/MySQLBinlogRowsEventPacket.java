@@ -33,7 +33,8 @@ import java.util.List;
 /**
  * MySQL binlog rows event packet.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/rows-event.html">ROWS_EVENT</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/classbinary__log_1_1Rows__event.html">ROWS_EVENT</a>
+ * @see <a href="https://mariadb.com/kb/en/rows_event_v1v2-rows_compressed_event_v1/">ROWS_EVENT</a>
  */
 @Getter
 public final class MySQLBinlogRowsEventPacket extends AbstractMySQLBinlogEventPacket {
