@@ -36,11 +36,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -71,12 +69,14 @@ class ShadowUpdateStatementRoutingEngineTest {
     void assertRouteAndParseShadowColumnConditions() {
         RouteContext routeContext = mock(RouteContext.class);
         when(routeContext.getRouteUnits()).thenReturn(Collections.singleton(new RouteUnit(new RouteMapper("ds", "ds_shadow"), Collections.emptyList())));
-        Optional<Collection<String>> sqlNotes = shadowRouteEngine.parseSQLComments();
-        assertTrue(sqlNotes.isPresent());
-        assertThat(sqlNotes.get().size(), is(2));
-        Iterator<String> sqlNotesIt = sqlNotes.get().iterator();
-        assertThat(sqlNotesIt.next(), is("/*shadow:true,foo:bar*/"));
-        assertThat(sqlNotesIt.next(), is("/*aaa:bbb*/"));
+        Collection<String> sqlComments = shadowRouteEngine.getSQLComments();
+        assertThat(sqlComments.size(), is(2));
+        assertSQLComments(sqlComments.iterator());
+    }
+    
+    private void assertSQLComments(final Iterator<String> sqlComments) {
+        assertThat(sqlComments.next(), is("/*shadow:true,foo:bar*/"));
+        assertThat(sqlComments.next(), is("/*aaa:bbb*/"));
     }
     
     @Test
