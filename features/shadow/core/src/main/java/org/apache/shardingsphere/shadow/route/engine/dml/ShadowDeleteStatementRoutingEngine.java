@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.route.engine.dml;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
@@ -26,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
 
 import java.util.Collection;
@@ -38,38 +36,26 @@ import java.util.Optional;
 /**
  * Shadow delete statement routing engine.
  */
-@RequiredArgsConstructor
 public final class ShadowDeleteStatementRoutingEngine extends AbstractShadowDMLStatementRouteEngine {
     
-    private final DeleteStatementContext deleteStatementContext;
+    private final DeleteStatementContext sqlStatementContext;
     
     private final List<Object> parameters;
     
-    @Override
-    protected Collection<SimpleTableSegment> getAllTables() {
-        return deleteStatementContext.getAllTables();
-    }
-    
-    @Override
-    protected ShadowOperationType getShadowOperationType() {
-        return ShadowOperationType.DELETE;
-    }
-    
-    @Override
-    protected Optional<Collection<String>> parseSQLComments() {
-        Collection<String> result = new LinkedList<>();
-        deleteStatementContext.getSqlStatement().getCommentSegments().forEach(each -> result.add(each.getText()));
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
+    public ShadowDeleteStatementRoutingEngine(final DeleteStatementContext sqlStatementContext, final List<Object> parameters) {
+        super(sqlStatementContext, ShadowOperationType.DELETE);
+        this.sqlStatementContext = sqlStatementContext;
+        this.parameters = parameters;
     }
     
     @Override
     protected Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator(final String shadowColumn) {
-        return new ShadowColumnConditionIterator(shadowColumn, parseWhereSegment());
+        return new ShadowColumnConditionIterator(shadowColumn, getWhereSegment());
     }
     
-    private Collection<ExpressionSegment> parseWhereSegment() {
+    private Collection<ExpressionSegment> getWhereSegment() {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        for (WhereSegment each : deleteStatementContext.getWhereSegments()) {
+        for (WhereSegment each : sqlStatementContext.getWhereSegments()) {
             for (AndPredicate predicate : ExpressionExtractUtils.getAndPredicates(each.getExpr())) {
                 result.addAll(predicate.getPredicates());
             }
