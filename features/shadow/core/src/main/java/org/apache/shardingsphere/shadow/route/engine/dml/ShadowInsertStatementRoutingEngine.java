@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.exception.syntax.UnsupportedShadowInsertValueException;
@@ -55,42 +56,39 @@ public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLS
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private final class ShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {
         
-        private final String shadowColumn;
+        private final String shadowColumnName;
         
-        private final Iterator<String> iterator;
+        private final Iterator<String> columnNames;
         
         private final List<InsertValueContext> insertValueContexts;
         
-        private int index;
+        private int columnIndex;
         
         @Override
         public boolean hasNext() {
-            return iterator.hasNext();
+            return columnNames.hasNext();
         }
         
         @Override
         public Optional<ShadowColumnCondition> next() {
-            String columnName = iterator.next();
-            if (!shadowColumn.equals(columnName)) {
-                index++;
+            String columnName = columnNames.next();
+            if (!shadowColumnName.equals(columnName)) {
+                columnIndex++;
                 return Optional.empty();
             }
-            Optional<Collection<Comparable<?>>> columnValues = getColumnValues(insertValueContexts, index);
-            index++;
-            return columnValues.map(each -> new ShadowColumnCondition(getSingleTableName(), columnName, each));
+            Collection<Comparable<?>> columnValues = getColumnValues(insertValueContexts, columnIndex);
+            columnIndex++;
+            return Optional.of(new ShadowColumnCondition(getSingleTableName(), columnName, columnValues));
         }
         
-        private Optional<Collection<Comparable<?>>> getColumnValues(final List<InsertValueContext> insertValueContexts, final int columnIndex) {
+        private Collection<Comparable<?>> getColumnValues(final List<InsertValueContext> insertValueContexts, final int columnIndex) {
             Collection<Comparable<?>> result = new LinkedList<>();
             for (InsertValueContext each : insertValueContexts) {
-                Object valueObject = each.getLiteralValue(columnIndex).orElseThrow(() -> new UnsupportedShadowInsertValueException(columnIndex));
-                if (valueObject instanceof Comparable<?>) {
-                    result.add((Comparable<?>) valueObject);
-                } else {
-                    return Optional.empty();
-                }
+                Object columnValue = each.getLiteralValue(columnIndex).orElseThrow(() -> new UnsupportedShadowInsertValueException(columnIndex));
+                ShardingSpherePreconditions.checkState(columnValue instanceof Comparable<?>, () -> new UnsupportedShadowInsertValueException(columnIndex));
+                result.add((Comparable<?>) columnValue);
             }
-            return result.isEmpty() ? Optional.empty() : Optional.of(result);
+            return result;
         }
     }
 }
