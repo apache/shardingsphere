@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.route.engine.dml;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
@@ -26,8 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
 
 import java.util.Collection;
@@ -35,41 +32,30 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Shadow update statement routing engine.
  */
-@RequiredArgsConstructor
 public final class ShadowUpdateStatementRoutingEngine extends AbstractShadowDMLStatementRouteEngine {
     
-    private final UpdateStatementContext updateStatementContext;
+    private final UpdateStatementContext sqlStatementContext;
     
     private final List<Object> parameters;
     
-    @Override
-    protected Collection<SimpleTableSegment> getAllTables() {
-        return updateStatementContext.getAllTables();
-    }
-    
-    @Override
-    protected ShadowOperationType getShadowOperationType() {
-        return ShadowOperationType.UPDATE;
-    }
-    
-    @Override
-    protected Collection<String> getSQLComments() {
-        return updateStatementContext.getSqlStatement().getCommentSegments().stream().map(CommentSegment::getText).collect(Collectors.toList());
+    public ShadowUpdateStatementRoutingEngine(final UpdateStatementContext sqlStatementContext, final List<Object> parameters) {
+        super(sqlStatementContext, ShadowOperationType.UPDATE);
+        this.sqlStatementContext = sqlStatementContext;
+        this.parameters = parameters;
     }
     
     @Override
     protected Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator(final String shadowColumn) {
-        return new ShadowColumnConditionIterator(shadowColumn, parseWhereSegment());
+        return new ShadowColumnConditionIterator(shadowColumn, getWhereSegment());
     }
     
-    private Collection<ExpressionSegment> parseWhereSegment() {
+    private Collection<ExpressionSegment> getWhereSegment() {
         Collection<ExpressionSegment> result = new LinkedList<>();
-        for (WhereSegment each : updateStatementContext.getWhereSegments()) {
+        for (WhereSegment each : sqlStatementContext.getWhereSegments()) {
             for (AndPredicate predicate : ExpressionExtractUtils.getAndPredicates(each.getExpr())) {
                 result.addAll(predicate.getPredicates());
             }

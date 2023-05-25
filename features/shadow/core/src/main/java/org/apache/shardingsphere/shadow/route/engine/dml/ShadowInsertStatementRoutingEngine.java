@@ -17,52 +17,37 @@
 
 package org.apache.shardingsphere.shadow.route.engine.dml;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.exception.syntax.UnsupportedShadowInsertValueException;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Shadow insert statement routing engine.
  */
-@RequiredArgsConstructor
 public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLStatementRouteEngine {
     
-    private final InsertStatementContext insertStatementContext;
+    private final InsertStatementContext sqlStatementContext;
     
-    @Override
-    protected Collection<SimpleTableSegment> getAllTables() {
-        return insertStatementContext.getAllTables();
-    }
-    
-    @Override
-    protected ShadowOperationType getShadowOperationType() {
-        return ShadowOperationType.INSERT;
-    }
-    
-    @Override
-    protected Collection<String> getSQLComments() {
-        return insertStatementContext.getSqlStatement().getCommentSegments().stream().map(CommentSegment::getText).collect(Collectors.toList());
+    public ShadowInsertStatementRoutingEngine(final InsertStatementContext sqlStatementContext) {
+        super(sqlStatementContext, ShadowOperationType.INSERT);
+        this.sqlStatementContext = sqlStatementContext;
     }
     
     @Override
     protected Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator(final String shadowColumn) {
-        return new ShadowColumnConditionIterator(shadowColumn, parseColumnNames().iterator(), insertStatementContext.getInsertValueContexts());
+        return new ShadowColumnConditionIterator(shadowColumn, getColumnNames().iterator(), sqlStatementContext.getInsertValueContexts());
     }
     
-    private Collection<String> parseColumnNames() {
-        return insertStatementContext.getInsertColumnNames();
+    private Collection<String> getColumnNames() {
+        return sqlStatementContext.getInsertColumnNames();
     }
     
     private final class ShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {
