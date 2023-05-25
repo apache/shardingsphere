@@ -15,34 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.importer.connector;
+package org.apache.shardingsphere.data.pipeline.spi.importer.sink;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.PipelineSink;
-
-import java.io.IOException;
+import java.io.Closeable;
 
 /**
- * Pipeline data source sink.
+ * Pipeline sink.
  */
-
-@RequiredArgsConstructor
-public final class PipelineDataSourceSink implements PipelineSink {
+public interface PipelineSink extends Closeable {
     
-    private final PipelineDataSourceManager pipelineDataSourceManager;
+    /**
+     * Get connector.
+     *
+     * @return connector
+     */
+    // TODO now Remove getConnector()
+    Object getConnector();
     
-    @Override
-    public Object getConnector() {
-        return pipelineDataSourceManager;
-    }
-    
-    @Override
-    public void close() throws IOException {
-    }
-    
-    @Override
-    public String getType() {
-        return "DataSource";
-    }
+    /**
+     * Connector type.
+     *
+     * @return connector type
+     */
+    String getType();
 }

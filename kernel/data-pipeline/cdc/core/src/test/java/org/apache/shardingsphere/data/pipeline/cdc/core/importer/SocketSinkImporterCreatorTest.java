@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
 import io.netty.channel.Channel;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.cdc.core.connector.PipelineSocketSink;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.PipelineSocketSink;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
