@@ -85,7 +85,7 @@ class OpenGaussCommandExecutorFactoryTest {
     @Test
     void assertNewPostgreSQLSimpleQueryExecutor() throws SQLException {
         PostgreSQLComQueryPacket queryPacket = mock(PostgreSQLComQueryPacket.class);
-        when(queryPacket.getSql()).thenReturn("");
+        when(queryPacket.getSQL()).thenReturn("");
         CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(PostgreSQLCommandPacketType.SIMPLE_QUERY, queryPacket, connectionSession, portalContext);
         assertThat(actual, instanceOf(OpenGaussComQueryExecutor.class));
     }
