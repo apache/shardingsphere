@@ -35,7 +35,6 @@ import static org.mockito.Mockito.when;
 
 class MySQLAdminExecutorFactoryTest {
     
-    @SuppressWarnings("rawtypes")
     @Test
     void assertNewInstanceWithMySQLShowFunctionStatusStatement() {
         MySQLShowFunctionStatusStatement statement = mock(MySQLShowFunctionStatusStatement.class);
@@ -46,7 +45,6 @@ class MySQLAdminExecutorFactoryTest {
         assertThat(executor.get(), instanceOf(ShowFunctionStatusExecutor.class));
     }
     
-    @SuppressWarnings("rawtypes")
     @Test
     void assertNewInstanceWithMySQLShowProcedureStatusStatement() {
         MySQLShowProcedureStatusStatement statement = mock(MySQLShowProcedureStatusStatement.class);
@@ -57,7 +55,6 @@ class MySQLAdminExecutorFactoryTest {
         assertThat(executor.get(), instanceOf(ShowProcedureStatusExecutor.class));
     }
     
-    @SuppressWarnings("rawtypes")
     @Test
     void assertNewInstanceWithMySQLShowTablesStatement() {
         MySQLShowTablesStatement statement = mock(MySQLShowTablesStatement.class);
