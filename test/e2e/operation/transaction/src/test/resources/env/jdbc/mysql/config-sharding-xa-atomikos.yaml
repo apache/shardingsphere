@@ -23,7 +23,7 @@
 
 databaseName: sharding_db
 rules:
-  - !TRANSACTION
+  transaction:
     defaultType: XA
     providerType: Atomikos
   - !SHARDING

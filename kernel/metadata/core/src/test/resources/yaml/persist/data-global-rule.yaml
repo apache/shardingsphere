@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-- !AUTHORITY
+authority:
   users:
     - user: root@%
       password: root
