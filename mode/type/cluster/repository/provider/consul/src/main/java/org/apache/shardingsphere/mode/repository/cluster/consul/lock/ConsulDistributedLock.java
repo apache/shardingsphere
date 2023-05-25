@@ -75,27 +75,21 @@ public final class ConsulDistributedLock implements DistributedLock {
         }
         PutParams putParams = new PutParams();
         long remainingMillis = timeoutMillis;
-        try {
-            while (true) {
-                String sessionId = createSessionId();
-                putParams.setAcquireSession(sessionId);
-                Response<Boolean> response = client.setKVValue(lockPath, LOCK_VALUE, putParams);
-                if (response.getValue()) {
-                    lockSessionId.set(sessionId);
-                    SESSION_FLUSH_EXECUTOR.scheduleAtFixedRate(() -> client.renewSession(sessionId, QueryParams.DEFAULT), 5L, 10L, TimeUnit.SECONDS);
-                    return true;
-                }
-                client.sessionDestroy(sessionId, null);
-                long waitingMillis = waitUntilRelease(response.getConsulIndex(), remainingMillis);
-                if (waitingMillis >= remainingMillis) {
-                    return false;
-                }
-                remainingMillis -= waitingMillis;
+        while (true) {
+            String sessionId = createSessionId();
+            putParams.setAcquireSession(sessionId);
+            Response<Boolean> response = client.setKVValue(lockPath, LOCK_VALUE, putParams);
+            if (response.getValue()) {
+                lockSessionId.set(sessionId);
+                SESSION_FLUSH_EXECUTOR.scheduleAtFixedRate(() -> client.renewSession(sessionId, QueryParams.DEFAULT), 5L, 10L, TimeUnit.SECONDS);
+                return true;
             }
-            // CHECKSTYLE:OFF
-        } catch (final Exception ignored) {
-            // CHECKSTYLE:ON
-            return false;
+            client.sessionDestroy(sessionId, null);
+            long waitingMillis = waitUntilRelease(response.getConsulIndex(), remainingMillis);
+            if (waitingMillis >= remainingMillis) {
+                return false;
+            }
+            remainingMillis -= waitingMillis;
         }
     }
     
