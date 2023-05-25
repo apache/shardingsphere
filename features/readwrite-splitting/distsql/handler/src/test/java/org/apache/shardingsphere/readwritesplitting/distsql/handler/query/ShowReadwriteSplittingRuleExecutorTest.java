@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
-import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
@@ -38,7 +37,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -74,8 +72,9 @@ class ShowReadwriteSplittingRuleExecutorTest {
         assertThat(row.getCell(1), is("readwrite_ds"));
         assertThat(row.getCell(2), is("ds_primary"));
         assertThat(row.getCell(3), is("ds_slave_0,ds_slave_1"));
-        assertThat(row.getCell(4), is("random"));
-        assertThat(row.getCell(5), is("read_weight=2:1"));
+        assertThat(row.getCell(4), is("DYNAMIC"));
+        assertThat(row.getCell(5), is("random"));
+        assertThat(row.getCell(6), is("read_weight=2:1"));
     }
     
     @Test
@@ -93,8 +92,9 @@ class ShowReadwriteSplittingRuleExecutorTest {
         assertThat(row.getCell(1), is("readwrite_ds"));
         assertThat(row.getCell(2), is("ds_primary"));
         assertThat(row.getCell(3), is("ds_slave_0,ds_slave_1"));
-        assertThat(row.getCell(4), is("random"));
-        assertThat(row.getCell(5), is("read_weight=2:1"));
+        assertThat(row.getCell(4), is("DYNAMIC"));
+        assertThat(row.getCell(5), is("random"));
+        assertThat(row.getCell(6), is("read_weight=2:1"));
     }
     
     private Map<String, Object> createExportedData() {
@@ -126,8 +126,9 @@ class ShowReadwriteSplittingRuleExecutorTest {
         assertThat(row.getCell(1), is("readwrite_ds"));
         assertThat(row.getCell(2), is("write_ds"));
         assertThat(row.getCell(3), is("read_ds_0,read_ds_1"));
-        assertThat(row.getCell(4), is(""));
+        assertThat(row.getCell(4), is("DYNAMIC"));
         assertThat(row.getCell(5), is(""));
+        assertThat(row.getCell(6), is(""));
     }
     
     private RuleConfiguration createRuleConfigurationWithoutLoadBalancer() {
@@ -140,27 +141,13 @@ class ShowReadwriteSplittingRuleExecutorTest {
     void assertGetColumnNames() {
         RQLExecutor<ShowReadwriteSplittingRulesStatement> executor = new ShowReadwriteSplittingRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
-        assertThat(columns.size(), is(5));
+        assertThat(columns.size(), is(6));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("name"));
         assertThat(iterator.next(), is("write_storage_unit_name"));
         assertThat(iterator.next(), is("read_storage_unit_names"));
+        assertThat(iterator.next(), is("transactional_read_query_strategy"));
         assertThat(iterator.next(), is("load_balancer_type"));
         assertThat(iterator.next(), is("load_balancer_props"));
-    }
-    
-    private Map<String, Object> getExportData() {
-        Map<String, Object> result = new HashMap<>(2, 1F);
-        result.put(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE, exportStaticDataSources());
-        return result;
-    }
-    
-    private Map<String, Map<String, String>> exportStaticDataSources() {
-        Map<String, Map<String, String>> result = new LinkedHashMap<>();
-        Map<String, String> staticRule = new LinkedHashMap<>(2, 1F);
-        staticRule.put(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME, "ds_0");
-        staticRule.put(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, "ds_1");
-        result.put("static_rule_1", staticRule);
-        return result;
     }
 }
