@@ -51,7 +51,7 @@ import java.util.Collection;
 /**
  * COM_QUERY command packet executor for MySQL.
  */
-public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor<MySQLPacket> {
+public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private final ConnectionSession connectionSession;
     
