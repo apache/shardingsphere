@@ -223,7 +223,7 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
     }
     
     @Override
-    protected void doStop() throws SQLException {
-        cancelStatement(dumpStatement.get());
+    protected void doStop() {
+        PipelineJdbcUtils.cancelStatement(dumpStatement.get());
     }
 }

@@ -49,5 +49,6 @@ public interface PipelineSink extends Closeable {
      *
      * @return connector type
      */
+    // TODO now Remove getType()
     String getType();
 }
