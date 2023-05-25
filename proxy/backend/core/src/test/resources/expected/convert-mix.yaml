@@ -51,10 +51,12 @@ PROPERTIES('minPoolSize'='1', 'connectionTimeoutMilliseconds'='30000', 'maxLifet
 
 CREATE READWRITE_SPLITTING RULE readwrite_ds_0 (
 WRITE_STORAGE_UNIT=ds_0,
-READ_STORAGE_UNITS(ds_1,ds_2)
+READ_STORAGE_UNITS(ds_1,ds_2),
+TYPE(NAME='random')
 ), readwrite_ds_1 (
 WRITE_STORAGE_UNIT=ds_3,
-READ_STORAGE_UNITS(ds_4,ds_5)
+READ_STORAGE_UNITS(ds_4,ds_5),
+TYPE(NAME='random')
 );
 
 CREATE ENCRYPT RULE t_encrypt (

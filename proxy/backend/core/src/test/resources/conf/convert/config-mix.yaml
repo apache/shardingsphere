@@ -74,75 +74,80 @@ dataSources:
     minPoolSize: 1
 
 rules:
-  - !SHARDING
-    tables:
-      t_order:
-        actualDataNodes: replica_ds_${0..1}.t_order_${0..1}
-        tableStrategy:
-          standard:
-            shardingColumn: order_id
-            shardingAlgorithmName: t_order_inline
-        keyGenerateStrategy:
-          column: order_id
-          keyGeneratorName: snowflake
-    defaultDatabaseStrategy:
-      standard:
-        shardingColumn: user_id
-        shardingAlgorithmName: database_inline
-    shardingAlgorithms:
-      database_inline:
-        type: INLINE
-        props:
-          algorithm-expression: replica_ds_${user_id % 2}
-      t_order_inline:
-        type: INLINE
-        props:
-          algorithm-expression: t_order_${order_id % 2}
-      t_order_item_inline:
-        type: INLINE
-        props:
-          algorithm-expression: t_order_item_${order_id % 2}
-    keyGenerators:
-      snowflake:
-        type: SNOWFLAKE
-  - !READWRITE_SPLITTING
-    dataSources:
-      readwrite_ds_0:
-        writeDataSourceName: ds_0
-        readDataSourceNames:
-          - ds_1
-          - ds_2
-      readwrite_ds_1:
-        writeDataSourceName: ds_3
-        readDataSourceNames:
-          - ds_4
-          - ds_5
-  - !ENCRYPT
-    encryptors:
-      aes_encryptor:
-        type: AES
-        props:
-          aes-key-value: 123456abc
-      rc4_encryptor:
-        type: RC4
-        props:
-          rc4-key-value: 123456abc
-      like_encryptor:
-        type: CHAR_DIGEST_LIKE
-    tables:
-      t_encrypt:
-        columns:
-          user_id:
-            cipher:
-              name: user_cipher
-              encryptorName: aes_encryptor
-            assistedQuery:
-              name: user_assisted
-              encryptorName: rc4_encryptor
-            likeQuery:
-              name: user_like
-              encryptorName: like_encryptor
-          order_id:
-            cipher:
-              name: order_cipher
-              encryptorName: rc4_encryptor
+- !SHARDING
+  tables:
+    t_order:
+      actualDataNodes: replica_ds_${0..1}.t_order_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order_inline
+      keyGenerateStrategy:
+        column: order_id
+        keyGeneratorName: snowflake
+  defaultDatabaseStrategy:
+    standard:
+      shardingColumn: user_id
+      shardingAlgorithmName: database_inline
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm-expression: replica_ds_${user_id % 2}
+    t_order_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_${order_id % 2}
+    t_order_item_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_item_${order_id % 2}
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+- !READWRITE_SPLITTING
+  dataSources:
+    readwrite_ds_0:
+      writeDataSourceName: ds_0
+      readDataSourceNames:
+        - ds_1
+        - ds_2
+      loadBalancerName: random
+    readwrite_ds_1:
+      writeDataSourceName: ds_3
+      readDataSourceNames:
+        - ds_4
+        - ds_5
+      loadBalancerName: random
+  loadBalancers:
+    random:
+      type: RANDOM
+- !ENCRYPT
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+    rc4_encryptor:
+      type: RC4
+      props:
+        rc4-key-value: 123456abc
+    like_encryptor:
+      type: CHAR_DIGEST_LIKE
+  tables:
+    t_encrypt:
+      columns:
+        user_id:
+          cipher:
+            name: user_cipher
+            encryptorName: aes_encryptor
+          assistedQuery:
+            name: user_assisted
+            encryptorName: rc4_encryptor
+          likeQuery:
+            name: user_like
+            encryptorName: like_encryptor
+        order_id:
+          cipher:
+            name: order_cipher
+            encryptorName: rc4_encryptor

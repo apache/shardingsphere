@@ -32,11 +32,23 @@ dropReadwriteSplittingRule
     ;
 
 readwriteSplittingRuleDefinition
-    : ruleName LP_ WRITE_STORAGE_UNIT EQ_ writeStorageUnitName COMMA_ READ_STORAGE_UNITS LP_ readStorageUnitsNames RP_ (COMMA_ algorithmDefinition)? RP_
+    : ruleName LP_ writeStorageUnit COMMA_ readStorageUnits (COMMA_ transactionalReadQueryStrategy)? (COMMA_ algorithmDefinition)? RP_
     ;
 
 ruleName
     : IDENTIFIER_
+    ;
+
+writeStorageUnit
+    : WRITE_STORAGE_UNIT EQ_ writeStorageUnitName
+    ;
+
+readStorageUnits
+    : READ_STORAGE_UNITS LP_ readStorageUnitsNames RP_
+    ;
+
+transactionalReadQueryStrategy
+    : TRANSACTIONAL_READ_QUERY_STRATEGY EQ_ transactionalReadQueryStrategyName
     ;
 
 writeStorageUnitName
@@ -45,6 +57,10 @@ writeStorageUnitName
 
 readStorageUnitsNames
     : storageUnitName (COMMA_ storageUnitName)*
+    ;
+
+transactionalReadQueryStrategyName
+    : STRING_
     ;
 
 ifExists
