@@ -19,8 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.SQLRULBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor.RULExecutor;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLFormatEngine;
 
@@ -29,27 +29,28 @@ import java.util.Collections;
 import java.util.Properties;
 
 /**
- * Format SQL handler.
+ * Format SQL executor.
  */
-public final class FormatSQLHandler extends SQLRULBackendHandler<FormatStatement> {
-    
-    private static final String FORMATTED_RESULT = "formatted_result";
+public final class FormatSQLExecutor implements RULExecutor<FormatStatement> {
     
     @Override
-    protected Collection<String> getColumnNames() {
-        return Collections.singleton(FORMATTED_RESULT);
+    public Collection<String> getColumnNames() {
+        return Collections.singleton("formatted_result");
     }
     
     @Override
-    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        String sql = getSqlStatement().getSql();
-        String databaseType = getConnectionSession().getProtocolType().getType();
-        return Collections.singleton(new LocalDataQueryResultRow(formatSQL(sql, databaseType)));
+    public Collection<LocalDataQueryResultRow> getRows(final ConnectionSession connectionSession, final FormatStatement sqlStatement) {
+        return Collections.singleton(new LocalDataQueryResultRow(formatSQL(sqlStatement.getSql(), connectionSession.getProtocolType().getType())));
     }
     
     private Object formatSQL(final String sql, final String databaseType) {
         Properties props = new Properties();
         props.setProperty("parameterized", Boolean.FALSE.toString());
         return new SQLFormatEngine(databaseType, new CacheOption(1, 1L)).format(sql, false, props);
+    }
+    
+    @Override
+    public String getType() {
+        return FormatStatement.class.getName();
     }
 }
