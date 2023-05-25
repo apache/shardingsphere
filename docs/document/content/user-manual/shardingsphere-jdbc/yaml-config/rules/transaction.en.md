@@ -11,7 +11,7 @@ ShardingSphere provides three modes for distributed transactions `LOCAL`, `XA`, 
 
 ```yaml
 rules:
-  - !TRANSACTION
+  transaction:
     defaultType: # Transaction mode, optional value LOCAL/XA/BASE
     providerType: # Specific implementation of the mode
 ```
@@ -24,7 +24,7 @@ The content of the server.yaml configuration file is as follows:
 
 ```yaml
 rules:
-  - !TRANSACTION
+  transaction:
     defaultType: LOCAL
 ```
 
@@ -34,7 +34,7 @@ The content of the server.yaml configuration file is as follows:
 
 ```yaml
 rules:
-  - !TRANSACTION
+  transaction:
     defaultType: XA
     providerType: Narayana/Atomikos 
 ```
@@ -58,7 +58,7 @@ The content of the server.yaml configuration file is as follows:
 
 ```yaml
 rules:
-  - !TRANSACTION
+  transaction:
     defaultType: BASE
     providerType: Seata 
 ```

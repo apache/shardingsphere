@@ -11,7 +11,7 @@ ShardingSphere 提供了三种模式的分布式事务 `LOCAL`, `XA`, `BASE`。
 
 ```yaml
 rules:
-  - !TRANSACTION
+  transaction:
     defaultType: # 事务模式，可选值 LOCAL/XA/BASE
     providerType: # 指定模式下的具体实现
 ```
@@ -24,7 +24,7 @@ server.yaml 配置文件内容如下：
 
 ```yaml
 rules:
-  - !TRANSACTION
+  transaction:
     defaultType: LOCAL
 ```
 
@@ -34,7 +34,7 @@ server.yaml 配置文件内容如下：
 
 ```yaml
 rules:
-  - !TRANSACTION
+  transaction:
     defaultType: XA
     providerType: Narayana/Atomikos 
 ```
@@ -58,7 +58,7 @@ server.yaml 配置文件内容如下：
 
 ```yaml
 rules:
-  - !TRANSACTION
+  transaction:
     defaultType: BASE
     providerType: Seata 
 ```

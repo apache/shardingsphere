@@ -54,7 +54,7 @@ Introducing Maven dependency
 Yaml:
 
 ```yaml
-- !TRANSACTION
+transaction:
   defaultType: XA
   providerType: Bitronix
 ```
