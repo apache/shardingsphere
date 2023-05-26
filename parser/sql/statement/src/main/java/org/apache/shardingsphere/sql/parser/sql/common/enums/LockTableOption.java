@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
+package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.AlgorithmTypeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.RequiredArgsConstructor;
 
 /**
- * MySQL alter table statement.
+ * Lock table option type enum.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class MySQLAlterTableStatement extends AlterTableStatement implements MySQLStatement {
+public enum LockTableOption {
     
-    private AlgorithmTypeSegment algorithmSegment;
+    DEFAULT("DEFAULT"),
+    NONE("NONE"),
+    SHARED("SHARED"),
+    EXCLUSIVE("EXCLUSIVE");
     
-    private LockTableSegment lockTableSegment;
+    private final String lockTableOption;
 }

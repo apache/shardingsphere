@@ -198,7 +198,7 @@ alterAlgorithmOption
     ;
 
 alterLockOption
-    : LOCK EQ_? (DEFAULT | NONE | 'SHARED' | 'EXCLUSIVE')
+    : LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
     ;
 
 truncateTable

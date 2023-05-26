@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.AlgorithmTypeSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.AlgorithmOption;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 
 /**
- * MySQL alter table statement.
+ * Algorithm type segment.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
-public final class MySQLAlterTableStatement extends AlterTableStatement implements MySQLStatement {
+public final class AlgorithmTypeSegment implements AlterDefinitionSegment {
     
-    private AlgorithmTypeSegment algorithmSegment;
+    private final int startIndex;
     
-    private LockTableSegment lockTableSegment;
+    private final int stopIndex;
+    
+    private final AlgorithmOption algorithmOption;
 }
