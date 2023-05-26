@@ -29,6 +29,7 @@ import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -100,7 +101,7 @@ public final class AgentTestActionExtension implements BeforeEachCallback {
         if (!hasSleep) {
             log.info("Waiting to collect data ...");
             hasSleep = true;
-            Awaitility.await().pollDelay(getSleepMilliseconds(), TimeUnit.MILLISECONDS).until(() -> true);
+            Awaitility.waitAtMost(Duration.ofMinutes(1)).await().pollDelay(getSleepMilliseconds(), TimeUnit.MILLISECONDS).until(() -> true);
         }
     }
     
