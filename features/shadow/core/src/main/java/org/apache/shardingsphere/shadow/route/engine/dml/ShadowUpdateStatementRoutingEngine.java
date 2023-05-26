@@ -25,13 +25,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.Column
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ExpressionExtractUtils;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Shadow update statement routing engine.
@@ -49,8 +48,16 @@ public final class ShadowUpdateStatementRoutingEngine extends AbstractShadowDMLS
     }
     
     @Override
-    protected Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator(final String shadowColumn) {
-        return new ShadowColumnConditionIterator(shadowColumn, getWhereSegment());
+    protected Collection<ShadowColumnCondition> getShadowColumnConditions(final String shadowColumnName) {
+        Collection<ShadowColumnCondition> result = new LinkedList<>();
+        for (ExpressionSegment each : getWhereSegment()) {
+            Collection<ColumnSegment> columns = ColumnExtractor.extract(each);
+            if (1 != columns.size()) {
+                continue;
+            }
+            ShadowExtractor.extractValues(each, parameters).map(values -> new ShadowColumnCondition(getSingleTableName(), shadowColumnName, values)).ifPresent(result::add);
+        }
+        return result;
     }
     
     private Collection<ExpressionSegment> getWhereSegment() {
@@ -61,17 +68,5 @@ public final class ShadowUpdateStatementRoutingEngine extends AbstractShadowDMLS
             }
         }
         return result;
-    }
-    
-    private final class ShadowColumnConditionIterator extends AbstractWhereSegmentShadowColumnConditionIterator {
-        
-        private ShadowColumnConditionIterator(final String shadowColumn, final Collection<ExpressionSegment> predicates) {
-            super(shadowColumn, predicates.iterator());
-        }
-        
-        @Override
-        protected Optional<ShadowColumnCondition> nextShadowColumnCondition(final ExpressionSegment expressionSegment, final ColumnSegment columnSegment) {
-            return ShadowExtractor.extractValues(expressionSegment, parameters).map(values -> new ShadowColumnCondition(getSingleTableName(), getShadowColumn(), values));
-        }
     }
 }

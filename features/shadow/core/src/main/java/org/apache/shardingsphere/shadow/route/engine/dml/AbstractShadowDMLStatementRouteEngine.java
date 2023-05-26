@@ -40,7 +40,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -145,24 +144,24 @@ public abstract class AbstractShadowDMLStatementRouteEngine implements ShadowRou
         if (columnShadowAlgorithms.isEmpty()) {
             return false;
         }
-        Iterator<Optional<ShadowColumnCondition>> iterator = getShadowColumnConditionIterator(shadowColumn);
-        ShadowDetermineCondition shadowDetermineCondition;
-        while (iterator.hasNext()) {
-            Optional<ShadowColumnCondition> next = iterator.next();
-            if (!next.isPresent()) {
-                continue;
-            }
-            for (ColumnShadowAlgorithm<Comparable<?>> each : columnShadowAlgorithms) {
-                shadowDetermineCondition = new ShadowDetermineCondition(shadowTable, operationType);
-                if (ColumnShadowAlgorithmDeterminer.isShadow(each, shadowDetermineCondition.initShadowColumnCondition(next.get()))) {
-                    return true;
-                }
+        for (ShadowColumnCondition each : getShadowColumnConditions(shadowColumn)) {
+            if (isMatchColumnShadowAlgorithm(shadowTable, columnShadowAlgorithms, each)) {
+                return true;
             }
         }
         return false;
     }
     
-    protected abstract Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator(String shadowColumn);
+    private boolean isMatchColumnShadowAlgorithm(final String shadowTable, final Collection<ColumnShadowAlgorithm<Comparable<?>>> algorithms, final ShadowColumnCondition condition) {
+        for (ColumnShadowAlgorithm<Comparable<?>> each : algorithms) {
+            if (ColumnShadowAlgorithmDeterminer.isShadow(each, new ShadowDetermineCondition(shadowTable, operationType).initShadowColumnCondition(condition))) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    protected abstract Collection<ShadowColumnCondition> getShadowColumnConditions(String shadowColumnName);
     
     protected final String getSingleTableName() {
         return tableAliasNameMappings.entrySet().iterator().next().getValue();
