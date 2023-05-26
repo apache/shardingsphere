@@ -278,7 +278,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             result = new ShardingSphereResultSet(resultSets, mergedResult, this, transparentStatement, executionContext, columnLabelAndIndexMap);
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
@@ -376,7 +376,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             return isNeedImplicitCommitTransaction(executionContext) ? executeUpdateWithImplicitCommitTransaction() : useDriverToExecuteUpdate();
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
@@ -445,7 +445,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             return isNeedImplicitCommitTransaction(executionContext) ? executeWithImplicitCommitTransaction() : useDriverToExecute();
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
@@ -484,7 +484,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             result = useDriverToExecute();
             connection.commit();
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             connection.rollback();
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
@@ -499,7 +499,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             result = useDriverToExecuteUpdate();
             connection.commit();
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             connection.rollback();
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
@@ -690,7 +690,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             initBatchPreparedStatementExecutor();
             return batchPreparedStatementExecutor.executeBatch(executionContext.getSqlStatementContext());
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             handleExceptionInTransaction(connection, metaDataContexts);
             throw SQLExceptionTransformEngine.toSQLException(ex, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType().getType());
