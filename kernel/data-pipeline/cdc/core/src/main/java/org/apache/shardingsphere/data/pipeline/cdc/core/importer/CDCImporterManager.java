@@ -15,41 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.importer.sink;
+package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
-
-import java.io.Closeable;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Pipeline sink.
+ * CDC importer manager.
  */
-public interface PipelineSink extends Closeable {
+public final class CDCImporterManager {
+    
+    private static final Map<String, CDCImporter> IMPORTER_MAP = new ConcurrentHashMap<>();
     
     /**
-     * Get connector.
+     * Put importer.
      *
-     * @return connector
+     * @param importer importer
      */
-    // TODO now Remove getConnector()
-    Object getConnector();
+    public static void putImporter(final CDCImporter importer) {
+        IMPORTER_MAP.put(importer.getImporterId(), importer);
+    }
     
     /**
-     * Write data.
+     * Get importer.
      *
-     * @param ackId ack id
-     * @param records records
-     * @return job progress updated parameter
+     * @param id importer id
+     * @return importer
      */
-    PipelineJobProgressUpdatedParameter write(String ackId, List<Record> records);
+    public static CDCImporter getImporter(final String id) {
+        return IMPORTER_MAP.get(id);
+    }
     
     /**
-     * Connector type.
+     * Remove importer.
      *
-     * @return connector type
+     * @param id importer id
      */
-    // TODO now Remove getType()
-    String getType();
+    public static void removeImporter(final String id) {
+        IMPORTER_MAP.remove(id);
+    }
 }

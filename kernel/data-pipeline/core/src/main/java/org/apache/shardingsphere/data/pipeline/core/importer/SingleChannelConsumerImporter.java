@@ -22,14 +22,16 @@ import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExe
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
+import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.sink.PipelineSink;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Single channel consumer importer.
@@ -52,11 +54,11 @@ public final class SingleChannelConsumerImporter extends AbstractLifecycleExecut
     @Override
     protected void runBlocking() {
         while (isRunning()) {
-            List<Record> records = channel.fetchRecords(batchSize, timeout, timeUnit);
+            List<Record> records = channel.fetchRecords(batchSize, timeout, timeUnit).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
             if (records.isEmpty()) {
                 continue;
             }
-            PipelineJobProgressUpdatedParameter updatedParam = sink.write(records);
+            PipelineJobProgressUpdatedParameter updatedParam = sink.write("", records);
             channel.ack(records);
             jobProgressListener.onProgressUpdated(updatedParam);
             if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
@@ -66,7 +68,7 @@ public final class SingleChannelConsumerImporter extends AbstractLifecycleExecut
     }
     
     @Override
-    protected void doStop() throws SQLException {
-        // TODO doStop()
+    protected void doStop() {
+        CloseUtils.closeQuietly(sink);
     }
 }

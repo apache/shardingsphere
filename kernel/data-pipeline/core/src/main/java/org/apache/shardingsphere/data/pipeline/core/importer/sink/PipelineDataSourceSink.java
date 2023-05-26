@@ -84,7 +84,7 @@ public final class PipelineDataSourceSink implements PipelineSink {
     }
     
     @Override
-    public PipelineJobProgressUpdatedParameter write(final List<Record> records) {
+    public PipelineJobProgressUpdatedParameter write(final String ackId, final List<Record> records) {
         return flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
     }
     

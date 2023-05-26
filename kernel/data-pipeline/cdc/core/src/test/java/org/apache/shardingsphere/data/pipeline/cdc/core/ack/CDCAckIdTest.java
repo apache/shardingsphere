@@ -17,37 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.ack;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * CDC ack position.
- */
-@Getter
-public final class CDCAckPosition {
+class CDCAckIdTest {
     
-    @Setter
-    private Record lastRecord;
-    
-    private final AtomicInteger dataRecordCount = new AtomicInteger();
-    
-    private final long createTimeMills;
-    
-    public CDCAckPosition(final Record lastRecord, final int dataRecordCount) {
-        this.lastRecord = lastRecord;
-        this.dataRecordCount.set(dataRecordCount);
-        createTimeMills = System.currentTimeMillis();
-    }
-    
-    /**
-     * Get data record count.
-     *
-     * @return data record count.
-     */
-    public int getDataRecordCount() {
-        return dataRecordCount.get();
+    @Test
+    void assertBuild() {
+        CDCAckId expected = CDCAckId.build("importer1");
+        String text = expected.marshal();
+        CDCAckId actual = CDCAckId.unmarshal(text);
+        assertThat(actual.getImporterId(), is(expected.getImporterId()));
+        assertThat(actual.getRandom(), is(expected.getRandom()));
     }
 }

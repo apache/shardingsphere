@@ -22,20 +22,20 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.StreamDataParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.context.job.CDCJobItemContext;
-import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckHolder;
-import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.PipelineSocketSink;
+import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckId;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporterManager;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.CDCSocketSink;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCExceptionWrapper;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCServerException;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.NotFindStreamDataSourceTableException;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
-import org.apache.shardingsphere.data.pipeline.cdc.generator.DataRecordComparatorGenerator;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.StreamDataRequestBody.SchemaTable;
@@ -57,7 +57,6 @@ import org.apache.shardingsphere.single.rule.SingleRule;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -152,10 +151,7 @@ public final class CDCBackendHandler {
             PipelineJobCenter.stop(jobId);
         }
         ShardingSphereDatabase database = PipelineContextManager.getProxyContext().getContextManager().getMetaDataContexts().getMetaData().getDatabase(cdcJobConfig.getDatabaseName());
-        Comparator<DataRecord> dataRecordComparator = cdcJobConfig.isDecodeWithTX()
-                ? DataRecordComparatorGenerator.generatorIncrementalComparator(database.getProtocolType())
-                : null;
-        jobAPI.startJob(jobId, new PipelineSocketSink(channel, database, cdcJobConfig.getSchemaTableNames(), dataRecordComparator));
+        jobAPI.startJob(jobId, new CDCSocketSink(channel, database, cdcJobConfig.getSchemaTableNames()));
         connectionContext.setJobId(jobId);
     }
     
@@ -179,7 +175,7 @@ public final class CDCBackendHandler {
             return;
         }
         CDCJobItemContext cdcJobItemContext = (CDCJobItemContext) jobItemContext.get();
-        if (cdcJobItemContext.getPipelineSink() instanceof PipelineSocketSink) {
+        if (cdcJobItemContext.getPipelineSink() instanceof CDCSocketSink) {
             Channel channel = (Channel) cdcJobItemContext.getPipelineSink().getConnector();
             if (channelId.equals(channel.id())) {
                 log.info("close CDC job, channel id: {}", channelId);
@@ -214,6 +210,12 @@ public final class CDCBackendHandler {
      * @param requestBody request body
      */
     public void processAck(final AckStreamingRequestBody requestBody) {
-        CDCAckHolder.getInstance().ack(requestBody.getAckId());
+        CDCAckId ackId = CDCAckId.unmarshal(requestBody.getAckId());
+        CDCImporter importer = CDCImporterManager.getImporter(ackId.getImporterId());
+        if (null == importer) {
+            log.warn("Could not get importer, ack id: {}", ackId.marshal());
+            return;
+        }
+        importer.ack(ackId.marshal());
     }
 }
