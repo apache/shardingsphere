@@ -57,7 +57,7 @@ import java.util.List;
  * COM_STMT_EXECUTE command executor for MySQL.
  */
 @RequiredArgsConstructor
-public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor<MySQLPacket> {
+public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     private final MySQLComStmtExecutePacket packet;
     

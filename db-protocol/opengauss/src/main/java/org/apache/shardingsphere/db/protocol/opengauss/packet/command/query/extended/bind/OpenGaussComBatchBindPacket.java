@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.db.protocol.opengauss.packet.command.query.extended.bind;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.OpenGaussCommandPacket;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.OpenGaussCommandPacketType;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.identifier.OpenGaussIdentifierTag;
@@ -39,7 +38,6 @@ import java.util.List;
  * Batch bind packet for openGauss.
  */
 @Getter
-@ToString
 public final class OpenGaussComBatchBindPacket extends OpenGaussCommandPacket {
     
     private final PostgreSQLPacketPayload payload;

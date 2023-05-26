@@ -107,7 +107,6 @@ class FrontendChannelInboundHandlerTest {
         assertThat(connectionSession.getDatabaseName(), is("database"));
     }
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertChannelReadNotAuthenticatedAndExceptionOccur() throws Exception {
         channel.register();

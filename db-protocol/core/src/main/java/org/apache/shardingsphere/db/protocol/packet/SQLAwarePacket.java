@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.binlog;
+package org.apache.shardingsphere.db.protocol.packet;
 
 /**
- * MySQL binlog event packet.
- *
- * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_replication_binlog_event.html">Binlog Event</a>
+ * SQL aware packet.
  */
-public interface MySQLBinlogEventPacket {
+public interface SQLAwarePacket {
     
     /**
-     * Get MySQL binlog event header.
-     *
-     * @return MySQL binlog event header
+     * Get SQL.
+     * 
+     * @return SQL.
      */
-    MySQLBinlogEventHeader getBinlogEventHeader();
+    String getSQL();
 }

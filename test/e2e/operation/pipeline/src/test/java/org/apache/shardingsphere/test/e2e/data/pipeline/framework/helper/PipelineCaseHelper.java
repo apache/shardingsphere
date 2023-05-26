@@ -138,8 +138,7 @@ public final class PipelineCaseHelper {
     public static String generateJsonString(final int length, final boolean useUnicodeCharacter) {
         String value;
         if (useUnicodeCharacter) {
-            // TODO openGauss incremental task parse single quote not correctly now
-            value = Strings.repeat("{中 } ABC", length);
+            value = Strings.repeat("{''中 } A'", Math.max(1, length / 10));
         } else {
             value = generateString(length);
         }

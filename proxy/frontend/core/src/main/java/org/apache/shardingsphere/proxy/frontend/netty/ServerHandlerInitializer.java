@@ -21,7 +21,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
 import org.apache.shardingsphere.db.protocol.netty.ProxyFlowControlHandler;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
  * Server handler initializer.
  */
 @RequiredArgsConstructor
-@Slf4j
 public final class ServerHandlerInitializer extends ChannelInitializer<Channel> {
     
     private final DatabaseType databaseType;

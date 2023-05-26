@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.OpenGaussCommandPacketType;
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.query.extended.bind.OpenGaussComBatchBindPacket;
 import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
+import org.apache.shardingsphere.db.protocol.packet.SQLAwarePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedCommandPacket;
@@ -72,7 +73,11 @@ public final class OpenGaussCommandExecutorFactory {
      */
     public static CommandExecutor newInstance(final CommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,
                                               final ConnectionSession connectionSession, final PortalContext portalContext) throws SQLException {
-        log.debug("Execute packet type: {}, value: {}", commandPacketType, commandPacket);
+        if (commandPacket instanceof SQLAwarePacket) {
+            log.debug("Execute packet type: {}, sql: {}", commandPacketType, ((SQLAwarePacket) commandPacket).getSQL());
+        } else {
+            log.debug("Execute packet type: {}", commandPacketType);
+        }
         if (!(commandPacket instanceof PostgreSQLAggregatedCommandPacket)) {
             return getCommandExecutor(commandPacketType, commandPacket, connectionSession, portalContext);
         }

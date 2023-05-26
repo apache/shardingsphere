@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.initdb;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
  * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_init_db.html">COM_INIT_DB</a>
  */
 @Getter
-@ToString
 public final class MySQLComInitDbPacket extends MySQLCommandPacket {
     
     private final String schema;

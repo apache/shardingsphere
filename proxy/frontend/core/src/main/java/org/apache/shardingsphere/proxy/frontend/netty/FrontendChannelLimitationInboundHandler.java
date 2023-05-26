@@ -28,8 +28,8 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 /**
  * Frontend channel limitation inbound handler.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public class FrontendChannelLimitationInboundHandler extends ChannelInboundHandlerAdapter {
     
     private final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine;

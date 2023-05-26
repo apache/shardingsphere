@@ -23,7 +23,6 @@ import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.netty.MySQLSequenceIdInboundHandler;
-import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.mysql.authentication.MySQLAuthenticationEngine;
@@ -38,13 +37,13 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Frontend engine for MySQL.
  */
 @Getter
-public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine<MySQLPacket> {
+public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine {
     
     private final AuthenticationEngine authenticationEngine = new MySQLAuthenticationEngine();
     
     private final MySQLCommandExecuteEngine commandExecuteEngine = new MySQLCommandExecuteEngine();
     
-    private final DatabasePacketCodecEngine<MySQLPacket> codecEngine = new MySQLPacketCodecEngine();
+    private final DatabasePacketCodecEngine codecEngine = new MySQLPacketCodecEngine();
     
     @Override
     public void initChannel(final Channel channel) {

@@ -32,7 +32,11 @@ dropReadwriteSplittingRule
     ;
 
 readwriteSplittingRuleDefinition
-    : ruleName LP_ writeStorageUnit COMMA_ readStorageUnits (COMMA_ transactionalReadQueryStrategy)? (COMMA_ algorithmDefinition)? RP_
+    : ruleName LP_ dataSourceDefinition (COMMA_ transactionalReadQueryStrategy)? (COMMA_ algorithmDefinition)? RP_
+    ;
+
+dataSourceDefinition
+    : writeStorageUnit COMMA_ readStorageUnits
     ;
 
 ruleName

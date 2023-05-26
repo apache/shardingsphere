@@ -57,7 +57,7 @@ import java.util.LinkedList;
 /**
  * Command query executor for PostgreSQL.
  */
-public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor<PostgreSQLPacket> {
+public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private final PortalContext portalContext;
     
@@ -68,7 +68,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor<Po
     
     public PostgreSQLComQueryExecutor(final PortalContext portalContext, final PostgreSQLComQueryPacket comQueryPacket, final ConnectionSession connectionSession) throws SQLException {
         this.portalContext = portalContext;
-        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), comQueryPacket.getSql(), connectionSession);
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), comQueryPacket.getSQL(), connectionSession);
     }
     
     @Override

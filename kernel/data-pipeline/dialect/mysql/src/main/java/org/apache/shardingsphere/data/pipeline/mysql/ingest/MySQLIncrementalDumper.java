@@ -25,11 +25,9 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlJd
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.IncrementalDumper;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.ActualTableName;
@@ -60,8 +58,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * MySQL incremental dumper.
@@ -91,7 +89,7 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
         YamlJdbcConfiguration jdbcConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getJdbcConfig();
         log.info("incremental dump, jdbcUrl={}", jdbcConfig.getUrl());
         DataSourceMetaData metaData = TypedSPILoader.getService(DatabaseType.class, "MySQL").getDataSourceMetaData(jdbcConfig.getUrl(), null);
-        ConnectInfo connectInfo = new ConnectInfo(new Random().nextInt(), metaData.getHostname(), metaData.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword());
+        ConnectInfo connectInfo = new ConnectInfo(ThreadLocalRandom.current().nextInt(), metaData.getHostname(), metaData.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword());
         client = new MySQLClient(connectInfo, dumperConfig.isDecodeWithTX());
         catalog = metaData.getCatalog();
     }
@@ -107,7 +105,6 @@ public final class MySQLIncrementalDumper extends AbstractLifecycleExecutor impl
             }
             handleEvents(events);
         }
-        channel.pushRecords(Collections.singletonList(new FinishedRecord(new FinishedPosition())));
     }
     
     private void handleEvents(final List<AbstractBinlogEvent> events) {
