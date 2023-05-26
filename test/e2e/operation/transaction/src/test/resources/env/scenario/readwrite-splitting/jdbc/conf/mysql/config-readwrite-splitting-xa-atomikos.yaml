@@ -51,9 +51,6 @@ dataSources:
     maxPoolSize: 2
     minPoolSize: 2
 rules:
-  - !TRANSACTION
-    defaultType: XA
-    providerType: Atomikos
   - !READWRITE_SPLITTING
     dataSources:
       readwrite_ds:
@@ -65,3 +62,7 @@ rules:
     loadBalancers:
       random:
         type: RANDOM
+
+transaction:
+  defaultType: XA
+  providerType: Atomikos
