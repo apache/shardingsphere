@@ -96,7 +96,6 @@ public final class AgentTestActionExtension implements BeforeEachCallback {
         OkHttpUtils.getInstance().get(String.join("", baseUrl, dropTableUrl));
     }
     
-    @SneakyThrows(InterruptedException.class)
     private void sleep() {
         if (!hasSleep) {
             log.info("Waiting to collect data ...");
