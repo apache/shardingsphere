@@ -72,9 +72,8 @@ class ParseDistSQLExecutorTest {
     void assertGetRowDataForMySQL() throws SQLException {
         String sql = "SELECT * FROM t_order";
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
-        ParseStatement parseStatement = new ParseStatement(sql);
         RULBackendHandler<FormatStatement> handler = new SQLRULBackendHandler<>();
-        handler.init(parseStatement, connectionSession);
+        handler.init(new ParseStatement(sql), connectionSession);
         handler.execute();
         handler.next();
         SQLStatement statement = sqlParserRule.getSQLParserEngine("MySQL").parse(sql, false);
@@ -86,9 +85,8 @@ class ParseDistSQLExecutorTest {
     void assertGetRowDataForPostgreSQL() throws SQLException {
         String sql = "SELECT * FROM t_order";
         when(connectionSession.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
-        ParseStatement parseStatement = new ParseStatement(sql);
         RULBackendHandler<FormatStatement> handler = new SQLRULBackendHandler<>();
-        handler.init(parseStatement, connectionSession);
+        handler.init(new ParseStatement(sql), connectionSession);
         handler.execute();
         handler.next();
         SQLStatement statement = sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false);
@@ -99,9 +97,8 @@ class ParseDistSQLExecutorTest {
     void assertExecute() {
         String sql = "wrong sql";
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
-        ParseStatement parseStatement = new ParseStatement(sql);
         RULBackendHandler<FormatStatement> handler = new SQLRULBackendHandler<>();
-        handler.init(parseStatement, connectionSession);
+        handler.init(new ParseStatement(sql), connectionSession);
         assertThrows(SQLParsingException.class, handler::execute);
     }
 }
