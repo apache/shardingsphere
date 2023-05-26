@@ -384,7 +384,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     }
     
     @Override
-    public ASTNode visitAlterAlgorithmOption(AlterAlgorithmOptionContext ctx) {
+    public ASTNode visitAlterAlgorithmOption(final AlterAlgorithmOptionContext ctx) {
         AlgorithmOption algorithmType = null;
         if (null != ctx.DEFAULT()) {
             algorithmType = AlgorithmOption.DEFAULT;
@@ -399,7 +399,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     }
     
     @Override
-    public ASTNode visitAlterLockOption(AlterLockOptionContext ctx) {
+    public ASTNode visitAlterLockOption(final AlterLockOptionContext ctx) {
         LockTableOption lockTableOption = null;
         if (null != ctx.DEFAULT()) {
             lockTableOption = LockTableOption.DEFAULT;
