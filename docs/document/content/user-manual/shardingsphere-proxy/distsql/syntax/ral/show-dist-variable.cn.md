@@ -13,7 +13,10 @@ weight = 7
 {{% tab name="语法" %}}
 ```sql
 ShowDistVariable ::=
-  'SHOW' ('VARIABLES' | 'VARIABLE' 'NAME' '=' variableName)
+  'SHOW' 'DIST' ('VARIABLES' ('LIKE' likePattern)?| 'VARIABLE' 'WHERE' 'NAME' '=' variableName)
+
+likePattern ::=
+  string
 
 variableName ::=
   identifier
