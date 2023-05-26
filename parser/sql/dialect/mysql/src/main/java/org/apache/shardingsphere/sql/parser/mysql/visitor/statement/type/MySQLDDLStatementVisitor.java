@@ -100,8 +100,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Truncat
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhileStatementContext;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.AlgorithmOption;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.LockTableOption;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.charset.CharsetNameSegment;
@@ -385,32 +383,32 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitAlterAlgorithmOption(final AlterAlgorithmOptionContext ctx) {
-        AlgorithmOption algorithmType = null;
-        if (null != ctx.DEFAULT()) {
-            algorithmType = AlgorithmOption.DEFAULT;
-        } else if (null != ctx.INSTANT()) {
-            algorithmType = AlgorithmOption.INSTANT;
+        String algorithmOption = null;
+        if (null != ctx.INSTANT()) {
+            algorithmOption = ctx.INSTANT().getText();
+        } else if (null != ctx.DEFAULT()) {
+            algorithmOption = ctx.DEFAULT().getText();
         } else if (null != ctx.INPLACE()) {
-            algorithmType = AlgorithmOption.INPLACE;
+            algorithmOption = ctx.INPLACE().getText();
         } else if (null != ctx.COPY()) {
-            algorithmType = AlgorithmOption.COPY;
+            algorithmOption = ctx.COPY().getText();
         }
-        return new AlgorithmTypeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), algorithmType);
+        return new AlgorithmTypeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), algorithmOption);
     }
     
     @Override
     public ASTNode visitAlterLockOption(final AlterLockOptionContext ctx) {
-        LockTableOption lockTableOption = null;
+        String lockOption = null;
         if (null != ctx.DEFAULT()) {
-            lockTableOption = LockTableOption.DEFAULT;
+            lockOption = ctx.DEFAULT().getText();
         } else if (null != ctx.NONE()) {
-            lockTableOption = LockTableOption.NONE;
+            lockOption = ctx.NONE().getText();
         } else if (null != ctx.SHARED()) {
-            lockTableOption = LockTableOption.SHARED;
+            lockOption = ctx.SHARED().getText();
         } else if (null != ctx.EXCLUSIVE()) {
-            lockTableOption = LockTableOption.EXCLUSIVE;
+            lockOption = ctx.EXCLUSIVE().getText();
         }
-        return new LockTableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), lockTableOption);
+        return new LockTableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), lockOption);
     }
     
     @Override

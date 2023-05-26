@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.AlgorithmOption;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 
 /**
@@ -35,5 +34,5 @@ public final class AlgorithmTypeSegment implements AlterDefinitionSegment {
     
     private final int stopIndex;
     
-    private final AlgorithmOption algorithmOption;
+    private final String algorithmOption;
 }
