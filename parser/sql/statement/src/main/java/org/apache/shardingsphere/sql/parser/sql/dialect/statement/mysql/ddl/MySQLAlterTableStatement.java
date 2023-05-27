@@ -30,11 +30,11 @@ import java.util.Optional;
  */
 @Setter
 public final class MySQLAlterTableStatement extends AlterTableStatement implements MySQLStatement {
-
+    
     private AlgorithmTypeSegment algorithmSegment;
-
+    
     private LockTableSegment lockTableSegment;
-
+    
     /**
      * Get algorithm segment.
      *
@@ -43,7 +43,7 @@ public final class MySQLAlterTableStatement extends AlterTableStatement implemen
     public Optional<AlgorithmTypeSegment> getGetAlgorithmSegment() {
         return Optional.ofNullable(algorithmSegment);
     }
-
+    
     /**
      * Get lock table Segment.
      *

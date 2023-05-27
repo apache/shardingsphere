@@ -100,6 +100,8 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Truncat
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ValidStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhileStatementContext;
 import org.apache.shardingsphere.sql.parser.mysql.visitor.statement.MySQLStatementVisitor;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.AlgorithmOption;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.LockTableOption;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.charset.CharsetNameSegment;
@@ -383,30 +385,30 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitAlterAlgorithmOption(final AlterAlgorithmOptionContext ctx) {
-        String algorithmOption = null;
+        AlgorithmOption algorithmOption = null;
         if (null != ctx.INSTANT()) {
-            algorithmOption = ctx.INSTANT().getText();
+            algorithmOption = AlgorithmOption.INSTANT;
         } else if (null != ctx.DEFAULT()) {
-            algorithmOption = ctx.DEFAULT().getText();
+            algorithmOption = AlgorithmOption.DEFAULT;
         } else if (null != ctx.INPLACE()) {
-            algorithmOption = ctx.INPLACE().getText();
+            algorithmOption = AlgorithmOption.INPLACE;
         } else if (null != ctx.COPY()) {
-            algorithmOption = ctx.COPY().getText();
+            algorithmOption = AlgorithmOption.COPY;
         }
         return new AlgorithmTypeSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), algorithmOption);
     }
     
     @Override
     public ASTNode visitAlterLockOption(final AlterLockOptionContext ctx) {
-        String lockOption = null;
+        LockTableOption lockOption = null;
         if (null != ctx.DEFAULT()) {
-            lockOption = ctx.DEFAULT().getText();
+            lockOption = LockTableOption.DEFAULT;
         } else if (null != ctx.NONE()) {
-            lockOption = ctx.NONE().getText();
+            lockOption = LockTableOption.NONE;
         } else if (null != ctx.SHARED()) {
-            lockOption = ctx.SHARED().getText();
+            lockOption = LockTableOption.SHARED;
         } else if (null != ctx.EXCLUSIVE()) {
-            lockOption = ctx.EXCLUSIVE().getText();
+            lockOption = LockTableOption.EXCLUSIVE;
         }
         return new LockTableSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), lockOption);
     }

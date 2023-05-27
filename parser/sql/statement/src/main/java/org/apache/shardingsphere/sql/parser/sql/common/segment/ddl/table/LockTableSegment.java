@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.LockTableOption;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 
 /**
@@ -34,5 +35,5 @@ public final class LockTableSegment implements AlterDefinitionSegment {
     
     private final int stopIndex;
     
-    private final String lockTableOption;
+    private final LockTableOption lockTableOption;
 }

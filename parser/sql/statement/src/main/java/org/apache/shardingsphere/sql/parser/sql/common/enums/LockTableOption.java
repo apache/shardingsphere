@@ -15,25 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.AlgorithmOption;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
+package org.apache.shardingsphere.sql.parser.sql.common.enums;
 
 /**
- * Algorithm type segment.
+ * Lock table option enum.
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class AlgorithmTypeSegment implements AlterDefinitionSegment {
+public enum LockTableOption {
     
-    private final int startIndex;
-    
-    private final int stopIndex;
-    
-    private final AlgorithmOption algorithmOption;
+    DEFAULT, NONE, SHARED, EXCLUSIVE
 }
