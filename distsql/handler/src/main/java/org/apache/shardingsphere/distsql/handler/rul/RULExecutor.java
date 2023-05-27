@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor;
+package org.apache.shardingsphere.distsql.handler.rul;
 
 import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,11 +43,10 @@ public interface RULExecutor<T extends RULStatement> extends TypedSPI {
     /**
      * Get query result rows.
      *
-     * @param connectionSession connectionSession connection session
      * @param sqlStatement SQL statement
      * @return query result rows
      */
-    default Collection<LocalDataQueryResultRow> getRows(ConnectionSession connectionSession, T sqlStatement) {
+    default Collection<LocalDataQueryResultRow> getRows(T sqlStatement) {
         return Collections.emptyList();
     }
 }

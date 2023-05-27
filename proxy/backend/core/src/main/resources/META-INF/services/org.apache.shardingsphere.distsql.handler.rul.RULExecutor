@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.FormatSQLExecutor
+org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql.ParseDistSQLExecutor
