@@ -21,13 +21,12 @@ import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.metadata.persist.node.metadata.config.readwritesplitting.ReadwriteSplittingNodeConverter;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 import java.util.Map.Entry;
 
 // TODO Rename YamlReadwriteSplittingRuleConfigurationSwapper when metadata structure adjustment completed. #25485
@@ -37,24 +36,18 @@ import java.util.Map.Entry;
 public final class NewYamlReadwriteSplittingRuleConfigurationSwapper
         implements NewYamlRuleConfigurationSwapper<ReadwriteSplittingRuleConfiguration> {
     
-    private static final String LOAD_BALANCERS_NODE = "load_balancers";
+    private final ReadwriteSplittingNodeConverter converter = new ReadwriteSplittingNodeConverter();
     
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final ReadwriteSplittingRuleConfiguration data) {
-        Collection<YamlDataNode> result = new HashSet<>();
+        Collection<YamlDataNode> result = new LinkedHashSet<>();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : data.getDataSources()) {
-            result.add(new YamlDataNode(String.join("/", each.getName()), YamlEngine.marshal(each)));
+            result.add(new YamlDataNode(converter.getGroupNamePath(each.getName()), YamlEngine.marshal(each)));
         }
         for (Entry<String, AlgorithmConfiguration> entry : data.getLoadBalancers().entrySet()) {
-            result.add(new YamlDataNode(String.join("/", LOAD_BALANCERS_NODE, entry.getKey()), YamlEngine.marshal(entry.getValue())));
+            result.add(new YamlDataNode(converter.getLoadBalancerPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
         }
         return result;
-    }
-    
-    @Override
-    public ReadwriteSplittingRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
-        // TODO
-        return new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
     }
     
     @Override

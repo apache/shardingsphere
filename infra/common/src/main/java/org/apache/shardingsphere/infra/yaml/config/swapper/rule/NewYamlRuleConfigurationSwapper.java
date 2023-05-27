@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;
 import org.apache.shardingsphere.infra.util.yaml.swapper.NewYamlConfigurationSwapper;
 
-// TODO Rename YamlRuleConfigurationSwapper when metadata structure adjustment completed. #25485
 /**
+ * TODO Rename YamlRuleConfigurationSwapper when metadata structure adjustment completed. #25485
  * YAML rule configuration swapper.
  *
  * @param <T> type of rule configuration

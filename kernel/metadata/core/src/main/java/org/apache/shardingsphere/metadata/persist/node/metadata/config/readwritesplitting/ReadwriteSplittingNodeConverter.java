@@ -17,24 +17,42 @@
 
 package org.apache.shardingsphere.metadata.persist.node.metadata.config.readwritesplitting;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Readwrite-splitting path processor.
+ * Readwrite-splitting node converter.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReadwriteSplittingPathProcessor {
+public final class ReadwriteSplittingNodeConverter {
     
     private static final String ROOT_NODE = "readwrite_splitting";
     
-    private static final String ACTIVE_VERSION = "/active_version";
+    private static final String ACTIVE_VERSION_NODE = "/active_version";
     
-    private static final String VERSIONS = "/versions";
+    private static final String VERSIONS_NODE = "/versions";
+    
+    private static final String LOAD_BALANCER_NODE = "load_balancers";
+    
+    /**
+     * Get group name path.
+     *
+     * @param groupName group name
+     * @return group name path
+     */
+    public String getGroupNamePath(final String groupName) {
+        return String.join("/", "", groupName);
+    }
+    
+    /**
+     * Get load balancer name.
+     *
+     * @param loadBalancerName load balancer name
+     * @return load balancer path
+     */
+    public String getLoadBalancerPath(final String loadBalancerName) {
+        return String.join("/", "", LOAD_BALANCER_NODE, loadBalancerName);
+    }
     
     /**
      * Get group name.
@@ -42,7 +60,7 @@ public final class ReadwriteSplittingPathProcessor {
      * @param path config node path
      * @return group name
      */
-    public static Optional<String> getGroupName(final String path) {
+    public Optional<String> getGroupName(final String path) {
         Pattern pattern = Pattern.compile(".+(?<=readwrite_splitting/)(.+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
@@ -54,7 +72,7 @@ public final class ReadwriteSplittingPathProcessor {
      * @param path config node path
      * @return group name
      */
-    public static Optional<String> getActiveVersion(final String path) {
+    public Optional<String> getActiveVersion(final String path) {
         Pattern pattern = Pattern.compile(".+(=active_version/)(.+)$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(path);
         return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();

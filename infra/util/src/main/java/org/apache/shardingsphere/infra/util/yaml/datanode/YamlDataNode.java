@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.infra.util.yaml.datanode;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @RequiredArgsConstructor
 public final class YamlDataNode {
     
