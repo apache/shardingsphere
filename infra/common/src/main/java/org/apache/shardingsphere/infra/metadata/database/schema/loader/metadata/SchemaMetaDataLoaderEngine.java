@@ -81,10 +81,7 @@ public final class SchemaMetaDataLoaderEngine {
         if (dialectSchemaMetaDataLoader.isPresent()) {
             try {
                 return dialectSchemaMetaDataLoader.get().load(material.getDataSource(), material.getActualTableNames(), material.getDefaultSchemaName());
-                // TODO replace Exception to SQLException when all dialect loader can handle meta data load normally
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
+            } catch (final SQLException ex) {
                 log.debug("Dialect load schema meta data error.", ex);
             }
         }
