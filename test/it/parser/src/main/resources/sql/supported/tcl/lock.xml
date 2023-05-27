@@ -17,6 +17,8 @@
   -->
 
 <sql-cases>
+    <sql-case id="lock_single_table_with_table_owner_read" value="lock table mysql.general_log READ" db-types="MySQL" />
+    <sql-case id="lock_single_table_with_alias_table_write" value="lock table mysql.general_log WRITE" db-types="MySQL" />
     <sql-case id="lock_table_with_table_owner_read" value="lock tables mysql.general_log READ" db-types="MySQL" />
     <sql-case id="lock_table_with_alias_table_write" value="lock tables mysql.general_log WRITE" db-types="MySQL" />
     <sql-case id="lock_table_with_read" value="lock tables t1 READ" db-types="MySQL" />
