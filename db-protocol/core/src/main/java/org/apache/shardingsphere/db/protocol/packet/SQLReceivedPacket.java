@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.db.protocol.packet;
 
 /**
- * SQL aware packet.
+ * SQL received packet.
  */
-public interface SQLAwarePacket {
+public interface SQLReceivedPacket {
     
     /**
      * Get SQL.
