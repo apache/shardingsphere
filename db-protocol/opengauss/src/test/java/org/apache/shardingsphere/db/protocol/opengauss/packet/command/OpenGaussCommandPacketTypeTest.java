@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.opengauss.packet.command;
 
-import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
+import org.apache.shardingsphere.db.protocol.packet.command.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.junit.jupiter.api.Test;
 

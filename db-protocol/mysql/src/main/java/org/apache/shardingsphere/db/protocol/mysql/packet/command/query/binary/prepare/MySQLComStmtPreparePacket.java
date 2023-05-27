@@ -20,7 +20,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.db.protocol.packet.SQLReceivedPacket;
+import org.apache.shardingsphere.db.protocol.packet.sql.SQLReceivedPacket;
 
 /**
  * COM_STMT_PREPARE command packet for MySQL.
