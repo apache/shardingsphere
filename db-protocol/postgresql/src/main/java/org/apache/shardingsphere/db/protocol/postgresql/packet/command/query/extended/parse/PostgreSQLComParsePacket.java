@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse;
 
 import lombok.Getter;
-import org.apache.shardingsphere.db.protocol.packet.SQLAwarePacket;
+import org.apache.shardingsphere.db.protocol.packet.sql.SQLReceivedPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
@@ -32,7 +32,7 @@ import java.util.List;
  * Command parse packet for PostgreSQL.
  */
 @Getter
-public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket implements SQLAwarePacket {
+public final class PostgreSQLComParsePacket extends PostgreSQLCommandPacket implements SQLReceivedPacket {
     
     private final PostgreSQLPacketPayload payload;
     

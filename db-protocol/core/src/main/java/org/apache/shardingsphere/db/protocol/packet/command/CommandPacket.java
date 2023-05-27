@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.packet;
+package org.apache.shardingsphere.db.protocol.packet.command;
 
 /**
  * Command packet.

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
+import org.apache.shardingsphere.db.protocol.packet.command.CommandPacket;
 
 /**
  * Command packet for MySQL.
