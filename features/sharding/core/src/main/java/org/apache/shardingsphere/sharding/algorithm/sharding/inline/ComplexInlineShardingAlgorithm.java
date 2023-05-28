@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.complex;
+package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import groovy.lang.Closure;
 import groovy.util.Expando;
@@ -100,7 +100,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
         return closure.call().toString();
     }
     
-    private static <K, V> Collection<Map<K, V>> combine(final Map<K, Collection<V>> map) {
+    private <K, V> Collection<Map<K, V>> combine(final Map<K, Collection<V>> map) {
         Collection<Map<K, V>> result = new LinkedList<>();
         for (Entry<K, Collection<V>> entry : map.entrySet()) {
             if (result.isEmpty()) {
