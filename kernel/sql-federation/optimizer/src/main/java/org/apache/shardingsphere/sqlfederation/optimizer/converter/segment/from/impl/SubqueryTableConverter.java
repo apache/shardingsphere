@@ -42,7 +42,17 @@ public final class SubqueryTableConverter implements SQLSegmentConverter<Subquer
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
-        sqlNodes.add(new SelectStatementConverter().convert(segment.getSubquery().getSelect()));
+        if (null == segment.getSubquery().getSelect().getProjections()) {
+            List<Optional<SqlNode>> operandList = new LinkedList<>();
+            operandList.add(new TableConverter().convert(segment.getSubquery().getSelect().getFrom()));
+            List<SqlNode> result = operandList.stream()
+                    .flatMap(optional -> optional.map(Stream::of).orElseGet(Stream::empty))
+                    .collect(Collectors.toList());
+            sqlNodes.add(new SqlBasicCall(SqlStdOperatorTable.EXPLICIT_TABLE,
+                    result, SqlParserPos.ZERO));
+        } else {
+            sqlNodes.add(new SelectStatementConverter().convert(segment.getSubquery().getSelect()));
+        }
         segment.getAlias().ifPresent(optional -> sqlNodes.add(new SqlIdentifier(optional, SqlParserPos.ZERO)));
         return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new ArrayList<>(sqlNodes), SqlParserPos.ZERO));
     }
