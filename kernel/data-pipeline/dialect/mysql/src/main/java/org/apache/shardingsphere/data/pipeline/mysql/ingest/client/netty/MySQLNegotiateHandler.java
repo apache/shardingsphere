@@ -102,9 +102,9 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     private byte[] getAuthPluginResponse(final MySQLAuthSwitchRequestPacket authSwitchRequest) throws NoSuchAlgorithmException {
         // TODO not support sha256_password now
         switch (MySQLAuthenticationPlugin.getPluginByName(authSwitchRequest.getAuthPluginName())) {
-            case NATIVE_PASSWORD_AUTHENTICATION:
+            case NATIVE:
                 return PasswordEncryption.encryptWithMySQL41(password.getBytes(), authSwitchRequest.getAuthPluginData().getAuthenticationPluginData());
-            case SHA2_AUTHENTICATION:
+            case CACHING_SHA2:
                 return PasswordEncryption.encryptWithSha2(password.getBytes(), authSwitchRequest.getAuthPluginData().getAuthenticationPluginData());
             default:
                 return password.getBytes();
@@ -112,7 +112,6 @@ public final class MySQLNegotiateHandler extends ChannelInboundHandlerAdapter {
     }
     
     private void handleCachingSha2Auth(final ChannelHandlerContext ctx, final MySQLAuthMoreDataPacket authMoreData) {
-        // how caching_sha2_password works: https://dev.mysql.com/doc/dev/mysql-server/8.0.11/page_caching_sha2_authentication_exchanges.html#sect_caching_sha2_info
         if (publicKeyRequested) {
             ctx.channel().writeAndFlush(new MySQLAuthSwitchResponsePacket(
                     PasswordEncryption.encryptWithRSAPublicKey(password, seed,
