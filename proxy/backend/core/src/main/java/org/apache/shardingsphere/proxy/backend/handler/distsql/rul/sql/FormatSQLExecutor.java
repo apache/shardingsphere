@@ -19,7 +19,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor.RULExecutor;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor.ConnectionSessionRequiredRULExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLFormatEngine;
@@ -31,7 +32,7 @@ import java.util.Properties;
 /**
  * Format SQL executor.
  */
-public final class FormatSQLExecutor implements RULExecutor<FormatStatement> {
+public final class FormatSQLExecutor implements ConnectionSessionRequiredRULExecutor<FormatStatement> {
     
     @Override
     public Collection<String> getColumnNames() {
@@ -39,7 +40,7 @@ public final class FormatSQLExecutor implements RULExecutor<FormatStatement> {
     }
     
     @Override
-    public Collection<LocalDataQueryResultRow> getRows(final ConnectionSession connectionSession, final FormatStatement sqlStatement) {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final FormatStatement sqlStatement) {
         return Collections.singleton(new LocalDataQueryResultRow(formatSQL(sqlStatement.getSql(), connectionSession.getProtocolType().getType())));
     }
     

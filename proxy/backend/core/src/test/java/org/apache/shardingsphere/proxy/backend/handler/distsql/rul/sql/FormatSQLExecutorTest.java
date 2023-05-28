@@ -19,12 +19,16 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.rul.sql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.RULBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.SQLRULBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 
 import java.sql.SQLException;
@@ -34,8 +38,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 class FormatSQLExecutorTest {
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ContextManager contextManager;
     
     @Mock
     private ConnectionSession connectionSession;
@@ -43,10 +51,10 @@ class FormatSQLExecutorTest {
     @Test
     void assertExecute() throws SQLException {
         String sql = "SELECT * FROM t_order WHERE order_id=1";
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(connectionSession.getProtocolType()).thenReturn(new MySQLDatabaseType());
-        FormatStatement statement = new FormatStatement(sql);
         RULBackendHandler<FormatStatement> handler = new SQLRULBackendHandler<>();
-        handler.init(statement, connectionSession);
+        handler.init(new FormatStatement(sql), connectionSession);
         handler.execute();
         handler.next();
         assertThat(new LinkedList<>(handler.getRowData().getData()).getFirst(), is("SELECT * \n"
