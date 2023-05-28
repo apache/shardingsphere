@@ -24,11 +24,12 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
+ * TODO Rename DatabaseRuleBasedPersistService when metadata structure adjustment completed. #25485
  * Database rule based persist service.
  *
  * @param <T> type of configuration
  */
-public interface DatabaseRuleBasedPersistService<T> extends DatabaseBasedPersistService<T> {
+public interface NewDatabaseRuleBasedPersistService<T> extends NewDatabaseBasedPersistService<T> {
     
     /**
      * Persist configurations.

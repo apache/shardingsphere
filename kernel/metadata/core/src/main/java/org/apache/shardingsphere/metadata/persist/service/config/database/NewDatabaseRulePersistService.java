@@ -21,27 +21,20 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * TODO Rename DatabaseRulePersistService when metadata structure adjustment completed. #25485
  * Database rule persist service.
  */
 @RequiredArgsConstructor
-public final class NewDatabaseRulePersistService implements DatabaseRuleBasedPersistService<Collection<RuleConfiguration>> {
+public final class NewDatabaseRulePersistService implements NewDatabaseRuleBasedPersistService<Collection<RuleConfiguration>> {
     
     private static final String DEFAULT_VERSION = "0";
     
@@ -89,30 +82,8 @@ public final class NewDatabaseRulePersistService implements DatabaseRuleBasedPer
         return String.join("/" , "", ruleName, key, VERSIONS, nextVersion);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
-    public Collection<RuleConfiguration> load(final String databaseName) {
-        return isExisted(databaseName)
-                ? new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName,
-                        getDatabaseActiveVersion(databaseName))), Collection.class, true))
-                : new LinkedList<>();
-    }
+    public Collection<RuleConfiguration> load(final String databaseName, final String ruleName) {
     
-    @SuppressWarnings("unchecked")
-    @Override
-    public Collection<RuleConfiguration> load(final String databaseName, final String version) {
-        String yamlContent = repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName, version));
-        return Strings.isNullOrEmpty(yamlContent) ? new LinkedList<>()
-                : new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(YamlEngine.unmarshal(repository.getDirectly(DatabaseMetaDataNode
-                        .getRulePath(databaseName, getDatabaseActiveVersion(databaseName))), Collection.class, true));
-    }
-    
-    private boolean isExisted(final String databaseName) {
-        return !Strings.isNullOrEmpty(getDatabaseActiveVersion(databaseName))
-                && !Strings.isNullOrEmpty(repository.getDirectly(DatabaseMetaDataNode.getRulePath(databaseName, getDatabaseActiveVersion(databaseName))));
-    }
-    
-    private String getDatabaseActiveVersion(final String databaseName) {
-        return repository.getDirectly(DatabaseMetaDataNode.getActiveVersionPath(databaseName));
     }
 }
