@@ -40,10 +40,7 @@ public final class PasswordEncryption {
     /**
      * Encrypt password with MySQL protocol 41.
      *
-     * <p>
-     * MySQL Internals Manual  /  MySQL Client/Server Protocol  /  Authentication Method  /  Secure Password Authentication
-     * <a href="https://dev.mysql.com/doc/internals/en/secure-password-authentication.html">secure-password-authentication</a>
-     * </p>
+     * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_connection_phase_authentication_methods_native_password_authentication.html">Native Authentication</a>
      *
      * @param password password
      * @param seed 20-bytes random data from server
@@ -60,6 +57,8 @@ public final class PasswordEncryption {
     /**
      * Encrypt password with sha2.
      *
+     * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_caching_sha2_authentication_exchanges.html">Caching_sha2_password information</a>
+     * 
      * @param password password
      * @param seed 20-bytes random data from server
      * @return encrypted password
