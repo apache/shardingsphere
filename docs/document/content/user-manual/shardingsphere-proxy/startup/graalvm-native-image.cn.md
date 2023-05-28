@@ -36,9 +36,9 @@ services:
 
 - 如下 3 个算法类由于涉及到 GraalVM Truffle Espresso 不方便在 host JVM 和 guest JVM 之间交互的 `groovy.lang.Closure`
   类，暂未可在 GraalVM Native Image 下使用。
-    - `org.apache.shardingsphere.sharding.algorithm.sharding.complex.ComplexInlineShardingAlgorithm`
-    - `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
     - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm`
+    - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.ComplexInlineShardingAlgorithm`
+    - `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
 
 - 当前阶段，GraalVM Native Image 形态的 ShardingSphere Proxy 处于混合 AOT ( GraalVM Native Image ) 和 JIT ( GraalVM
   Truffle Espresso ) 运行的阶段。由于 https://github.com/oracle/graal/issues/4555 尚未关闭，GraalVM Truffle Espresso

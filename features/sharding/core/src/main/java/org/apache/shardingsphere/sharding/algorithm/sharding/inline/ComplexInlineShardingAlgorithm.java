@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.complex;
+package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import groovy.lang.Closure;
 import groovy.util.Expando;
@@ -87,8 +87,7 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
         Map<String, Collection<Comparable<?>>> columnNameAndShardingValuesMap = shardingValue.getColumnNameAndShardingValuesMap();
         ShardingSpherePreconditions.checkState(shardingColumns.isEmpty() || shardingColumns.size() == columnNameAndShardingValuesMap.size(),
                 () -> new MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException(shardingColumns.size(), columnNameAndShardingValuesMap.size()));
-        Collection<Map<String, Comparable<?>>> combine = combine(columnNameAndShardingValuesMap);
-        return combine.stream().map(this::doSharding).collect(Collectors.toList());
+        return combine(columnNameAndShardingValuesMap).stream().map(this::doSharding).collect(Collectors.toList());
     }
     
     private String doSharding(final Map<String, Comparable<?>> shardingValues) {
@@ -100,9 +99,9 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
         return closure.call().toString();
     }
     
-    private static <K, V> Collection<Map<K, V>> combine(final Map<K, Collection<V>> map) {
+    private <K, V> Collection<Map<K, V>> combine(final Map<K, Collection<V>> columnNameAndShardingValuesMap) {
         Collection<Map<K, V>> result = new LinkedList<>();
-        for (Entry<K, Collection<V>> entry : map.entrySet()) {
+        for (Entry<K, Collection<V>> entry : columnNameAndShardingValuesMap.entrySet()) {
             if (result.isEmpty()) {
                 for (V value : entry.getValue()) {
                     Map<K, V> item = new HashMap<>();

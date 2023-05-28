@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.complex;
+package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
