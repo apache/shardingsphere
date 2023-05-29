@@ -60,7 +60,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     private static final String INDEX_META_DATA_SQL = "SELECT OWNER AS TABLE_SCHEMA, TABLE_NAME, INDEX_NAME FROM ALL_INDEXES WHERE OWNER = ? AND TABLE_NAME IN (%s)";
     
     private static final String PRIMARY_KEY_META_DATA_SQL = "SELECT A.OWNER AS TABLE_SCHEMA, A.TABLE_NAME AS TABLE_NAME, B.COLUMN_NAME AS COLUMN_NAME FROM ALL_CONSTRAINTS A INNER JOIN"
-            + " ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND A.OWNER = ?";
+            + " ALL_CONS_COLUMNS B ON A.CONSTRAINT_NAME = B.CONSTRAINT_NAME WHERE CONSTRAINT_TYPE = 'P' AND A.OWNER = '%s'";
     
     private static final String PRIMARY_KEY_META_DATA_SQL_IN_TABLES = PRIMARY_KEY_META_DATA_SQL + " AND A.TABLE_NAME IN (%s)";
     
@@ -176,8 +176,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
     
     private Map<String, Collection<String>> loadTablePrimaryKeys(final Connection connection, final Collection<String> tableNames) throws SQLException {
         Map<String, Collection<String>> result = new HashMap<>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(tableNames))) {
-            preparedStatement.setString(1, connection.getSchema());
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getPrimaryKeyMetaDataSQL(connection.getSchema(), tableNames))) {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     String columnName = resultSet.getString("COLUMN_NAME");
@@ -189,9 +188,9 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         return result;
     }
     
-    private String getPrimaryKeyMetaDataSQL(final Collection<String> tables) {
-        return tables.isEmpty() ? PRIMARY_KEY_META_DATA_SQL
-                : String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
+    private String getPrimaryKeyMetaDataSQL(final String schemaName, final Collection<String> tables) {
+        return tables.isEmpty() ? String.format(PRIMARY_KEY_META_DATA_SQL, schemaName)
+                : String.format(PRIMARY_KEY_META_DATA_SQL_IN_TABLES, schemaName, tables.stream().map(each -> String.format("'%s'", each)).collect(Collectors.joining(",")));
     }
     
     @Override
