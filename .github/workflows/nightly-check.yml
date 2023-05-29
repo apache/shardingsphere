@@ -21,7 +21,6 @@ on:
   schedule:
     - cron: '0 20 */1 * *'  # once a day. UTC time
   workflow_dispatch:
-  push:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true
@@ -140,7 +139,7 @@ jobs:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     name: Check - Dead links
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v3
       - run: sudo npm install -g markdown-link-check@3.10.0
@@ -151,9 +150,10 @@ jobs:
           done
 
   analyze:
-#    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     name: Check - CodeQL
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       security-events: write
       actions: read
