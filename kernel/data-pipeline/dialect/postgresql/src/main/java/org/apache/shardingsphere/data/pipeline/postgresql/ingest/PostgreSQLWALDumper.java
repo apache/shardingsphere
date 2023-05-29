@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
@@ -50,10 +51,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * PostgreSQL WAL dumper.
  */
+@Slf4j
 public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
     
     private final DumperConfiguration dumperConfig;
@@ -70,6 +73,8 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     
     private List<AbstractRowEvent> rowEvents = new LinkedList<>();
     
+    private final AtomicInteger reconnectTimes = new AtomicInteger();
+    
     public PostgreSQLWALDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
                                final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
@@ -82,9 +87,15 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
         this.decodeWithTX = dumperConfig.isDecodeWithTX();
     }
     
-    @SneakyThrows(InterruptedException.class)
     @Override
     protected void runBlocking() {
+        while (reconnectTimes.get() <= 3) {
+            connect();
+        }
+    }
+    
+    @SneakyThrows(InterruptedException.class)
+    private void connect() {
         // TODO use unified PgConnection
         try (
                 Connection connection = logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig());
@@ -94,6 +105,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
             DecodingPlugin decodingPlugin = new TestDecodingPlugin(utils);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
+                reconnectTimes.set(0);
                 if (null == message) {
                     Thread.sleep(10L);
                     continue;
@@ -106,7 +118,11 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
                 }
             }
         } catch (final SQLException ex) {
-            throw new IngestException(ex);
+            int reconnectTimes = this.reconnectTimes.incrementAndGet();
+            log.error("Connect failed, reconnect times={}", reconnectTimes, ex);
+            if (reconnectTimes > 3) {
+                throw new IngestException(ex);
+            }
         }
     }
     

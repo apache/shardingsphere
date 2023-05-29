@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.opengauss.ingest;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
@@ -48,10 +49,12 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * WAL dumper of openGauss.
  */
+@Slf4j
 public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
     
     private final DumperConfiguration dumperConfig;
@@ -68,6 +71,8 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     
     private List<AbstractRowEvent> rowEvents = new LinkedList<>();
     
+    private final AtomicInteger reconnectTimes = new AtomicInteger();
+    
     public OpenGaussWALDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
                               final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
@@ -80,15 +85,22 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
         this.decodeWithTX = dumperConfig.isDecodeWithTX();
     }
     
-    @SneakyThrows(InterruptedException.class)
     @Override
     protected void runBlocking() {
+        while (reconnectTimes.get() <= 3) {
+            connect();
+        }
+    }
+    
+    @SneakyThrows(InterruptedException.class)
+    private void connect() {
         PGReplicationStream stream = null;
         try (PgConnection connection = getReplicationConnectionUnwrap()) {
             stream = logicalReplication.createReplicationStream(connection, walPosition.getLogSequenceNumber(), OpenGaussPositionInitializer.getUniqueSlotName(connection, dumperConfig.getJobId()));
             DecodingPlugin decodingPlugin = new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.getTimestampUtils()), decodeWithTX);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
+                reconnectTimes.set(0);
                 if (null == message) {
                     Thread.sleep(10L);
                     continue;
@@ -101,7 +113,11 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
                 }
             }
         } catch (final SQLException ex) {
-            throw new IngestException(ex);
+            int reconnectTimes = this.reconnectTimes.incrementAndGet();
+            log.error("Connect failed, reconnect times={}", reconnectTimes, ex);
+            if (reconnectTimes > 3) {
+                throw new IngestException(ex);
+            }
         } finally {
             if (null != stream) {
                 try {
