@@ -138,6 +138,7 @@ jobs:
   
   check-dead-links:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
+    name: Check - Dead links
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -151,8 +152,12 @@ jobs:
 
   analyze:
 #    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
-    name: Analyze
+    name: Check - CodeQL
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -163,5 +168,5 @@ jobs:
         with:
           languages: java
       - name: Install project
-        run: ./mvnw clean install -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Drat.skip=true
+        run: ./mvnw clean install -DskipTests -Dmaven.javadoc.skip=true -Drat.skip=true
       - uses: github/codeql-action/analyze@v2
