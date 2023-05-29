@@ -15,19 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.data;
-
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
+package org.apache.shardingsphere.metadata.persist.service.config.database;
 
 /**
- * Null sharding value exception.
+ * TODO Rename DatabaseBasedPersistService when metadata structure adjustment completed. #25485
+ * Database based persist service.
+ *
+ * @param <T> type of configuration
  */
-public final class NullShardingValueException extends ShardingSQLException {
+public interface NewDatabaseBasedPersistService<T> {
     
-    private static final long serialVersionUID = -6223086772479822057L;
+    /**
+     * Persist configurations.
+     *
+     * @param databaseName database name
+     * @param configs configurations
+     */
+    void persist(String databaseName, T configs);
     
-    public NullShardingValueException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20, "Sharding value can't be null in SQL statement.");
-    }
+    /**
+     * Load configurations.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     * @return configurations
+     */
+    T load(String databaseName, String ruleName);
 }

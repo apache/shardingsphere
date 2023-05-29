@@ -15,19 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.data;
+package org.apache.shardingsphere.infra.util.yaml.datanode;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-/**
- * Null sharding value exception.
- */
-public final class NullShardingValueException extends ShardingSQLException {
+@Getter
+@RequiredArgsConstructor
+public final class YamlDataNode {
     
-    private static final long serialVersionUID = -6223086772479822057L;
+    private final String key;
     
-    public NullShardingValueException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20, "Sharding value can't be null in SQL statement.");
-    }
+    private final String value;
 }

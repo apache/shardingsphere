@@ -35,9 +35,10 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Cluster mode context manager.
+ * TODO rename to ClusterModeContextManager after meta data refactor completed
+ * New cluster mode context manager.
  */
-public final class ClusterModeContextManager implements ModeContextManager, ContextManagerAware {
+public final class NewClusterModeContextManager implements ModeContextManager, ContextManagerAware {
     
     private ContextManager contextManager;
     

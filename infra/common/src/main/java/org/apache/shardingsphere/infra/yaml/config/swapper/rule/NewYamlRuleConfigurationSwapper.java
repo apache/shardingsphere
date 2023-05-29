@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.data;
+package org.apache.shardingsphere.infra.yaml.config.swapper.rule;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.util.yaml.swapper.NewYamlConfigurationSwapper;
 
 /**
- * Null sharding value exception.
+ * TODO Rename YamlRuleConfigurationSwapper when metadata structure adjustment completed. #25485
+ * YAML rule configuration swapper.
+ *
+ * @param <T> type of rule configuration
  */
-public final class NullShardingValueException extends ShardingSQLException {
+@SingletonSPI
+public interface NewYamlRuleConfigurationSwapper<T extends RuleConfiguration> extends NewYamlConfigurationSwapper<T>, OrderedSPI<T> {
     
-    private static final long serialVersionUID = -6223086772479822057L;
-    
-    public NullShardingValueException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20, "Sharding value can't be null in SQL statement.");
-    }
+    /**
+     * Get YAML rule tag name.
+     * 
+     * @return YAML rule tag name
+     */
+    String getRuleTagName();
 }

@@ -15,19 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.data;
+package org.apache.shardingsphere.infra.util.yaml.swapper;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
+import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 
+import java.util.Collection;
+
+// TODO Rename YamlConfigurationSwapper when metadata structure adjustment completed. #25485
 /**
- * Null sharding value exception.
+ * YAML configuration swapper.
+ *
+ * @param <T> type of swapped object
  */
-public final class NullShardingValueException extends ShardingSQLException {
+public interface NewYamlConfigurationSwapper<T> {
     
-    private static final long serialVersionUID = -6223086772479822057L;
+    /**
+    * Swap to YAML data node.
+    *
+    * @param data data to be swapped
+    * @return YAML data nodes
+    */
+    Collection<YamlDataNode> swapToDataNodes(T data);
     
-    public NullShardingValueException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20, "Sharding value can't be null in SQL statement.");
-    }
+    /**
+     * Swap from data node to object.
+     *
+     * @param dataNodes data nodes
+     * @return swapped object
+     */
+    T swapToObject(Collection<YamlDataNode> dataNodes);
 }

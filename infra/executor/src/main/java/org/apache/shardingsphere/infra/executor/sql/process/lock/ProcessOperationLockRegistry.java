@@ -54,12 +54,7 @@ public final class ProcessOperationLockRegistry {
         locks.put(lockId, lock);
         lock.lock();
         try {
-            while (!releaseStrategy.isReadyToRelease()) {
-                if (!lock.awaitDefaultTime()) {
-                    return false;
-                }
-            }
-            return true;
+            return lock.awaitDefaultTime(releaseStrategy);
         } finally {
             lock.unlock();
             locks.remove(lockId);

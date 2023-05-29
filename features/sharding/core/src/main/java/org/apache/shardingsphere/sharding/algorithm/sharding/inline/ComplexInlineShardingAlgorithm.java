@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import groovy.lang.Closure;
 import groovy.util.Expando;
+import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
-import org.apache.shardingsphere.infra.expr.core.InlineExpressionParserFactory;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.sharding.complex.ComplexKeysShardingValue;
 import org.apache.shardingsphere.sharding.exception.algorithm.sharding.MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException;
@@ -87,38 +87,43 @@ public final class ComplexInlineShardingAlgorithm implements ComplexKeysSharding
         Map<String, Collection<Comparable<?>>> columnNameAndShardingValuesMap = shardingValue.getColumnNameAndShardingValuesMap();
         ShardingSpherePreconditions.checkState(shardingColumns.isEmpty() || shardingColumns.size() == columnNameAndShardingValuesMap.size(),
                 () -> new MismatchedComplexInlineShardingAlgorithmColumnAndValueSizeException(shardingColumns.size(), columnNameAndShardingValuesMap.size()));
-        return combine(columnNameAndShardingValuesMap).stream().map(this::doSharding).collect(Collectors.toList());
+        return flatten(columnNameAndShardingValuesMap).stream().map(this::doSharding).collect(Collectors.toList());
     }
     
-    private String doSharding(final Map<String, Comparable<?>> shardingValues) {
+    private String doSharding(final Map<String, Comparable<?>> columnNameAndShardingValueMap) {
         Closure<?> closure = createClosure();
-        for (Entry<String, Comparable<?>> entry : shardingValues.entrySet()) {
+        for (Entry<String, Comparable<?>> entry : columnNameAndShardingValueMap.entrySet()) {
             ShardingSpherePreconditions.checkNotNull(entry.getValue(), NullShardingValueException::new);
             closure.setProperty(entry.getKey(), entry.getValue());
         }
         return closure.call().toString();
     }
     
-    private <K, V> Collection<Map<K, V>> combine(final Map<K, Collection<V>> columnNameAndShardingValuesMap) {
-        Collection<Map<K, V>> result = new LinkedList<>();
-        for (Entry<K, Collection<V>> entry : columnNameAndShardingValuesMap.entrySet()) {
+    private Collection<Map<String, Comparable<?>>> flatten(final Map<String, Collection<Comparable<?>>> columnNameAndShardingValuesMap) {
+        Collection<Map<String, Comparable<?>>> result = new LinkedList<>();
+        for (Entry<String, Collection<Comparable<?>>> entry : columnNameAndShardingValuesMap.entrySet()) {
             if (result.isEmpty()) {
-                for (V value : entry.getValue()) {
-                    Map<K, V> item = new HashMap<>();
+                for (Comparable<?> value : entry.getValue()) {
+                    Map<String, Comparable<?>> item = new HashMap<>();
                     item.put(entry.getKey(), value);
                     result.add(item);
                 }
             } else {
-                Collection<Map<K, V>> list = new LinkedList<>();
-                for (Map<K, V> loop : result) {
-                    for (V value : entry.getValue()) {
-                        Map<K, V> item = new HashMap<>();
-                        item.put(entry.getKey(), value);
-                        item.putAll(loop);
-                        list.add(item);
-                    }
-                }
-                result = list;
+                result = flatten(result, entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
+    }
+    
+    private Collection<Map<String, Comparable<?>>> flatten(final Collection<Map<String, Comparable<?>>> columnNameAndShardingValueMaps,
+                                                           final String columnName, final Collection<Comparable<?>> shardingValues) {
+        Collection<Map<String, Comparable<?>>> result = new LinkedList<>();
+        for (Map<String, Comparable<?>> each : columnNameAndShardingValueMaps) {
+            for (Comparable<?> value : shardingValues) {
+                Map<String, Comparable<?>> item = new HashMap<>();
+                item.put(columnName, value);
+                item.putAll(each);
+                result.add(item);
             }
         }
         return result;

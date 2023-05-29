@@ -15,19 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.exception.data;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table;
 
-import org.apache.shardingsphere.infra.util.exception.external.sql.sqlstate.XOpenSQLState;
-import org.apache.shardingsphere.sharding.exception.ShardingSQLException;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.AlgorithmOption;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 
 /**
- * Null sharding value exception.
+ * Algorithm type segment.
  */
-public final class NullShardingValueException extends ShardingSQLException {
+@RequiredArgsConstructor
+@Getter
+@Setter
+public final class AlgorithmTypeSegment implements AlterDefinitionSegment {
     
-    private static final long serialVersionUID = -6223086772479822057L;
+    private final int startIndex;
     
-    public NullShardingValueException() {
-        super(XOpenSQLState.CHECK_OPTION_VIOLATION, 20, "Sharding value can't be null in SQL statement.");
-    }
+    private final int stopIndex;
+    
+    private final AlgorithmOption algorithmOption;
 }

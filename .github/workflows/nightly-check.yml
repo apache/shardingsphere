@@ -28,7 +28,7 @@ env:
 
 jobs:
   check-spotbugs:
-    if: github.repository == 'apache/shardingsphere'
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     name: Check - SpotBugs
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -44,7 +44,7 @@ jobs:
         run: ./mvnw clean install spotbugs:check -T1C
   
   check-and-report-sonarcloud:
-    if: github.repository == 'apache/shardingsphere'
+    if: (github.repository == 'apache/shardingsphere')
     name: Check - SonarCloud
     runs-on: ubuntu-latest
     timeout-minutes: 40
@@ -73,7 +73,7 @@ jobs:
         run: ./mvnw -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=apache_shardingsphere -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -DskipTests
   
   jacoco-coverage-report-sonarcloud:
-    if: github.repository == 'apache/shardingsphere'
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     name: Coverage - SonarCloud
     runs-on: ubuntu-latest
     timeout-minutes: 40
@@ -105,7 +105,7 @@ jobs:
         run: ./mvnw -B sonar:sonar -Dsonar.login=${SONAR_TOKEN} -Dsonar.projectKey=apache_shardingsphere -Dsonar.coverage.jacoco.xmlReportPaths=report/target/site/jacoco-aggregate/jacoco.xml -Dmaven.javadoc.skip=true -Drat.skip=true
   
   checkstyle-report-sonarcloud:
-    if: github.repository == 'apache/shardingsphere'
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     name: Checkstyle - SonarCloud
     runs-on: ubuntu-latest
     timeout-minutes: 40
@@ -134,3 +134,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
         run: ./mvnw -B sonar:sonar -Dsonar.projectKey=apache_shardingsphere -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+  
+  CheckDeadLinks:
+    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v3
+      - run: sudo npm install -g markdown-link-check@3.10.0
+      - name: Check dead link
+        run: |
+          for file in $(find . -name "*.md"); do
+            markdown-link-check -c .github/workflows/resources/linkcheck/.dlc.json -q "$file"
+          done
