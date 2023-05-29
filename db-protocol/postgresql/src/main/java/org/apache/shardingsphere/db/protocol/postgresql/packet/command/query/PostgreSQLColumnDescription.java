@@ -53,6 +53,6 @@ public final class PostgreSQLColumnDescription {
         this.columnIndex = columnIndex;
         this.columnLength = columnLength;
         this.dataFormat = dataFormat;
-        typeOID = Types.ARRAY == columnType ? PostgreSQLArrayColumnType.getTypeOid(columnTypeName) : PostgreSQLColumnType.valueOfJDBCType(columnType).getValue();
+        typeOID = Types.ARRAY == columnType ? PostgreSQLArrayColumnType.getTypeOid(columnTypeName) : PostgreSQLColumnType.valueOfJDBCType(columnType, columnTypeName).getValue();
     }
 }

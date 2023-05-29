@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextBitUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextJsonUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextTimeUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextTimestampUtils;
@@ -132,6 +133,8 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
                 return PostgreSQLTextTimestampUtils.parse(textValue);
             case POSTGRESQL_TYPE_JSON:
                 return PostgreSQLTextJsonUtils.parse(textValue);
+            case POSTGRESQL_TYPE_BIT:
+                return PostgreSQLTextBitUtils.parse(textValue);
             default:
                 return textValue;
         }
