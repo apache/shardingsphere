@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.LockTableOption;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 
 /**
- * Command packet type loader for PostgreSQL.
+ * Lock type segment.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PostgreSQLCommandPacketTypeLoader {
+@RequiredArgsConstructor
+@Getter
+@Setter
+public final class LockTableSegment implements AlterDefinitionSegment {
     
-    /**
-     * Get command packet type.
-     *
-     * @param payload packet payload for PostgreSQL
-     * @return command packet type for PostgreSQL
-     */
-    public static PostgreSQLCommandPacketType getCommandPacketType(final PostgreSQLPacketPayload payload) {
-        return PostgreSQLCommandPacketType.valueOf(payload.getByteBuf().getByte(payload.getByteBuf().readerIndex()));
-    }
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final LockTableOption lockTableOption;
 }

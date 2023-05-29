@@ -25,9 +25,11 @@ import org.apache.shardingsphere.test.e2e.agent.common.util.JDBCAgentTestUtils;
 import org.apache.shardingsphere.test.e2e.agent.common.util.OkHttpUtils;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -95,12 +97,11 @@ public final class AgentTestActionExtension implements BeforeEachCallback {
         OkHttpUtils.getInstance().get(String.join("", baseUrl, dropTableUrl));
     }
     
-    @SneakyThrows(InterruptedException.class)
     private void sleep() {
         if (!hasSleep) {
             log.info("Waiting to collect data ...");
             hasSleep = true;
-            TimeUnit.MILLISECONDS.sleep(getSleepMilliseconds());
+            Awaitility.waitAtMost(Duration.ofMinutes(1)).await().pollDelay(getSleepMilliseconds(), TimeUnit.MILLISECONDS).until(() -> true);
         }
     }
     

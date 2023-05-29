@@ -15,10 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.packet;
+package org.apache.shardingsphere.db.protocol.packet.sql;
 
 /**
- * Command packet.
+ * SQL received packet.
  */
-public interface CommandPacket {
+public interface SQLReceivedPacket {
+    
+    /**
+     * Get SQL.
+     * 
+     * @return SQL.
+     */
+    String getSQL();
 }

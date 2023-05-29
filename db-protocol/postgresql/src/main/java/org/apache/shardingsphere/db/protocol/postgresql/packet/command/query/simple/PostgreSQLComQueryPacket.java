@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple;
 
-import org.apache.shardingsphere.db.protocol.packet.SQLAwarePacket;
+import org.apache.shardingsphere.db.protocol.packet.sql.SQLReceivedPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Command query packet for PostgreSQL.
  */
-public final class PostgreSQLComQueryPacket extends PostgreSQLCommandPacket implements SQLAwarePacket {
+public final class PostgreSQLComQueryPacket extends PostgreSQLCommandPacket implements SQLReceivedPacket {
     
     private final String sql;
     

@@ -26,12 +26,15 @@ import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -66,6 +69,8 @@ public final class MockedDataSource implements DataSource, AutoCloseable {
     @Setter(AccessLevel.NONE)
     private boolean closed;
     
+    private final Collection<Connection> openedConnections = new HashSet<>();
+    
     public MockedDataSource(final Connection connection) {
         this.connection = connection;
     }
@@ -79,6 +84,8 @@ public final class MockedDataSource implements DataSource, AutoCloseable {
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(result.getMetaData().getURL()).thenReturn(url);
         when(result.createStatement(anyInt(), anyInt(), anyInt()).getConnection()).thenReturn(result);
+        doAnswer(invocation -> openedConnections.remove(result)).when(result).close();
+        openedConnections.add(result);
         return result;
     }
     
@@ -87,10 +94,13 @@ public final class MockedDataSource implements DataSource, AutoCloseable {
         return getConnection();
     }
     
-    @SuppressWarnings("ReturnOfNull")
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T unwrap(final Class<T> iface) {
-        return null;
+    public <T> T unwrap(final Class<T> iface) throws SQLException {
+        if (iface.isInstance(this)) {
+            return (T) this;
+        }
+        throw new SQLException("Wrapped DataSource is not an instance of " + iface);
     }
     
     @Override

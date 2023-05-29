@@ -15,10 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.packet;
+package org.apache.shardingsphere.infra.datasource.pool.destroyer.fixture;
 
-/**
- * Command packet type.
- */
-public interface CommandPacketType {
+import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.datasource.pool.destroyer.detector.DataSourcePoolActiveDetector;
+import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
+
+public final class MockedDataSourcePoolActiveDetector implements DataSourcePoolActiveDetector {
+    
+    @SneakyThrows(SQLException.class)
+    @Override
+    public boolean containsActiveConnection(final DataSource dataSource) {
+        return !dataSource.unwrap(MockedDataSource.class).getOpenedConnections().isEmpty();
+    }
+    
+    @Override
+    public String getType() {
+        return MockedDataSource.class.getName();
+    }
 }

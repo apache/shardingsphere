@@ -20,14 +20,14 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.db.protocol.packet.SQLAwarePacket;
+import org.apache.shardingsphere.db.protocol.packet.sql.SQLReceivedPacket;
 
 /**
  * COM_STMT_PREPARE command packet for MySQL.
  * 
  * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_stmt_prepare.html">COM_STMT_PREPARE</a>
  */
-public final class MySQLComStmtPreparePacket extends MySQLCommandPacket implements SQLAwarePacket {
+public final class MySQLComStmtPreparePacket extends MySQLCommandPacket implements SQLReceivedPacket {
     
     private final String sql;
     

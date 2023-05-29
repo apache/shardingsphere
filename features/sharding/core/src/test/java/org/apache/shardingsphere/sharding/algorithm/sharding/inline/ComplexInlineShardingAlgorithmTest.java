@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.algorithm.sharding.complex;
+package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import com.google.common.collect.Range;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -56,10 +56,10 @@ class ComplexInlineShardingAlgorithmTest {
     }
     
     private ComplexKeysShardingValue<Comparable<?>> createComplexKeysShardingValue(final List<Comparable<?>> values) {
-        Map<String, Collection<Comparable<?>>> sharingValues = new HashMap<>(2, 1F);
-        sharingValues.put("type", values);
-        sharingValues.put("order_id", values);
-        return new ComplexKeysShardingValue<>("t_order", sharingValues, Collections.emptyMap());
+        Map<String, Collection<Comparable<?>>> columnNameAndShardingValuesMap = new HashMap<>(2, 1F);
+        columnNameAndShardingValuesMap.put("type", values);
+        columnNameAndShardingValuesMap.put("order_id", values);
+        return new ComplexKeysShardingValue<>("t_order", columnNameAndShardingValuesMap, Collections.emptyMap());
     }
     
     @Test

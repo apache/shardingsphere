@@ -30,8 +30,8 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.p
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.reset.MySQLComStmtResetPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
-import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
-import org.apache.shardingsphere.db.protocol.packet.SQLAwarePacket;
+import org.apache.shardingsphere.db.protocol.packet.command.CommandPacket;
+import org.apache.shardingsphere.db.protocol.packet.sql.SQLReceivedPacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.admin.MySQLComResetConnectionExecutor;
@@ -68,8 +68,8 @@ public final class MySQLCommandExecutorFactory {
      */
     @SuppressWarnings("DataFlowIssue")
     public static CommandExecutor newInstance(final MySQLCommandPacketType commandPacketType, final CommandPacket commandPacket, final ConnectionSession connectionSession) throws SQLException {
-        if (commandPacket instanceof SQLAwarePacket) {
-            log.debug("Execute packet type: {}, sql: {}", commandPacketType, ((SQLAwarePacket) commandPacket).getSQL());
+        if (commandPacket instanceof SQLReceivedPacket) {
+            log.debug("Execute packet type: {}, sql: {}", commandPacketType, ((SQLReceivedPacket) commandPacket).getSQL());
         } else {
             log.debug("Execute packet type: {}", commandPacketType);
         }

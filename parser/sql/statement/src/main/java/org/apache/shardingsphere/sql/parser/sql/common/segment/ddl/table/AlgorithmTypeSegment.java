@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.command;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.AlgorithmOption;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 
 /**
- * Command packet type loader for MySQL.
+ * Algorithm type segment.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MySQLCommandPacketTypeLoader {
+@RequiredArgsConstructor
+@Getter
+@Setter
+public final class AlgorithmTypeSegment implements AlterDefinitionSegment {
     
-    /**
-     * Get command packet type.
-     *
-     * @param payload packet payload for MySQL
-     * @return command packet type for MySQL
-     */
-    public static MySQLCommandPacketType getCommandPacketType(final MySQLPacketPayload payload) {
-        return MySQLCommandPacketType.valueOf(payload.readInt1());
-    }
+    private final int startIndex;
+    
+    private final int stopIndex;
+    
+    private final AlgorithmOption algorithmOption;
 }

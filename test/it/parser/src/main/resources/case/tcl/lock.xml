@@ -17,6 +17,16 @@
   -->
 
 <sql-parser-test-cases>
+    <lock sql-case-id="lock_single_table_with_table_owner_read">
+        <table name="general_log" start-index="11" stop-index="27">
+            <owner name="mysql" start-index="11" stop-index="15" />
+        </table>
+    </lock>
+    <lock sql-case-id="lock_single_table_with_alias_table_write">
+        <table name="general_log" start-index="11" stop-index="27">
+            <owner name="mysql" start-index="11" stop-index="15" />
+        </table>
+    </lock>
     <lock sql-case-id="lock_table_with_table_owner_read">
         <table name="general_log" start-index="12" stop-index="28">
             <owner name="mysql" start-index="12" stop-index="16" />

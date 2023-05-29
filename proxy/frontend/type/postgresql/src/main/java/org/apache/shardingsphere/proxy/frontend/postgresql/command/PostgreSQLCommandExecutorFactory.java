@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.db.protocol.packet.SQLAwarePacket;
+import org.apache.shardingsphere.db.protocol.packet.sql.SQLReceivedPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLAggregatedCommandPacket;
@@ -68,8 +68,8 @@ public final class PostgreSQLCommandExecutorFactory {
      */
     public static CommandExecutor newInstance(final PostgreSQLCommandPacketType commandPacketType, final PostgreSQLCommandPacket commandPacket,
                                               final ConnectionSession connectionSession, final PortalContext portalContext) throws SQLException {
-        if (commandPacket instanceof SQLAwarePacket) {
-            log.debug("Execute packet type: {}, sql: {}", commandPacketType, ((SQLAwarePacket) commandPacket).getSQL());
+        if (commandPacket instanceof SQLReceivedPacket) {
+            log.debug("Execute packet type: {}, sql: {}", commandPacketType, ((SQLReceivedPacket) commandPacket).getSQL());
         } else {
             log.debug("Execute packet type: {}", commandPacketType);
         }

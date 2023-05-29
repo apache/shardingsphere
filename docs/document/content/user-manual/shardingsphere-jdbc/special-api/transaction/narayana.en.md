@@ -74,7 +74,7 @@ See [Narayana's Official Documentation](https://narayana.io/documentation/index.
 Yaml:
 
 ```yaml
-- !TRANSACTION
+transaction:
   defaultType: XA
   providerType: Narayana
 ```
