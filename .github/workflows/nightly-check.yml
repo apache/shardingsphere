@@ -149,7 +149,7 @@ jobs:
             markdown-link-check -c .github/workflows/resources/linkcheck/.dlc.json -q "$file"
           done
 
-  analyze:
+  check-security-issues:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     name: Check - CodeQL
     runs-on: ubuntu-latest
