@@ -71,8 +71,6 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     
     private List<AbstractRowEvent> rowEvents = new LinkedList<>();
     
-    private final AtomicInteger reconnectTimes = new AtomicInteger();
-    
     public OpenGaussWALDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
                               final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
@@ -87,13 +85,15 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     
     @Override
     protected void runBlocking() {
+        AtomicInteger reconnectTimes = new AtomicInteger();
         while (isRunning()) {
             try {
-                connect();
+                dump();
+                break;
             } catch (final SQLException ex) {
-                int reconnectTimes = this.reconnectTimes.incrementAndGet();
-                log.error("Connect failed, reconnect times={}", reconnectTimes, ex);
-                if (reconnectTimes > 3) {
+                int times = reconnectTimes.incrementAndGet();
+                log.error("Connect failed, reconnect times={}", times, ex);
+                if (times >= 5) {
                     throw new IngestException(ex);
                 }
             }
@@ -101,14 +101,13 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     }
     
     @SneakyThrows(InterruptedException.class)
-    private void connect() throws SQLException {
+    private void dump() throws SQLException {
         PGReplicationStream stream = null;
         try (PgConnection connection = getReplicationConnectionUnwrap()) {
             stream = logicalReplication.createReplicationStream(connection, walPosition.getLogSequenceNumber(), OpenGaussPositionInitializer.getUniqueSlotName(connection, dumperConfig.getJobId()));
             DecodingPlugin decodingPlugin = new MppdbDecodingPlugin(new OpenGaussTimestampUtils(connection.getTimestampUtils()), decodeWithTX);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
-                reconnectTimes.set(0);
                 if (null == message) {
                     Thread.sleep(10L);
                     continue;

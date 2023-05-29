@@ -73,8 +73,6 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     
     private List<AbstractRowEvent> rowEvents = new LinkedList<>();
     
-    private final AtomicInteger reconnectTimes = new AtomicInteger();
-    
     public PostgreSQLWALDumper(final DumperConfiguration dumperConfig, final IngestPosition position,
                                final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         ShardingSpherePreconditions.checkState(StandardPipelineDataSourceConfiguration.class.equals(dumperConfig.getDataSourceConfig().getClass()),
@@ -89,13 +87,15 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     
     @Override
     protected void runBlocking() {
+        AtomicInteger reconnectTimes = new AtomicInteger();
         while (isRunning()) {
             try {
-                connect();
+                dump();
+                break;
             } catch (final SQLException ex) {
-                int reconnectTimes = this.reconnectTimes.incrementAndGet();
-                log.error("Connect failed, reconnect times={}", reconnectTimes, ex);
-                if (reconnectTimes > 3) {
+                int times = reconnectTimes.incrementAndGet();
+                log.error("Connect failed, reconnect times={}", times, ex);
+                if (times >= 5) {
                     throw new IngestException(ex);
                 }
             }
@@ -103,7 +103,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     }
     
     @SneakyThrows(InterruptedException.class)
-    private void connect() throws SQLException {
+    private void dump() throws SQLException {
         // TODO use unified PgConnection
         try (
                 Connection connection = logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig());
@@ -111,7 +111,6 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
                         walPosition.getLogSequenceNumber())) {
             PostgreSQLTimestampUtils utils = new PostgreSQLTimestampUtils(connection.unwrap(PgConnection.class).getTimestampUtils());
             DecodingPlugin decodingPlugin = new TestDecodingPlugin(utils);
-            reconnectTimes.set(0);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
                 if (null == message) {
