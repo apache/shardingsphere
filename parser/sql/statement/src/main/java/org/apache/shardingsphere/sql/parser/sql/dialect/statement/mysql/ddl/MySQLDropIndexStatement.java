@@ -17,20 +17,30 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
+import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.AlgorithmTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
  * MySQL drop index statement.
  */
 @Setter
+@Getter
 public final class MySQLDropIndexStatement extends DropIndexStatement implements MySQLStatement {
     
     private SimpleTableSegment table;
+
+    private final Collection<AlgorithmTypeSegment> algorithmSegment = new LinkedList<>();
+
+    private final Collection<LockTableSegment> lockTableSegment = new LinkedList<>();
     
     /**
      * Get simple table segment.
