@@ -128,9 +128,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
     }
     
     private void writeImmediately(final List<? extends Record> recordList, final Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap) {
-        while (!channel.isWritable() && channel.isActive()) {
-            doAwait();
-        }
+        doAwait();
         if (!channel.isActive()) {
             return;
         }
@@ -147,14 +145,17 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
         channel.writeAndFlush(CDCResponseGenerator.succeedBuilder("").setDataRecordResult(dataRecordResult).build());
     }
     
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void doAwait() {
-        lock.lock();
-        try {
-            condition.await(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS);
-        } catch (final InterruptedException ignored) {
-            Thread.currentThread().interrupt();
-        } finally {
-            lock.unlock();
+        while (!channel.isWritable() && channel.isActive()) {
+            lock.lock();
+            try {
+                condition.await(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS);
+            } catch (final InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            } finally {
+                lock.unlock();
+            }
         }
     }
     
@@ -183,7 +184,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
      * Send incremental start event.
      *
      * @param socketSinkImporter socket sink importer
-     * @param batchSize batch size
+     * @param batchSize          batch size
      */
     public void sendIncrementalStartEvent(final SocketSinkImporter socketSinkImporter, final int batchSize) {
         incrementalRecordMap.computeIfAbsent(socketSinkImporter, ignored -> new ArrayBlockingQueue<>(batchSize));
