@@ -50,13 +50,19 @@ public final class ProcessOperationLock {
     }
     
     /**
-     * Await.
-     * 
+     * Await default time.
+     *
+     * @param releaseStrategy release strategy
      * @return boolean
      */
     @SneakyThrows(InterruptedException.class)
-    public boolean awaitDefaultTime() {
-        return condition.await(TIMEOUT_MILLS, TimeUnit.MILLISECONDS);
+    public boolean awaitDefaultTime(final ProcessOperationLockReleaseStrategy releaseStrategy) {
+        while (!releaseStrategy.isReadyToRelease()) {
+            if (condition.await(TIMEOUT_MILLS, TimeUnit.MILLISECONDS)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**

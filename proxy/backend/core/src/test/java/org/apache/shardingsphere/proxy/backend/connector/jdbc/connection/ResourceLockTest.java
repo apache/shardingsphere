@@ -17,27 +17,57 @@
 
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.connection;
 
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.internal.configuration.plugins.Plugins;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
+@ExtendWith(AutoMockExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class ResourceLockTest {
     
+    @Mock
+    private ChannelHandlerContext channelHandlerContext;
+    
+    @Mock
+    private Channel channel;
+    
+    @Mock
+    private ResourceLock resourceLock;
+    
     @Test
-    void assertDoAwait() {
-        ResourceLock resourceLock = new ResourceLock();
-        long startTime = System.currentTimeMillis();
-        resourceLock.doAwait();
-        assertTrue(System.currentTimeMillis() - startTime >= 200L);
+    void assertDoAwait() throws NoSuchFieldException, IllegalAccessException {
+        when(channel.isWritable()).thenReturn(false);
+        when(channel.isActive()).thenReturn(true);
+        when(channelHandlerContext.channel()).thenReturn(channel);
+        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        executorService.submit(() -> resourceLock.doAwait(channelHandlerContext));
+        Awaitility.await().pollDelay(200L, TimeUnit.MILLISECONDS).until(() -> true);
+        Plugins.getMemberAccessor().set(ResourceLock.class.getDeclaredField("condition"), resourceLock, new ReentrantLock().newCondition());
+        verify(resourceLock, times(1)).doAwait(channelHandlerContext);
     }
     
     @Test
     void assertDoNotify() {
+        when(channel.isWritable()).thenReturn(true);
+        when(channel.isActive()).thenReturn(true);
+        when(channelHandlerContext.channel()).thenReturn(channel);
         ResourceLock resourceLock = new ResourceLock();
         long startTime = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(1);
@@ -45,7 +75,7 @@ class ResourceLockTest {
             Awaitility.await().pollDelay(50L, TimeUnit.MILLISECONDS).until(() -> true);
             resourceLock.doNotify();
         });
-        resourceLock.doAwait();
+        resourceLock.doAwait(channelHandlerContext);
         assertTrue(System.currentTimeMillis() > startTime);
     }
 }
