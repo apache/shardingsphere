@@ -1,11 +1,11 @@
 +++
-title = "SHOW SHADOW ALGORITHM"
+title = "SHOW SHADOW ALGORITHMS"
 weight = 3
 +++
 
 ### 描述
 
-`SHOW SHADOW ALGORITHM` 语法用于查询指定逻辑库中的影子算法。
+`SHOW SHADOW ALGORITHMS` 语法用于查询指定逻辑库中的影子算法。
 
 ### 语法
 
