@@ -164,4 +164,4 @@ jobs:
           languages: java
       - name: Install project
         run: ./mvnw clean install -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Drat.skip=true
-        uses: github/codeql-action/analyze@v2
+      - uses: github/codeql-action/analyze@v2
