@@ -109,9 +109,7 @@ public final class NewClusterModeContextManager implements ModeContextManager, C
     
     @Override
     public void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
-        contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persist(databaseName,
-                contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources(),
-                contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(), ruleConfigs);
+        contextManager.getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persist(databaseName, ruleConfigs);
     }
     
     @Override
