@@ -87,13 +87,21 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     
     @Override
     protected void runBlocking() {
-        while (reconnectTimes.get() <= 3) {
-            connect();
+        while (isRunning()) {
+            try {
+                connect();
+            } catch (final SQLException ex) {
+                int reconnectTimes = this.reconnectTimes.incrementAndGet();
+                log.error("Connect failed, reconnect times={}", reconnectTimes, ex);
+                if (reconnectTimes > 3) {
+                    throw new IngestException(ex);
+                }
+            }
         }
     }
     
     @SneakyThrows(InterruptedException.class)
-    private void connect() {
+    private void connect() throws SQLException {
         PGReplicationStream stream = null;
         try (PgConnection connection = getReplicationConnectionUnwrap()) {
             stream = logicalReplication.createReplicationStream(connection, walPosition.getLogSequenceNumber(), OpenGaussPositionInitializer.getUniqueSlotName(connection, dumperConfig.getJobId()));
@@ -111,12 +119,6 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
                 } else {
                     processEventIgnoreTX(event);
                 }
-            }
-        } catch (final SQLException ex) {
-            int reconnectTimes = this.reconnectTimes.incrementAndGet();
-            log.error("Connect failed, reconnect times={}", reconnectTimes, ex);
-            if (reconnectTimes > 3) {
-                throw new IngestException(ex);
             }
         } finally {
             if (null != stream) {

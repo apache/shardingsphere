@@ -89,13 +89,21 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     
     @Override
     protected void runBlocking() {
-        while (reconnectTimes.get() <= 3) {
-            connect();
+        while (isRunning()) {
+            try {
+                connect();
+            } catch (final SQLException ex) {
+                int reconnectTimes = this.reconnectTimes.incrementAndGet();
+                log.error("Connect failed, reconnect times={}", reconnectTimes, ex);
+                if (reconnectTimes > 3) {
+                    throw new IngestException(ex);
+                }
+            }
         }
     }
     
     @SneakyThrows(InterruptedException.class)
-    private void connect() {
+    private void connect() throws SQLException {
         // TODO use unified PgConnection
         try (
                 Connection connection = logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig());
@@ -103,9 +111,9 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
                         walPosition.getLogSequenceNumber())) {
             PostgreSQLTimestampUtils utils = new PostgreSQLTimestampUtils(connection.unwrap(PgConnection.class).getTimestampUtils());
             DecodingPlugin decodingPlugin = new TestDecodingPlugin(utils);
+            reconnectTimes.set(0);
             while (isRunning()) {
                 ByteBuffer message = stream.readPending();
-                reconnectTimes.set(0);
                 if (null == message) {
                     Thread.sleep(10L);
                     continue;
@@ -116,12 +124,6 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
                 } else {
                     processEventIgnoreTX(event);
                 }
-            }
-        } catch (final SQLException ex) {
-            int reconnectTimes = this.reconnectTimes.incrementAndGet();
-            log.error("Connect failed, reconnect times={}", reconnectTimes, ex);
-            if (reconnectTimes > 3) {
-                throw new IngestException(ex);
             }
         }
     }
