@@ -32,20 +32,26 @@ import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCTasksRunner;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractSimplePipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.sink.PipelineSink;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
+import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * CDC job.
  */
 @Slf4j
-public final class CDCJob extends AbstractSimplePipelineJob {
+public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     
-    private final PipelineSink pipelineSink;
+    private final PipelineSink sink;
     
     private final CDCJobAPI jobAPI = new CDCJobAPI();
     
@@ -53,9 +59,56 @@ public final class CDCJob extends AbstractSimplePipelineJob {
     
     private final PipelineDataSourceManager dataSourceManager = new DefaultPipelineDataSourceManager();
     
-    public CDCJob(final String jobId, final PipelineSink pipelineSink) {
+    public CDCJob(final String jobId, final PipelineSink sink) {
         super(jobId);
-        this.pipelineSink = pipelineSink;
+        this.sink = sink;
+    }
+    
+    @Override
+    public void execute(final ShardingContext shardingContext) {
+        String jobId = shardingContext.getJobName();
+        log.info("Execute job {}", jobId);
+        CDCJobConfiguration jobConfig = new YamlCDCJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
+        Collection<CompletableFuture<?>> futures = new ArrayList<>(jobConfig.getJobShardingCount());
+        for (int shardingItem = 0; shardingItem < jobConfig.getJobShardingCount(); shardingItem++) {
+            if (isStopping()) {
+                log.info("stopping true, ignore");
+                return;
+            }
+            PipelineJobItemContext jobItemContext = buildPipelineJobItemContext(jobConfig, shardingItem);
+            PipelineTasksRunner tasksRunner = buildPipelineTasksRunner(jobItemContext);
+            if (!addTasksRunner(shardingItem, tasksRunner)) {
+                continue;
+            }
+            jobAPI.cleanJobItemErrorMessage(jobId, shardingItem);
+            prepare(jobItemContext);
+            log.info("start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
+            futures.add(CompletableFuture.runAsync(tasksRunner::start));
+        }
+        ExecuteEngine.trigger(futures, new ExecuteCallback() {
+            
+            @Override
+            public void onSuccess() {
+                log.info("onSuccess");
+            }
+            
+            @Override
+            public void onFailure(final Throwable throwable) {
+                log.error("onFailure", throwable);
+            }
+        });
+    }
+    
+    private PipelineJobItemContext buildPipelineJobItemContext(final CDCJobConfiguration jobConfig, final int shardingItem) {
+        Optional<InventoryIncrementalJobItemProgress> initProgress = jobAPI.getJobItemProgress(jobConfig.getJobId(), shardingItem);
+        CDCProcessContext jobProcessContext = jobAPI.buildPipelineProcessContext(jobConfig);
+        CDCTaskConfiguration taskConfig = jobAPI.buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
+        return new CDCJobItemContext(jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, dataSourceManager, sink);
+    }
+    
+    private PipelineTasksRunner buildPipelineTasksRunner(final PipelineJobItemContext pipelineJobItemContext) {
+        InventoryIncrementalJobItemContext jobItemContext = (InventoryIncrementalJobItemContext) pipelineJobItemContext;
+        return new CDCTasksRunner(jobItemContext, jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
     }
     
     @Override
@@ -64,26 +117,8 @@ public final class CDCJob extends AbstractSimplePipelineJob {
     }
     
     @Override
-    protected PipelineJobItemContext buildPipelineJobItemContext(final ShardingContext shardingContext) {
-        int shardingItem = shardingContext.getShardingItem();
-        CDCJobConfiguration jobConfig = new YamlCDCJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
-        Optional<InventoryIncrementalJobItemProgress> initProgress = jobAPI.getJobItemProgress(shardingContext.getJobName(), shardingItem);
-        CDCProcessContext jobProcessContext = jobAPI.buildPipelineProcessContext(jobConfig);
-        CDCTaskConfiguration taskConfig = jobAPI.buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
-        return new CDCJobItemContext(jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, dataSourceManager, pipelineSink);
-    }
-    
-    @Override
-    protected PipelineTasksRunner buildPipelineTasksRunner(final PipelineJobItemContext pipelineJobItemContext) {
-        InventoryIncrementalJobItemContext jobItemContext = (InventoryIncrementalJobItemContext) pipelineJobItemContext;
-        return new CDCTasksRunner(jobItemContext, jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
-    }
-    
-    @Override
     protected void doClean() {
         dataSourceManager.close();
-        if (pipelineSink instanceof AutoCloseable) {
-            CloseUtils.closeQuietly((AutoCloseable) pipelineSink);
-        }
+        CloseUtils.closeQuietly(sink);
     }
 }

@@ -204,14 +204,21 @@ public final class CDCJobAPI extends AbstractInventoryIncrementalJobAPIImpl {
         return result;
     }
     
+    @Override
+    protected JobConfigurationPOJO convertJobConfiguration(final PipelineJobConfiguration jobConfig) {
+        JobConfigurationPOJO result = super.convertJobConfiguration(jobConfig);
+        result.setShardingTotalCount(1);
+        return result;
+    }
+    
     /**
      * Start job.
      *
      * @param jobId job id
-     * @param pipelineSink importer connector
+     * @param sink sink
      */
-    public void startJob(final String jobId, final PipelineSink pipelineSink) {
-        CDCJob job = new CDCJob(jobId, pipelineSink);
+    public void startJob(final String jobId, final PipelineSink sink) {
+        CDCJob job = new CDCJob(jobId, sink);
         PipelineJobCenter.addJob(jobId, job);
         updateJobConfigurationDisabled(jobId, false);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
