@@ -21,6 +21,7 @@ on:
   schedule:
     - cron: '0 20 */1 * *'  # once a day. UTC time
   workflow_dispatch:
+  push:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true
@@ -135,7 +136,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
         run: ./mvnw -B sonar:sonar -Dsonar.projectKey=apache_shardingsphere -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
   
-  CheckDeadLinks:
+  check-dead-links:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -147,3 +148,20 @@ jobs:
           for file in $(find . -name "*.md"); do
             markdown-link-check -c .github/workflows/resources/linkcheck/.dlc.json -q "$file"
           done
+
+  analyze:
+#    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
+    name: Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: java
+      - name: Install project
+        run: ./mvnw clean install -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Drat.skip=true
+        uses: github/codeql-action/analyze@v2
