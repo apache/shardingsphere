@@ -68,7 +68,6 @@ class ResourceLockTest {
         when(channel.isWritable()).thenReturn(true);
         when(channel.isActive()).thenReturn(true);
         when(channelHandlerContext.channel()).thenReturn(channel);
-        ResourceLock resourceLock = new ResourceLock();
         long startTime = System.currentTimeMillis();
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         executorService.submit(() -> {
