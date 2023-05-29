@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.shardingsphere.driver.jdbc.context;
 
 import org.apache.shardingsphere.driver.state.circuit.datasource.CircuitBreakerDataSource;
@@ -15,27 +32,29 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(MockitoExtension.class)
 class JDBCContextTest {
-
+    
     public static final String TEST_DB = "test_db";
-
+    
     @Mock
     private DataSourceChangedEvent event;
-
+    
     @Test
     void assertNullCachedDbMetadataWithEmptyDatasource() throws Exception {
-        JDBCContext jdbcContext = new JDBCContext(new HashMap<>());
-        assertThat(jdbcContext.getCachedDatabaseMetaData(), nullValue());
+        JDBCContext actual = new JDBCContext(new HashMap<>());
+        assertNull(actual.getCachedDatabaseMetaData());
     }
-
+    
     @Test
     void assertNotNullCashedDbMetadataWith() throws SQLException {
         Map<String, DataSource> dataSourceMap = getStringDataSourceMap();
         JDBCContext jdbcContext = new JDBCContext(dataSourceMap);
         assertThat(jdbcContext.getCachedDatabaseMetaData(), notNullValue());
     }
+    
     @Test
     void assetNullMetadataAfterRefreshingExisting() throws SQLException {
         Map<String, DataSource> stringDataSourceMap = getStringDataSourceMap();
@@ -43,11 +62,11 @@ class JDBCContextTest {
         jdbcContext.refreshCachedDatabaseMetaData(event);
         assertThat(jdbcContext.getCachedDatabaseMetaData(), nullValue());
     }
-
+    
     private static Map<String, DataSource> getStringDataSourceMap() {
         CircuitBreakerDataSource dataSource = new CircuitBreakerDataSource();
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put(TEST_DB, dataSource);
-        return dataSourceMap;
+        Map<String, DataSource> result = new HashMap<>();
+        result.put(TEST_DB, dataSource);
+        return result;
     }
 }
