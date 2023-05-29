@@ -421,7 +421,7 @@ dropTrigger
     ;
 
 renameTable
-    : RENAME TABLE tableName TO tableName (COMMA_ tableName TO tableName)*
+    : RENAME (TABLE | TABLES) tableName TO tableName (COMMA_ tableName TO tableName)*
     ;
 
 createDefinitionClause

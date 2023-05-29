@@ -23,6 +23,12 @@
             <rename-table name="t_order1" start-index="24" stop-index="31" />
         </rename>
     </rename-table>
+    <rename-table sql-case-id="rename_tables_rule">
+        <rename start-index="14" stop-index="32">
+            <table name="t_order" start-index="14" stop-index="20" />
+            <rename-table name="t_order1" start-index="25" stop-index="32" />
+        </rename>
+    </rename-table>
     <rename-table sql-case-id="rename_multiple_tables">
         <rename start-index="13" stop-index="31">
             <table name="t_order" start-index="13" stop-index="19" />
