@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.metadata.persist.data.ShardingSphereDataBasedPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseBasedPersistService;
-import org.apache.shardingsphere.metadata.persist.service.config.database.DatabaseRuleBasedPersistService;
 import org.apache.shardingsphere.metadata.persist.service.config.global.GlobalPersistService;
 import org.apache.shardingsphere.metadata.persist.service.database.DatabaseMetaDataBasedPersistService;
 import org.apache.shardingsphere.metadata.persist.service.version.MetaDataVersionBasedPersistService;
@@ -66,7 +65,7 @@ public interface MetaDataBasedPersistService {
      * 
      * @return persist service
      */
-    DatabaseRuleBasedPersistService<Collection<RuleConfiguration>> getDatabaseRulePersistService();
+    DatabaseBasedPersistService<Collection<RuleConfiguration>> getDatabaseRulePersistService();
     
     /**
      * Get global rule service.

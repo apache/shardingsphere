@@ -73,7 +73,8 @@ public final class NewDatabaseRulePersistService implements NewDatabaseRuleBased
             }
             List<String> versions = repository.getChildrenKeys(String.join("/", "", ruleName, each.getKey(), VERSIONS));
             repository.persist(appendVersion(ruleName, each.getKey(), versions.isEmpty()
-                    ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), each.getValue());
+                    ? DEFAULT_VERSION
+                    : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), each.getValue());
         }
     }
     
