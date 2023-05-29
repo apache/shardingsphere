@@ -163,6 +163,12 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
+      - uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ env.CACHE_PREFIX }}-maven-third-party-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ env.CACHE_PREFIX }}-maven-third-party-
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
