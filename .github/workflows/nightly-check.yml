@@ -134,3 +134,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
         run: ./mvnw -B sonar:sonar -Dsonar.projectKey=apache_shardingsphere -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml
+  
+  CheckDeadLinks:
+#    if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v3
+      - run: sudo npm install -g markdown-link-check@3.10.0
+      - run: |
+          for file in $(find . -name "*.md"); do
+            markdown-link-check -c .github/workflows/resources/linkcheck/.dlc.json -q "$file"
+          done
