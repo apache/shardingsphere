@@ -4,6 +4,12 @@
       "pattern": "^http://localhost"
     },
     {
+      "pattern": "^https://dist.apache.org/repos/dist/release/incubator/shardingsphere/*"
+    },
+    {
+      "pattern": "^https://github.com/apache/incubator-shardingsphere/*"
+    },
+    {
       "pattern": "^https://twitter.com*"
     }
   ],
