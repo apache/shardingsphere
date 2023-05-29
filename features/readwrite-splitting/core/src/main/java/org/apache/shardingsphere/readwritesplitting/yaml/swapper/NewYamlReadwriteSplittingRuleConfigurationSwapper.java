@@ -26,7 +26,9 @@ import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleCo
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
 // TODO Rename YamlReadwriteSplittingRuleConfigurationSwapper when metadata structure adjustment completed. #25485
@@ -48,6 +50,12 @@ public final class NewYamlReadwriteSplittingRuleConfigurationSwapper
             result.add(new YamlDataNode(converter.getLoadBalancerPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
         }
         return result;
+    }
+    
+    @Override
+    public ReadwriteSplittingRuleConfiguration swapToObject(final Collection<YamlDataNode> dataNodes) {
+        // TODO
+        return new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
     }
     
     @Override

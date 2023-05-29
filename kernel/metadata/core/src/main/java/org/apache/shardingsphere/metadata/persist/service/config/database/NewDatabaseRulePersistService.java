@@ -27,7 +27,10 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfi
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import javax.sql.DataSource;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * TODO Rename DatabaseRulePersistService when metadata structure adjustment completed. #25485
@@ -68,22 +71,23 @@ public final class NewDatabaseRulePersistService implements NewDatabaseRuleBased
             if (Strings.isNullOrEmpty(repository.getDirectly(each.getKey()))) {
                 repository.persist(appendActiveVersion(ruleName, each.getKey()), DEFAULT_VERSION);
             }
-            List<String> versions = repository.getChildrenKeys(String.join("/" , "", ruleName, each.getKey(), VERSIONS));
+            List<String> versions = repository.getChildrenKeys(String.join("/", "", ruleName, each.getKey(), VERSIONS));
             repository.persist(appendVersion(ruleName, each.getKey(), versions.isEmpty()
                     ? DEFAULT_VERSION : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), each.getValue());
         }
     }
     
     private String appendActiveVersion(final String ruleName, final String key) {
-        return String.join("/" , "", ruleName, key, ACTIVE_VERSION);
+        return String.join("/", "", ruleName, key, ACTIVE_VERSION);
     }
     
     private String appendVersion(final String ruleName, final String key, final String nextVersion) {
-        return String.join("/" , "", ruleName, key, VERSIONS, nextVersion);
+        return String.join("/", "", ruleName, key, VERSIONS, nextVersion);
     }
     
     @Override
     public Collection<RuleConfiguration> load(final String databaseName, final String ruleName) {
-    
+        // TODO
+        return Collections.emptyList();
     }
 }

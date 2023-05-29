@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.metadata.persist.service.config.database;
 
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-
-import java.util.Map;
-
 /**
  * TODO Rename DatabaseBasedPersistService when metadata structure adjustment completed. #25485
  * Database based persist service.

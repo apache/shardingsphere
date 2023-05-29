@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.metadata.persist.node.metadata.config.readwritesplitting;
 
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Readwrite-splitting node converter.
  */
@@ -52,29 +48,5 @@ public final class ReadwriteSplittingNodeConverter {
      */
     public String getLoadBalancerPath(final String loadBalancerName) {
         return String.join("/", "", LOAD_BALANCER_NODE, loadBalancerName);
-    }
-    
-    /**
-     * Get group name.
-     *
-     * @param path config node path
-     * @return group name
-     */
-    public Optional<String> getGroupName(final String path) {
-        Pattern pattern = Pattern.compile(".+(?<=readwrite_splitting/)(.+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
-    }
-    
-    /**
-     * Get active version.
-     *
-     * @param path config node path
-     * @return group name
-     */
-    public Optional<String> getActiveVersion(final String path) {
-        Pattern pattern = Pattern.compile(".+(=active_version/)(.+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(path);
-        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
     }
 }

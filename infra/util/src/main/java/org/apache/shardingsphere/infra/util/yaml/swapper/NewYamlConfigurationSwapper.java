@@ -36,4 +36,12 @@ public interface NewYamlConfigurationSwapper<T> {
     * @return YAML data nodes
     */
     Collection<YamlDataNode> swapToDataNodes(T data);
+    
+    /**
+     * Swap from data node to object.
+     *
+     * @param dataNodes data nodes
+     * @return swapped object
+     */
+    T swapToObject(Collection<YamlDataNode> dataNodes);
 }
