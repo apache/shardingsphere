@@ -184,7 +184,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
      * Send incremental start event.
      *
      * @param socketSinkImporter socket sink importer
-     * @param batchSize          batch size
+     * @param batchSize batch size
      */
     public void sendIncrementalStartEvent(final SocketSinkImporter socketSinkImporter, final int batchSize) {
         incrementalRecordMap.computeIfAbsent(socketSinkImporter, ignored -> new ArrayBlockingQueue<>(batchSize));
