@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
@@ -50,10 +51,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * PostgreSQL WAL dumper.
  */
+@Slf4j
 public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor implements IncrementalDumper {
     
     private final DumperConfiguration dumperConfig;
@@ -82,9 +85,25 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
         this.decodeWithTX = dumperConfig.isDecodeWithTX();
     }
     
-    @SneakyThrows(InterruptedException.class)
     @Override
     protected void runBlocking() {
+        AtomicInteger reconnectTimes = new AtomicInteger();
+        while (isRunning()) {
+            try {
+                dump();
+                break;
+            } catch (final SQLException ex) {
+                int times = reconnectTimes.incrementAndGet();
+                log.error("Connect failed, reconnect times={}", times, ex);
+                if (times >= 5) {
+                    throw new IngestException(ex);
+                }
+            }
+        }
+    }
+    
+    @SneakyThrows(InterruptedException.class)
+    private void dump() throws SQLException {
         // TODO use unified PgConnection
         try (
                 Connection connection = logicalReplication.createConnection((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig());
@@ -105,8 +124,6 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
                     processEventIgnoreTX(event);
                 }
             }
-        } catch (final SQLException ex) {
-            throw new IngestException(ex);
         }
     }
     
