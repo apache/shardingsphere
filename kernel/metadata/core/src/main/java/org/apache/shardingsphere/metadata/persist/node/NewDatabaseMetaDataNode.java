@@ -19,7 +19,7 @@ package org.apache.shardingsphere.metadata.persist.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.metadata.persist.node.metadata.datasource.DataSourcePathProcessor;
+import org.apache.shardingsphere.metadata.persist.node.metadata.datasource.DataSourceNodeConverter;
 
 // TODO Rename DatabaseMetaDataNode when metadata structure adjustment completed. #25485
 /**
@@ -30,6 +30,12 @@ public final class NewDatabaseMetaDataNode {
     
     private static final String ROOT_NODE = "metadata";
     
+    private static final String RULE_NODE = "rules";
+    
+    private static final String ACTIVE_VERSION = "active_version";
+    
+    private static final String VERSIONS = "versions";
+    
     /**
      * Get data Sources path.
      *
@@ -37,7 +43,7 @@ public final class NewDatabaseMetaDataNode {
      * @return data sources path
      */
     public static String getDataSourcesPath(final String databaseName) {
-        return String.join("/", getMetaDataNodePath(), DataSourcePathProcessor.getDataSourcesPath(databaseName));
+        return String.join("/", getMetaDataNodePath(), DataSourceNodeConverter.getDataSourcesPath(databaseName));
     }
     
     /**
@@ -49,7 +55,7 @@ public final class NewDatabaseMetaDataNode {
      * @return data source path
      */
     public static String getDataSourcePath(final String databaseName, final String dataSourceName, final String version) {
-        return String.join("/", getMetaDataNodePath(), DataSourcePathProcessor.getDataSourcePath(databaseName, dataSourceName, version));
+        return String.join("/", getMetaDataNodePath(), DataSourceNodeConverter.getDataSourcePath(databaseName, dataSourceName, version));
     }
     
     /**
@@ -60,7 +66,55 @@ public final class NewDatabaseMetaDataNode {
      * @return data source active version path
      */
     public static String getDataSourceActiveVersionPath(final String databaseName, final String dataSourceName) {
-        return String.join("/", getMetaDataNodePath(), DataSourcePathProcessor.getActiveVersionPath(databaseName, dataSourceName));
+        return String.join("/", getMetaDataNodePath(), DataSourceNodeConverter.getActiveVersionPath(databaseName, dataSourceName));
+    }
+    
+    /**
+     * Get database rule path.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     * @return database rule path
+     */
+    public static String getDatabaseRulePath(final String databaseName, final String ruleName) {
+        return String.join("/", getMetaDataNodePath(), databaseName, RULE_NODE, ruleName);
+    }
+    
+    /**
+     * Get database rule active version path.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     * @param key key
+     * @return database rule active version path
+     */
+    public static String getDatabaseRuleActiveVersionPath(final String databaseName, final String ruleName, final String key) {
+        return String.join("/", getMetaDataNodePath(), databaseName, ruleName, key, ACTIVE_VERSION);
+    }
+    
+    /**
+     * Get database rule versions path.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     * @param key key
+     * @return database rule versions path
+     */
+    public static String getDatabaseRuleVersionsPath(final String databaseName, final String ruleName, final String key) {
+        return String.join("/", getMetaDataNodePath(), databaseName, ruleName, key, VERSIONS);
+    }
+    
+    /**
+     * Get database rule version path.
+     *
+     * @param databaseName database name
+     * @param ruleName rule name
+     * @param key key
+     * @param nextVersion next version
+     * @return database rule next version
+     */
+    public static String getDatabaseRuleVersionPath(final String databaseName, final String ruleName, final String key, final String nextVersion) {
+        return String.join("/", getMetaDataNodePath(), databaseName, ruleName, key, VERSIONS, nextVersion);
     }
     
     /**
@@ -68,7 +122,7 @@ public final class NewDatabaseMetaDataNode {
      *
      * @return meta data node path
      */
-    public static String getMetaDataNodePath() {
+    private static String getMetaDataNodePath() {
         return String.join("/", "", ROOT_NODE);
     }
 }
