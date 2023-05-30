@@ -29,11 +29,10 @@ import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.sel
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Optional;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 /**
  * Subquery table converter.
@@ -47,13 +46,8 @@ public final class SubqueryTableConverter implements SQLSegmentConverter<Subquer
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         if (null == segment.getSubquery().getSelect().getProjections()) {
-            List<Optional<SqlNode>> operandList = new LinkedList<>();
-            operandList.add(new TableConverter().convert(segment.getSubquery().getSelect().getFrom()));
-            List<SqlNode> result = operandList.stream()
-                    .flatMap(optional -> optional.map(Stream::of).orElseGet(Stream::empty))
-                    .collect(Collectors.toList());
-            sqlNodes.add(new SqlBasicCall(SqlStdOperatorTable.EXPLICIT_TABLE,
-                    result, SqlParserPos.ZERO));
+            List<SqlNode> tables = new TableConverter().convert(segment.getSubquery().getSelect().getFrom()).map(Collections::singletonList).orElseGet(Collections::emptyList);
+            sqlNodes.add(new SqlBasicCall(SqlStdOperatorTable.EXPLICIT_TABLE, tables, SqlParserPos.ZERO));
         } else {
             sqlNodes.add(new SelectStatementConverter().convert(segment.getSubquery().getSelect()));
         }
