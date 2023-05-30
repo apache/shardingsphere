@@ -44,12 +44,4 @@ public interface PipelineSink extends Closeable {
      * @return job progress updated parameter
      */
     PipelineJobProgressUpdatedParameter write(String ackId, List<Record> records);
-    
-    /**
-     * Connector type.
-     *
-     * @return connector type
-     */
-    // TODO now Remove getType()
-    String getType();
 }

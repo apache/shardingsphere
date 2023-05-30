@@ -124,10 +124,9 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
         return sourceMetaDataLoaderLazyInitializer.get();
     }
     
-    // TODO Use SPI, configurable
     @Override
     public PipelineSink getSink() {
-        return new PipelineDataSourceSink(dataSourceManager);
+        return new PipelineDataSourceSink(taskConfig.getImporterConfig(), dataSourceManager);
     }
     
     /**
