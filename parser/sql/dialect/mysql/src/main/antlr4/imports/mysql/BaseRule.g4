@@ -455,6 +455,7 @@ identifierKeywordsUnambiguous
     | SUSPEND
     | SWAPS
     | SWITCHES
+    | SYSTEM
     | TABLES
     | TABLESPACE
     | TABLE_CHECKSUM
