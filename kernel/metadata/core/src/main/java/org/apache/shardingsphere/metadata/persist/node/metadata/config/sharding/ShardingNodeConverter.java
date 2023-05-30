@@ -34,15 +34,15 @@ public final class ShardingNodeConverter {
     
     private static final String DEFAULT_STRATEGY = "default_strategy";
     
-    private static final String DEFAULT_DATABASE_STRATEGY = "defaultDatabaseStrategy";
+    private static final String DEFAULT_DATABASE_STRATEGY = "default_database_strategy";
     
-    private static final String DEFAULT_TABLE_STRATEGY = "defaultTableStrategy";
+    private static final String DEFAULT_TABLE_STRATEGY = "default_table_strategy";
     
-    private static final String DEFAULT_KEY_GENERATE_STRATEGY = "defaultKeyGenerateStrategy";
+    private static final String DEFAULT_KEY_GENERATE_STRATEGY = "default_key_generate_strategy";
     
-    private static final String DEFAULT_AUDIT_STRATEGY = "defaultAuditStrategy";
+    private static final String DEFAULT_AUDIT_STRATEGY = "default_audit_strategy";
     
-    private static final String DEFAULT_SHARDING_COLUMN = "defaultShardingColumn";
+    private static final String DEFAULT_SHARDING_COLUMN = "default_sharding_column";
     
     private static final String SHARDING_ALGORITHMS = "sharding_algorithms";
     

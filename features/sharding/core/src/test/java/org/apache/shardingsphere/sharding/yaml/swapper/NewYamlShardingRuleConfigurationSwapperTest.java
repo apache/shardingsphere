@@ -46,11 +46,11 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         assertThat(result.size(), is(7));
         Iterator<YamlDataNode> iterator = result.iterator();
         assertThat(iterator.next().getKey(), is("sharding/broadcast_tables"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/defaultDatabaseStrategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/defaultTableStrategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/defaultKeyGenerateStrategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/defaultAuditStrategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/defaultShardingColumn"));
+        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_database_strategy"));
+        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_table_strategy"));
+        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_key_generate_strategy"));
+        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_audit_strategy"));
+        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_sharding_column"));
         assertThat(iterator.next().getKey(), is("sharding/sharding_cache"));
     }
     
@@ -64,11 +64,11 @@ class NewYamlShardingRuleConfigurationSwapperTest {
         assertThat(iterator.next().getKey(), is("sharding/tables/table_SUB_LOGIC_TABLE"));
         assertThat(iterator.next().getKey(), is("sharding/binding_tables/binding_table_foo"));
         assertThat(iterator.next().getKey(), is("sharding/broadcast_tables"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/defaultDatabaseStrategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/defaultTableStrategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/defaultKeyGenerateStrategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/defaultAuditStrategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/defaultShardingColumn"));
+        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_database_strategy"));
+        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_table_strategy"));
+        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_key_generate_strategy"));
+        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_audit_strategy"));
+        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_sharding_column"));
         assertThat(iterator.next().getKey(), is("sharding/sharding_algorithms/core_standard_fixture"));
         assertThat(iterator.next().getKey(), is("sharding/key_generators/uuid"));
         assertThat(iterator.next().getKey(), is("sharding/key_generators/default"));
