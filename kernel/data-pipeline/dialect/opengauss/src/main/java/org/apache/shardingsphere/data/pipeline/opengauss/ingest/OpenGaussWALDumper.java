@@ -83,6 +83,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
         this.decodeWithTX = dumperConfig.isDecodeWithTX();
     }
     
+    @SneakyThrows(InterruptedException.class)
     @Override
     protected void runBlocking() {
         AtomicInteger reconnectTimes = new AtomicInteger();
@@ -92,6 +93,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
                 break;
             } catch (final SQLException ex) {
                 int times = reconnectTimes.incrementAndGet();
+                Thread.sleep(Math.min(15 * 1000L, 1000L << times));
                 log.error("Connect failed, reconnect times={}", times, ex);
                 if (times >= 5) {
                     throw new IngestException(ex);
