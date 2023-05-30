@@ -207,7 +207,7 @@ truncateTable
 
 createIndex
     : CREATE createIndexSpecification? INDEX indexName indexTypeClause? ON tableName keyListWithExpression indexOption?
-    (alterAlgorithmOption | alterLockOption)*
+    alterAlgorithmOption? alterLockOption?
     ;
 
 createDatabase

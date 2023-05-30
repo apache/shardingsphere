@@ -615,11 +615,11 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
         result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
         result.getColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
-        for (AlterAlgorithmOptionContext each : ctx.alterAlgorithmOption()) {
-            result.getAlgorithmSegment().add((AlgorithmTypeSegment) visit(each));
+        if (null != ctx.alterAlgorithmOption()) {
+            result.setAlgorithmSegment((AlgorithmTypeSegment) visit(ctx.alterAlgorithmOption()));
         }
-        for (AlterLockOptionContext each : ctx.alterLockOption()) {
-            result.getLockTableSegment().add((LockTableSegment) visit(each));
+        if (null != ctx.alterLockOption()) {
+            result.setLockTableSegment((LockTableSegment) visit(ctx.alterLockOption()));
         }
         return result;
     }
