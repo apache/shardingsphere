@@ -292,9 +292,9 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     /**
-     * Judge group by and order by sequence is same or not.
+     * Judge group is start with order or not.
      *
-     * @return group by and order by sequence is same or not
+     * @return group is start with order or not
      */
     public boolean isGroupByStartsWithOrderByItems() {
         if (groupByContext.getItems().isEmpty()) {
