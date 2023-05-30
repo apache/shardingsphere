@@ -24,12 +24,16 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.from.TableConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.statement.select.SelectStatementConverter;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Subquery table converter.
@@ -42,7 +46,17 @@ public final class SubqueryTableConverter implements SQLSegmentConverter<Subquer
             return Optional.empty();
         }
         Collection<SqlNode> sqlNodes = new LinkedList<>();
-        sqlNodes.add(new SelectStatementConverter().convert(segment.getSubquery().getSelect()));
+        if (null == segment.getSubquery().getSelect().getProjections()) {
+            List<Optional<SqlNode>> operandList = new LinkedList<>();
+            operandList.add(new TableConverter().convert(segment.getSubquery().getSelect().getFrom()));
+            List<SqlNode> result = operandList.stream()
+                    .flatMap(optional -> optional.map(Stream::of).orElseGet(Stream::empty))
+                    .collect(Collectors.toList());
+            sqlNodes.add(new SqlBasicCall(SqlStdOperatorTable.EXPLICIT_TABLE,
+                    result, SqlParserPos.ZERO));
+        } else {
+            sqlNodes.add(new SelectStatementConverter().convert(segment.getSubquery().getSelect()));
+        }
         segment.getAlias().ifPresent(optional -> sqlNodes.add(new SqlIdentifier(optional, SqlParserPos.ZERO)));
         return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new ArrayList<>(sqlNodes), SqlParserPos.ZERO));
     }
