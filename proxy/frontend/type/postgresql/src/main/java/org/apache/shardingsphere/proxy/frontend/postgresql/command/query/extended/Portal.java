@@ -191,14 +191,14 @@ public final class Portal {
     }
     
     private BinaryCell createBinaryCell(final QueryResponseCell cell) {
-        return new BinaryCell(PostgreSQLColumnType.valueOfJDBCType(cell.getJdbcType(), cell.getColumnTypeName()), getCellData(cell));
+        return new BinaryCell(PostgreSQLColumnType.valueOfJDBCType(cell.getJdbcType(), cell.getColumnTypeName().orElse(null)), getCellData(cell));
     }
     
     private Object getCellData(final QueryResponseCell cell) {
-        if (PostgreSQLColumnType.isPgBit(cell.getJdbcType(), cell.getColumnTypeName())) {
+        if (PostgreSQLColumnType.isPgBit(cell.getJdbcType(), cell.getColumnTypeName().orElse(null))) {
             return PostgreSQLTextBitUtils.getTextValue(cell.getData());
         }
-        if (PostgreSQLColumnType.isPgBool(cell.getJdbcType(), cell.getColumnTypeName())) {
+        if (PostgreSQLColumnType.isPgBool(cell.getJdbcType(), cell.getColumnTypeName().orElse(null))) {
             return PostgreSQLTextBoolUtils.getTextValue(cell.getData());
         }
         return cell.getData();
