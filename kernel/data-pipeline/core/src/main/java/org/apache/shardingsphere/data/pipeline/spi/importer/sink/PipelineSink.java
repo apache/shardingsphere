@@ -29,12 +29,12 @@ import java.util.List;
 public interface PipelineSink extends Closeable {
     
     /**
-     * Get connector.
+     * Identifier matched or not.
      *
-     * @return connector
+     * @param identifier sink identifier
+     * @return true if matched, otherwise false
      */
-    // TODO now Remove getConnector()
-    Object getConnector();
+    boolean identifierMatched(Object identifier);
     
     /**
      * Write data.

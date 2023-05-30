@@ -21,17 +21,16 @@ import com.google.common.base.Strings;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.api.pojo.StreamDataParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCConnectionContext;
-import org.apache.shardingsphere.data.pipeline.cdc.context.job.CDCJobItemContext;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckId;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporterManager;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.sink.CDCSocketSink;
+import org.apache.shardingsphere.data.pipeline.cdc.core.job.CDCJob;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCExceptionWrapper;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.CDCServerException;
 import org.apache.shardingsphere.data.pipeline.cdc.exception.NotFindStreamDataSourceTableException;
@@ -166,22 +165,14 @@ public final class CDCBackendHandler {
             log.warn("job id is null or empty, ignored");
             return;
         }
-        List<Integer> shardingItems = new ArrayList<>(PipelineJobCenter.getShardingItems(jobId));
-        if (shardingItems.isEmpty()) {
+        CDCJob job = (CDCJob) PipelineJobCenter.getJob(jobId);
+        if (null == job) {
             return;
         }
-        Optional<PipelineJobItemContext> jobItemContext = PipelineJobCenter.getJobItemContext(jobId, shardingItems.get(0));
-        if (!jobItemContext.isPresent()) {
-            return;
-        }
-        CDCJobItemContext cdcJobItemContext = (CDCJobItemContext) jobItemContext.get();
-        if (cdcJobItemContext.getSink() instanceof CDCSocketSink) {
-            Channel channel = (Channel) cdcJobItemContext.getSink().getConnector();
-            if (channelId.equals(channel.id())) {
-                log.info("close CDC job, channel id: {}", channelId);
-                PipelineJobCenter.stop(jobId);
-                jobAPI.updateJobConfigurationDisabled(jobId, true);
-            }
+        if (job.getSink().identifierMatched(channelId)) {
+            log.info("close CDC job, channel id: {}", channelId);
+            PipelineJobCenter.stop(jobId);
+            jobAPI.updateJobConfigurationDisabled(jobId, true);
         }
     }
     

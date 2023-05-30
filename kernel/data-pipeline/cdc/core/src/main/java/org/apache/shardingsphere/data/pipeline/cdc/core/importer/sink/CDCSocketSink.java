@@ -67,8 +67,8 @@ public final class CDCSocketSink implements PipelineSink {
     }
     
     @Override
-    public Object getConnector() {
-        return channel;
+    public boolean identifierMatched(final Object identifier) {
+        return channel.id().equals(identifier);
     }
     
     @Override

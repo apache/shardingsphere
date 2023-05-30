@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.job;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
@@ -52,6 +53,7 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     
+    @Getter
     private final PipelineSink sink;
     
     private final CDCJobAPI jobAPI = new CDCJobAPI();
