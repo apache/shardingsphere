@@ -19,13 +19,12 @@ package org.apache.shardingsphere.example.parser.sqlserver.statement;
 
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 public final class SQLServerParserStatementExample {
     
@@ -48,17 +47,18 @@ public final class SQLServerParserStatementExample {
     private static final List<String> SQLSERVER_PARSER_STATEMENT_LIST;
     
     static {
-        SQLSERVER_PARSER_STATEMENT_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_UPDATE_SQL, DML_DELETE_SQL,
-                DDL_CREATE_SQL, DDL_DROP_SQL, DDL_ALTER_SQL, DDL_TRUNCATE_SQL);
+        SQLSERVER_PARSER_STATEMENT_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_UPDATE_SQL, DML_DELETE_SQL, DDL_CREATE_SQL, DDL_DROP_SQL, DDL_ALTER_SQL, DDL_TRUNCATE_SQL);
     }
     
+    // CHECKSTYLE:OFF
     public static void main(String[] args) {
+        // CHECKSTYLE:ON
         SQLSERVER_PARSER_STATEMENT_LIST.forEach(sql -> {
             CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("SQLServer", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQLServer", "STATEMENT", false, new Properties());
-            SQLServerStatement sqlStatement = visitorEngine.visit(parseASTNode);
+            SQLStatementVisitorEngine visitorEngine = new SQLStatementVisitorEngine("SQLServer", false);
+            SQLStatement sqlStatement = visitorEngine.visit(parseASTNode);
             System.out.println(sqlStatement);
         });
     }

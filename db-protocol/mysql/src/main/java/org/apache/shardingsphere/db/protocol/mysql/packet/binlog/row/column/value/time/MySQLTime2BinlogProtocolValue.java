@@ -22,15 +22,18 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.valu
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.io.Serializable;
+import java.time.LocalTime;
 
 /**
  * TIME2 type value of MySQL binlog protocol.
+ * Stored as 3-byte value The number of decimals for the fractional part is stored in the table metadata as a one byte value.
+ * The number of bytes that follow the 3 byte time value can be calculated with the following formula: (decimals + 1) / 2
  *
  * <p>
- *     TIME2 type applied after MySQL 5.6.4.
+ * TIME2 type applied after MySQL 5.6.4.
  * </p>
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/field__types_8h.html">field type</a>
  */
 public final class MySQLTime2BinlogProtocolValue implements MySQLBinlogProtocolValue {
     
@@ -38,9 +41,12 @@ public final class MySQLTime2BinlogProtocolValue implements MySQLBinlogProtocolV
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int time = payload.getByteBuf().readUnsignedMedium();
         if (0x800000 == time) {
-            return MySQLTimeValueUtil.ZERO_OF_TIME;
+            return MySQLTimeValueUtils.ZERO_OF_TIME;
         }
         MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
-        return String.format("%02d:%02d:%02d%s", (time >> 12) % (1 << 10), (time >> 6) % (1 << 6), time % (1 << 6), fractionalSeconds);
+        int hour = (time >> 12) % (1 << 10);
+        int minute = (time >> 6) % (1 << 6);
+        int second = time % (1 << 6);
+        return LocalTime.of(hour, minute, second).withNano(fractionalSeconds.getNanos());
     }
 }

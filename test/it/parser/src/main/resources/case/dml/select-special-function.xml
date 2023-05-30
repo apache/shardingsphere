@@ -62,6 +62,25 @@
             </expression-projection>
         </projections>
     </select>
+    <select sql-case-id="select_cast">
+        <projections start-index="7" stop-index="44">
+            <expression-projection text="CAST(c AT TIME ZONE 'UTC' AS DATETIME)" start-index="7" stop-index="44">
+                <expr>
+                    <function function-name="CAST" start-index="7" stop-index="44" text="CAST(c AT TIME ZONE 'UTC' AS DATETIME)">
+                        <parameter>
+                            <column name="c" start-index="12" stop-index="12" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="UTC" start-index="27" stop-index="31" />
+                        </parameter>
+                        <parameter>
+                            <data-type value="DATETIME" start-index="36" stop-index="43" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
     <select sql-case-id="select_convert_function">
         <projections start-index="7" stop-index="33">
             <expression-projection text="CONVERT('2020-10-01', DATE)" start-index="7" stop-index="33">
@@ -91,7 +110,14 @@
         <projections start-index="7" stop-index="35">
             <expression-projection text="SUBSTRING('foobarbar' from 4)" start-index="7" stop-index="35">
                 <expr>
-                    <function function-name="SUBSTRING" start-index="7" stop-index="35" text="SUBSTRING('foobarbar' from 4)" />
+                    <function function-name="SUBSTRING" start-index="7" stop-index="35" text="SUBSTRING('foobarbar' from 4)" >
+                        <parameter>
+                            <literal-expression value="foobarbar" start-index="17" stop-index="27" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="4" start-index="34" stop-index="34" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -105,7 +131,7 @@
                             <literal-expression value="YEAR" start-index="15" stop-index="18" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="2019-07-02" start-index="23" stop-index="32" />
+                            <literal-expression value="2019-07-02" start-index="25"  stop-index="36" />
                         </parameter>
                     </function>
                 </expr>
@@ -116,7 +142,23 @@
         <projections start-index="7" stop-index="29">
             <expression-projection text="CHAR(77,121,83,81,'76')" start-index="7" stop-index="29">
                 <expr>
-                    <function function-name="CHAR" start-index="7" stop-index="29" text="CHAR(77,121,83,81,'76')" />
+                    <function function-name="CHAR" start-index="7" stop-index="29" text="CHAR(77,121,83,81,'76')" >
+                        <parameter>
+                            <literal-expression value="77" start-index="12" stop-index="13" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="121" start-index="15" stop-index="17" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="83" start-index="19" stop-index="20" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="81" start-index="22" stop-index="23" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="76" start-index="25" stop-index="28" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -125,16 +167,46 @@
         <projections start-index="7" stop-index="22">
             <expression-projection text="TRIM('  bar   ')" start-index="7" stop-index="22">
                 <expr>
-                    <function function-name="TRIM" start-index="7" stop-index="22" text="TRIM('  bar   ')" />
+                    <function function-name="TRIM" start-index="7" stop-index="22" text="TRIM('  bar   ')">
+                        <parameter>
+                            <literal-expression value="  bar   " start-index="12" stop-index="21" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    <select sql-case-id="select_trim_with_both">
+        <projections start-index="7" stop-index="33">
+            <expression-projection text="TRIM(BOTH ' ' from ' bar ')" start-index="7" stop-index="33">
+                <expr>
+                    <function function-name="TRIM" start-index="7" stop-index="33" text="TRIM(BOTH ' ' from ' bar ')" >
+                        <parameter>
+                            <literal-expression value="BOTH" start-index="12" stop-index="15" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value=" " start-index="17" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value=" bar " start-index="26" stop-index="32" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
     </select>
     <select sql-case-id="select_with_trim_expr">
         <projections start-index="7" stop-index="27">
-            <expression-projection text="trim('#' from `name`)" start-index="7" stop-index="27">
+            <expression-projection text="TRIM('#' FROM `name`)" start-index="7" stop-index="27">
                 <expr>
-                    <function function-name="trim" start-index="7" stop-index="27" text="trim('#' from `name`)" />
+                    <function function-name="TRIM" start-index="7" stop-index="27" text="TRIM('#' FROM `name`)" >
+                        <parameter>
+                            <literal-expression value="#" start-index="12" stop-index="14" />
+                        </parameter>
+                        <parameter>
+                            <column name="name" start-delimiter="`" end-delimiter="`" start-index="21" stop-index="26" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -142,11 +214,40 @@
             <simple-table name="t_order" start-index="34" stop-index="40" />
         </from>
     </select>
+    <select sql-case-id="select_with_trim_expr_and_both">
+        <projections start-index="7" stop-index="32">
+            <expression-projection text="TRIM(BOTH '#' FROM `name`)" start-index="7" stop-index="32">
+                <expr>
+                    <function function-name="TRIM" start-index="7" stop-index="32" text="TRIM(BOTH '#' FROM `name`)" >
+                        <parameter>
+                            <literal-expression value="BOTH" start-index="12" stop-index="15" />
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="#" start-index="17" stop-index="19" />
+                        </parameter>
+                        <parameter>
+                            <column name="name" start-delimiter="`" end-delimiter="`" start-index="26" stop-index="31" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-delimiter="`" end-delimiter="`" start-index="39" stop-index="47" />
+        </from>
+    </select>
     <select sql-case-id="select_with_trim_expr_from_expr">
         <projections start-index="7" stop-index="33">
-            <expression-projection text="trim(remove_name from name)" start-index="7" stop-index="33">
+            <expression-projection text="TRIM(remove_name FROM name)" start-index="7" stop-index="33">
                 <expr>
-                    <function function-name="trim" start-index="7" stop-index="33" text="trim(remove_name from name)" />
+                    <function function-name="TRIM" start-index="7" stop-index="33" text="TRIM(remove_name FROM name)" >
+                        <parameter>
+                            <column name="remove_name" start-index="12" stop-index="22" />
+                        </parameter>
+                        <parameter>
+                            <column name="name" start-index="29" stop-index="32" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>
@@ -154,11 +255,37 @@
             <simple-table name="t_order" start-index="40" stop-index="46" />
         </from>
     </select>
+    <select sql-case-id="select_with_trim_expr_from_expr_and_both">
+        <projections start-index="7" stop-index="42">
+            <expression-projection text="TRIM(BOTH `remove_name` FROM `name`)" start-index="7" stop-index="42">
+                <expr>
+                    <function function-name="TRIM" start-index="7" stop-index="42" text="TRIM(BOTH `remove_name` FROM `name`)" >
+                        <parameter>
+                            <literal-expression value="BOTH" start-index="12" stop-index="15" />
+                        </parameter>
+                        <parameter>
+                            <column name="remove_name" start-delimiter="`" end-delimiter="`" start-index="17" stop-index="29" />
+                        </parameter>
+                        <parameter>
+                            <column name="name" start-delimiter="`" end-delimiter="`" start-index="36" stop-index="41" />
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-delimiter="`" end-delimiter="`" start-index="49" stop-index="57" />
+        </from>
+    </select>
     <select sql-case-id="select_weight_string">
         <projections start-index="7" stop-index="26">
             <expression-projection text="WEIGHT_STRING('bar')" start-index="7" stop-index="26">
                 <expr>
-                    <function function-name="WEIGHT_STRING" start-index="7" stop-index="26" text="WEIGHT_STRING('bar')" />
+                    <function function-name="WEIGHT_STRING" start-index="7" stop-index="26" text="WEIGHT_STRING('bar')" >
+                        <parameter>
+                            <literal-expression value="bar" start-index="21" stop-index="25" />
+                        </parameter>
+                    </function>
                 </expr>
             </expression-projection>
         </projections>

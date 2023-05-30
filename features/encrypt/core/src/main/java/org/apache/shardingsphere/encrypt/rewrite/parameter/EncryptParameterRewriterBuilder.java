@@ -49,11 +49,10 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
     
     private final Map<String, ShardingSphereSchema> schemas;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     private final Collection<EncryptCondition> encryptConditions;
     
-    @SuppressWarnings("rawtypes")
     @Override
     public Collection<ParameterRewriter> getParameterRewriters() {
         Collection<ParameterRewriter> result = new LinkedList<>();
@@ -64,14 +63,13 @@ public final class EncryptParameterRewriterBuilder implements ParameterRewriterB
         return result;
     }
     
-    private void addParameterRewriter(final Collection<ParameterRewriter> paramRewriters, final ParameterRewriter<?> toBeAddedParamRewriter) {
+    private void addParameterRewriter(final Collection<ParameterRewriter> paramRewriters, final ParameterRewriter toBeAddedParamRewriter) {
         if (toBeAddedParamRewriter.isNeedRewrite(sqlStatementContext)) {
             setUpParameterRewriter(toBeAddedParamRewriter);
             paramRewriters.add(toBeAddedParamRewriter);
         }
     }
     
-    @SuppressWarnings("rawtypes")
     private void setUpParameterRewriter(final ParameterRewriter toBeAddedParamRewriter) {
         if (toBeAddedParamRewriter instanceof SchemaMetaDataAware) {
             ((SchemaMetaDataAware) toBeAddedParamRewriter).setSchemas(schemas);

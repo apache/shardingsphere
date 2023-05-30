@@ -20,8 +20,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.jdbc;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,25 +32,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class AbstractExecuteCountAdviceTest {
+class AbstractExecuteCountAdviceTest {
     
     private final MetricConfiguration config = new MetricConfiguration("jdbc_statement_execute_total", MetricCollectorType.COUNTER,
             "Total number of statement execute", Collections.singletonList("statement_type"));
     
     @AfterEach
-    public void reset() {
+    void reset() {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertWithStatement() {
+    void assertWithStatement() {
         StatementExecuteCountAdvice advice = new StatementExecuteCountAdvice();
         advice.afterMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, null, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("statement=1"));
     }
     
     @Test
-    public void assertWithPreparedStatement() {
+    void assertWithPreparedStatement() {
         PreparedStatementExecuteCountAdvice advice = new PreparedStatementExecuteCountAdvice();
         advice.afterMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{}, null, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is("prepared_statement=1"));

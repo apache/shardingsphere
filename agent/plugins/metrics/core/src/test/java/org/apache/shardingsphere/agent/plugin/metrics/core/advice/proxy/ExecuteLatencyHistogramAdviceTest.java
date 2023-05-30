@@ -22,33 +22,51 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollecto
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.admin.quit.MySQLComQuitExecutor;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.mockito.Mockito.mock;
 
-public final class ExecuteLatencyHistogramAdviceTest {
+class ExecuteLatencyHistogramAdviceTest {
     
     private final MetricConfiguration config = new MetricConfiguration("proxy_execute_latency_millis", MetricCollectorType.HISTOGRAM, null, Collections.emptyList(), Collections.emptyMap());
     
     @AfterEach
-    public void reset() {
+    void reset() {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertExecuteLatencyHistogram() throws InterruptedException {
+    void assertExecuteLatencyHistogramWhenQueryCommandExecutor() {
         ExecuteLatencyHistogramAdvice advice = new ExecuteLatencyHistogramAdvice();
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
         Method method = mock(Method.class);
-        advice.beforeMethod(targetObject, method, new Object[]{}, "FIXTURE");
-        Thread.sleep(500L);
-        advice.afterMethod(targetObject, method, new Object[]{}, null, "FIXTURE");
-        assertThat(Double.parseDouble(MetricsCollectorRegistry.get(config, "FIXTURE").toString()), greaterThanOrEqualTo(500d));
+        Object[] args = new Object[]{null, null, mock(MySQLComQueryPacketExecutor.class)};
+        advice.beforeMethod(targetObject, method, args, "FIXTURE");
+        Awaitility.await().pollDelay(500L, TimeUnit.MILLISECONDS).until(() -> true);
+        advice.afterMethod(targetObject, method, args, null, "FIXTURE");
+        assertThat(Double.parseDouble(MetricsCollectorRegistry.get(config, "FIXTURE").toString()), greaterThanOrEqualTo(500D));
+    }
+    
+    @Test
+    void assertExecuteLatencyHistogramWhenNotQueryCommandExecutor() {
+        ExecuteLatencyHistogramAdvice advice = new ExecuteLatencyHistogramAdvice();
+        TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
+        Method method = mock(Method.class);
+        Object[] args = new Object[]{null, null, mock(MySQLComQuitExecutor.class)};
+        advice.beforeMethod(targetObject, method, args, "FIXTURE");
+        Awaitility.await().pollDelay(20L, TimeUnit.MILLISECONDS).until(() -> true);
+        advice.afterMethod(targetObject, method, args, null, "FIXTURE");
+        assertThat(Double.parseDouble(MetricsCollectorRegistry.get(config, "FIXTURE").toString()), equalTo(0D));
     }
 }

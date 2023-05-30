@@ -1,12 +1,12 @@
 +++
 title = "ALTER MIGRATION RULE"
-weight = 3
+weight = 2
 
 +++
 
 ### 描述
 
-`ALTER MIGRATION RULE` 语法用于修改数据迁移规则
+`ALTER MIGRATION RULE` 语法用于修改数据迁移规则。
 ### 语法
 
 {{< tabs >}}

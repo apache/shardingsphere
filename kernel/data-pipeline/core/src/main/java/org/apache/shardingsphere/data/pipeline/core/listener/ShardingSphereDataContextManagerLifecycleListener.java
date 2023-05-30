@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.listener;
 
 import org.apache.shardingsphere.data.pipeline.core.execute.ShardingSphereDataJobWorker;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 
@@ -28,13 +28,17 @@ import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleLi
 public final class ShardingSphereDataContextManagerLifecycleListener implements ContextManagerLifecycleListener {
     
     @Override
-    public void onInitialized(final ModeConfiguration modeConfig, final ContextManager contextManager) {
-        if (null == modeConfig) {
-            return;
-        }
+    public void onInitialized(final String databaseName, final ContextManager contextManager) {
         if (!contextManager.getInstanceContext().isCluster()) {
             return;
         }
+        if (InstanceType.PROXY != contextManager.getInstanceContext().getInstance().getMetaData().getType()) {
+            return;
+        }
         ShardingSphereDataJobWorker.initialize(contextManager);
+    }
+    
+    @Override
+    public void onDestroyed(final String databaseName, final InstanceType instanceType) {
     }
 }

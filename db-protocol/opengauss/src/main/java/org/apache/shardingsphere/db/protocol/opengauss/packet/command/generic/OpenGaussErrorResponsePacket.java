@@ -30,7 +30,7 @@ import java.util.Map.Entry;
 /**
  * Error response packet for openGauss.
  */
-public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierPacket {
+public final class OpenGaussErrorResponsePacket extends PostgreSQLIdentifierPacket {
     
     public static final char FIELD_TYPE_SEVERITY = 'S';
     
@@ -61,13 +61,13 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
     private final Map<Character, String> fields;
     
     public OpenGaussErrorResponsePacket(final ServerErrorMessage serverErrorMessage) {
-        fields = new LinkedHashMap<>(13, 1);
+        fields = new LinkedHashMap<>(13, 1F);
         fillFieldsByServerErrorMessage(serverErrorMessage);
         fillRequiredFieldsIfNecessary();
     }
     
     public OpenGaussErrorResponsePacket(final String severityLevel, final String sqlState, final String message) {
-        fields = new LinkedHashMap<>(4, 1);
+        fields = new LinkedHashMap<>(4, 1F);
         fields.put(FIELD_TYPE_SEVERITY, severityLevel);
         fields.put(FIELD_TYPE_CODE, sqlState);
         fields.put(FIELD_TYPE_MESSAGE, message);
@@ -94,10 +94,10 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
             fields.put(FIELD_TYPE_HINT, serverErrorMessage.getHint());
         }
         if (serverErrorMessage.getPosition() > 0) {
-            fields.put(FIELD_TYPE_POSITION, serverErrorMessage.getPosition() + "");
+            fields.put(FIELD_TYPE_POSITION, String.valueOf(serverErrorMessage.getPosition()));
         }
         if (serverErrorMessage.getInternalPosition() > 0) {
-            fields.put(FIELD_TYPE_INTERNAL_POSITION, serverErrorMessage.getInternalPosition() + "");
+            fields.put(FIELD_TYPE_INTERNAL_POSITION, String.valueOf(serverErrorMessage.getInternalPosition()));
         }
         if (null != serverErrorMessage.getInternalQuery()) {
             fields.put(FIELD_TYPE_INTERNAL_QUERY, serverErrorMessage.getInternalQuery());
@@ -109,7 +109,7 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
             fields.put(FIELD_TYPE_FILE, serverErrorMessage.getFile());
         }
         if (serverErrorMessage.getLine() > 0) {
-            fields.put(FIELD_TYPE_LINE, serverErrorMessage.getLine() + "");
+            fields.put(FIELD_TYPE_LINE, String.valueOf(serverErrorMessage.getLine()));
         }
         if (null != serverErrorMessage.getRoutine()) {
             fields.put(FIELD_TYPE_ROUTINE, serverErrorMessage.getRoutine());
@@ -121,7 +121,7 @@ public final class OpenGaussErrorResponsePacket implements PostgreSQLIdentifierP
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         for (Entry<Character, String> entry : fields.entrySet()) {
             payload.writeInt1(entry.getKey());
             payload.writeStringNul(entry.getValue());

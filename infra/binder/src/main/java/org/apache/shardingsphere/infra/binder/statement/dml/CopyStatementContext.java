@@ -30,13 +30,18 @@ import java.util.Collection;
  * Copy statement context.
  */
 @Getter
-public final class CopyStatementContext extends CommonSQLStatementContext<CopyStatement> implements TableAvailable {
+public final class CopyStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
     public CopyStatementContext(final CopyStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTableSegment(), getDatabaseType());
+    }
+    
+    @Override
+    public CopyStatement getSqlStatement() {
+        return (CopyStatement) super.getSqlStatement();
     }
     
     @Override

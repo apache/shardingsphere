@@ -51,12 +51,7 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
     
     private final SQLStatement sqlStatement;
     
-    /**
-     * Route for single table.
-     *
-     * @param routeContext route context
-     * @param singleRule single rule
-     */
+    @Override
     public void route(final RouteContext routeContext, final SingleRule singleRule) {
         if (routeContext.getRouteUnits().isEmpty() || sqlStatement instanceof SelectStatement) {
             route0(routeContext, singleRule);
@@ -83,14 +78,15 @@ public final class SingleStandardRouteEngine implements SingleRouteEngine {
         if (sqlStatement instanceof CreateTableStatement) {
             QualifiedTable table = singleTableNames.iterator().next();
             Optional<DataNode> dataNodeOptional = rule.findSingleTableDataNode(table.getSchemaName(), table.getTableName());
-            if (!dataNodeOptional.isPresent()) {
-                String dataSourceName = rule.assignNewDataSourceName();
-                routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
-            } else if (CreateTableStatementHandler.ifNotExists((CreateTableStatement) sqlStatement)) {
+            boolean containsIfNotExists = CreateTableStatementHandler.ifNotExists((CreateTableStatement) sqlStatement);
+            if (dataNodeOptional.isPresent() && containsIfNotExists) {
                 String dataSourceName = dataNodeOptional.map(DataNode::getDataSourceName).orElse(null);
                 routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
-            } else {
+            } else if (dataNodeOptional.isPresent()) {
                 throw new TableExistsException(table.getTableName());
+            } else {
+                String dataSourceName = rule.assignNewDataSourceName();
+                routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(table.getTableName(), table.getTableName()))));
             }
         } else if (sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement || rule.isAllTablesInSameDataSource(routeContext, singleTableNames)) {
             fillRouteContext(rule, routeContext, rule.getSingleTableNames(singleTableNames));

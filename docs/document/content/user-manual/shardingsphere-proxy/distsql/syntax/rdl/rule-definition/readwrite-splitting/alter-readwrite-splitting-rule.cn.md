@@ -1,11 +1,11 @@
 +++
 title = "ALTER READWRITE_SPLITTING RULE"
-weight = 3
+weight = 2
 +++
 
 ## 描述
 
-`ALTER READWRITE_SPLITTING RULE` 语法用于修改读写分离规则
+`ALTER READWRITE_SPLITTING RULE` 语法用于修改读写分离规则。
 
 ### 语法定义
 
@@ -16,13 +16,13 @@ AlterReadwriteSplittingRule ::=
   'ALTER' 'READWRITE_SPLITTING' 'RULE' readwriteSplittingDefinition (',' readwriteSplittingDefinition)*
 
 readwriteSplittingDefinition ::=
-  ruleName '(' (staticReadwriteSplittingDefinition | dynamicReadwriteSplittingDefinition) (',' loadBalancerDefinition)? ')'
+  ruleName '(' dataSourceDefinition (',' transactionalReadQueryStrategyDefinition)? (',' loadBalancerDefinition)? ')'
 
-staticReadwriteSplittingDefinition ::=
-    'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')'
+dataSourceDefinition ::=
+    'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')' 
 
-dynamicReadwriteSplittingDefinition ::=
-    'AUTO_AWARE_RESOURCE' '=' resourceName
+transactionalReadQueryStrategyDefinition ::=
+    'TRANSACTIONAL_READ_QUERY_STRATEGY' '=' transactionalReadQueryStrategyType
 
 loadBalancerDefinition ::=
     'TYPE' '(' 'NAME' '=' loadBalancerType (',' propertiesDefinition)? ')'
@@ -36,9 +36,9 @@ writeStorageUnitName ::=
 storageUnitName ::=
   identifier
 
-resourceName ::=
-  identifier
-    
+transactionalReadQueryStrategyType ::=
+  string
+
 loadBalancerType ::=
   string
 
@@ -59,12 +59,12 @@ value ::=
 
 ### 补充说明
 
-- 动态读写分离规则依赖于数据库发现规则；
-- `loadBalancerType` 指定负载均衡算法类型，请参考[负载均衡算法]((/cn/user-manual/common-config/builtin-algorithm/load-balance/))；
+- `transactionalReadQueryStrategyType` 指定事务内读请求路由策略，请参考[YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting/)；
+- `loadBalancerType` 指定负载均衡算法类型，请参考[负载均衡算法]((/cn/user-manual/common-config/builtin-algorithm/load-balance/))。
 
 ### 示例
 
-#### 修改静态读写分离规则
+#### 修改读写分离规则
 
 ```sql
 ALTER READWRITE_SPLITTING RULE ms_group_0 (
@@ -74,18 +74,9 @@ ALTER READWRITE_SPLITTING RULE ms_group_0 (
 );
 ```
 
-#### 修改动态读写分离规则
-
-```sql
-ALTER READWRITE_SPLITTING RULE ms_group_1 (
-    AUTO_AWARE_RESOURCE=group_0
-    TYPE(NAME="random")
-);
-```
-
 ### 保留字
 
-`ALTER`、`READWRITE_SPLITTING`、`RULE`、`WRITE_STORAGE_UNIT`、`READ_STORAGE_UNITS`、`AUTO_AWARE_RESOURCE`
+`ALTER`、`READWRITE_SPLITTING`、`RULE`、`WRITE_STORAGE_UNIT`、`READ_STORAGE_UNITS`
 、`TYPE`、`NAME`、`PROPERTIES`、`TRUE`、`FALSE`
 
 ### 相关链接

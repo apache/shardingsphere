@@ -53,8 +53,8 @@ public final class ResponsePacketBuilder {
      * @param statusFlags server status flags
      * @return query response packets
      */
-    public static Collection<DatabasePacket<?>> buildQueryResponsePackets(final QueryResponseHeader queryResponseHeader, final int characterSet, final int statusFlags) {
-        Collection<DatabasePacket<?>> result = new LinkedList<>();
+    public static Collection<DatabasePacket> buildQueryResponsePackets(final QueryResponseHeader queryResponseHeader, final int characterSet, final int statusFlags) {
+        Collection<DatabasePacket> result = new LinkedList<>();
         List<QueryHeader> queryHeaders = queryResponseHeader.getQueryHeaders();
         result.add(new MySQLFieldCountPacket(queryHeaders.size()));
         for (QueryHeader each : queryHeaders) {
@@ -92,7 +92,7 @@ public final class ResponsePacketBuilder {
      * @param serverStatusFlag server status flag
      * @return update response packets
      */
-    public static Collection<DatabasePacket<?>> buildUpdateResponsePackets(final UpdateResponseHeader updateResponseHeader, final int serverStatusFlag) {
-        return Collections.singletonList(new MySQLOKPacket(updateResponseHeader.getUpdateCount(), updateResponseHeader.getLastInsertId(), serverStatusFlag));
+    public static Collection<DatabasePacket> buildUpdateResponsePackets(final UpdateResponseHeader updateResponseHeader, final int serverStatusFlag) {
+        return Collections.singleton(new MySQLOKPacket(updateResponseHeader.getUpdateCount(), updateResponseHeader.getLastInsertId(), serverStatusFlag));
     }
 }

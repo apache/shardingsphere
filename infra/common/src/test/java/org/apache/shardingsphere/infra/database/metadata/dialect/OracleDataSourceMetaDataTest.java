@@ -24,10 +24,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class OracleDataSourceMetaDataTest {
+class OracleDataSourceMetaDataTest {
     
     @Test
-    public void assertNewConstructorWithPort() {
+    void assertNewConstructorWithPort() {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@//127.0.0.1:9999/ds_0", "test");
         assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
@@ -36,7 +36,7 @@ public final class OracleDataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorWithDomainPort() {
+    void assertNewConstructorWithDomainPort() {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:oci:@axxx.frex.cc:9999/ds_0", "test");
         assertThat(actual.getHostname(), is("axxx.frex.cc"));
         assertThat(actual.getPort(), is(9999));
@@ -45,7 +45,7 @@ public final class OracleDataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorWithHalfenDomainPort() {
+    void assertNewConstructorWithHalfenDomainPort() {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:oci:@ax-xx.frex.cc:9999/ds_0", "test");
         assertThat(actual.getHostname(), is("ax-xx.frex.cc"));
         assertThat(actual.getPort(), is(9999));
@@ -54,7 +54,7 @@ public final class OracleDataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorWithIpDefaultPort() {
+    void assertNewConstructorWithIpDefaultPort() {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/ds_0", "test");
         assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(1521));
@@ -62,7 +62,7 @@ public final class OracleDataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorWithDomainDefaultPort() {
+    void assertNewConstructorWithDomainDefaultPort() {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:oci:@axxx.frex.cc/ds_0", "test");
         assertThat(actual.getHostname(), is("axxx.frex.cc"));
         assertThat(actual.getPort(), is(1521));
@@ -70,7 +70,7 @@ public final class OracleDataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorWithHalfenDomainDefaultPort() {
+    void assertNewConstructorWithHalfenDomainDefaultPort() {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:oci:@ax-xx.frex.cc/ds_0", "test");
         assertThat(actual.getHostname(), is("ax-xx.frex.cc"));
         assertThat(actual.getPort(), is(1521));
@@ -78,7 +78,7 @@ public final class OracleDataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorWithConnectDescriptorIpUrl() {
+    void assertNewConstructorWithConnectDescriptorIpUrl() {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = 172.16.0.12)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)"
                 + "(HOST = 172.16.0.22)(PORT = 1521))(LOAD_BALANCE = yes)(FAILOVER = ON)(CONNECT_DATA =(SERVER = DEDICATED)"
                 + "(SERVICE_NAME = rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "test");
@@ -89,7 +89,7 @@ public final class OracleDataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorWithConnectDescriptorDomainUrl() {
+    void assertNewConstructorWithConnectDescriptorDomainUrl() {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = axxx.frex.cc)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)"
                 + "(HOST = axxx.frex.cc)(PORT = 1521))(LOAD_BALANCE = yes)(FAILOVER = ON)(CONNECT_DATA =(SERVER = DEDICATED)"
                 + "(SERVICE_NAME = rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "test");
@@ -100,7 +100,7 @@ public final class OracleDataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorWithConnectDescriptorHalfenDomainUrl() {
+    void assertNewConstructorWithConnectDescriptorHalfenDomainUrl() {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = ax-xx.frex.cc)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)"
                 + "(HOST = ax-xx.frex.cc)(PORT = 1521))(LOAD_BALANCE = yes)(FAILOVER = ON)(CONNECT_DATA =(SERVER = DEDICATED)"
                 + "(SERVICE_NAME = rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "test");
@@ -111,12 +111,12 @@ public final class OracleDataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorFailure() {
+    void assertNewConstructorFailure() {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> new OracleDataSourceMetaData("jdbc:oracle:xxxxxxxx", "test"));
     }
     
     @Test
-    public void assertNewConstructorWithConnectDescriptorUrlWithExtraSpaces() {
+    void assertNewConstructorWithConnectDescriptorUrlWithExtraSpaces() {
         OracleDataSourceMetaData actual = new OracleDataSourceMetaData("jdbc:oracle:thin:@(DESCRIPTION = description"
                 + "(HOST   =   172.16.0.22)(PORT   =  1521))(LOAD_BALANCE = yes)(FAILOVER = ON)(CONNECT_DATA =(SERVER = DEDICATED)"
                 + "(SERVICE_NAME   =   rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "test");

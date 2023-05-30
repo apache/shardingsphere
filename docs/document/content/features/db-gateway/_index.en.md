@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.5. </b>"
+pre = "<b>3.4. </b>"
 title = "DB Gateway"
-weight = 5
+weight = 4
 chapter = true
 +++
 

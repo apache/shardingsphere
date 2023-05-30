@@ -44,7 +44,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class UpdateStatementContextTest {
+class UpdateStatementContextTest {
     
     @Mock
     private WhereSegment whereSegment;
@@ -53,7 +53,7 @@ public final class UpdateStatementContextTest {
     private ColumnSegment columnSegment;
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         when(columnSegment.getOwner()).thenReturn(Optional.of(new OwnerSegment(0, 0, new IdentifierValue("tbl_2"))));
         BinaryOperationExpression expression = new BinaryOperationExpression(0, 0, columnSegment, null, null, null);
         when(whereSegment.getExpr()).thenReturn(expression);

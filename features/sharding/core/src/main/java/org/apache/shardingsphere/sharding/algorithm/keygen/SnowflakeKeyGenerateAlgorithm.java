@@ -26,8 +26,13 @@ import org.apache.shardingsphere.sharding.exception.algorithm.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.exception.algorithm.keygen.SnowflakeClockMoveBackException;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Snowflake key generate algorithm.
@@ -46,13 +51,13 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private static final String MAX_VIBRATION_OFFSET_KEY = "max-vibration-offset";
     
-    private static final String MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS_KEY = "max-tolerate-time-difference-milliseconds";
+    private static final String MAX_TOLERATE_TIME_DIFFERENCE_MILLIS_KEY = "max-tolerate-time-difference-milliseconds";
     
     private static final long SEQUENCE_BITS = 12L;
     
     private static final long WORKER_ID_BITS = 10L;
     
-    private static final long SEQUENCE_MASK = (1 << SEQUENCE_BITS) - 1;
+    private static final long SEQUENCE_MASK = (1 << SEQUENCE_BITS) - 1L;
     
     private static final long WORKER_ID_LEFT_SHIFT_BITS = SEQUENCE_BITS;
     
@@ -60,50 +65,36 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private static final int DEFAULT_VIBRATION_VALUE = 1;
     
-    private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10;
+    private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLIS = 10;
     
     private static final int DEFAULT_WORKER_ID = 0;
     
     @Setter
     private static TimeService timeService = new TimeService();
     
+    private final AtomicReference<InstanceContext> instanceContext = new AtomicReference<>();
+    
+    private final AtomicInteger sequenceOffset = new AtomicInteger(-1);
+    
+    private final AtomicLong sequence = new AtomicLong();
+    
+    private final AtomicLong lastMillis = new AtomicLong();
+    
     private Properties props;
     
     private int maxVibrationOffset;
     
-    private int maxTolerateTimeDifferenceMilliseconds;
-    
-    private volatile int sequenceOffset = -1;
-    
-    private volatile long sequence;
-    
-    private volatile long lastMilliseconds;
-    
-    private volatile InstanceContext instanceContext;
+    private int maxTolerateTimeDifferenceMillis;
     
     static {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(2016, Calendar.NOVEMBER, 1);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        EPOCH = calendar.getTimeInMillis();
+        EPOCH = LocalDateTime.of(2016, 11, 1, 0, 0, 0).toInstant(ZoneId.systemDefault().getRules().getOffset(Instant.now())).toEpochMilli();
     }
     
     @Override
     public void init(final Properties props) {
         this.props = props;
         maxVibrationOffset = getMaxVibrationOffset(props);
-        maxTolerateTimeDifferenceMilliseconds = getMaxTolerateTimeDifferenceMilliseconds(props);
-    }
-    
-    @Override
-    public void setInstanceContext(final InstanceContext instanceContext) {
-        this.instanceContext = instanceContext;
-        if (null != instanceContext) {
-            instanceContext.generateWorkerId(props);
-        }
+        maxTolerateTimeDifferenceMillis = getMaxTolerateTimeDifferenceMillis(props);
     }
     
     private int getMaxVibrationOffset(final Properties props) {
@@ -112,36 +103,47 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
         return result;
     }
     
-    private int getMaxTolerateTimeDifferenceMilliseconds(final Properties props) {
-        return Integer.parseInt(props.getOrDefault(MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS_KEY, MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS).toString());
+    private int getMaxTolerateTimeDifferenceMillis(final Properties props) {
+        int result = Integer.parseInt(props.getOrDefault(MAX_TOLERATE_TIME_DIFFERENCE_MILLIS_KEY, MAX_TOLERATE_TIME_DIFFERENCE_MILLIS).toString());
+        ShardingSpherePreconditions.checkState(result >= 0, () -> new KeyGenerateAlgorithmInitializationException(getType(), "Illegal max tolerate time difference milliseconds."));
+        return result;
+    }
+    
+    @Override
+    public void setInstanceContext(final InstanceContext instanceContext) {
+        this.instanceContext.set(instanceContext);
+        if (null != instanceContext) {
+            instanceContext.generateWorkerId(props);
+        }
     }
     
     @Override
     public synchronized Long generateKey() {
-        long currentMilliseconds = timeService.getCurrentMillis();
-        if (waitTolerateTimeDifferenceIfNeed(currentMilliseconds)) {
-            currentMilliseconds = timeService.getCurrentMillis();
+        long currentMillis = timeService.getCurrentMillis();
+        if (waitTolerateTimeDifferenceIfNeed(currentMillis)) {
+            currentMillis = timeService.getCurrentMillis();
         }
-        if (lastMilliseconds == currentMilliseconds) {
-            if (0L == (sequence = (sequence + 1) & SEQUENCE_MASK)) {
-                currentMilliseconds = waitUntilNextTime(currentMilliseconds);
+        if (lastMillis.get() == currentMillis) {
+            sequence.set(sequence.incrementAndGet() & SEQUENCE_MASK);
+            if (0L == sequence.get()) {
+                currentMillis = waitUntilNextTime(currentMillis);
             }
         } else {
             vibrateSequenceOffset();
-            sequence = sequenceOffset;
+            sequence.set(sequenceOffset.get());
         }
-        lastMilliseconds = currentMilliseconds;
-        return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | ((long) getWorkerId() << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
+        lastMillis.set(currentMillis);
+        return ((currentMillis - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | ((long) getWorkerId() << WORKER_ID_LEFT_SHIFT_BITS) | sequence.get();
     }
     
     @SneakyThrows(InterruptedException.class)
-    private boolean waitTolerateTimeDifferenceIfNeed(final long currentMilliseconds) {
-        if (lastMilliseconds <= currentMilliseconds) {
+    private boolean waitTolerateTimeDifferenceIfNeed(final long currentMillis) {
+        if (lastMillis.get() <= currentMillis) {
             return false;
         }
-        long timeDifferenceMilliseconds = lastMilliseconds - currentMilliseconds;
-        ShardingSpherePreconditions.checkState(timeDifferenceMilliseconds < maxTolerateTimeDifferenceMilliseconds, () -> new SnowflakeClockMoveBackException(lastMilliseconds, currentMilliseconds));
-        Thread.sleep(timeDifferenceMilliseconds);
+        long timeDifferenceMillis = lastMillis.get() - currentMillis;
+        ShardingSpherePreconditions.checkState(timeDifferenceMillis < maxTolerateTimeDifferenceMillis, () -> new SnowflakeClockMoveBackException(lastMillis.get(), currentMillis));
+        Thread.sleep(timeDifferenceMillis);
         return true;
     }
     
@@ -153,13 +155,14 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
         return result;
     }
     
-    @SuppressWarnings("NonAtomicOperationOnVolatileField")
     private void vibrateSequenceOffset() {
-        sequenceOffset = sequenceOffset >= maxVibrationOffset ? 0 : sequenceOffset + 1;
+        if (!sequenceOffset.compareAndSet(maxVibrationOffset, 0)) {
+            sequenceOffset.incrementAndGet();
+        }
     }
     
     private int getWorkerId() {
-        return null == instanceContext ? DEFAULT_WORKER_ID : instanceContext.getWorkerId();
+        return null == instanceContext.get() ? DEFAULT_WORKER_ID : instanceContext.get().getWorkerId();
     }
     
     @Override

@@ -154,11 +154,12 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
     
     POSTGRESQL_TYPE_REF_CURSOR_ARRAY(2201);
     
-    private static final Map<Integer, PostgreSQLColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1);
+    private static final Map<Integer, PostgreSQLColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
     
     private final int value;
     
     static {
+        JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.TINYINT, POSTGRESQL_TYPE_INT2);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.SMALLINT, POSTGRESQL_TYPE_INT2);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.INTEGER, POSTGRESQL_TYPE_INT4);
         JDBC_TYPE_AND_COLUMN_TYPE_MAP.put(Types.BIGINT, POSTGRESQL_TYPE_INT8);
@@ -196,6 +197,7 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
      * 
      * @param value value
      * @return PostgreSQL column type
+     * @throws PostgreSQLProtocolException PostgreSQL protocol exception
      */
     public static PostgreSQLColumnType valueOf(final int value) {
         for (PostgreSQLColumnType each : values()) {

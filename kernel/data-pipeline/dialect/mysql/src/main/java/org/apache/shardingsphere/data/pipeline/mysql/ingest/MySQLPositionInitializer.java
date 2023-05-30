@@ -35,35 +35,35 @@ public final class MySQLPositionInitializer implements PositionInitializer {
     @Override
     public BinlogPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            BinlogPosition result = getBinlogPosition(connection);
-            result.setServerId(getServerId(connection));
-            return result;
+            return getBinlogPosition(connection);
         }
     }
     
     @Override
     public BinlogPosition init(final String data) {
         String[] array = data.split("#");
-        Preconditions.checkArgument(array.length == 2, "Unknown binlog position: " + data);
-        return new BinlogPosition(array[0], Long.parseLong(array[1]));
+        Preconditions.checkArgument(2 == array.length, "Unknown binlog position: %s", data);
+        return new BinlogPosition(array[0], Long.parseLong(array[1]), 0L);
     }
     
     private BinlogPosition getBinlogPosition(final Connection connection) throws SQLException {
+        String filename;
+        long position;
+        long serverId;
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement("SHOW MASTER STATUS");
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
-            return new BinlogPosition(resultSet.getString(1), resultSet.getLong(2));
+            filename = resultSet.getString(1);
+            position = resultSet.getLong(2);
         }
-    }
-    
-    private long getServerId(final Connection connection) throws SQLException {
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement("SHOW VARIABLES LIKE 'server_id'");
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
-            return resultSet.getLong(2);
+            serverId = resultSet.getLong(2);
         }
+        return new BinlogPosition(filename, position, serverId);
     }
     
     @Override

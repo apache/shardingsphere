@@ -34,7 +34,6 @@ import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskPr
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.dumper.InventoryDumper;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
 import org.apache.shardingsphere.data.pipeline.spi.importer.ImporterCreator;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
@@ -44,6 +43,7 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Inventory task.
@@ -65,7 +65,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
     
     private final Importer importer;
     
-    private volatile IngestPosition<?> position;
+    private final AtomicReference<IngestPosition> position;
     
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
                          final PipelineChannelCreator pipelineChannelCreator, final ImporterConnector importerConnector,
@@ -75,11 +75,11 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
         taskId = generateTaskId(inventoryDumperConfig);
         this.inventoryDumperExecuteEngine = inventoryDumperExecuteEngine;
         this.inventoryImporterExecuteEngine = inventoryImporterExecuteEngine;
-        channel = createChannel(pipelineChannelCreator);
+        channel = createChannel(pipelineChannelCreator, importerConfig.getBatchSize());
         dumper = new InventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
-        importer = TypedSPILoader.getService(ImporterCreator.class, importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener,
-                ImporterType.INVENTORY);
-        position = inventoryDumperConfig.getPosition();
+        importer = TypedSPILoader.getService(ImporterCreator.class,
+                importerConnector.getType()).createImporter(importerConfig, importerConnector, channel, jobProgressListener, ImporterType.INVENTORY);
+        position = new AtomicReference<>(inventoryDumperConfig.getPosition());
     }
     
     private String generateTaskId(final InventoryDumperConfiguration inventoryDumperConfig) {
@@ -119,12 +119,10 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
         return result;
     }
     
-    private PipelineChannel createChannel(final PipelineChannelCreator pipelineChannelCreator) {
-        return pipelineChannelCreator.createPipelineChannel(1, records -> {
-            Record lastNormalRecord = RecordUtil.getLastNormalRecord(records);
-            if (null != lastNormalRecord) {
-                position = lastNormalRecord.getPosition();
-            }
+    private PipelineChannel createChannel(final PipelineChannelCreator pipelineChannelCreator, final int batchSize) {
+        return pipelineChannelCreator.createPipelineChannel(1, batchSize, records -> {
+            Record lastRecord = records.get(records.size() - 1);
+            position.set(lastRecord.getPosition());
         });
     }
     
@@ -136,7 +134,7 @@ public final class InventoryTask implements PipelineTask, AutoCloseable {
     
     @Override
     public InventoryTaskProgress getTaskProgress() {
-        return new InventoryTaskProgress(position);
+        return new InventoryTaskProgress(position.get());
     }
     
     @Override

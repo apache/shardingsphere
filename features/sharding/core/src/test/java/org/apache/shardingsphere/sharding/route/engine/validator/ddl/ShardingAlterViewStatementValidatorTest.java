@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.ddl;
 
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.AlterViewStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.exception.syntax.RenamedViewWithoutSameConfigurationException;
@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sharding.route.engine.validator.ddl.impl.Shardi
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -39,59 +38,60 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingAlterViewStatementValidatorTest {
+class ShardingAlterViewStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
     
     @Test
-    public void assertPreValidateAlterViewForMySQL() {
+    void assertPreValidateAlterViewForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
         sqlStatement.setSelect(selectStatement);
-        SQLStatementContext<AlterViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
+        SQLStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.isShardingTable("t_order")).thenReturn(false);
-        new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        assertDoesNotThrow(() -> new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
-    public void assertPreValidateAlterViewWithShardingTableForMySQL() {
+    void assertPreValidateAlterViewWithShardingTableForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         MySQLAlterViewStatement sqlStatement = new MySQLAlterViewStatement();
         sqlStatement.setSelect(selectStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        SQLStatementContext<AlterViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
+        SQLStatementContext sqlStatementContext = new AlterViewStatementContext(sqlStatement);
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         assertThrows(UnsupportedShardingOperationException.class,
                 () -> new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
-    public void assertPreValidateAlterRenamedView() {
+    void assertPreValidateAlterRenamedView() {
         OpenGaussAlterViewStatement selectStatement = new OpenGaussAlterViewStatement();
         selectStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
-        SQLStatementContext<AlterViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(selectStatement);
+        SQLStatementContext sqlStatementContext = new AlterViewStatementContext(selectStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.isBroadcastTable("t_order")).thenReturn(true);
         when(shardingRule.isBroadcastTable("t_order_new")).thenReturn(true);
-        new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class));
+        assertDoesNotThrow(() -> new ShardingAlterViewStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database, mock(ConfigurationProperties.class)));
     }
     
     @Test
-    public void assertPreValidateAlterRenamedViewWithoutSameConfig() {
+    void assertPreValidateAlterRenamedViewWithoutSameConfig() {
         OpenGaussAlterViewStatement selectStatement = new OpenGaussAlterViewStatement();
         selectStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         selectStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_new"))));
-        SQLStatementContext<AlterViewStatement> sqlStatementContext = new CommonSQLStatementContext<>(selectStatement);
+        SQLStatementContext sqlStatementContext = new AlterViewStatementContext(selectStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(shardingRule.isBroadcastTable("t_order")).thenReturn(true);
         when(shardingRule.isBroadcastTable("t_order_new")).thenReturn(false);

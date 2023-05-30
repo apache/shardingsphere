@@ -27,40 +27,76 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class KeepFirstNLastMMaskAlgorithmTest {
+class KeepFirstNLastMMaskAlgorithmTest {
     
     private KeepFirstNLastMMaskAlgorithm maskAlgorithm;
     
+    private KeepFirstNLastMMaskAlgorithm sameFirstNLastMMaskAlgorithm;
+    
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         maskAlgorithm = new KeepFirstNLastMMaskAlgorithm();
-        maskAlgorithm.init(PropertiesBuilder.build(new Property("first-n", "2"), new Property("last-m", "5"), new Property("replace-char", "*")));
+        maskAlgorithm.init(PropertiesBuilder.build(new Property("first-n", "3"), new Property("last-m", "5"), new Property("replace-char", "*")));
+        sameFirstNLastMMaskAlgorithm = new KeepFirstNLastMMaskAlgorithm();
+        sameFirstNLastMMaskAlgorithm.init(PropertiesBuilder.build(new Property("first-n", "5"), new Property("last-m", "5"), new Property("replace-char", "*")));
     }
     
     @Test
-    public void assertMask() {
-        assertThat(maskAlgorithm.mask("abc123456"), is("ab**23456"));
+    void assertMask() {
+        assertThat(maskAlgorithm.mask("abc123456"), is("abc*23456"));
+        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc123456789"), is("abc12**56789"));
     }
     
     @Test
-    public void assertMaskWhenPlainValueLengthLessThenFirstNLastMSum() {
+    void assertMaskWhenPlainValueLengthLessThanFirstN() {
+        assertThat(maskAlgorithm.mask("ab"), is("ab"));
+        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc"), is("abc"));
+    }
+    
+    @Test
+    void assertMaskWhenPlainValueLengthEqualsFirstN() {
         assertThat(maskAlgorithm.mask("abc"), is("abc"));
+        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc12"), is("abc12"));
     }
     
     @Test
-    public void assertInitWhenFirstNIsEmpty() {
+    void assertMaskWhenPlainValueLengthLessThanLastM() {
+        assertThat(maskAlgorithm.mask("abc1"), is("abc1"));
+        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc1"), is("abc1"));
+    }
+    
+    @Test
+    void assertMaskWhenPlainValueLengthEqualsLastM() {
+        assertThat(maskAlgorithm.mask("abc12"), is("abc12"));
+        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc12"), is("abc12"));
+    }
+    
+    @Test
+    void assertMaskWhenPlainValueLengthLessThanFirstNPlusLastM() {
+        assertThat(maskAlgorithm.mask("abc1234"), is("abc1234"));
+        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc123456"), is("abc123456"));
+    }
+    
+    @Test
+    void assertMaskWhenPlainValueLengthEqualsFirstNPlusLastM() {
+        assertThat(maskAlgorithm.mask("abc12345"), is("abc12345"));
+        assertThat(sameFirstNLastMMaskAlgorithm.mask("abc1234567"), is("abc1234567"));
+    }
+    
+    @Test
+    void assertInitWhenFirstNIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", ""), new Property("last-m", "5"), new Property("replace-char", "*"))));
     }
     
     @Test
-    public void assertInitWhenLastMIsEmpty() {
+    void assertInitWhenLastMIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "2"), new Property("last-m", ""), new Property("replace-char", "*"))));
     }
     
     @Test
-    public void assertInitWhenReplaceCharIsEmpty() {
+    void assertInitWhenReplaceCharIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("first-n", "2"), new Property("last-m", "5"), new Property("replace-char", ""))));
     }

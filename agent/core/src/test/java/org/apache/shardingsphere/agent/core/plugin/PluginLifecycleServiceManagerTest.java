@@ -30,25 +30,26 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public final class PluginLifecycleServiceManagerTest {
+class PluginLifecycleServiceManagerTest {
     
     @Test
-    public void assertInitPluginLifecycleService() {
-        PluginLifecycleServiceManager.init(Collections.emptyMap(), Collections.emptyList(), new MultipleParentClassLoader(Collections.emptyList()), true);
+    void assertInitPluginLifecycleService() {
+        assertDoesNotThrow(() -> PluginLifecycleServiceManager.init(Collections.emptyMap(), Collections.emptyList(), new MultipleParentClassLoader(Collections.emptyList()), true));
     }
     
     @Test
-    public void assertInitPluginLifecycleServiceWithMap() {
+    void assertInitPluginLifecycleServiceWithMap() {
         Map<String, PluginConfiguration> pluginConfigs = Collections.singletonMap("Key", new PluginConfiguration("localhost", 8080, "random", new Properties()));
-        PluginLifecycleServiceManager.init(pluginConfigs, Collections.emptyList(), new MultipleParentClassLoader(Collections.emptyList()), true);
+        assertDoesNotThrow(() -> PluginLifecycleServiceManager.init(pluginConfigs, Collections.emptyList(), new MultipleParentClassLoader(Collections.emptyList()), true));
     }
     
     @Test
-    public void assertInitPluginLifecycleServiceWithMockHandler() throws MalformedURLException {
+    void assertInitPluginLifecycleServiceWithMockHandler() throws MalformedURLException {
         URLStreamHandlerFactory urlStreamHandlerFactory = mock(URLStreamHandlerFactory.class);
         PluginLifecycleServiceManager.init(Collections.emptyMap(), Collections.emptyList(),
                 new PrivateMLet(new URL[]{Paths.get(System.getProperty("java.io.tmpdir"), "test.txt").toUri().toURL()},

@@ -276,7 +276,17 @@
                             </left>
                             <operator>=</operator>
                             <right>
-                                <common-expression text="? || ?" literal-text="1 || 2" start-index="47" stop-index="52" />
+                                <binary-operation-expression start-index="47" stop-index="52">
+                                    <left>
+                                        <parameter-marker-expression parameter-index="0" start-index="47" stop-index="47" />
+                                        <literal-expression value="1" start-index="47" stop-index="47" />
+                                    </left>
+                                    <operator>||</operator>
+                                    <right>
+                                        <parameter-marker-expression parameter-index="1" start-index="52" stop-index="52" />
+                                        <literal-expression value="2" start-index="52" stop-index="52" />
+                                    </right>
+                                </binary-operation-expression>
                             </right>
                         </binary-operation-expression>
                     </left>
@@ -743,7 +753,7 @@
                             <owner name="t_order" start-index="28" stop-index="34" />
                         </column>
                     </left>
-                    <operator>&gt;</operator>
+                    <operator>&gt; ALL</operator>
                     <right>
                         <subquery start-index="49" stop-index="98">
                             <select>
@@ -1312,7 +1322,14 @@
                     </left>
                     <operator>+</operator>
                     <right>
-                        <expression-projection text="INTERVAL 1 SECOND" start-index="47" stop-index="63" />
+                        <function function-name="INTERVAL" text="INTERVAL" start-index="47" stop-index="54" >
+                            <parameter>
+                                <literal-expression value="1" start-index="56" stop-index="56" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="SECOND" start-index="58" stop-index="63" />
+                            </parameter>
+                        </function>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1336,7 +1353,14 @@
                     </left>
                     <operator>-</operator>
                     <right>
-                        <expression-projection text="INTERVAL 1 SECOND" start-index="47" stop-index="63" />
+                        <function function-name="INTERVAL" text="INTERVAL" start-index="47" stop-index="54" >
+                            <parameter>
+                                <literal-expression value="1" start-index="56" stop-index="56" />
+                            </parameter>
+                            <parameter>
+                                <literal-expression value="SECOND" start-index="58" stop-index="63" />
+                            </parameter>
+                        </function>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -1434,7 +1458,7 @@
             <expr>
                 <binary-operation-expression start-index="28" stop-index="55">
                     <left>
-                        <common-expression text="@@max_connections" start-index="28" stop-index="44" />
+                        <variable-segment text="@@max_connections" start-index="28" stop-index="44" variable="max_connections" />
                     </left>
                     <operator>&lt;</operator>
                     <right>
@@ -1693,6 +1717,28 @@
         <where start-index="22" stop-index="44">
             <expr>
                 <function function-name="-&gt;" text="order_id -&gt;&quot;$[1]&quot;" start-index="28" stop-index="44"/>
+            </expr>
+        </where>
+    </select>
+
+    <select sql-case-id="select_where_with_simple_expr_with_json_member_of">
+        <from start-index="14" stop-index="20">
+            <simple-table name="t_order" start-index="14" stop-index="20" />
+        </from>
+        <projections distinct-row="false" start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <where start-index="22" stop-index="56">
+            <expr>
+                <binary-operation-expression start-index="28" stop-index="56">
+                    <left>
+                        <column name="order_id" start-index="28" stop-index="35"/>
+                    </left>
+                    <operator>MEMBER OF</operator>
+                    <right>
+                        <expression-projection text="&quot;[1,2,3]&quot;" start-index="47" stop-index="55" />
+                    </right>
+                </binary-operation-expression>
             </expr>
         </where>
     </select>
@@ -2091,17 +2137,17 @@
 
     <select sql-case-id="select_with_repeat_function">
         <from>
-            <simple-table name="t_order" start-index="32" stop-index="38" />
+            <simple-table name="t_order" start-index="31" stop-index="37" />
         </from>
-        <projections start-index="7" stop-index="25">
-            <expression-projection text="REPEAT('MySQL', 3)" start-index="7" stop-index="25">
+        <projections start-index="7" stop-index="24">
+            <expression-projection text="REPEAT('MySQL', 3)" start-index="7" stop-index="24">
                 <expr>
                     <function function-name="REPEAT" text="REPEAT('MySQL', 3)" start-index="7" stop-index="24">
                         <parameter>
-                            <literal-expression value="MySQL" start-index="14" stop-index="18" />
+                            <literal-expression value="MySQL" start-index="14" stop-index="20" />
                         </parameter>
                         <parameter>
-                            <literal-expression value="3" start-index="20" stop-index="20" />
+                            <literal-expression value="3" start-index="23" stop-index="23" />
                         </parameter>
                     </function>
                 </expr>
@@ -2250,6 +2296,30 @@
         </projections>
         <from>
             <simple-table name="DUAL" start-index="44" stop-index="47" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_between_expression">
+        <projections start-index="7" stop-index="44">
+            <expression-projection text="item_id BETWEEN 1 AND order_id" start-index="7" stop-index="36">
+                <expr>
+                    <between-expression start-index="7" stop-index="36">
+                        <left>
+                            <column start-index="7" stop-index="13" name="item_id" />
+                        </left>
+                        <between-expr>
+                            <literal-expression start-index="23" stop-index="23" value="1" />
+                        </between-expr>
+                        <and-expr>
+                            <column start-index="29" stop-index="36" name="order_id" />
+                        </and-expr>
+                    </between-expression>
+                </expr>
+            </expression-projection>
+            <column-projection start-index="39" stop-index="44" name="status" />
+        </projections>
+        <from>
+            <simple-table name="t_order_item" start-index="51" stop-index="62" />
         </from>
     </select>
 </sql-parser-test-cases>

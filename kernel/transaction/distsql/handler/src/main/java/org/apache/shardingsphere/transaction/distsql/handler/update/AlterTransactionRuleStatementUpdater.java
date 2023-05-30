@@ -38,7 +38,7 @@ public final class AlterTransactionRuleStatementUpdater implements GlobalRuleRAL
     public void checkSQLStatement(final TransactionRuleConfiguration currentRuleConfig, final AlterTransactionRuleStatement sqlStatement) {
         checkTransactionType(sqlStatement);
         TransactionType transactionType = TransactionType.valueOf(sqlStatement.getDefaultType().toUpperCase());
-        if (TransactionType.LOCAL.equals(transactionType)) {
+        if (TransactionType.LOCAL == transactionType) {
             return;
         }
         checkTransactionManager(sqlStatement, transactionType);
@@ -48,17 +48,17 @@ public final class AlterTransactionRuleStatementUpdater implements GlobalRuleRAL
     private void checkTransactionType(final AlterTransactionRuleStatement statement) {
         try {
             TransactionType.valueOf(statement.getDefaultType().toUpperCase());
-        } catch (final IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ignored) {
             throw new InvalidRuleConfigurationException("Transaction", String.format("Unsupported transaction type `%s`", statement.getDefaultType()));
         }
     }
     
     private void checkTransactionManager(final AlterTransactionRuleStatement statement, final TransactionType transactionType) {
         Collection<ShardingSphereTransactionManager> transactionManagers = ShardingSphereServiceLoader.getServiceInstances(ShardingSphereTransactionManager.class);
-        Optional<ShardingSphereTransactionManager> transactionManager = transactionManagers.stream().filter(each -> transactionType.equals(each.getTransactionType())).findFirst();
+        Optional<ShardingSphereTransactionManager> transactionManager = transactionManagers.stream().filter(each -> transactionType == each.getTransactionType()).findFirst();
         ShardingSpherePreconditions.checkState(transactionManager.isPresent(),
                 () -> new InvalidRuleConfigurationException("Transaction", String.format("No transaction manager with type `%s`", statement.getDefaultType())));
-        if (TransactionType.XA.equals(transactionType)) {
+        if (TransactionType.XA == transactionType) {
             checkTransactionManagerProviderType(transactionManager.get(), statement.getProvider().getProviderType());
         }
     }

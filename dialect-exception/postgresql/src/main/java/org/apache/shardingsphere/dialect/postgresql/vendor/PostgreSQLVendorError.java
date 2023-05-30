@@ -43,6 +43,8 @@ public enum PostgreSQLVendorError implements VendorError {
     
     DUPLICATE_DATABASE(PostgreSQLState.DUPLICATE_DATABASE, "Database '%s' already exists"),
     
+    DUPLICATE_TABLE(PostgreSQLState.DUPLICATE_TABLE, "Table '%s' already exists"),
+    
     INVALID_AUTHORIZATION_SPECIFICATION(XOpenSQLState.INVALID_AUTHORIZATION_SPECIFICATION, "unknown username: %s"),
     
     NO_USERNAME(XOpenSQLState.INVALID_AUTHORIZATION_SPECIFICATION, "no PostgreSQL user name specified in startup packet"),

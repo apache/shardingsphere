@@ -27,24 +27,22 @@ import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobTy
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PipelineProcessConfigurationPersistServiceTest {
+class PipelineProcessConfigurationPersistServiceTest {
     
     @BeforeAll
-    public static void beforeClass() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
+    static void beforeClass() {
+        PipelineContextUtils.mockModeConfigAndContextManager();
     }
     
     @Test
-    public void assertLoadAndPersist() {
+    void assertLoadAndPersist() {
         YamlPipelineProcessConfiguration yamlProcessConfig = new YamlPipelineProcessConfiguration();
         YamlPipelineReadConfiguration yamlReadConfig = YamlPipelineReadConfiguration.buildWithDefaultValue();
         yamlReadConfig.fillInNullFieldsWithDefaultValue();
@@ -52,14 +50,15 @@ public final class PipelineProcessConfigurationPersistServiceTest {
         yamlProcessConfig.setRead(yamlReadConfig);
         YamlPipelineWriteConfiguration yamlWriteConfig = YamlPipelineWriteConfiguration.buildWithDefaultValue();
         yamlProcessConfig.setWrite(yamlWriteConfig);
-        YamlAlgorithmConfiguration yamlStreamChannel = new YamlAlgorithmConfiguration("MEMORY", new Properties());
+        YamlAlgorithmConfiguration yamlStreamChannel = new YamlAlgorithmConfiguration();
+        yamlStreamChannel.setType("MEMORY");
         yamlProcessConfig.setStreamChannel(yamlStreamChannel);
         String expectedYamlText = YamlEngine.marshal(yamlProcessConfig);
         PipelineProcessConfiguration processConfig = new YamlPipelineProcessConfigurationSwapper().swapToObject(yamlProcessConfig);
         PipelineProcessConfigurationPersistService persistService = new PipelineProcessConfigurationPersistService();
         JobType jobType = new MigrationJobType();
-        persistService.persist(jobType, processConfig);
-        String actualYamlText = YamlEngine.marshal(new YamlPipelineProcessConfigurationSwapper().swapToYamlConfiguration(persistService.load(jobType)));
+        persistService.persist(PipelineContextUtils.getContextKey(), jobType, processConfig);
+        String actualYamlText = YamlEngine.marshal(new YamlPipelineProcessConfigurationSwapper().swapToYamlConfiguration(persistService.load(PipelineContextUtils.getContextKey(), jobType)));
         assertThat(actualYamlText, is(expectedYamlText));
     }
 }

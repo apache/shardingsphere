@@ -1,11 +1,11 @@
 +++
 title = "DROP MASK RULE"
-weight = 4
+weight = 3
 +++
 
 ## 说明
 
-`DROP MASK RULE` 语法用于删除数据脱敏规则
+`DROP MASK RULE` 语法用于删除数据脱敏规则。
 
 ### 语法
 

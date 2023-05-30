@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.it.rewrite.fixture.encrypt;
 
 import org.apache.shardingsphere.encrypt.api.encrypt.standard.StandardEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 
 public final class RewriteNormalEncryptAlgorithmFixture implements StandardEncryptAlgorithm<Object, String> {
     

@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.watcher;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.event.ClusterStateEvent;
-import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
@@ -48,11 +48,8 @@ public final class ClusterStateChangedWatcher implements GovernanceWatcher<Gover
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         String clusterStatus = ComputeNode.getClusterStatusNodePath();
-        if (!Strings.isNullOrEmpty(clusterStatus)) {
-            if (event.getKey().equals(ComputeNode.getClusterStatusNodePath()) && Type.DELETED != event.getType()) {
-                return Optional.of(new ClusterStateEvent(event.getValue()));
-            }
-        }
-        return Optional.empty();
+        return Strings.isNullOrEmpty(clusterStatus) || Type.DELETED == event.getType() || !event.getKey().equals(ComputeNode.getClusterStatusNodePath())
+                ? Optional.empty()
+                : Optional.of(new ClusterStateEvent(event.getValue()));
     }
 }

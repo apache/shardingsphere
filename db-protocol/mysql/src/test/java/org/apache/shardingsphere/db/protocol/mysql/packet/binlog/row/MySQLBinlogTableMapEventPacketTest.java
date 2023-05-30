@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLBinlogTableMapEventPacketTest {
+class MySQLBinlogTableMapEventPacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
@@ -51,7 +51,7 @@ public final class MySQLBinlogTableMapEventPacketTest {
     private MySQLBinlogEventHeader binlogEventHeader;
     
     @Test
-    public void assertNew() {
+    void assertNew() {
         when(payload.readInt6()).thenReturn(1L);
         when(payload.readInt2()).thenReturn(0, 255);
         when(payload.readInt1()).thenReturn(4, 4, MySQLBinaryColumnType.MYSQL_TYPE_LONGLONG.getValue(), MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR.getValue(),

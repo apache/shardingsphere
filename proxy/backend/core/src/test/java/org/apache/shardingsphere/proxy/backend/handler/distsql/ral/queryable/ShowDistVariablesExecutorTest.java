@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowDistVariablesStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.internal.InternalConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -30,7 +30,6 @@ import org.apache.shardingsphere.test.util.PropertiesBuilder;
 import org.apache.shardingsphere.test.util.PropertiesBuilder.Property;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -41,14 +40,14 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowDistVariablesExecutorTest {
+class ShowDistVariablesExecutorTest {
     
     private final ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
     
     private final ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(2));
@@ -58,15 +57,29 @@ public final class ShowDistVariablesExecutorTest {
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() {
         when(metaData.getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system_log_level", "INFO"))));
-        when(metaData.getInternalProps()).thenReturn(new InternalConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
+        when(metaData.getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
         when(metaData.getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
         ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, mock(ShowDistVariablesStatement.class));
-        assertThat(actual.size(), is(23));
+        assertThat(actual.size(), is(21));
         LocalDataQueryResultRow row = actual.iterator().next();
-        assertThat(row.getCell(1), is("system_log_level"));
-        assertThat(row.getCell(2), is("INFO"));
+        assertThat(row.getCell(1), is("agent_plugins_enabled"));
+        assertThat(row.getCell(2), is("true"));
+    }
+    
+    @Test
+    void assertExecuteWithLike() {
+        when(metaData.getProps()).thenReturn(new ConfigurationProperties(PropertiesBuilder.build(new Property("system_log_level", "INFO"))));
+        when(metaData.getTemporaryProps()).thenReturn(new TemporaryConfigurationProperties(PropertiesBuilder.build(new Property("proxy-meta-data-collector-enabled", Boolean.FALSE.toString()))));
+        when(metaData.getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(new LoggingRule(new DefaultLoggingRuleConfigurationBuilder().build()))));
+        ShowDistVariablesExecutor executor = new ShowDistVariablesExecutor();
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, connectionSession, new ShowDistVariablesStatement("sql_%"));
+        assertThat(actual.size(), is(3));
+        Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
+        assertThat(iterator.next().getCell(1), is("sql_federation_type"));
+        assertThat(iterator.next().getCell(1), is("sql_show"));
+        assertThat(iterator.next().getCell(1), is("sql_simple"));
     }
 }

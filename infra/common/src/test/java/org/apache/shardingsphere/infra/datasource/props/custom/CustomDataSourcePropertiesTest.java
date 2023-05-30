@@ -28,10 +28,10 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class CustomDataSourcePropertiesTest {
+class CustomDataSourcePropertiesTest {
     
     @Test
-    public void assertGetProperties() {
+    void assertGetProperties() {
         Map<String, Object> actual = new CustomDataSourceProperties(
                 createProperties(), Arrays.asList("username", "password", "closed"), Collections.singletonList("closed"), Collections.singletonMap("username", "user")).getProperties();
         assertThat(actual.size(), is(3));
@@ -45,7 +45,7 @@ public final class CustomDataSourcePropertiesTest {
     }
     
     private Map<String, Object> createProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(8, 1);
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("user", "root");
         result.put("password", "root");
         result.put("closed", false);

@@ -19,10 +19,12 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngine;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -33,30 +35,33 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class EncryptPredicateRightValueTokenGeneratorTest extends EncryptGeneratorBaseTest {
+class EncryptPredicateRightValueTokenGeneratorTest {
     
-    @Test
-    public void assertIsGenerateSQLToken() {
-        EncryptPredicateRightValueTokenGenerator tokenGenerator = new EncryptPredicateRightValueTokenGenerator();
-        tokenGenerator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
-        tokenGenerator.setEncryptRule(createEncryptRule());
-        assertTrue(tokenGenerator.isGenerateSQLToken(createUpdatesStatementContext()));
+    private final EncryptPredicateRightValueTokenGenerator generator = new EncryptPredicateRightValueTokenGenerator();
+    
+    @BeforeEach
+    void setup() {
+        generator.setEncryptRule(EncryptGeneratorFixtureBuilder.createEncryptRule());
     }
     
     @Test
-    public void assertGenerateSQLTokenFromGenerateNewSQLToken() {
-        UpdateStatementContext updatesStatementContext = createUpdatesStatementContext();
-        EncryptPredicateRightValueTokenGenerator tokenGenerator = new EncryptPredicateRightValueTokenGenerator();
-        tokenGenerator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
-        tokenGenerator.setEncryptRule(createEncryptRule());
-        tokenGenerator.setEncryptConditions(getEncryptConditions(updatesStatementContext));
-        Collection<SQLToken> sqlTokens = tokenGenerator.generateSQLTokens(updatesStatementContext);
+    void assertIsGenerateSQLToken() {
+        generator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
+        assertTrue(generator.isGenerateSQLToken(EncryptGeneratorFixtureBuilder.createUpdateStatementContext()));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenFromGenerateNewSQLToken() {
+        UpdateStatementContext updateStatementContext = EncryptGeneratorFixtureBuilder.createUpdateStatementContext();
+        generator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
+        generator.setEncryptConditions(getEncryptConditions(updateStatementContext));
+        Collection<SQLToken> sqlTokens = generator.generateSQLTokens(updateStatementContext);
         assertThat(sqlTokens.size(), is(1));
-        assertThat(sqlTokens.iterator().next().toString(), is("'123456'"));
+        assertThat(sqlTokens.iterator().next().toString(), is("'assistedEncryptValue'"));
     }
     
-    private Collection<EncryptCondition> getEncryptConditions(final UpdateStatementContext updatesStatementContext) {
-        return new EncryptConditionEngine(createEncryptRule(), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereSchema.class)))
-                .createEncryptConditions(updatesStatementContext.getWhereSegments(), updatesStatementContext.getColumnSegments(), updatesStatementContext, DefaultDatabase.LOGIC_NAME);
+    private Collection<EncryptCondition> getEncryptConditions(final UpdateStatementContext updateStatementContext) {
+        return new EncryptConditionEngine(EncryptGeneratorFixtureBuilder.createEncryptRule(), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereSchema.class)))
+                .createEncryptConditions(updateStatementContext.getWhereSegments(), updateStatementContext.getColumnSegments(), updateStatementContext, DefaultDatabase.LOGIC_NAME);
     }
 }

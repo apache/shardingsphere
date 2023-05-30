@@ -62,11 +62,7 @@ public final class MigrationJobConfiguration implements PipelineJobConfiguration
     
     private final int retryTimes;
     
-    /**
-     * Get job sharding count.
-     *
-     * @return job sharding count
-     */
+    @Override
     public int getJobShardingCount() {
         return jobShardingDataNodes.size();
     }

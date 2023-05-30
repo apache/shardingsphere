@@ -60,15 +60,15 @@ public final class ColumnMetaDataLoader {
         Collection<String> primaryKeys = loadPrimaryKeys(connection, tableNamePattern);
         List<String> columnNames = new ArrayList<>();
         List<Integer> columnTypes = new ArrayList<>();
-        List<Boolean> isPrimaryKeys = new ArrayList<>();
-        List<Boolean> isCaseSensitives = new ArrayList<>();
+        List<Boolean> primaryKeyFlags = new ArrayList<>();
+        List<Boolean> caseSensitiveFlags = new ArrayList<>();
         try (ResultSet resultSet = connection.getMetaData().getColumns(connection.getCatalog(), connection.getSchema(), tableNamePattern, "%")) {
             while (resultSet.next()) {
                 String tableName = resultSet.getString(TABLE_NAME);
                 if (Objects.equals(tableNamePattern, tableName)) {
                     String columnName = resultSet.getString(COLUMN_NAME);
                     columnTypes.add(resultSet.getInt(DATA_TYPE));
-                    isPrimaryKeys.add(primaryKeys.contains(columnName));
+                    primaryKeyFlags.add(primaryKeys.contains(columnName));
                     columnNames.add(columnName);
                 }
             }
@@ -76,8 +76,8 @@ public final class ColumnMetaDataLoader {
         try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(generateEmptyResultSQL(tableNamePattern, columnNames, databaseType))) {
             for (int i = 0; i < columnNames.size(); i++) {
                 boolean generated = resultSet.getMetaData().isAutoIncrement(i + 1);
-                isCaseSensitives.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(columnNames.get(i))));
-                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), isPrimaryKeys.get(i), generated, isCaseSensitives.get(i), true, false));
+                caseSensitiveFlags.add(resultSet.getMetaData().isCaseSensitive(resultSet.findColumn(columnNames.get(i))));
+                result.add(new ColumnMetaData(columnNames.get(i), columnTypes.get(i), primaryKeyFlags.get(i), generated, caseSensitiveFlags.get(i), true, false));
             }
         }
         return result;

@@ -1,6 +1,6 @@
 +++
 title = "CREATE SHADOW RULE"
-weight = 2
+weight = 1
 +++
 
 ## Description

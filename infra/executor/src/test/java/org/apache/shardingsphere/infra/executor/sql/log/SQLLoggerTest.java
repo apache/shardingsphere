@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.log;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -43,7 +43,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class SQLLoggerTest {
+class SQLLoggerTest {
     
     private static final String SQL = "SELECT * FROM t_user";
     
@@ -55,14 +55,14 @@ public final class SQLLoggerTest {
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @BeforeAll
-    public static void setupLogger() {
+    static void setupLogger() {
         ch.qos.logback.classic.Logger log = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger("ShardingSphere-SQL");
         ListAppender<LoggingEvent> appender = (ListAppender) log.getAppender("SQLLoggerTestAppender");
         appenderList = appender.list;
     }
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         executionUnits = prepareExecutionUnits(Arrays.asList("db1", "db2", "db3"));
         appenderList.clear();
     }
@@ -72,7 +72,7 @@ public final class SQLLoggerTest {
     }
     
     @Test
-    public void assertLogNormalSQLWithoutParameter() {
+    void assertLogNormalSQLWithoutParameter() {
         SQLLogger.logSQL(queryContext, false, new ExecutionContext(queryContext, executionUnits, mock(RouteContext.class)));
         assertThat(appenderList.size(), is(4));
         assertTrue(appenderList.stream().allMatch(loggingEvent -> Level.INFO == loggingEvent.getLevel()));
@@ -83,7 +83,7 @@ public final class SQLLoggerTest {
     }
     
     @Test
-    public void assertLogNormalSQLWithParameters() {
+    void assertLogNormalSQLWithParameters() {
         executionUnits.forEach(each -> each.getSqlUnit().getParameters().add("parameter"));
         SQLLogger.logSQL(queryContext, false, new ExecutionContext(queryContext, executionUnits, mock(RouteContext.class)));
         assertThat(appenderList.size(), is(4));
@@ -95,7 +95,7 @@ public final class SQLLoggerTest {
     }
     
     @Test
-    public void assertLogSimpleSQL() {
+    void assertLogSimpleSQL() {
         SQLLogger.logSQL(queryContext, true, new ExecutionContext(queryContext, executionUnits, mock(RouteContext.class)));
         assertThat(appenderList.size(), is(2));
         assertTrue(appenderList.stream().allMatch(loggingEvent -> Level.INFO == loggingEvent.getLevel()));

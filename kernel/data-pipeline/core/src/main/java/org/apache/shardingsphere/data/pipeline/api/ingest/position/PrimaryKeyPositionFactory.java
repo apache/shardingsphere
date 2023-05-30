@@ -19,12 +19,15 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 /**
  * Primary key position factory.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PrimaryKeyPositionFactory {
     
     /**
@@ -32,8 +35,9 @@ public final class PrimaryKeyPositionFactory {
      *
      * @param data string data
      * @return primary key position
+     * @throws IllegalArgumentException illegal argument exception
      */
-    public static IngestPosition<?> newInstance(final String data) {
+    public static IngestPosition newInstance(final String data) {
         List<String> parts = Splitter.on(',').splitToList(data);
         Preconditions.checkArgument(3 == parts.size(), "Unknown primary key position: " + data);
         Preconditions.checkArgument(1 == parts.get(0).length(), "Invalid primary key position type: " + parts.get(0));
@@ -61,7 +65,7 @@ public final class PrimaryKeyPositionFactory {
      * @param endValue end value
      * @return ingest position
      */
-    public static IngestPosition<?> newInstance(final Object beginValue, final Object endValue) {
+    public static IngestPosition newInstance(final Object beginValue, final Object endValue) {
         if (beginValue instanceof Number) {
             return new IntegerPrimaryKeyPosition(((Number) beginValue).longValue(), null != endValue ? ((Number) endValue).longValue() : Long.MAX_VALUE);
         }

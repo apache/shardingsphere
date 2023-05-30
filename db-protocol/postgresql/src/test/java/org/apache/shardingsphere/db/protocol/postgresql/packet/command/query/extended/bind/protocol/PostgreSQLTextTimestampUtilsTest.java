@@ -29,11 +29,11 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PostgreSQLTextTimestampUtilsTest {
+class PostgreSQLTextTimestampUtilsTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    public void assertGetLocalDateTimeNoExceptionOccurs(final String input, final Timestamp expected) {
+    void assertGetLocalDateTimeNoExceptionOccurs(final String input, final Timestamp expected) {
         assertThat(PostgreSQLTextTimestampUtils.parse(input), is(expected));
     }
     
@@ -61,13 +61,14 @@ public final class PostgreSQLTextTimestampUtilsTest {
                     Arguments.of("2021-10-12 23:23:23.12345678", Timestamp.valueOf("2021-10-12 23:23:23.12345678")),
                     Arguments.of("2021-10-12 23:23:23.123456789", Timestamp.valueOf("2021-10-12 23:23:23.123456789")),
                     Arguments.of("2021-10-12 23:23:23.123456 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456")),
-                    // TODO The following 4 cases are related to user.timezone of test environment
-                    // Arguments.of("2021-10-12 23:23:23.1234567 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.1234567")),
-                    // Arguments.of("2021-10-12 23:23:23.12345678 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.12345678")),
-                    // Arguments.of("2021-10-12 23:23:23.123456789+08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456789")),
-                    // Arguments.of("2021-10-12 23:23:23.123456789 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456789")),
+                    Arguments.of("2021-10-12 23:23:23.1234567 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.1234567")),
+                    Arguments.of("2021-10-12 23:23:23.12345678 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.12345678")),
+                    Arguments.of("2021-10-12 23:23:23.123456789+08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456789")),
+                    Arguments.of("2021-10-12 23:23:23.123456789 +08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456789")),
                     Arguments.of("2021-10-12 23:23:23.123456 -08:00", Timestamp.valueOf("2021-10-12 23:23:23.123456")),
-                    Arguments.of("2021-3-3 23:23:23.123456", Timestamp.valueOf("2021-03-03 23:23:23.123456")));
+                    Arguments.of("2021-3-3 23:23:23.123456", Timestamp.valueOf("2021-03-03 23:23:23.123456")),
+                    Arguments.of("infinity", new Timestamp(9223372036825200000L)),
+                    Arguments.of("-infinity", new Timestamp(-9223372036832400000L)));
         }
     }
 }

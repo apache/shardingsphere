@@ -45,10 +45,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowDefaultShardingStrategyExecutorTest {
+class ShowDefaultShardingStrategyExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingRule rule1 = mock(ShardingRule.class);
         when(rule1.getConfiguration()).thenReturn(createRuleConfiguration1());
@@ -95,7 +95,7 @@ public final class ShowDefaultShardingStrategyExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         RQLExecutor<ShowDefaultShardingStrategyStatement> executor = new ShowDefaultShardingStrategyExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(6));

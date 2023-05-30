@@ -32,10 +32,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLFrontendEngineTest {
+class PostgreSQLFrontendEngineTest {
     
     @Test
-    public void assertRelease() {
+    void assertRelease() {
         ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
         int connectionId = 1;
         when(connectionSession.getConnectionId()).thenReturn(connectionId);

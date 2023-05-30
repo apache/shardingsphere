@@ -40,14 +40,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlSchemaSwapperTest {
+class YamlSchemaSwapperTest {
     
     private static final String YAML = "yaml/schema/schema.yaml";
     
     private static final String YAML_WITHOUT_TABLE = "yaml/schema/schema-without-table.yaml";
     
     @Test
-    public void assertSwapToYamlSchema() {
+    void assertSwapToYamlSchema() {
         ShardingSphereSchema schema = new YamlSchemaSwapper().swapToObject(YamlEngine.unmarshal(readYAML(YAML), YamlShardingSphereSchema.class));
         YamlShardingSphereSchema yamlSchema = new YamlSchemaSwapper().swapToYamlConfiguration(schema);
         assertThat(yamlSchema.getTables().keySet(), is(Collections.singleton("t_order")));
@@ -77,13 +77,14 @@ public final class YamlSchemaSwapperTest {
     }
     
     @Test
-    public void assertSwapToShardingSphereSchema() {
+    void assertSwapToShardingSphereSchema() {
         YamlShardingSphereSchema yamlSchema = YamlEngine.unmarshal(readYAML(YAML), YamlShardingSphereSchema.class);
         ShardingSphereSchema actualSchema = new YamlSchemaSwapper().swapToObject(yamlSchema);
         assertThat(actualSchema.getAllTableNames(), is(Collections.singleton("t_order")));
         ShardingSphereTable actualTable = actualSchema.getTable("t_order");
         assertColumn(actualTable);
-        assertThat(actualTable.getIndexes().keySet(), is(Collections.singleton("primary")));
+        assertThat(actualTable.getIndexes().size(), is(1));
+        assertThat(actualTable.getIndexes().iterator().next().getName(), is("PRIMARY"));
         assertThat(actualSchema.getAllColumnNames("t_order").size(), is(2));
         assertTrue(actualSchema.containsColumn("t_order", "id"));
         assertTrue(actualSchema.containsColumn("t_order", "name"));
@@ -91,18 +92,18 @@ public final class YamlSchemaSwapperTest {
     
     private void assertColumn(final ShardingSphereTable table) {
         assertThat(table.getColumns().size(), is(2));
-        assertThat(table.getColumns().get("id"), is(new ShardingSphereColumn("id", 0, true, false, false, true, false)));
-        assertThat(table.getColumns().get("name"), is(new ShardingSphereColumn("name", 10, false, true, true, false, true)));
+        assertThat(table.getColumn("id"), is(new ShardingSphereColumn("id", 0, true, false, false, true, false)));
+        assertThat(table.getColumn("name"), is(new ShardingSphereColumn("name", 10, false, true, true, false, true)));
     }
     
     @Test
-    public void assertSwapToYamlSchemaWithoutTable() {
+    void assertSwapToYamlSchemaWithoutTable() {
         ShardingSphereSchema schema = new YamlSchemaSwapper().swapToObject(YamlEngine.unmarshal(readYAML(YAML_WITHOUT_TABLE), YamlShardingSphereSchema.class));
         assertTrue(new YamlSchemaSwapper().swapToYamlConfiguration(schema).getTables().isEmpty());
     }
     
     @Test
-    public void assertSwapToShardingSphereSchemaWithoutTable() {
+    void assertSwapToShardingSphereSchemaWithoutTable() {
         YamlShardingSphereSchema yamlSchema = YamlEngine.unmarshal(readYAML(YAML_WITHOUT_TABLE), YamlShardingSphereSchema.class);
         assertTrue(new YamlSchemaSwapper().swapToObject(yamlSchema).getAllTableNames().isEmpty());
     }

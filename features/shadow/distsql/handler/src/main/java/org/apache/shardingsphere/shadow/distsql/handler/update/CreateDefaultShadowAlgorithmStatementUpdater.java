@@ -23,7 +23,6 @@ import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgo
 import org.apache.shardingsphere.distsql.handler.update.RuleDefinitionCreateUpdater;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -52,7 +51,7 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     }
     
     @Override
-    public RuleConfiguration buildToBeCreatedRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final CreateDefaultShadowAlgorithmStatement sqlStatement) {
+    public ShadowRuleConfiguration buildToBeCreatedRuleConfiguration(final ShadowRuleConfiguration currentRuleConfig, final CreateDefaultShadowAlgorithmStatement sqlStatement) {
         ShadowRuleConfiguration result = new ShadowRuleConfiguration();
         if (getDuplicatedRuleNames(currentRuleConfig).isEmpty()) {
             result = new ShadowRuleConfiguration();
@@ -86,8 +85,8 @@ public final class CreateDefaultShadowAlgorithmStatementUpdater implements RuleD
     }
     
     private void checkAlgorithmType(final CreateDefaultShadowAlgorithmStatement sqlStatement) {
-        String shadowAlgorithmType = sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment().getName();
-        ShardingSpherePreconditions.checkState(TypedSPILoader.contains(ShadowAlgorithm.class, shadowAlgorithmType), () -> new InvalidAlgorithmConfigurationException("shadow", shadowAlgorithmType));
+        AlgorithmSegment shadowAlgorithmType = sqlStatement.getShadowAlgorithmSegment().getAlgorithmSegment();
+        TypedSPILoader.checkService(ShadowAlgorithm.class, shadowAlgorithmType.getName(), shadowAlgorithmType.getProps());
     }
     
     private void checkAlgorithmCompleteness(final Collection<AlgorithmSegment> algorithmSegments) {

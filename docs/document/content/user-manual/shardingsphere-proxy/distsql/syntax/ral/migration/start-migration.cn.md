@@ -1,11 +1,11 @@
 +++
 title = "START MIGRATION"
-weight = 16
+weight = 14
 +++
 
 ### 描述
 
-`START MIGRATION` 语法用于开始指定的数据迁移作业
+`START MIGRATION` 语法用于开始指定的数据迁移作业。
 
 ### 语法
 

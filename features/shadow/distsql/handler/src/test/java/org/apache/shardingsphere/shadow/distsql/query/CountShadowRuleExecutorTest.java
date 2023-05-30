@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.distsql.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -29,8 +28,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -39,12 +38,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class CountShadowRuleExecutorTest {
+class CountShadowRuleExecutorTest {
     
     @Test
-    public void assertGetRowData() {
-        RQLExecutor<CountShadowRuleStatement> executor = new CountShadowRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountShadowRuleStatement.class));
+    void assertGetRowData() {
+        Collection<LocalDataQueryResultRow> actual = new CountShadowRuleExecutor().getRows(mockDatabase(), mock(CountShadowRuleStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -54,9 +52,8 @@ public final class CountShadowRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
-        RQLExecutor<CountShadowRuleStatement> executor = new CountShadowRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
+    void assertGetColumnNames() {
+        Collection<String> columns = new CountShadowRuleExecutor().getColumnNames();
         assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("rule_name"));
@@ -73,11 +70,11 @@ public final class CountShadowRuleExecutorTest {
     }
     
     private ShadowRule mockShadowRule() {
-        Map<String, Collection<String>> shadowDataSourceMappings = new HashMap<>();
-        shadowDataSourceMappings.put("shadow-data-source-0", Arrays.asList("ds", "ds_shadow"));
-        shadowDataSourceMappings.put("shadow-data-source-1", Arrays.asList("ds1", "ds1_shadow"));
         ShadowRule result = mock(ShadowRule.class);
-        when(result.getDataSourceMapper()).thenReturn(shadowDataSourceMappings);
+        Map<String, Collection<String>> dataSourceMapper = new LinkedHashMap<>();
+        dataSourceMapper.put("shadow-data-source-0", Arrays.asList("ds", "ds_shadow"));
+        dataSourceMapper.put("shadow-data-source-1", Arrays.asList("ds1", "ds1_shadow"));
+        when(result.getDataSourceMapper()).thenReturn(dataSourceMapper);
         return result;
     }
 }

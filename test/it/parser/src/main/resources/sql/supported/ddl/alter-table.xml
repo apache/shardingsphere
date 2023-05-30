@@ -30,6 +30,8 @@
     <sql-case id="alter_table_partition" value="alter table t1 partition by key(c1) partitions 5" db-types="MySQL" />
     <sql-case id="alter_table_if_exists_only" value="ALTER TABLE IF EXISTS ONLY t_log ADD name varchar" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_table_with_force" value="ALTER TABLE t_order FORCE" db-types="MySQL" />
+    <sql-case id="alter_table_with_single_rename_column" value="alter table t_order rename column new_col to renamed_col" db-types="MySQL" />
+    <sql-case id="alter_table_with_multiple_rename_column" value="ALTER TABLE t_order RENAME COLUMN first_name TO full_name,RENAME COLUMN last_name TO surname" db-types="MySQL" />
     <sql-case id="alter_table_with_space" value="    ALTER TABLE
         t_order" db-types="MySQL,Oracle" />
     <sql-case id="alter_table_with_back_quota" value="ALTER TABLE `t_order` FORCE" db-types="MySQL" />
@@ -154,4 +156,6 @@
     <sql-case id="alter_table_reset" value="ALTER TABLE t_order RESET (fillfactor = 12)" db-types="PostgreSQL" />
     <sql-case id="alter_table_set_access_method" value="ALTER TABLE t_order SET ACCESS METHOD heap, SET ACCESS METHOD heap2" db-types="PostgreSQL" />
     <sql-case id="alter_table_drop_expression" value="ALTER TABLE t_order ALTER COLUMN a DROP EXPRESSION;" db-types="PostgreSQL" />
+    <sql-case id="alter_table_modify_column_precision_with_decimal" value="ALTER TABLE t_order MODIFY COLUMN a VARCHAR(10.000000000001)" db-types="MySQL" />
+    <sql-case id="alter_table_order_by" value="ALTER TABLE t_order ORDER BY t_order.id, t_order.status desc" db-types="MySQL" />
 </sql-cases>

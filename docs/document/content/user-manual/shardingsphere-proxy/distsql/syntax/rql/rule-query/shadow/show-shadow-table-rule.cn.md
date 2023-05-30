@@ -1,11 +1,11 @@
 +++
-title = "SHOW SHADOW TABLE RULE"
-weight = 3
+title = "SHOW SHADOW TABLE RULES"
+weight = 2
 +++
 
 ### 描述
 
-`SHOW SHADOW TABLE RULE` 语法用于查询指定逻辑库中的影子表规则。
+`SHOW SHADOW TABLE RULES` 语法用于查询指定逻辑库中的影子表规则。
 
 ### 语法
 
@@ -30,9 +30,9 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列                     | 说明       |
-| --------------------- | ---------- |
-| shadow_table          | 影子表      |
+| 列                     | 说明     |
+|-----------------------|--------|
+| shadow_table          | 影子表    |
 | shadow_algorithm_name | 影子算法名称 |
 
 ### 示例

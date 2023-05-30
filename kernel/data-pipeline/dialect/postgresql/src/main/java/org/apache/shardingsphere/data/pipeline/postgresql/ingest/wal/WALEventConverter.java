@@ -55,8 +55,9 @@ public final class WALEventConverter {
     /**
      * Convert WAL event to {@code Record}.
      *
-     * @param event of wal
+     * @param event WAL event
      * @return record
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public Record convert(final AbstractWALEvent event) {
         if (filter(event)) {
@@ -116,14 +117,14 @@ public final class WALEventConverter {
         // TODO Unique key may be a column within unique index
         List<String> primaryKeyColumns = tableMetaData.getPrimaryKeyColumns();
         for (int i = 0; i < event.getPrimaryKeys().size(); i++) {
-            result.addColumn(new Column(primaryKeyColumns.get(i), event.getPrimaryKeys().get(i), true, true));
+            result.addColumn(new Column(primaryKeyColumns.get(i), event.getPrimaryKeys().get(i), null, true, true));
         }
         return result;
     }
     
     private DataRecord createDataRecord(final AbstractRowEvent rowsEvent, final int columnCount) {
         DataRecord result = new DataRecord(new WALPosition(rowsEvent.getLogSequenceNumber()), columnCount);
-        result.setTableName(dumperConfig.getLogicTableName(rowsEvent.getTableName()).getLowercase());
+        result.setTableName(dumperConfig.getLogicTableName(rowsEvent.getTableName()).getOriginal());
         result.setCsn(rowsEvent.getCsn());
         return result;
     }
@@ -142,7 +143,7 @@ public final class WALEventConverter {
         }
     }
     
-    boolean isColumnUnneeded(final Set<ColumnName> columnNameSet, final String columnName) {
+    private boolean isColumnUnneeded(final Set<ColumnName> columnNameSet, final String columnName) {
         return null != columnNameSet && !columnNameSet.contains(new ColumnName(columnName));
     }
 }

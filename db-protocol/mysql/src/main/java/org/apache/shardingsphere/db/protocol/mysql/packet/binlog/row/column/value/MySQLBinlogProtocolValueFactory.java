@@ -43,7 +43,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.valu
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.time.MySQLTimestampBinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.time.MySQLYearBinlogProtocolValue;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -52,7 +52,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLBinlogProtocolValueFactory {
     
-    private static final Map<MySQLBinaryColumnType, MySQLBinlogProtocolValue> BINLOG_PROTOCOL_VALUES = new HashMap<>();
+    private static final Map<MySQLBinaryColumnType, MySQLBinlogProtocolValue> BINLOG_PROTOCOL_VALUES = new EnumMap<>(MySQLBinaryColumnType.class);
     
     static {
         registerIntegerTypeValue();
@@ -92,7 +92,7 @@ public final class MySQLBinlogProtocolValueFactory {
         BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_STRING, new MySQLStringBinlogProtocolValue());
         BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR, new MySQLVarcharBinlogProtocolValue());
         BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, new MySQLVarcharBinlogProtocolValue());
-        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MySQL_TYPE_JSON, new MySQLJsonBinlogProtocolValue());
+        BINLOG_PROTOCOL_VALUES.put(MySQLBinaryColumnType.MYSQL_TYPE_JSON, new MySQLJsonBinlogProtocolValue());
     }
     
     private static void registerBlobTypeValue() {

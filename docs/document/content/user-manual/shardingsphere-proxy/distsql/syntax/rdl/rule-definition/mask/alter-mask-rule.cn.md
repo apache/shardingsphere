@@ -1,11 +1,11 @@
 +++
 title = "ALTER MASK RULE"
-weight = 3
+weight = 2
 +++
 
 ## 描述
 
-`ALTER MASK RULE` 语法用于修改数据脱敏规则.
+`ALTER MASK RULE` 语法用于修改数据脱敏规则。
 
 ### 语法定义
 

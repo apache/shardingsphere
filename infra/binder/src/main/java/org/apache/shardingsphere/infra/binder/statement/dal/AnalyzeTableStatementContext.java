@@ -30,13 +30,18 @@ import java.util.Collection;
  * Analyze table statement context.
  */
 @Getter
-public final class AnalyzeTableStatementContext extends CommonSQLStatementContext<AnalyzeTableStatement> implements TableAvailable {
+public final class AnalyzeTableStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
     public AnalyzeTableStatementContext(final AnalyzeTableStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
+    }
+    
+    @Override
+    public AnalyzeTableStatement getSqlStatement() {
+        return (AnalyzeTableStatement) super.getSqlStatement();
     }
     
     @Override

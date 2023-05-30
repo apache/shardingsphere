@@ -32,20 +32,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLComParsePacketTest {
+class PostgreSQLComParsePacketTest {
     
     @Mock
     private PostgreSQLPacketPayload payload;
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         when(payload.readInt2()).thenReturn(1);
         when(payload.readInt4()).thenReturn(0);
         when(payload.readStringNul()).thenReturn("sql");
         PostgreSQLComParsePacket actual = new PostgreSQLComParsePacket(payload);
         actual.write(payload);
         assertThat(actual.getIdentifier(), is(PostgreSQLCommandPacketType.PARSE_COMMAND));
-        assertThat(actual.getSql(), is("sql"));
+        assertThat(actual.getSQL(), is("sql"));
         assertThat(actual.getStatementId(), is("sql"));
         List<PostgreSQLColumnType> types = actual.readParameterTypes();
         assertThat(types.size(), is(1));

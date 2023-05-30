@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.encrypt.fixture;
 
 import org.apache.shardingsphere.encrypt.api.encrypt.like.LikeEncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.encrypt.api.context.EncryptContext;
 
 public final class CoreQueryLikeEncryptAlgorithmFixture implements LikeEncryptAlgorithm<Object, String> {
     

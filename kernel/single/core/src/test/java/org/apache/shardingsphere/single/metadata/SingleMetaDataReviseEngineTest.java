@@ -37,12 +37,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class SingleMetaDataReviseEngineTest {
+class SingleMetaDataReviseEngineTest {
     
     private static final String TABLE_NAME = "t_single";
     
     @Test
-    public void assertRevise() {
+    void assertRevise() {
         Map<String, SchemaMetaData> schemaMetaDataMap = Collections.singletonMap("sharding_db", new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData())));
         TableMetaData tableMetaData = new MetaDataReviseEngine(Collections.singleton(mock(SingleRule.class))).revise(
                 schemaMetaDataMap, mock(GenericSchemaBuilderMaterial.class)).get("sharding_db").getTables().iterator().next();

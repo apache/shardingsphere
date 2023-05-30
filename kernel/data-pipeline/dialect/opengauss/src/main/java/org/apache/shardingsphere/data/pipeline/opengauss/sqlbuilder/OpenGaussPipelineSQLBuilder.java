@@ -73,8 +73,8 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
     }
     
     @Override
-    public List<Column> extractUpdatedColumns(final DataRecord record) {
-        return record.getColumns().stream().filter(each -> !(each.isUniqueKey())).collect(Collectors.toList());
+    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
+        return dataRecord.getColumns().stream().filter(each -> !(each.isUniqueKey())).collect(Collectors.toList());
     }
     
     private String buildConflictSQL(final DataRecord dataRecord) {
@@ -84,7 +84,7 @@ public final class OpenGaussPipelineSQLBuilder extends AbstractPipelineSQLBuilde
             if (column.isUniqueKey()) {
                 continue;
             }
-            result.append(quote(column.getName())).append("=EXCLUDED.").append(quote(column.getName())).append(",");
+            result.append(quote(column.getName())).append("=EXCLUDED.").append(quote(column.getName())).append(',');
         }
         result.setLength(result.length() - 1);
         return result.toString();

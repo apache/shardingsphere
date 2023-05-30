@@ -28,10 +28,12 @@ import javax.transaction.xa.XAResource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public final class SingleXAResourceHolderTest {
+class SingleXAResourceHolderTest {
     
     @Mock
     private XAResource xaResource;
@@ -42,37 +44,37 @@ public final class SingleXAResourceHolderTest {
     private SingleXAResourceHolder singleXAResourceHolder;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         singleXAResourceHolder = new SingleXAResourceHolder(xaResource, resourceBean);
     }
     
     @Test
-    public void assertGetXAResource() {
+    void assertGetXAResource() {
         assertThat(singleXAResourceHolder.getXAResource(), is(xaResource));
     }
     
     @Test
-    public void assertGetResourceBean() {
+    void assertGetResourceBean() {
         assertThat(singleXAResourceHolder.getResourceBean(), is(resourceBean));
     }
     
     @Test
-    public void assertGetXAResourceHolders() {
-        assertNull(singleXAResourceHolder.getXAResourceHolders());
+    void assertGetXAResourceHolders() {
+        assertTrue(singleXAResourceHolder.getXAResourceHolders().isEmpty());
     }
     
     @Test
-    public void assertGetConnectionHandle() {
+    void assertGetConnectionHandle() {
         assertNull(singleXAResourceHolder.getConnectionHandle());
     }
     
     @Test
-    public void assertGetLastReleaseDate() {
+    void assertGetLastReleaseDate() {
         assertNull(singleXAResourceHolder.getLastReleaseDate());
     }
     
     @Test
-    public void assertClose() {
-        singleXAResourceHolder.close();
+    void assertClose() {
+        assertDoesNotThrow(() -> singleXAResourceHolder.close());
     }
 }

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetDistV
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.LoggerLevel;
-import org.apache.shardingsphere.infra.config.props.internal.InternalConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
@@ -29,19 +29,15 @@ import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.standalone.StandaloneModeContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidValueException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
-import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.test.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.mock.StaticMockSettings;
-import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -54,31 +50,13 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class SetDistVariableUpdaterTest {
+class SetDistVariableUpdaterTest {
     
     @Mock
     private ConnectionSession connectionSession;
     
     @Test
-    public void assertExecuteWithTransactionType() {
-        SetDistVariableStatement statement = new SetDistVariableStatement("transaction_type", "local");
-        when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.XA));
-        SetDistVariableUpdater updater = new SetDistVariableUpdater();
-        updater.executeUpdate(connectionSession, statement);
-        assertThat(connectionSession.getTransactionStatus().getTransactionType().name(), is(TransactionType.LOCAL.name()));
-    }
-    
-    @Test
-    public void assertExecuteWithAgent() {
-        SetDistVariableStatement statement = new SetDistVariableStatement("AGENT_PLUGINS_ENABLED", Boolean.FALSE.toString());
-        SetDistVariableUpdater updater = new SetDistVariableUpdater();
-        updater.executeUpdate(connectionSession, statement);
-        String actualValue = SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "default");
-        assertThat(actualValue, is(Boolean.FALSE.toString()));
-    }
-    
-    @Test
-    public void assertExecuteWithConfigurationKey() {
+    void assertExecuteWithConfigurationKey() {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_frontend_flush_threshold", "1024");
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
         ContextManager contextManager = mockContextManager();
@@ -90,19 +68,19 @@ public final class SetDistVariableUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithInternalConfigurationKey() {
+    void assertExecuteWithTemporaryConfigurationKey() {
         SetDistVariableStatement statement = new SetDistVariableStatement("proxy_meta_data_collector_enabled", "false");
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         updater.executeUpdate(connectionSession, statement);
-        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getInternalProps().getProps().get("proxy-meta-data-collector-enabled");
+        Object actualValue = contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getProps().get("proxy-meta-data-collector-enabled");
         assertThat(actualValue.toString(), is("false"));
-        assertThat(contextManager.getMetaDataContexts().getMetaData().getInternalProps().getValue(InternalConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED), is(false));
+        assertThat(contextManager.getMetaDataContexts().getMetaData().getTemporaryProps().getValue(TemporaryConfigurationPropertyKey.PROXY_META_DATA_COLLECTOR_ENABLED), is(false));
     }
     
     @Test
-    public void assertExecuteWithSystemLogLevel() {
+    void assertExecuteWithSystemLogLevel() {
         SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "debug");
         SetDistVariableUpdater updater = new SetDistVariableUpdater();
         ContextManager contextManager = mockContextManager();
@@ -114,7 +92,7 @@ public final class SetDistVariableUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithWrongSystemLogLevel() {
+    void assertExecuteWithWrongSystemLogLevel() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         SetDistVariableStatement statement = new SetDistVariableStatement("system_log_level", "invalid");

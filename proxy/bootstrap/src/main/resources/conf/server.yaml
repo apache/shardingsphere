@@ -68,7 +68,6 @@
 #  max-connections-size-per-query: 1
 #  kernel-executor-size: 16  # Infinite by default.
 #  proxy-frontend-flush-threshold: 128  # The default value is 128.
-#  proxy-hint-enabled: false
 #  # sql-show is the same as props in logger ShardingSphere-SQL, and its priority is lower than logging rule
 #  sql-show: false
 #  check-table-metadata-enabled: false
@@ -76,13 +75,12 @@
 #    # The default value is -1, which means set the minimum value for different JDBC drivers.
 #  proxy-backend-query-fetch-size: -1
 #  proxy-frontend-executor-size: 0 # Proxy frontend executor size. The default value is 0, which means let Netty decide.
-#    # Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
-#    # and block other clients if client connections are more than `proxy-frontend-executor-size`, especially executing slow SQL.
-#  proxy-backend-executor-suitable: OLAP
 #  proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
 #    # Available sql federation type: NONE (default), ORIGINAL, ADVANCED
 #  sql-federation-type: NONE
-#  proxy-mysql-default-version: 5.7.22 # In the absence of schema name, the default version will be used.
 #  proxy-default-port: 3307 # Proxy default port.
 #  proxy-netty-backlog: 1024 # Proxy netty backlog.
 #  cdc-server-port: 33071 # CDC server port
+#  proxy-frontend-ssl-enabled: false
+#  proxy-frontend-ssl-cipher: ''
+#  proxy-frontend-ssl-version: TLSv1.2,TLSv1.3

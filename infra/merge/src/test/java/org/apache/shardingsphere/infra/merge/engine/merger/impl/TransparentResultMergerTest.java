@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.merge.engine.merger.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.jupiter.api.Test;
@@ -30,10 +30,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class TransparentResultMergerTest {
+class TransparentResultMergerTest {
     
     @Test
-    public void assertMerge() throws SQLException {
+    void assertMerge() throws SQLException {
         QueryResult queryResult = mock(QueryResult.class);
         when(queryResult.next()).thenReturn(true);
         assertTrue(new TransparentResultMerger().merge(Collections.singletonList(queryResult), mock(SQLStatementContext.class),

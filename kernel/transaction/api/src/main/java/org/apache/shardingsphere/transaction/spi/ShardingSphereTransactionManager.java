@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.spi;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import javax.sql.DataSource;
@@ -28,7 +29,7 @@ import java.util.Map;
 /**
  * ShardingSphere transaction manager.
  */
-public interface ShardingSphereTransactionManager extends AutoCloseable {
+public interface ShardingSphereTransactionManager extends TypedSPI, AutoCloseable {
     
     /**
      * Initialize transaction manager.
@@ -96,4 +97,10 @@ public interface ShardingSphereTransactionManager extends AutoCloseable {
     default boolean containsProviderType(String providerType) {
         return true;
     }
+    
+    /**
+     * Close transaction manager.
+     */
+    @Override
+    void close();
 }

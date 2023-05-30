@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.logging.yaml.swapper;
 
+import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.logging.logger.ShardingSphereLogger;
 import org.apache.shardingsphere.logging.yaml.config.YamlLoggerConfiguration;
-import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-
-import java.util.Objects;
 
 /**
  * YAML logger swapper.
@@ -30,15 +28,21 @@ public final class YamlLoggerSwapper implements YamlConfigurationSwapper<YamlLog
     
     @Override
     public YamlLoggerConfiguration swapToYamlConfiguration(final ShardingSphereLogger data) {
-        if (Objects.isNull(data)) {
+        if (null == data) {
             return null;
         }
-        return new YamlLoggerConfiguration(data.getLoggerName(), data.getLevel(), data.getAdditivity(), data.getAppenderName(), data.getProps());
+        YamlLoggerConfiguration result = new YamlLoggerConfiguration();
+        result.setLoggerName(data.getLoggerName());
+        result.setLevel(data.getLevel());
+        result.setAdditivity(data.getAdditivity());
+        result.setAppenderName(data.getAppenderName());
+        result.setProps(data.getProps());
+        return result;
     }
     
     @Override
     public ShardingSphereLogger swapToObject(final YamlLoggerConfiguration yamlConfig) {
-        if (Objects.isNull(yamlConfig)) {
+        if (null == yamlConfig) {
             return null;
         }
         ShardingSphereLogger result = new ShardingSphereLogger(yamlConfig.getLoggerName(), yamlConfig.getLevel(), yamlConfig.getAdditivity(), yamlConfig.getAppenderName());

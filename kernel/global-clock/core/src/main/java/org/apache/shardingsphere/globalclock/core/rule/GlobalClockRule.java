@@ -19,14 +19,18 @@ package org.apache.shardingsphere.globalclock.core.rule;
 
 import lombok.Getter;
 import org.apache.shardingsphere.globalclock.api.config.GlobalClockRuleConfiguration;
-import org.apache.shardingsphere.globalclock.core.exception.GlobalClockNotEnabledException;
 import org.apache.shardingsphere.globalclock.core.provider.GlobalClockProvider;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.transaction.spi.TransactionHook;
 
-import java.util.Optional;
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Global clock rule.
@@ -36,36 +40,35 @@ public final class GlobalClockRule implements GlobalRule {
     @Getter
     private final GlobalClockRuleConfiguration configuration;
     
-    private final GlobalClockProvider globalClockProvider;
-    
-    private final boolean enabled;
-    
-    public GlobalClockRule(final GlobalClockRuleConfiguration ruleConfig) {
+    public GlobalClockRule(final GlobalClockRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
-        enabled = ruleConfig.isEnabled();
-        globalClockProvider = enabled ? TypedSPILoader.getService(GlobalClockProvider.class, String.join(".", ruleConfig.getType(), ruleConfig.getProvider()),
-                null == ruleConfig.getProps() ? new Properties() : ruleConfig.getProps()) : null;
-        Optional.ofNullable(globalClockProvider).ifPresent(optional -> optional.init(ruleConfig.getProps()));
+        if (ruleConfig.isEnabled()) {
+            TypedSPILoader.getService(GlobalClockProvider.class, getGlobalClockProviderType(), configuration.getProps());
+        }
+        TypedSPILoader.getService(TransactionHook.class, "GLOBAL_CLOCK", getProps(databases));
+    }
+    
+    private Properties getProps(final Map<String, ShardingSphereDatabase> databases) {
+        Properties result = new Properties();
+        result.setProperty("trunkType", DatabaseTypeEngine.getTrunkDatabaseTypeName(DatabaseTypeEngine.getStorageType(getDataSources(databases))));
+        result.setProperty("enabled", String.valueOf(configuration.isEnabled()));
+        result.setProperty("type", configuration.getType());
+        result.setProperty("provider", configuration.getProvider());
+        return result;
+    }
+    
+    private Collection<DataSource> getDataSources(final Map<String, ShardingSphereDatabase> databases) {
+        return databases.values().stream().filter(each -> !each.getResourceMetaData().getDataSources().isEmpty())
+                .flatMap(each -> each.getResourceMetaData().getDataSources().values().stream()).collect(Collectors.toList());
     }
     
     /**
-     * Get current timestamp.
-     *
-     * @return current timestamp
+     * Get global clock provider type.
+     * 
+     * @return global clock provider type
      */
-    public long getCurrentTimestamp() {
-        ShardingSpherePreconditions.checkState(enabled, GlobalClockNotEnabledException::new);
-        return globalClockProvider.getCurrentTimestamp();
-    }
-    
-    /**
-     * Get next timestamp.
-     *
-     * @return next timestamp
-     */
-    public long getNextTimestamp() {
-        ShardingSpherePreconditions.checkState(enabled, GlobalClockNotEnabledException::new);
-        return globalClockProvider.getNextTimestamp();
+    public String getGlobalClockProviderType() {
+        return String.join(".", configuration.getType(), configuration.getProvider());
     }
     
     @Override

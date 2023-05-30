@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CountEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -35,12 +34,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class CountEncryptRuleExecutorTest {
+class CountEncryptRuleExecutorTest {
     
     @Test
-    public void assertGetRowData() {
-        RQLExecutor<CountEncryptRuleStatement> executor = new CountEncryptRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountEncryptRuleStatement.class));
+    void assertGetRowData() {
+        Collection<LocalDataQueryResultRow> actual = new CountEncryptRuleExecutor().getRows(mockDatabase(), mock(CountEncryptRuleStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -50,9 +48,8 @@ public final class CountEncryptRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
-        RQLExecutor<CountEncryptRuleStatement> executor = new CountEncryptRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
+    void assertGetColumnNames() {
+        Collection<String> columns = new CountEncryptRuleExecutor().getColumnNames();
         assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("rule_name"));

@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Transaction rule.
@@ -51,7 +52,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
     
     private final Map<String, ShardingSphereDatabase> databases;
     
-    private volatile ShardingSphereTransactionManagerEngine resource;
+    private final AtomicReference<ShardingSphereTransactionManagerEngine> resource;
     
     public TransactionRule(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
@@ -59,26 +60,35 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         providerType = ruleConfig.getProviderType();
         props = ruleConfig.getProps();
         this.databases = new ConcurrentHashMap<>(databases);
-        resource = createTransactionManagerEngine(this.databases);
+        resource = new AtomicReference<>(createTransactionManagerEngine(this.databases));
     }
     
     private synchronized ShardingSphereTransactionManagerEngine createTransactionManagerEngine(final Map<String, ShardingSphereDatabase> databases) {
         if (databases.isEmpty()) {
-            return new ShardingSphereTransactionManagerEngine();
+            return new ShardingSphereTransactionManagerEngine(defaultType);
         }
-        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(databases.size(), 1);
-        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(databases.size(), 1);
+        Map<String, DataSource> dataSourceMap = new LinkedHashMap<>(databases.size(), 1F);
+        Map<String, DatabaseType> databaseTypes = new LinkedHashMap<>(databases.size(), 1F);
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             ShardingSphereDatabase database = entry.getValue();
             database.getResourceMetaData().getDataSources().forEach((key, value) -> dataSourceMap.put(database.getName() + "." + key, value));
             database.getResourceMetaData().getStorageTypes().forEach((key, value) -> databaseTypes.put(database.getName() + "." + key, value));
         }
         if (dataSourceMap.isEmpty()) {
-            return new ShardingSphereTransactionManagerEngine();
+            return new ShardingSphereTransactionManagerEngine(defaultType);
         }
-        ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine();
+        ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine(defaultType);
         result.init(databaseTypes, dataSourceMap, providerType);
         return result;
+    }
+    
+    /**
+     * Get resource.
+     * 
+     * @return resource
+     */
+    public ShardingSphereTransactionManagerEngine getResource() {
+        return resource.get();
     }
     
     @Override
@@ -107,18 +117,18 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
     }
     
     private void rebuildEngine() {
-        ShardingSphereTransactionManagerEngine previousEngine = resource;
+        ShardingSphereTransactionManagerEngine previousEngine = resource.get();
         if (null != previousEngine) {
             closeEngine(previousEngine);
         }
-        resource = createTransactionManagerEngine(databases);
+        resource.set(createTransactionManagerEngine(databases));
     }
     
     private void closeEngine() {
-        ShardingSphereTransactionManagerEngine engine = resource;
+        ShardingSphereTransactionManagerEngine engine = resource.get();
         if (null != engine) {
             closeEngine(engine);
-            resource = new ShardingSphereTransactionManagerEngine();
+            resource.set(new ShardingSphereTransactionManagerEngine(defaultType));
         }
     }
     
@@ -126,7 +136,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         try {
             engine.close();
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             log.error("Close transaction engine failed", ex);
         }

@@ -25,8 +25,7 @@ import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConne
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.sql.SQLException;
@@ -144,7 +143,7 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
         if (result > Integer.MAX_VALUE) {
             result = Integer.MAX_VALUE;
         }
-        return hasResult ? Long.valueOf(result).intValue() : -1;
+        return hasResult ? (int) result : -1;
     }
     
     @Override
@@ -194,10 +193,10 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     }
     
     protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final MetaDataContexts metaDataContexts) {
-        if (connection.getConnectionManager().getConnectionTransaction().isInTransaction()) {
+        if (connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction()) {
             DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
-            if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-                connection.getConnectionManager().getConnectionTransaction().setRollbackOnly(true);
+            if (databaseType instanceof SchemaSupportedDatabaseType) {
+                connection.getDatabaseConnectionManager().getConnectionTransaction().setRollbackOnly(true);
             }
         }
     }

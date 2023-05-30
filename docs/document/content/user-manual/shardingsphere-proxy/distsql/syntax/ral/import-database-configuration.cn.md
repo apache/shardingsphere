@@ -1,11 +1,11 @@
 +++
 title = "IMPORT DATABASE CONFIGURATION"
-weight = 10
+weight = 12
 +++
 
 ### 描述
 
-`IMPORT DATABASE CONFIGURATION` 语法用于将 `YAML` 中的配置导入到指定逻辑库中
+`IMPORT DATABASE CONFIGURATION` 语法用于将 `YAML` 中的配置导入到指定逻辑库中。
 
 ### 语法
 

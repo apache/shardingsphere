@@ -21,17 +21,18 @@ import org.apache.shardingsphere.agent.api.PluginConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlAgentConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlPluginCategoryConfiguration;
 import org.apache.shardingsphere.agent.core.plugin.config.yaml.entity.YamlPluginConfiguration;
+import org.apache.shardingsphere.agent.core.yaml.AgentYamlEngine;
 import org.junit.jupiter.api.Test;
-import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -39,19 +40,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class YamlPluginsConfigurationSwapperTest {
+class YamlPluginsConfigurationSwapperTest {
     
     private static final String CONFIG_PATH = "/conf/agent.yaml";
     
     @Test
-    public void assertSwapWithNullPlugins() {
+    void assertSwapWithNullPlugins() {
         YamlAgentConfiguration yamlAgentConfig = new YamlAgentConfiguration();
         yamlAgentConfig.setPlugins(new YamlPluginCategoryConfiguration());
         assertTrue(YamlPluginsConfigurationSwapper.swap(yamlAgentConfig).isEmpty());
     }
     
     @Test
-    public void assertSwapWithSinglePluginConfiguration() {
+    void assertSwapWithSinglePluginConfiguration() {
         YamlPluginCategoryConfiguration yamlPluginCategoryConfig = new YamlPluginCategoryConfiguration();
         yamlPluginCategoryConfig.setLogging(Collections.singletonMap("log_fixture", createYamlPluginConfiguration("localhost", "random", 8080, new Properties())));
         YamlAgentConfiguration yamlAgentConfig = new YamlAgentConfiguration();
@@ -66,7 +67,7 @@ public final class YamlPluginsConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapWithMultiplePluginConfigurations() {
+    void assertSwapWithMultiplePluginConfigurations() {
         YamlPluginCategoryConfiguration yamlPluginCategoryConfig = new YamlPluginCategoryConfiguration();
         yamlPluginCategoryConfig.setLogging(Collections.singletonMap("log_fixture", createYamlPluginConfiguration(null, null, 8080, createProperties())));
         yamlPluginCategoryConfig.setMetrics(Collections.singletonMap("metrics_fixture", createYamlPluginConfiguration("localhost", "random", 8081, createProperties())));
@@ -81,17 +82,19 @@ public final class YamlPluginsConfigurationSwapperTest {
     }
     
     @Test
-    public void assertSwapWithFile() throws IOException {
-        YamlAgentConfiguration yamlAgentConfig = new Yaml().loadAs(new InputStreamReader(new FileInputStream(new File(getResourceURL(), CONFIG_PATH))), YamlAgentConfiguration.class);
-        Map<String, PluginConfiguration> actual = YamlPluginsConfigurationSwapper.swap(yamlAgentConfig);
-        assertThat(actual.size(), is(3));
-        assertLogFixturePluginConfiguration(actual.get("log_fixture"));
-        assertMetricsPluginConfiguration(actual.get("metrics_fixture"));
-        assertTracingPluginConfiguration(actual.get("tracing_fixture"));
+    void assertSwapWithFile() throws IOException {
+        try (InputStream inputStream = Files.newInputStream(new File(getResourceURL(), CONFIG_PATH).toPath())) {
+            YamlAgentConfiguration yamlAgentConfig = AgentYamlEngine.unmarshalYamlAgentConfiguration(inputStream);
+            Map<String, PluginConfiguration> actual = YamlPluginsConfigurationSwapper.swap(yamlAgentConfig);
+            assertThat(actual.size(), is(3));
+            assertLogFixturePluginConfiguration(actual.get("log_fixture"));
+            assertMetricsPluginConfiguration(actual.get("metrics_fixture"));
+            assertTracingPluginConfiguration(actual.get("tracing_fixture"));
+        }
     }
     
     private String getResourceURL() throws UnsupportedEncodingException {
-        return URLDecoder.decode(YamlPluginsConfigurationSwapper.class.getClassLoader().getResource("").getFile(), "UTF8");
+        return URLDecoder.decode(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("")).getFile(), "UTF8");
     }
     
     private void assertLogFixturePluginConfiguration(final PluginConfiguration actual) {

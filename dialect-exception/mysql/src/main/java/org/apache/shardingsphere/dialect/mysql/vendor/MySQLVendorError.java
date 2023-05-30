@@ -32,6 +32,8 @@ import org.apache.shardingsphere.infra.util.exception.external.sql.vendor.Vendor
 @Getter
 public enum MySQLVendorError implements VendorError {
     
+    ER_HANDSHAKE_ERROR(XOpenSQLState.COMMUNICATION_LINK_FAILURE, 1043, "Bad handshake"),
+    
     ER_DBACCESS_DENIED_ERROR(XOpenSQLState.SYNTAX_ERROR, 1044, "Access denied for user '%s'@'%s' to database '%s'"),
     
     ER_ACCESS_DENIED_ERROR(XOpenSQLState.INVALID_AUTHORIZATION_SPECIFICATION, 1045, "Access denied for user '%s'@'%s' (using password: %s)"),
@@ -57,6 +59,14 @@ public enum MySQLVendorError implements VendorError {
     ER_UNKNOWN_CHARACTER_SET(XOpenSQLState.SYNTAX_ERROR, 1115, "Unknown character set: '%s'"),
     
     ER_WRONG_VALUE_COUNT_ON_ROW(XOpenSQLState.MISMATCH_INSERT_VALUES_AND_COLUMNS, 1136, "Column count doesn't match value count at row %d"),
+    
+    ER_UNKNOWN_SYSTEM_VARIABLE(XOpenSQLState.GENERAL_ERROR, 1193, "Unknown system variable '%s'"),
+    
+    ER_LOCAL_VARIABLE(XOpenSQLState.GENERAL_ERROR, 1228, "Variable '%s' is a SESSION variable and can't be used with SET GLOBAL"),
+    
+    ER_GLOBAL_VARIABLE(XOpenSQLState.GENERAL_ERROR, 1229, "Variable '%s' is a GLOBAL variable and should be set with SET GLOBAL"),
+    
+    ER_INCORRECT_GLOBAL_LOCAL_VAR(XOpenSQLState.GENERAL_ERROR, 1238, "Variable '%s' is a %s variable"),
     
     ER_UNKNOWN_COLLATION(XOpenSQLState.GENERAL_ERROR, 1273, "Unknown collation: '%s'"),
     

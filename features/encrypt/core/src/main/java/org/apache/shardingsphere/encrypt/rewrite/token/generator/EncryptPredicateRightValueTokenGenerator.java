@@ -26,6 +26,7 @@ import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptBinaryCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.impl.EncryptInCondition;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateEqualRightValueToken;
+import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateFunctionRightValueToken;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptPredicateInRightValueToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -34,9 +35,10 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.ParametersAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -49,7 +51,7 @@ import java.util.Optional;
 @Setter
 public final class EncryptPredicateRightValueTokenGenerator
         implements
-            CollectionSQLTokenGenerator<SQLStatementContext<?>>,
+            CollectionSQLTokenGenerator<SQLStatementContext>,
             ParametersAware,
             EncryptConditionsAware,
             EncryptRuleAware,
@@ -64,12 +66,12 @@ public final class EncryptPredicateRightValueTokenGenerator
     private String databaseName;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof WhereAvailable && !((WhereAvailable) sqlStatementContext).getWhereSegments().isEmpty();
     }
     
     @Override
-    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedHashSet<>();
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));
         for (EncryptCondition each : encryptConditions) {
@@ -81,15 +83,17 @@ public final class EncryptPredicateRightValueTokenGenerator
     private SQLToken generateSQLToken(final String schemaName, final EncryptCondition encryptCondition) {
         List<Object> originalValues = encryptCondition.getValues(parameters);
         int startIndex = encryptCondition.getStartIndex();
-        boolean queryWithCipherColumn = encryptRule.isQueryWithCipherColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
-        return queryWithCipherColumn ? generateSQLTokenForQueryWithCipherColumn(schemaName, encryptCondition, originalValues, startIndex)
-                : generateSQLTokenForQueryWithoutCipherColumn(schemaName, encryptCondition, originalValues, startIndex);
+        return generateSQLToken(schemaName, encryptCondition, originalValues, startIndex);
     }
     
-    private SQLToken generateSQLTokenForQueryWithCipherColumn(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
+    private SQLToken generateSQLToken(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
         int stopIndex = encryptCondition.getStopIndex();
         Map<Integer, Object> indexValues = getPositionValues(encryptCondition.getPositionValueMap().keySet(), getEncryptedValues(schemaName, encryptCondition, originalValues));
         Collection<Integer> parameterMarkerIndexes = encryptCondition.getPositionIndexMap().keySet();
+        if (encryptCondition instanceof EncryptBinaryCondition && ((EncryptBinaryCondition) encryptCondition).getExpressionSegment() instanceof FunctionSegment) {
+            return new EncryptPredicateFunctionRightValueToken(startIndex, stopIndex,
+                    ((FunctionSegment) ((EncryptBinaryCondition) encryptCondition).getExpressionSegment()).getFunctionName(), indexValues, parameterMarkerIndexes);
+        }
         return encryptCondition instanceof EncryptInCondition
                 ? new EncryptPredicateInRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes)
                 : new EncryptPredicateEqualRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes);
@@ -98,31 +102,13 @@ public final class EncryptPredicateRightValueTokenGenerator
     private List<Object> getEncryptedValues(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues) {
         if (encryptCondition instanceof EncryptBinaryCondition && "LIKE".equalsIgnoreCase(((EncryptBinaryCondition) encryptCondition).getOperator())) {
             Optional<String> likeQueryColumn = encryptRule.findLikeQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
-            if (!likeQueryColumn.isPresent()) {
-                throw new UnsupportedEncryptSQLException("LIKE");
-            } else {
-                return encryptRule.getEncryptLikeQueryValues(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
-            }
+            ShardingSpherePreconditions.checkState(likeQueryColumn.isPresent(), () -> new UnsupportedEncryptSQLException("LIKE"));
+            return encryptRule.getEncryptLikeQueryValues(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
         }
         Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
         return assistedQueryColumn.isPresent()
                 ? encryptRule.getEncryptAssistedQueryValues(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues)
                 : encryptRule.getEncryptValues(databaseName, schemaName, encryptCondition.getTableName(), encryptCondition.getColumnName(), originalValues);
-    }
-    
-    private SQLToken generateSQLTokenForQueryWithoutCipherColumn(final String schemaName, final EncryptCondition encryptCondition, final List<Object> originalValues, final int startIndex) {
-        int stopIndex = encryptCondition.getStopIndex();
-        Map<Integer, Object> indexValues = new HashMap<>();
-        Optional<String> plainColumn = encryptRule.findPlainColumn(encryptCondition.getTableName(), encryptCondition.getColumnName());
-        if (plainColumn.isPresent()) {
-            indexValues.putAll(getPositionValues(encryptCondition.getPositionValueMap().keySet(), originalValues));
-        } else {
-            indexValues.putAll(getPositionValues(encryptCondition.getPositionValueMap().keySet(), getEncryptedValues(schemaName, encryptCondition, originalValues)));
-        }
-        Collection<Integer> parameterMarkerIndexes = encryptCondition.getPositionIndexMap().keySet();
-        return encryptCondition instanceof EncryptInCondition
-                ? new EncryptPredicateInRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes)
-                : new EncryptPredicateEqualRightValueToken(startIndex, stopIndex, indexValues, parameterMarkerIndexes);
     }
     
     private Map<Integer, Object> getPositionValues(final Collection<Integer> valuePositions, final List<Object> encryptValues) {

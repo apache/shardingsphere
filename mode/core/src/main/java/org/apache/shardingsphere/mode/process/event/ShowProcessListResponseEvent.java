@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.process.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
 
 import java.util.Collection;
 
@@ -29,5 +30,5 @@ import java.util.Collection;
 @Getter
 public final class ShowProcessListResponseEvent {
     
-    private final Collection<String> batchProcessContexts;
+    private final Collection<Process> processes;
 }

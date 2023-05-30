@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStat
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Show readwrite splitting rules statement.
+ * Show readwrite-splitting rules statement.
  */
 @Getter
 public final class ShowReadwriteSplittingRulesStatement extends ShowRulesStatement {

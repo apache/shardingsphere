@@ -62,7 +62,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private final ShardingConditions shardingConditions;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     private final ConfigurationProperties props;
     
@@ -70,7 +70,7 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private final SQLHintExtractor sqlHintExtractor;
     
-    public ShardingStandardRoutingEngine(final String logicTableName, final ShardingConditions shardingConditions, final SQLStatementContext<?> sqlStatementContext,
+    public ShardingStandardRoutingEngine(final String logicTableName, final ShardingConditions shardingConditions, final SQLStatementContext sqlStatementContext,
                                          final HintValueContext hintValueContext, final ConfigurationProperties props) {
         this.logicTableName = logicTableName;
         this.shardingConditions = shardingConditions;

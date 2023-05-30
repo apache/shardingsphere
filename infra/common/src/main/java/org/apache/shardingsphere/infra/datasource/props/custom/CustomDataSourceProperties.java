@@ -44,7 +44,7 @@ public final class CustomDataSourceProperties {
     }
     
     private Map<String, Object> getProperties(final Map<String, Object> props) {
-        Map<String, Object> result = new LinkedHashMap<>(props.size(), 1);
+        Map<String, Object> result = new LinkedHashMap<>(props.size(), 1F);
         for (Entry<String, Object> entry : props.entrySet()) {
             if (!entry.getKey().contains(".")) {
                 result.put(entry.getKey(), entry.getValue());

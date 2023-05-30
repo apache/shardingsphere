@@ -30,13 +30,18 @@ import java.util.Collection;
  * Drop table statement context.
  */
 @Getter
-public final class DropTableStatementContext extends CommonSQLStatementContext<DropTableStatement> implements TableAvailable {
+public final class DropTableStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
     public DropTableStatementContext(final DropTableStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
+    }
+    
+    @Override
+    public DropTableStatement getSqlStatement() {
+        return (DropTableStatement) super.getSqlStatement();
     }
     
     @Override

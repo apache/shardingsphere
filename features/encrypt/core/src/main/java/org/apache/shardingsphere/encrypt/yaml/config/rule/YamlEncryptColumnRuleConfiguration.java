@@ -28,21 +28,11 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 @Setter
 public final class YamlEncryptColumnRuleConfiguration implements YamlConfiguration {
     
-    private String logicColumn;
+    private String name;
     
-    private String cipherColumn;
+    private YamlEncryptColumnItemRuleConfiguration cipher;
     
-    private String assistedQueryColumn;
+    private YamlEncryptColumnItemRuleConfiguration assistedQuery;
     
-    private String likeQueryColumn;
-    
-    private String plainColumn;
-    
-    private String encryptorName;
-    
-    private String assistedQueryEncryptorName;
-    
-    private String likeQueryEncryptorName;
-    
-    private Boolean queryWithCipherColumn;
+    private YamlEncryptColumnItemRuleConfiguration likeQuery;
 }

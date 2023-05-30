@@ -19,7 +19,7 @@ package org.apache.shardingsphere.encrypt.distsql.parser.segment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 import java.util.Collection;
 
@@ -33,6 +33,4 @@ public final class EncryptRuleSegment implements ASTNode {
     private final String tableName;
     
     private final Collection<EncryptColumnSegment> columns;
-    
-    private final Boolean queryWithCipherColumn;
 }

@@ -39,7 +39,6 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 <#if feature?contains("readwrite-splitting")>
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 </#if>
 <#if feature?contains("encrypt")>
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -54,12 +53,6 @@ import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceCo
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
-</#if>
-<#if feature?contains("db-discovery")>
-import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 </#if>
 <#if feature?contains("mask")>
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
@@ -132,9 +125,6 @@ public final class Configuration {
         Collection<RuleConfiguration> result = new LinkedList<>();
     <#if transaction!="local">
         result.add(createTransactionRuleConfiguration());
-    </#if>
-    <#if feature?contains("db-discovery")>
-        result.add(createDatabaseDiscoveryRuleConfiguration());
     </#if>
     <#if feature?contains("encrypt")>
         result.add(createEncryptRuleConfiguration());

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
 
 /**
  * YAML storage node data source swapper.
@@ -32,12 +32,11 @@ public final class YamlStorageNodeDataSourceSwapper implements YamlConfiguration
         YamlStorageNodeDataSource result = new YamlStorageNodeDataSource();
         result.setRole(data.getRole().name());
         result.setStatus(data.getStatus().name());
-        result.setReplicationDelayMilliseconds(data.getReplicationDelayMilliseconds());
         return result;
     }
     
     @Override
     public StorageNodeDataSource swapToObject(final YamlStorageNodeDataSource yamlConfig) {
-        return new StorageNodeDataSource(StorageNodeRole.valueOf(yamlConfig.getRole()), DataSourceState.valueOf(yamlConfig.getStatus()), yamlConfig.getReplicationDelayMilliseconds());
+        return new StorageNodeDataSource(StorageNodeRole.valueOf(yamlConfig.getRole()), DataSourceState.valueOf(yamlConfig.getStatus()));
     }
 }

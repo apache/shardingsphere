@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * Capability flag for MySQL.
  * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/capability-flags.html#packet-Protocol::CapabilityFlags">CapabilityFlags</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/group__group__cs__capabilities__flags.html">Capabilities Flags</a>
  */
 @RequiredArgsConstructor
 @Getter

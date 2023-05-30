@@ -19,9 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.parser.segment.strategy;
 
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-
-import java.util.Optional;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 /**
  * Key generate strategy segment.
@@ -31,18 +29,10 @@ public final class KeyGenerateStrategySegment implements ASTNode {
     
     private final String keyGenerateColumn;
     
-    private final Optional<String> keyGenerateAlgorithmName;
-    
-    private AlgorithmSegment keyGenerateAlgorithmSegment;
-    
-    public KeyGenerateStrategySegment(final String keyGenerateColumn, final String keyGenerateAlgorithmName) {
-        this.keyGenerateColumn = keyGenerateColumn;
-        this.keyGenerateAlgorithmName = Optional.ofNullable(keyGenerateAlgorithmName);
-    }
+    private final AlgorithmSegment keyGenerateAlgorithmSegment;
     
     public KeyGenerateStrategySegment(final String keyGenerateColumn, final AlgorithmSegment keyGenerateAlgorithmSegment) {
         this.keyGenerateColumn = keyGenerateColumn;
-        this.keyGenerateAlgorithmName = Optional.empty();
         this.keyGenerateAlgorithmSegment = keyGenerateAlgorithmSegment;
     }
 }

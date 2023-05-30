@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpr
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.timeservice.core.rule.TimeServiceRule;
+import org.apache.shardingsphere.timeservice.core.rule.TimestampServiceRule;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -43,45 +43,45 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class ConditionValueGeneratorFactoryTest {
+class ConditionValueGeneratorFactoryTest {
     
     private final Column column = new Column("id", "tbl");
     
     @Test
-    public void assertGenerateBinaryOperationExpression() {
+    void assertGenerateBinaryOperationExpression() {
         ConditionValueCompareOperatorGenerator conditionValueCompareOperatorGenerator = new ConditionValueCompareOperatorGenerator();
         BinaryOperationExpression rightValue = new BinaryOperationExpression(0, 0, mock(ColumnSegment.class), new LiteralExpressionSegment(0, 0, 1), "=", null);
-        Optional<ShardingConditionValue> actual = conditionValueCompareOperatorGenerator.generate(rightValue, column, new LinkedList<>(), mock(TimeServiceRule.class));
-        Optional<ShardingConditionValue> expected = ConditionValueGeneratorFactory.generate(rightValue, column, new LinkedList<>(), mock(TimeServiceRule.class));
+        Optional<ShardingConditionValue> actual = conditionValueCompareOperatorGenerator.generate(rightValue, column, new LinkedList<>(), mock(TimestampServiceRule.class));
+        Optional<ShardingConditionValue> expected = ConditionValueGeneratorFactory.generate(rightValue, column, new LinkedList<>(), mock(TimestampServiceRule.class));
         assertTrue(actual.isPresent() && expected.isPresent());
         assertThat(actual.get().getTableName(), is(expected.get().getTableName()));
         assertThat(actual.get().getColumnName(), is(expected.get().getColumnName()));
     }
     
     @Test
-    public void assertGenerateInOperationExpression() {
+    void assertGenerateInOperationExpression() {
         ConditionValueInOperatorGenerator conditionValueInOperatorGenerator = new ConditionValueInOperatorGenerator();
         ColumnSegment left = new ColumnSegment(0, 0, new IdentifierValue("id"));
         ListExpression right = new ListExpression(0, 0);
         right.getItems().add(new ParameterMarkerExpressionSegment(0, 0, 0));
         Optional<ShardingConditionValue> actual = conditionValueInOperatorGenerator.generate(
-                new InExpression(0, 0, left, right, false), column, Collections.singletonList(1), mock(TimeServiceRule.class));
+                new InExpression(0, 0, left, right, false), column, Collections.singletonList(1), mock(TimestampServiceRule.class));
         Optional<ShardingConditionValue> expected = ConditionValueGeneratorFactory.generate(
-                new InExpression(0, 0, left, right, false), column, Collections.singletonList(1), mock(TimeServiceRule.class));
+                new InExpression(0, 0, left, right, false), column, Collections.singletonList(1), mock(TimestampServiceRule.class));
         assertTrue(actual.isPresent() && expected.isPresent());
         assertThat(actual.get().getColumnName(), is(expected.get().getColumnName()));
         assertThat(actual.get().getTableName(), is(expected.get().getTableName()));
     }
     
     @Test
-    public void assertGenerateBetweenExpression() {
+    void assertGenerateBetweenExpression() {
         ConditionValueBetweenOperatorGenerator conditionValueBetweenOperatorGenerator = new ConditionValueBetweenOperatorGenerator();
         ExpressionSegment betweenSegment = new LiteralExpressionSegment(0, 0, 1);
         ExpressionSegment andSegment = new LiteralExpressionSegment(0, 0, 2);
         Optional<ShardingConditionValue> actual = conditionValueBetweenOperatorGenerator.generate(
-                new BetweenExpression(0, 0, null, betweenSegment, andSegment, false), column, new LinkedList<>(), mock(TimeServiceRule.class));
+                new BetweenExpression(0, 0, null, betweenSegment, andSegment, false), column, new LinkedList<>(), mock(TimestampServiceRule.class));
         Optional<ShardingConditionValue> expected = ConditionValueGeneratorFactory.generate(
-                new BetweenExpression(0, 0, null, betweenSegment, andSegment, false), column, new LinkedList<>(), mock(TimeServiceRule.class));
+                new BetweenExpression(0, 0, null, betweenSegment, andSegment, false), column, new LinkedList<>(), mock(TimestampServiceRule.class));
         assertTrue(actual.isPresent() && expected.isPresent());
         assertThat(actual.get().getColumnName(), is(expected.get().getColumnName()));
         assertThat(actual.get().getTableName(), is(expected.get().getTableName()));

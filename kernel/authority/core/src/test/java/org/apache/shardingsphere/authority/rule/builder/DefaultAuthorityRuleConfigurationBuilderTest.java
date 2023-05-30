@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class DefaultAuthorityRuleConfigurationBuilderTest {
+class DefaultAuthorityRuleConfigurationBuilderTest {
     
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         AuthorityRuleConfiguration actual = new DefaultAuthorityRuleConfigurationBuilder().build();
         assertThat(actual.getAuthorityProvider().getType(), is("ALL_PERMITTED"));
         assertThat(actual.getUsers().size(), is(1));

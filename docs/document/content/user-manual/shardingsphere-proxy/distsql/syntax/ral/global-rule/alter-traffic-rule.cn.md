@@ -1,11 +1,11 @@
 +++
 title = "ALTER TRAFFIC RULE"
-weight = 8
+weight = 7
 +++
 
 ## 描述
 
-`ALTER TRAFFIC RULE` 语法用于修改双路由规则
+`ALTER TRAFFIC RULE` 语法用于修改双路由规则。
 
 ### 语法定义
 

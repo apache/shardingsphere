@@ -26,8 +26,11 @@ import java.sql.Timestamp;
 
 /**
  * MySQL TIMESTAMP2 binlog protocol value.
+ * Stored as a 4 byte UNIX timestamp (number of seconds since 00:00, Jan 1 1970 UTC) followed by the fractional second parts.
+ * The number of decimals for the fractional part is stored in the table metadata as a one byte value.
+ * The number of bytes that follow the 4 byte timestamp can be calculated with the following formula: (decimals + 1) / 2
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/field__types_8h.html">field type</a>
  */
 public final class MySQLTimestamp2BinlogProtocolValue implements MySQLBinlogProtocolValue {
     
@@ -35,9 +38,11 @@ public final class MySQLTimestamp2BinlogProtocolValue implements MySQLBinlogProt
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         int seconds = payload.getByteBuf().readInt();
         if (0 == seconds) {
-            return MySQLTimeValueUtil.DATETIME_OF_ZERO;
+            return MySQLTimeValueUtils.DATETIME_OF_ZERO;
         }
-        String result = MySQLTimeValueUtil.getSimpleDateFormat().format(new Timestamp(seconds * 1000L));
-        return columnDef.getColumnMeta() > 0 ? result + new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload) : result;
+        int nanos = columnDef.getColumnMeta() > 0 ? new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload).getNanos() : 0;
+        Timestamp result = new Timestamp(seconds * 1000L);
+        result.setNanos(nanos);
+        return result;
     }
 }

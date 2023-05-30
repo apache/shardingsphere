@@ -20,8 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.builder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
@@ -49,7 +48,7 @@ public final class SystemSchemaBuilder {
      * @return ShardingSphere system schema map
      */
     public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType databaseType) {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(databaseType.getSystemSchemas().size(), 1);
+        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(databaseType.getSystemSchemas().size(), 1F);
         YamlTableSwapper swapper = new YamlTableSwapper();
         for (String each : getSystemSchemas(databaseName, databaseType)) {
             result.put(each.toLowerCase(), createSchema(getSchemaStreams(each, databaseType), swapper));
@@ -58,7 +57,7 @@ public final class SystemSchemaBuilder {
     }
     
     private static Collection<String> getSystemSchemas(final String originalDatabaseName, final DatabaseType databaseType) {
-        String databaseName = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType ? "postgres" : originalDatabaseName;
+        String databaseName = databaseType instanceof SchemaSupportedDatabaseType ? "postgres" : originalDatabaseName;
         return databaseType.getSystemDatabaseSchemaMap().getOrDefault(databaseName, Collections.emptyList());
     }
     
@@ -66,13 +65,13 @@ public final class SystemSchemaBuilder {
         SystemSchemaBuilderRule builderRule = SystemSchemaBuilderRule.valueOf(databaseType.getType(), schemaName);
         Collection<InputStream> result = new LinkedList<>();
         for (String each : builderRule.getTables()) {
-            result.add(SystemSchemaBuilder.class.getClassLoader().getResourceAsStream("schema/" + databaseType.getType().toLowerCase() + "/" + schemaName + "/" + each + ".yaml"));
+            result.add(Thread.currentThread().getContextClassLoader().getResourceAsStream("schema/" + databaseType.getType().toLowerCase() + "/" + schemaName + "/" + each + ".yaml"));
         }
         return result;
     }
     
     private static ShardingSphereSchema createSchema(final Collection<InputStream> schemaStreams, final YamlTableSwapper swapper) {
-        Map<String, ShardingSphereTable> tables = new LinkedHashMap<>(schemaStreams.size(), 1);
+        Map<String, ShardingSphereTable> tables = new LinkedHashMap<>(schemaStreams.size(), 1F);
         for (InputStream each : schemaStreams) {
             YamlShardingSphereTable metaData = new Yaml().loadAs(each, YamlShardingSphereTable.class);
             tables.put(metaData.getName(), swapper.swapToObject(metaData));

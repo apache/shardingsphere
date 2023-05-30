@@ -30,7 +30,7 @@ public final class MergedEncryptShowColumnsMergedResult extends EncryptShowColum
     
     private final QueryResult queryResult;
     
-    public MergedEncryptShowColumnsMergedResult(final QueryResult queryResult, final SQLStatementContext<?> sqlStatementContext, final EncryptRule encryptRule) {
+    public MergedEncryptShowColumnsMergedResult(final QueryResult queryResult, final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
         super(sqlStatementContext, encryptRule);
         this.queryResult = queryResult;
     }

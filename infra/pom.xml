@@ -22,22 +22,23 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>5.3.2-SNAPSHOT</version>
+        <version>5.3.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-infra</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>util</module>
         <module>common</module>
         <module>parser</module>
         <module>binder</module>
+        <module>session</module>
         <module>route</module>
         <module>rewrite</module>
         <module>executor</module>
         <module>merge</module>
         <module>context</module>
-        <module>util-groovy</module>
+        <module>expr</module>
+        <module>util</module>
     </modules>
 </project>

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.mysql.handler.admin.executor;
 
 import io.netty.util.DefaultAttributeMap;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.executor.sql.process.Process;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -32,6 +33,7 @@ import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -41,40 +43,31 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ShowProcessListExecutorTest {
+class ShowProcessListExecutorTest {
     
     @Test
-    public void assertExecute() throws SQLException, ReflectiveOperationException {
+    void assertExecute() throws SQLException, ReflectiveOperationException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShowProcessListExecutor showProcessListExecutor = new ShowProcessListExecutor();
-        setupBatchProcessContexts(showProcessListExecutor);
+        setupProcesses(showProcessListExecutor);
         showProcessListExecutor.execute(new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap()));
         assertThat(showProcessListExecutor.getQueryResultMetaData().getColumnCount(), is(8));
         MergedResult mergedResult = showProcessListExecutor.getMergedResult();
         while (mergedResult.next()) {
             assertThat(mergedResult.getValue(1, String.class), is("f6c2336a-63ba-41bf-941e-2e3504eb2c80"));
-            assertThat(mergedResult.getValue(2, String.class), is("sharding"));
+            assertThat(mergedResult.getValue(2, String.class), is("root"));
             assertThat(mergedResult.getValue(3, String.class), is("127.0.0.1"));
-            assertThat(mergedResult.getValue(4, String.class), is("sharding_db"));
+            assertThat(mergedResult.getValue(4, String.class), is("foo_db"));
             assertThat(mergedResult.getValue(7, String.class), is("Executing 1/2"));
-            assertThat(mergedResult.getValue(8, String.class), is("alter table t_order add column a varchar(64) after order_id"));
+            assertThat(mergedResult.getValue(8, String.class), is("ALTER TABLE t_order ADD COLUMN a varchar(64) AFTER order_id"));
         }
     }
     
-    private void setupBatchProcessContexts(final ShowProcessListExecutor showProcessListExecutor) throws ReflectiveOperationException {
-        String executionNodeValue = "contexts:\n"
-                + "- executionID: f6c2336a-63ba-41bf-941e-2e3504eb2c80\n"
-                + "  sql: alter table t_order add column a varchar(64) after order_id\n"
-                + "  startTimeMillis: 1617939785160\n"
-                + "  databaseName: sharding_db\n"
-                + "  username: sharding\n"
-                + "  hostname: 127.0.0.1\n"
-                + "  unitStatuses:\n"
-                + "  - processStatus: START\n"
-                + "    unitID: unitID1\n"
-                + "  - processStatus: DONE\n"
-                + "    unitID: unitID2\n";
-        Plugins.getMemberAccessor().set(showProcessListExecutor.getClass().getDeclaredField("batchProcessContexts"), showProcessListExecutor, Collections.singleton(executionNodeValue));
+    private void setupProcesses(final ShowProcessListExecutor showProcessListExecutor) throws ReflectiveOperationException {
+        Process process = new Process("f6c2336a-63ba-41bf-941e-2e3504eb2c80", 1617939785160L,
+                "ALTER TABLE t_order ADD COLUMN a varchar(64) AFTER order_id", "foo_db", "root", "127.0.0.1", 2, Collections.emptyList(), new AtomicInteger(1), false);
+        Plugins.getMemberAccessor().set(
+                showProcessListExecutor.getClass().getDeclaredField("processes"), showProcessListExecutor, Collections.singleton(process));
     }
 }

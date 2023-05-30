@@ -22,20 +22,20 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class DefaultDataSourcePropertyProviderTest {
+class DefaultDataSourcePropertyProviderTest {
     
     @Test
-    public void assertGetURLPropertyName() {
+    void assertGetURLPropertyName() {
         assertThat(new DefaultDataSourcePropertyProvider().getURLPropertyName(), is("url"));
     }
     
     @Test
-    public void assertGetUsernamePropertyName() {
+    void assertGetUsernamePropertyName() {
         assertThat(new DefaultDataSourcePropertyProvider().getUsernamePropertyName(), is("username"));
     }
     
     @Test
-    public void assertGetPasswordPropertyName() {
+    void assertGetPasswordPropertyName() {
         assertThat(new DefaultDataSourcePropertyProvider().getPasswordPropertyName(), is("password"));
     }
 }

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
@@ -60,12 +60,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ShowDatabasesExecutorTest {
+class ShowDatabasesExecutorTest {
     
     private static final String DATABASE_PATTERN = "database_%s";
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(IntStream.range(0, 10).mapToObj(each -> String.format("database_%s", each)).collect(Collectors.toList()));
@@ -76,7 +76,7 @@ public final class ShowDatabasesExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithPrefixLike() throws SQLException {
+    void assertExecuteWithPrefixLike() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
         ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "database%");
@@ -91,7 +91,7 @@ public final class ShowDatabasesExecutorTest {
     }
     
     private Collection<String> getActual(final ShowDatabasesExecutor executor) throws SQLException {
-        Map<String, String> result = new ConcurrentHashMap<>(10, 1);
+        Map<String, String> result = new ConcurrentHashMap<>(10, 1F);
         while (executor.getMergedResult().next()) {
             String value = executor.getMergedResult().getValue(1, Object.class).toString();
             result.put(value, value);
@@ -100,7 +100,7 @@ public final class ShowDatabasesExecutorTest {
     }
     
     private Collection<String> getExpected() {
-        Map<String, String> result = new ConcurrentHashMap<>(10, 1);
+        Map<String, String> result = new ConcurrentHashMap<>(10, 1F);
         for (int i = 0; i < 10; i++) {
             String value = String.format(DATABASE_PATTERN, i);
             result.put(value, value);
@@ -109,7 +109,7 @@ public final class ShowDatabasesExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithSuffixLike() throws SQLException {
+    void assertExecuteWithSuffixLike() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
         ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "%_1");
@@ -130,7 +130,7 @@ public final class ShowDatabasesExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithPreciseLike() throws SQLException {
+    void assertExecuteWithPreciseLike() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
         ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "database_9");
@@ -151,7 +151,7 @@ public final class ShowDatabasesExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithLikeMatchNone() throws SQLException {
+    void assertExecuteWithLikeMatchNone() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
         ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
         ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "not_exist_database");
@@ -187,7 +187,7 @@ public final class ShowDatabasesExecutorTest {
     }
     
     private Map<String, ShardingSphereDatabase> getDatabases() {
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1);
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1F);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());

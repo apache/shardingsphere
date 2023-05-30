@@ -23,6 +23,7 @@ columns:
     generated: false
     name: TABLE_CATALOG
     primaryKey: false
+    unsigned: false
     visible: true
   table_schema:
     caseSensitive: false
@@ -30,6 +31,7 @@ columns:
     generated: false
     name: TABLE_SCHEMA
     primaryKey: false
+    unsigned: false
     visible: true
   table_name:
     caseSensitive: false
@@ -37,6 +39,7 @@ columns:
     generated: false
     name: TABLE_NAME
     primaryKey: false
+    unsigned: false
     visible: true
   column_name:
     caseSensitive: false
@@ -44,19 +47,23 @@ columns:
     generated: false
     name: COLUMN_NAME
     primaryKey: false
+    unsigned: false
     visible: true
   ordinal_position:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: ORDINAL_POSITION
     primaryKey: false
+    unsigned: true
+    visible: true
   column_default:
     caseSensitive: false
     dataType: -1
     generated: false
     name: COLUMN_DEFAULT
     primaryKey: false
+    unsigned: false
     visible: true
   is_nullable:
     caseSensitive: false
@@ -64,6 +71,7 @@ columns:
     generated: false
     name: IS_NULLABLE
     primaryKey: false
+    unsigned: false
     visible: true
   data_type:
     caseSensitive: false
@@ -71,41 +79,47 @@ columns:
     generated: false
     name: DATA_TYPE
     primaryKey: false
+    unsigned: false
     visible: true
   character_maximum_length:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: CHARACTER_MAXIMUM_LENGTH
     primaryKey: false
+    unsigned: true
     visible: true
   character_octet_length:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: CHARACTER_OCTET_LENGTH
     primaryKey: false
+    unsigned: true
     visible: true
   numeric_precision:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: NUMERIC_PRECISION
     primaryKey: false
+    unsigned: true
     visible: true
   numeric_scale:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: NUMERIC_SCALE
     primaryKey: false
+    unsigned: true
     visible: true
   datetime_precision:
     caseSensitive: false
-    dataType: -5
+    dataType: 4
     generated: false
     name: DATETIME_PRECISION
     primaryKey: false
+    unsigned: true
     visible: true
   character_set_name:
     caseSensitive: false
@@ -113,6 +127,7 @@ columns:
     generated: false
     name: CHARACTER_SET_NAME
     primaryKey: false
+    unsigned: false
     visible: true
   collation_name:
     caseSensitive: false
@@ -120,6 +135,7 @@ columns:
     generated: false
     name: COLLATION_NAME
     primaryKey: false
+    unsigned: false
     visible: true
   column_type:
     caseSensitive: false
@@ -127,6 +143,7 @@ columns:
     generated: false
     name: COLUMN_TYPE
     primaryKey: false
+    unsigned: false
     visible: true
   column_key:
     caseSensitive: false
@@ -134,6 +151,7 @@ columns:
     generated: false
     name: COLUMN_KEY
     primaryKey: false
+    unsigned: false
     visible: true
   extra:
     caseSensitive: false
@@ -141,6 +159,7 @@ columns:
     generated: false
     name: EXTRA
     primaryKey: false
+    unsigned: false
     visible: true
   privileges:
     caseSensitive: false
@@ -148,6 +167,7 @@ columns:
     generated: false
     name: PRIVILEGES
     primaryKey: false
+    unsigned: false
     visible: true
   column_comment:
     caseSensitive: false
@@ -155,6 +175,7 @@ columns:
     generated: false
     name: COLUMN_COMMENT
     primaryKey: false
+    unsigned: false
     visible: true
   generation_expression:
     caseSensitive: false
@@ -162,4 +183,5 @@ columns:
     generated: false
     name: GENERATION_EXPRESSION
     primaryKey: false
+    unsigned: false
     visible: true

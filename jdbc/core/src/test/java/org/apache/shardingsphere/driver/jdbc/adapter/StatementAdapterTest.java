@@ -43,6 +43,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -52,10 +53,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class StatementAdapterTest {
+class StatementAdapterTest {
     
     @Test
-    public void assertClose() throws SQLException {
+    void assertClose() throws SQLException {
         Statement statement = mock(Statement.class);
         ShardingSphereStatement actual = mockShardingSphereStatement(statement);
         actual.close();
@@ -65,7 +66,7 @@ public final class StatementAdapterTest {
     }
     
     @Test
-    public void assertSetPoolable() throws SQLException {
+    void assertSetPoolable() throws SQLException {
         Statement statement = mock(Statement.class);
         ShardingSphereStatement actual = mockShardingSphereStatement(statement);
         actual.setPoolable(true);
@@ -74,7 +75,7 @@ public final class StatementAdapterTest {
     }
     
     @Test
-    public void assertSetFetchSize() throws SQLException {
+    void assertSetFetchSize() throws SQLException {
         Statement statement = mock(Statement.class);
         ShardingSphereStatement actual = mockShardingSphereStatement(statement);
         actual.setFetchSize(100);
@@ -83,7 +84,7 @@ public final class StatementAdapterTest {
     }
     
     @Test
-    public void assertSetFetchDirection() throws SQLException {
+    void assertSetFetchDirection() throws SQLException {
         Statement statement = mock(Statement.class);
         ShardingSphereStatement actual = mockShardingSphereStatement(statement);
         actual.setFetchDirection(ResultSet.FETCH_REVERSE);
@@ -92,7 +93,7 @@ public final class StatementAdapterTest {
     }
     
     @Test
-    public void assertSetEscapeProcessing() throws SQLException {
+    void assertSetEscapeProcessing() throws SQLException {
         Statement statement = mock(Statement.class);
         ShardingSphereStatement actual = mockShardingSphereStatement(statement);
         actual.setEscapeProcessing(true);
@@ -100,7 +101,7 @@ public final class StatementAdapterTest {
     }
     
     @Test
-    public void assertCancel() throws SQLException {
+    void assertCancel() throws SQLException {
         Statement statement = mock(Statement.class);
         ShardingSphereStatement actual = mockShardingSphereStatement(statement);
         actual.cancel();
@@ -108,7 +109,7 @@ public final class StatementAdapterTest {
     }
     
     @Test
-    public void assertGetUpdateCountWithoutAccumulate() throws SQLException {
+    void assertGetUpdateCountWithoutAccumulate() throws SQLException {
         Statement statement1 = mock(Statement.class);
         when(statement1.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
         Statement statement2 = mock(Statement.class);
@@ -118,7 +119,7 @@ public final class StatementAdapterTest {
     }
     
     @Test
-    public void assertGetUpdateCountWithoutAccumulateAndInvalidResult() throws SQLException {
+    void assertGetUpdateCountWithoutAccumulateAndInvalidResult() throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.getUpdateCount()).thenReturn(-1);
         ShardingSphereStatement actual = mockShardingSphereStatement(statement);
@@ -126,13 +127,13 @@ public final class StatementAdapterTest {
     }
     
     @Test
-    public void assertGetUpdateCountWithoutAccumulateAndEmptyResult() throws SQLException {
+    void assertGetUpdateCountWithoutAccumulateAndEmptyResult() throws SQLException {
         ShardingSphereStatement actual = mockShardingSphereStatement();
         assertThat(actual.getUpdateCount(), is(-1));
     }
     
     @Test
-    public void assertGetUpdateCountWithAccumulate() throws SQLException {
+    void assertGetUpdateCountWithAccumulate() throws SQLException {
         Statement statement1 = mock(Statement.class);
         when(statement1.getUpdateCount()).thenReturn(Integer.MAX_VALUE);
         Statement statement2 = mock(Statement.class);
@@ -142,17 +143,21 @@ public final class StatementAdapterTest {
     }
     
     @Test
-    public void assertGetWarnings() {
-        assertNull(mockShardingSphereStatement().getWarnings());
+    void assertGetWarnings() throws SQLException {
+        try (ShardingSphereStatement actual = mockShardingSphereStatement()) {
+            assertNull(actual.getWarnings());
+        }
     }
     
     @Test
-    public void assertClearWarnings() {
-        mockShardingSphereStatement().clearWarnings();
+    void assertClearWarnings() throws SQLException {
+        try (ShardingSphereStatement actual = mockShardingSphereStatement()) {
+            assertDoesNotThrow(actual::clearWarnings);
+        }
     }
     
     @Test
-    public void assertGetMoreResults() throws SQLException {
+    void assertGetMoreResults() throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.getMoreResults()).thenReturn(true);
         ShardingSphereStatement actual = mockShardingSphereStatement(statement);
@@ -160,17 +165,17 @@ public final class StatementAdapterTest {
     }
     
     @Test
-    public void assertGetMoreResultsWithCurrent() {
+    void assertGetMoreResultsWithCurrent() {
         assertFalse(mockShardingSphereStatement().getMoreResults(Statement.KEEP_CURRENT_RESULT));
     }
     
     @Test
-    public void assertGetMaxFieldSizeWithoutRoutedStatements() throws SQLException {
+    void assertGetMaxFieldSizeWithoutRoutedStatements() throws SQLException {
         assertThat(mockShardingSphereStatement().getMaxFieldSize(), is(0));
     }
     
     @Test
-    public void assertGetMaxFieldSizeWithRoutedStatements() throws SQLException {
+    void assertGetMaxFieldSizeWithRoutedStatements() throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.getMaxFieldSize()).thenReturn(10);
         ShardingSphereStatement actual = mockShardingSphereStatement(statement);
@@ -178,7 +183,7 @@ public final class StatementAdapterTest {
     }
     
     @Test
-    public void assertSetMaxFieldSize() throws SQLException {
+    void assertSetMaxFieldSize() throws SQLException {
         Statement statement = mock(Statement.class);
         ShardingSphereStatement actual = mockShardingSphereStatement(statement);
         actual.setMaxFieldSize(10);
@@ -186,12 +191,12 @@ public final class StatementAdapterTest {
     }
     
     @Test
-    public void assertGetMaxRowsWitRoutedStatements() throws SQLException {
+    void assertGetMaxRowsWitRoutedStatements() throws SQLException {
         assertThat(mockShardingSphereStatement().getMaxRows(), is(-1));
     }
     
     @Test
-    public void assertGetMaxRowsWithoutRoutedStatements() throws SQLException {
+    void assertGetMaxRowsWithoutRoutedStatements() throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.getMaxRows()).thenReturn(10);
         ShardingSphereStatement actual = mockShardingSphereStatement(statement);
@@ -199,7 +204,7 @@ public final class StatementAdapterTest {
     }
     
     @Test
-    public void assertSetMaxRows() throws SQLException {
+    void assertSetMaxRows() throws SQLException {
         Statement statement = mock(Statement.class);
         ShardingSphereStatement actual = mockShardingSphereStatement(statement);
         actual.setMaxRows(10);
@@ -207,12 +212,12 @@ public final class StatementAdapterTest {
     }
     
     @Test
-    public void assertGetQueryTimeoutWithoutRoutedStatements() throws SQLException {
+    void assertGetQueryTimeoutWithoutRoutedStatements() throws SQLException {
         assertThat(mockShardingSphereStatement().getQueryTimeout(), is(0));
     }
     
     @Test
-    public void assertGetQueryTimeoutWithRoutedStatements() throws SQLException {
+    void assertGetQueryTimeoutWithRoutedStatements() throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.getQueryTimeout()).thenReturn(10);
         ShardingSphereStatement actual = mockShardingSphereStatement(statement);
@@ -220,7 +225,7 @@ public final class StatementAdapterTest {
     }
     
     @Test
-    public void assertSetQueryTimeout() throws SQLException {
+    void assertSetQueryTimeout() throws SQLException {
         Statement statement = mock(Statement.class);
         ShardingSphereStatement actual = mockShardingSphereStatement(statement);
         actual.setQueryTimeout(10);

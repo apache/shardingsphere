@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.handshake;
 
+import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLCapabilityFlag;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLHandshakePacketTest {
+class MySQLHandshakePacketTest {
     
     @Mock
     private MySQLPacketPayload payload;
@@ -43,18 +44,18 @@ public final class MySQLHandshakePacketTest {
     private final byte[] part2 = {68, 102, 53, 122, 65, 49, 84, 79, 85, 115, 116, 113};
     
     @Test
-    public void assertNewWithPayload() {
-        when(payload.readInt1()).thenReturn(MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.DEFAULT_CHARSET.getId(), 0);
-        when(payload.readStringNul()).thenReturn(MySQLServerInfo.getDefaultServerVersion());
+    void assertNewWithPayload() {
+        when(payload.readInt1()).thenReturn(MySQLConstants.PROTOCOL_VERSION, MySQLConstants.DEFAULT_CHARSET.getId(), 0);
+        when(payload.readStringNul()).thenReturn(DatabaseProtocolServerInfo.getDefaultProtocolVersion("MySQL"));
         when(payload.readStringNulByBytes()).thenReturn(part1, part2);
         when(payload.readInt4()).thenReturn(1000);
         when(payload.readInt2()).thenReturn(
                 MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
         MySQLHandshakePacket actual = new MySQLHandshakePacket(payload);
-        assertThat(actual.getServerVersion(), is(MySQLServerInfo.getDefaultServerVersion()));
+        assertThat(actual.getServerVersion(), is(DatabaseProtocolServerInfo.getDefaultProtocolVersion("MySQL")));
         assertThat(actual.getCapabilityFlagsLower(), is(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower()));
         assertThat(actual.getConnectionId(), is(1000));
-        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET.getId()));
+        assertThat(actual.getCharacterSet(), is(MySQLConstants.DEFAULT_CHARSET.getId()));
         assertThat(actual.getStatusFlag(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT));
         assertThat(actual.getCapabilityFlagsUpper(), is(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper()));
         assertThat(actual.getAuthPluginData().getAuthenticationPluginDataPart1(), is(part1));
@@ -63,18 +64,18 @@ public final class MySQLHandshakePacketTest {
     }
     
     @Test
-    public void assertNewWithClientPluginAuthPayload() {
-        when(payload.readInt1()).thenReturn(MySQLServerInfo.PROTOCOL_VERSION, MySQLServerInfo.DEFAULT_CHARSET.getId(), 0);
-        when(payload.readStringNul()).thenReturn(MySQLServerInfo.getDefaultServerVersion(), MySQLAuthenticationMethod.NATIVE.getMethodName());
+    void assertNewWithClientPluginAuthPayload() {
+        when(payload.readInt1()).thenReturn(MySQLConstants.PROTOCOL_VERSION, MySQLConstants.DEFAULT_CHARSET.getId(), 0);
+        when(payload.readStringNul()).thenReturn(DatabaseProtocolServerInfo.getDefaultProtocolVersion("MySQL"), MySQLAuthenticationMethod.NATIVE.getMethodName());
         when(payload.readStringNulByBytes()).thenReturn(part1, part2);
         when(payload.readInt4()).thenReturn(1000);
         when(payload.readInt2()).thenReturn(
                 MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower(), MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue(), MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16);
         MySQLHandshakePacket actual = new MySQLHandshakePacket(payload);
-        assertThat(actual.getServerVersion(), is(MySQLServerInfo.getDefaultServerVersion()));
+        assertThat(actual.getServerVersion(), is(DatabaseProtocolServerInfo.getDefaultProtocolVersion("MySQL")));
         assertThat(actual.getCapabilityFlagsLower(), is(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower()));
         assertThat(actual.getConnectionId(), is(1000));
-        assertThat(actual.getCharacterSet(), is(MySQLServerInfo.DEFAULT_CHARSET.getId()));
+        assertThat(actual.getCharacterSet(), is(MySQLConstants.DEFAULT_CHARSET.getId()));
         assertThat(actual.getStatusFlag(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT));
         assertThat(actual.getCapabilityFlagsUpper(), is(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16));
         assertThat(actual.getAuthPluginData().getAuthenticationPluginDataPart1(), is(part1));
@@ -84,15 +85,27 @@ public final class MySQLHandshakePacketTest {
     }
     
     @Test
-    public void assertWrite() {
+    void assertNewWithSSLEnabled() {
+        MySQLHandshakePacket actual = new MySQLHandshakePacket(1, true, new MySQLAuthenticationPluginData());
+        assertThat(actual.getCapabilityFlagsLower() & MySQLCapabilityFlag.CLIENT_SSL.getValue(), is(MySQLCapabilityFlag.CLIENT_SSL.getValue()));
+    }
+    
+    @Test
+    void assertNewWithSSLNotEnabled() {
+        MySQLHandshakePacket actual = new MySQLHandshakePacket(1, false, new MySQLAuthenticationPluginData());
+        assertThat(actual.getCapabilityFlagsLower() & MySQLCapabilityFlag.CLIENT_SSL.getValue(), is(0));
+    }
+    
+    @Test
+    void assertWrite() {
         MySQLAuthenticationPluginData authPluginData = new MySQLAuthenticationPluginData(part1, part2);
-        new MySQLHandshakePacket(1000, authPluginData).write(payload);
-        verify(payload).writeInt1(MySQLServerInfo.PROTOCOL_VERSION);
-        verify(payload).writeStringNul(MySQLServerInfo.getDefaultServerVersion());
+        new MySQLHandshakePacket(1000, false, authPluginData).write(payload);
+        verify(payload).writeInt1(MySQLConstants.PROTOCOL_VERSION);
+        verify(payload).writeStringNul(DatabaseProtocolServerInfo.getDefaultProtocolVersion("MySQL"));
         verify(payload).writeInt4(1000);
         verify(payload).writeStringNul(new String(authPluginData.getAuthenticationPluginDataPart1()));
         verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower());
-        verify(payload).writeInt1(MySQLServerInfo.DEFAULT_CHARSET.getId());
+        verify(payload).writeInt1(MySQLConstants.DEFAULT_CHARSET.getId());
         verify(payload).writeInt2(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsUpper());
         verify(payload).writeInt1(authPluginData.getAuthenticationPluginData().length + 1);
@@ -101,17 +114,17 @@ public final class MySQLHandshakePacketTest {
     }
     
     @Test
-    public void assertWriteWithClientPluginAuth() {
+    void assertWriteWithClientPluginAuth() {
         MySQLAuthenticationPluginData authPluginData = new MySQLAuthenticationPluginData(part1, part2);
-        MySQLHandshakePacket actual = new MySQLHandshakePacket(1000, authPluginData);
+        MySQLHandshakePacket actual = new MySQLHandshakePacket(1000, false, authPluginData);
         actual.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
         actual.write(payload);
-        verify(payload).writeInt1(MySQLServerInfo.PROTOCOL_VERSION);
-        verify(payload).writeStringNul(MySQLServerInfo.getDefaultServerVersion());
+        verify(payload).writeInt1(MySQLConstants.PROTOCOL_VERSION);
+        verify(payload).writeStringNul(DatabaseProtocolServerInfo.getDefaultProtocolVersion("MySQL"));
         verify(payload).writeInt4(1000);
         verify(payload).writeStringNul(new String(authPluginData.getAuthenticationPluginDataPart1()));
         verify(payload).writeInt2(MySQLCapabilityFlag.calculateHandshakeCapabilityFlagsLower());
-        verify(payload).writeInt1(MySQLServerInfo.DEFAULT_CHARSET.getId());
+        verify(payload).writeInt1(MySQLConstants.DEFAULT_CHARSET.getId());
         verify(payload).writeInt2(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         verify(payload).writeInt2(MySQLCapabilityFlag.CLIENT_PLUGIN_AUTH.getValue() >> 16);
         verify(payload).writeInt1(authPluginData.getAuthenticationPluginData().length + 1);

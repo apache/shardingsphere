@@ -27,28 +27,28 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ExecutorExceptionHandlerTest {
+class ExecutorExceptionHandlerTest {
     
     @AfterEach
-    public void tearDown() throws NoSuchFieldException, IllegalAccessException {
+    void tearDown() throws NoSuchFieldException, IllegalAccessException {
         ((ThreadLocal<?>) Plugins.getMemberAccessor().get(SQLExecutorExceptionHandler.class.getDeclaredField("IS_EXCEPTION_THROWN"), SQLExecutorExceptionHandler.class)).remove();
     }
     
     @Test
-    public void assertHandleExceptionWithoutSet() {
+    void assertHandleExceptionWithoutSet() {
         assertTrue(SQLExecutorExceptionHandler.isExceptionThrown());
         assertThrows(SQLException.class, () -> SQLExecutorExceptionHandler.handleException(new SQLException("")));
     }
     
     @Test
-    public void assertHandleExceptionWhenExceptionThrownIsTrue() {
+    void assertHandleExceptionWhenExceptionThrownIsTrue() {
         SQLExecutorExceptionHandler.setExceptionThrown(true);
         assertTrue(SQLExecutorExceptionHandler.isExceptionThrown());
         assertThrows(SQLException.class, () -> SQLExecutorExceptionHandler.handleException(new SQLException("")));
     }
     
     @Test
-    public void assertHandleExceptionWhenExceptionThrownIsFalse() throws SQLException {
+    void assertHandleExceptionWhenExceptionThrownIsFalse() throws SQLException {
         SQLExecutorExceptionHandler.setExceptionThrown(false);
         assertFalse(SQLExecutorExceptionHandler.isExceptionThrown());
         SQLExecutorExceptionHandler.handleException(new SQLException(""));

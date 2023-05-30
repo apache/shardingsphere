@@ -38,7 +38,6 @@ import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -52,19 +51,19 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ExportDatabaseConfigurationExecutorTest {
+class ExportDatabaseConfigurationExecutorTest {
     
     private final ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
     
     @Test
-    public void assertGetColumns() {
+    void assertGetColumns() {
         Collection<String> columns = new ExportDatabaseConfigurationExecutor().getColumnNames();
         assertThat(columns.size(), is(1));
         assertThat(columns.iterator().next(), is("result"));
     }
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() {
         when(database.getName()).thenReturn("normal_db");
         when(database.getResourceMetaData().getDataSources()).thenReturn(createDataSourceMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
@@ -75,7 +74,7 @@ public final class ExportDatabaseConfigurationExecutorTest {
     }
     
     @Test
-    public void assertExecuteWithEmptyDatabase() {
+    void assertExecuteWithEmptyDatabase() {
         when(database.getName()).thenReturn("empty_db");
         when(database.getResourceMetaData().getDataSources()).thenReturn(Collections.emptyMap());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
@@ -87,7 +86,7 @@ public final class ExportDatabaseConfigurationExecutorTest {
     }
     
     private Map<String, DataSource> createDataSourceMap() {
-        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
         result.put("ds_0", createDataSource("demo_ds_0"));
         result.put("ds_1", createDataSource("demo_ds_1"));
         return result;

@@ -23,7 +23,7 @@ on:
   workflow_dispatch:
 
 env:
-  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true -Drat.skip=true
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dmaven.javadoc.skip=true -Djacoco.skip=true
   RUNS_ON: ubuntu-latest
   REPOSITORY: apache/shardingsphere
   REPOSITORY_NAME: shardingsphere
@@ -55,7 +55,7 @@ jobs:
       - name: Build prod with Maven
         run: ./mvnw -T1C -B -ntp clean install
       - name: Run SQL parser
-        run: ./mvnw -nsu -B install -f sql-parser/dialect/${{ matrix.database }}/pom.xml -Dsql.parser.external.it.enabled=true
+        run: ./mvnw -nsu -B install -f parser/sql/dialect/${{ matrix.database }}/pom.xml -Dsql.parser.external.it.enabled=true
       - uses: actions/upload-artifact@v3
         with:
           name: sql-report

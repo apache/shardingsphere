@@ -1,11 +1,11 @@
 +++
 title = "SHOW COMPUTE NODE INFO"
-weight = 2
+weight = 4
 +++
 
 ### 描述
 
-`SHOW COMPUTE NODE INFO` 语法用于查询当前 proxy 实例信息
+`SHOW COMPUTE NODE INFO` 语法用于查询当前 proxy 实例信息。
 
 ### 语法
 
@@ -23,15 +23,15 @@ ShowComputeNodeInfo ::=
 
 ### 返回值说明
 
-| 列             | 说明               |
-|----------------|-------------------|
-| instance_id    | proxy 实例编号     |
-| host           | 主机地址           |
-| port           | 端口号             |
-| status         | proxy 实例状态     |
-| mode_type      | proxy 实例模式     |
-| worker_id      | worker id         |
-| labels         | 标签               |
+| 列           | 说明         |
+|-------------|------------|
+| instance_id | proxy 实例编号 |
+| host        | 主机地址       |
+| port        | 端口号        |
+| status      | proxy 实例状态 |
+| mode_type   | proxy 实例模式 |
+| worker_id   | worker id  |
+| labels      | 标签         |
 
 ### 示例
 

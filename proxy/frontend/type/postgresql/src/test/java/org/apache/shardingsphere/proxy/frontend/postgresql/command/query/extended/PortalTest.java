@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLEmptyQueryResponsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
@@ -26,17 +28,18 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLPortalSuspendedPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
-import org.apache.shardingsphere.infra.binder.QueryContext;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.UnknownSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
@@ -67,14 +70,17 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -87,16 +93,16 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings({ProxyContext.class, ProxyBackendHandlerFactory.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class PortalTest {
+class PortalTest {
     
     @Mock
     private ProxyBackendHandler proxyBackendHandler;
     
     @Mock
-    private BackendConnection backendConnection;
+    private ProxyDatabaseConnectionManager databaseConnectionManager;
     
     @BeforeEach
-    public void setup() throws SQLException {
+    void setup() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = mockDatabase();
@@ -106,7 +112,7 @@ public final class PortalTest {
         when(ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), anyString(), any(SQLStatement.class), eq(connectionSession), any(HintValueContext.class)))
                 .thenReturn(proxyBackendHandler);
         when(ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), any(QueryContext.class), eq(connectionSession), anyBoolean())).thenReturn(proxyBackendHandler);
-        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
+        when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
     }
     
     private ContextManager mockContextManager() {
@@ -123,17 +129,18 @@ public final class PortalTest {
     }
     
     @Test
-    public void assertGetName() throws SQLException {
+    void assertGetName() throws SQLException {
         Portal portal = new Portal("", new PostgreSQLServerPreparedStatement("",
-                new CommonSQLStatementContext<>(new PostgreSQLEmptyStatement()), Collections.emptyList()), Collections.emptyList(), Collections.emptyList(), backendConnection);
+                new UnknownSQLStatementContext(new PostgreSQLEmptyStatement()), Collections.emptyList()), Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         assertThat(portal.getName(), is(""));
     }
     
     @Test
-    public void assertExecuteSelectStatementAndReturnAllRows() throws SQLException {
+    void assertExecuteSelectStatementAndReturnAllRows() throws SQLException {
         QueryResponseHeader responseHeader = mock(QueryResponseHeader.class);
-        QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
-        when(responseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(queryHeader));
+        QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.VARCHAR, "columnTypeName", 0, 0, false, false, false, false);
+        QueryHeader intColumnQueryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
+        when(responseHeader.getQueryHeaders()).thenReturn(Arrays.asList(queryHeader, intColumnQueryHeader));
         when(proxyBackendHandler.execute()).thenReturn(responseHeader);
         when(proxyBackendHandler.next()).thenReturn(true, true, false);
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
@@ -143,19 +150,27 @@ public final class PortalTest {
         PostgreSQLServerPreparedStatement preparedStatement =
                 new PostgreSQLServerPreparedStatement("", sqlStatementContext, Collections.emptyList());
         List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
-        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, backendConnection);
+        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, databaseConnectionManager);
         portal.bind();
-        assertThat(portal.describe(), instanceOf(PostgreSQLRowDescriptionPacket.class));
-        List<PostgreSQLPacket> actualPackets = portal.execute(0);
+        PostgreSQLPacket portalDescription = portal.describe();
+        assertThat(portalDescription, instanceOf(PostgreSQLRowDescriptionPacket.class));
+        Optional<Collection<PostgreSQLColumnDescription>> columnDescriptions = ReflectionUtils.getFieldValue(portalDescription, "columnDescriptions");
+        assertTrue(columnDescriptions.isPresent());
+        Iterator<PostgreSQLColumnDescription> columnDescriptionIterator = columnDescriptions.get().iterator();
+        PostgreSQLColumnDescription textColumnDescription = columnDescriptionIterator.next();
+        PostgreSQLColumnDescription intColumnDescription = columnDescriptionIterator.next();
+        assertThat(textColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.TEXT.getCode()));
+        assertThat(intColumnDescription.getDataFormat(), is(PostgreSQLValueFormat.BINARY.getCode()));
+        List<DatabasePacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.size(), is(3));
-        Iterator<PostgreSQLPacket> actualPacketsIterator = actualPackets.iterator();
+        Iterator<DatabasePacket> actualPacketsIterator = actualPackets.iterator();
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLCommandCompletePacket.class));
     }
     
     @Test
-    public void assertExecuteSelectStatementAndPortalSuspended() throws SQLException {
+    void assertExecuteSelectStatementAndPortalSuspended() throws SQLException {
         QueryResponseHeader responseHeader = mock(QueryResponseHeader.class);
         QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
         when(responseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(queryHeader));
@@ -168,74 +183,73 @@ public final class PortalTest {
         when(selectStatementContext.getSqlStatement()).thenReturn(new PostgreSQLSelectStatement());
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", selectStatementContext, Collections.emptyList());
         List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
-        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, backendConnection);
+        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), resultFormats, databaseConnectionManager);
         portal.bind();
         assertThat(portal.describe(), instanceOf(PostgreSQLRowDescriptionPacket.class));
-        List<PostgreSQLPacket> actualPackets = portal.execute(2);
+        List<DatabasePacket> actualPackets = portal.execute(2);
         assertThat(actualPackets.size(), is(3));
-        Iterator<PostgreSQLPacket> actualPacketsIterator = actualPackets.iterator();
+        Iterator<DatabasePacket> actualPacketsIterator = actualPackets.iterator();
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLDataRowPacket.class));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLPortalSuspendedPacket.class));
     }
     
     @Test
-    public void assertExecuteUpdate() throws SQLException {
+    void assertExecuteUpdate() throws SQLException {
         when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(proxyBackendHandler.next()).thenReturn(false);
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(insertStatementContext.getSqlStatement()).thenReturn(new PostgreSQLInsertStatement());
         PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", insertStatementContext, Collections.emptyList());
-        Portal portal = new Portal("insert into t values (1)", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
+        Portal portal = new Portal("insert into t values (1)", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
-        List<PostgreSQLPacket> actualPackets = portal.execute(0);
+        List<DatabasePacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.iterator().next(), instanceOf(PostgreSQLCommandCompletePacket.class));
     }
     
     @Test
-    public void assertExecuteEmptyStatement() throws SQLException {
+    void assertExecuteEmptyStatement() throws SQLException {
         when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(proxyBackendHandler.next()).thenReturn(false);
-        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", new CommonSQLStatementContext<>(new PostgreSQLEmptyStatement()), Collections.emptyList());
-        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", new UnknownSQLStatementContext(new PostgreSQLEmptyStatement()), Collections.emptyList());
+        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
-        List<PostgreSQLPacket> actualPackets = portal.execute(0);
+        List<DatabasePacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.iterator().next(), instanceOf(PostgreSQLEmptyQueryResponsePacket.class));
     }
     
     @Test
-    public void assertExecuteSetStatement() throws SQLException {
+    void assertExecuteSetStatement() throws SQLException {
         when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(proxyBackendHandler.next()).thenReturn(false);
         String sql = "set client_encoding = utf8";
         PostgreSQLSetStatement setStatement = new PostgreSQLSetStatement();
         VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
-        variableAssignSegment.setVariable(new VariableSegment());
+        variableAssignSegment.setVariable(new VariableSegment(0, 0, "client_encoding"));
         setStatement.getVariableAssigns().add(variableAssignSegment);
-        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(sql, new CommonSQLStatementContext<>(setStatement), Collections.emptyList());
-        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(sql, new UnknownSQLStatementContext(setStatement), Collections.emptyList());
+        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
         portal.bind();
-        List<PostgreSQLPacket> actualPackets = portal.execute(0);
+        List<DatabasePacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.size(), is(2));
         assertThat(actualPackets.get(0), instanceOf(PostgreSQLCommandCompletePacket.class));
         assertThat(actualPackets.get(1), instanceOf(PostgreSQLParameterStatusPacket.class));
     }
     
-    @SuppressWarnings("unchecked")
     @Test
-    public void assertDescribeBeforeBind() {
+    void assertDescribeBeforeBind() {
         PostgreSQLServerPreparedStatement preparedStatement = mock(PostgreSQLServerPreparedStatement.class);
         when(preparedStatement.getSqlStatementContext()).thenReturn(mock(SQLStatementContext.class));
-        assertThrows(IllegalStateException.class, () -> new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection).describe());
+        assertThrows(IllegalStateException.class, () -> new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager).describe());
     }
     
     @Test
-    public void assertClose() throws SQLException {
-        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", new CommonSQLStatementContext<>(new PostgreSQLEmptyStatement()), Collections.emptyList());
-        new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection).close();
-        verify(backendConnection).unmarkResourceInUse(proxyBackendHandler);
+    void assertClose() throws SQLException {
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement("", new UnknownSQLStatementContext(new PostgreSQLEmptyStatement()), Collections.emptyList());
+        new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager).close();
+        verify(databaseConnectionManager).unmarkResourceInUse(proxyBackendHandler);
         verify(proxyBackendHandler).close();
     }
 }

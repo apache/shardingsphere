@@ -33,16 +33,15 @@ ShardingSphere-Proxy is a transparent database proxy, providing a database serve
 
 ### Product Features
 
-| Feature                 | Definition |
-| ----------------------- | ---------- |
-| Data Sharding           | Data sharding is an effective way to deal with massive data storage and computing. ShardingSphere provides a distributed database solution based on the underlying database, which can scale computing and storage horizontally. |
+| Feature                 | Definition                                                                                                                                                                                                                                                                                                                                   |
+|-------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Data Sharding           | Data sharding is an effective way to deal with massive data storage and computing. ShardingSphere provides a distributed database solution based on the underlying database, which can scale computing and storage horizontally.                                                                                                             |
 | Distributed Transaction | Transactional capability is key to ensuring database integrity and security and is also one of the databases' core technologies. With a hybrid engine based on XA and BASE transactions, ShardingSphere provides distributed transaction capabilities on top of standalone databases, enabling data security across underlying data sources. |
-| Read/write Splitting    | Read/write splitting can be used to cope with business access with high stress. ShardingSphere provides flexible read/write splitting capabilities and can achieve read access load balancing based on the understanding of SQL semantics and the ability to perceive the underlying database topology. |
-| High Availability       | High availability is a basic requirement for a data storage and computing platform. Guarantee the HA of your distributed database cluster with ShardingSphere’s Operator on Kubernetes, and the native HA of your existing data sources. |
-| Data Migration          | Data migration is the key to connecting data ecosystems. SharingSphere provides migration capabilities to help users migrate the data from other data sources, while simultaneously performing data sharding. |
-| Query Federation        | Federated queries are effective in utilizing data in a complex data environment. ShardingSphere provides complex data query and analysis capabilities across data sources, simplifying the data aggregation from different data locations. |
-| Data Encryption         | Data Encryption is a basic way to ensure data security. ShardingSphere provides a complete, transparent, secure, and low-cost data encryption solution. |
-| Shadow Database         | In full-link online load testing scenarios, ShardingSphere supports data isolation in complex load testing scenarios through the shadow database function. Execute your load testing scenarios in a production environment without worrying about test data polluting your production data. |
+| Read/write Splitting    | Read/write splitting can be used to cope with business access with high stress. ShardingSphere provides flexible read/write splitting capabilities and can achieve read access load balancing based on the understanding of SQL semantics and the ability to perceive the underlying database topology.                                      |
+| Data Migration          | Data migration is the key to connecting data ecosystems. ShardingSphere provides migration capabilities to help users migrate the data from other data sources, while simultaneously performing data sharding.                                                                                                                               |
+| Query Federation        | Federated queries are effective in utilizing data in a complex data environment. ShardingSphere provides complex data query and analysis capabilities across data sources, simplifying the data aggregation from different data locations.                                                                                                   |
+| Data Encryption         | Data Encryption is a basic way to ensure data security. ShardingSphere provides a complete, transparent, secure, and low-cost data encryption solution.                                                                                                                                                                                      |
+| Shadow Database         | In full-link online load testing scenarios, ShardingSphere supports data isolation in complex load testing scenarios through the shadow database function. Execute your load testing scenarios in a production environment without worrying about test data polluting your production data.                                                  |
 
 ### Advantages
 
@@ -105,7 +104,7 @@ It includes a query optimizer, distributed transaction engine, distributed execu
 Used to provide enhancement capabilities.
 All components are optional, allowing you to choose whether to include zero or multiple components.
 Components are isolated from each other, and multiple components can be used together by overlaying.
-It includes data sharding, read/write splitting, database high availability, data encryption and shadow database and so on.
+It includes data sharding, read/write splitting, data encryption and shadow database and so on.
 The user-defined feature can be fully customized and extended for the top-level interface defined by Apache ShardingSphere without changing kernel codes.
 
 #### L3 Ecosystem Layer
@@ -130,7 +129,7 @@ It can be considered as an enhanced version of the JDBC driver, which is fully c
 ![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc_v3.png)
 
 |                        | ShardingSphere-JDBC | ShardingSphere-Proxy |
-| ---------------------- | ------------------- | -------------------- |
+|------------------------|---------------------|----------------------|
 | Database               | `Any`               | MySQL/PostgreSQL     |
 | Connections Count Cost | `More`              | Less                 |
 | Heterogeneous language | `Java Only`         | Any                  |
@@ -151,7 +150,7 @@ It can use any kind of terminal that is compatible with MySQL or PostgreSQL prot
 ![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy_v2.png)
 
 |                        | ShardingSphere-JDBC | ShardingSphere-Proxy   |
-| ---------------------- | ------------------- | ---------------------- |
+|------------------------|---------------------|------------------------|
 | Database               | Any                 | `MySQL/PostgreSQL`     |
 | Connections Count Cost | More                | `Less`                 |
 | Heterogeneous language | Java Only           | `Any`                  |

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.sync;
 
-import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
@@ -26,7 +25,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Command sync packet for PostgreSQL.
  */
-@ToString
 public final class PostgreSQLComSyncPacket extends PostgreSQLCommandPacket {
     
     public PostgreSQLComSyncPacket(final PostgreSQLPacketPayload payload) {
@@ -34,7 +32,7 @@ public final class PostgreSQLComSyncPacket extends PostgreSQLCommandPacket {
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
     }
     
     @Override

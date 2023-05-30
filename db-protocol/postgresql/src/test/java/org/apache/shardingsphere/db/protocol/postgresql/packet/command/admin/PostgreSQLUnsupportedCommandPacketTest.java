@@ -31,20 +31,20 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLUnsupportedCommandPacketTest {
+class PostgreSQLUnsupportedCommandPacketTest {
     
     @Mock
     private ByteBuf byteBuf;
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         PostgreSQLUnsupportedCommandPacket rowPacket = new PostgreSQLUnsupportedCommandPacket(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST);
         rowPacket.write(new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8));
         assertThat(byteBuf.writerIndex(), is(0));
     }
     
     @Test
-    public void assertGetMessageType() {
+    void assertGetMessageType() {
         PostgreSQLUnsupportedCommandPacket rowPacket = new PostgreSQLUnsupportedCommandPacket(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST);
         assertThat(rowPacket.getIdentifier(), is(PostgreSQLMessagePacketType.AUTHENTICATION_REQUEST));
     }

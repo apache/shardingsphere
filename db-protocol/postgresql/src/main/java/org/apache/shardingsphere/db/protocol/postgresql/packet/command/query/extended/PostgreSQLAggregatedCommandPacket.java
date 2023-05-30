@@ -19,7 +19,6 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLComExecutePacket;
@@ -31,7 +30,6 @@ import java.util.List;
 import java.util.RandomAccess;
 
 @Getter
-@ToString
 public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPacket {
     
     private final List<PostgreSQLCommandPacket> packets;
@@ -94,7 +92,8 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
         }
         this.firstBindIndex = firstBindIndex;
         this.lastExecuteIndex = lastExecuteIndex;
-        if (this.containsBatchedStatements = firstStatementBindTimes == firstStatementExecuteTimes && firstStatementBindTimes >= 3) {
+        containsBatchedStatements = firstStatementBindTimes == firstStatementExecuteTimes && firstStatementBindTimes >= 3;
+        if (containsBatchedStatements) {
             ensureRandomAccessible(packets);
         }
     }
@@ -104,7 +103,7 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
     }
     
     @Override

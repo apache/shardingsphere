@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.route.engine;
 
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
@@ -41,10 +41,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShadowRouteEngineFactoryTest {
+class ShadowRouteEngineFactoryTest {
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         ShadowRouteEngine shadowInsertRouteEngine = ShadowRouteEngineFactory.newInstance(new QueryContext(createInsertSqlStatementContext(), "", Collections.emptyList()));
         assertThat(shadowInsertRouteEngine, instanceOf(ShadowInsertStatementRoutingEngine.class));
         ShadowRouteEngine shadowUpdateRouteEngine = ShadowRouteEngineFactory.newInstance(new QueryContext(createUpdateSqlStatementContext(), "", Collections.emptyList()));
@@ -55,25 +55,25 @@ public final class ShadowRouteEngineFactoryTest {
         assertThat(shadowSelectRouteEngine, instanceOf(ShadowSelectStatementRoutingEngine.class));
     }
     
-    private SQLStatementContext<InsertStatement> createInsertSqlStatementContext() {
+    private SQLStatementContext createInsertSqlStatementContext() {
         InsertStatementContext result = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(InsertStatement.class));
         return result;
     }
     
-    private SQLStatementContext<UpdateStatement> createUpdateSqlStatementContext() {
+    private SQLStatementContext createUpdateSqlStatementContext() {
         UpdateStatementContext result = mock(UpdateStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(UpdateStatement.class));
         return result;
     }
     
-    private SQLStatementContext<DeleteStatement> createDeleteSqlStatementContext() {
+    private SQLStatementContext createDeleteSqlStatementContext() {
         DeleteStatementContext result = mock(DeleteStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(DeleteStatement.class));
         return result;
     }
     
-    private SQLStatementContext<SelectStatement> createSelectSqlStatementContext() {
+    private SQLStatementContext createSelectSqlStatementContext() {
         SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(mock(SelectStatement.class));
         return result;

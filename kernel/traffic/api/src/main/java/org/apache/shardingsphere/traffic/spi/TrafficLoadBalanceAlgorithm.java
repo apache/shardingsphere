@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.traffic.spi;
 
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.algorithm.ShardingSphereAlgorithm;
 
 import java.util.List;
 
 /**
  * Traffic load balance algorithm.
  */
-public interface TrafficLoadBalanceAlgorithm extends TypedSPI {
+public interface TrafficLoadBalanceAlgorithm extends ShardingSphereAlgorithm {
     
     /**
      * Get instance definition.

@@ -43,16 +43,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShadowNonDMLStatementRoutingEngineTest {
+class ShadowNonDMLStatementRoutingEngineTest {
     
     private ShadowNonDMLStatementRoutingEngine shadowRouteEngine;
     
     @BeforeEach
-    public void init() {
+    void init() {
         shadowRouteEngine = new ShadowNonDMLStatementRoutingEngine(createSQLStatementContext());
     }
     
-    private SQLStatementContext<?> createSQLStatementContext() {
+    private SQLStatementContext createSQLStatementContext() {
         CreateTableStatementContext result = mock(CreateTableStatementContext.class);
         MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement(false);
         sqlStatement.getCommentSegments().add(new CommentSegment("/* SHARDINGSPHERE_HINT: SHADOW=true */", 0, 20));
@@ -61,7 +61,7 @@ public final class ShadowNonDMLStatementRoutingEngineTest {
     }
     
     @Test
-    public void assertRoute() {
+    void assertRoute() {
         RouteContext routeContext = createRouteContext();
         shadowRouteEngine.route(routeContext, new ShadowRule(createShadowRuleConfiguration()));
         Collection<RouteUnit> routeUnits = routeContext.getRouteUnits();

@@ -150,7 +150,9 @@ public final class ExecutorEngine implements AutoCloseable {
         for (Future<Collection<O>> each : restFutures) {
             try {
                 result.addAll(each.get());
-            } catch (final InterruptedException | ExecutionException ex) {
+            } catch (final InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            } catch (final ExecutionException ex) {
                 return throwException(ex);
             }
         }

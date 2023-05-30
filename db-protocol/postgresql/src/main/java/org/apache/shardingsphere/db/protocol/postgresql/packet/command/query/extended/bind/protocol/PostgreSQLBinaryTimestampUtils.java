@@ -24,6 +24,9 @@ import java.sql.Timestamp;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Binary timestamp utility class of PostgreSQL.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLBinaryTimestampUtils {
     
@@ -39,11 +42,11 @@ public final class PostgreSQLBinaryTimestampUtils {
      * @return PostgreSQL time
      */
     public static long toPostgreSQLTime(final Timestamp timestamp, final boolean withTimeZone) {
-        long millis = timestamp.getTime() - (timestamp.getNanos() / 1000000) + (!withTimeZone ? TimeZone.getDefault().getRawOffset() : 0);
-        long nanos = timestamp.getNanos() / 1000;
+        long millis = timestamp.getTime() - (timestamp.getNanos() / 1000000L) + (withTimeZone ? 0L : TimeZone.getDefault().getRawOffset());
+        long nanos = timestamp.getNanos() / 1000L;
         long pgSeconds = convertJavaEpochToPgEpoch(millis / 1000L);
-        if (nanos >= 1000000) {
-            nanos -= 1000000;
+        if (nanos >= 1000000L) {
+            nanos -= 1000000L;
             pgSeconds++;
         }
         return pgSeconds * 1000000 + nanos;
@@ -52,6 +55,9 @@ public final class PostgreSQLBinaryTimestampUtils {
     /**
      * Refer to <a href="https://github.com/pgjdbc/pgjdbc/blob/e5e36bd3e8ac87ae554ac5cd1ac664fcd0010073/pgjdbc/src/main/java/org/postgresql/jdbc/TimestampUtils.java#L1453-L1475">
      * org.postgresql.jdbc.TimestampUtils</a>.
+     * 
+     * @param seconds seconds
+     * @return epoch of PostgreSQL
      */
     private static long convertJavaEpochToPgEpoch(final long seconds) {
         long offsetSeconds = seconds - POSTGRESQL_SECONDS_OFFSET;

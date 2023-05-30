@@ -30,13 +30,18 @@ import java.util.Collection;
  * Truncate statement context.
  */
 @Getter
-public final class TruncateStatementContext extends CommonSQLStatementContext<TruncateStatement> implements TableAvailable {
+public final class TruncateStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
     public TruncateStatementContext(final TruncateStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTables(), getDatabaseType());
+    }
+    
+    @Override
+    public TruncateStatement getSqlStatement() {
+        return (TruncateStatement) super.getSqlStatement();
     }
     
     @Override

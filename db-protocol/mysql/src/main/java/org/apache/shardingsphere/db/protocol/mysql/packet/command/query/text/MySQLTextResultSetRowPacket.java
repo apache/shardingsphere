@@ -32,15 +32,15 @@ import java.util.Collection;
 /**
  * Text result set row packet for MySQL.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#packet-ProtocolText::ResultsetRow">ResultsetRow</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_query_response_text_resultset_row.html">Text Resultset Row</a>
  */
 @RequiredArgsConstructor
 @Getter
-public final class MySQLTextResultSetRowPacket implements MySQLPacket {
+public final class MySQLTextResultSetRowPacket extends MySQLPacket {
     
     private static final int NULL = 0xfb;
     
-    private static final DateTimeFormatter DT_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     private final Collection<Object> data;
     
@@ -52,25 +52,29 @@ public final class MySQLTextResultSetRowPacket implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         for (Object each : data) {
             if (null == each) {
                 payload.writeInt1(NULL);
-            } else {
-                if (each instanceof byte[]) {
-                    payload.writeBytesLenenc((byte[]) each);
-                } else if ((each instanceof Timestamp) && (0 == ((Timestamp) each).getNanos())) {
-                    payload.writeStringLenenc(each.toString().split("\\.")[0]);
-                } else if (each instanceof BigDecimal) {
-                    payload.writeStringLenenc(((BigDecimal) each).toPlainString());
-                } else if (each instanceof Boolean) {
-                    payload.writeBytesLenenc((Boolean) each ? new byte[]{1} : new byte[]{0});
-                } else if (each instanceof LocalDateTime) {
-                    payload.writeStringLenenc(DT_FMT.format((LocalDateTime) each));
-                } else {
-                    payload.writeStringLenenc(each.toString());
-                }
+                continue;
             }
+            writeDataIntoPayload(payload, each);
+        }
+    }
+    
+    private void writeDataIntoPayload(final MySQLPacketPayload payload, final Object data) {
+        if (data instanceof byte[]) {
+            payload.writeBytesLenenc((byte[]) data);
+        } else if (data instanceof Timestamp && 0 == ((Timestamp) data).getNanos()) {
+            payload.writeStringLenenc(data.toString().split("\\.")[0]);
+        } else if (data instanceof BigDecimal) {
+            payload.writeStringLenenc(((BigDecimal) data).toPlainString());
+        } else if (data instanceof Boolean) {
+            payload.writeBytesLenenc((boolean) data ? new byte[]{1} : new byte[]{0});
+        } else if (data instanceof LocalDateTime) {
+            payload.writeStringLenenc(DATE_TIME_FORMATTER.format((LocalDateTime) data));
+        } else {
+            payload.writeStringLenenc(data.toString());
         }
     }
 }

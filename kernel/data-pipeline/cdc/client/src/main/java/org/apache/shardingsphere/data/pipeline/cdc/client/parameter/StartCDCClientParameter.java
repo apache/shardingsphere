@@ -32,8 +32,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class StartCDCClientParameter {
     
-    private String databaseType;
-    
     private String address;
     
     private int port;
@@ -47,6 +45,4 @@ public final class StartCDCClientParameter {
     private List<SchemaTable> schemaTables;
     
     private boolean full;
-    
-    private final ImportDataSourceParameter importDataSourceParameter;
 }

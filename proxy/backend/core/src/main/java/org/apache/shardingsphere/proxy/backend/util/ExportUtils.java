@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.CompatibleEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
@@ -37,8 +37,10 @@ import org.apache.shardingsphere.single.api.config.SingleRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map.Entry;
@@ -47,13 +49,14 @@ import java.util.Map.Entry;
  * Export utility class.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ExportUtils {
+public final class ExportUtils {
     
     /**
      * Export configuration data to specified file.
      * 
      * @param filePath file path
      * @param exportedData exported configuration data
+     * @throws FileIOException file IO exception
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void exportToFile(final String filePath, final String exportedData) {
@@ -61,7 +64,7 @@ public class ExportUtils {
         if (!file.exists()) {
             file.getParentFile().mkdirs();
         }
-        try (FileOutputStream output = new FileOutputStream(file)) {
+        try (OutputStream output = Files.newOutputStream(Paths.get(file.toURI()))) {
             output.write(exportedData.getBytes());
             output.flush();
         } catch (final IOException ex) {
@@ -71,7 +74,7 @@ public class ExportUtils {
     
     /**
      * Generate configuration data of ShardingSphere database.
-     * 
+     *
      * @param database ShardingSphere database
      * @return configuration data
      */
@@ -98,7 +101,7 @@ public class ExportUtils {
     }
     
     private static void appendDataSourceConfiguration(final String name, final DataSource dataSource, final StringBuilder stringBuilder) {
-        stringBuilder.append("  ").append(name).append(":").append(System.lineSeparator());
+        stringBuilder.append("  ").append(name).append(':').append(System.lineSeparator());
         DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(dataSource);
         dataSourceProps.getConnectionPropertySynonyms().getStandardProperties()
                 .forEach((key, value) -> stringBuilder.append("    ").append(key).append(": ").append(value).append(System.lineSeparator()));
@@ -125,10 +128,10 @@ public class ExportUtils {
             return shardingRuleConfig.getTables().isEmpty() && shardingRuleConfig.getAutoTables().isEmpty();
         } else if (ruleConfig instanceof ReadwriteSplittingRuleConfiguration) {
             return ((ReadwriteSplittingRuleConfiguration) ruleConfig).getDataSources().isEmpty();
-        } else if (ruleConfig instanceof DatabaseDiscoveryRuleConfiguration) {
-            return ((DatabaseDiscoveryRuleConfiguration) ruleConfig).getDataSources().isEmpty();
         } else if (ruleConfig instanceof EncryptRuleConfiguration) {
             return ((EncryptRuleConfiguration) ruleConfig).getTables().isEmpty();
+        } else if (ruleConfig instanceof CompatibleEncryptRuleConfiguration) {
+            return ((CompatibleEncryptRuleConfiguration) ruleConfig).getTables().isEmpty();
         } else if (ruleConfig instanceof ShadowRuleConfiguration) {
             return ((ShadowRuleConfiguration) ruleConfig).getTables().isEmpty();
         } else if (ruleConfig instanceof MaskRuleConfiguration) {

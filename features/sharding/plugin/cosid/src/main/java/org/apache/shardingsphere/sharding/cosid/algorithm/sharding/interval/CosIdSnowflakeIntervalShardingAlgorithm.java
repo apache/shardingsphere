@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval;
 
+import me.ahoo.cosid.sharding.LocalDateTimeConvertor;
+import me.ahoo.cosid.sharding.SnowflakeLocalDateTimeConvertor;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeIdStateParser;
 import me.ahoo.cosid.snowflake.SnowflakeIdStateParser;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.cosid.algorithm.keygen.CosIdSnowflakeKeyGenerateAlgorithm;
-import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.CosIdLocalDateTimeConvertor;
-import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.convertor.impl.SnowflakeCosIdLocalDateTimeConvertor;
 
 import java.time.ZoneId;
 import java.util.Properties;
@@ -38,12 +38,12 @@ public final class CosIdSnowflakeIntervalShardingAlgorithm extends AbstractCosId
     private static final String ZONE_ID_KEY = "zone-id";
     
     @Override
-    protected CosIdLocalDateTimeConvertor createLocalDateTimeConvertor(final Properties props) {
-        return new SnowflakeCosIdLocalDateTimeConvertor(createSnowflakeIdStateParser(props));
+    protected LocalDateTimeConvertor createLocalDateTimeConvertor(final Properties props) {
+        return new SnowflakeLocalDateTimeConvertor(createSnowflakeIdStateParser(props));
     }
     
     private SnowflakeIdStateParser createSnowflakeIdStateParser(final Properties props) {
-        long epoch = Long.parseLong(props.getProperty(EPOCH_KEY, CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH + ""));
+        long epoch = Long.parseLong(props.getProperty(EPOCH_KEY, String.valueOf(CosIdSnowflakeKeyGenerateAlgorithm.DEFAULT_EPOCH)));
         ZoneId zoneId = props.containsKey(ZONE_ID_KEY) ? ZoneId.of(props.getProperty(ZONE_ID_KEY)) : ZoneId.systemDefault();
         return new MillisecondSnowflakeIdStateParser(
                 epoch, MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, zoneId);

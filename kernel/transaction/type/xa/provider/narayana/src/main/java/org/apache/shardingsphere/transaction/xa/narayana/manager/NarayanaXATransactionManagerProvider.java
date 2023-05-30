@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.transaction.xa.narayana.manager;
 
 import com.arjuna.ats.arjuna.objectstore.StoreManager;
-import com.arjuna.ats.arjuna.recovery.RecoveryManager;
 import com.arjuna.ats.internal.arjuna.recovery.AtomicActionRecoveryModule;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
 import com.arjuna.ats.jbossatx.jta.RecoveryManagerService;
@@ -27,7 +26,8 @@ import com.arjuna.common.internal.util.propertyservice.BeanPopulator;
 import com.arjuna.common.util.propertyservice.PropertiesFactory;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.util.reflection.ReflectionUtil;
+import org.apache.shardingsphere.infra.util.reflection.ReflectionUtils;
+import org.apache.shardingsphere.transaction.exception.CloseTransactionManagerFailedException;
 import org.apache.shardingsphere.transaction.xa.spi.SingleXAResource;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
@@ -35,7 +35,6 @@ import javax.sql.XADataSource;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -55,21 +54,20 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
         transactionManager = jtaPropertyManager.getJTAEnvironmentBean().getTransactionManager();
         xaRecoveryModule = XARecoveryModule.getRegisteredXARecoveryModule();
         recoveryManagerService = new RecoveryManagerService();
-        RecoveryManager.delayRecoveryManagerThread();
         recoveryManagerService.create();
         recoveryManagerService.start();
     }
     
     @Override
     public void registerRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        if (Objects.nonNull(xaRecoveryModule)) {
+        if (null != xaRecoveryModule) {
             xaRecoveryModule.addXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
         }
     }
     
     @Override
     public void removeRecoveryResource(final String dataSourceName, final XADataSource xaDataSource) {
-        if (Objects.nonNull(xaRecoveryModule)) {
+        if (null != xaRecoveryModule) {
             xaRecoveryModule.removeXAResourceRecoveryHelper(new DataSourceXAResourceRecoveryHelper(xaDataSource));
         }
     }
@@ -81,8 +79,14 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
     }
     
     @Override
-    public void close() throws Exception {
-        recoveryManagerService.stop();
+    public void close() {
+        try {
+            recoveryManagerService.stop();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            throw new CloseTransactionManagerFailedException(ex);
+        }
         recoveryManagerService.destroy();
         cleanPropertiesFactory();
         cleanBeanInstances();
@@ -92,25 +96,25 @@ public final class NarayanaXATransactionManagerProvider implements XATransaction
     }
     
     private void cleanPropertiesFactory() {
-        ReflectionUtil.setStaticFieldValue(PropertiesFactory.class, "delegatePropertiesFactory", null);
+        ReflectionUtils.setStaticFieldValue(PropertiesFactory.class, "delegatePropertiesFactory", null);
     }
     
     private void cleanBeanInstances() {
-        ReflectionUtil.<ConcurrentMap<String, Object>>getStaticFieldValue(BeanPopulator.class, "beanInstances").clear();
+        ReflectionUtils.<ConcurrentMap<String, Object>>getStaticFieldValue(BeanPopulator.class, "beanInstances").clear();
     }
     
     private void cleanAtomicActionRecovery() {
-        ReflectionUtil.setStaticFieldValue(AtomicActionRecoveryModule.class, "_recoveryStore", null);
+        ReflectionUtils.setStaticFieldValue(AtomicActionRecoveryModule.class, "_recoveryStore", null);
     }
     
     private void cleanXARecoveryModule() {
-        ReflectionUtil.setStaticFieldValue(XARecoveryModule.class, "registeredXARecoveryModule", null);
+        ReflectionUtils.setStaticFieldValue(XARecoveryModule.class, "registeredXARecoveryModule", null);
     }
     
     private void cleanStoreManager() {
-        ReflectionUtil.setStaticFieldValue(StoreManager.class, "actionStore", null);
-        ReflectionUtil.setStaticFieldValue(StoreManager.class, "stateStore", null);
-        ReflectionUtil.setStaticFieldValue(StoreManager.class, "communicationStore", null);
+        ReflectionUtils.setStaticFieldValue(StoreManager.class, "actionStore", null);
+        ReflectionUtils.setStaticFieldValue(StoreManager.class, "stateStore", null);
+        ReflectionUtils.setStaticFieldValue(StoreManager.class, "communicationStore", null);
     }
     
     @Override

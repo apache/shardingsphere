@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Prometheus metrics exporter.
+ * Metrics exporter of Prometheus.
  */
 @RequiredArgsConstructor
 public final class PrometheusMetricsExporter extends Collector {

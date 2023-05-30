@@ -26,8 +26,8 @@ import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.client.Admin;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.shardingsphere.proxy.backend.hbase.bean.HBaseCluster;
-import org.apache.shardingsphere.proxy.backend.hbase.connector.HBaseBackgroundExecutorManager;
-import org.apache.shardingsphere.proxy.backend.hbase.connector.HBaseExecutor;
+import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseBackgroundExecutorManager;
+import org.apache.shardingsphere.proxy.backend.hbase.executor.HBaseExecutor;
 import org.apache.shardingsphere.proxy.backend.hbase.exception.HBaseOperationException;
 import org.apache.shardingsphere.proxy.backend.hbase.props.HBaseProperties;
 import org.apache.shardingsphere.proxy.backend.hbase.props.HBasePropertyKey;
@@ -71,7 +71,7 @@ public final class HBaseContext implements AutoCloseable {
     /**
      * Get instance of HBase context.
      *
-     * @return instance of HBase context
+     * @return got instance
      */
     public static HBaseContext getInstance() {
         return INSTANCE;

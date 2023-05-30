@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
+class ShardingDataSourceGroupBroadcastRoutingEngineTest {
     
     private final ShardingDataSourceGroupBroadcastRoutingEngine shardingDataSourceGroupBroadcastRoutingEngine = new ShardingDataSourceGroupBroadcastRoutingEngine();
     
@@ -60,7 +60,7 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
     
     private TableRule mockTableRule(final List<String> dataSources) {
         TableRule result = mock(TableRule.class);
-        Map<String, List<DataNode>> dataNodeGroups = new HashMap<>(dataSources.size(), 1);
+        Map<String, List<DataNode>> dataNodeGroups = new HashMap<>(dataSources.size(), 1F);
         for (String each : dataSources) {
             dataNodeGroups.put(each, null);
         }
@@ -69,7 +69,7 @@ public final class ShardingDataSourceGroupBroadcastRoutingEngineTest {
     }
     
     @Test
-    public void assertRoute() {
+    void assertRoute() {
         List<List<String>> shards = new LinkedList<>();
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));
         shards.add(Arrays.asList("ds1", "ds2", "ds3"));

@@ -32,6 +32,7 @@ public final class GovernanceContainerFactory {
      * 
      * @param type governance center type
      * @return created instance
+     * @throws RuntimeException runtime exception
      */
     @SuppressWarnings("SwitchStatementWithTooFewBranches")
     public static GovernanceContainer newInstance(final String type) {

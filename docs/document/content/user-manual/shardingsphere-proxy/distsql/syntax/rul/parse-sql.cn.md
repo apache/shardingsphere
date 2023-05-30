@@ -5,7 +5,7 @@ weight = 1
 
 ### 描述
 
-`PARSE SQL` 语法用于解析 `SQL` 并输出抽象语法树
+`PARSE SQL` 语法用于解析 `SQL` 并输出抽象语法树。
 
 ### 语法
 
@@ -23,10 +23,10 @@ ParseSql ::=
 
 ### 返回值说明
 
-| 列                       | 说明            |
-|--------------------------|----------------|
-| parsed_statement         | 解析SQL语句类型  |
-| parsed_statement_detail  | 解析SQL语句细节  |
+| 列                       | 说明        |
+|-------------------------|-----------|
+| parsed_statement        | 解析SQL语句类型 |
+| parsed_statement_detail | 解析SQL语句细节 |
 
 ### 示例
 

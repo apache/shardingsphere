@@ -37,7 +37,7 @@ import java.util.Optional;
  * Move statement context.
  */
 @Getter
-public final class MoveStatementContext extends CommonSQLStatementContext<MoveStatement> implements CursorAvailable, WhereAvailable, CursorDefinitionAware {
+public final class MoveStatementContext extends CommonSQLStatementContext implements CursorAvailable, WhereAvailable, CursorDefinitionAware {
     
     private CursorStatementContext cursorStatementContext;
     
@@ -46,6 +46,11 @@ public final class MoveStatementContext extends CommonSQLStatementContext<MoveSt
     public MoveStatementContext(final MoveStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(Collections.emptyList(), getDatabaseType());
+    }
+    
+    @Override
+    public MoveStatement getSqlStatement() {
+        return (MoveStatement) super.getSqlStatement();
     }
     
     @Override

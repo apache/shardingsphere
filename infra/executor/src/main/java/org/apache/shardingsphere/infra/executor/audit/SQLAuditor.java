@@ -29,6 +29,8 @@ import java.util.List;
 
 /**
  * SQL auditor.
+ * 
+ * @param <T> type of rule
  */
 @SingletonSPI
 public interface SQLAuditor<T extends ShardingSphereRule> extends OrderedSPI<T> {
@@ -43,5 +45,5 @@ public interface SQLAuditor<T extends ShardingSphereRule> extends OrderedSPI<T> 
      * @param database current database
      * @param rule rule
      */
-    void audit(SQLStatementContext<?> sqlStatementContext, List<Object> params, Grantee grantee, ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule);
+    void audit(SQLStatementContext sqlStatementContext, List<Object> params, Grantee grantee, ShardingSphereRuleMetaData globalRuleMetaData, ShardingSphereDatabase database, T rule);
 }

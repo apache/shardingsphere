@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.impl;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptProjectionTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.EncryptColumnItem;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
@@ -49,12 +50,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class EncryptProjectionTokenGeneratorTest {
+class EncryptProjectionTokenGeneratorTest {
     
     private EncryptProjectionTokenGenerator generator;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         generator = new EncryptProjectionTokenGenerator();
         generator.setEncryptRule(mockEncryptRule());
         generator.setDatabaseName("db_schema");
@@ -67,17 +68,16 @@ public final class EncryptProjectionTokenGeneratorTest {
         EncryptTable encryptTable2 = mock(EncryptTable.class);
         when(encryptTable1.getLogicColumns()).thenReturn(Collections.singletonList("mobile"));
         when(encryptTable2.getLogicColumns()).thenReturn(Collections.singletonList("mobile"));
-        when(result.findPlainColumn("doctor", "mobile")).thenReturn(Optional.of("mobile"));
-        when(result.findPlainColumn("doctor1", "mobile")).thenReturn(Optional.of("Mobile"));
         when(result.findEncryptTable("doctor")).thenReturn(Optional.of(encryptTable1));
         when(result.findEncryptTable("doctor1")).thenReturn(Optional.of(encryptTable2));
-        EncryptColumn column = new EncryptColumn("mobile", null, null, "mobile", null, null);
+        EncryptColumn column = new EncryptColumn("mobile", new EncryptColumnItem("mobile"));
+        column.setLikeQuery(new EncryptColumnItem("mobile"));
         when(result.findEncryptColumn("doctor", "mobile")).thenReturn(Optional.of(column));
         return result;
     }
     
     @Test
-    public void assertGenerateSQLTokensWhenOwnerMatchTableAlias() {
+    void assertGenerateSQLTokensWhenOwnerMatchTableAlias() {
         SimpleTableSegment doctorTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor")));
         doctorTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
         ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue("mobile"));
@@ -90,12 +90,12 @@ public final class EncryptProjectionTokenGeneratorTest {
         SimpleTableSegment doctorOneTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor1")));
         when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Arrays.asList(doctorTable, doctorOneTable), DatabaseTypeEngine.getDatabaseType("MySQL")));
         when(sqlStatementContext.getProjectionsContext().getProjections()).thenReturn(Collections.singletonList(new ColumnProjection("a", "mobile", null)));
-        Collection<SubstitutableColumnNameToken> actual = generator.generateSQLTokens(sqlStatementContext);
+        Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
     }
     
     @Test
-    public void assertGenerateSQLTokensWhenOwnerMatchTableAliasForSameTable() {
+    void assertGenerateSQLTokensWhenOwnerMatchTableAliasForSameTable() {
         SimpleTableSegment doctorTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor")));
         doctorTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("a")));
         ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue("mobile"));
@@ -108,12 +108,12 @@ public final class EncryptProjectionTokenGeneratorTest {
         SimpleTableSegment sameDoctorTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor")));
         when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Arrays.asList(doctorTable, sameDoctorTable), DatabaseTypeEngine.getDatabaseType("MySQL")));
         when(sqlStatementContext.getProjectionsContext().getProjections()).thenReturn(Collections.singletonList(new ColumnProjection("a", "mobile", null)));
-        Collection<SubstitutableColumnNameToken> actual = generator.generateSQLTokens(sqlStatementContext);
+        Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
     }
     
     @Test
-    public void assertGenerateSQLTokensWhenOwnerMatchTableName() {
+    void assertGenerateSQLTokensWhenOwnerMatchTableName() {
         ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue("mobile"));
         column.setOwner(new OwnerSegment(0, 0, new IdentifierValue("doctor")));
         ProjectionsSegment projections = mock(ProjectionsSegment.class);
@@ -125,7 +125,7 @@ public final class EncryptProjectionTokenGeneratorTest {
         SimpleTableSegment doctorOneTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("doctor1")));
         when(sqlStatementContext.getTablesContext()).thenReturn(new TablesContext(Arrays.asList(doctorTable, doctorOneTable), DatabaseTypeEngine.getDatabaseType("MySQL")));
         when(sqlStatementContext.getProjectionsContext().getProjections()).thenReturn(Collections.singletonList(new ColumnProjection("doctor", "mobile", null)));
-        Collection<SubstitutableColumnNameToken> actual = generator.generateSQLTokens(sqlStatementContext);
+        Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
     }
 }

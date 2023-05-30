@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.time.LocalTime;
@@ -24,8 +26,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 /**
- * Utils for PostgreSQL time.
+ * Text time utility class of PostgreSQL.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PostgreSQLTextTimeUtils {
     
     private static final DateTimeFormatter POSTGRESQL_TIME_FORMATTER = DateTimeFormatter.ofPattern(
@@ -40,6 +43,7 @@ public final class PostgreSQLTextTimeUtils {
      *
      * @param value text value to be parsed
      * @return time
+     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
      */
     public static LocalTime parse(final String value) {
         try {

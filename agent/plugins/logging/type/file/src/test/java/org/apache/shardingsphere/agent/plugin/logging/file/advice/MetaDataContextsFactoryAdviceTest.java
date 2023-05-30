@@ -33,12 +33,12 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
-public final class MetaDataContextsFactoryAdviceTest {
+class MetaDataContextsFactoryAdviceTest {
     
     private ListAppender<ILoggingEvent> listAppender;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         Logger logger = (Logger) LoggerFactory.getLogger(MetaDataContextsFactoryAdvice.class);
         listAppender = new ListAppender<>();
         listAppender.start();
@@ -46,7 +46,7 @@ public final class MetaDataContextsFactoryAdviceTest {
     }
     
     @Test
-    public void assertLog() {
+    void assertLog() {
         MetaDataContextsFactoryAdvice advice = new MetaDataContextsFactoryAdvice();
         Method method = mock(Method.class);
         advice.beforeMethod(null, method, new Object[]{}, "FIXTURE");

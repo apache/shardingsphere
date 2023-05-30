@@ -31,17 +31,18 @@ import java.util.concurrent.ThreadLocalRandom;
 @Getter
 public final class ExecutionGroupReportContext {
     
+    // TODO processID should same with connectionId
+    private final String processId;
+    
     private final String databaseName;
     
     private final Grantee grantee;
-    
-    private final String executionID;
     
     public ExecutionGroupReportContext(final String databaseName) {
         this(databaseName, new Grantee("", ""));
     }
     
     public ExecutionGroupReportContext(final String databaseName, final Grantee grantee) {
-        this(databaseName, grantee, new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", ""));
+        this(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", ""), databaseName, grantee);
     }
 }

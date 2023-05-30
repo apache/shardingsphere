@@ -51,7 +51,7 @@ public interface ExampleGenerator extends TypedSPI {
         for (String eachMode : exampleConfig.getModes()) {
             for (String eachTransaction : exampleConfig.getTransactions()) {
                 for (String eachFramework : exampleConfig.getFrameworks()) {
-                    for (String eachFeature : GenerateUtil.generateCombination(exampleConfig.getFeatures())) {
+                    for (String eachFeature : GenerateUtils.generateCombination(exampleConfig.getFeatures())) {
                         generate(templateConfig, buildDataModel(exampleConfig.getProps(), eachMode, eachTransaction, eachFramework, eachFeature), buildOutputPath(exampleConfig));
                     }
                 }

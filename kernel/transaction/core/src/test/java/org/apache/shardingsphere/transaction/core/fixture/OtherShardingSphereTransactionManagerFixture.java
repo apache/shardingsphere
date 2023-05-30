@@ -65,4 +65,9 @@ public final class OtherShardingSphereTransactionManagerFixture implements Shard
     @Override
     public void close() {
     }
+    
+    @Override
+    public String getType() {
+        return TransactionType.XA.name();
+    }
 }

@@ -33,10 +33,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SuppressWarnings("unchecked")
-public final class PostgreSQLErrPacketFactoryTest {
+class PostgreSQLErrPacketFactoryTest {
     
     @Test
-    public void assertPSQLExceptionWithServerErrorMessageNotNull() throws ReflectiveOperationException {
+    void assertPSQLExceptionWithServerErrorMessageNotNull() throws ReflectiveOperationException {
         ServerErrorMessage serverErrorMessage = mock(ServerErrorMessage.class);
         when(serverErrorMessage.getSeverity()).thenReturn(PostgreSQLMessageSeverityLevel.FATAL);
         when(serverErrorMessage.getSQLState()).thenReturn("sqlState");
@@ -51,7 +51,7 @@ public final class PostgreSQLErrPacketFactoryTest {
     }
     
     @Test
-    public void assertPSQLExceptionWithServerErrorMessageIsNull() throws ReflectiveOperationException {
+    void assertPSQLExceptionWithServerErrorMessageIsNull() throws ReflectiveOperationException {
         PostgreSQLErrorResponsePacket actual = PostgreSQLErrPacketFactory.newInstance(new PSQLException("psqlEx", PSQLState.UNEXPECTED_ERROR, new Exception("test")));
         Map<Character, String> fields = (Map<Character, String>) Plugins.getMemberAccessor().get(PostgreSQLErrorResponsePacket.class.getDeclaredField("fields"), actual);
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_CODE), is(PSQLState.UNEXPECTED_ERROR.getState()));
@@ -59,7 +59,7 @@ public final class PostgreSQLErrPacketFactoryTest {
     }
     
     @Test
-    public void assertRuntimeException() throws ReflectiveOperationException {
+    void assertRuntimeException() throws ReflectiveOperationException {
         PostgreSQLErrorResponsePacket actual = PostgreSQLErrPacketFactory.newInstance(new RuntimeException("test"));
         Map<Character, String> fields = (Map<Character, String>) Plugins.getMemberAccessor().get(PostgreSQLErrorResponsePacket.class.getDeclaredField("fields"), actual);
         assertThat(fields.get(PostgreSQLErrorResponsePacket.FIELD_TYPE_MESSAGE), is("test"));

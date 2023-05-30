@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.api.encrypt.like;
 
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 /**
  * Like encrypt algorithm.
@@ -26,14 +25,5 @@ import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
  * @param <I> type of plain value
  * @param <O> type of cipher value
  */
-public interface LikeEncryptAlgorithm<I, O> extends EncryptAlgorithm {
-    
-    /**
-     * Encrypt.
-     *
-     * @param plainValue plain value
-     * @param encryptContext encrypt context
-     * @return cipher value
-     */
-    O encrypt(I plainValue, EncryptContext encryptContext);
+public interface LikeEncryptAlgorithm<I, O> extends EncryptAlgorithm<I, O> {
 }

@@ -56,7 +56,7 @@ public final class SchemaMetaDataLoaderEngine {
      * @throws SQLException SQL exception
      */
     public static Map<String, SchemaMetaData> load(final Collection<SchemaMetaDataLoaderMaterial> materials) throws SQLException {
-        Map<String, SchemaMetaData> result = new LinkedHashMap<>(materials.size(), 1);
+        Map<String, SchemaMetaData> result = new LinkedHashMap<>(materials.size(), 1F);
         Collection<Future<Collection<SchemaMetaData>>> futures = new LinkedList<>();
         for (SchemaMetaDataLoaderMaterial each : materials) {
             futures.add(EXECUTOR_SERVICE.submit(() -> load(each)));
@@ -65,7 +65,9 @@ public final class SchemaMetaDataLoaderEngine {
             for (Future<Collection<SchemaMetaData>> each : futures) {
                 mergeSchemaMetaDataMap(result, each.get());
             }
-        } catch (final InterruptedException | ExecutionException ex) {
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        } catch (final ExecutionException ex) {
             if (ex.getCause() instanceof SQLException) {
                 throw (SQLException) ex.getCause();
             }
@@ -79,10 +81,7 @@ public final class SchemaMetaDataLoaderEngine {
         if (dialectSchemaMetaDataLoader.isPresent()) {
             try {
                 return dialectSchemaMetaDataLoader.get().load(material.getDataSource(), material.getActualTableNames(), material.getDefaultSchemaName());
-                // TODO replace Exception to SQLException when all dialect loader can handle meta data load normally
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
+            } catch (final SQLException ex) {
                 log.debug("Dialect load schema meta data error.", ex);
             }
         }

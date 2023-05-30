@@ -29,7 +29,6 @@ import java.util.Map;
 /**
  * Binary column type for MySQL.
  * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-query-response.html#column-type">Column Type</a>
  * @see <a href="https://github.com/apache/shardingsphere/issues/4355"></a>
  */
 @RequiredArgsConstructor
@@ -81,7 +80,7 @@ public enum MySQLBinaryColumnType implements BinaryColumnType {
      *
      * @see <a href="https://github.com/apache/shardingsphere/issues/4795"></a>
      */
-    MySQL_TYPE_JSON(0xf5),
+    MYSQL_TYPE_JSON(0xf5),
     
     MYSQL_TYPE_NEWDECIMAL(0xf6),
     
@@ -103,9 +102,9 @@ public enum MySQLBinaryColumnType implements BinaryColumnType {
     
     MYSQL_TYPE_GEOMETRY(0xff);
     
-    private static final Map<Integer, MySQLBinaryColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1);
+    private static final Map<Integer, MySQLBinaryColumnType> JDBC_TYPE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
     
-    private static final Map<Integer, MySQLBinaryColumnType> VALUE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1);
+    private static final Map<Integer, MySQLBinaryColumnType> VALUE_AND_COLUMN_TYPE_MAP = new HashMap<>(values().length, 1F);
     
     private final int value;
     

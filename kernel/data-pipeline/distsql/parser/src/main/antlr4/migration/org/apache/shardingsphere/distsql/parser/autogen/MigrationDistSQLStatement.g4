@@ -36,5 +36,5 @@ execute
     | startMigrationCheck
     | stopMigrationCheck
     | dropMigrationCheck
-    ) SEMI?
+    ) SEMI_? EOF
     ;

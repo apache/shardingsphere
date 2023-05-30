@@ -25,20 +25,13 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * Count encrypt rule executor.
  */
 public final class CountEncryptRuleExecutor implements RQLExecutor<CountEncryptRuleStatement> {
-    
-    private static final String ENCRYPT = "encrypt";
     
     @Override
     public Collection<String> getColumnNames() {
@@ -48,32 +41,13 @@ public final class CountEncryptRuleExecutor implements RQLExecutor<CountEncryptR
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountEncryptRuleStatement sqlStatement) {
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
-        Map<String, LinkedList<Object>> rowMap = new LinkedHashMap<>();
-        rule.ifPresent(optional -> addEncryptData(rowMap, database.getName(), rule.get()));
-        Iterator<Entry<String, LinkedList<Object>>> data = rowMap.entrySet().iterator();
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        while (data.hasNext()) {
-            Entry<String, LinkedList<Object>> entry = data.next();
-            entry.getValue().addFirst(entry.getKey());
-            result.add(new LocalDataQueryResultRow(entry.getValue()));
-        }
+        rule.ifPresent(optional -> fillRows(result, optional, database.getName()));
         return result;
     }
     
-    private void addEncryptData(final Map<String, LinkedList<Object>> rowMap, final String databaseName, final EncryptRule rule) {
-        addData(rowMap, ENCRYPT, databaseName, () -> rule.getTables().size());
-    }
-    
-    private void addData(final Map<String, LinkedList<Object>> rowMap, final String dataKey, final String databaseName, final Supplier<Integer> apply) {
-        rowMap.compute(dataKey, (key, value) -> buildRow(value, databaseName, apply.get()));
-    }
-    
-    private LinkedList<Object> buildRow(final LinkedList<Object> value, final String databaseName, final int count) {
-        if (null == value) {
-            return new LinkedList<>(Arrays.asList(databaseName, count));
-        }
-        value.set(1, (Integer) value.get(1) + count);
-        return value;
+    private void fillRows(final Collection<LocalDataQueryResultRow> result, final EncryptRule rule, final String databaseName) {
+        result.add(new LocalDataQueryResultRow("encrypt", databaseName, rule.getTables().size()));
     }
     
     @Override

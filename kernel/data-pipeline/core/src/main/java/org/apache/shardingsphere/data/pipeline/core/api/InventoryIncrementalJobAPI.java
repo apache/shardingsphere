@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobOffsetInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.InventoryIncrementalJobItemInfo;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 
 import java.sql.SQLException;
@@ -42,29 +43,31 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     /**
      * Alter process configuration.
      *
+     * @param contextKey context key
      * @param processConfig process configuration
      */
-    void alterProcessConfiguration(PipelineProcessConfiguration processConfig);
+    void alterProcessConfiguration(PipelineContextKey contextKey, PipelineProcessConfiguration processConfig);
     
     /**
      * Show process configuration.
      *
+     * @param contextKey context key
      * @return process configuration, non-null
      */
-    PipelineProcessConfiguration showProcessConfiguration();
+    PipelineProcessConfiguration showProcessConfiguration(PipelineContextKey contextKey);
     
     /**
      * Persist job offset info.
      *
-     * @param jobId job id
-     * @param jobOffsetInfo job offset info.
+     * @param jobId job ID
+     * @param jobOffsetInfo job offset info
      */
     void persistJobOffsetInfo(String jobId, JobOffsetInfo jobOffsetInfo);
     
     /**
      * Get job offset info.
      *
-     * @param jobId job id
+     * @param jobId job ID
      * @return job offset progress
      */
     JobOffsetInfo getJobOffsetInfo(String jobId);
@@ -83,7 +86,7 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     /**
      * Get job infos.
      *
-     * @param jobId job id
+     * @param jobId job ID
      * @return job item infos
      */
     List<InventoryIncrementalJobItemInfo> getJobItemInfos(String jobId);
@@ -119,24 +122,24 @@ public interface InventoryIncrementalJobAPI extends PipelineJobAPI {
     /**
      * Aggregate data consistency check results.
      *
-     * @param jobId job id
+     * @param jobId job ID
      * @param checkResults check results
      * @return check success or not
      */
     boolean aggregateDataConsistencyCheckResults(String jobId, Map<String, DataConsistencyCheckResult> checkResults);
     
     /**
+     * Commit pipeline job.
+     *
+     * @param jobId job ID
+     */
+    void commit(String jobId);
+    
+    /**
      * Rollback pipeline job.
      *
-     * @param jobId job id
+     * @param jobId job ID
      * @throws SQLException when rollback underlying database data
      */
     void rollback(String jobId) throws SQLException;
-    
-    /**
-     * Commit pipeline job.
-     *
-     * @param jobId job id
-     */
-    void commit(String jobId);
 }

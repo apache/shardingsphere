@@ -1,0 +1,211 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: EVENTS
+columns:
+  event_catalog:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EVENT_CATALOG
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_schema:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EVENT_SCHEMA
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EVENT_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  definer:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DEFINER
+    primaryKey: false
+    unsigned: false
+    visible: true
+  time_zone:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TIME_ZONE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_body:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EVENT_BODY
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_definition:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: EVENT_DEFINITION
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EVENT_TYPE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  execute_at:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: EXECUTE_AT
+    primaryKey: false
+    unsigned: false
+    visible: true
+  interval_value:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: INTERVAL_VALUE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  interval_field:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: INTERVAL_FIELD
+    primaryKey: false
+    unsigned: false
+    visible: true
+  sql_mode:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: SQL_MODE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  starts:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: STARTS
+    primaryKey: false
+    unsigned: false
+    visible: true
+  ends:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: ENDS
+    primaryKey: false
+    unsigned: false
+    visible: true
+  status:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: STATUS
+    primaryKey: false
+    unsigned: false
+    visible: true
+  on_completion:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: ON_COMPLETION
+    primaryKey: false
+    unsigned: false
+    visible: true
+  created:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: CREATED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_altered:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_ALTERED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_executed:
+    caseSensitive: false
+    dataType: 93
+    generated: false
+    name: LAST_EXECUTED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  event_comment:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: EVENT_COMMENT
+    primaryKey: false
+    unsigned: false
+    visible: true
+  originator:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: ORIGINATOR
+    primaryKey: false
+    unsigned: false
+    visible: true
+  character_set_client:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: CHARACTER_SET_CLIENT
+    primaryKey: false
+    unsigned: false
+    visible: true
+  collation_connection:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: COLLATION_CONNECTION
+    primaryKey: false
+    unsigned: false
+    visible: true
+  database_collation:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: DATABASE_COLLATION
+    primaryKey: false
+    unsigned: false
+    visible: true

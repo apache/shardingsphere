@@ -23,11 +23,10 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.hook.SPISQLExecutionHook;
 import org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook;
-import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.DatabaseMetaData;
@@ -57,6 +56,8 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     private final boolean isExceptionThrown;
     
+    private final ProcessEngine processEngine = new ProcessEngine();
+    
     @Override
     public final Collection<T> execute(final Collection<JDBCExecutionUnit> executionUnits, final boolean isTrunkThread) throws SQLException {
         // TODO It is better to judge whether need sane result before execute, can avoid exception thrown
@@ -85,7 +86,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
             sqlExecutionHook.start(jdbcExecutionUnit.getExecutionUnit().getDataSourceName(), sqlUnit.getSql(), sqlUnit.getParameters(), dataSourceMetaData, isTrunkThread);
             T result = executeSQL(sqlUnit.getSql(), jdbcExecutionUnit.getStorageResource(), jdbcExecutionUnit.getConnectionMode(), storageType);
             sqlExecutionHook.finishSuccess();
-            finishReport(jdbcExecutionUnit);
+            processEngine.completeSQLUnitExecution();
             return result;
         } catch (final SQLException ex) {
             if (!storageType.equals(protocolType)) {
@@ -108,10 +109,6 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
         DataSourceMetaData result = storageType.getDataSourceMetaData(url, databaseMetaData.getUserName());
         CACHED_DATASOURCE_METADATA.put(url, result);
         return result;
-    }
-    
-    private void finishReport(final SQLExecutionUnit executionUnit) {
-        new ExecuteProcessEngine().finishExecution(executionUnit);
     }
     
     protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode, DatabaseType storageType) throws SQLException;

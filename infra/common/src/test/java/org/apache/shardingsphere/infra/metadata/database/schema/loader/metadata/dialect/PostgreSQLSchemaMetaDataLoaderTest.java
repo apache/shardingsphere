@@ -44,7 +44,7 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLSchemaMetaDataLoaderTest {
+class PostgreSQLSchemaMetaDataLoaderTest {
     
     private static final String BASIC_TABLE_META_DATA_SQL = "SELECT table_name, column_name, ordinal_position, data_type, udt_name, column_default, table_schema"
             + " FROM information_schema.columns WHERE table_schema IN ('public')";
@@ -67,7 +67,7 @@ public final class PostgreSQLSchemaMetaDataLoaderTest {
     private static final String LOAD_ALL_ROLE_TABLE_GRANTS_SQL = "SELECT table_name FROM information_schema.role_table_grants";
     
     @Test
-    public void assertLoadWithoutTables() throws SQLException {
+    void assertLoadWithoutTables() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
         when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
@@ -92,7 +92,7 @@ public final class PostgreSQLSchemaMetaDataLoaderTest {
     }
     
     @Test
-    public void assertLoadWithTables() throws SQLException {
+    void assertLoadWithTables() throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
         when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
@@ -189,8 +189,8 @@ public final class PostgreSQLSchemaMetaDataLoaderTest {
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
         assertThat(indexesIterator.next(), is(new IndexMetaData("id")));
-        assertThat(actualTableMetaData.getConstrains().size(), is(1));
-        Iterator<ConstraintMetaData> constrainsIterator = actualTableMetaData.getConstrains().iterator();
+        assertThat(actualTableMetaData.getConstraints().size(), is(1));
+        Iterator<ConstraintMetaData> constrainsIterator = actualTableMetaData.getConstraints().iterator();
         assertThat(constrainsIterator.next(), is(new ConstraintMetaData("tbl_con", "refer_tbl")));
     }
 }

@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.logging.yaml.config;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
@@ -28,8 +26,6 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
  */
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public final class YamlAppenderConfiguration implements YamlConfiguration {
     
     private String appenderName;

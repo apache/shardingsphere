@@ -34,10 +34,10 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class DBCPDataSourcePoolCreatorTest {
+class DBCPDataSourcePoolCreatorTest {
     
     @Test
-    public void assertCreateDataSource() {
+    void assertCreateDataSource() {
         BasicDataSource actual = (BasicDataSource) DataSourcePoolCreator.create(new DataSourceProperties(BasicDataSource.class.getName(), createDataSourceProperties()));
         assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));

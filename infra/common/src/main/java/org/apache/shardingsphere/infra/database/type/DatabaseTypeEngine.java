@@ -85,7 +85,7 @@ public final class DatabaseTypeEngine {
      * @return storage types
      */
     public static Map<String, DatabaseType> getStorageTypes(final String databaseName, final DatabaseConfiguration databaseConfig) {
-        Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1);
+        Map<String, DatabaseType> result = new LinkedHashMap<>(databaseConfig.getDataSources().size(), 1F);
         Map<String, DataSource> enabledDataSources = DataSourceStateManager.getInstance().getEnabledDataSourceMap(databaseName, databaseConfig.getDataSources());
         for (Entry<String, DataSource> entry : enabledDataSources.entrySet()) {
             result.put(entry.getKey(), getStorageType(entry.getValue()));

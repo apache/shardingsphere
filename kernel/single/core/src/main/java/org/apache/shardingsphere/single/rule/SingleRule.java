@@ -103,7 +103,7 @@ public final class SingleRule implements DatabaseRule, DataNodeContainedRule, Ta
     }
     
     private Collection<String> getLoadedTables(final Collection<ShardingSphereRule> builtRules) {
-        return builtRules.stream().filter(each -> each instanceof DataNodeContainedRule)
+        return builtRules.stream().filter(DataNodeContainedRule.class::isInstance)
                 .flatMap(each -> ((DataNodeContainedRule) each).getAllTables().stream()).collect(Collectors.toCollection(() -> new TreeSet<>(String.CASE_INSENSITIVE_ORDER)));
     }
     

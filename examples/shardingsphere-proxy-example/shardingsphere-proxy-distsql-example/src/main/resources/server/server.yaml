@@ -54,13 +54,9 @@ props:
   max-connections-size-per-query: 1
   kernel-executor-size: 16  # Infinite by default.
   proxy-frontend-flush-threshold: 128  # The default value is 128.
-  proxy-hint-enabled: true
   sql-show: false
   check-table-metadata-enabled: false
     # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
   # The default value is -1, which means set the minimum value for different JDBC drivers.
   proxy-backend-query-fetch-size: -1
   proxy-frontend-executor-size: 0 # Proxy frontend executor size. The default value is 0, which means let Netty decide.
-    # Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
-  # if client connections are more than proxy-frontend-netty-executor-size, especially executing slow SQL.
-  proxy-backend-executor-suitable: OLAP

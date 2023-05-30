@@ -30,10 +30,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class DataRecordComparatorGeneratorTest {
+class DataRecordComparatorGeneratorTest {
     
     @Test
-    public void assertGeneratorIncrementalComparator() {
+    void assertGeneratorIncrementalComparator() {
         Comparator<DataRecord> dataRecordComparator = DataRecordComparatorGenerator.generatorIncrementalComparator(new OpenGaussDatabaseType());
         List<DataRecord> dataRecords = new LinkedList<>();
         dataRecords.add(generateDataRecord(1L));

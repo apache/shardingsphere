@@ -30,6 +30,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class KillStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "processlist-id")
-    private String processlistId;
+    @XmlAttribute(name = "process-id")
+    private String processId;
 }

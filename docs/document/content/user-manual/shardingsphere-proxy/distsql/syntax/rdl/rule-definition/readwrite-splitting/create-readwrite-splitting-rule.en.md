@@ -1,11 +1,11 @@
 +++
 title = "CREATE READWRITE_SPLITTING RULE"
-weight = 2
+weight = 1
 +++
 
 ## Description
 
-The `CREATE READWRITE_SPLITTING RULE` syntax is used to create a readwrite splitting rule.
+The `CREATE READWRITE_SPLITTING RULE` syntax is used to create a readwrite-splitting rule.
 
 ### Syntax
 
@@ -19,13 +19,13 @@ ifNotExists ::=
   'IF' 'NOT' 'EXISTS'
 
 readwriteSplittingDefinition ::=
-  ruleName '(' (staticReadwriteSplittingDefinition | dynamicReadwriteSplittingDefinition) (',' loadBalancerDefinition)? ')'
+  ruleName '(' dataSourceDefinition (',' transactionalReadQueryStrategyDefinition)? (',' loadBalancerDefinition)? ')'
 
-staticReadwriteSplittingDefinition ::=
-    'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')'
+dataSourceDefinition ::=
+    'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')' 
 
-dynamicReadwriteSplittingDefinition ::=
-    'AUTO_AWARE_RESOURCE' '=' resourceName
+transactionalReadQueryStrategyDefinition ::=
+    'TRANSACTIONAL_READ_QUERY_STRATEGY' '=' transactionalReadQueryStrategyType
 
 loadBalancerDefinition ::=
     'TYPE' '(' 'NAME' '=' loadBalancerType (',' propertiesDefinition)? ')'
@@ -39,9 +39,9 @@ writeStorageUnitName ::=
 storageUnitName ::=
   identifier
 
-resourceName ::=
-  identifier
-    
+transactionalReadQueryStrategyType ::=
+  string
+
 loadBalancerType ::=
   string
 
@@ -62,15 +62,14 @@ value ::=
 
 ### Supplement
 
-- Support the creation of static readwrite-splitting rules and dynamic readwrite-splitting rules;
-- Dynamic readwrite-splitting rules rely on database discovery rules;
+- `transactionalReadQueryStrategyType` specifies the routing strategy for read query within a transaction, please refer to [YAML configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting/);
 - `loadBalancerType` specifies the load balancing algorithm type, please refer to [Load Balance Algorithm](/en/user-manual/common-config/builtin-algorithm/load-balance/);
 - Duplicate `ruleName` will not be created;
 - `ifNotExists` clause used for avoid `Duplicate readwrite_splitting rule` error.
 
 ### Example
 
-#### Create a statics readwrite splitting rule
+#### Create a readwrite-splitting rule
 
 ```sql
 CREATE READWRITE_SPLITTING RULE ms_group_0 (
@@ -80,18 +79,9 @@ CREATE READWRITE_SPLITTING RULE ms_group_0 (
 );
 ```
 
-#### Create a dynamic readwrite splitting rule
+#### Create readwrite-splitting rule with `ifNotExists` clause
 
-```sql
-CREATE READWRITE_SPLITTING RULE ms_group_1 (
-    AUTO_AWARE_RESOURCE=group_0
-    TYPE(NAME="random")
-);
-```
-
-#### Create readwrite splitting rule with `ifNotExists` clause
-
-- Statics readwrite splitting rule
+- readwrite-splitting rule
 
 ```sql
 CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_0 (
@@ -101,18 +91,9 @@ CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_0 (
 );
 ```
 
-- Dynamic readwrite splitting rule
-
-```sql
-CREATE READWRITE_SPLITTING RULE IF NOT EXISTS ms_group_1 (
-    AUTO_AWARE_RESOURCE=group_0
-    TYPE(NAME="random")
-);
-```
-
 ### Reserved word
 
-`CREATE`, `READWRITE_SPLITTING`, `RULE`, `WRITE_STORAGE_UNIT`, `READ_STORAGE_UNITS`, `AUTO_AWARE_RESOURCE`
+`CREATE`, `READWRITE_SPLITTING`, `RULE`, `WRITE_STORAGE_UNIT`, `READ_STORAGE_UNITS`
 , `TYPE`, `NAME`, `PROPERTIES`, `TRUE`, `FALSE`
 
 ### Related links

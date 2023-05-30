@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateDatabaseStatement;
@@ -46,12 +46,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ShowCreateDatabaseExecutorTest {
+class ShowCreateDatabaseExecutorTest {
     
     private static final String DATABASE_PATTERN = "db_%s";
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         MySQLShowCreateDatabaseStatement statement = new MySQLShowCreateDatabaseStatement();
         statement.setDatabaseName("db_0");
         ShowCreateDatabaseExecutor executor = new ShowCreateDatabaseExecutor(statement);
@@ -77,7 +77,7 @@ public final class ShowCreateDatabaseExecutorTest {
     }
     
     private Map<String, ShardingSphereDatabase> getDatabases() {
-        Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
+        Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1F);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());

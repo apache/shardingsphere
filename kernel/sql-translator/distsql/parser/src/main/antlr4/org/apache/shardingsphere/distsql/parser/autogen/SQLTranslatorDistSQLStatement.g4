@@ -20,5 +20,5 @@ grammar SQLTranslatorDistSQLStatement;
 import Symbol, RALStatement;
 
 execute
-    : (showSQLTranslatorRule) SEMI?
+    : (showSQLTranslatorRule) SEMI_? EOF
     ;

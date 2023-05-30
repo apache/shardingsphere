@@ -1,0 +1,563 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: table_lock_waits_summary_by_table
+columns:
+  object_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: OBJECT_TYPE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  object_schema:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: OBJECT_SCHEMA
+    primaryKey: false
+    unsigned: false
+    visible: true
+  object_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: OBJECT_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  count_star:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_STAR
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_timer_wait:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_TIMER_WAIT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_wait:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MIN_TIMER_WAIT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_wait:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_TIMER_WAIT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_wait:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_TIMER_WAIT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_read:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_READ
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_timer_read:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_TIMER_READ
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_read:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MIN_TIMER_READ
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_read:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_TIMER_READ
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_read:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_TIMER_READ
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_write:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_WRITE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_timer_write:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_TIMER_WRITE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_write:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MIN_TIMER_WRITE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_write:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_TIMER_WRITE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_write:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_TIMER_WRITE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_read_normal:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_READ_NORMAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_timer_read_normal:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_TIMER_READ_NORMAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_read_normal:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MIN_TIMER_READ_NORMAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_read_normal:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_TIMER_READ_NORMAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_read_normal:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_TIMER_READ_NORMAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_read_with_shared_locks:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_READ_WITH_SHARED_LOCKS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_timer_read_with_shared_locks:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_TIMER_READ_WITH_SHARED_LOCKS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_read_with_shared_locks:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MIN_TIMER_READ_WITH_SHARED_LOCKS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_read_with_shared_locks:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_TIMER_READ_WITH_SHARED_LOCKS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_read_with_shared_locks:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_TIMER_READ_WITH_SHARED_LOCKS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_read_high_priority:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_READ_HIGH_PRIORITY
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_timer_read_high_priority:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_TIMER_READ_HIGH_PRIORITY
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_read_high_priority:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MIN_TIMER_READ_HIGH_PRIORITY
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_read_high_priority:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_TIMER_READ_HIGH_PRIORITY
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_read_high_priority:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_TIMER_READ_HIGH_PRIORITY
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_read_no_insert:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_READ_NO_INSERT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_timer_read_no_insert:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_TIMER_READ_NO_INSERT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_read_no_insert:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MIN_TIMER_READ_NO_INSERT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_read_no_insert:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_TIMER_READ_NO_INSERT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_read_no_insert:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_TIMER_READ_NO_INSERT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_read_external:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_READ_EXTERNAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_timer_read_external:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_TIMER_READ_EXTERNAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_read_external:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MIN_TIMER_READ_EXTERNAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_read_external:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_TIMER_READ_EXTERNAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_read_external:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_TIMER_READ_EXTERNAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_write_allow_write:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_WRITE_ALLOW_WRITE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_timer_write_allow_write:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_TIMER_WRITE_ALLOW_WRITE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_write_allow_write:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MIN_TIMER_WRITE_ALLOW_WRITE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_write_allow_write:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_TIMER_WRITE_ALLOW_WRITE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_write_allow_write:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_TIMER_WRITE_ALLOW_WRITE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_write_concurrent_insert:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_WRITE_CONCURRENT_INSERT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_timer_write_concurrent_insert:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_TIMER_WRITE_CONCURRENT_INSERT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_write_concurrent_insert:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MIN_TIMER_WRITE_CONCURRENT_INSERT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_write_concurrent_insert:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_TIMER_WRITE_CONCURRENT_INSERT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_write_concurrent_insert:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_TIMER_WRITE_CONCURRENT_INSERT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_write_low_priority:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_WRITE_LOW_PRIORITY
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_timer_write_low_priority:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_TIMER_WRITE_LOW_PRIORITY
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_write_low_priority:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MIN_TIMER_WRITE_LOW_PRIORITY
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_write_low_priority:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_TIMER_WRITE_LOW_PRIORITY
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_write_low_priority:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_TIMER_WRITE_LOW_PRIORITY
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_write_normal:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_WRITE_NORMAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_timer_write_normal:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_TIMER_WRITE_NORMAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_write_normal:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MIN_TIMER_WRITE_NORMAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_write_normal:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_TIMER_WRITE_NORMAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_write_normal:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_TIMER_WRITE_NORMAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_write_external:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_WRITE_EXTERNAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  sum_timer_write_external:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SUM_TIMER_WRITE_EXTERNAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  min_timer_write_external:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MIN_TIMER_WRITE_EXTERNAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  avg_timer_write_external:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: AVG_TIMER_WRITE_EXTERNAL
+    primaryKey: false
+    unsigned: true
+    visible: true
+  max_timer_write_external:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: MAX_TIMER_WRITE_EXTERNAL
+    primaryKey: false
+    unsigned: true
+    visible: true

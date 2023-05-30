@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Projecti
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -48,19 +49,19 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     private final PostgreSQLAdminExecutorCreator delegated = new PostgreSQLAdminExecutorCreator();
     
     @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext) {
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext) {
         return delegated.create(sqlStatementContext);
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String databaseName) {
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext sqlStatementContext, final String sql, final String databaseName, final List<Object> parameters) {
         if (isSystemCatalogQuery(sqlStatementContext)) {
             return Optional.of(new OpenGaussSystemCatalogAdminQueryExecutor(sql));
         }
-        return delegated.create(sqlStatementContext, sql, databaseName);
+        return delegated.create(sqlStatementContext, sql, databaseName, parameters);
     }
     
-    private boolean isSystemCatalogQuery(final SQLStatementContext<?> sqlStatementContext) {
+    private boolean isSystemCatalogQuery(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext.getTablesContext().getTableNames().contains(OG_DATABASE)) {
             return true;
         }

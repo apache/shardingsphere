@@ -120,7 +120,9 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Inst
                 client.close();
                 throw new OperationTimeoutException();
             }
-        } catch (final InterruptedException | OperationTimeoutException ex) {
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        } catch (final OperationTimeoutException ex) {
             ZookeeperExceptionHandler.handleException(ex);
         }
     }
@@ -142,10 +144,10 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Inst
     @Override
     public void persist(final String key, final String value) {
         try {
-            if (!isExisted(key)) {
-                client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(key, value.getBytes(StandardCharsets.UTF_8));
-            } else {
+            if (isExisted(key)) {
                 update(key, value);
+            } else {
+                client.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT).forPath(key, value.getBytes(StandardCharsets.UTF_8));
             }
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
@@ -207,13 +209,12 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Inst
     public void persistExclusiveEphemeral(final String key, final String value) {
         try {
             client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(key, value.getBytes(StandardCharsets.UTF_8));
+        } catch (final NodeExistsException ex) {
+            throw new ClusterPersistRepositoryException(ex);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            if (ex instanceof NodeExistsException) {
-                throw new ClusterPersistRepositoryException(ex);
-            }
             ZookeeperExceptionHandler.handleException(ex);
+            // CHECKSTYLE:ON
         }
     }
     

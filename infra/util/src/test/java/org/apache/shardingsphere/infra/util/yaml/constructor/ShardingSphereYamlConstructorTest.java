@@ -31,11 +31,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class ShardingSphereYamlConstructorTest {
+class ShardingSphereYamlConstructorTest {
     
     @Test
-    public void assertToObject() throws IOException {
-        try (InputStream inputStream = ShardingSphereYamlConstructorTest.class.getClassLoader().getResourceAsStream("yaml/customized-obj.yaml")) {
+    void assertToObject() throws IOException {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("yaml/customized-obj.yaml")) {
             assertYamlObject(new Yaml(new ShardingSphereYamlConstructor(YamlConfigurationFixture.class)).loadAs(inputStream, YamlConfigurationFixture.class));
         }
     }
@@ -51,8 +51,8 @@ public final class ShardingSphereYamlConstructorTest {
     }
     
     @Test
-    public void assertToObjectWithNotAcceptClass() throws IOException {
-        try (InputStream inputStream = ShardingSphereYamlConstructorTest.class.getClassLoader().getResourceAsStream("yaml/accepted-class.yaml")) {
+    void assertToObjectWithNotAcceptClass() throws IOException {
+        try (InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("yaml/accepted-class.yaml")) {
             assertThrows(ConstructorException.class, () -> new Yaml(new ShardingSphereYamlConstructor(Object.class)).loadAs(inputStream, Object.class));
         }
     }

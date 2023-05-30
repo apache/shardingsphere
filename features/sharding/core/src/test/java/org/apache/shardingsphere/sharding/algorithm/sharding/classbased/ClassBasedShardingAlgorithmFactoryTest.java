@@ -29,16 +29,16 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class ClassBasedShardingAlgorithmFactoryTest {
+class ClassBasedShardingAlgorithmFactoryTest {
     
     @Test
-    public void assertNewInstanceWithUnAssignableFrom() {
+    void assertNewInstanceWithUnAssignableFrom() {
         assertThrows(ShardingAlgorithmClassImplementationException.class,
                 () -> ClassBasedShardingAlgorithmFactory.newInstance(ClassBasedHintShardingAlgorithmFixture.class.getName(), StandardShardingAlgorithm.class, new Properties()));
     }
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         assertThat(ClassBasedShardingAlgorithmFactory.newInstance(ClassBasedStandardShardingAlgorithmFixture.class.getName(), StandardShardingAlgorithm.class, new Properties()),
                 instanceOf(ClassBasedStandardShardingAlgorithmFixture.class));
     }

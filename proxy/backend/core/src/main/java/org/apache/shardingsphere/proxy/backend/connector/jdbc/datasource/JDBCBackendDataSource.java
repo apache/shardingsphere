@@ -93,7 +93,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
         for (int i = 0; i < connectionSize; i++) {
             try {
                 result.add(createConnection(databaseName, dataSourceName, dataSource, transactionType));
-            } catch (final SQLException ex) {
+            } catch (final SQLException ignored) {
                 for (Connection each : result) {
                     each.close();
                 }

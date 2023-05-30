@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
 import lombok.Getter;
-import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Attachable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
+import org.apache.shardingsphere.sql.parser.sql.common.enums.OrderDirection;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,9 +31,9 @@ import java.util.List;
 @Getter
 public final class OrderByToken extends SQLToken implements Attachable {
     
-    private final List<String> columnLabels = new LinkedList<>();
+    private final List<String> columnLabels = new ArrayList<>();
     
-    private final List<OrderDirection> orderDirections = new LinkedList<>();
+    private final List<OrderDirection> orderDirections = new ArrayList<>();
     
     public OrderByToken(final int startIndex) {
         super(startIndex);
@@ -45,12 +45,12 @@ public final class OrderByToken extends SQLToken implements Attachable {
         result.append(" ORDER BY ");
         for (int i = 0; i < columnLabels.size(); i++) {
             if (0 == i) {
-                result.append(columnLabels.get(0)).append(" ").append(orderDirections.get(i).name());
+                result.append(columnLabels.get(0)).append(' ').append(orderDirections.get(i).name());
             } else {
-                result.append(",").append(columnLabels.get(i)).append(" ").append(orderDirections.get(i).name());
+                result.append(',').append(columnLabels.get(i)).append(' ').append(orderDirections.get(i).name());
             }
         }
-        result.append(" ");
+        result.append(' ');
         return result.toString();
     }
 }

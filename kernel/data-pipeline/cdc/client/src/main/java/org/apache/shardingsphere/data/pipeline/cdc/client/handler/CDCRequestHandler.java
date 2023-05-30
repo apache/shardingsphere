@@ -19,14 +19,13 @@ package org.apache.shardingsphere.data.pipeline.cdc.client.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.cdc.client.constant.ClientConnectionStatus;
 import org.apache.shardingsphere.data.pipeline.cdc.client.context.ClientConnectionContext;
 import org.apache.shardingsphere.data.pipeline.cdc.client.event.StreamDataEvent;
-import org.apache.shardingsphere.data.pipeline.cdc.client.importer.DataSourceImporter;
-import org.apache.shardingsphere.data.pipeline.cdc.client.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.cdc.client.parameter.StartCDCClientParameter;
-import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtil;
+import org.apache.shardingsphere.data.pipeline.cdc.client.util.RequestIdUtils;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.AckStreamingRequestBody;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.request.CDCRequest.Builder;
@@ -40,28 +39,25 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordR
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.StreamDataResult;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * CDC request handler.
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     
     private final StartCDCClientParameter parameter;
     
-    private final Importer importer;
-    
-    public CDCRequestHandler(final StartCDCClientParameter parameter) {
-        this.parameter = parameter;
-        importer = new DataSourceImporter(parameter.getDatabaseType(), parameter.getImportDataSourceParameter());
-    }
+    private final Consumer<List<Record>> consumer;
     
     @Override
     public void userEventTriggered(final ChannelHandlerContext ctx, final Object evt) {
         if (evt instanceof StreamDataEvent) {
             StreamDataRequestBody streamDataRequestBody = StreamDataRequestBody.newBuilder().setDatabase(parameter.getDatabase()).setFull(parameter.isFull())
-                    .addAllSourceSchemaTables(parameter.getSchemaTables()).build();
-            CDCRequest request = CDCRequest.newBuilder().setRequestId(RequestIdUtil.generateRequestId()).setType(Type.STREAM_DATA).setStreamDataRequestBody(streamDataRequestBody).build();
+                    .addAllSourceSchemaTable(parameter.getSchemaTables()).build();
+            CDCRequest request = CDCRequest.newBuilder().setRequestId(RequestIdUtils.generateRequestId()).setType(Type.STREAM_DATA).setStreamDataRequestBody(streamDataRequestBody).build();
             ctx.writeAndFlush(request);
         }
     }
@@ -85,28 +81,20 @@ public final class CDCRequestHandler extends ChannelInboundHandlerAdapter {
     // TODO not remove the method, may be used again in the future
     private void sendStartStreamingDataRequest(final ChannelHandlerContext ctx, final String streamingId, final ClientConnectionContext connectionContext) {
         StartStreamingRequestBody startStreamingRequest = StartStreamingRequestBody.newBuilder().setStreamingId(streamingId).build();
-        Builder builder = CDCRequest.newBuilder().setRequestId(RequestIdUtil.generateRequestId()).setType(Type.START_STREAMING).setStartStreamingRequestBody(startStreamingRequest);
+        Builder builder = CDCRequest.newBuilder().setRequestId(RequestIdUtils.generateRequestId()).setType(Type.START_STREAMING).setStartStreamingRequestBody(startStreamingRequest);
         ctx.writeAndFlush(builder.build());
         connectionContext.setStatus(ClientConnectionStatus.STREAMING);
     }
     
     private void processDataRecords(final ChannelHandlerContext ctx, final DataRecordResult result) {
-        List<Record> recordsList = result.getRecordsList();
-        for (Record each : recordsList) {
-            try {
-                importer.write(each);
-                // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
-                // CHECKSTYLE:ON
-                throw new RuntimeException(ex);
-            }
-        }
+        List<Record> recordsList = result.getRecordList();
+        consumer.accept(recordsList);
         ctx.channel().writeAndFlush(CDCRequest.newBuilder().setType(Type.ACK_STREAMING).setAckStreamingRequestBody(AckStreamingRequestBody.newBuilder().setAckId(result.getAckId()).build()).build());
     }
     
     @Override
-    public void channelInactive(final ChannelHandlerContext ctx) throws Exception {
-        importer.close();
+    public void channelInactive(final ChannelHandlerContext ctx) {
+        log.info("Request handler channel inactive");
         ctx.fireChannelInactive();
     }
     

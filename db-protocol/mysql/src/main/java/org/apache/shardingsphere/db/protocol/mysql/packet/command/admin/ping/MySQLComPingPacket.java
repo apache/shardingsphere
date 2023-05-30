@@ -23,7 +23,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPa
 /**
  * COM_PING command packet for MySQL.
  * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-ping.html">COM_PING</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_ping.html">COM_PING</a>
  */
 public final class MySQLComPingPacket extends MySQLCommandPacket {
     

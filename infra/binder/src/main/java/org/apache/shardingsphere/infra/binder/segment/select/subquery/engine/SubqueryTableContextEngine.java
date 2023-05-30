@@ -41,7 +41,7 @@ public final class SubqueryTableContextEngine {
     public Collection<SubqueryTableContext> createSubqueryTableContexts(final SelectStatementContext subqueryContext, final String alias) {
         Collection<SubqueryTableContext> result = new LinkedList<>();
         List<String> columnNames = subqueryContext.getProjectionsContext().getExpandProjections().stream()
-                .filter(each -> each instanceof ColumnProjection).map(each -> ((ColumnProjection) each).getName()).collect(Collectors.toList());
+                .filter(ColumnProjection.class::isInstance).map(each -> ((ColumnProjection) each).getName()).collect(Collectors.toList());
         for (String each : subqueryContext.getTablesContext().getTableNames()) {
             result.add(new SubqueryTableContext(each, alias, columnNames));
         }

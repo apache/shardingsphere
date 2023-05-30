@@ -22,13 +22,13 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.QueryablePipelineRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.pipeline.UpdatablePipelineRALStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.pipeline.QueryablePipelineRALStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.pipeline.UpdatablePipelineRALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.QueryableRALStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.QueryableScalingRALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.UpdatableRALStatementAssert;
-import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.migration.UpdatableScalingRALStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 
 /**
@@ -45,10 +45,10 @@ public final class RALStatementAssert {
      * @param expected expected RAL statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final RALStatement actual, final SQLParserTestCase expected) {
-        if (actual instanceof QueryableScalingRALStatement) {
-            QueryableScalingRALStatementAssert.assertIs(assertContext, (QueryableScalingRALStatement) actual, expected);
-        } else if (actual instanceof UpdatableScalingRALStatement) {
-            UpdatableScalingRALStatementAssert.assertIs(assertContext, (UpdatableScalingRALStatement) actual, expected);
+        if (actual instanceof QueryablePipelineRALStatement) {
+            QueryablePipelineRALStatementAssert.assertIs(assertContext, (QueryablePipelineRALStatement) actual, expected);
+        } else if (actual instanceof UpdatablePipelineRALStatement) {
+            UpdatablePipelineRALStatementAssert.assertIs(assertContext, (UpdatablePipelineRALStatement) actual, expected);
         } else if (actual instanceof QueryableRALStatement) {
             QueryableRALStatementAssert.assertIs(assertContext, (QueryableRALStatement) actual, expected);
         } else if (actual instanceof UpdatableRALStatement) {

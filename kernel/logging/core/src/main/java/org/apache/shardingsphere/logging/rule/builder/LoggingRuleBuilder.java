@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 import org.apache.shardingsphere.logging.config.LoggingRuleConfiguration;
 import org.apache.shardingsphere.logging.constant.LoggingOrder;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
-import org.apache.shardingsphere.logging.utils.LoggingUtils;
+import org.apache.shardingsphere.logging.util.LoggingUtils;
 
 import java.util.Map;
 
@@ -35,8 +35,6 @@ public final class LoggingRuleBuilder implements GlobalRuleBuilder<LoggingRuleCo
     @Override
     public LoggingRule build(final LoggingRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final ConfigurationProperties props) {
         LoggingUtils.syncLoggingConfig(ruleConfig, props);
-        // TODO Make it only work on Proxy
-        // LoggingUtils.refreshLogger(ruleConfig);
         return new LoggingRule(ruleConfig);
     }
     

@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.timeservice.core.rule.builder.DefaultTimeServiceConfigurationBuilder
+org.apache.shardingsphere.timeservice.core.rule.builder.DefaultTimestampServiceConfigurationBuilder

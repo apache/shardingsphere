@@ -22,21 +22,20 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere</artifactId>
-        <version>5.3.2-SNAPSHOT</version>
+        <version>5.3.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-kernel</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>parser</module>
         <module>single</module>
         <module>authority</module>
         <module>transaction</module>
         <module>time-service</module>
-        <module>schedule</module>
         <module>data-pipeline</module>
         <module>sql-federation</module>
+        <module>sql-parser</module>
         <module>sql-translator</module>
         <module>traffic</module>
         <module>logging</module>

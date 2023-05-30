@@ -34,10 +34,10 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class SetInstanceStatusUpdaterTest {
+class SetInstanceStatusUpdaterTest {
     
     @Test
-    public void assertExecuteWithNotNotClusterMode() {
+    void assertExecuteWithNotNotClusterMode() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         SetInstanceStatusUpdater updater = new SetInstanceStatusUpdater();
@@ -45,7 +45,7 @@ public final class SetInstanceStatusUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithNotExistsInstanceID() {
+    void assertExecuteWithNotExistsInstanceID() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -54,7 +54,7 @@ public final class SetInstanceStatusUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithCurrentUsingInstance() {
+    void assertExecuteWithCurrentUsingInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("instanceID");
@@ -64,7 +64,7 @@ public final class SetInstanceStatusUpdaterTest {
     }
     
     @Test
-    public void assertExecuteWithAlreadyDisableInstance() {
+    void assertExecuteWithAlreadyDisableInstance() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getInstanceContext().isCluster()).thenReturn(true);
         when(contextManager.getInstanceContext().getInstance().getCurrentInstanceId()).thenReturn("currentInstance");

@@ -25,25 +25,25 @@ import javax.sql.XADataSource;
 import java.lang.reflect.Constructor;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * XA connection wrapper for openGauss.
  */
 public final class OpenGaussXAConnectionWrapper implements XAConnectionWrapper {
     
-    private static volatile Class<Connection> jdbcConnectionClass;
+    private Class<Connection> jdbcConnectionClass;
     
-    private static volatile Constructor<?> xaConnectionConstructor;
-    
-    private static volatile boolean initialized;
+    private Constructor<?> xaConnectionConstructor;
     
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
-        if (!initialized) {
-            loadReflection();
-            initialized = true;
-        }
         return createXAConnection(connection.unwrap(jdbcConnectionClass));
+    }
+    
+    @Override
+    public void init(final Properties props) {
+        loadReflection();
     }
     
     private void loadReflection() {

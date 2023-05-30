@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.api.impl;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineMetaDataPersistService;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -39,23 +40,23 @@ public final class PipelineDataSourcePersistService implements PipelineMetaDataP
     
     @Override
     @SuppressWarnings("unchecked")
-    public Map<String, DataSourceProperties> load(final JobType jobType) {
-        String dataSourcesProps = PipelineAPIFactory.getGovernanceRepositoryAPI().getMetaDataDataSources(jobType);
+    public Map<String, DataSourceProperties> load(final PipelineContextKey contextKey, final JobType jobType) {
+        String dataSourcesProps = PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).getMetaDataDataSources(jobType);
         if (Strings.isNullOrEmpty(dataSourcesProps)) {
             return Collections.emptyMap();
         }
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSourcesProps, Map.class);
-        Map<String, DataSourceProperties> result = new LinkedHashMap<>(yamlDataSources.size());
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(yamlDataSources.size(), 1F);
         yamlDataSources.forEach((key, value) -> result.put(key, swapper.swapToDataSourceProperties(value)));
         return result;
     }
     
     @Override
-    public void persist(final JobType jobType, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        Map<String, Map<String, Object>> dataSourceMap = new LinkedHashMap<>(dataSourcePropsMap.size());
+    public void persist(final PipelineContextKey contextKey, final JobType jobType, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        Map<String, Map<String, Object>> dataSourceMap = new LinkedHashMap<>(dataSourcePropsMap.size(), 1F);
         for (Entry<String, DataSourceProperties> entry : dataSourcePropsMap.entrySet()) {
             dataSourceMap.put(entry.getKey(), swapper.swapToMap(entry.getValue()));
         }
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistMetaDataDataSources(jobType, YamlEngine.marshal(dataSourceMap));
+        PipelineAPIFactory.getGovernanceRepositoryAPI(contextKey).persistMetaDataDataSources(jobType, YamlEngine.marshal(dataSourceMap));
     }
 }

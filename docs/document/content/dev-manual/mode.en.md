@@ -17,9 +17,9 @@ Standalone mode configuration information persistence definition
 
 ### Implementation classes
 
-| *Configuration Type* | *Description*        | *Fully-qualified class name* |
-| -------------------- | -------------------- | ---------------------------- |
-| JDBC                   | JDBC-based persistence | [`org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository`](https://github.com/apache/shardingsphere/blob/master/mode/type/standalone/repository/provider/jdbc/core/src/main/java/org/apache/shardingsphere/mode/repository/standalone/jdbc/JDBCRepository.java) |
+| *Configuration Type* | *Description*          | *Fully-qualified class name*                                                                                                                                                                                                                                                      |
+|----------------------|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| JDBC                 | JDBC-based persistence | [`org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepository`](https://github.com/apache/shardingsphere/blob/master/mode/type/standalone/repository/provider/jdbc/core/src/main/java/org/apache/shardingsphere/mode/repository/standalone/jdbc/JDBCRepository.java) |
 
 ## ClusterPersistRepository
 
@@ -33,12 +33,12 @@ Cluster mode configuration information persistence definition
 
 ### Implementation classes
 
-| *Configuration Type* | *Description*               | *Fully-qualified class name* |
-| -------------------- | --------------------------- | ---------------------------- |
+| *Configuration Type* | *Description*               | *Fully-qualified class name*                                                                                                                                                                                                                                                                 |
+|----------------------|-----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ZooKeeper            | ZooKeeper based persistence | [`org.apache.shardingsphere.mode.repository.cluster.zookeeper.ZookeeperRepository`](https://github.com/apache/shardingsphere/blob/master/mode/type/cluster/repository/provider/zookeeper/src/main/java/org/apache/shardingsphere/mode/repository/cluster/zookeeper/ZookeeperRepository.java) |
-| etcd                 | Etcd based persistence      | [`org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository`](https://github.com/apache/shardingsphere/blob/master/mode/type/cluster/repository/provider/etcd/src/main/java/org/apache/shardingsphere/mode/repository/cluster/etcd/EtcdRepository.java) |
-| Nacos                | Nacos based persistence     | [`org.apache.shardingsphere.mode.repository.cluster.nacos.NacosRepository`](https://github.com/apache/shardingsphere/blob/master/mode/type/cluster/repository/provider/nacos/src/main/java/org/apache/shardingsphere/mode/repository/cluster/nacos/NacosRepository.java) |
-| Consul               | Consul based persistence    | [`org.apache.shardingsphere.mode.repository.cluster.consul.ConsulRepository`](https://github.com/apache/shardingsphere/blob/master/mode/type/cluster/repository/provider/consul/src/main/java/org/apache/shardingsphere/mode/repository/cluster/consul/ConsulRepository.java) |
+| etcd                 | Etcd based persistence      | [`org.apache.shardingsphere.mode.repository.cluster.etcd.EtcdRepository`](https://github.com/apache/shardingsphere/blob/master/mode/type/cluster/repository/provider/etcd/src/main/java/org/apache/shardingsphere/mode/repository/cluster/etcd/EtcdRepository.java)                          |
+| Nacos                | Nacos based persistence     | [`org.apache.shardingsphere.mode.repository.cluster.nacos.NacosRepository`](https://github.com/apache/shardingsphere/blob/master/mode/type/cluster/repository/provider/nacos/src/main/java/org/apache/shardingsphere/mode/repository/cluster/nacos/NacosRepository.java)                     |
+| Consul               | Consul based persistence    | [`org.apache.shardingsphere.mode.repository.cluster.consul.ConsulRepository`](https://github.com/apache/shardingsphere/blob/master/mode/type/cluster/repository/provider/consul/src/main/java/org/apache/shardingsphere/mode/repository/cluster/consul/ConsulRepository.java)                |
 
 ## GovernanceWatcher
 
@@ -61,4 +61,3 @@ Governance listener definition
 | Types: UPDATED; WatchingKeys: /rules                                      | The global rule configuration change listener | [`org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.watcher.GlobalRuleChangedWatcher`](https://github.com/apache/shardingsphere/blob/master/mode/type/cluster/core/src/main/java/org/apache/shardingsphere/mode/manager/cluster/coordinator/registry/config/watcher/GlobalRuleChangedWatcher.java)                             |
 | Types: ADDED, UPDATED, DELETED; WatchingKeys: /sys_data                   | System database change listener               | [`org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.watcher.ShardingSphereDataChangedWatcher`](https://github.com/apache/shardingsphere/blob/master/mode/type/cluster/core/src/main/java/org/apache/shardingsphere/mode/manager/cluster/coordinator/registry/data/ShardingSphereDataChangedWatcher.java)                       |
 | Types: ADDED, UPDATED, DELETED; WatchingKeys: /nodes/storage_nodes        | Storage node state change listener            | [`org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.watcher.StorageNodeStateChangedWatcher`](https://github.com/apache/shardingsphere/blob/master/mode/type/cluster/core/src/main/java/org/apache/shardingsphere/mode/manager/cluster/coordinator/registry/status/storage/watcher/StorageNodeStateChangedWatcher.java) |
-| Types: DELETED; WatchingKeys: /lock/exclusive/locks/cluster_lock          | Cluster lock release listener                 | [`org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.cluster.watcher.lock.ClusterLockDeletedWatcher`](https://github.com/apache/shardingsphere/blob/master/mode/type/cluster/core/src/main/java/org/apache/shardingsphere/mode/manager/cluster/coordinator/registry/status/cluster/watcher/lock/ClusterLockDeletedWatcher.java) |

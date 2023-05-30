@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.distsql.handler.exception.algorithm.InvalidAlgorithmConfigurationException;
+import org.apache.shardingsphere.distsql.handler.exception.datasource.MissingRequiredDataSourcesException;
 import org.apache.shardingsphere.distsql.handler.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.distsql.handler.validate.DataSourcePropertiesValidateHandler;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
+import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundServerException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.YamlDatabaseConfigurationImportExecutor;
@@ -49,65 +51,60 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class ImportDatabaseConfigurationUpdaterTest {
+class ImportDatabaseConfigurationUpdaterTest {
     
     private ImportDatabaseConfigurationUpdater importDatabaseConfigUpdater;
     
     @Test
-    public void assertImportDatabaseExecutorForSharding() throws SQLException {
+    void assertImportDatabaseExecutorForSharding() throws SQLException {
         assertExecute("sharding_db", "/conf/import/config-sharding.yaml");
     }
     
     @Test
-    public void assertImportDatabaseExecutorForReadwriteSplitting() throws SQLException {
+    void assertImportDatabaseExecutorForReadwriteSplitting() throws SQLException {
         assertExecute("readwrite_splitting_db", "/conf/import/config-readwrite-splitting.yaml");
     }
     
     @Test
-    public void assertImportDatabaseExecutorForDatabaseDiscovery() throws SQLException {
-        assertExecute("database_discovery_db", "/conf/import/config-database-discovery.yaml");
-    }
-    
-    @Test
-    public void assertImportDatabaseExecutorForEncrypt() throws SQLException {
+    void assertImportDatabaseExecutorForEncrypt() throws SQLException {
         assertExecute("encrypt_db", "/conf/import/config-encrypt.yaml");
     }
     
     @Test
-    public void assertImportDatabaseExecutorForShadow() throws SQLException {
+    void assertImportDatabaseExecutorForShadow() throws SQLException {
         assertExecute("shadow_db", "/conf/import/config-shadow.yaml");
     }
     
     @Test
-    public void assertImportDatabaseExecutorForMask() throws SQLException {
+    void assertImportDatabaseExecutorForMask() throws SQLException {
         assertExecute("mask_db", "/conf/import/config-mask.yaml");
     }
     
     @Test
-    public void assertImportExistedDatabase() {
+    void assertImportExistedDatabase() {
         String databaseName = "sharding_db";
         when(ProxyContext.getInstance().databaseExists(databaseName)).thenReturn(true);
-        assertThrows(IllegalStateException.class, () -> assertExecute(databaseName, "/conf/import/config-sharding.yaml"));
+        assertThrows(UnsupportedSQLOperationException.class, () -> assertExecute(databaseName, "/conf/import/config-sharding.yaml"));
     }
     
     @Test
-    public void assertImportEmptyDatabaseName() {
-        assertThrows(NullPointerException.class, () -> assertExecute("sharding_db", "/conf/import/config-empty-database-name.yaml"));
+    void assertImportEmptyDatabaseName() {
+        assertThrows(UnsupportedSQLOperationException.class, () -> assertExecute("sharding_db", "/conf/import/config-empty-database-name.yaml"));
     }
     
     @Test
-    public void assertImportEmptyDataSource() {
-        assertThrows(IllegalStateException.class, () -> assertExecute("sharding_db", "/conf/import/config-empty-data-source.yaml"));
+    void assertImportEmptyDataSource() {
+        assertThrows(MissingRequiredDataSourcesException.class, () -> assertExecute("sharding_db", "/conf/import/config-empty-data-source.yaml"));
     }
     
     @Test
-    public void assertImportDuplicatedLogicTable() {
+    void assertImportDuplicatedLogicTable() {
         assertThrows(DuplicateRuleException.class, () -> assertExecute("sharding_db", "/conf/import/config-duplicated-logic-table.yaml"));
     }
     
     @Test
-    public void assertImportInvalidAlgorithm() {
-        assertThrows(InvalidAlgorithmConfigurationException.class, () -> assertExecute("sharding_db", "/conf/import/config-invalid-algorithm.yaml"));
+    void assertImportInvalidAlgorithm() {
+        assertThrows(ServiceProviderNotFoundServerException.class, () -> assertExecute("sharding_db", "/conf/import/config-invalid-algorithm.yaml"));
     }
     
     private void assertExecute(final String databaseName, final String filePath) throws SQLException {

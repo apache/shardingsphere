@@ -48,7 +48,7 @@ public abstract class MemoryMergedResult<T extends ShardingSphereRule> implement
     
     private boolean wasNull;
     
-    protected MemoryMergedResult(final T rule, final ShardingSphereSchema schema, final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
+    protected MemoryMergedResult(final T rule, final ShardingSphereSchema schema, final SQLStatementContext sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         List<MemoryQueryResultRow> memoryQueryResultRows = init(rule, schema, sqlStatementContext, queryResults);
         memoryResultSetRows = memoryQueryResultRows.iterator();
         if (!memoryQueryResultRows.isEmpty()) {
@@ -56,7 +56,7 @@ public abstract class MemoryMergedResult<T extends ShardingSphereRule> implement
         }
     }
     
-    protected abstract List<MemoryQueryResultRow> init(T rule, ShardingSphereSchema schema, SQLStatementContext<?> sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
+    protected abstract List<MemoryQueryResultRow> init(T rule, ShardingSphereSchema schema, SQLStatementContext sqlStatementContext, List<QueryResult> queryResults) throws SQLException;
     
     @Override
     public final boolean next() {

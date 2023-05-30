@@ -31,13 +31,18 @@ import java.util.Collections;
  * Show create table statement context.
  */
 @Getter
-public final class ShowCreateTableStatementContext extends CommonSQLStatementContext<MySQLShowCreateTableStatement> implements TableAvailable {
+public final class ShowCreateTableStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
     public ShowCreateTableStatementContext(final MySQLShowCreateTableStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
+    }
+    
+    @Override
+    public MySQLShowCreateTableStatement getSqlStatement() {
+        return (MySQLShowCreateTableStatement) super.getSqlStatement();
     }
     
     @Override

@@ -46,9 +46,8 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
     
     private final Map<String, ShardingSphereSchema> schemas;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
-    @SuppressWarnings("rawtypes")
     @Override
     public Collection<ParameterRewriter> getParameterRewriters() {
         Collection<ParameterRewriter> result = new LinkedList<>();
@@ -57,7 +56,6 @@ public final class ShardingParameterRewriterBuilder implements ParameterRewriter
         return result;
     }
     
-    @SuppressWarnings("rawtypes")
     private void addParameterRewriter(final Collection<ParameterRewriter> paramRewriters, final ParameterRewriter toBeAddedParamRewriter) {
         if (toBeAddedParamRewriter instanceof SchemaMetaDataAware) {
             ((SchemaMetaDataAware) toBeAddedParamRewriter).setSchemas(schemas);

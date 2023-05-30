@@ -30,16 +30,16 @@ import java.util.List;
  * PostgreSQL aggregated responses packet.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLAggregatedResponsesPacket implements PostgreSQLPacket {
+public final class PostgreSQLAggregatedResponsesPacket extends PostgreSQLPacket {
     
-    private final List<DatabasePacket<?>> packets;
+    private final List<DatabasePacket> packets;
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
         ByteBuf byteBuf = payload.getByteBuf();
-        for (DatabasePacket<?> each : packets) {
+        for (DatabasePacket each : packets) {
             if (!(each instanceof PostgreSQLIdentifierPacket)) {
-                ((PostgreSQLPacket) each).write(payload);
+                each.write(payload);
                 continue;
             }
             PostgreSQLIdentifierPacket eachPacket = (PostgreSQLIdentifierPacket) each;

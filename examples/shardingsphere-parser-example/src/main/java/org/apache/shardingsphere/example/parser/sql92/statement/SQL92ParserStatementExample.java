@@ -19,13 +19,12 @@ package org.apache.shardingsphere.example.parser.sql92.statement;
 
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.SQL92Statement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 public final class SQL92ParserStatementExample {
     
@@ -46,17 +45,18 @@ public final class SQL92ParserStatementExample {
     private static final List<String> SQL92_PARSER_STATEMENT_LIST;
     
     static {
-        SQL92_PARSER_STATEMENT_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_UPDATE_SQL, DML_DELETE_SQL,
-                DDL_CREATE_SQL, DDL_DROP_SQL, DDL_ALTER_SQL);
+        SQL92_PARSER_STATEMENT_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_UPDATE_SQL, DML_DELETE_SQL, DDL_CREATE_SQL, DDL_DROP_SQL, DDL_ALTER_SQL);
     }
     
-    public static void main(String[] args) {
+    // CHECKSTYLE:OFF
+    public static void main(final String[] args) {
+        // CHECKSTYLE:ON
         SQL92_PARSER_STATEMENT_LIST.forEach(sql -> {
             CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("SQL92", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("SQL92", "STATEMENT", false, new Properties());
-            SQL92Statement sqlStatement = visitorEngine.visit(parseASTNode);
+            SQLStatementVisitorEngine visitorEngine = new SQLStatementVisitorEngine("SQL92", false);
+            SQLStatement sqlStatement = visitorEngine.visit(parseASTNode);
             System.out.println(sqlStatement.toString());
         });
     }

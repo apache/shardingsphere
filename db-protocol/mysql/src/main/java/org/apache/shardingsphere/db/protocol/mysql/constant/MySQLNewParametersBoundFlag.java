@@ -23,8 +23,6 @@ import org.apache.shardingsphere.db.protocol.mysql.exception.MySQLProtocolExcept
 
 /**
  * New parameters bound flag for MySQL.
- * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-stmt-execute.html">COM_STMT_EXECUTE</a>
  */
 @RequiredArgsConstructor
 @Getter
@@ -41,6 +39,7 @@ public enum MySQLNewParametersBoundFlag {
      * 
      * @param value value
      * @return new parameters bound flag
+     * @throws MySQLProtocolException MySQL protocol exception
      */
     public static MySQLNewParametersBoundFlag valueOf(final int value) {
         for (MySQLNewParametersBoundFlag each : values()) {

@@ -27,14 +27,9 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.Base
  */
 @RequiredArgsConstructor
 @Getter
-public final class WALPosition implements IngestPosition<WALPosition> {
+public final class WALPosition implements IngestPosition {
     
     private final BaseLogSequenceNumber logSequenceNumber;
-    
-    @Override
-    public int compareTo(final WALPosition position) {
-        return null == position ? 1 : Long.compare(logSequenceNumber.asLong(), position.logSequenceNumber.asLong());
-    }
     
     @Override
     public String toString() {

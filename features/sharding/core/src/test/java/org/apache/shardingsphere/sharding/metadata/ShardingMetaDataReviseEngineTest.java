@@ -40,17 +40,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingMetaDataReviseEngineTest {
+class ShardingMetaDataReviseEngineTest {
     
     @Test
-    public void assertReviseWithKeyGenerateStrategy() {
+    void assertReviseWithKeyGenerateStrategy() {
         GenericSchemaBuilderMaterial material = mock(GenericSchemaBuilderMaterial.class);
         when(material.getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         Map<String, SchemaMetaData> actual = new MetaDataReviseEngine(Collections.singleton(mockShardingRule())).revise(Collections.singletonMap("sharding_db",
                 new SchemaMetaData("sharding_db", Collections.singleton(createTableMetaData()))), material);
         Iterator<ColumnMetaData> columns = actual.get("sharding_db").getTables().iterator().next().getColumns().iterator();
         assertTrue(columns.next().isGenerated());
-        assertFalse(columns.next().isGenerated());
         assertFalse(columns.next().isGenerated());
         assertFalse(columns.next().isGenerated());
     }
@@ -64,7 +63,6 @@ public final class ShardingMetaDataReviseEngineTest {
     private TableMetaData createTableMetaData() {
         Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", Types.INTEGER, true, true, true, true, false),
                 new ColumnMetaData("pwd_cipher", Types.VARCHAR, false, false, true, true, false),
-                new ColumnMetaData("pwd_plain", Types.VARCHAR, false, false, true, true, false),
                 new ColumnMetaData("product_id", Types.INTEGER, false, false, true, true, false));
         return new TableMetaData("t_order", columns, Collections.emptyList(), Collections.emptyList());
     }

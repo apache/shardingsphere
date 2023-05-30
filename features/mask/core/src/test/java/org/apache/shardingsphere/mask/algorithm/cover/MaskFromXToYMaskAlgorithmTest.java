@@ -27,46 +27,83 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class MaskFromXToYMaskAlgorithmTest {
+class MaskFromXToYMaskAlgorithmTest {
     
     private MaskFromXToYMaskAlgorithm maskAlgorithm;
     
+    private MaskFromXToYMaskAlgorithm sameFromXToYMaskAlgorithm;
+    
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         maskAlgorithm = new MaskFromXToYMaskAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", "*")));
+        sameFromXToYMaskAlgorithm = new MaskFromXToYMaskAlgorithm();
+        sameFromXToYMaskAlgorithm.init(PropertiesBuilder.build(new Property("from-x", "5"), new Property("to-y", "5"), new Property("replace-char", "*")));
     }
     
     @Test
-    public void assertMask() {
-        assertThat(maskAlgorithm.mask("abc12345"), is("abc***45"));
+    void assertMask() {
+        assertThat(maskAlgorithm.mask("abc123456"), is("abc***456"));
+        assertThat(sameFromXToYMaskAlgorithm.mask("abc123456"), is("abc12*456"));
     }
     
     @Test
-    public void assertMaskWhenPlainValueLengthLessThanFromX() {
-        assertThat(maskAlgorithm.mask("ab"), is("ab"));
+    void assertMaskWhenPlainValueLengthLessThanFromXPlusOne() {
+        assertThat(maskAlgorithm.mask("abc"), is("abc"));
+        assertThat(sameFromXToYMaskAlgorithm.mask("abc"), is("abc"));
     }
     
     @Test
-    public void assertMaskWhenPlainValueLengthLessThanToY() {
+    void assertMaskWhenPlainValueLengthEqualsFromXPlusOne() {
         assertThat(maskAlgorithm.mask("abc1"), is("abc*"));
+        assertThat(sameFromXToYMaskAlgorithm.mask("abc123"), is("abc12*"));
     }
     
     @Test
-    public void assertInitWhenFromXIsEmpty() {
+    void assertMaskWhenPlainValueLengthLessThanToYPlusOne() {
+        assertThat(maskAlgorithm.mask("abc12"), is("abc**"));
+        assertThat(sameFromXToYMaskAlgorithm.mask("abc12"), is("abc12"));
+    }
+    
+    @Test
+    void assertMaskWhenPlainValueLengthEqualsToYPlusOne() {
+        assertThat(maskAlgorithm.mask("abc123"), is("abc***"));
+        assertThat(sameFromXToYMaskAlgorithm.mask("abc123"), is("abc12*"));
+    }
+    
+    @Test
+    void assertInitWhenFromXIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", ""), new Property("to-y", "5"), new Property("replace-char", "*"))));
     }
     
     @Test
-    public void assertInitWhenToYIsEmpty() {
+    void assertInitWhenToYIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", ""), new Property("replace-char", "*"))));
     }
     
     @Test
-    public void assertInitWhenReplaceCharIsEmpty() {
+    void assertInitWhenReplaceCharIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskFromXToYMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "5"), new Property("replace-char", ""))));
+    }
+    
+    @Test
+    void assertInitWhenFromXIsNotPositive() {
+        assertThrows(MaskAlgorithmInitializationException.class,
+                () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "-3"), new Property("to-y", "5"), new Property("replace-char", "*"))));
+    }
+    
+    @Test
+    void assertInitWhenToYIsNotPositive() {
+        assertThrows(MaskAlgorithmInitializationException.class,
+                () -> new MaskFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "3"), new Property("to-y", "-5"), new Property("replace-char", "*"))));
+    }
+    
+    @Test
+    void assertInitWhenFromXGreaterThanToY() {
+        assertThrows(MaskAlgorithmInitializationException.class,
+                () -> new KeepFirstNLastMMaskAlgorithm().init(PropertiesBuilder.build(new Property("from-x", "5"), new Property("to-y", "2"), new Property("replace-char", ""))));
     }
 }

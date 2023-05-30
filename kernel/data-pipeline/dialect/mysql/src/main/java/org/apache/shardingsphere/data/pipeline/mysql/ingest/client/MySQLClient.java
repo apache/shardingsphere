@@ -29,9 +29,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.BinlogSyncChannelAlreadyClosedException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.GlobalTableMapEventMapping;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
@@ -43,6 +43,7 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.netty.MySQLNe
 import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
+import org.apache.shardingsphere.db.protocol.mysql.netty.MySQLSequenceIdInboundHandler;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComBinlogDumpCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog.MySQLComRegisterSlaveCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
@@ -53,12 +54,15 @@ import org.apache.shardingsphere.infra.util.exception.ShardingSpherePrecondition
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.net.InetSocketAddress;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * MySQL Connector.
@@ -75,13 +79,15 @@ public final class MySQLClient {
     
     private Promise<Object> responseCallback;
     
-    private final ArrayBlockingQueue<AbstractBinlogEvent> blockingEventQueue = new ArrayBlockingQueue<>(10000);
+    private final ArrayBlockingQueue<List<AbstractBinlogEvent>> blockingEventQueue = new ArrayBlockingQueue<>(2500);
     
     private ServerInfo serverInfo;
     
     private volatile boolean running = true;
     
     private final AtomicInteger reconnectTimes = new AtomicInteger();
+    
+    private final boolean decodeWithTX;
     
     /**
      * Connect to MySQL.
@@ -101,6 +107,7 @@ public final class MySQLClient {
                         socketChannel.attr(MySQLConstants.MYSQL_SEQUENCE_ID).set(new AtomicInteger());
                         socketChannel.pipeline().addLast(new ChannelAttrInitializer());
                         socketChannel.pipeline().addLast(new PacketCodec(new MySQLPacketCodecEngine()));
+                        socketChannel.pipeline().addLast(new MySQLSequenceIdInboundHandler());
                         socketChannel.pipeline().addLast(new MySQLNegotiatePackageDecoder());
                         socketChannel.pipeline().addLast(new MySQLCommandPacketDecoder());
                         socketChannel.pipeline().addLast(new MySQLNegotiateHandler(connectInfo.getUsername(), connectInfo.getPassword(), responseCallback));
@@ -108,7 +115,6 @@ public final class MySQLClient {
                     }
                 }).connect(connectInfo.getHost(), connectInfo.getPort()).channel();
         serverInfo = waitExpectedResponse(ServerInfo.class);
-        reconnectTimes.set(0);
         running = true;
     }
     
@@ -189,8 +195,7 @@ public final class MySQLClient {
         }
         InternalResultSet resultSet = executeQuery("SELECT @@GLOBAL.BINLOG_CHECKSUM");
         String checksumType = resultSet.getFieldValues().get(0).getData().iterator().next().toString();
-        checksumType = null != checksumType ? checksumType.toUpperCase() : "";
-        switch (checksumType) {
+        switch (checksumType.toUpperCase()) {
             case "NONE":
                 return 0;
             case "CRC32":
@@ -205,7 +210,7 @@ public final class MySQLClient {
         channel.pipeline().remove(MySQLCommandPacketDecoder.class);
         channel.pipeline().remove(MySQLCommandResponseHandler.class);
         String tableKey = String.join(":", connectInfo.getHost(), String.valueOf(connectInfo.getPort()));
-        channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder(checksumLength, GlobalTableMapEventMapping.getTableMapEventMap(tableKey)));
+        channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder(checksumLength, GlobalTableMapEventMapping.getTableMapEventMap(tableKey), decodeWithTX));
         channel.pipeline().addLast(new MySQLBinlogEventHandler(getLastBinlogEvent(binlogFileName, binlogPosition)));
         resetSequenceID();
         channel.writeAndFlush(new MySQLComBinlogDumpCommandPacket((int) binlogPosition, connectInfo.getServerId(), binlogFileName));
@@ -227,19 +232,21 @@ public final class MySQLClient {
      *
      * @return binlog event
      */
-    public synchronized AbstractBinlogEvent poll() {
+    public synchronized List<AbstractBinlogEvent> poll() {
         ShardingSpherePreconditions.checkState(running, BinlogSyncChannelAlreadyClosedException::new);
         try {
-            return blockingEventQueue.poll(100L, TimeUnit.MILLISECONDS);
+            List<AbstractBinlogEvent> result = blockingEventQueue.poll(100L, TimeUnit.MILLISECONDS);
+            return null == result ? Collections.emptyList() : result;
         } catch (final InterruptedException ignored) {
-            return null;
+            Thread.currentThread().interrupt();
+            return Collections.emptyList();
         }
     }
     
     @SuppressWarnings("unchecked")
     private <T> T waitExpectedResponse(final Class<T> type) {
         try {
-            Object response = responseCallback.get(5, TimeUnit.SECONDS);
+            Object response = responseCallback.get(5L, TimeUnit.SECONDS);
             if (null == response) {
                 return null;
             }
@@ -247,11 +254,14 @@ public final class MySQLClient {
                 return (T) response;
             }
             if (response instanceof MySQLErrPacket) {
-                throw new RuntimeException(((MySQLErrPacket) response).getErrorMessage());
+                throw new PipelineInternalException(((MySQLErrPacket) response).getErrorMessage());
             }
-            throw new RuntimeException("unexpected response type");
-        } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
-            throw new RuntimeException(ex);
+            throw new PipelineInternalException("unexpected response type");
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new PipelineInternalException(ex);
+        } catch (final ExecutionException | TimeoutException ex) {
+            throw new PipelineInternalException(ex);
         }
     }
     
@@ -269,6 +279,7 @@ public final class MySQLClient {
                 eventLoopGroup.shutdownGracefully();
             }
         } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
             log.error("close channel interrupted", ex);
         }
     }
@@ -291,24 +302,40 @@ public final class MySQLClient {
         }
     }
     
-    @AllArgsConstructor
     private final class MySQLBinlogEventHandler extends ChannelInboundHandlerAdapter {
         
-        private volatile AbstractBinlogEvent lastBinlogEvent;
+        private final AtomicReference<AbstractBinlogEvent> lastBinlogEvent;
         
+        MySQLBinlogEventHandler(final AbstractBinlogEvent lastBinlogEvent) {
+            this.lastBinlogEvent = new AtomicReference<>(lastBinlogEvent);
+        }
+        
+        @SuppressWarnings("unchecked")
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
             if (!running) {
                 return;
             }
+            reconnectTimes.set(0);
+            if (msg instanceof List) {
+                List<AbstractBinlogEvent> records = (List<AbstractBinlogEvent>) msg;
+                if (records.isEmpty()) {
+                    log.warn("The records is empty");
+                    return;
+                }
+                lastBinlogEvent.set(records.get(records.size() - 1));
+                blockingEventQueue.put(records);
+                return;
+            }
             if (msg instanceof AbstractBinlogEvent) {
-                lastBinlogEvent = (AbstractBinlogEvent) msg;
-                blockingEventQueue.put(lastBinlogEvent);
+                lastBinlogEvent.set((AbstractBinlogEvent) msg);
+                blockingEventQueue.put(Collections.singletonList(lastBinlogEvent.get()));
             }
         }
         
         @Override
         public void channelInactive(final ChannelHandlerContext ctx) {
+            log.warn("MySQL binlog channel inactive");
             if (!running) {
                 return;
             }
@@ -317,24 +344,20 @@ public final class MySQLClient {
         
         @Override
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
-            String fileName = null == lastBinlogEvent ? null : lastBinlogEvent.getFileName();
-            Long position = null == lastBinlogEvent ? null : lastBinlogEvent.getPosition();
+            String fileName = null == lastBinlogEvent.get() ? null : lastBinlogEvent.get().getFileName();
+            Long position = null == lastBinlogEvent.get() ? null : lastBinlogEvent.get().getPosition();
             log.error("MySQLBinlogEventHandler protocol resolution error, file name:{}, position:{}", fileName, position, cause);
-            if (!running) {
-                return;
-            }
-            reconnect();
         }
         
         private void reconnect() {
             closeChannel();
-            if (reconnectTimes.get() > 3) {
-                log.warn("exceeds the maximum number of retry times, last binlog event:{}", lastBinlogEvent);
+            if (reconnectTimes.incrementAndGet() > 3) {
+                log.warn("Exceeds the maximum number of retry times, last binlog event:{}", lastBinlogEvent);
                 return;
             }
-            reconnectTimes.incrementAndGet();
             connect();
-            subscribe(lastBinlogEvent.getFileName(), lastBinlogEvent.getPosition());
+            log.info("Reconnect times {}", reconnectTimes.get());
+            subscribe(lastBinlogEvent.get().getFileName(), lastBinlogEvent.get().getPosition());
         }
     }
 }

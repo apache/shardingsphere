@@ -19,8 +19,11 @@ package org.apache.shardingsphere.mask.algorithm.replace;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mask.exception.algorithm.MaskAlgorithmInitializationException;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -47,6 +50,8 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
     
     private static final String DEFAULT_SPECIAL_CODES = "~,!,@,#,$,%,^,&,*,:,<,>,|";
     
+    private final Random random = new SecureRandom();
+    
     private List<Character> uppercaseLetterCodes;
     
     private List<Character> lowercaseLetterCodes;
@@ -60,7 +65,11 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
         uppercaseLetterCodes = splitPropsToList(props.getProperty(UPPERCASE_LETTER_CODES, DEFAULT_UPPERCASE_LETTER_CODES));
         lowercaseLetterCodes = splitPropsToList(props.getProperty(LOWERCASE_LETTER_CODES, DEFAULT_LOWERCASE_LETTER_CODES));
         digitalCodes = splitPropsToList(props.getProperty(DIGITAL_CODES, DEFAULT_DIGITAL_CODES));
+        ShardingSpherePreconditions.checkState(!digitalCodes.isEmpty(),
+                () -> new MaskAlgorithmInitializationException(getType(), String.format("'%s' must be not empty", DIGITAL_CODES)));
         specialCodes = splitPropsToList(props.getProperty(SPECIAL_CODES, DEFAULT_SPECIAL_CODES));
+        ShardingSpherePreconditions.checkState(!SPECIAL_CODES.isEmpty(),
+                () -> new MaskAlgorithmInitializationException(getType(), String.format("'%s' must be not empty", SPECIAL_CODES)));
     }
     
     private List<Character> splitPropsToList(final String props) {
@@ -73,7 +82,6 @@ public final class GenericTableRandomReplaceAlgorithm implements MaskAlgorithm<O
         if (Strings.isNullOrEmpty(result)) {
             return result;
         }
-        Random random = new Random();
         char[] chars = result.toCharArray();
         for (int i = 0; i < chars.length; i++) {
             char c = chars[i];

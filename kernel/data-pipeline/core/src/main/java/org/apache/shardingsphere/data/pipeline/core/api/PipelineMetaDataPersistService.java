@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.api;
 
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 
 /**
@@ -29,16 +30,18 @@ public interface PipelineMetaDataPersistService<T> {
     /**
      * Load meta data.
      *
+     * @param contextKey context key
      * @param jobType job type, nullable
      * @return configurations
      */
-    T load(JobType jobType);
+    T load(PipelineContextKey contextKey, JobType jobType);
     
     /**
      * Persist meta data.
      *
+     * @param contextKey context key
      * @param jobType job type, nullable
      * @param configs configurations
      */
-    void persist(JobType jobType, T configs);
+    void persist(PipelineContextKey contextKey, JobType jobType, T configs);
 }

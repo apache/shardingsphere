@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.fixture.EncryptGeneratorFixtureBuilder;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -26,31 +28,32 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class EncryptInsertValuesTokenGeneratorTest extends EncryptGeneratorBaseTest {
+class EncryptInsertValuesTokenGeneratorTest {
     
-    @Test
-    public void assertIsGenerateSQLToken() {
-        EncryptInsertValuesTokenGenerator encryptInsertValuesTokenGenerator = new EncryptInsertValuesTokenGenerator();
-        encryptInsertValuesTokenGenerator.setEncryptRule(createEncryptRule());
-        assertTrue(encryptInsertValuesTokenGenerator.isGenerateSQLToken(createInsertStatementContext(Collections.emptyList())));
+    private final EncryptInsertValuesTokenGenerator generator = new EncryptInsertValuesTokenGenerator();
+    
+    @BeforeEach
+    void setup() {
+        generator.setEncryptRule(EncryptGeneratorFixtureBuilder.createEncryptRule());
     }
     
     @Test
-    public void assertGenerateSQLTokenFromGenerateNewSQLToken() {
-        EncryptInsertValuesTokenGenerator encryptInsertValuesTokenGenerator = new EncryptInsertValuesTokenGenerator();
-        encryptInsertValuesTokenGenerator.setEncryptRule(createEncryptRule());
-        encryptInsertValuesTokenGenerator.setPreviousSQLTokens(Collections.emptyList());
-        encryptInsertValuesTokenGenerator.setDatabaseName("db_schema");
-        assertThat(encryptInsertValuesTokenGenerator.generateSQLToken(createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?, ?)"));
+    void assertIsGenerateSQLToken() {
+        assertTrue(generator.isGenerateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Collections.emptyList())));
     }
     
     @Test
-    public void assertGenerateSQLTokenFromPreviousSQLTokens() {
-        EncryptInsertValuesTokenGenerator encryptInsertValuesTokenGenerator = new EncryptInsertValuesTokenGenerator();
-        encryptInsertValuesTokenGenerator.setDatabaseName("db-001");
-        encryptInsertValuesTokenGenerator.setEncryptRule(createEncryptRule());
-        encryptInsertValuesTokenGenerator.setPreviousSQLTokens(getPreviousSQLTokens());
-        encryptInsertValuesTokenGenerator.setDatabaseName("db_schema");
-        assertThat(encryptInsertValuesTokenGenerator.generateSQLToken(createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?, ?)"));
+    void assertGenerateSQLTokenFromGenerateNewSQLToken() {
+        generator.setPreviousSQLTokens(Collections.emptyList());
+        generator.setDatabaseName("db_schema");
+        assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?)"));
+    }
+    
+    @Test
+    void assertGenerateSQLTokenFromPreviousSQLTokens() {
+        generator.setDatabaseName("db-001");
+        generator.setPreviousSQLTokens(EncryptGeneratorFixtureBuilder.getPreviousSQLTokens());
+        generator.setDatabaseName("db_schema");
+        assertThat(generator.generateSQLToken(EncryptGeneratorFixtureBuilder.createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?)"));
     }
 }

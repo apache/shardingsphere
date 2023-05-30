@@ -45,11 +45,16 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     private final ShardingSphereDatabase database;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final boolean transparentStatement;
+    
+    private final SQLStatementContext sqlStatementContext;
     
     @Override
     public int getColumnCount() throws SQLException {
         if (sqlStatementContext instanceof SelectStatementContext) {
+            if (transparentStatement) {
+                return resultSetMetaData.getColumnCount();
+            }
             if (hasSelectExpandProjections()) {
                 return ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().size();
             }
@@ -95,6 +100,9 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnLabel(final int column) throws SQLException {
+        if (transparentStatement) {
+            return resultSetMetaData.getColumnLabel(column);
+        }
         if (hasSelectExpandProjections()) {
             checkColumnIndex(column);
             Projection projection = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1);
@@ -107,6 +115,9 @@ public final class ShardingSphereResultSetMetaData extends WrapperAdapter implem
     
     @Override
     public String getColumnName(final int column) throws SQLException {
+        if (transparentStatement) {
+            return resultSetMetaData.getColumnName(column);
+        }
         if (hasSelectExpandProjections()) {
             checkColumnIndex(column);
             Projection projection = ((SelectStatementContext) sqlStatementContext).getProjectionsContext().getExpandProjections().get(column - 1);

@@ -35,10 +35,10 @@ public final class DropBroadcastTableRuleStatementUpdater implements RuleDefinit
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database,
                                   final DropBroadcastTableRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        String databaseName = database.getName();
         if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExists()) {
             return;
         }
+        String databaseName = database.getName();
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
         checkBroadcastTableRuleExist(databaseName, sqlStatement, currentRuleConfig);
     }

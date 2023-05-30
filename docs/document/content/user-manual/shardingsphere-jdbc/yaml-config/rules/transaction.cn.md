@@ -10,10 +10,9 @@ ShardingSphere 提供了三种模式的分布式事务 `LOCAL`, `XA`, `BASE`。
 ## 参数解释
 
 ```yaml
-rules:
-  - !TRANSACTION
-    defaultType: # 事务模式，可选值 LOCAL/XA/BASE
-    providerType: # 指定模式下的具体实现
+transaction:
+  defaultType: # 事务模式，可选值 LOCAL/XA/BASE
+  providerType: # 指定模式下的具体实现
 ```
 
 ## 操作步骤
@@ -23,9 +22,8 @@ rules:
 server.yaml 配置文件内容如下：
 
 ```yaml
-rules:
-  - !TRANSACTION
-    defaultType: LOCAL
+transaction:
+  defaultType: LOCAL
 ```
 
 ### 使用 XA 模式
@@ -33,10 +31,9 @@ rules:
 server.yaml 配置文件内容如下：
 
 ```yaml
-rules:
-  - !TRANSACTION
-    defaultType: XA
-    providerType: Narayana/Atomikos 
+transaction:
+  defaultType: XA
+  providerType: Narayana/Atomikos 
 ```
 手动添加 Narayana 相关依赖：
 
@@ -57,10 +54,9 @@ shardingsphere-transaction-xa-narayana-x.x.x-SNAPSHOT.jar
 server.yaml 配置文件内容如下：
 
 ```yaml
-rules:
-  - !TRANSACTION
-    defaultType: BASE
-    providerType: Seata 
+transaction:
+  defaultType: BASE
+  providerType: Seata 
 ```
 
 搭建 Seata Server，添加相关配置文件，和 Seata 依赖，具体步骤参考 [ShardingSphere 集成 Seata 柔性事务](https://community.sphere-ex.com/t/topic/404)

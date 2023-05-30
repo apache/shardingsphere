@@ -1,6 +1,6 @@
 +++
 title = "SHOW MASK RULES"
-weight = 2
+weight = 1
 +++
 
 ### 描述
@@ -33,12 +33,12 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列                        | 说明               |
-|--------------------------| ------------------ |
-| table                    | 表名                |
-| column                   | 列名                |
-| algorithm_type           | 数据脱敏算法类型     |
-| algorithm_props          | 数据脱敏算法参数     |
+| 列               | 说明       |
+|-----------------|----------|
+| table           | 表名       |
+| column          | 列名       |
+| algorithm_type  | 数据脱敏算法类型 |
+| algorithm_props | 数据脱敏算法参数 |
 
 ### 示例
 

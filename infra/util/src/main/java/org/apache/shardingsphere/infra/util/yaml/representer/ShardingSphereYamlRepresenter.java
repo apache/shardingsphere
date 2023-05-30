@@ -59,7 +59,7 @@ public final class ShardingSphereYamlRepresenter extends Representer {
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     protected Node representMapping(final Tag tag, final Map<?, ?> mapping, final DumperOptions.FlowStyle flowStyle) {
-        Map skippedEmptyValuesMapping = new LinkedHashMap<>(mapping.size(), 1);
+        Map skippedEmptyValuesMapping = new LinkedHashMap<>(mapping.size(), 1F);
         for (Entry<?, ?> entry : mapping.entrySet()) {
             if (entry.getValue() instanceof Collection && ((Collection) entry.getValue()).isEmpty()) {
                 continue;

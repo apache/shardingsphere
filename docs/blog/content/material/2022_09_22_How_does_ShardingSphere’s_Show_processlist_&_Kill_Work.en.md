@@ -45,7 +45,7 @@ Now that you understand the functions of `Show processlist` and `Kill <processID
 
 ## 2.1 How is SQL saved and destroyed?
 
-Each SQL executed in ShardingSphere will generate an `ExecutionGroupContext` object. The object contains all the information about this SQL, among which there is an `executionID` field to ensure its uniqueness.
+Each SQL executed in ShardingSphere will generate an `ExecutionGroupContext` object. The object contains all the information about this SQL, among which there is an `processID` field to ensure its uniqueness.
 
 When ShardingSphere receives a SQL command, the `GovernanceExecuteProcessReporter# report` is called to store `ExecutionGroupContext` information into the cache of `ConcurrentHashMap `(currently only DML and DDL statements of MySQL are supported; other types of databases will be supported in later versions. Query statements are also classified into DML).
 
@@ -55,9 +55,9 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     @Override
     public void report(final QueryContext queryContext, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
                        final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
-        ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants);
-        ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), executeProcessContext);
-        ShowProcessListManager.getInstance().putProcessStatement(executeProcessContext.getExecutionID(), executeProcessContext.getProcessStatements());
+        ExecuteProcessContext process = new ExecuteProcessContext(queryContext.getSql(), executionGroupContext, constants);
+        ShowProcessListManager.getInstance().putProcessContext(process.getProcessID(), process);
+        ShowProcessListManager.getInstance().putProcessStatement(process.getProcessID(), process.getProcessStatements());
     }
 }@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowProcessListManager {
@@ -65,7 +65,7 @@ public final class ShowProcessListManager {
     private static final ShowProcessListManager INSTANCE = new ShowProcessListManager();
     
     @Getter
-    private final Map<String, ExecuteProcessContext> processContexts = new ConcurrentHashMap<>();
+    private final Map<String, ExecuteProcessContext> processes = new ConcurrentHashMap<>();
     
     @Getter
     private final Map<String, Collection<Statement>> processStatements = new ConcurrentHashMap<>();
@@ -74,22 +74,22 @@ public final class ShowProcessListManager {
         return INSTANCE;
     }
     
-    public void putProcessContext(final String executionId, final ExecuteProcessContext processContext) {
-        processContexts.put(executionId, processContext);
+    public void putProcessContext(final String processID, final ExecuteProcessContext process) {
+        processes.put(processID, process);
     }
     
-    public void putProcessStatement(final String executionId, final Collection<Statement> statements) {
+    public void putProcessStatement(final String processID, final Collection<Statement> statements) {
         if (statements.isEmpty()) {
             return;
         }
-        processStatements.put(executionId, statements);
+        processStatements.put(processID, statements);
     }
 }
 ```
 
-As shown above, the `ShowProcessListManager` class has two cache Maps, namely `processContexts` and `processStatements`. The former stores the mapping between `executionID` and `ExecuteProcessContext`.
+As shown above, the `ShowProcessListManager` class has two cache Maps, namely `processes` and `processStatements`. The former stores the mapping between `processID` and `ExecuteProcessContext`.
 
-The latter contains the mapping between `executionID` and `Statement objects` that may generate multiple statements after the SQL is overwritten.
+The latter contains the mapping between `processID` and `Statement objects` that may generate multiple statements after the SQL is overwritten.
 
 Every time ShardingSphere receives a SQL statement, the SQL information will be cached into the two Maps. After SQL is executed, the cache of Map will be deleted.
 
@@ -120,7 +120,7 @@ public final class ProxyJDBCExecutor {
                             true),
                     ProxyJDBCExecutorCallbackFactory.newInstance(type, protocolType, databaseType, context.getSqlStatement(), databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown,
                             false));
-            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
+            ExecuteProcessEngine.finish(executionGroupContext.getProcessID(), eventBusContext);
             return result;
         } finally {
             ExecuteProcessEngine.clean();
@@ -130,7 +130,7 @@ public final class ProxyJDBCExecutor {
 
 As shown above, `ExecuteProcessEngine.initialize(queryContext, executionGroupContext, eventBusContext);` will store the SQL information in the two cache Maps. Finally, `ExecuteProcessEngine.clean();` in the code block will clear up the Map in the cache.
 
-The SQL shown in the `Show processlist` was obtained from `processContexts`. But this Map is just a local cache. If ShardingSphere is deployed in cluster mode, how does `Show processlist` obtain SQL running on other machines in the cluster? Let's see how ShardingSphere handles it.
+The SQL shown in the `Show processlist` was obtained from `processes`. But this Map is just a local cache. If ShardingSphere is deployed in cluster mode, how does `Show processlist` obtain SQL running on other machines in the cluster? Let's see how ShardingSphere handles it.
 
 ## 2.2 How does `Show processlist` work?
 
@@ -167,22 +167,22 @@ public final class ShowProcessListExecutor implements DatabaseAdminQueryExecutor
         if (null == batchProcessContexts || batchProcessContexts.isEmpty()) {
             return new RawMemoryQueryResult(queryResultMetaData, Collections.emptyList());
         }
-        Collection<YamlExecuteProcessContext> processContexts = new LinkedList<>();
+        Collection<YamlExecuteProcessContext> processes = new LinkedList<>();
         for (String each : batchProcessContexts) {
-            processContexts.addAll(YamlEngine.unmarshal(each, BatchYamlExecuteProcessContext.class).getContexts());
+            processes.addAll(YamlEngine.unmarshal(each, BatchYamlExecuteProcessContext.class).getContexts());
         }
-        List<MemoryQueryResultDataRow> rows = processContexts.stream().map(processContext -> {
+        List<MemoryQueryResultDataRow> rows = processes.stream().map(process -> {
             List<Object> rowValues = new ArrayList<>(8);
-            rowValues.add(processContext.getExecutionID());
-            rowValues.add(processContext.getUsername());
-            rowValues.add(processContext.getHostname());
-            rowValues.add(processContext.getDatabaseName());
+            rowValues.add(process.getProcessIDID());
+            rowValues.add(process.getUsername());
+            rowValues.add(process.getHostname());
+            rowValues.add(process.getDatabaseName());
             rowValues.add("Execute");
-            rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - processContext.getStartTimeMillis()));
-            int processDoneCount = processContext.getUnitStatuses().stream().map(each -> ExecuteProcessConstants.EXECUTE_STATUS_DONE == each.getStatus() ? 1 : 0).reduce(0, Integer::sum);
+            rowValues.add(TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - process.getStartTimeMillis()));
+            int processDoneCount = process.getUnitStatuses().stream().map(each -> ExecuteProcessConstants.EXECUTE_STATUS_DONE == each.getStatus() ? 1 : 0).reduce(0, Integer::sum);
             String statePrefix = "Executing ";
-            rowValues.add(statePrefix + processDoneCount + "/" + processContext.getUnitStatuses().size());
-            String sql = processContext.getSql();
+            rowValues.add(statePrefix + processDoneCount + "/" + process.getUnitStatuses().size());
+            String sql = process.getSql();
             if (null != sql && sql.length() > 100) {
                 sql = sql.substring(0, 100);
             }
@@ -217,20 +217,20 @@ This method is the core to implementing `Show processlist`. Next, we'll introduc
 public final class ProcessRegistrySubscriber {    
     @Subscribe
     public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
-        String processListId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
+        String processId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString().replace("-", "");
         boolean triggerIsComplete = false;
         // 1. Obtain the Process List path of all existing proxy nodes in cluster mode
-        Collection<String> triggerPaths = getTriggerPaths(processListId);
+        Collection<String> triggerPaths = getTriggerPaths(processId);
         try {
             // 2. Iterate through the path and write an empty string to the node, to trigger the node monitoring.
             triggerPaths.forEach(each -> repository.persist(each, ""));
             // 3. Lock and wait 5 seconds for each node to write the information of currently running SQL to the persistence layer. 
-            triggerIsComplete = waitAllNodeDataReady(processListId, triggerPaths);
+            triggerIsComplete = waitAllNodeDataReady(processId, triggerPaths);
             // 4. Fetch and aggregate the data written by each proxy node from the persistence layer. Then EventBus will post a ShowProcessListResponseEvent command, which means the operation is completed.
-            sendShowProcessList(processListId);
+            sendShowProcessList(processId);
         } finally {
             // 5. Delete resources
-            repository.delete(ProcessNode.getProcessListIdPath(processListId));
+            repository.delete(ProcessNode.getProcessIdPath(processId));
             if (!triggerIsComplete) {
                 triggerPaths.forEach(repository::delete);
             }
@@ -243,7 +243,7 @@ It contains five steps and steps 2 & 3 are the focus.
 
 ### 2.2.1 Step 2: the cluster obtains the data implementation
 
-In this step, an empty string will be written to the node `/nodes/compute_nodes/process_trigger/<instanceId>:<processlistId>`, which will trigger ShardingSphere's monitoring logic.
+In this step, an empty string will be written to the node `/nodes/compute_nodes/show_process_list_trigger/<instanceId>:<processId>`, which will trigger ShardingSphere's monitoring logic.
 
 When ShardingSphere is started, the persistence layer will `watch` to monitor a series of path changes, such as the addition, deletion, and modification operations of the path `/nodes/compute_nodes`.
 
@@ -275,9 +275,9 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
             // show processlist
         } else if (event.getKey().startsWith(ComputeNode.getProcessTriggerNodePatch())) {
             return createShowProcessListTriggerEvent(event);
-            // kill processlistId
+            // kill processId
         } else if (event.getKey().startsWith(ComputeNode.getProcessKillNodePatch())) {
-            return createKillProcessListIdEvent(event);
+            return createKillProcessIdEvent(event);
         }
         return Optional.empty();
     }
@@ -311,17 +311,17 @@ public final class ClusterContextManagerCoordinator {    @Subscribe
         if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
-        Collection<ExecuteProcessContext> processContexts = ShowProcessListManager.getInstance().getAllProcessContext();
-        if (!processContexts.isEmpty()) {
-            registryCenter.getRepository().persist(ProcessNode.getProcessListInstancePath(event.getProcessListId(), event.getInstanceId()),
-                    YamlEngine.marshal(new BatchYamlExecuteProcessContext(processContexts)));
+        Collection<ExecuteProcessContext> processes = ShowProcessListManager.getInstance().getAllProcessContext();
+        if (!processes.isEmpty()) {
+            registryCenter.getRepository().persist(ProcessNode.getProcessListInstancePath(event.getProcessId(), event.getInstanceId()),
+                    YamlEngine.marshal(new BatchYamlExecuteProcessContext(processes)));
         }
-        registryCenter.getRepository().delete(ComputeNode.getProcessTriggerInstanceIdNodePath(event.getInstanceId(), event.getProcessListId()));
+        registryCenter.getRepository().delete(ComputeNode.getProcessTriggerInstanceIdNodePath(event.getInstanceId(), event.getProcessId()));
     }
 }
 ```
 
-`ClusterContextManagerCoordinator#triggerShowProcessList` will subscribe to `ShowProcessListTriggerEvent`, in which `processContext` data is processed by itself. `ShowProcessListManager.getInstance().getAllProcessContext()` retrieves the `processContext` that is currently running (here the data refers to the SQL information that ShardingSphere stores in the Map before each SQL execution, which is described at the beginning of the article) and transfers it to the persistence layer. If the `/nodes/compute_nodes/process_trigger/<instanceId>:<processlistId>` node is deleted, the processing is completed.
+`ClusterContextManagerCoordinator#triggerShowProcessList` will subscribe to `ShowProcessListTriggerEvent`, in which `process` data is processed by itself. `ShowProcessListManager.getInstance().getAllProcessContext()` retrieves the `process` that is currently running (here the data refers to the SQL information that ShardingSphere stores in the Map before each SQL execution, which is described at the beginning of the article) and transfers it to the persistence layer. If the `/nodes/compute_nodes/show_process_list_trigger/<instanceId>:<processId>` node is deleted, the processing is completed.
 
 When you delete the node, monitoring will also be triggered and `ShowProcessListUnitCompleteEvent` will be posted. This event will finally awake the pending lock.
 
@@ -330,9 +330,9 @@ public final class ClusterContextManagerCoordinator {
     
     @Subscribe
     public synchronized void completeUnitShowProcessList(final ShowProcessListUnitCompleteEvent event) {
-        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessListId());
-        if (null != simpleLock) {
-            simpleLock.doNotify();
+        ShowProcessListLock lock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessId());
+        if (null != lock) {
+            lock.doNotify();
         }
     }
 }
@@ -349,9 +349,9 @@ public final class ClusterContextManagerCoordinator {
     
     @Subscribe
     public synchronized void completeUnitShowProcessList(final ShowProcessListUnitCompleteEvent event) {
-        ShowProcessListSimpleLock simpleLock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessListId());
-        if (null != simpleLock) {
-            simpleLock.doNotify();
+        ShowProcessListLock lock = ShowProcessListManager.getInstance().getLocks().get(event.getProcessId());
+        if (null != lock) {
+            lock.doNotify();
         }
     }
 }
@@ -364,11 +364,11 @@ After each instance processed the data, the instance that received the `Show pro
 ```java
 public final class ProcessRegistrySubscriber {  
     
-    private void sendShowProcessList(final String processListId) {
-        List<String> childrenKeys = repository.getChildrenKeys(ProcessNode.getProcessListIdPath(processListId));
+    private void sendShowProcessList(final String processId) {
+        List<String> childrenKeys = repository.getChildrenKeys(ProcessNode.getProcessIdPath(processId));
         Collection<String> batchProcessContexts = new LinkedList<>();
         for (String each : childrenKeys) {
-            batchProcessContexts.add(repository.get(ProcessNode.getProcessListInstancePath(processListId, each)));
+            batchProcessContexts.add(repository.get(ProcessNode.getProcessListInstancePath(processId, each)));
         }
         eventBusContext.post(new ShowProcessListResponseEvent(batchProcessContexts));
     }

@@ -34,41 +34,41 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class TypedSPILoaderTest {
+class TypedSPILoaderTest {
     
     @Test
-    public void assertContains() {
+    void assertContains() {
         assertTrue(TypedSPILoader.contains(TypedSPIFixture.class, "TYPED.FIXTURE"));
         assertFalse(TypedSPILoader.contains(TypedSPIFixture.class, "NOT_EXISTED"));
     }
     
     @Test
-    public void assertFindServiceWithoutProperties() {
+    void assertFindServiceWithoutProperties() {
         assertTrue(TypedSPILoader.findService(TypedSPIFixture.class, "TYPED.FIXTURE").isPresent());
     }
     
     @Test
-    public void assertFindServiceWithProperties() {
+    void assertFindServiceWithProperties() {
         assertTrue(TypedSPILoader.findService(TypedSPIFixture.class, "TYPED.FIXTURE", new Properties()).isPresent());
     }
     
     @Test
-    public void assertGetServiceWithoutProperties() {
+    void assertGetServiceWithoutProperties() {
         assertThat(TypedSPILoader.getService(TypedSPIFixture.class, "TYPED.FIXTURE"), instanceOf(TypedSPIFixtureImpl.class));
     }
     
     @Test
-    public void assertGetServiceWithProperties() {
+    void assertGetServiceWithProperties() {
         assertThat(((TypedSPIFixtureImpl) TypedSPILoader.getService(TypedSPIFixture.class, "TYPED.FIXTURE", PropertiesBuilder.build(new Property("key", "1")))).getValue(), is("1"));
     }
     
     @Test
-    public void assertGetServiceWithAlias() {
+    void assertGetServiceWithAlias() {
         assertNotNull(TypedSPILoader.getService(TypedSPIFixture.class, "TYPED.ALIAS"));
     }
     
     @Test
-    public void assertGetServiceWhenTypeIsNotExist() {
+    void assertGetServiceWhenTypeIsNotExist() {
         assertThrows(ServiceProviderNotFoundServerException.class, () -> TypedSPILoader.getService(TypedSPIFixture.class, "NOT_EXISTED"));
     }
 }

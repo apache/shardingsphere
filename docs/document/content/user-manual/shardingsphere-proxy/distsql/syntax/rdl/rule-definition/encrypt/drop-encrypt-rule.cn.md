@@ -1,11 +1,11 @@
 +++
 title = "DROP ENCRYPT RULE"
-weight = 4
+weight = 3
 +++
 
 ## 说明
 
-`DROP ENCRYPT RULE` 语法用于删除加密规则
+`DROP ENCRYPT RULE` 语法用于删除加密规则。
 
 ### 语法
 

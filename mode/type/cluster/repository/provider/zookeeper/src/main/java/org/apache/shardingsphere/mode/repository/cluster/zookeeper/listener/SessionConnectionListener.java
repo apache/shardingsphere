@@ -27,12 +27,10 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeData;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
-import org.apache.shardingsphere.mode.repository.cluster.zookeeper.handler.ZookeeperExceptionHandler;
 
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Session connection state listener.
@@ -70,7 +68,7 @@ public final class SessionConnectionListener implements ConnectionStateListener 
             sleepInterval();
             return false;
         } catch (final InterruptedException ex) {
-            ZookeeperExceptionHandler.handleException(ex);
+            Thread.currentThread().interrupt();
             return true;
         }
     }
@@ -89,6 +87,6 @@ public final class SessionConnectionListener implements ConnectionStateListener 
     
     @SneakyThrows(InterruptedException.class)
     private void sleepInterval() {
-        TimeUnit.SECONDS.sleep(RECONNECT_INTERVAL_SECONDS);
+        Thread.sleep(RECONNECT_INTERVAL_SECONDS * 1000L);
     }
 }

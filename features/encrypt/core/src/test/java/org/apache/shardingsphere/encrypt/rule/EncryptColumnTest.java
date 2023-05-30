@@ -21,20 +21,21 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class EncryptColumnTest {
+class EncryptColumnTest {
     
     @Test
-    public void assertGetAssistedQueryColumn() {
-        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "encryptorName", null).getAssistedQueryColumn().isPresent());
+    void assertGetAssistedQueryColumn() {
+        EncryptColumn encryptColumn = new EncryptColumn("logicColumn", new EncryptColumnItem("cipherColumn", "encryptorName"));
+        encryptColumn.setLikeQuery(new EncryptColumnItem("likeQueryColumn"));
+        encryptColumn.setAssistedQuery(new EncryptColumnItem("assistedQueryColumn"));
+        assertTrue(encryptColumn.getAssistedQuery().isPresent());
     }
     
     @Test
-    public void assertGetLikeQueryColumn() {
-        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "encryptorName", null).getLikeQueryColumn().isPresent());
-    }
-    
-    @Test
-    public void assertGetPlainColumn() {
-        assertTrue(new EncryptColumn("cipherColumn", "assistedQueryColumn", "likeQueryColumn", "plainColumn", "encryptorName", null).getPlainColumn().isPresent());
+    void assertGetLikeQueryColumn() {
+        EncryptColumn encryptColumn = new EncryptColumn("logicColumn", new EncryptColumnItem("cipherColumn", "encryptorName"));
+        encryptColumn.setAssistedQuery(new EncryptColumnItem("assistedQueryColumn"));
+        encryptColumn.setLikeQuery(new EncryptColumnItem("likeQueryColumn"));
+        assertTrue(encryptColumn.getLikeQuery().isPresent());
     }
 }

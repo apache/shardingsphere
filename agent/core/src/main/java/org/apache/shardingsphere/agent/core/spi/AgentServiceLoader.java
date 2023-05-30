@@ -28,6 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Agent service loader.
+ * 
+ * @param <T> type of service 
  */
 @Getter
 public final class AgentServiceLoader<T> {

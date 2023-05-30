@@ -19,7 +19,7 @@ databaseName: agent-metrics-db
 
 dataSources:
   ds_0:
-    url: jdbc:mysql://mysql.agent.metrics.host:3306/agent_metrics_db_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.agent.proxy.metrics.host:3306/agent_metrics_db_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000
@@ -28,7 +28,7 @@ dataSources:
     maxPoolSize: 10
     minPoolSize: 2
   ds_1:
-    url: jdbc:mysql://mysql.agent.metrics.host:3306/agent_metrics_db_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+    url: jdbc:mysql://mysql.agent.proxy.metrics.host:3306/agent_metrics_db_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: root
     password:
     connectionTimeoutMilliseconds: 30000

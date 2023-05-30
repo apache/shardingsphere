@@ -26,11 +26,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class OpenGaussDataSourceMetaDataTest {
+class OpenGaussDataSourceMetaDataTest {
     
     @Test
-    public void assertNewConstructorWithSimpleJdbcUrl() {
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:openGauss://127.0.0.1/foo_ds");
+    void assertNewConstructorWithSimpleJdbcUrl() {
+        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:opengauss://127.0.0.1/foo_ds");
         assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(5432));
         assertThat(actual.getCatalog(), is("foo_ds"));
@@ -39,8 +39,8 @@ public final class OpenGaussDataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorWithComplexJdbcUrl() {
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:openGauss://127.0.0.1:9999,127.0.0.2:9999,127.0.0.3:9999/foo_ds?targetServerType=master");
+    void assertNewConstructorWithComplexJdbcUrl() {
+        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData("jdbc:opengauss://127.0.0.1:9999,127.0.0.2:9999,127.0.0.3:9999/foo_ds?targetServerType=master");
         assertThat(actual.getHostname(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(9999));
         assertThat(actual.getCatalog(), is("foo_ds"));
@@ -50,7 +50,7 @@ public final class OpenGaussDataSourceMetaDataTest {
     }
     
     @Test
-    public void assertNewConstructorFailure() {
-        assertThrows(UnrecognizedDatabaseURLException.class, () -> new PostgreSQLDataSourceMetaData("jdbc:openGauss:xxxxxxxx"));
+    void assertNewConstructorFailure() {
+        assertThrows(UnrecognizedDatabaseURLException.class, () -> new PostgreSQLDataSourceMetaData("jdbc:opengauss:xxxxxxxx"));
     }
 }

@@ -25,19 +25,13 @@ import org.apache.shardingsphere.mask.rule.MaskRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * Count mask rule executor.
  */
 public final class CountMaskRuleExecutor implements RQLExecutor<CountMaskRuleStatement> {
-    
-    private static final String MASK = "mask";
     
     @Override
     public Collection<String> getColumnNames() {
@@ -47,30 +41,13 @@ public final class CountMaskRuleExecutor implements RQLExecutor<CountMaskRuleSta
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereDatabase database, final CountMaskRuleStatement sqlStatement) {
         Optional<MaskRule> rule = database.getRuleMetaData().findSingleRule(MaskRule.class);
-        Map<String, LinkedList<Object>> rowMap = new LinkedHashMap<>();
-        rule.ifPresent(optional -> addMaskData(rowMap, database.getName(), rule.get()));
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        for (final Entry<String, LinkedList<Object>> entry : rowMap.entrySet()) {
-            entry.getValue().addFirst(entry.getKey());
-            result.add(new LocalDataQueryResultRow(entry.getValue()));
-        }
+        rule.ifPresent(optional -> fillRows(result, optional, database.getName()));
         return result;
     }
     
-    private void addMaskData(final Map<String, LinkedList<Object>> rowMap, final String databaseName, final MaskRule rule) {
-        addData(rowMap, MASK, databaseName, () -> rule.getTables().size());
-    }
-    
-    private void addData(final Map<String, LinkedList<Object>> rowMap, final String dataKey, final String databaseName, final Supplier<Integer> apply) {
-        rowMap.compute(dataKey, (key, value) -> buildRow(value, databaseName, apply.get()));
-    }
-    
-    private LinkedList<Object> buildRow(final LinkedList<Object> value, final String databaseName, final int count) {
-        if (null == value) {
-            return new LinkedList<>(Arrays.asList(databaseName, count));
-        }
-        value.set(1, (Integer) value.get(1) + count);
-        return value;
+    private void fillRows(final Collection<LocalDataQueryResultRow> result, final MaskRule rule, final String databaseName) {
+        result.add(new LocalDataQueryResultRow("mask", databaseName, rule.getTables().size()));
     }
     
     @Override

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.test.it.data.pipeline.api.impl;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
-import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstan
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.importer.connector.DataSourceImporterConnector;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.context.MigrationJobItemContext;
@@ -40,7 +38,7 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
-import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -61,18 +59,32 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public final class GovernanceRepositoryAPIImplTest {
+class GovernanceRepositoryAPIImplTest {
     
     private static GovernanceRepositoryAPI governanceRepositoryAPI;
     
+    private static final AtomicReference<DataChangedEvent> EVENT_ATOMIC_REFERENCE = new AtomicReference<>();
+    
+    private static final CountDownLatch COUNT_DOWN_LATCH = new CountDownLatch(1);
+    
     @BeforeAll
-    public static void beforeClass() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
-        governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
+    static void beforeClass() {
+        PipelineContextUtils.mockModeConfigAndContextManager();
+        governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey());
+        watch();
+    }
+    
+    private static void watch() {
+        governanceRepositoryAPI.watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> {
+            if ((DataPipelineConstants.DATA_PIPELINE_ROOT + "/1").equals(event.getKey())) {
+                EVENT_ATOMIC_REFERENCE.set(event);
+                COUNT_DOWN_LATCH.countDown();
+            }
+        });
     }
     
     @Test
-    public void assertPersistJobProgress() {
+    void assertPersistJobProgress() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
         governanceRepositoryAPI.persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue");
         Optional<String> actual = governanceRepositoryAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
@@ -81,7 +93,7 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
-    public void assertPersistJobCheckResult() {
+    void assertPersistJobCheckResult() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
         Map<String, DataConsistencyCheckResult> actual = new HashMap<>();
         actual.put("test", new DataConsistencyCheckResult(new DataConsistencyCountCheckResult(1, 1), new DataConsistencyContentCheckResult(true)));
@@ -92,7 +104,7 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
-    public void assertDeleteJob() {
+    void assertDeleteJob() {
         governanceRepositoryAPI.persist(DataPipelineConstants.DATA_PIPELINE_ROOT + "/1", "");
         governanceRepositoryAPI.deleteJob("1");
         Optional<String> actual = governanceRepositoryAPI.getJobItemProgress("1", 0);
@@ -100,7 +112,7 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
-    public void assertGetChildrenKeys() {
+    void assertGetChildrenKeys() {
         governanceRepositoryAPI.persist(DataPipelineConstants.DATA_PIPELINE_ROOT + "/1", "");
         List<String> actual = governanceRepositoryAPI.getChildrenKeys(DataPipelineConstants.DATA_PIPELINE_ROOT);
         assertFalse(actual.isEmpty());
@@ -108,26 +120,18 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     @Test
-    public void assertWatch() throws InterruptedException {
-        AtomicReference<DataChangedEvent> eventReference = new AtomicReference<>();
-        CountDownLatch countDownLatch = new CountDownLatch(1);
+    void assertWatch() throws InterruptedException {
         String key = DataPipelineConstants.DATA_PIPELINE_ROOT + "/1";
-        governanceRepositoryAPI.watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> {
-            if (event.getKey().equals(key)) {
-                eventReference.set(event);
-                countDownLatch.countDown();
-            }
-        });
         governanceRepositoryAPI.persist(key, "");
-        boolean awaitResult = countDownLatch.await(10, TimeUnit.SECONDS);
+        boolean awaitResult = COUNT_DOWN_LATCH.await(10, TimeUnit.SECONDS);
         assertTrue(awaitResult);
-        DataChangedEvent event = eventReference.get();
+        DataChangedEvent event = EVENT_ATOMIC_REFERENCE.get();
         assertNotNull(event);
         assertThat(event.getType(), anyOf(is(Type.ADDED), is(Type.UPDATED)));
     }
     
     @Test
-    public void assertGetShardingItems() {
+    void assertGetShardingItems() {
         MigrationJobItemContext jobItemContext = mockJobItemContext();
         governanceRepositoryAPI.persistJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem(), "testValue");
         List<Integer> shardingItems = governanceRepositoryAPI.getShardingItems(jobItemContext.getJobId());
@@ -136,10 +140,9 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     private MigrationJobItemContext mockJobItemContext() {
-        MigrationJobItemContext result = PipelineContextUtil.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
+        MigrationJobItemContext result = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration());
         MigrationTaskConfiguration taskConfig = result.getTaskConfig();
         result.getInventoryTasks().add(mockInventoryTask(taskConfig));
-        result.getIncrementalTasks().add(mockIncrementalTask(taskConfig));
         return result;
     }
     
@@ -148,23 +151,15 @@ public final class GovernanceRepositoryAPIImplTest {
         dumperConfig.setPosition(new PlaceholderPosition());
         dumperConfig.setActualTableName("t_order");
         dumperConfig.setLogicTableName("t_order");
-        dumperConfig.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtil.mockOrderIdColumnMetaData()));
+        dumperConfig.setUniqueKeyColumns(Collections.singletonList(PipelineContextUtils.mockOrderIdColumnMetaData()));
         dumperConfig.setShardingItem(0);
         PipelineDataSourceWrapper dataSource = mock(PipelineDataSourceWrapper.class);
         PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(dataSource);
-        return new InventoryTask(dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtil.getPipelineChannelCreator(), mockImporterConnector(),
-                dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine(), PipelineContextUtil.getExecuteEngine(), new FixtureInventoryIncrementalJobItemContext());
+        return new InventoryTask(dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtils.getPipelineChannelCreator(), mockImporterConnector(),
+                dataSource, metaDataLoader, PipelineContextUtils.getExecuteEngine(), PipelineContextUtils.getExecuteEngine(), new FixtureInventoryIncrementalJobItemContext());
     }
     
     private ImporterConnector mockImporterConnector() {
         return new DataSourceImporterConnector(new DefaultPipelineDataSourceManager());
-    }
-    
-    private IncrementalTask mockIncrementalTask(final MigrationTaskConfiguration taskConfig) {
-        DumperConfiguration dumperConfig = taskConfig.getDumperConfig();
-        dumperConfig.setPosition(new PlaceholderPosition());
-        PipelineTableMetaDataLoader metaDataLoader = new StandardPipelineTableMetaDataLoader(mock(PipelineDataSourceWrapper.class));
-        return new IncrementalTask(3, dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtil.getPipelineChannelCreator(), mockImporterConnector(),
-                metaDataLoader, PipelineContextUtil.getExecuteEngine(), new FixtureInventoryIncrementalJobItemContext());
     }
 }

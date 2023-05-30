@@ -23,15 +23,15 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ProxyTrafficAlgorithmTest {
+class ProxyTrafficAlgorithmTest {
     
     @Test
-    public void assertMatchWhenInTransaction() {
+    void assertMatchWhenInTransaction() {
         assertTrue(new ProxyTrafficAlgorithm().match(new TransactionTrafficValue(true)));
     }
     
     @Test
-    public void assertMatchWhenNotInTransaction() {
+    void assertMatchWhenNotInTransaction() {
         assertFalse(new ProxyTrafficAlgorithm().match(new TransactionTrafficValue(false)));
     }
 }

@@ -35,7 +35,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLStringBinaryProtocolValueTest {
+class PostgreSQLStringBinaryProtocolValueTest {
     
     @Mock
     private ByteBuf byteBuf;
@@ -43,12 +43,12 @@ public final class PostgreSQLStringBinaryProtocolValueTest {
     private PostgreSQLPacketPayload payload;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
     }
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         doAnswer((Answer<ByteBuf>) invocation -> {
             ((byte[]) invocation.getArguments()[0])[0] = 'a';
             return byteBuf;

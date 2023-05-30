@@ -39,20 +39,19 @@ import org.apache.shardingsphere.encrypt.distsql.parser.statement.CountEncryptRu
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.CreateEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.DropEncryptRuleStatement;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
-import java.util.Objects;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
  * SQL statement visitor for encrypt DistSQL.
  */
-public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor<ASTNode> {
     
     @Override
     public ASTNode visitCreateEncryptRule(final CreateEncryptRuleContext ctx) {
@@ -79,26 +78,18 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     @Override
     public ASTNode visitEncryptRuleDefinition(final EncryptRuleDefinitionContext ctx) {
         return new EncryptRuleSegment(getIdentifierValue(ctx.tableName()),
-                ctx.encryptColumnDefinition().stream().map(each -> (EncryptColumnSegment) visit(each)).collect(Collectors.toList()),
-                null == ctx.queryWithCipherColumn() ? null : Boolean.parseBoolean(getIdentifierValue(ctx.queryWithCipherColumn())));
+                ctx.encryptColumnDefinition().stream().map(each -> (EncryptColumnSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitEncryptColumnDefinition(final EncryptColumnDefinitionContext ctx) {
         return new EncryptColumnSegment(getIdentifierValue(ctx.columnDefinition().columnName()),
                 getIdentifierValue(ctx.cipherColumnDefinition().cipherColumnName()),
-                null == ctx.plainColumnDefinition() ? null : getIdentifierValue(ctx.plainColumnDefinition().plainColumnName()),
                 null == ctx.assistedQueryColumnDefinition() ? null : getIdentifierValue(ctx.assistedQueryColumnDefinition().assistedQueryColumnName()),
                 null == ctx.likeQueryColumnDefinition() ? null : getIdentifierValue(ctx.likeQueryColumnDefinition().likeQueryColumnName()),
-                getIdentifierValue(ctx.columnDefinition().dataType()),
-                getIdentifierValue(ctx.cipherColumnDefinition().dataType()),
-                null == ctx.plainColumnDefinition() ? null : getIdentifierValue(ctx.plainColumnDefinition().dataType()),
-                null == ctx.assistedQueryColumnDefinition() ? null : getIdentifierValue(ctx.assistedQueryColumnDefinition().dataType()),
-                null == ctx.likeQueryColumnDefinition() ? null : getIdentifierValue(ctx.likeQueryColumnDefinition().dataType()),
-                null == ctx.encryptAlgorithm() ? null : (AlgorithmSegment) visit(ctx.encryptAlgorithm().algorithmDefinition()),
+                (AlgorithmSegment) visit(ctx.encryptAlgorithm().algorithmDefinition()),
                 null == ctx.assistedQueryAlgorithm() ? null : (AlgorithmSegment) visit(ctx.assistedQueryAlgorithm().algorithmDefinition()),
-                null == ctx.likeQueryAlgorithm() ? null : (AlgorithmSegment) visit(ctx.likeQueryAlgorithm().algorithmDefinition()),
-                null == ctx.queryWithCipherColumn() ? null : Boolean.parseBoolean(getIdentifierValue(ctx.queryWithCipherColumn())));
+                null == ctx.likeQueryAlgorithm() ? null : (AlgorithmSegment) visit(ctx.likeQueryAlgorithm().algorithmDefinition()));
     }
     
     @Override
@@ -133,6 +124,6 @@ public final class EncryptDistSQLStatementVisitor extends EncryptDistSQLStatemen
     
     @Override
     public ASTNode visitCountEncryptRule(final CountEncryptRuleContext ctx) {
-        return new CountEncryptRuleStatement(Objects.nonNull(ctx.databaseName()) ? (DatabaseSegment) visit(ctx.databaseName()) : null);
+        return new CountEncryptRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
 }

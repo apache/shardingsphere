@@ -41,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-public final class DropMaskRuleStatementUpdaterTest {
+class DropMaskRuleStatementUpdaterTest {
     
     private final DropMaskRuleStatementUpdater updater = new DropMaskRuleStatementUpdater();
     
@@ -49,18 +49,18 @@ public final class DropMaskRuleStatementUpdaterTest {
     private ShardingSphereDatabase database;
     
     @Test
-    public void assertCheckSQLStatementWithoutCurrentRule() {
+    void assertCheckSQLStatementWithoutCurrentRule() {
         assertThrows(MissingRequiredRuleException.class, () -> updater.checkSQLStatement(database, createSQLStatement(false, "t_mask"), null));
     }
     
     @Test
-    public void assertCheckSQLStatementWithoutToBeDroppedRule() {
+    void assertCheckSQLStatementWithoutToBeDroppedRule() {
         assertThrows(MissingRequiredRuleException.class,
                 () -> updater.checkSQLStatement(database, createSQLStatement(false, "t_mask"), new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap())));
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfiguration() {
+    void assertUpdateCurrentRuleConfiguration() {
         MaskRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         assertTrue(updater.updateCurrentRuleConfiguration(createSQLStatement(false, "t_mask"), ruleConfig));
         assertTrue(ruleConfig.getMaskAlgorithms().isEmpty());
@@ -68,7 +68,7 @@ public final class DropMaskRuleStatementUpdaterTest {
     }
     
     @Test
-    public void assertUpdateCurrentRuleConfigurationWithIfExists() {
+    void assertUpdateCurrentRuleConfigurationWithIfExists() {
         MaskRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropMaskRuleStatement statement = createSQLStatement(true, "t_user");
         updater.checkSQLStatement(database, statement, mock(MaskRuleConfiguration.class));

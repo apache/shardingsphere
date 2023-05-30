@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.generator;
 
-import org.apache.shardingsphere.data.pipeline.cdc.common.CDCResponseErrorCode;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Builder;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse.Status;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.CDCResponse
 /**
  * CDC response message generator.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CDCResponseGenerator {
     
     /**
@@ -45,7 +47,7 @@ public final class CDCResponseGenerator {
      * @param errorMessage error message
      * @return failed response
      */
-    public static CDCResponse failed(final String requestId, final CDCResponseErrorCode errorCode, final String errorMessage) {
-        return CDCResponse.newBuilder().setStatus(Status.FAILED).setRequestId(requestId).setErrorCode(errorCode.getCode()).setErrorMessage(errorMessage).build();
+    public static CDCResponse failed(final String requestId, final String errorCode, final String errorMessage) {
+        return CDCResponse.newBuilder().setStatus(Status.FAILED).setRequestId(requestId).setErrorCode(errorCode).setErrorMessage(errorMessage).build();
     }
 }

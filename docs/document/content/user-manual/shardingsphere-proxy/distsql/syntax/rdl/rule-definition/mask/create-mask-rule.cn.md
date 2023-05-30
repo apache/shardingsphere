@@ -1,11 +1,11 @@
 +++
 title = "CREATE MASK RULE"
-weight = 2
+weight = 1
 +++
 
 ## 描述
 
-The `CREATE MASK RULE` 语法用于创建数据脱敏规则.
+`CREATE MASK RULE` 语法用于创建数据脱敏规则。
 
 ### 语法定义
 

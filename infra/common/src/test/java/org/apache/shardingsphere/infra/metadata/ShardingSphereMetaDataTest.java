@@ -44,9 +44,7 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -55,10 +53,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ShardingSphereDatabase.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ShardingSphereMetaDataTest {
+class ShardingSphereMetaDataTest {
     
     @Test
-    public void assertAddDatabase() {
+    void assertAddDatabase() {
         ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
         ShardingSphereDatabase database = mockDatabase(mock(ShardingSphereResourceMetaData.class), new MockedDataSource(), mock(ResourceHeldRule.class));
         DatabaseType databaseType = mock(DatabaseType.class);
@@ -72,7 +70,7 @@ public final class ShardingSphereMetaDataTest {
     }
     
     @Test
-    public void assertDropDatabase() {
+    void assertDropDatabase() {
         ShardingSphereResourceMetaData resourceMetaData = mock(ShardingSphereResourceMetaData.class);
         DataSource dataSource = new MockedDataSource();
         ResourceHeldRule<?> databaseResourceHeldRule = mock(ResourceHeldRule.class);
@@ -96,7 +94,7 @@ public final class ShardingSphereMetaDataTest {
     }
     
     @Test
-    public void assertGetPostgreSQLDefaultSchema() throws SQLException {
+    void assertGetPostgreSQLDefaultSchema() throws SQLException {
         PostgreSQLDatabaseType databaseType = new PostgreSQLDatabaseType();
         ShardingSphereDatabase actual = ShardingSphereDatabase.create("foo_db", databaseType, Collections.singletonMap("", databaseType),
                 mock(DataSourceProvidedDatabaseConfiguration.class), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
@@ -104,17 +102,10 @@ public final class ShardingSphereMetaDataTest {
     }
     
     @Test
-    public void assertGetMySQLDefaultSchema() throws SQLException {
+    void assertGetMySQLDefaultSchema() throws SQLException {
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
         ShardingSphereDatabase actual = ShardingSphereDatabase.create("foo_db", databaseType, Collections.singletonMap("", databaseType),
                 mock(DataSourceProvidedDatabaseConfiguration.class), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
         assertNotNull(actual.getSchema("foo_db"));
-    }
-    
-    @Test
-    public void assertNullDatabaseName() {
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.emptyMap(), null, new ConfigurationProperties(new Properties()));
-        assertFalse(metaData.containsDatabase(null));
-        assertNull(metaData.getDatabase(null));
     }
 }

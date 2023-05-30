@@ -19,17 +19,19 @@ package org.apache.shardingsphere.test.it.data.pipeline.scenario.consistencychec
 
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlConsistencyCheckJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJob;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobId;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.api.impl.ConsistencyCheckJobAPI;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.config.yaml.YamlConsistencyCheckJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.context.ConsistencyCheckJobItemContext;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtil;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
+import org.apache.shardingsphere.test.it.data.pipeline.core.util.PipelineContextUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.Collections;
 import java.util.Map;
@@ -37,20 +39,21 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public final class ConsistencyCheckJobTest {
+class ConsistencyCheckJobTest {
     
     @BeforeAll
-    public static void beforeClass() {
-        PipelineContextUtil.mockModeConfigAndContextManager();
+    static void beforeClass() {
+        PipelineContextUtils.mockModeConfigAndContextManager();
     }
     
     @Test
-    public void assertBuildPipelineJobItemContext() throws ReflectiveOperationException {
-        String checkJobId = "j0201001";
+    void assertBuildPipelineJobItemContext() {
+        ConsistencyCheckJobId pipelineJobId = new ConsistencyCheckJobId(PipelineContextKey.buildForProxy(), JobConfigurationBuilder.createYamlMigrationJobConfiguration().getJobId());
+        String checkJobId = new ConsistencyCheckJobAPI().marshalJobId(pipelineJobId);
         Map<String, Object> expectTableCheckPosition = Collections.singletonMap("t_order", 100);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(checkJobId, 0, YamlEngine.marshal(createYamlConsistencyCheckJobItemProgress(expectTableCheckPosition)));
-        ConsistencyCheckJob consistencyCheckJob = new ConsistencyCheckJob();
-        Plugins.getMemberAccessor().invoke(AbstractPipelineJob.class.getDeclaredMethod("setJobId", String.class), consistencyCheckJob, checkJobId);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineContextUtils.getContextKey()).persistJobItemProgress(checkJobId, 0,
+                YamlEngine.marshal(createYamlConsistencyCheckJobItemProgress(expectTableCheckPosition)));
+        ConsistencyCheckJob consistencyCheckJob = new ConsistencyCheckJob(checkJobId);
         ConsistencyCheckJobItemContext actual = consistencyCheckJob.buildPipelineJobItemContext(
                 new ShardingContext(checkJobId, "", 1, YamlEngine.marshal(createYamlConsistencyCheckJobConfiguration(checkJobId)), 0, ""));
         assertThat(actual.getProgressContext().getTableCheckPositions(), is(expectTableCheckPosition));

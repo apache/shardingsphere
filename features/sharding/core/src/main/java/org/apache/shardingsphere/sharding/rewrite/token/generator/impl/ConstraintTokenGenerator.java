@@ -21,6 +21,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.ConstraintAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.ConstraintToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.aware.ShardingRuleAware;
@@ -34,18 +35,18 @@ import java.util.LinkedList;
  * Constraint token generator.
  */
 @Setter
-public final class ConstraintTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>>, ShardingRuleAware {
+public final class ConstraintTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ShardingRuleAware {
     
     private ShardingRule shardingRule;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof ConstraintAvailable && !((ConstraintAvailable) sqlStatementContext).getConstraints().isEmpty();
     }
     
     @Override
-    public Collection<ConstraintToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
-        Collection<ConstraintToken> result = new LinkedList<>();
+    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+        Collection<SQLToken> result = new LinkedList<>();
         if (sqlStatementContext instanceof ConstraintAvailable) {
             for (ConstraintSegment each : ((ConstraintAvailable) sqlStatementContext).getConstraints()) {
                 IdentifierValue constraintIdentifier = each.getIdentifier();

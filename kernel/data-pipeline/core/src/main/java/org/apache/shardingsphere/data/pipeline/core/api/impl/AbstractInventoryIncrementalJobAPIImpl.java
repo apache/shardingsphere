@@ -38,9 +38,11 @@ import org.apache.shardingsphere.data.pipeline.core.api.InventoryIncrementalJobA
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.ConsistencyCheckJobItemProgressContext;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmChooser;
-import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtil;
+import org.apache.shardingsphere.data.pipeline.core.config.process.PipelineProcessConfigurationUtils;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContextKey;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobIdUtils;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlInventoryIncrementalJobItemProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobOffsetInfo;
@@ -87,18 +89,19 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     public abstract InventoryIncrementalProcessContext buildPipelineProcessContext(PipelineJobConfiguration pipelineJobConfig);
     
     @Override
-    public void alterProcessConfiguration(final PipelineProcessConfiguration processConfig) {
+    public void alterProcessConfiguration(final PipelineContextKey contextKey, final PipelineProcessConfiguration processConfig) {
         // TODO check rateLimiter type match or not
-        processConfigPersistService.persist(getJobType(), processConfig);
+        processConfigPersistService.persist(contextKey, getJobType(), processConfig);
     }
     
     @Override
-    public PipelineProcessConfiguration showProcessConfiguration() {
-        PipelineProcessConfiguration result = processConfigPersistService.load(getJobType());
-        result = PipelineProcessConfigurationUtil.convertWithDefaultValue(result);
+    public PipelineProcessConfiguration showProcessConfiguration(final PipelineContextKey contextKey) {
+        PipelineProcessConfiguration result = processConfigPersistService.load(contextKey, getJobType());
+        result = PipelineProcessConfigurationUtils.convertWithDefaultValue(result);
         return result;
     }
     
+    @Override
     protected abstract TableBasedPipelineJobInfo getJobInfo(String jobId);
     
     @Override
@@ -123,8 +126,9 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
             int shardingItem = entry.getKey();
             TableBasedPipelineJobInfo jobInfo = getJobInfo(jobId);
             InventoryIncrementalJobItemProgress jobItemProgress = entry.getValue();
+            String errorMessage = getJobItemErrorMessage(jobId, shardingItem);
             if (null == jobItemProgress) {
-                result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobInfo.getTable(), null, startTimeMillis, 0, ""));
+                result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobInfo.getTable(), null, startTimeMillis, 0, errorMessage));
                 continue;
             }
             int inventoryFinishedPercentage = 0;
@@ -133,7 +137,6 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
             } else if (0 != jobItemProgress.getProcessedRecordsCount() && 0 != jobItemProgress.getInventoryRecordsCount()) {
                 inventoryFinishedPercentage = (int) Math.min(100, jobItemProgress.getProcessedRecordsCount() * 100 / jobItemProgress.getInventoryRecordsCount());
             }
-            String errorMessage = getJobItemErrorMessage(jobId, shardingItem);
             result.add(new InventoryIncrementalJobItemInfo(shardingItem, jobInfo.getTable(), jobItemProgress, startTimeMillis, inventoryFinishedPercentage, errorMessage));
         }
         return result;
@@ -151,12 +154,12 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
         jobItemProgress.setProcessedRecordsCount(context.getProcessedRecordsCount());
         jobItemProgress.setInventoryRecordsCount(context.getInventoryRecordsCount());
         String value = YamlEngine.marshal(jobItemProgressSwapper.swapToYamlConfiguration(jobItemProgress));
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(context.getJobId(), context.getShardingItem(), value);
+        String jobId = context.getJobId();
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persistJobItemProgress(jobId, context.getShardingItem(), value);
     }
     
     private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final Collection<IncrementalTask> incrementalTasks) {
-        IncrementalTask incrementalTask = incrementalTasks.size() > 0 ? incrementalTasks.iterator().next() : null;
-        return new JobItemIncrementalTasksProgress(null != incrementalTask ? incrementalTask.getTaskProgress() : null);
+        return new JobItemIncrementalTasksProgress(incrementalTasks.isEmpty() ? null : incrementalTasks.iterator().next().getTaskProgress());
     }
     
     private JobItemInventoryTasksProgress getInventoryTasksProgress(final Collection<InventoryTask> inventoryTasks) {
@@ -170,12 +173,12 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     @Override
     public void persistJobOffsetInfo(final String jobId, final JobOffsetInfo jobOffsetInfo) {
         String value = YamlEngine.marshal(jobOffsetInfoSwapper.swapToYamlConfiguration(jobOffsetInfo));
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobOffsetInfo(jobId, value);
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persistJobOffsetInfo(jobId, value);
     }
     
     @Override
     public JobOffsetInfo getJobOffsetInfo(final String jobId) {
-        Optional<String> offsetInfo = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobOffsetInfo(jobId);
+        Optional<String> offsetInfo = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobOffsetInfo(jobId);
         if (offsetInfo.isPresent()) {
             YamlJobOffsetInfo info = YamlEngine.unmarshal(offsetInfo.get(), YamlJobOffsetInfo.class);
             return jobOffsetInfoSwapper.swapToObject(info);
@@ -185,7 +188,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     
     @Override
     public Optional<InventoryIncrementalJobItemProgress> getJobItemProgress(final String jobId, final int shardingItem) {
-        Optional<String> progress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobItemProgress(jobId, shardingItem);
+        Optional<String> progress = PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).getJobItemProgress(jobId, shardingItem);
         return progress.map(s -> jobItemProgressSwapper.swapToObject(YamlEngine.unmarshal(s, YamlInventoryIncrementalJobItemProgress.class)));
     }
     
@@ -196,12 +199,12 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
             return;
         }
         jobItemProgress.get().setStatus(status);
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobItemProgress(jobId, shardingItem, YamlEngine.marshal(jobItemProgressSwapper.swapToYamlConfiguration(jobItemProgress.get())));
+        PipelineAPIFactory.getGovernanceRepositoryAPI(PipelineJobIdUtils.parseContextKey(jobId)).persistJobItemProgress(jobId, shardingItem,
+                YamlEngine.marshal(jobItemProgressSwapper.swapToYamlConfiguration(jobItemProgress.get())));
     }
     
     @Override
     public Collection<DataConsistencyCheckAlgorithmInfo> listDataConsistencyCheckAlgorithms() {
-        checkModeConfig();
         Collection<DataConsistencyCheckAlgorithmInfo> result = new LinkedList<>();
         for (DataConsistencyCalculateAlgorithm each : ShardingSphereServiceLoader.getServiceInstances(DataConsistencyCalculateAlgorithm.class)) {
             SPIDescription description = each.getClass().getAnnotation(SPIDescription.class);

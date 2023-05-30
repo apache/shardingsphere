@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
@@ -31,11 +32,12 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
-import org.apache.shardingsphere.infra.binder.QueryContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
@@ -73,25 +75,25 @@ public final class Portal {
     
     private final ProxyBackendHandler proxyBackendHandler;
     
-    private final BackendConnection backendConnection;
+    private final ProxyDatabaseConnectionManager databaseConnectionManager;
     
     private ResponseHeader responseHeader;
     
     public Portal(final String name, final PostgreSQLServerPreparedStatement preparedStatement, final List<Object> params, final List<PostgreSQLValueFormat> resultFormats,
-                  final BackendConnection backendConnection) throws SQLException {
+                  final ProxyDatabaseConnectionManager databaseConnectionManager) throws SQLException {
         this.name = name;
         this.sqlStatement = preparedStatement.getSqlStatementContext().getSqlStatement();
         this.resultFormats = resultFormats;
-        this.backendConnection = backendConnection;
-        String databaseName = backendConnection.getConnectionSession().getDefaultDatabaseName();
-        SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext();
+        this.databaseConnectionManager = databaseConnectionManager;
+        String databaseName = databaseConnectionManager.getConnectionSession().getDefaultDatabaseName();
+        SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(params);
         }
         DatabaseType protocolType = ProxyContext.getInstance().getDatabase(databaseName).getProtocolType();
-        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params);
-        backendConnection.getConnectionSession().setQueryContext(queryContext);
-        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(protocolType, queryContext, backendConnection.getConnectionSession(), true);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, preparedStatement.getSql(), params, new HintValueContext(), true);
+        databaseConnectionManager.getConnectionSession().setQueryContext(queryContext);
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(protocolType, queryContext, databaseConnectionManager.getConnectionSession(), true);
     }
     
     /**
@@ -107,6 +109,7 @@ public final class Portal {
      * Describe portal.
      *
      * @return portal description packet
+     * @throws IllegalStateException illegal state exception
      */
     public PostgreSQLPacket describe() {
         if (responseHeader instanceof QueryResponseHeader) {
@@ -126,7 +129,8 @@ public final class Portal {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         int columnIndex = 0;
         for (QueryHeader each : queryResponseHeader.getQueryHeaders()) {
-            result.add(new PostgreSQLColumnDescription(each.getColumnLabel(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName()));
+            PostgreSQLValueFormat valueFormat = determineValueFormat(columnIndex);
+            result.add(new PostgreSQLColumnDescription(each.getColumnLabel(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName(), valueFormat.getCode()));
         }
         return result;
     }
@@ -138,9 +142,9 @@ public final class Portal {
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public List<PostgreSQLPacket> execute(final int maxRows) throws SQLException {
+    public List<DatabasePacket> execute(final int maxRows) throws SQLException {
         int fetchSize = maxRows > 0 ? maxRows : Integer.MAX_VALUE;
-        List<PostgreSQLPacket> result = new LinkedList<>();
+        List<DatabasePacket> result = new LinkedList<>();
         for (int i = 0; i < fetchSize && hasNext(); i++) {
             result.add(nextPacket());
         }
@@ -201,7 +205,7 @@ public final class Portal {
     }
     
     private void suspendPortal() {
-        backendConnection.markResourceInUse(proxyBackendHandler);
+        databaseConnectionManager.markResourceInUse(proxyBackendHandler);
     }
     
     private long getUpdateCount() {
@@ -214,7 +218,7 @@ public final class Portal {
      * @throws SQLException SQL exception
      */
     public void close() throws SQLException {
-        backendConnection.unmarkResourceInUse(proxyBackendHandler);
+        databaseConnectionManager.unmarkResourceInUse(proxyBackendHandler);
         proxyBackendHandler.close();
     }
 }

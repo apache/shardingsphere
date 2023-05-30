@@ -40,10 +40,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowShardingTableReferenceRuleExecutorTest {
+class ShowShardingTableReferenceRuleExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         RQLExecutor<ShowShardingTableReferenceRulesStatement> executor = new ShowShardingTableReferenceRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(ShowShardingTableReferenceRulesStatement.class));
         assertThat(actual.size(), is(1));
@@ -54,7 +54,7 @@ public final class ShowShardingTableReferenceRuleExecutorTest {
     }
     
     @Test
-    public void assertGetRowDataWithSpecifiedRuleName() {
+    void assertGetRowDataWithSpecifiedRuleName() {
         RQLExecutor<ShowShardingTableReferenceRulesStatement> executor = new ShowShardingTableReferenceRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), new ShowShardingTableReferenceRulesStatement("foo", null));
         assertThat(actual.size(), is(1));
@@ -65,7 +65,7 @@ public final class ShowShardingTableReferenceRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         RQLExecutor<ShowShardingTableReferenceRulesStatement> executor = new ShowShardingTableReferenceRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(2));

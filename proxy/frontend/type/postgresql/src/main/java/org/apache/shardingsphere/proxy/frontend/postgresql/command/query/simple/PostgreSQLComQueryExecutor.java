@@ -53,7 +53,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Command query executor for PostgreSQL.
@@ -69,11 +68,11 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     public PostgreSQLComQueryExecutor(final PortalContext portalContext, final PostgreSQLComQueryPacket comQueryPacket, final ConnectionSession connectionSession) throws SQLException {
         this.portalContext = portalContext;
-        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), comQueryPacket.getSql(), connectionSession);
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), comQueryPacket.getSQL(), connectionSession);
     }
     
     @Override
-    public Collection<DatabasePacket<?>> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() throws SQLException {
         ResponseHeader responseHeader = proxyBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
             return Collections.singleton(createRowDescriptionPacket((QueryResponseHeader) responseHeader));
@@ -96,7 +95,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
         return result;
     }
     
-    private List<DatabasePacket<?>> createUpdatePacket(final UpdateResponseHeader updateResponseHeader) throws SQLException {
+    private Collection<DatabasePacket> createUpdatePacket(final UpdateResponseHeader updateResponseHeader) throws SQLException {
         SQLStatement sqlStatement = updateResponseHeader.getSqlStatement();
         if (sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement) {
             portalContext.closeAll();
@@ -108,8 +107,8 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
                 : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(PostgreSQLCommand::getTag).orElse(""), updateResponseHeader.getUpdateCount()));
     }
     
-    private List<DatabasePacket<?>> createParameterStatusResponse(final SetStatement sqlStatement) {
-        List<DatabasePacket<?>> result = new ArrayList<>(2);
+    private Collection<DatabasePacket> createParameterStatusResponse(final SetStatement sqlStatement) {
+        Collection<DatabasePacket> result = new ArrayList<>(2);
         result.add(new PostgreSQLCommandCompletePacket("SET", 0));
         for (VariableAssignSegment each : sqlStatement.getVariableAssigns()) {
             result.add(new PostgreSQLParameterStatusPacket(each.getVariable().getVariable(), IdentifierValue.getQuotedContent(each.getAssignValue())));

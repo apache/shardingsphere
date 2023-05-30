@@ -51,7 +51,7 @@ Therefore, one SQL will drive `Database type (5) * Access port type (2) * SQL ex
 
 ## User Guide
 
-Module path：`test/e2e/suite`
+Module path：`test/e2e/sql`
 
 ### Test case configuration
 
@@ -163,7 +163,7 @@ Run the above command to build a Docker mirror `apache/shardingsphere-proxy-test
 If you only modify the test code, you can reuse the existing test mirror without rebuilding it. Skip the mirror building and run the integration testing directly with the following command:
 
 ```bash
-./mvnw -B clean install -f test/e2e/suite/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
+./mvnw -B clean install -f test/e2e/sql/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_2,scenario_name_n} -Dit.cluster.databases=MySQL
 ```
 
 #### Remote debug Proxy code in Docker container
@@ -194,4 +194,4 @@ After editing the above information, run Run -> Run -> e2e-debug in IDEA to star
 #### Notice
 
 1. To test Oracle, add an Oracle driver dependency to pom.xml.
-1. In order to ensure the integrity and legibility of the test data, 10 database shards and 10 table shards are used in the sharding of the integration testing, which takes a long time to run the test cases completely.
+2. In order to ensure the integrity and legibility of the test data, 10 database shards and 10 table shards are used in the sharding of the integration testing, which takes a long time to run the test cases completely.

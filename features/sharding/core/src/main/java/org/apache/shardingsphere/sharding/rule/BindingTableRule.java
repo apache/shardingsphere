@@ -56,6 +56,8 @@ public final class BindingTableRule {
      * @param otherLogicTable other logic table name in same binding table rule
      * @param otherActualTable other actual table name in same binding table rule
      * @return actual table name
+     * @throws ActualTableNotFoundException actual table not found exception
+     * @throws BindingTableNotFoundException binding table not found exception
      */
     public String getBindingActualTable(final String dataSource, final String logicTable, final String otherLogicTable, final String otherActualTable) {
         Optional<TableRule> otherLogicTableRule = Optional.ofNullable(tableRules.get(otherLogicTable.toLowerCase()));
@@ -79,7 +81,16 @@ public final class BindingTableRule {
         return tableRules.keySet();
     }
     
-    Map<String, String> getLogicAndActualTables(final String dataSource, final String logicTable, final String actualTable, final Collection<String> availableLogicBindingTables) {
+    /**
+     * Get logic and actual tables.
+     * 
+     * @param dataSource data source
+     * @param logicTable logic table
+     * @param actualTable actual table
+     * @param availableLogicBindingTables available logic binding tables
+     * @return logic and actual tables
+     */
+    public Map<String, String> getLogicAndActualTables(final String dataSource, final String logicTable, final String actualTable, final Collection<String> availableLogicBindingTables) {
         Map<String, String> result = new LinkedHashMap<>();
         for (String each : availableLogicBindingTables) {
             String availableLogicTable = each.toLowerCase();

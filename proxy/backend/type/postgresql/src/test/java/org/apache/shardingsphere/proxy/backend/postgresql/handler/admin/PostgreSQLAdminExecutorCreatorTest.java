@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin;
 
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.UnknownSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -46,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class PostgreSQLAdminExecutorCreatorTest {
+class PostgreSQLAdminExecutorCreatorTest {
     
     private static final String PSQL_SELECT_DATABASES = "SELECT d.datname as \"Name\",\n"
             + "       pg_catalog.pg_get_userbyid(d.datdba) as \"Owner\",\n"
@@ -80,93 +81,93 @@ public final class PostgreSQLAdminExecutorCreatorTest {
             + "ORDER BY 1,2;";
     
     @Test
-    public void assertCreateWithOtherSQLStatementContextOnly() {
-        assertThat(new PostgreSQLAdminExecutorCreator().create(new CommonSQLStatementContext<>(new PostgreSQLInsertStatement())), is(Optional.empty()));
+    void assertCreateWithOtherSQLStatementContextOnly() {
+        assertThat(new PostgreSQLAdminExecutorCreator().create(new UnknownSQLStatementContext(new PostgreSQLInsertStatement())), is(Optional.empty()));
     }
     
     @Test
-    public void assertCreateWithShowSQLStatement() {
-        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(new CommonSQLStatementContext<>(new PostgreSQLShowStatement("client_encoding")));
+    void assertCreateWithShowSQLStatement() {
+        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(new UnknownSQLStatementContext(new PostgreSQLShowStatement("client_encoding")));
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLShowVariableExecutor.class));
     }
     
     @Test
-    public void assertCreateWithSelectDatabase() {
+    void assertCreateWithSelectDatabase() {
         SQLStatement sqlStatement = parseSQL(PSQL_SELECT_DATABASES);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn((SelectStatement) sqlStatement);
-        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, PSQL_SELECT_DATABASES, "");
+        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, PSQL_SELECT_DATABASES, "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(SelectDatabaseExecutor.class));
     }
     
     @Test
-    public void assertCreateWithSelectTablespace() {
+    void assertCreateWithSelectTablespace() {
         SQLStatement sqlStatement = parseSQL(PSQL_SELECT_TABLESPACES);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn((SelectStatement) sqlStatement);
-        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, PSQL_SELECT_TABLESPACES, "");
+        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, PSQL_SELECT_TABLESPACES, "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(SelectTableExecutor.class));
     }
     
     @Test
-    public void assertCreateWithSelectPgCatalogWithSubquery() {
+    void assertCreateWithSelectPgCatalogWithSubquery() {
         SQLStatement sqlStatement = parseSQL(SELECT_PG_CATALOG_WITH_SUBQUERY);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn((SelectStatement) sqlStatement);
-        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, SELECT_PG_CATALOG_WITH_SUBQUERY, "");
+        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, SELECT_PG_CATALOG_WITH_SUBQUERY, "", Collections.emptyList());
         assertFalse(actual.isPresent());
     }
     
     @Test
-    public void assertCreateWithSelectPgNamespaceAndPgClass() {
+    void assertCreateWithSelectPgNamespaceAndPgClass() {
         SQLStatement sqlStatement = parseSQL(SELECT_PG_CLASS_AND_PG_NAMESPACE);
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn((SelectStatement) sqlStatement);
-        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, SELECT_PG_CLASS_AND_PG_NAMESPACE, "");
+        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(selectStatementContext, SELECT_PG_CLASS_AND_PG_NAMESPACE, "", Collections.emptyList());
         assertFalse(actual.isPresent());
     }
     
-    private static SQLStatement parseSQL(final String sql) {
+    private SQLStatement parseSQL(final String sql) {
         CacheOption cacheOption = new CacheOption(0, 0);
         SQLParserRule sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption));
         return sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false);
     }
     
     @Test
-    public void assertCreateWithSelectNonPgCatalog() {
+    void assertCreateWithSelectNonPgCatalog() {
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class);
         when(selectStatementContext.getSqlStatement()).thenReturn(new PostgreSQLSelectStatement());
-        assertThat(new PostgreSQLAdminExecutorCreator().create(selectStatementContext, "select 1", ""), is(Optional.empty()));
+        assertThat(new PostgreSQLAdminExecutorCreator().create(selectStatementContext, "select 1", "", Collections.emptyList()), is(Optional.empty()));
     }
     
     @Test
-    public void assertCreateWithSetStatement() {
+    void assertCreateWithSetStatement() {
         PostgreSQLSetStatement setStatement = new PostgreSQLSetStatement();
-        CommonSQLStatementContext<PostgreSQLSetStatement> sqlStatementContext = new CommonSQLStatementContext<>(setStatement);
-        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "SET client_encoding = utf8", "");
+        UnknownSQLStatementContext sqlStatementContext = new UnknownSQLStatementContext(setStatement);
+        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "SET client_encoding = utf8", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLSetVariableAdminExecutor.class));
     }
     
     @Test
-    public void assertCreateWithResetStatement() {
+    void assertCreateWithResetStatement() {
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator()
-                .create(new CommonSQLStatementContext<>(new PostgreSQLResetParameterStatement("client_encoding")), "RESET client_encoding", "");
+                .create(new UnknownSQLStatementContext(new PostgreSQLResetParameterStatement("client_encoding")), "RESET client_encoding", "", Collections.emptyList());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLResetVariableAdminExecutor.class));
     }
     
     @Test
-    public void assertCreateWithDMLStatement() {
+    void assertCreateWithDMLStatement() {
         DeleteStatementContext sqlStatementContext = new DeleteStatementContext(new PostgreSQLDeleteStatement());
-        assertThat(new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "delete from t where id = 1", ""), is(Optional.empty()));
+        assertThat(new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "delete from t where id = 1", "", Collections.emptyList()), is(Optional.empty()));
     }
     
     @Test
-    public void assertGetType() {
+    void assertGetType() {
         assertThat(new PostgreSQLAdminExecutorCreator().getType(), is("PostgreSQL"));
     }
 }

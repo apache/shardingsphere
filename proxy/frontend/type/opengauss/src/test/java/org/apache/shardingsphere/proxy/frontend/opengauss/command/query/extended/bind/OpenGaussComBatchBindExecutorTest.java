@@ -24,7 +24,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -33,10 +32,11 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.logging.rule.LoggingRule;
 import org.apache.shardingsphere.logging.rule.builder.DefaultLoggingRuleConfigurationBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -72,13 +72,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class OpenGaussComBatchBindExecutorTest {
+class OpenGaussComBatchBindExecutorTest {
     
     private final ShardingSphereSQLParserEngine parserEngine = new ShardingSphereSQLParserEngine("openGauss", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false);
     
-    @SuppressWarnings("rawtypes")
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         String statement = "S_1";
         String sql = "insert into bmsql (id) values (?)";
         SQLStatement sqlStatement = parserEngine.parse(sql, false);
@@ -88,7 +87,7 @@ public final class OpenGaussComBatchBindExecutorTest {
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statement, new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, Collections.emptyList()));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        Iterator<DatabasePacket<?>> actualPacketsIterator = new OpenGaussComBatchBindExecutor(mockComBatchBindPacket(), connectionSession).execute().iterator();
+        Iterator<DatabasePacket> actualPacketsIterator = new OpenGaussComBatchBindExecutor(mockComBatchBindPacket(), connectionSession).execute().iterator();
         assertThat(actualPacketsIterator.next(), is(PostgreSQLBindCompletePacket.getInstance()));
         assertThat(actualPacketsIterator.next(), instanceOf(PostgreSQLCommandCompletePacket.class));
         assertFalse(actualPacketsIterator.hasNext());
@@ -98,17 +97,17 @@ public final class OpenGaussComBatchBindExecutorTest {
         ConnectionSession result = mock(ConnectionSession.class);
         when(result.getConnectionContext()).thenReturn(new ConnectionContext());
         when(result.getDatabaseName()).thenReturn("foo_db");
-        BackendConnection backendConnection = mock(BackendConnection.class);
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:opengauss://127.0.0.1/foo_db");
-        when(backendConnection.getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        when(databaseConnectionManager.getConnections(nullable(String.class), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
         PreparedStatement preparedStatement = mock(PreparedStatement.class);
         when(preparedStatement.getConnection()).thenReturn(connection);
         JDBCBackendStatement backendStatement = mock(JDBCBackendStatement.class);
         when(backendStatement.createStorageResource(any(ExecutionUnit.class), any(Connection.class), any(ConnectionMode.class), any(StatementOption.class), nullable(DatabaseType.class)))
                 .thenReturn(preparedStatement);
         when(result.getStatementManager()).thenReturn(backendStatement);
-        when(result.getBackendConnection()).thenReturn(backendConnection);
+        when(result.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
         when(result.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         return result;
     }
@@ -132,7 +131,7 @@ public final class OpenGaussComBatchBindExecutorTest {
         return result;
     }
     
-    private static ShardingSphereDatabase mockDatabase() {
+    private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResourceMetaData().getAllInstanceDataSourceNames()).thenReturn(Collections.singletonList("foo_ds"));
         when(result.getResourceMetaData().getStorageTypes()).thenReturn(Collections.singletonMap("foo_ds", new OpenGaussDatabaseType()));

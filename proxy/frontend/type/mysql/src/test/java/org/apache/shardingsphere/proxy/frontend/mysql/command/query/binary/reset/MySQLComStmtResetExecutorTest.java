@@ -38,10 +38,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLComStmtResetExecutorTest {
+class MySQLComStmtResetExecutorTest {
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
@@ -50,8 +50,8 @@ public final class MySQLComStmtResetExecutorTest {
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, preparedStatement);
         MySQLComStmtResetPacket packet = mock(MySQLComStmtResetPacket.class);
         when(packet.getStatementId()).thenReturn(1);
-        MySQLComStmtResetExecutor mysqlComStmtResetExecutor = new MySQLComStmtResetExecutor(packet, connectionSession);
-        Collection<DatabasePacket<?>> actual = mysqlComStmtResetExecutor.execute();
+        MySQLComStmtResetExecutor executor = new MySQLComStmtResetExecutor(packet, connectionSession);
+        Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(MySQLOKPacket.class));
         assertTrue(preparedStatement.getLongData().isEmpty());

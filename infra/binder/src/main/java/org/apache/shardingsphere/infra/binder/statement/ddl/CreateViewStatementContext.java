@@ -31,7 +31,7 @@ import java.util.Collection;
  * Create view statement context.
  */
 @Getter
-public final class CreateViewStatementContext extends CommonSQLStatementContext<CreateViewStatement> implements TableAvailable {
+public final class CreateViewStatementContext extends CommonSQLStatementContext implements TableAvailable {
     
     private final TablesContext tablesContext;
     
@@ -40,6 +40,11 @@ public final class CreateViewStatementContext extends CommonSQLStatementContext<
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromCreateViewStatement(sqlStatement);
         tablesContext = new TablesContext(extractor.getRewriteTables(), getDatabaseType());
+    }
+    
+    @Override
+    public CreateViewStatement getSqlStatement() {
+        return (CreateViewStatement) super.getSqlStatement();
     }
     
     @Override

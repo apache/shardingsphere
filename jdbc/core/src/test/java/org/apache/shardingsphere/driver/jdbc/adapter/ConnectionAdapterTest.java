@@ -24,9 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -36,57 +34,67 @@ import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ConnectionAdapterTest {
+class ConnectionAdapterTest {
     
-    @AfterEach
-    public void tearDown() {
-        TransactionTypeHolder.clear();
+    @Test
+    void assertGetWarnings() throws SQLException {
+        try (Connection actual = createConnectionAdaptor()) {
+            assertNull(actual.getWarnings());
+        }
     }
     
     @Test
-    public void assertGetWarnings() throws SQLException {
-        assertNull(createConnectionAdaptor().getWarnings());
+    void assertClearWarnings() throws SQLException {
+        try (Connection actual = createConnectionAdaptor()) {
+            assertDoesNotThrow(actual::clearWarnings);
+        }
     }
     
     @Test
-    public void assertClearWarnings() throws SQLException {
-        createConnectionAdaptor().clearWarnings();
+    void assertGetHoldability() throws SQLException {
+        try (Connection actual = createConnectionAdaptor()) {
+            assertThat(actual.getHoldability(), is(ResultSet.CLOSE_CURSORS_AT_COMMIT));
+        }
     }
     
     @Test
-    public void assertGetHoldability() throws SQLException {
-        assertThat(createConnectionAdaptor().getHoldability(), is(ResultSet.CLOSE_CURSORS_AT_COMMIT));
+    void assertSetHoldability() throws SQLException {
+        try (Connection actual = createConnectionAdaptor()) {
+            actual.setHoldability(ResultSet.CONCUR_READ_ONLY);
+        }
+        try (Connection actual = createConnectionAdaptor()) {
+            assertThat(actual.getHoldability(), is(ResultSet.CLOSE_CURSORS_AT_COMMIT));
+        }
     }
     
     @Test
-    public void assertSetHoldability() throws SQLException {
-        createConnectionAdaptor().setHoldability(ResultSet.CONCUR_READ_ONLY);
-        assertThat(createConnectionAdaptor().getHoldability(), is(ResultSet.CLOSE_CURSORS_AT_COMMIT));
+    void assertGetCatalog() throws SQLException {
+        try (Connection actual = createConnectionAdaptor()) {
+            assertNull(actual.getCatalog());
+        }
     }
     
     @Test
-    public void assertGetCatalog() throws SQLException {
-        assertNull(createConnectionAdaptor().getCatalog());
+    void assertSetCatalog() throws SQLException {
+        try (Connection actual = createConnectionAdaptor()) {
+            actual.setCatalog("");
+            assertNull(actual.getCatalog());
+        }
     }
     
     @Test
-    public void assertSetCatalog() throws SQLException {
-        Connection actual = createConnectionAdaptor();
-        actual.setCatalog("");
-        assertNull(actual.getCatalog());
-    }
-    
-    @Test
-    public void assertSetSchema() throws SQLException {
-        Connection actual = createConnectionAdaptor();
-        String originalSchema = actual.getSchema();
-        actual.setSchema("");
-        assertThat(actual.getSchema(), is(originalSchema));
+    void assertSetSchema() throws SQLException {
+        try (Connection actual = createConnectionAdaptor()) {
+            String originalSchema = actual.getSchema();
+            actual.setSchema("");
+            assertThat(actual.getSchema(), is(originalSchema));
+        }
     }
     
     private Connection createConnectionAdaptor() {

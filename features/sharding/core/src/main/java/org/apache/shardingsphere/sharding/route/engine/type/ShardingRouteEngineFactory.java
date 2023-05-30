@@ -19,19 +19,18 @@ package org.apache.shardingsphere.sharding.route.engine.type;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.binder.QueryContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
-import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDataSourceGroupBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDatabaseBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingInstanceBroadcastRoutingEngine;
@@ -109,7 +108,7 @@ public final class ShardingRouteEngineFactory {
         return getDQLRoutingEngine(shardingRule, database, sqlStatementContext, queryContext.getHintValueContext(), shardingConditions, props, connectionContext);
     }
     
-    private static ShardingRouteEngine getDDLRoutingEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext<?> sqlStatementContext,
+    private static ShardingRouteEngine getDDLRoutingEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
                                                            final HintValueContext hintValueContext, final ShardingConditions shardingConditions, final ConfigurationProperties props,
                                                            final ConnectionContext connectionContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
@@ -139,7 +138,7 @@ public final class ShardingRouteEngineFactory {
         return new ShardingTableBroadcastRoutingEngine(database, sqlStatementContext, shardingRuleTableNames);
     }
     
-    private static ShardingRouteEngine getCursorRouteEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext<?> sqlStatementContext,
+    private static ShardingRouteEngine getCursorRouteEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
                                                             final HintValueContext hintValueContext, final ShardingConditions shardingConditions, final ConfigurationProperties props,
                                                             final Collection<String> tableNames, final ConnectionContext connectionContext) {
         if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
@@ -156,7 +155,7 @@ public final class ShardingRouteEngineFactory {
         return new ShardingIgnoreRoutingEngine();
     }
     
-    private static ShardingRouteEngine getDALRoutingEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext<?> sqlStatementContext,
+    private static ShardingRouteEngine getDALRoutingEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
                                                            final ConnectionContext connectionContext) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof MySQLUseStatement) {
@@ -192,7 +191,7 @@ public final class ShardingRouteEngineFactory {
         return sqlStatement instanceof MySQLCreateResourceGroupStatement || sqlStatement instanceof MySQLSetResourceGroupStatement;
     }
     
-    private static ShardingRouteEngine getDCLRoutingEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext<?> sqlStatementContext) {
+    private static ShardingRouteEngine getDCLRoutingEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
         if (isDCLForSingleTable(sqlStatementContext)) {
             Collection<String> shardingRuleTableNames = shardingRule.getShardingRuleTableNames(sqlStatementContext.getTablesContext().getTableNames());
             return shardingRuleTableNames.isEmpty() ? new ShardingIgnoreRoutingEngine() : new ShardingTableBroadcastRoutingEngine(database, sqlStatementContext, shardingRuleTableNames);
@@ -200,7 +199,7 @@ public final class ShardingRouteEngineFactory {
         return new ShardingInstanceBroadcastRoutingEngine(database.getResourceMetaData());
     }
     
-    private static boolean isDCLForSingleTable(final SQLStatementContext<?> sqlStatementContext) {
+    private static boolean isDCLForSingleTable(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof TableAvailable) {
             TableAvailable tableSegmentsAvailable = (TableAvailable) sqlStatementContext;
             return 1 == tableSegmentsAvailable.getAllTables().size() && !"*".equals(tableSegmentsAvailable.getAllTables().iterator().next().getTableName().getIdentifier().getValue());
@@ -208,7 +207,7 @@ public final class ShardingRouteEngineFactory {
         return false;
     }
     
-    private static ShardingRouteEngine getDQLRoutingEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext<?> sqlStatementContext,
+    private static ShardingRouteEngine getDQLRoutingEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext,
                                                            final HintValueContext hintValueContext, final ShardingConditions shardingConditions, final ConfigurationProperties props,
                                                            final ConnectionContext connectionContext) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
@@ -228,7 +227,7 @@ public final class ShardingRouteEngineFactory {
     }
     
     private static ShardingRouteEngine getDQLRouteEngineForShardingTable(final ShardingRule shardingRule, final ShardingSphereDatabase database,
-                                                                         final SQLStatementContext<?> sqlStatementContext, final HintValueContext hintValueContext,
+                                                                         final SQLStatementContext sqlStatementContext, final HintValueContext hintValueContext,
                                                                          final ShardingConditions shardingConditions, final ConfigurationProperties props, final Collection<String> tableNames) {
         boolean allBindingTables = tableNames.size() > 1 && shardingRule.isAllBindingTables(database, sqlStatementContext, tableNames);
         if (isShardingStandardQuery(shardingRule, tableNames, allBindingTables)) {
@@ -239,12 +238,11 @@ public final class ShardingRouteEngineFactory {
     }
     
     private static String getLogicTableName(final ShardingConditions shardingConditions, final Collection<String> tableNames) {
-        for (ShardingCondition each : shardingConditions.getConditions()) {
-            for (ShardingConditionValue shardingConditionValue : each.getValues()) {
-                return shardingConditionValue.getTableName();
-            }
+        if (shardingConditions.getConditions().isEmpty()) {
+            return tableNames.iterator().next();
         }
-        return tableNames.iterator().next();
+        ShardingCondition shardingCondition = shardingConditions.getConditions().iterator().next();
+        return shardingCondition.getValues().isEmpty() ? tableNames.iterator().next() : shardingCondition.getValues().iterator().next().getTableName();
     }
     
     private static boolean isShardingStandardQuery(final ShardingRule shardingRule, final Collection<String> tableNames, final boolean allBindingTables) {

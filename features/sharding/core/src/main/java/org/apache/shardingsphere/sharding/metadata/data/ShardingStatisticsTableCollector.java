@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.metadata.data;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
@@ -54,12 +55,18 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
     
     private static final String POSTGRESQL_TABLE_DATA_LENGTH = "SELECT PG_RELATION_SIZE(RELID) as DATA_LENGTH  FROM PG_STAT_ALL_TABLES T WHERE SCHEMANAME='%s' AND RELNAME = '%s'";
     
+    private static final String OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH = "SELECT RELTUPLES AS TABLE_ROWS, PG_TABLE_SIZE('%s') AS DATA_LENGTH FROM PG_CLASS WHERE RELNAME = '%s'";
+    
+    private static final String TABLE_ROWS_COLUMN_NAME = "TABLE_ROWS";
+    
+    private static final String DATA_LENGTH_COLUMN_NAME = "DATA_LENGTH";
+    
     @Override
     public Optional<ShardingSphereTableData> collect(final String databaseName, final ShardingSphereTable table,
                                                      final Map<String, ShardingSphereDatabase> shardingSphereDatabases) throws SQLException {
         ShardingSphereTableData result = new ShardingSphereTableData(SHARDING_TABLE_STATISTICS);
         DatabaseType protocolType = shardingSphereDatabases.values().iterator().next().getProtocolType();
-        if (protocolType instanceof PostgreSQLDatabaseType || protocolType instanceof OpenGaussDatabaseType) {
+        if (protocolType instanceof SchemaSupportedDatabaseType) {
             collectFromDatabase(shardingSphereDatabases.get(databaseName), result);
         } else {
             for (ShardingSphereDatabase each : shardingSphereDatabases.values()) {
@@ -101,7 +108,8 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
         } else if (databaseType instanceof PostgreSQLDatabaseType) {
             addForPostgreSQL(dataSources, dataNode, row);
         } else if (databaseType instanceof OpenGaussDatabaseType) {
-            // TODO get OpenGauss rows and data length
+            addForOpenGauss(dataSources, dataNode, row);
+        } else {
             row.add(BigDecimal.ZERO);
             row.add(BigDecimal.ZERO);
         }
@@ -116,8 +124,8 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
                 Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(String.format(MYSQL_TABLE_ROWS_AND_DATA_LENGTH, connection.getCatalog(), dataNode.getTableName()))) {
                 if (resultSet.next()) {
-                    tableRows = resultSet.getBigDecimal("TABLE_ROWS");
-                    dataLength = resultSet.getBigDecimal("DATA_LENGTH");
+                    tableRows = resultSet.getBigDecimal(TABLE_ROWS_COLUMN_NAME);
+                    dataLength = resultSet.getBigDecimal(DATA_LENGTH_COLUMN_NAME);
                 }
             }
         }
@@ -134,17 +142,48 @@ public final class ShardingStatisticsTableCollector implements ShardingSphereDat
                 Statement statement = connection.createStatement()) {
             try (ResultSet resultSet = statement.executeQuery(String.format(POSTGRESQL_TABLE_ROWS_LENGTH, dataNode.getSchemaName(), dataNode.getTableName()))) {
                 if (resultSet.next()) {
-                    tableRows = resultSet.getBigDecimal("TABLE_ROWS");
+                    tableRows = resultSet.getBigDecimal(TABLE_ROWS_COLUMN_NAME);
                 }
             }
             try (ResultSet resultSet = statement.executeQuery(String.format(POSTGRESQL_TABLE_DATA_LENGTH, dataNode.getSchemaName(), dataNode.getTableName()))) {
                 if (resultSet.next()) {
-                    dataLength = resultSet.getBigDecimal("DATA_LENGTH");
+                    dataLength = resultSet.getBigDecimal(DATA_LENGTH_COLUMN_NAME);
                 }
             }
         }
         row.add(tableRows);
         row.add(dataLength);
+    }
+    
+    private void addForOpenGauss(final Map<String, DataSource> dataSources, final DataNode dataNode, final List<Object> row) throws SQLException {
+        try (Connection connection = dataSources.get(dataNode.getDataSourceName()).getConnection()) {
+            if (isTableExist(connection, dataNode.getTableName())) {
+                doAddForOpenGauss(dataNode, row, connection);
+            } else {
+                row.add(BigDecimal.ZERO);
+                row.add(BigDecimal.ZERO);
+            }
+        }
+    }
+    
+    private boolean isTableExist(final Connection connection, final String tableNamePattern) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), connection.getSchema(), tableNamePattern, null)) {
+            return resultSet.next();
+        }
+    }
+    
+    private void doAddForOpenGauss(final DataNode dataNode, final List<Object> row, final Connection connection) throws SQLException {
+        try (
+                Statement statement = connection.createStatement()) {
+            try (
+                    ResultSet resultSet = statement
+                            .executeQuery(String.format(OPENGAUSS_TABLE_ROWS_AND_DATA_LENGTH, dataNode.getTableName(), dataNode.getTableName()))) {
+                if (resultSet.next()) {
+                    row.add(resultSet.getBigDecimal(TABLE_ROWS_COLUMN_NAME));
+                    row.add(resultSet.getBigDecimal(DATA_LENGTH_COLUMN_NAME));
+                }
+            }
+        }
     }
     
     @Override

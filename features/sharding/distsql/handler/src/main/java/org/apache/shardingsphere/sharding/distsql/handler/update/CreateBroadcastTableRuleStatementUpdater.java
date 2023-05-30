@@ -45,7 +45,7 @@ public final class CreateBroadcastTableRuleStatementUpdater implements RuleDefin
         Collection<String> tables = sqlStatement.getTables();
         if (sqlStatement.isIfNotExists()) {
             Collection<String> duplicatedRuleNames = getDuplicatedRuleNames(sqlStatement, currentRuleConfig);
-            tables.removeIf(each -> duplicatedRuleNames.contains(each));
+            tables.removeIf(duplicatedRuleNames::contains);
         }
         result.setBroadcastTables(tables);
         return result;

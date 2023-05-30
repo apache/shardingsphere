@@ -22,18 +22,22 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.valu
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * MySQL DATETIME2 binlog protocol value.
+ * Stored as 4-byte value The number of decimals for the fractional part is stored in the table metadata as a one byte value.
+ * The number of bytes that follow the 5 byte datetime value can be calculated with the following formula: (decimals + 1) / 2
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/field__types_8h.html">field type</a>
  */
 public final class MySQLDatetime2BinlogProtocolValue implements MySQLBinlogProtocolValue {
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         long datetime = readDatetimeV2FromPayload(payload);
-        return 0 == datetime ? MySQLTimeValueUtil.DATETIME_OF_ZERO : readDatetime(columnDef, datetime, payload);
+        return 0 == datetime ? MySQLTimeValueUtils.DATETIME_OF_ZERO : readDatetime(columnDef, datetime, payload);
     }
     
     private long readDatetimeV2FromPayload(final MySQLPacketPayload payload) {
@@ -46,15 +50,19 @@ public final class MySQLDatetime2BinlogProtocolValue implements MySQLBinlogProto
     
     private Serializable readDatetime(final MySQLBinlogColumnDef columnDef, final long datetime, final MySQLPacketPayload payload) {
         long datetimeWithoutSign = datetime & (0x8000000000L - 1);
-        return readDate(datetimeWithoutSign >> 17) + " " + readTime(datetimeWithoutSign % (1 << 17)) + new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
-    }
-    
-    private String readDate(final long date) {
+        if (0 == datetimeWithoutSign) {
+            return MySQLTimeValueUtils.DATETIME_OF_ZERO;
+        }
+        long date = datetimeWithoutSign >> 17;
         long yearAndMonth = date >> 5;
-        return String.format("%d-%02d-%02d", yearAndMonth / 13, yearAndMonth % 13, date % (1 << 5));
-    }
-    
-    private String readTime(final long time) {
-        return String.format("%02d:%02d:%02d", time >> 12, (time >> 6) % (1 << 6), time % (1 << 6));
+        int year = (int) (yearAndMonth / 13);
+        int month = (int) (yearAndMonth % 13);
+        int day = (int) (date % (1 << 5));
+        long time = datetimeWithoutSign % (1 << 17);
+        int hour = (int) (time >> 12);
+        int minute = (int) ((time >> 6) % (1 << 6));
+        int second = (int) (time % (1 << 6));
+        MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
+        return Timestamp.valueOf(LocalDateTime.of(year, month, day, hour, minute, second, fractionalSeconds.getNanos()));
     }
 }

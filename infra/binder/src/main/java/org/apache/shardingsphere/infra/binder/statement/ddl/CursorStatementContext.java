@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.infra.binder.statement.ddl;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.binder.aware.CursorDefinition;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
-import org.apache.shardingsphere.infra.context.cursor.CursorDefinition;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.Whe
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.util.ColumnExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtil;
+import org.apache.shardingsphere.sql.parser.sql.common.util.WhereExtractUtils;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 
 import java.util.Collection;
@@ -45,7 +45,7 @@ import java.util.Optional;
  * Cursor statement context.
  */
 @Getter
-public final class CursorStatementContext extends CommonSQLStatementContext<OpenGaussCursorStatement> implements CursorAvailable, TableAvailable, WhereAvailable, CursorDefinition {
+public final class CursorStatementContext extends CommonSQLStatementContext implements CursorAvailable, TableAvailable, WhereAvailable, CursorDefinition {
     
     private final Collection<WhereSegment> whereSegments = new LinkedList<>();
     
@@ -72,8 +72,13 @@ public final class CursorStatementContext extends CommonSQLStatementContext<Open
     
     private void extractWhereSegments(final Collection<WhereSegment> whereSegments, final SelectStatement select) {
         select.getWhere().ifPresent(whereSegments::add);
-        whereSegments.addAll(WhereExtractUtil.getSubqueryWhereSegments(select));
-        whereSegments.addAll(WhereExtractUtil.getJoinWhereSegments(select));
+        whereSegments.addAll(WhereExtractUtils.getSubqueryWhereSegments(select));
+        whereSegments.addAll(WhereExtractUtils.getJoinWhereSegments(select));
+    }
+    
+    @Override
+    public OpenGaussCursorStatement getSqlStatement() {
+        return (OpenGaussCursorStatement) super.getSqlStatement();
     }
     
     @Override

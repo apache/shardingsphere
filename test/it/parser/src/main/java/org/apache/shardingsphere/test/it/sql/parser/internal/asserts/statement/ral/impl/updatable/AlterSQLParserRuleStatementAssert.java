@@ -17,20 +17,24 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ral.impl.updatable;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.parser.distsql.parser.segment.CacheOptionSegment;
 import org.apache.shardingsphere.parser.distsql.parser.statement.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedCacheOption;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.AlterSQLParserRuleStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Alter SQL parser rule statement assert.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class AlterSQLParserRuleStatementAssert {
     
     /**
@@ -41,12 +45,7 @@ public final class AlterSQLParserRuleStatementAssert {
      * @param expected expected alter SQL parser rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterSQLParserRuleStatement actual, final AlterSQLParserRuleStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should not exist."));
-        } else {
-            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
-        }
-        assertNotNull(actual);
+        ExistingAssert.assertIs(assertContext, actual, expected);
         assertCacheOption(assertContext, actual.getParseTreeCache(), expected.getSqlParserRule().getParseTreeCache());
         assertCacheOption(assertContext, actual.getSqlStatementCache(), expected.getSqlParserRule().getSqlStatementCache());
     }
@@ -56,9 +55,8 @@ public final class AlterSQLParserRuleStatementAssert {
             assertNull(actual, assertContext.getText("Actual statement should not exist."));
         } else {
             assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+            assertThat(actual.getInitialCapacity(), is(expected.getInitialCapacity()));
+            assertThat(actual.getMaximumSize(), is(expected.getMaximumSize()));
         }
-        assertNotNull(actual);
-        assertThat(actual.getInitialCapacity(), is(expected.getInitialCapacity()));
-        assertThat(actual.getMaximumSize(), is(expected.getMaximumSize()));
     }
 }

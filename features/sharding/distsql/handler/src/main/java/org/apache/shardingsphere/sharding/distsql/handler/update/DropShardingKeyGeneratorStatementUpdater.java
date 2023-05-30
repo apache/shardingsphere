@@ -30,7 +30,6 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingK
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -66,10 +65,10 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
     
     private Collection<String> getUsedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> result = new LinkedHashSet<>();
-        shardingRuleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy())).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
-        shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy())).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
+        shardingRuleConfig.getTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
+        shardingRuleConfig.getAutoTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
         KeyGenerateStrategyConfiguration keyGenerateStrategy = shardingRuleConfig.getDefaultKeyGenerateStrategy();
-        if (Objects.nonNull(keyGenerateStrategy) && !Strings.isNullOrEmpty(keyGenerateStrategy.getKeyGeneratorName())) {
+        if (null != keyGenerateStrategy && !Strings.isNullOrEmpty(keyGenerateStrategy.getKeyGeneratorName())) {
             result.add(keyGenerateStrategy.getKeyGeneratorName());
         }
         return result;

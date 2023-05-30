@@ -1,0 +1,179 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: INNODB_BUFFER_PAGE
+columns:
+  pool_id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: POOL_ID
+    primaryKey: false
+    unsigned: true
+    visible: true
+  block_id:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: BLOCK_ID
+    primaryKey: false
+    unsigned: true
+    visible: true
+  space:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: SPACE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  page_number:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: PAGE_NUMBER
+    primaryKey: false
+    unsigned: true
+    visible: true
+  page_type:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PAGE_TYPE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  flush_type:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: FLUSH_TYPE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  fix_count:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: FIX_COUNT
+    primaryKey: false
+    unsigned: true
+    visible: true
+  is_hashed:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: IS_HASHED
+    primaryKey: false
+    unsigned: false
+    visible: true
+  newest_modification:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: NEWEST_MODIFICATION
+    primaryKey: false
+    unsigned: true
+    visible: true
+  oldest_modification:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: OLDEST_MODIFICATION
+    primaryKey: false
+    unsigned: true
+    visible: true
+  access_time:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: ACCESS_TIME
+    primaryKey: false
+    unsigned: true
+    visible: true
+  table_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: TABLE_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  index_name:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: INDEX_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  number_records:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: NUMBER_RECORDS
+    primaryKey: false
+    unsigned: true
+    visible: true
+  data_size:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: DATA_SIZE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  compressed_size:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COMPRESSED_SIZE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  page_state:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: PAGE_STATE
+    primaryKey: false
+    unsigned: false
+    visible: true
+  io_fix:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: IO_FIX
+    primaryKey: false
+    unsigned: false
+    visible: true
+  is_old:
+    caseSensitive: false
+    dataType: 12
+    generated: false
+    name: IS_OLD
+    primaryKey: false
+    unsigned: false
+    visible: true
+  free_page_clock:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: FREE_PAGE_CLOCK
+    primaryKey: false
+    unsigned: true
+    visible: true

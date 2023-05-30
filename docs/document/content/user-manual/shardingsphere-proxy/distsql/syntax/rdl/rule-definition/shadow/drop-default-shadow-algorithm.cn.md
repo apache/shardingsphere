@@ -1,11 +1,11 @@
 +++
 title = "DROP DEFAULT SHADOW ALGORITHM"
-weight = 7
+weight = 6
 +++
 
 ## 描述
 
-`DROP DEFAULT SHADOW ALGORITHM` 语法用于为指定逻辑库删除默认影子库压测算法
+`DROP DEFAULT SHADOW ALGORITHM` 语法用于为指定逻辑库删除默认影子库压测算法。
 
 ### 语法定义
 

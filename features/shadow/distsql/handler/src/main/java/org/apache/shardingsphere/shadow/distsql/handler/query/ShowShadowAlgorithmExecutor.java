@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -53,8 +52,7 @@ public final class ShowShadowAlgorithmExecutor implements RQLExecutor<ShowShadow
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         while (data.hasNext()) {
             Entry<String, AlgorithmConfiguration> row = data.next();
-            result.add(new LocalDataQueryResultRow(row.getKey(), row.getValue().getType(),
-                    convertToString(row.getValue().getProps()), Boolean.valueOf(row.getKey().equals(defaultAlgorithm)).toString()));
+            result.add(new LocalDataQueryResultRow(row.getKey(), row.getValue().getType(), convertToString(row.getValue().getProps()), Boolean.toString(row.getKey().equals(defaultAlgorithm))));
         }
         return result;
     }
@@ -65,7 +63,7 @@ public final class ShowShadowAlgorithmExecutor implements RQLExecutor<ShowShadow
     }
     
     private String convertToString(final Properties props) {
-        return Objects.nonNull(props) ? PropertiesConverter.convert(props) : "";
+        return null != props ? PropertiesConverter.convert(props) : "";
     }
     
     @Override

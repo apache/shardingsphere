@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DistSQLStatementContext implements SQLStatementContext<DistSQLStatement> {
+public final class DistSQLStatementContext implements SQLStatementContext {
     
     private final DistSQLStatement sqlStatement;
     

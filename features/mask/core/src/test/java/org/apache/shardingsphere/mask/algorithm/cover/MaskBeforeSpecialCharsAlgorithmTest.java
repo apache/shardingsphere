@@ -28,49 +28,49 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class MaskBeforeSpecialCharsAlgorithmTest {
+class MaskBeforeSpecialCharsAlgorithmTest {
     
     private MaskBeforeSpecialCharsAlgorithm maskAlgorithm;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         maskAlgorithm = new MaskBeforeSpecialCharsAlgorithm();
         maskAlgorithm.init(PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", "*")));
     }
     
     @Test
-    public void assertMask() {
+    void assertMask() {
         assertThat(maskAlgorithm.mask("abcd134"), is("***d134"));
     }
     
     @Test
-    public void assertMaskWhenPlainValueMatchedMultipleSpecialChars() {
+    void assertMaskWhenPlainValueMatchedMultipleSpecialChars() {
         assertThat(maskAlgorithm.mask("abcd1234d1234"), is("***d1234d1234"));
     }
     
     @Test
-    public void assertMaskEmptyString() {
+    void assertMaskEmptyString() {
         assertThat(maskAlgorithm.mask(""), is(""));
     }
     
     @Test
-    public void assertMaskNull() {
+    void assertMaskNull() {
         assertThat(maskAlgorithm.mask(null), is(nullValue()));
     }
     
     @Test
-    public void assertMaskWhenPlainValueNotMatchedSpecialChars() {
+    void assertMaskWhenPlainValueNotMatchedSpecialChars() {
         assertThat(maskAlgorithm.mask("abcd234"), is("abcd234"));
     }
     
     @Test
-    public void assertInitWhenSpecialCharsIsEmpty() {
+    void assertInitWhenSpecialCharsIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build(new Property("special-chars", ""), new Property("replace-char", "*"))));
     }
     
     @Test
-    public void assertInitWhenReplaceCharIsEmpty() {
+    void assertInitWhenReplaceCharIsEmpty() {
         assertThrows(MaskAlgorithmInitializationException.class,
                 () -> new MaskBeforeSpecialCharsAlgorithm().init(PropertiesBuilder.build(new Property("special-chars", "d1"), new Property("replace-char", ""))));
     }

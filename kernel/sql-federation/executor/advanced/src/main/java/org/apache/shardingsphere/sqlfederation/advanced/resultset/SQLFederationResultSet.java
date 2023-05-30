@@ -24,9 +24,8 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.Projecti
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtils;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 
@@ -78,8 +77,8 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     public SQLFederationResultSet(final Enumerator<Object> enumerator, final ShardingSphereSchema schema, final AbstractSchema filterableSchema,
                                   final SelectStatementContext selectStatementContext, final RelDataType validatedNodeType) {
         this.enumerator = enumerator;
-        columnLabelAndIndexes = new HashMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1);
-        Map<Integer, String> indexAndColumnLabels = new HashMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1);
+        columnLabelAndIndexes = new HashMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
+        Map<Integer, String> indexAndColumnLabels = new HashMap<>(selectStatementContext.getProjectionsContext().getExpandProjections().size(), 1F);
         handleColumnLabelAndIndex(columnLabelAndIndexes, indexAndColumnLabels, selectStatementContext);
         resultSetMetaData = new SQLFederationResultSetMetaData(schema, filterableSchema, selectStatementContext, validatedNodeType, indexAndColumnLabels);
     }
@@ -96,8 +95,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     private String getColumnLabel(final Projection projection, final DatabaseType databaseType) {
         if (projection instanceof AggregationDistinctProjection) {
-            boolean isPostgreSQLOpenGaussStatement = databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType;
-            return isPostgreSQLOpenGaussStatement ? ((AggregationDistinctProjection) projection).getType().name().toLowerCase() : projection.getExpression();
+            return databaseType instanceof SchemaSupportedDatabaseType ? ((AggregationDistinctProjection) projection).getType().name().toLowerCase() : projection.getExpression();
         }
         return projection.getColumnLabel();
     }
@@ -105,7 +103,11 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     @Override
     public boolean next() {
         boolean result = enumerator.moveNext();
-        currentRows = result ? (enumerator.current().getClass().isArray() ? (Object[]) enumerator.current() : new Object[]{enumerator.current()}) : new Object[]{};
+        if (result) {
+            currentRows = enumerator.current().getClass().isArray() ? (Object[]) enumerator.current() : new Object[]{enumerator.current()};
+        } else {
+            currentRows = new Object[]{};
+        }
         return result;
     }
     
@@ -123,7 +125,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public String getString(final int columnIndex) throws SQLException {
-        return (String) ResultSetUtil.convertValue(getValue(columnIndex, String.class), String.class);
+        return (String) ResultSetUtils.convertValue(getValue(columnIndex, String.class), String.class);
     }
     
     @Override
@@ -133,7 +135,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public boolean getBoolean(final int columnIndex) throws SQLException {
-        return (boolean) ResultSetUtil.convertValue(getValue(columnIndex, boolean.class), boolean.class);
+        return (boolean) ResultSetUtils.convertValue(getValue(columnIndex, boolean.class), boolean.class);
     }
     
     @Override
@@ -143,7 +145,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public byte getByte(final int columnIndex) throws SQLException {
-        return (byte) ResultSetUtil.convertValue(getValue(columnIndex, byte.class), byte.class);
+        return (byte) ResultSetUtils.convertValue(getValue(columnIndex, byte.class), byte.class);
     }
     
     @Override
@@ -153,7 +155,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public short getShort(final int columnIndex) throws SQLException {
-        return (short) ResultSetUtil.convertValue(getValue(columnIndex, short.class), short.class);
+        return (short) ResultSetUtils.convertValue(getValue(columnIndex, short.class), short.class);
     }
     
     @Override
@@ -163,7 +165,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public int getInt(final int columnIndex) throws SQLException {
-        return (int) ResultSetUtil.convertValue(getValue(columnIndex, int.class), int.class);
+        return (int) ResultSetUtils.convertValue(getValue(columnIndex, int.class), int.class);
     }
     
     @Override
@@ -173,7 +175,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public long getLong(final int columnIndex) throws SQLException {
-        return (long) ResultSetUtil.convertValue(getValue(columnIndex, long.class), long.class);
+        return (long) ResultSetUtils.convertValue(getValue(columnIndex, long.class), long.class);
     }
     
     @Override
@@ -183,7 +185,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public float getFloat(final int columnIndex) throws SQLException {
-        return (float) ResultSetUtil.convertValue(getValue(columnIndex, float.class), float.class);
+        return (float) ResultSetUtils.convertValue(getValue(columnIndex, float.class), float.class);
     }
     
     @Override
@@ -193,7 +195,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public double getDouble(final int columnIndex) throws SQLException {
-        return (double) ResultSetUtil.convertValue(getValue(columnIndex, double.class), double.class);
+        return (double) ResultSetUtils.convertValue(getValue(columnIndex, double.class), double.class);
     }
     
     @Override
@@ -203,7 +205,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public BigDecimal getBigDecimal(final int columnIndex, final int scale) throws SQLException {
-        return (BigDecimal) ResultSetUtil.convertValue(getValue(columnIndex, BigDecimal.class), BigDecimal.class);
+        return (BigDecimal) ResultSetUtils.convertValue(getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
     @Override
@@ -213,7 +215,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public BigDecimal getBigDecimal(final int columnIndex) throws SQLException {
-        return (BigDecimal) ResultSetUtil.convertValue(getValue(columnIndex, BigDecimal.class), BigDecimal.class);
+        return (BigDecimal) ResultSetUtils.convertValue(getValue(columnIndex, BigDecimal.class), BigDecimal.class);
     }
     
     @Override
@@ -223,7 +225,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public byte[] getBytes(final int columnIndex) throws SQLException {
-        return (byte[]) ResultSetUtil.convertValue(getValue(columnIndex, byte[].class), byte[].class);
+        return (byte[]) ResultSetUtils.convertValue(getValue(columnIndex, byte[].class), byte[].class);
     }
     
     @Override
@@ -233,7 +235,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public Date getDate(final int columnIndex) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(getValue(columnIndex, Date.class), Date.class);
+        return (Date) ResultSetUtils.convertValue(getValue(columnIndex, Date.class), Date.class);
     }
     
     @Override
@@ -243,7 +245,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public Date getDate(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Date) ResultSetUtil.convertValue(getCalendarValue(columnIndex), Date.class);
+        return (Date) ResultSetUtils.convertValue(getCalendarValue(columnIndex), Date.class);
     }
     
     @Override
@@ -253,7 +255,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public Time getTime(final int columnIndex) throws SQLException {
-        return (Time) ResultSetUtil.convertValue(getValue(columnIndex, Time.class), Time.class);
+        return (Time) ResultSetUtils.convertValue(getValue(columnIndex, Time.class), Time.class);
     }
     
     @Override
@@ -263,7 +265,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public Time getTime(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Time) ResultSetUtil.convertValue(getCalendarValue(columnIndex), Time.class);
+        return (Time) ResultSetUtils.convertValue(getCalendarValue(columnIndex), Time.class);
     }
     
     @Override
@@ -273,7 +275,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public Timestamp getTimestamp(final int columnIndex) throws SQLException {
-        return (Timestamp) ResultSetUtil.convertValue(getValue(columnIndex, Timestamp.class), Timestamp.class);
+        return (Timestamp) ResultSetUtils.convertValue(getValue(columnIndex, Timestamp.class), Timestamp.class);
     }
     
     @Override
@@ -283,7 +285,7 @@ public final class SQLFederationResultSet extends AbstractUnsupportedOperationRe
     
     @Override
     public Timestamp getTimestamp(final int columnIndex, final Calendar cal) throws SQLException {
-        return (Timestamp) ResultSetUtil.convertValue(getCalendarValue(columnIndex), Timestamp.class);
+        return (Timestamp) ResultSetUtils.convertValue(getCalendarValue(columnIndex), Timestamp.class);
     }
     
     @Override

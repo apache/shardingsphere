@@ -67,7 +67,7 @@ public final class ConsulRepository implements ClusterPersistRepository {
         consulClient = new ShardingSphereConsulClient(rawClient);
         consulProps = new ConsulProperties(config.getProps());
         distributedLockHolder = new DistributedLockHolder(getType(), consulClient, consulProps);
-        watchKeyMap = new HashMap<>(6, 1);
+        watchKeyMap = new HashMap<>(6, 1F);
     }
     
     @Override
@@ -145,10 +145,10 @@ public final class ConsulRepository implements ClusterPersistRepository {
             Long index = response.getConsulIndex();
             if (null != index && 0 == currentIndex) {
                 currentIndex = index;
-                Collection<String> watchKeys = watchKeyMap.get(key);
-                if (null == watchKeys) {
-                    watchKeys = new HashSet<>();
+                if (!watchKeyMap.containsKey(key)) {
+                    watchKeyMap.put(key, new HashSet<>());
                 }
+                Collection<String> watchKeys = watchKeyMap.get(key);
                 for (GetValue each : response.getValue()) {
                     watchKeys.add(each.getKey());
                 }
@@ -156,7 +156,7 @@ public final class ConsulRepository implements ClusterPersistRepository {
             }
             if (null != index && index > currentIndex) {
                 currentIndex = index;
-                Collection<String> newKeys = new HashSet<>(response.getValue().size());
+                Collection<String> newKeys = new HashSet<>(response.getValue().size(), 1F);
                 Collection<String> watchKeys = watchKeyMap.get(key);
                 for (GetValue each : response.getValue()) {
                     newKeys.add(each.getKey());

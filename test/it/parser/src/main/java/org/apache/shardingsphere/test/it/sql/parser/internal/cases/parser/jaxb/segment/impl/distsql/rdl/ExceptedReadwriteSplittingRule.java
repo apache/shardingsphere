@@ -20,22 +20,18 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
-import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperty;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Excepted readwrite splitting rule.
+ * Excepted readwrite-splitting rule.
  */
 @Getter
 @Setter
 public final class ExceptedReadwriteSplittingRule extends AbstractExpectedIdentifierSQLSegment {
-    
-    @XmlAttribute(name = "auto-aware-resource")
-    private String autoAwareResource;
     
     @XmlAttribute(name = "write-data-source")
     private String writeDataSource;
@@ -43,9 +39,9 @@ public final class ExceptedReadwriteSplittingRule extends AbstractExpectedIdenti
     @XmlElement(name = "read-data-source")
     private List<String> readDataSources;
     
-    @XmlAttribute(name = "load-balancer")
-    private String loadBalancer;
+    @XmlAttribute(name = "transactional-read-query-strategy")
+    private String transactionalReadQueryStrategy;
     
-    @XmlElement(name = "property")
-    private final List<ExpectedProperty> properties = new LinkedList<>();
+    @XmlElement(name = "load-balancer")
+    private ExpectedAlgorithm loadBalancer;
 }

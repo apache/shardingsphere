@@ -26,10 +26,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class PoolPropertySynonymsTest {
+class PoolPropertySynonymsTest {
     
     @Test
-    public void assertGetStandardPropertiesWithStandardProperties() {
+    void assertGetStandardPropertiesWithStandardProperties() {
         PoolPropertySynonyms actual = new PoolPropertySynonyms(createStandardProperties(), createPropertySynonyms());
         assertThat(actual.getStandardProperties().size(), is(6));
         assertThat(actual.getStandardProperties().get("connectionTimeoutMilliseconds"), is(30000));
@@ -41,7 +41,7 @@ public final class PoolPropertySynonymsTest {
     }
     
     @Test
-    public void assertGetStandardPropertiesWithLocalProperties() {
+    void assertGetStandardPropertiesWithLocalProperties() {
         PoolPropertySynonyms actual = new PoolPropertySynonyms(createLocalProperties(), createPropertySynonyms());
         assertThat(actual.getStandardProperties().size(), is(6));
         assertThat(actual.getStandardProperties().get("connectionTimeoutMilliseconds"), is(30000));
@@ -53,7 +53,7 @@ public final class PoolPropertySynonymsTest {
     }
     
     @Test
-    public void assertGetLocalPropertiesWithStandardProperties() {
+    void assertGetLocalPropertiesWithStandardProperties() {
         PoolPropertySynonyms actual = new PoolPropertySynonyms(createStandardProperties(), createPropertySynonyms());
         assertThat(actual.getLocalProperties().size(), is(6));
         assertThat(actual.getLocalProperties().get("connectionTimeout"), is(30000));
@@ -65,7 +65,7 @@ public final class PoolPropertySynonymsTest {
     }
     
     @Test
-    public void assertGetLocalPropertiesWithLocalProperties() {
+    void assertGetLocalPropertiesWithLocalProperties() {
         PoolPropertySynonyms actual = new PoolPropertySynonyms(createLocalProperties(), createPropertySynonyms());
         assertThat(actual.getLocalProperties().size(), is(6));
         assertThat(actual.getLocalProperties().get("connectionTimeout"), is(30000));
@@ -77,7 +77,7 @@ public final class PoolPropertySynonymsTest {
     }
     
     private Map<String, Object> createStandardProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(6, 1);
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("connectionTimeoutMilliseconds", 30000);
         result.put("idleTimeoutMilliseconds", 180000);
         result.put("maxLifetimeMilliseconds", 180000);
@@ -88,7 +88,7 @@ public final class PoolPropertySynonymsTest {
     }
     
     private Map<String, Object> createLocalProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(6, 1);
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("connectionTimeout", 30000);
         result.put("idleTimeout", 180000);
         result.put("maxLifetime", 180000);
@@ -99,7 +99,7 @@ public final class PoolPropertySynonymsTest {
     }
     
     private Map<String, String> createPropertySynonyms() {
-        Map<String, String> result = new LinkedHashMap<>(5, 1);
+        Map<String, String> result = new LinkedHashMap<>(5, 1F);
         result.put("connectionTimeoutMilliseconds", "connectionTimeout");
         result.put("idleTimeoutMilliseconds", "idleTimeout");
         result.put("maxLifetimeMilliseconds", "maxLifetime");

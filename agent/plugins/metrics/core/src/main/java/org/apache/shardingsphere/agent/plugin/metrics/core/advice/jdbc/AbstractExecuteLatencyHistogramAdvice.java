@@ -38,8 +38,8 @@ public abstract class AbstractExecuteLatencyHistogramAdvice implements InstanceM
     private final MetricConfiguration config = new MetricConfiguration("jdbc_statement_execute_latency_millis", MetricCollectorType.HISTOGRAM,
             "Statement execute latency millis histogram", Collections.singletonMap("buckets", getBuckets()));
     
-    private static Map<String, Object> getBuckets() {
-        Map<String, Object> result = new HashMap<>(4, 1);
+    private Map<String, Object> getBuckets() {
+        Map<String, Object> result = new HashMap<>(4, 1F);
         result.put("type", "exp");
         result.put("start", 1);
         result.put("factor", 2);
@@ -49,7 +49,7 @@ public abstract class AbstractExecuteLatencyHistogramAdvice implements InstanceM
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        getMethodTimeRecorder().record(method);
+        getMethodTimeRecorder().recordNow(method);
     }
     
     @Override

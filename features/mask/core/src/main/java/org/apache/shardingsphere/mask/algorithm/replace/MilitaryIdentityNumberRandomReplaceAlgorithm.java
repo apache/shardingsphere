@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.mask.algorithm.MaskAlgorithmPropsChecker;
 import org.apache.shardingsphere.mask.spi.MaskAlgorithm;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -33,6 +34,8 @@ import java.util.stream.Collectors;
 public final class MilitaryIdentityNumberRandomReplaceAlgorithm implements MaskAlgorithm<Object, String> {
     
     private static final String TYPE_CODE = "type-codes";
+    
+    private final Random random = new SecureRandom();
     
     private List<Character> typeCodes;
     
@@ -52,7 +55,6 @@ public final class MilitaryIdentityNumberRandomReplaceAlgorithm implements MaskA
         if (Strings.isNullOrEmpty(result)) {
             return result;
         }
-        Random random = new Random();
         char[] chars = result.toCharArray();
         chars[0] = typeCodes.get(random.nextInt(typeCodes.size()));
         for (int i = 1; i < chars.length; i++) {

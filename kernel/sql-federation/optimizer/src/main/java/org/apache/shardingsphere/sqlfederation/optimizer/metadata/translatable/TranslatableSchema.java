@@ -30,7 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.sqlfederation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.sqlfederation.optimizer.metadata.statistic.FederationStatistic;
-import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationDataTypeUtil;
+import org.apache.shardingsphere.sqlfederation.optimizer.util.SQLFederationDataTypeUtils;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -52,7 +52,7 @@ public final class TranslatableSchema extends AbstractSchema {
     }
     
     private Map<String, Table> createTableMap(final ShardingSphereSchema schema, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory, final TableScanExecutor executor) {
-        Map<String, Table> result = new LinkedHashMap<>(schema.getTables().size(), 1);
+        Map<String, Table> result = new LinkedHashMap<>(schema.getTables().size(), 1F);
         for (ShardingSphereTable each : schema.getTables().values()) {
             if (schema.containsView(each.getName())) {
                 result.put(each.getName(), getViewTable(schema, each, protocolType, javaTypeFactory));
@@ -64,8 +64,8 @@ public final class TranslatableSchema extends AbstractSchema {
         return result;
     }
     
-    private static ViewTable getViewTable(final ShardingSphereSchema schema, final ShardingSphereTable table, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
-        RelDataType relDataType = SQLFederationDataTypeUtil.createRelDataType(table, protocolType, javaTypeFactory);
+    private ViewTable getViewTable(final ShardingSphereSchema schema, final ShardingSphereTable table, final DatabaseType protocolType, final JavaTypeFactory javaTypeFactory) {
+        RelDataType relDataType = SQLFederationDataTypeUtils.createRelDataType(table, protocolType, javaTypeFactory);
         ShardingSphereView view = schema.getView(table.getName());
         return new ViewTable(javaTypeFactory.getJavaClass(relDataType), RelDataTypeImpl.proto(relDataType), view.getViewDefinition(), Collections.emptyList(), Collections.emptyList());
     }

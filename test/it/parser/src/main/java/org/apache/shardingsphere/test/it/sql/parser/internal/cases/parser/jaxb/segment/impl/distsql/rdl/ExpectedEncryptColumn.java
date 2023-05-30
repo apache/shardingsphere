@@ -32,9 +32,6 @@ import javax.xml.bind.annotation.XmlElement;
 @Setter
 public final class ExpectedEncryptColumn extends AbstractExpectedIdentifierSQLSegment {
     
-    @XmlAttribute(name = "plain-column")
-    private String plainColumn;
-    
     @XmlAttribute(name = "cipher-column")
     private String cipherColumn;
     

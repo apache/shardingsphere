@@ -17,15 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.listener;
 
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 
 /**
  * Context manager lifecycle listener.
- * <p>
- *     It just support <code>proxy</code> mode for now, <code>JDBC</code> mode is not supported.
- * </p>
  */
 @SingletonSPI
 public interface ContextManagerLifecycleListener {
@@ -33,8 +30,16 @@ public interface ContextManagerLifecycleListener {
     /**
      * Callback on initialized.
      *
-     * @param modeConfig mode configuration
+     * @param databaseName database name
      * @param contextManager context manager
      */
-    void onInitialized(ModeConfiguration modeConfig, ContextManager contextManager);
+    void onInitialized(String databaseName, ContextManager contextManager);
+    
+    /**
+     * Callback on destroyed.
+     *
+     * @param databaseName database name
+     * @param instanceType instance type
+     */
+    void onDestroyed(String databaseName, InstanceType instanceType);
 }

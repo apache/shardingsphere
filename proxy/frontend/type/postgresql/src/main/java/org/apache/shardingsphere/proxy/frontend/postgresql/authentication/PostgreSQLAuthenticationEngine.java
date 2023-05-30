@@ -19,19 +19,21 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.authentication;
 
 import com.google.common.base.Strings;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.ssl.SslHandler;
 import org.apache.shardingsphere.authority.checker.AuthorityChecker;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
+import org.apache.shardingsphere.db.protocol.constant.DatabaseProtocolServerInfo;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLAuthenticationMethod;
-import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLComStartupPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLPasswordMessagePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLRandomGenerator;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLSSLNegativePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLSSLUnwillingPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLSSLWillingPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.authentication.PostgreSQLMD5PasswordAuthenticationPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.authentication.PostgreSQLPasswordAuthenticationPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
@@ -55,6 +57,7 @@ import org.apache.shardingsphere.proxy.frontend.authentication.Authenticator;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticatorFactory;
 import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.postgresql.authentication.authenticator.PostgreSQLAuthenticatorType;
+import org.apache.shardingsphere.proxy.frontend.ssl.ProxySSLContext;
 
 import java.util.Optional;
 
@@ -83,7 +86,13 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
     @Override
     public AuthenticationResult authenticate(final ChannelHandlerContext context, final PacketPayload payload) {
         if (SSL_REQUEST_PAYLOAD_LENGTH == payload.getByteBuf().markReaderIndex().readInt() && SSL_REQUEST_CODE == payload.getByteBuf().readInt()) {
-            context.writeAndFlush(new PostgreSQLSSLNegativePacket());
+            if (ProxySSLContext.getInstance().isSSLEnabled()) {
+                SslHandler sslHandler = new SslHandler(ProxySSLContext.getInstance().newSSLEngine(context.alloc()), true);
+                context.pipeline().addFirst(SslHandler.class.getSimpleName(), sslHandler);
+                context.writeAndFlush(new PostgreSQLSSLWillingPacket());
+            } else {
+                context.writeAndFlush(new PostgreSQLSSLUnwillingPacket());
+            }
             return AuthenticationResultBuilder.continued();
         }
         payload.getByteBuf().resetReaderIndex();
@@ -99,7 +108,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         login(currentAuthResult.getDatabase(), currentAuthResult.getUsername(), md5Salt, passwordMessagePacket.getDigest(), rule);
         // TODO implement PostgreSQLServerInfo like MySQLServerInfo
         context.write(new PostgreSQLAuthenticationOKPacket());
-        context.write(new PostgreSQLParameterStatusPacket("server_version", PostgreSQLServerInfo.getServerVersion()));
+        context.write(new PostgreSQLParameterStatusPacket("server_version", DatabaseProtocolServerInfo.getProtocolVersion(currentAuthResult.getDatabase(), "PostgreSQL")));
         context.write(new PostgreSQLParameterStatusPacket("client_encoding", clientEncoding));
         context.write(new PostgreSQLParameterStatusPacket("server_encoding", "UTF8"));
         context.write(new PostgreSQLParameterStatusPacket("integer_datetimes", "on"));

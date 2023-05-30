@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.sqlbuilder;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
+import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
@@ -108,7 +108,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     protected final String getQualifiedTableName(final String schemaName, final String tableName) {
         StringBuilder result = new StringBuilder();
         if (TypedSPILoader.getService(DatabaseType.class, getType()).isSchemaAvailable() && !Strings.isNullOrEmpty(schemaName)) {
-            result.append(quote(schemaName)).append(".");
+            result.append(quote(schemaName)).append('.');
         }
         result.append(quote(tableName));
         return result.toString();
@@ -154,8 +154,8 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     }
     
     @Override
-    public List<Column> extractUpdatedColumns(final DataRecord record) {
-        return new ArrayList<>(RecordUtil.extractUpdatedColumns(record));
+    public List<Column> extractUpdatedColumns(final DataRecord dataRecord) {
+        return new ArrayList<>(RecordUtils.extractUpdatedColumns(dataRecord));
     }
     
     @Override
@@ -179,7 +179,7 @@ public abstract class AbstractPipelineSQLBuilder implements PipelineSQLBuilder {
     private String buildWhereSQL(final Collection<Column> conditionColumns) {
         StringBuilder where = new StringBuilder();
         for (Column each : conditionColumns) {
-            where.append(String.format("%s = ? and ", quote(each.getName())));
+            where.append(String.format("%s = ? AND ", quote(each.getName())));
         }
         where.setLength(where.length() - 5);
         return where.toString();

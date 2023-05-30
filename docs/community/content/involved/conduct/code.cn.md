@@ -63,6 +63,7 @@ chapter = true
  - 条件表达式中，优先使用正向语义，以便于理解代码逻辑。例如：`if (null == param) {} else {}`。
  - 使用具体的 `@SuppressWarnings("xxx")` 代替 `@SuppressWarnings("all")`。
  - 热点方法内应避免使用 Java Stream，除非该场景下使用 Stream 的性能优于普通循环。
+ - 工具类名称命名为 `xxUtils`。
 
 ## 单元测试规范
 
@@ -79,7 +80,7 @@ chapter = true
  - 除去简单的 `getter /setter` 方法，以及声明 SPI 的静态代码，如：`getType / getOrder`，单元测试需全覆盖。
  - 每个测试用例需精确断言，尽量不使用 `not`、`containsString` 断言。
  - 准备环境的代码和测试代码分离。
- - 只有 Mockito，junit `Assert`，hamcrest `CoreMatchers` 和 `MatcherAssert` 相关可以使用 static import。
+ - 只有 Mockito，junit `Assertions`，hamcrest `CoreMatchers` 和 `MatcherAssert` 相关可以使用 static import。
  - 数据断言规范应遵循：
     - 布尔类型断言应使用 `assertTrue` 和 `assertFalse`；
     - 空值断言应使用 `assertNull` 和 `assertNotNull`；
@@ -92,7 +93,7 @@ chapter = true
    - 模拟静态方法或构造器，应优先考虑使用测试框架提供的 `AutoMockExtension` 和 `StaticMockSettings` 自动释放资源；若使用 Mockito `mockStatic` 和 `mockConstruction` 方法，必须搭配 `try-with-resource` 或在清理方法中关闭，避免泄漏。
    - 校验仅有一次调用时，无需使用 `times(1)` 参数，使用 `verify` 的单参数方法即可。
 
-## G4 编码规范
+## G4 规范
 
  - 公共规范
    - 每行长度不超过 `200` 个字符，保证每一行语义完整以便于理解。
@@ -107,3 +108,14 @@ chapter = true
    - 如果一个规则的分支超过 `5` 个，则每个分支一行。
    - 规则命名采用 java 变量的驼峰形式。
    - 为每种 SQL 语句类型定义一个独立的语法文件，文件名称由 `数据库名称` + `语句类型名称` + `Statement`。例如：`MySQLDQLStatement.g4`。
+
+## GitHub Action 规范
+
+- Workflow 文件名以 `.yml` 结尾。
+- Workflow 文件名由 `触发方式-执行操作` 的小写字母组成，例如 `nightly-check.yml`。pull_request 触发的任务省略触发方式，例如 `check.yml`。
+- 触发方式包括：pull_request（不加前缀）、nightly。
+- 执行操作包括： check、ci、e2e 、build。
+- Workflow 文件内的 `name` 属性命名与文件名一致，单词以 `-` 作为分隔符，分隔符两侧要加空格，每个单词首字母大写，例如 `Nightly - Check`。
+- Workflow 中的 `job` 属性命名，须在 Workflow 中保持唯一。
+- 使用 `matrix` 的时候，必须添加作业并行度限制为 5：`max-parallel: 5`。
+- 必须为作业设置超时时间，最大不超过 1 小时。例如 `timeout-minutes: 10`。

@@ -29,10 +29,10 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.Exportabl
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.constant.ExportableItemConstants;
+import org.apache.shardingsphere.metadata.persist.MetaDataBasedPersistService;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.service.StorageNodeStatusService;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable.executor.ConnectionSessionRequiredQueryableRALExecutor;
@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -57,7 +58,7 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Conn
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("storage_unit", "status", "delay_time(ms)");
+        return Arrays.asList("storage_unit", "status");
     }
     
     @Override
@@ -95,7 +96,7 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Conn
                 .map(this::deconstructString).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
-    private Map<String, StorageNodeDataSource> getPersistentReadResources(final String databaseName, final MetaDataPersistService persistService) {
+    private Map<String, StorageNodeDataSource> getPersistentReadResources(final String databaseName, final MetaDataBasedPersistService persistService) {
         if (null == persistService || null == persistService.getRepository() || !(persistService.getRepository() instanceof ClusterPersistRepository)) {
             return Collections.emptyMap();
         }
@@ -121,17 +122,16 @@ public final class ShowStatusFromReadwriteSplittingRulesExecutor implements Conn
         return readResources.stream().map(each -> buildRow(each, disabledReadResources.get(each))).collect(Collectors.toList());
     }
     
-    private LinkedList<String> deconstructString(final String str) {
+    private List<String> deconstructString(final String str) {
         return new LinkedList<>(Arrays.asList(str.split(",")));
     }
     
     private LocalDataQueryResultRow buildRow(final String resource, final StorageNodeDataSource storageNodeDataSource) {
         if (null == storageNodeDataSource) {
-            return new LocalDataQueryResultRow(resource, DataSourceState.ENABLED.name(), "0");
+            return new LocalDataQueryResultRow(resource, DataSourceState.ENABLED.name());
         }
-        long replicationDelayMilliseconds = storageNodeDataSource.getReplicationDelayMilliseconds();
         String status = storageNodeDataSource.getStatus().name();
-        return new LocalDataQueryResultRow(resource, status, Long.toString(replicationDelayMilliseconds));
+        return new LocalDataQueryResultRow(resource, status);
     }
     
     @Override

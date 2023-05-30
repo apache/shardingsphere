@@ -44,8 +44,8 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     
     private static final String MODEL_FILE = "file:";
     
-    private static final Pattern PATTERN = Pattern.compile("jdbc:h2:((?<modelMem>mem|~)[:/](?<catalog>[\\w\\-]+)|"
-            + "(?<modelSslOrTcp>ssl:|tcp:)(//)?(?<hostname>[\\w\\-.]+)(:(?<port>[0-9]{1,4})/)?[/~\\w\\-.]+/(?<name>[\\-\\w]*)|"
+    private static final Pattern URL_PATTERN = Pattern.compile("jdbc:h2:((?<modelMem>mem|~)[:/](?<catalog>[\\w\\-]+)|"
+            + "(?<modelSslOrTcp>ssl:|tcp:)(//)?(?<hostname>[\\w\\-.]+)(:(?<port>\\d{1,4})/)?[/~\\w\\-.]+/(?<name>[\\-\\w]*)|"
             + "(?<modelFile>file:)[/~\\w\\-]+/(?<fileName>[\\-\\w]*));?\\S*", Pattern.CASE_INSENSITIVE);
     
     private final String hostname;
@@ -59,9 +59,9 @@ public final class H2DataSourceMetaData implements DataSourceMetaData {
     private final String schema;
     
     public H2DataSourceMetaData(final String url) {
-        Matcher matcher = PATTERN.matcher(url);
+        Matcher matcher = URL_PATTERN.matcher(url);
         if (!matcher.find()) {
-            throw new UnrecognizedDatabaseURLException(url, PATTERN.pattern());
+            throw new UnrecognizedDatabaseURLException(url, URL_PATTERN.pattern());
         }
         String portFromMatcher = matcher.group("port");
         String catalogFromMatcher = matcher.group("catalog");

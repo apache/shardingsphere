@@ -17,48 +17,31 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.segment;
 
-import com.google.common.base.Strings;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 
 import java.util.Collection;
-import java.util.Properties;
 
 /**
  * Readwrite-splitting rule segment.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Getter
 public final class ReadwriteSplittingRuleSegment implements ASTNode {
     
     private final String name;
     
-    private final String autoAwareResource;
-    
     private final String writeDataSource;
     
     private final Collection<String> readDataSources;
     
-    private final String loadBalancer;
+    private final String transactionalReadQueryStrategy;
     
-    private final Properties props;
+    private final AlgorithmSegment loadBalancer;
     
-    public ReadwriteSplittingRuleSegment(final String name, final String autoAwareResource, final String loadBalancer, final Properties props) {
-        this(name, autoAwareResource, null, null, loadBalancer, props);
-    }
-    
-    public ReadwriteSplittingRuleSegment(final String name, final String writeDataSource, final Collection<String> readDataSources, final String loadBalancer, final Properties props) {
-        this(name, null, writeDataSource, readDataSources, loadBalancer, props);
-    }
-    
-    /**
-     * Is it an auto aware type.
-     *
-     * @return is auto ware or not
-     */
-    public boolean isAutoAware() {
-        return !Strings.isNullOrEmpty(autoAwareResource);
+    public ReadwriteSplittingRuleSegment(final String name, final String writeDataSource, final Collection<String> readDataSources, final AlgorithmSegment loadBalancer) {
+        this(name, writeDataSource, readDataSources, null, loadBalancer);
     }
 }

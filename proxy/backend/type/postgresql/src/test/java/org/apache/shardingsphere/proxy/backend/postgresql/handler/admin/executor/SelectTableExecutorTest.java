@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.test.fixture.jdbc.MockedDataSource;
@@ -56,17 +56,17 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
-public final class SelectTableExecutorTest {
+class SelectTableExecutorTest {
     
     @Test
-    public void assertExecute() throws SQLException {
+    void assertExecute() throws SQLException {
         String sql = "SELECT c.oid, n.nspname AS schemaname, c.relname AS tablename from pg_tablespace";
         ShardingSphereDatabase database = createDatabase();
         ContextManager contextManager = mockContextManager(database);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Collections.singleton("public"));
         when(ProxyContext.getInstance().getDatabase("public")).thenReturn(database);
-        SelectTableExecutor executor = new SelectTableExecutor(sql);
+        SelectTableExecutor executor = new SelectTableExecutor(sql, Collections.emptyList());
         executor.execute(mock(ConnectionSession.class));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(3));
         int count = 0;
@@ -120,7 +120,7 @@ public final class SelectTableExecutorTest {
     }
     
     private Map<String, String> createExpectedResultSetMap() {
-        Map<String, String> result = new LinkedHashMap<>(3, 1);
+        Map<String, String> result = new LinkedHashMap<>(3, 1F);
         result.put("tablename", "t_order_1");
         result.put("c.oid", "0000");
         result.put("schemaname", "public");

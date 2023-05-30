@@ -26,7 +26,7 @@ import org.apache.shardingsphere.proxy.frontend.mysql.authentication.authenticat
 /**
  * Clear password authenticator for MySQL.
  * 
- * @see <a href="https://dev.mysql.com/doc/internals/en/clear-text-authentication.html">Clear Text Authentication</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_connection_phase_authentication_methods_clear_text_password.html">Clear Text Authentication</a>
  */
 public final class MySQLClearPasswordAuthenticator implements MySQLAuthenticator {
     

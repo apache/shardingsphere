@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.it.data.pipeline.spi.job;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.core.job.type.ConsistencyCheckJobType;
+import org.apache.shardingsphere.data.pipeline.scenario.consistencycheck.ConsistencyCheckJobType;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.MigrationJobType;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobType;
 import org.apache.shardingsphere.data.pipeline.spi.job.JobTypeFactory;
@@ -30,10 +30,10 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class JobTypeFactoryTest {
+class JobTypeFactoryTest {
     
     @Test
-    public void assertGetInstance() {
+    void assertGetInstance() {
         Collection<Pair<String, Class<? extends JobType>>> paramResult = Arrays.asList(
                 Pair.of(MigrationJobType.TYPE_CODE, MigrationJobType.class), Pair.of(ConsistencyCheckJobType.TYPE_CODE, ConsistencyCheckJobType.class));
         for (Pair<String, Class<? extends JobType>> each : paramResult) {

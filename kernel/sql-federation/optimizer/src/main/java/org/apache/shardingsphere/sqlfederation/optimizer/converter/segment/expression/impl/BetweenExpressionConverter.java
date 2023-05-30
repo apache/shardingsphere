@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expre
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -46,7 +45,7 @@ public final class BetweenExpressionConverter implements SQLSegmentConverter<Bet
         expressionConverter.convert(expression.getLeft()).ifPresent(sqlNodes::add);
         expressionConverter.convert(expression.getBetweenExpr()).ifPresent(sqlNodes::add);
         expressionConverter.convert(expression.getAndExpr()).ifPresent(sqlNodes::add);
-        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.BETWEEN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO);
-        return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, Collections.singletonList(sqlNode), SqlParserPos.ZERO)) : Optional.of(sqlNode);
+        return Optional.of(expression.isNot() ? new SqlBasicCall(SqlStdOperatorTable.NOT_BETWEEN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO)
+                : new SqlBasicCall(SqlStdOperatorTable.BETWEEN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO));
     }
 }

@@ -1,11 +1,11 @@
 +++
 title = "REFRESH TABLE METADATA"
-weight = 6
+weight = 8
 +++
 
 ### 描述
 
-`REFRESH TABLE METADATA` 语法用于刷新表元数据
+`REFRESH TABLE METADATA` 语法用于刷新表元数据。
 
 ### 语法
 

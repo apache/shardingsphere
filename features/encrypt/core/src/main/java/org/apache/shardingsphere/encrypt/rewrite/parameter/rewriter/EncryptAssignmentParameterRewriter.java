@@ -20,8 +20,8 @@ package org.apache.shardingsphere.encrypt.rewrite.parameter.rewriter;
 import com.google.common.base.Preconditions;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rewrite.aware.EncryptRuleAware;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
@@ -49,14 +49,14 @@ import java.util.Optional;
  * Assignment parameter rewriter for encrypt.
  */
 @Setter
-public final class EncryptAssignmentParameterRewriter implements ParameterRewriter<SQLStatementContext<?>>, EncryptRuleAware, DatabaseNameAware {
+public final class EncryptAssignmentParameterRewriter implements ParameterRewriter, EncryptRuleAware, DatabaseNameAware {
     
     private EncryptRule encryptRule;
     
     private String databaseName;
     
     @Override
-    public boolean isNeedRewrite(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isNeedRewrite(final SQLStatementContext sqlStatementContext) {
         if (sqlStatementContext instanceof UpdateStatementContext) {
             return true;
         }
@@ -67,11 +67,11 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
     }
     
     @Override
-    public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext<?> sqlStatementContext, final List<Object> params) {
+    public void rewrite(final ParameterBuilder paramBuilder, final SQLStatementContext sqlStatementContext, final List<Object> params) {
         String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));
         for (AssignmentSegment each : getSetAssignmentSegment(sqlStatementContext.getSqlStatement()).getAssignments()) {
-            if (each.getValue() instanceof ParameterMarkerExpressionSegment && encryptRule.findEncryptor(tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent()) {
+            if (each.getValue() instanceof ParameterMarkerExpressionSegment && encryptRule.findStandardEncryptor(tableName, each.getColumns().get(0).getIdentifier().getValue()).isPresent()) {
                 StandardParameterBuilder standardParamBuilder = paramBuilder instanceof StandardParameterBuilder
                         ? (StandardParameterBuilder) paramBuilder
                         : ((GroupedParameterBuilder) paramBuilder).getParameterBuilders().get(0);
@@ -104,9 +104,6 @@ public final class EncryptAssignmentParameterRewriter implements ParameterRewrit
         if (encryptRule.findLikeQueryColumn(tableName, columnName).isPresent()) {
             Object likeValue = encryptRule.getEncryptLikeQueryValues(databaseName, schemaName, tableName, columnName, Collections.singletonList(originalValue)).iterator().next();
             addedParams.add(likeValue);
-        }
-        if (encryptRule.findPlainColumn(tableName, columnName).isPresent()) {
-            addedParams.add(originalValue);
         }
         if (!addedParams.isEmpty()) {
             paramBuilder.addAddedParameters(parameterMarkerIndex, addedParams);

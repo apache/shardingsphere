@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
-import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -38,7 +38,7 @@ import java.util.Collections;
  * Create index statement context.
  */
 @Getter
-public final class CreateIndexStatementContext extends CommonSQLStatementContext<CreateIndexStatement> implements TableAvailable, IndexAvailable {
+public final class CreateIndexStatementContext extends CommonSQLStatementContext implements TableAvailable, IndexAvailable {
     
     private final TablesContext tablesContext;
     
@@ -51,6 +51,11 @@ public final class CreateIndexStatementContext extends CommonSQLStatementContext
     }
     
     @Override
+    public CreateIndexStatement getSqlStatement() {
+        return (CreateIndexStatement) super.getSqlStatement();
+    }
+    
+    @Override
     public Collection<SimpleTableSegment> getAllTables() {
         return null == getSqlStatement().getTable() ? Collections.emptyList() : Collections.singletonList(getSqlStatement().getTable());
     }
@@ -59,7 +64,7 @@ public final class CreateIndexStatementContext extends CommonSQLStatementContext
     public Collection<IndexSegment> getIndexes() {
         if (null == getSqlStatement().getIndex()) {
             return CreateIndexStatementHandler.getGeneratedIndexStartIndex(getSqlStatement()).map(each -> Collections.singletonList(new IndexSegment(each, each,
-                    new IndexNameSegment(each, each, new IdentifierValue(IndexMetaDataUtil.getGeneratedLogicIndexName(getSqlStatement().getColumns())))))).orElseGet(Collections::emptyList);
+                    new IndexNameSegment(each, each, new IdentifierValue(IndexMetaDataUtils.getGeneratedLogicIndexName(getSqlStatement().getColumns())))))).orElseGet(Collections::emptyList);
         }
         return Collections.singletonList(getSqlStatement().getIndex());
     }

@@ -42,10 +42,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowMaskRuleExecutorTest {
+class ShowMaskRuleExecutorTest {
     
     @Test
-    public void assertGetRowData() {
+    void assertGetRowData() {
         ShardingSphereDatabase database = mockDatabase();
         RQLExecutor<ShowMaskRulesStatement> executor = new ShowMaskRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowMaskRulesStatement.class));
@@ -59,7 +59,7 @@ public final class ShowMaskRuleExecutorTest {
     }
     
     @Test
-    public void assertGetRowDataWithoutMaskRule() {
+    void assertGetRowDataWithoutMaskRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         RQLExecutor<ShowMaskRulesStatement> executor = new ShowMaskRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(database, mock(ShowMaskRulesStatement.class));
@@ -67,7 +67,7 @@ public final class ShowMaskRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         RQLExecutor<ShowMaskRulesStatement> executor = new ShowMaskRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(4));

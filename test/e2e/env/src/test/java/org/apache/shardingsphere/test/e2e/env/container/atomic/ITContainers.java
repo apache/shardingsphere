@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.lifecycle.Startable;
+import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -100,10 +101,7 @@ public final class ITContainers implements Startable {
                 })
                 .forEach(each -> {
                     while (!(each.isRunning() && each.isHealthy())) {
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(500L);
-                        } catch (final InterruptedException ignored) {
-                        }
+                        Awaitility.await().pollDelay(500L, TimeUnit.MILLISECONDS).until(() -> true);
                     }
                 });
     }

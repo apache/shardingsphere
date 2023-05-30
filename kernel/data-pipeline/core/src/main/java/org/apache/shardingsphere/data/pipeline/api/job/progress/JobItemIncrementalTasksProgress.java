@@ -38,7 +38,7 @@ public final class JobItemIncrementalTasksProgress {
      *
      * @return incremental position
      */
-    public Optional<IngestPosition<?>> getIncrementalPosition() {
+    public Optional<IngestPosition> getIncrementalPosition() {
         return null == incrementalTaskProgress ? Optional.empty() : Optional.of(incrementalTaskProgress.getPosition());
     }
     

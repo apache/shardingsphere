@@ -24,6 +24,7 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsColl
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.type.HistogramMetricsCollector;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
+import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -40,8 +41,8 @@ public final class ExecuteLatencyHistogramAdvice implements InstanceMethodAdvice
     
     private final MethodTimeRecorder methodTimeRecorder = new MethodTimeRecorder(ExecuteLatencyHistogramAdvice.class);
     
-    private static Map<String, Object> getBuckets() {
-        Map<String, Object> result = new HashMap<>(4, 1);
+    private Map<String, Object> getBuckets() {
+        Map<String, Object> result = new HashMap<>(4, 1F);
         result.put("type", "exp");
         result.put("start", 1);
         result.put("factor", 2);
@@ -51,11 +52,15 @@ public final class ExecuteLatencyHistogramAdvice implements InstanceMethodAdvice
     
     @Override
     public void beforeMethod(final TargetAdviceObject target, final Method method, final Object[] args, final String pluginType) {
-        methodTimeRecorder.record(method);
+        if (args[2] instanceof QueryCommandExecutor) {
+            methodTimeRecorder.recordNow(method);
+        }
     }
     
     @Override
     public void afterMethod(final TargetAdviceObject target, final Method method, final Object[] args, final Object result, final String pluginType) {
-        MetricsCollectorRegistry.<HistogramMetricsCollector>get(config, pluginType).observe(methodTimeRecorder.getElapsedTimeAndClean(method));
+        if (args[2] instanceof QueryCommandExecutor) {
+            MetricsCollectorRegistry.<HistogramMetricsCollector>get(config, pluginType).observe(methodTimeRecorder.getElapsedTimeAndClean(method));
+        }
     }
 }

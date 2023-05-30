@@ -40,12 +40,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class ShardingPrepareStatementValidatorTest {
+class ShardingPrepareStatementValidatorTest {
     
     @Mock
     private ShardingRule shardingRule;
@@ -57,7 +58,7 @@ public final class ShardingPrepareStatementValidatorTest {
     private RouteContext routeContext;
     
     @Test
-    public void assertPostValidatePrepareWithEmptyRouteResultForPostgreSQL() {
+    void assertPostValidatePrepareWithEmptyRouteResultForPostgreSQL() {
         PrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         when(routeContext.getRouteUnits()).thenReturn(Collections.emptyList());
         assertThrows(EmptyShardingRouteResultException.class,
@@ -66,18 +67,18 @@ public final class ShardingPrepareStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidatePrepareWithDifferentDataSourceForPostgreSQL() {
+    void assertPostValidatePrepareWithDifferentDataSourceForPostgreSQL() {
         PrepareStatement sqlStatement = new PostgreSQLPrepareStatement();
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
                 Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_0"))));
         when(routeContext.getRouteUnits()).thenReturn(routeUnits);
-        new ShardingPrepareStatementValidator().postValidate(shardingRule, new PrepareStatementContext(sqlStatement), new HintValueContext(),
-                Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext);
+        assertDoesNotThrow(() -> new ShardingPrepareStatementValidator().postValidate(
+                shardingRule, new PrepareStatementContext(sqlStatement), new HintValueContext(), Collections.emptyList(), database, mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
-    public void assertPostValidatePrepareWithSameDataSourceForPostgreSQL() {
+    void assertPostValidatePrepareWithSameDataSourceForPostgreSQL() {
         Collection<RouteUnit> routeUnits = new LinkedList<>();
         routeUnits.add(new RouteUnit(new RouteMapper("ds_0", "ds_0"),
                 Arrays.asList(new RouteMapper("t_order", "t_order_0"), new RouteMapper("t_order_item", "t_order_item_0"))));

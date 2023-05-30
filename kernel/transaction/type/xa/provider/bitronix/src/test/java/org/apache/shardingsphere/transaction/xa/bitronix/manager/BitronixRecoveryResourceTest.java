@@ -35,6 +35,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -44,7 +45,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class BitronixRecoveryResourceTest {
+class BitronixRecoveryResourceTest {
     
     @Mock
     private SingleXAResource singleXAResource;
@@ -61,7 +62,7 @@ public final class BitronixRecoveryResourceTest {
     private BitronixRecoveryResource bitronixRecoveryResource;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         when(singleXAResource.getResourceName()).thenReturn("ds1");
         when(xaDataSource.getXAConnection()).thenReturn(xaConnection);
         when(xaConnection.getXAResource()).thenReturn(xaResource);
@@ -69,7 +70,7 @@ public final class BitronixRecoveryResourceTest {
     }
     
     @Test
-    public void assertRecovery() throws SQLException {
+    void assertRecovery() throws SQLException {
         XAResourceHolderState xaResourceHolderState = bitronixRecoveryResource.startRecovery();
         assertThat(xaResourceHolderState.getUniqueName(), is("ds1"));
         XAResourceHolder xaResourceHolder = xaResourceHolderState.getXAResourceHolder();
@@ -79,38 +80,45 @@ public final class BitronixRecoveryResourceTest {
     }
     
     @Test
-    public void assertRecoveryWhenXaConnectionIsNull() throws SQLException {
+    void assertRecoveryWhenXaConnectionIsNull() throws SQLException {
         BitronixRecoveryResource bitronixRecoveryResource = new BitronixRecoveryResource("ds1", null);
         bitronixRecoveryResource.endRecovery();
         verify(xaConnection, times(0)).close();
     }
     
     @Test
-    public void assertRecoveryWhenSQLExceptionIsThrown() throws SQLException {
+    void assertRecoveryWhenSQLExceptionIsThrown() throws SQLException {
         when(xaDataSource.getXAConnection()).thenThrow(new SQLException());
         assertThrows(SQLException.class, () -> bitronixRecoveryResource.startRecovery());
     }
     
     @Test
-    public void assertFindXAResourceHolder() {
+    void assertFindXAResourceHolder() {
         assertNotNull(bitronixRecoveryResource.findXAResourceHolder(singleXAResource));
     }
     
     @Test
-    public void assertCreatePooledConnection() {
+    void assertCreatePooledConnection() {
         assertNull(bitronixRecoveryResource.createPooledConnection(null, null));
     }
     
     @Test
-    public void assertGetReference() {
+    void assertGetReference() {
         assertNull(bitronixRecoveryResource.getReference());
     }
     
     @Test
-    public void assertEmptyMethods() {
-        bitronixRecoveryResource.init();
-        bitronixRecoveryResource.setFailed(true);
-        bitronixRecoveryResource.setFailed(false);
-        bitronixRecoveryResource.close();
+    void assertInit() {
+        assertDoesNotThrow(() -> bitronixRecoveryResource.init());
+    }
+    
+    @Test
+    void assertSetFailed() {
+        assertDoesNotThrow(() -> bitronixRecoveryResource.setFailed(true));
+    }
+    
+    @Test
+    void assertClose() {
+        assertDoesNotThrow(() -> bitronixRecoveryResource.close());
     }
 }

@@ -34,16 +34,16 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class BuildInfoExporterTest {
+class BuildInfoExporterTest {
     
     @AfterEach
-    public void reset() {
+    void reset() {
         MetricConfiguration config = new MetricConfiguration("build_info", MetricCollectorType.GAUGE_METRIC_FAMILY, null, Arrays.asList("name", "version"), Collections.emptyMap());
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertExport() {
+    void assertExport() {
         Optional<GaugeMetricFamilyMetricsCollector> collector = new BuildInfoExporter().export("FIXTURE");
         assertTrue(collector.isPresent());
         assertThat(collector.get().toString(), containsString("ShardingSphere=1"));

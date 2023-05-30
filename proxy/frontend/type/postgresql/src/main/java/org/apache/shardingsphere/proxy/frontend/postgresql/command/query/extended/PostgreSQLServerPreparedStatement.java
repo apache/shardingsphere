@@ -40,7 +40,7 @@ public final class PostgreSQLServerPreparedStatement implements ServerPreparedSt
     
     private final String sql;
     
-    private final SQLStatementContext<?> sqlStatementContext;
+    private final SQLStatementContext sqlStatementContext;
     
     private final List<PostgreSQLColumnType> parameterTypes;
     

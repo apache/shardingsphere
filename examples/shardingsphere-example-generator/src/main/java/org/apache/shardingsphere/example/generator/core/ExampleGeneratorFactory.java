@@ -49,7 +49,7 @@ public final class ExampleGeneratorFactory {
     
     private Configuration createTemplateConfiguration() throws IOException {
         Configuration result = new Configuration(Configuration.VERSION_2_3_31);
-        result.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(ExampleGeneratorFactory.class.getClassLoader().getResource("template")).getFile()));
+        result.setDirectoryForTemplateLoading(new File(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("template")).getFile()));
         result.setDefaultEncoding("UTF-8");
         return result;
     }

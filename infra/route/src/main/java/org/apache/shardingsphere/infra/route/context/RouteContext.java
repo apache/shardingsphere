@@ -60,7 +60,7 @@ public final class RouteContext {
      * @return actual data source names
      */
     public Collection<String> getActualDataSourceNames() {
-        return routeUnits.stream().map(each -> each.getDataSourceMapper().getActualName()).collect(Collectors.toCollection(() -> new HashSet<>(routeUnits.size(), 1)));
+        return routeUnits.stream().map(each -> each.getDataSourceMapper().getActualName()).collect(Collectors.toCollection(() -> new HashSet<>(routeUnits.size(), 1L)));
     }
     
     /**
@@ -95,7 +95,7 @@ public final class RouteContext {
      * @return map relationship between data source and logic tables
      */
     public Map<String, Set<String>> getDataSourceLogicTablesMap(final Collection<String> actualDataSourceNames) {
-        Map<String, Set<String>> result = new HashMap<>(actualDataSourceNames.size(), 1);
+        Map<String, Set<String>> result = new HashMap<>(actualDataSourceNames.size(), 1F);
         for (String each : actualDataSourceNames) {
             Set<String> logicTableNames = getLogicTableNames(each);
             if (!logicTableNames.isEmpty()) {

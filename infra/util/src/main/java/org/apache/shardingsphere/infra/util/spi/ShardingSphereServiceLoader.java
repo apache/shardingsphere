@@ -30,6 +30,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ShardingSphere service loader.
+ * 
+ * @param <T> type of service
  */
 public final class ShardingSphereServiceLoader<T> {
     

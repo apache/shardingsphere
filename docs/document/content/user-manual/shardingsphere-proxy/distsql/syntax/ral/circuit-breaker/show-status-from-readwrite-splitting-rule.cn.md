@@ -1,11 +1,11 @@
 +++
 title = "SHOW STATUS FROM READWRITE_SPLITTING RULE"
-weight = 3
+weight = 2
 +++
 
 ### 描述
 
-`SHOW STATUS FROM READWRITE_SPLITTING RULE` 语法用于查询指定逻辑库中指定读写分离规则中读写分离存储单元状态
+`SHOW STATUS FROM READWRITE_SPLITTING RULE` 语法用于查询指定逻辑库中指定读写分离规则中读写分离存储单元状态。
 
 ### 语法
 
@@ -33,11 +33,10 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列             | 说明           |
-|----------------|---------------|
-| resource       | 存储单元名称    |
-| status         | 存储单元状态    |
-| delay_time(ms) | 延迟时间        |
+| 列              | 说明     |
+|----------------|--------|
+| resource       | 存储单元名称 |
+| status         | 存储单元状态 |
 
 ### 示例
 
@@ -49,14 +48,14 @@ SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0 FROM sharding_db;
-+----------+---------+----------------+
-| resource | status  | delay_time(ms) |
-+----------+---------+----------------+
-| ds_0     | enabled | 0              |
-| ds_1     | enabled | 0              |
-| ds_2     | enabled | 0              |
-| ds_3     | enabled | 0              |
-+----------+---------+----------------+
++----------+---------+
+| resource | status  |
++----------+---------+
+| ds_0     | enabled |
+| ds_1     | enabled |
+| ds_2     | enabled |
+| ds_3     | enabled |
++----------+---------+
 4 rows in set (0.01 sec)
 ```
 
@@ -68,14 +67,14 @@ SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES FROM sharding_db;
-+----------+---------+----------------+
-| resource | status  | delay_time(ms) |
-+----------+---------+----------------+
-| ds_0     | enabled | 0              |
-| ds_1     | enabled | 0              |
-| ds_2     | enabled | 0              |
-| ds_3     | enabled | 0              |
-+----------+---------+----------------+
++----------+---------+
+| resource | status  |
++----------+---------+
+| ds_0     | enabled |
+| ds_1     | enabled |
+| ds_2     | enabled |
+| ds_3     | enabled |
++----------+---------+
 4 rows in set (0.00 sec)
 ```
 
@@ -87,14 +86,14 @@ SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULE ms_group_0;
-+----------+---------+----------------+
-| resource | status  | delay_time(ms) |
-+----------+---------+----------------+
-| ds_0     | enabled | 0              |
-| ds_1     | enabled | 0              |
-| ds_2     | enabled | 0              |
-| ds_3     | enabled | 0              |
-+----------+---------+----------------+
++----------+---------+
+| resource | status  |
++----------+---------+
+| ds_0     | enabled |
+| ds_1     | enabled |
+| ds_2     | enabled |
+| ds_3     | enabled |
++----------+---------+
 4 rows in set (0.01 sec)
 ```
 
@@ -106,14 +105,14 @@ mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
 
 ```sql
 mysql> SHOW STATUS FROM READWRITE_SPLITTING RULES;
-+----------+---------+----------------+
-| resource | status  | delay_time(ms) |
-+----------+---------+----------------+
-| ds_0     | enabled | 0              |
-| ds_1     | enabled | 0              |
-| ds_2     | enabled | 0              |
-| ds_3     | enabled | 0              |
-+----------+---------+----------------+
++----------+---------+
+| resource | status  |
++----------+---------+
+| ds_0     | enabled |
+| ds_1     | enabled |
+| ds_2     | enabled |
+| ds_3     | enabled |
++----------+---------+
 4 rows in set (0.01 sec)
 ```
 

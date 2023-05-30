@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.encrypt.rule;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.Optional;
 
@@ -28,53 +28,32 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
+@Setter
 public final class EncryptColumn {
     
-    private final String cipherColumn;
+    private final String name;
     
-    private final String assistedQueryColumn;
+    private final EncryptColumnItem cipher;
     
-    private final String plainColumn;
+    private EncryptColumnItem assistedQuery;
     
-    private final String likeQueryColumn;
+    private EncryptColumnItem likeQuery;
     
-    private final String encryptorName;
-    
-    private final String assistedQueryEncryptorName;
-    
-    private final String likeQueryEncryptorName;
-    
-    private final Boolean queryWithCipherColumn;
-    
-    public EncryptColumn(final String cipherColumn, final String assistedQueryColumn, final String likeQueryColumn, final String plainColumn,
-                         final String encryptorName, final Boolean queryWithCipherColumn) {
-        this(cipherColumn, assistedQueryColumn, plainColumn, likeQueryColumn, encryptorName, null, null, queryWithCipherColumn);
+    /**
+     * Get assisted query.
+     *
+     * @return assisted query column item
+     */
+    public Optional<EncryptColumnItem> getAssistedQuery() {
+        return Optional.ofNullable(assistedQuery);
     }
     
     /**
-     * Get assisted query column.
+     * Get like query.
      *
-     * @return assisted query column
+     * @return like query column item
      */
-    public Optional<String> getAssistedQueryColumn() {
-        return Strings.isNullOrEmpty(assistedQueryColumn) ? Optional.empty() : Optional.of(assistedQueryColumn);
-    }
-    
-    /**
-     * Get like query column.
-     *
-     * @return like query column
-     */
-    public Optional<String> getLikeQueryColumn() {
-        return Strings.isNullOrEmpty(likeQueryColumn) ? Optional.empty() : Optional.of(likeQueryColumn);
-    }
-    
-    /**
-     * Get plain column.
-     *
-     * @return plain column
-     */
-    public Optional<String> getPlainColumn() {
-        return Strings.isNullOrEmpty(plainColumn) ? Optional.empty() : Optional.of(plainColumn);
+    public Optional<EncryptColumnItem> getLikeQuery() {
+        return Optional.ofNullable(likeQuery);
     }
 }

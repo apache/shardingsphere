@@ -31,7 +31,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatem
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -63,9 +62,9 @@ public final class GeneratedKeyContextEngine {
         if (!schema.containsTable(tableName)) {
             return Optional.empty();
         }
-        for (Entry<String, ShardingSphereColumn> entry : schema.getTable(tableName).getColumns().entrySet()) {
-            if (entry.getValue().isGenerated()) {
-                return Optional.of(entry.getKey());
+        for (ShardingSphereColumn each : schema.getTable(tableName).getColumns()) {
+            if (each.isGenerated()) {
+                return Optional.of(each.getName());
             }
         }
         return Optional.empty();

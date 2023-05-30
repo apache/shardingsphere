@@ -19,44 +19,62 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.di
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.distsql.PropertiesAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedAlgorithm;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExceptedReadwriteSplittingRule;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
- * Readwrite splitting rule assert.
+ * Readwrite-splitting rule assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReadwriteSplittingRuleAssert {
     
     /**
-     * Assert readwrite splitting rule is correct with expected parser result.
+     * Assert readwrite-splitting rule is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual readwrite splitting rule
-     * @param expected expected readwrite splitting rule test case
+     * @param actual actual readwrite-splitting rule
+     * @param expected expected readwrite-splitting rule test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ReadwriteSplittingRuleSegment actual, final ExceptedReadwriteSplittingRule expected) {
         if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual readwrite splitting rule should not exit."));
+            assertNull(actual, assertContext.getText("Actual readwrite-splitting rule should not exit."));
         } else {
-            assertNotNull(actual, assertContext.getText("Actual readwrite splitting rule should exit."));
-            assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
+            assertNotNull(actual, assertContext.getText("Actual readwrite-splitting rule should exit."));
+            assertThat(assertContext.getText(String.format("`%s`'s readwrite-splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
-            assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getAutoAwareResource(), is(expected.getAutoAwareResource()));
-            assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
+            assertThat(assertContext.getText(String.format("`%s`'s readwrite-splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getWriteDataSource(), is(expected.getWriteDataSource()));
-            assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
+            assertThat(assertContext.getText(String.format("`%s`'s readwrite-splitting rule segment assertion error: ",
                     actual.getClass().getSimpleName())), actual.getReadDataSources(), is(expected.getReadDataSources()));
-            assertThat(assertContext.getText(String.format("`%s`'s readwrite splitting rule segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getLoadBalancer(), is(expected.getLoadBalancer()));
+            assertTransactionalReadQueryStrategy(assertContext, actual, expected);
+            assertLoadBalancer(assertContext, actual.getLoadBalancer(), expected.getLoadBalancer());
+        }
+    }
+    
+    private static void assertTransactionalReadQueryStrategy(final SQLCaseAssertContext assertContext, final ReadwriteSplittingRuleSegment actual, final ExceptedReadwriteSplittingRule expected) {
+        if (null == expected.getTransactionalReadQueryStrategy()) {
+            assertNull(actual.getTransactionalReadQueryStrategy(), assertContext.getText("Actual transactional read query strategy should not exist."));
+        } else {
+            assertNotNull(actual.getTransactionalReadQueryStrategy(), assertContext.getText("Actual transactional read query strategy should exist."));
+            assertThat(assertContext.getText("Transactional read query strategy assertion error"), actual.getTransactionalReadQueryStrategy(), is(expected.getTransactionalReadQueryStrategy()));
+        }
+    }
+    
+    private static void assertLoadBalancer(final SQLCaseAssertContext assertContext, final AlgorithmSegment actual, final ExpectedAlgorithm expected) {
+        if (null == expected) {
+            assertNull(actual, assertContext.getText("Actual load balancer should not exist."));
+        } else {
+            assertNotNull(actual, assertContext.getText("Actual load balancer should exist."));
+            assertThat(assertContext.getText("Load balancer assertion error"), actual.getName(), is(expected.getName()));
             PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProperties());
         }
     }

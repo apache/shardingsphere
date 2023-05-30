@@ -31,13 +31,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MySQLBinlogEventHeaderTest {
+class MySQLBinlogEventHeaderTest {
     
     @Mock
     private MySQLPacketPayload payload;
     
     @Test
-    public void assertNew() {
+    void assertNew() {
         when(payload.readInt4()).thenReturn(1234567890, 123456, 19, 4);
         when(payload.readInt1()).thenReturn(MySQLBinlogEventType.UNKNOWN_EVENT.getValue());
         when(payload.readInt2()).thenReturn(MySQLBinlogEventFlag.LOG_EVENT_BINLOG_IN_USE_F.getValue());
@@ -51,7 +51,7 @@ public final class MySQLBinlogEventHeaderTest {
     }
     
     @Test
-    public void assertWrite() {
+    void assertWrite() {
         new MySQLBinlogEventHeader(1234567890, MySQLBinlogEventType.UNKNOWN_EVENT.getValue(), 123456, 19, 4, MySQLBinlogEventFlag.LOG_EVENT_BINLOG_IN_USE_F.getValue(), 4).write(payload);
         verify(payload).writeInt4(1234567890);
         verify(payload).writeInt1(MySQLBinlogEventType.UNKNOWN_EVENT.getValue());

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.ingest.position;
 /**
  * Integer primary key position.
  */
-public final class IntegerPrimaryKeyPosition extends PrimaryKeyPosition<Long> implements IngestPosition<IntegerPrimaryKeyPosition> {
+public final class IntegerPrimaryKeyPosition extends PrimaryKeyPosition<Long> implements IngestPosition {
     
     private final long beginValue;
     
@@ -49,10 +49,5 @@ public final class IntegerPrimaryKeyPosition extends PrimaryKeyPosition<Long> im
     @Override
     protected char getType() {
         return 'i';
-    }
-    
-    @Override
-    public int compareTo(final IntegerPrimaryKeyPosition position) {
-        return null == position ? 1 : Long.compare(beginValue, position.beginValue);
     }
 }

@@ -24,22 +24,19 @@ import org.apache.shardingsphere.proxy.backend.exception.UnsupportedVariableExce
  */
 public enum VariableEnum {
     
-    AGENT_PLUGINS_ENABLED,
-    
-    CACHED_CONNECTIONS,
-    
-    TRANSACTION_TYPE;
+    CACHED_CONNECTIONS;
     
     /**
      * Returns the variable constant of the specified variable name.
      * 
      * @param variableName variable name
      * @return variable constant
+     * @throws UnsupportedVariableException unsupported variable exception
      */
     public static VariableEnum getValueOf(final String variableName) {
         try {
             return valueOf(variableName.toUpperCase());
-        } catch (final IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ignored) {
             throw new UnsupportedVariableException(variableName);
         }
     }

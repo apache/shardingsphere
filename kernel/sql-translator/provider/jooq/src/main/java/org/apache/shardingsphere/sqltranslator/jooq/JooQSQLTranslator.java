@@ -19,7 +19,6 @@ package org.apache.shardingsphere.sqltranslator.jooq;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
 import org.apache.shardingsphere.sqltranslator.exception.syntax.UnsupportedTranslatedSQLException;
 import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
 import org.jooq.Query;
@@ -31,12 +30,12 @@ import org.jooq.impl.DSL;
 public final class JooQSQLTranslator implements SQLTranslator {
     
     @Override
-    public String translate(final String sql, final SQLStatement statement, final DatabaseType protocolType, final DatabaseType storageType) throws SQLTranslationException {
+    public String translate(final String sql, final SQLStatement statement, final DatabaseType protocolType, final DatabaseType storageType) {
         try {
             Query query = DSL.using(JooQDialectRegistry.getSQLDialect(protocolType)).parser().parseQuery(sql);
             return DSL.using(JooQDialectRegistry.getSQLDialect(storageType)).render(query);
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final Exception ignored) {
             // CHECKSTYLE:ON
             throw new UnsupportedTranslatedSQLException(sql);
         }

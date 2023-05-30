@@ -27,7 +27,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
  * PasswordMessage (frontend) packet for PostgreSQL.
  */
 @Getter
-public final class PostgreSQLPasswordMessagePacket implements PostgreSQLIdentifierPacket {
+public final class PostgreSQLPasswordMessagePacket extends PostgreSQLIdentifierPacket {
     
     private final String digest;
     
@@ -37,7 +37,7 @@ public final class PostgreSQLPasswordMessagePacket implements PostgreSQLIdentifi
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
     }
     
     @Override

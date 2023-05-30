@@ -6,7 +6,6 @@ weight = 1
 ## Background
 
 Apache ShardingSphere uses ThreadLocal to manage sharding key values for mandatory routing. A sharding value can be added by programming to the HintManager that takes effect only within the current thread.
-Apache ShardingSphere can also do mandatory routing by adding comments to SQL.
 
 Main application scenarios for Hint:
 - The sharding fields do not exist in the SQL and database table structure but in the external business logic.
@@ -21,9 +20,7 @@ Main application scenarios for Hint:
 
 ## Sample
 
-### Sharding with Hint
-
-#### Hint Configuration
+### Hint Configuration
 
 Hint algorithms require users to implement the interface of `org.apache.shardingsphere.api.sharding.hint.HintShardingAlgorithm`. 
 Apache ShardingSphere will acquire sharding values from HintManager to route.
@@ -52,26 +49,26 @@ props:
     sql-show: true
 ```
 
-#### Get HintManager
+### Get HintManager
 
 ```java
 HintManager hintManager = HintManager.getInstance();
 ```
 
-#### Add Sharding Value
+### Add Sharding Value
 
 - Use `hintManager.addDatabaseShardingValue` to add sharding key value of data source.
 - Use `hintManager.addTableShardingValue` to add sharding key value of table.
 
 > Users can use `hintManager.setDatabaseShardingValue` to set sharding value in hint route to some certain sharding database without sharding tables.
 
-#### Clean Hint Values
+### Clean Hint Values
 
 Sharding values are saved in `ThreadLocal`, so it is necessary to use `hintManager.close()` to clean `ThreadLocal`.
 
 **`HintManager` has implemented `AutoCloseable`. We recommend to close it automatically with `try with resource`.**
 
-#### Codes:
+### Codes:
 
 ```java
 // Sharding database and table with HintManager
@@ -100,24 +97,6 @@ try (HintManager hintManager = HintManager.getInstance();
         }
     }
 }
-```
-
-#### Use special SQL comments
-
-##### Terms of Use
-
-For the SQL Hint function, the comment format only supports `/* */` for now. The content needs to start with `SHARDINGSPHERE_HINT:`, and optional attributes include:
-
-- `{table}.SHARDING_DATABASE_VALUE`: used to add the data source sharding value corresponding to `{table}` table, multiple attributes are separated by commas;
-- `{table}.SHARDING_TABLE_VALUE`: used to add the table sharding value corresponding to `{table}` table, multiple attributes are separated by commas.
-
-> Users can use `SHARDING_DATABASE_VALUE` to set sharding value in hint route to some certain sharding database without sharding tables.
-
-##### Codes:
-
-```sql
-/* SHARDINGSPHERE_HINT: t_order.SHARDING_DATABASE_VALUE=1, t_order.SHARDING_TABLE_VALUE=1 */
-SELECT * FROM t_order;
 ```
 
 ## Related References

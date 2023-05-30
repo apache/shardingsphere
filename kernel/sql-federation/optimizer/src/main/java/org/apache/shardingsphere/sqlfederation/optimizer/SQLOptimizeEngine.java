@@ -54,17 +54,17 @@ public final class SQLOptimizeEngine {
         return new SQLOptimizeContext(bestPlan, validatedNodeType);
     }
     
-    private static RelNode optimizeWithRBO(final RelNode logicPlan, final RelOptPlanner hepPlanner) {
+    private RelNode optimizeWithRBO(final RelNode logicPlan, final RelOptPlanner hepPlanner) {
         hepPlanner.setRoot(logicPlan);
         return hepPlanner.findBestExp();
     }
     
     private RelNode optimizeWithCBO(final RelNode bestPlan, final SqlToRelConverter converter) {
         RelOptPlanner planner = converter.getCluster().getPlanner();
-        if (!bestPlan.getTraitSet().equals(converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE))) {
-            planner.setRoot(planner.changeTraits(bestPlan, converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE)));
-        } else {
+        if (bestPlan.getTraitSet().equals(converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE))) {
             planner.setRoot(bestPlan);
+        } else {
+            planner.setRoot(planner.changeTraits(bestPlan, converter.getCluster().traitSet().replace(EnumerableConvention.INSTANCE)));
         }
         return planner.findBestExp();
     }

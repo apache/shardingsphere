@@ -1,0 +1,44 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<dataset>
+    <metadata>
+        <column name="variable_name" />
+        <column name="variable_value" />
+    </metadata>
+    <row values="agent_plugins_enabled| true" />
+    <row values="cached_connections| 0" />
+    <row values="cdc_server_port| 33071" />
+    <row values="check_table_meta_data_enabled| false" />
+    <row values="kernel_executor_size| 16" />
+    <row values="max_connections_size_per_query| 1" />
+    <row values="proxy_backend_executor_suitable| OLAP" />
+    <row values="proxy_backend_query_fetch_size| -1" />
+    <row values="proxy_default_port| 3307" />
+    <row values="proxy_frontend_database_protocol_type| " />
+    <row values="proxy_frontend_executor_size| 0" />
+    <row values="proxy_frontend_flush_threshold| 128" />
+    <row values="proxy_frontend_max_connections| 0" />
+    <row values="proxy_instance_type| Proxy" />
+    <row values="proxy_meta_data_collector_enabled| true" />
+    <row values="proxy_mysql_default_version| 5.7.22" />
+    <row values="proxy_netty_backlog| 1024" />
+    <row values="sql_federation_type| ADVANCED" />
+    <row values="sql_show| false" />
+    <row values="sql_simple| false" />
+    <row values="system_log_level| INFO" />
+</dataset>

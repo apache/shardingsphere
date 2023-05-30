@@ -43,7 +43,7 @@ public final class PostgreSQLComCloseExecutor implements CommandExecutor {
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket<?>> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() throws SQLException {
         switch (packet.getType()) {
             case PREPARED_STATEMENT:
                 connectionSession.getServerPreparedStatementRegistry().removePreparedStatement(packet.getName());
@@ -54,6 +54,6 @@ public final class PostgreSQLComCloseExecutor implements CommandExecutor {
             default:
                 throw new UnsupportedSQLOperationException(packet.getType().name());
         }
-        return Collections.singletonList(new PostgreSQLCloseCompletePacket());
+        return Collections.singleton(new PostgreSQLCloseCompletePacket());
     }
 }

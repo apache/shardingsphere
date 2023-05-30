@@ -40,10 +40,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ProxyConfigurationLoaderTest {
+class ProxyConfigurationLoaderTest {
     
     @Test
-    public void assertLoadEmptyConfiguration() throws IOException {
+    void assertLoadEmptyConfiguration() throws IOException {
         YamlProxyConfiguration actual = ProxyConfigurationLoader.load("/conf/empty/");
         YamlProxyServerConfiguration serverConfig = actual.getServerConfiguration();
         assertNull(serverConfig.getMode());
@@ -55,7 +55,7 @@ public final class ProxyConfigurationLoaderTest {
     }
     
     @Test
-    public void assertLoad() throws IOException {
+    void assertLoad() throws IOException {
         YamlProxyConfiguration actual = ProxyConfigurationLoader.load("/conf/config_loader/");
         Iterator<YamlRuleConfiguration> actualGlobalRules = actual.getServerConfiguration().getRules().iterator();
         // TODO assert mode
@@ -76,7 +76,8 @@ public final class ProxyConfigurationLoaderTest {
                 .filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(each -> (YamlShardingRuleConfiguration) each);
         assertTrue(shardingRuleConfig.isPresent());
         assertShardingRuleConfiguration(shardingRuleConfig.get());
-        assertFalse(actual.getRules().stream().filter(each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(each -> (YamlEncryptRuleConfiguration) each).isPresent());
+        assertFalse(
+                actual.getRules().stream().filter(each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(each -> (YamlEncryptRuleConfiguration) each).isPresent());
     }
     
     private void assertShardingRuleConfiguration(final YamlShardingRuleConfiguration actual) {
@@ -96,7 +97,8 @@ public final class ProxyConfigurationLoaderTest {
         assertDataSourceConfiguration(actual.getDataSources().get("read_ds_0"), "jdbc:mysql://127.0.0.1:3306/read_ds_0");
         assertDataSourceConfiguration(actual.getDataSources().get("read_ds_1"), "jdbc:mysql://127.0.0.1:3306/read_ds_1");
         assertFalse(actual.getRules().stream().filter(each -> each instanceof YamlShardingRuleConfiguration).findFirst().map(each -> (YamlShardingRuleConfiguration) each).isPresent());
-        assertFalse(actual.getRules().stream().filter(each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(each -> (YamlEncryptRuleConfiguration) each).isPresent());
+        assertFalse(
+                actual.getRules().stream().filter(each -> each instanceof YamlEncryptRuleConfiguration).findFirst().map(each -> (YamlEncryptRuleConfiguration) each).isPresent());
         Optional<YamlReadwriteSplittingRuleConfiguration> ruleConfig = actual.getRules().stream()
                 .filter(each -> each instanceof YamlReadwriteSplittingRuleConfiguration).findFirst().map(each -> (YamlReadwriteSplittingRuleConfiguration) each);
         assertTrue(ruleConfig.isPresent());
@@ -106,9 +108,8 @@ public final class ProxyConfigurationLoaderTest {
     }
     
     private void assertReadwriteSplittingRuleConfiguration(final YamlReadwriteSplittingDataSourceRuleConfiguration actual) {
-        assertNotNull(actual.getStaticStrategy());
-        assertThat(actual.getStaticStrategy().getWriteDataSourceName(), is("write_ds"));
-        assertThat(actual.getStaticStrategy().getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(actual.getWriteDataSourceName(), is("write_ds"));
+        assertThat(actual.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }
     
     private void assertEncryptRuleConfiguration(final YamlProxyDatabaseConfiguration actual) {
@@ -126,12 +127,13 @@ public final class ProxyConfigurationLoaderTest {
     private void assertEncryptRuleConfiguration(final YamlEncryptRuleConfiguration actual) {
         assertThat(actual.getEncryptors().size(), is(2));
         assertTrue(actual.getEncryptors().containsKey("aes_encryptor"));
-        assertTrue(actual.getEncryptors().containsKey("md5_encryptor"));
+        assertTrue(actual.getEncryptors().containsKey("rc4_encryptor"));
         YamlAlgorithmConfiguration aesEncryptAlgorithmConfig = actual.getEncryptors().get("aes_encryptor");
         assertThat(aesEncryptAlgorithmConfig.getType(), is("AES"));
         assertThat(aesEncryptAlgorithmConfig.getProps().getProperty("aes-key-value"), is("123456abc"));
-        YamlAlgorithmConfiguration md5EncryptAlgorithmConfig = actual.getEncryptors().get("md5_encryptor");
-        assertThat(md5EncryptAlgorithmConfig.getType(), is("MD5"));
+        YamlAlgorithmConfiguration md5EncryptAlgorithmConfig = actual.getEncryptors().get("rc4_encryptor");
+        assertThat(md5EncryptAlgorithmConfig.getType(), is("RC4"));
+        assertThat(md5EncryptAlgorithmConfig.getProps().getProperty("rc4-key-value"), is("123456abc"));
     }
     
     private void assertDataSourceConfiguration(final YamlProxyDataSourceConfiguration actual, final String expectedURL) {

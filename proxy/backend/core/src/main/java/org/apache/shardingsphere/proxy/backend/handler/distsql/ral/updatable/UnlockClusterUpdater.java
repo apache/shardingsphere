@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.handler.ral.update.RALUpdater;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlockClusterStatement;
+import org.apache.shardingsphere.infra.lock.GlobalLockNames;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.state.cluster.ClusterState;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
@@ -42,9 +43,16 @@ public final class UnlockClusterUpdater implements RALUpdater<UnlockClusterState
         checkState();
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         LockContext lockContext = contextManager.getInstanceContext().getLockContext();
-        lockContext.unlock(new GlobalLockDefinition("cluster_lock"));
-        contextManager.getInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(ClusterState.OK));
-        // TODO unlock snapshot info if locked
+        GlobalLockDefinition lockDefinition = new GlobalLockDefinition(GlobalLockNames.CLUSTER_LOCK.getLockName());
+        if (lockContext.tryLock(lockDefinition, 3000L)) {
+            try {
+                checkState();
+                contextManager.getInstanceContext().getEventBusContext().post(new ClusterStatusChangedEvent(ClusterState.OK));
+                // TODO unlock snapshot info if locked
+            } finally {
+                lockContext.unlock(lockDefinition);
+            }
+        }
     }
     
     private void checkMode() {

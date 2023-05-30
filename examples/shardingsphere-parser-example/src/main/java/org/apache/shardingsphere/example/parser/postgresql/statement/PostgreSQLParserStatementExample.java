@@ -19,13 +19,12 @@ package org.apache.shardingsphere.example.parser.postgresql.statement;
 
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 public final class PostgreSQLParserStatementExample {
     
@@ -46,17 +45,18 @@ public final class PostgreSQLParserStatementExample {
     private static final List<String> POSTGRESQL_PARSER_STATEMENT_LIST;
     
     static {
-        POSTGRESQL_PARSER_STATEMENT_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_UPDATE_SQL, DML_DELETE_SQL,
-                DDL_CREATE_SQL, DDL_DROP_SQL, DDL_ALTER_SQL);
+        POSTGRESQL_PARSER_STATEMENT_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_UPDATE_SQL, DML_DELETE_SQL, DDL_CREATE_SQL, DDL_DROP_SQL, DDL_ALTER_SQL);
     }
     
-    public static void main(String[] args) {
+    // CHECKSTYLE:OFF
+    public static void main(final String[] args) {
+        // CHECKSTYLE:ON
         POSTGRESQL_PARSER_STATEMENT_LIST.forEach(sql -> {
             CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("PostgreSQL", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(sql, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("PostgreSQL", "STATEMENT", false, new Properties());
-            PostgreSQLStatement sqlStatement = visitorEngine.visit(parseASTNode);
+            SQLStatementVisitorEngine visitorEngine = new SQLStatementVisitorEngine("PostgreSQL", false);
+            SQLStatement sqlStatement = visitorEngine.visit(parseASTNode);
             System.out.println(sqlStatement.toString());
         });
     }

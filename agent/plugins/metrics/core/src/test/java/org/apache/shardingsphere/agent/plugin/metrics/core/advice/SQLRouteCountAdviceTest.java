@@ -22,9 +22,9 @@ import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollecto
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
-import org.apache.shardingsphere.infra.binder.QueryContext;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.binder.statement.UnknownSQLStatementContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLDeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
@@ -39,42 +39,42 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class SQLRouteCountAdviceTest {
+class SQLRouteCountAdviceTest {
     
     private final MetricConfiguration config = new MetricConfiguration("routed_sql_total", MetricCollectorType.COUNTER, null, Collections.singletonList("type"), Collections.emptyMap());
     
     private final SQLRouteCountAdvice advice = new SQLRouteCountAdvice();
     
     @AfterEach
-    public void reset() {
+    void reset() {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertInsertRoute() {
-        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLInsertStatement()), "", Collections.emptyList());
+    void assertInsertRoute() {
+        QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext(new MySQLInsertStatement()), "", Collections.emptyList());
         assertRoute(queryContext, "INSERT=1");
     }
     
     @Test
-    public void assertUpdateRoute() {
-        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLUpdateStatement()), "", Collections.emptyList());
+    void assertUpdateRoute() {
+        QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext(new MySQLUpdateStatement()), "", Collections.emptyList());
         assertRoute(queryContext, "UPDATE=1");
     }
     
     @Test
-    public void assertDeleteRoute() {
-        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLDeleteStatement()), "", Collections.emptyList());
+    void assertDeleteRoute() {
+        QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext(new MySQLDeleteStatement()), "", Collections.emptyList());
         assertRoute(queryContext, "DELETE=1");
     }
     
     @Test
-    public void assertSelectRoute() {
-        QueryContext queryContext = new QueryContext(new CommonSQLStatementContext<>(new MySQLSelectStatement()), "", Collections.emptyList());
+    void assertSelectRoute() {
+        QueryContext queryContext = new QueryContext(new UnknownSQLStatementContext(new MySQLSelectStatement()), "", Collections.emptyList());
         assertRoute(queryContext, "SELECT=1");
     }
     
-    public void assertRoute(final QueryContext queryContext, final String expected) {
+    void assertRoute(final QueryContext queryContext, final String expected) {
         advice.beforeMethod(new TargetAdviceObjectFixture(), mock(Method.class), new Object[]{new ConnectionContext(), queryContext}, "FIXTURE");
         assertThat(MetricsCollectorRegistry.get(config, "FIXTURE").toString(), is(expected));
     }

@@ -26,11 +26,11 @@ public abstract class ShardingSphereServerException extends ShardingSphereExtern
     
     private static final long serialVersionUID = 1547233217081261239L;
     
-    public ShardingSphereServerException(final String errorCategory, final int errorCode, final String message) {
+    protected ShardingSphereServerException(final String errorCategory, final int errorCode, final String message) {
         super(String.format("%s-%05d: %s", errorCategory, errorCode, message));
     }
     
-    public ShardingSphereServerException(final String errorCategory, final int errorCode, final String message, final Exception cause) {
+    protected ShardingSphereServerException(final String errorCategory, final int errorCode, final String message, final Exception cause) {
         super(String.format("%s-%05d: %s", errorCategory, errorCode, message), cause);
     }
 }

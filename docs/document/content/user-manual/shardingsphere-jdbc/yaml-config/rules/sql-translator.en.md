@@ -6,8 +6,7 @@ weight = 8
 ## Configuration Item Explanation
 
 ```yaml
-rules:
-- !SQL_TRANSLATOR
+sqlTranslator:
   type: # SQL translator type
   useOriginalSQLWhenTranslatingFailed: # Whether use original SQL when translating failed
 ```

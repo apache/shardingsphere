@@ -17,20 +17,15 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.command.binlog;
 
+import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
-import lombok.Getter;
-import lombok.ToString;
-
 /**
  * COM_REGISTER_SLAVE command packet for MySQL.
- *
- * @see <a href="https://dev.mysql.com/doc/internals/en/com-register-slave.html">COM_REGISTER_SLAVE</a>
  */
 @Getter
-@ToString
 public final class MySQLComRegisterSlaveCommandPacket extends MySQLCommandPacket {
     
     private final int serverId;

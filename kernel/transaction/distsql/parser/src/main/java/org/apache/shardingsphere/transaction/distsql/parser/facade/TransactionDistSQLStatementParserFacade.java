@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.transaction.distsql.parser.facade;
 
 import org.apache.shardingsphere.distsql.parser.engine.spi.FeaturedDistSQLStatementParserFacade;
+import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
@@ -41,7 +42,7 @@ public final class TransactionDistSQLStatementParserFacade implements FeaturedDi
     }
     
     @Override
-    public Class<? extends SQLVisitor> getVisitorClass() {
+    public Class<? extends SQLVisitor<ASTNode>> getVisitorClass() {
         return TransactionDistSQLStatementVisitor.class;
     }
     

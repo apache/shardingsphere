@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple;
 
-import lombok.Getter;
-import lombok.ToString;
+import org.apache.shardingsphere.db.protocol.packet.sql.SQLReceivedPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
@@ -27,9 +26,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacket
 /**
  * Command query packet for PostgreSQL.
  */
-@Getter
-@ToString
-public final class PostgreSQLComQueryPacket extends PostgreSQLCommandPacket {
+public final class PostgreSQLComQueryPacket extends PostgreSQLCommandPacket implements SQLReceivedPacket {
     
     private final String sql;
     
@@ -39,11 +36,16 @@ public final class PostgreSQLComQueryPacket extends PostgreSQLCommandPacket {
     }
     
     @Override
-    public void write(final PostgreSQLPacketPayload payload) {
+    protected void write(final PostgreSQLPacketPayload payload) {
     }
     
     @Override
     public PostgreSQLIdentifierTag getIdentifier() {
         return PostgreSQLCommandPacketType.SIMPLE_QUERY;
+    }
+    
+    @Override
+    public String getSQL() {
+        return sql;
     }
 }

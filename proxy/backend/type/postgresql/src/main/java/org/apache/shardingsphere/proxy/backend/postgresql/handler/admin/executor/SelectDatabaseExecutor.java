@@ -54,48 +54,48 @@ public final class SelectDatabaseExecutor extends DefaultDatabaseMetaDataExecuto
     
     private boolean isQueryDatabase;
     
-    public SelectDatabaseExecutor(final SelectStatement sqlStatement, final String sql) {
-        super(sql);
+    public SelectDatabaseExecutor(final SelectStatement sqlStatement, final String sql, final List<Object> parameters) {
+        super(sql, parameters);
         this.sqlStatement = sqlStatement;
     }
     
     @Override
-    protected void createPreProcessing() {
+    protected void postProcess() {
         removeDuplicatedRow();
         addDefaultRow();
     }
     
     private void addDefaultRow() {
         Collection<String> schemaWithoutDataSource = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> !hasDataSource(each)).collect(Collectors.toList());
-        schemaWithoutDataSource.forEach(each -> getRows().addLast(getDefaultRowData(each)));
+        schemaWithoutDataSource.forEach(each -> getRows().add(getDefaultRowData(each)));
     }
     
     private void removeDuplicatedRow() {
         if (isQueryDatabase) {
-            List<Map<String, Object>> toBeRemovedRow = getRows().stream().collect(Collectors.groupingBy(each -> each.get(databaseNameAlias), Collectors.toCollection(LinkedList::new)))
+            Collection<Map<String, Object>> toBeRemovedRow = getRows().stream().collect(Collectors.groupingBy(each -> each.get(databaseNameAlias), Collectors.toCollection(LinkedList::new)))
                     .values().stream().filter(each -> each.size() > 1).map(LinkedList::getLast).collect(Collectors.toList());
             toBeRemovedRow.forEach(each -> getRows().remove(each));
         }
     }
     
     @Override
-    protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
+    protected Collection<String> getDatabaseNames(final ConnectionSession connectionSession) {
         Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> isAuthorized(each, connectionSession.getGrantee())).collect(Collectors.toList());
         return databaseNames.stream().filter(AbstractDatabaseMetaDataExecutor::hasDataSource).collect(Collectors.toList());
     }
     
     @Override
-    protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
-        buildColumnNames(aliasMap);
+    protected void preProcess(final String databaseName, final Map<String, Object> rows, final Map<String, String> alias) {
+        buildColumnNames(alias);
         ShardingSphereResourceMetaData resourceMetaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResourceMetaData();
-        Set<String> catalogs = resourceMetaData.getDataSources().keySet().stream().map(each -> resourceMetaData.getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
-        databaseNameAlias = aliasMap.getOrDefault(DATABASE_NAME, aliasMap.getOrDefault(DATNAME, aliasMap.getOrDefault(NAME, "")));
-        String rowValue = rowMap.getOrDefault(databaseNameAlias, "").toString();
+        Collection<String> catalogs = resourceMetaData.getDataSources().keySet().stream().map(each -> resourceMetaData.getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
+        databaseNameAlias = alias.getOrDefault(DATABASE_NAME, alias.getOrDefault(DATNAME, alias.getOrDefault(NAME, "")));
+        String rowValue = rows.getOrDefault(databaseNameAlias, "").toString();
         isQueryDatabase = !rowValue.isEmpty();
         if (catalogs.contains(rowValue)) {
-            rowMap.replace(databaseNameAlias, databaseName);
+            rows.replace(databaseNameAlias, databaseName);
         } else {
-            rowMap.clear();
+            rows.clear();
         }
     }
     

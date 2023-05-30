@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class StringPrimaryKeyPosition extends PrimaryKeyPosition<String> implements IngestPosition<StringPrimaryKeyPosition> {
+public final class StringPrimaryKeyPosition extends PrimaryKeyPosition<String> implements IngestPosition {
     
     private final String beginValue;
     
@@ -39,10 +39,5 @@ public final class StringPrimaryKeyPosition extends PrimaryKeyPosition<String> i
     @Override
     protected char getType() {
         return 's';
-    }
-    
-    @Override
-    public int compareTo(final StringPrimaryKeyPosition position) {
-        return null == position ? 1 : beginValue.compareTo(position.getBeginValue());
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mask.distsql.handler.query;
 
-import org.apache.shardingsphere.distsql.handler.query.RQLExecutor;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -35,12 +34,11 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class CountMaskRuleExecutorTest {
+class CountMaskRuleExecutorTest {
     
     @Test
-    public void assertGetRowData() {
-        RQLExecutor<CountMaskRuleStatement> executor = new CountMaskRuleExecutor();
-        Collection<LocalDataQueryResultRow> actual = executor.getRows(mockDatabase(), mock(CountMaskRuleStatement.class));
+    void assertGetRowData() {
+        Collection<LocalDataQueryResultRow> actual = new CountMaskRuleExecutor().getRows(mockDatabase(), mock(CountMaskRuleStatement.class));
         assertThat(actual.size(), is(1));
         Iterator<LocalDataQueryResultRow> iterator = actual.iterator();
         LocalDataQueryResultRow row = iterator.next();
@@ -50,9 +48,8 @@ public final class CountMaskRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
-        RQLExecutor<CountMaskRuleStatement> executor = new CountMaskRuleExecutor();
-        Collection<String> columns = executor.getColumnNames();
+    void assertGetColumnNames() {
+        Collection<String> columns = new CountMaskRuleExecutor().getColumnNames();
         assertThat(columns.size(), is(3));
         Iterator<String> iterator = columns.iterator();
         assertThat(iterator.next(), is("rule_name"));

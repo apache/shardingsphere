@@ -1,0 +1,91 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: replication_group_member_stats
+columns:
+  channel_name:
+    caseSensitive: false
+    dataType: 1
+    generated: false
+    name: CHANNEL_NAME
+    primaryKey: false
+    unsigned: false
+    visible: true
+  view_id:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: VIEW_ID
+    primaryKey: false
+    unsigned: false
+    visible: true
+  member_id:
+    caseSensitive: true
+    dataType: 1
+    generated: false
+    name: MEMBER_ID
+    primaryKey: false
+    unsigned: false
+    visible: true
+  count_transactions_in_queue:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_TRANSACTIONS_IN_QUEUE
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_transactions_checked:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_TRANSACTIONS_CHECKED
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_conflicts_detected:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_CONFLICTS_DETECTED
+    primaryKey: false
+    unsigned: true
+    visible: true
+  count_transactions_rows_validating:
+    caseSensitive: false
+    dataType: 4
+    generated: false
+    name: COUNT_TRANSACTIONS_ROWS_VALIDATING
+    primaryKey: false
+    unsigned: true
+    visible: true
+  transactions_committed_all_members:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: TRANSACTIONS_COMMITTED_ALL_MEMBERS
+    primaryKey: false
+    unsigned: false
+    visible: true
+  last_conflict_free_transaction:
+    caseSensitive: false
+    dataType: -1
+    generated: false
+    name: LAST_CONFLICT_FREE_TRANSACTION
+    primaryKey: false
+    unsigned: false
+    visible: true

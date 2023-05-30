@@ -38,7 +38,8 @@ public interface PipelineMetaDataChangedEventHandler {
     /**
      * Handle meta data changed event.
      *
+     * @param jobId job id
      * @param event changed event
      */
-    void handle(DataChangedEvent event);
+    void handle(String jobId, DataChangedEvent event);
 }

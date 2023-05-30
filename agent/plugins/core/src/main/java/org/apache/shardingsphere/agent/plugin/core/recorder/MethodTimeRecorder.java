@@ -39,7 +39,7 @@ public final class MethodTimeRecorder {
      * 
      * @param method method to be recorded
      */
-    public void record(final Method method) {
+    public void recordNow(final Method method) {
         CURRENT_RECORDER.get().put(getKey(method), System.currentTimeMillis());
     }
     
@@ -68,5 +68,8 @@ public final class MethodTimeRecorder {
     
     private void clean(final String key) {
         CURRENT_RECORDER.get().remove(key);
+        if (CURRENT_RECORDER.get().isEmpty()) {
+            CURRENT_RECORDER.remove();
+        }
     }
 }

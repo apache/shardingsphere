@@ -48,8 +48,8 @@ public final class DropShardingTableReferenceRuleStatementUpdater implements Rul
                 () -> new MissingRequiredRuleException("Sharding table reference", databaseName));
     }
     
-    private void checkToBeDroppedShardingTableReferenceRules(final String databaseName, final DropShardingTableReferenceRuleStatement sqlStatement,
-                                                             final ShardingRuleConfiguration currentRuleConfig) throws MissingRequiredRuleException {
+    private void checkToBeDroppedShardingTableReferenceRules(final String databaseName,
+                                                             final DropShardingTableReferenceRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         if (sqlStatement.isIfExists()) {
             return;
         }

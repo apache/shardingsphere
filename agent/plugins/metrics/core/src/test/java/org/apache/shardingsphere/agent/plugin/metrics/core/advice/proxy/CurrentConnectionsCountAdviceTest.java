@@ -20,8 +20,8 @@ package org.apache.shardingsphere.agent.plugin.metrics.core.advice.proxy;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricCollectorType;
 import org.apache.shardingsphere.agent.plugin.metrics.core.config.MetricConfiguration;
-import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.collector.MetricsCollectorFixture;
+import org.apache.shardingsphere.agent.plugin.metrics.core.fixture.TargetAdviceObjectFixture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,19 +33,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class CurrentConnectionsCountAdviceTest {
+class CurrentConnectionsCountAdviceTest {
     
     private final MetricConfiguration config = new MetricConfiguration("proxy_current_connections", MetricCollectorType.GAUGE, null, Collections.emptyList(), Collections.emptyMap());
     
     private final CurrentConnectionsCountAdvice advice = new CurrentConnectionsCountAdvice();
     
     @AfterEach
-    public void reset() {
+    void reset() {
         ((MetricsCollectorFixture) MetricsCollectorRegistry.get(config, "FIXTURE")).reset();
     }
     
     @Test
-    public void assertCountCurrentConnections() {
+    void assertCountCurrentConnections() {
         TargetAdviceObjectFixture targetObject = new TargetAdviceObjectFixture();
         advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{}, "FIXTURE");
         advice.beforeMethod(targetObject, mockMethod("channelActive"), new Object[]{}, "FIXTURE");

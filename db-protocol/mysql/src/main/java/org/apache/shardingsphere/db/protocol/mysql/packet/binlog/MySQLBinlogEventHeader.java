@@ -26,12 +26,12 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 /**
  * MySQL binlog event header.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/binlog-event-header.html">Binlog Event header</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_replication_binlog_event.html#sect_protocol_replication_binlog_event_header">Binlog Event header</a>
  */
 @RequiredArgsConstructor
 @Getter
 @ToString
-public final class MySQLBinlogEventHeader implements MySQLPacket {
+public final class MySQLBinlogEventHeader extends MySQLPacket {
     
     /**
      * MySQL binlog event header length is 19 in binlog version 3 and 4.
@@ -66,7 +66,7 @@ public final class MySQLBinlogEventHeader implements MySQLPacket {
     }
     
     @Override
-    public void write(final MySQLPacketPayload payload) {
+    protected void write(final MySQLPacketPayload payload) {
         payload.writeInt4(timestamp);
         payload.writeInt1(eventType);
         payload.writeInt4(serverId);

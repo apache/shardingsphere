@@ -29,17 +29,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class PortalContextTest {
+class PortalContextTest {
     
     private final PortalContext portalContext = new PortalContext();
     
     @Test
-    public void assertAddAndGetUnnamedPortal() throws SQLException {
+    void assertAddAndGetUnnamedPortal() throws SQLException {
         assertAddAndGetPortal("");
     }
     
     @Test
-    public void assertAddAndGetNamedPortal() throws SQLException {
+    void assertAddAndGetNamedPortal() throws SQLException {
         assertAddAndGetPortal("P_1");
     }
     
@@ -51,7 +51,7 @@ public final class PortalContextTest {
     }
     
     @Test
-    public void assertAddDuplicateNamedPortal() throws SQLException {
+    void assertAddDuplicateNamedPortal() throws SQLException {
         Portal portal = mock(Portal.class);
         when(portal.getName()).thenReturn("P_1");
         portalContext.add(portal);
@@ -59,7 +59,7 @@ public final class PortalContextTest {
     }
     
     @Test
-    public void assertCloseSinglePortal() throws SQLException {
+    void assertCloseSinglePortal() throws SQLException {
         Portal portal = mock(Portal.class);
         String portalName = "P_1";
         when(portal.getName()).thenReturn(portalName);
@@ -69,7 +69,7 @@ public final class PortalContextTest {
     }
     
     @Test
-    public void assertCloseAllPortals() throws SQLException {
+    void assertCloseAllPortals() throws SQLException {
         Portal portal1 = mock(Portal.class);
         when(portal1.getName()).thenReturn("P_1");
         Portal portal2 = mock(Portal.class);

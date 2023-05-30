@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.sqltranslator.constant;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * SQL translator order.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLTranslatorOrder {
     
     /**

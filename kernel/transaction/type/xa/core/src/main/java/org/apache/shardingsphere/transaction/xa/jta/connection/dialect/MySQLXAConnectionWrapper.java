@@ -25,25 +25,25 @@ import javax.sql.XADataSource;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * XA connection wrapper for MySQL.
  */
 public final class MySQLXAConnectionWrapper implements XAConnectionWrapper {
     
-    private static volatile Class<Connection> jdbcConnectionClass;
+    private Class<Connection> jdbcConnectionClass;
     
-    private static volatile Method xaConnectionCreatorMethod;
-    
-    private static volatile boolean initialized;
+    private Method xaConnectionCreatorMethod;
     
     @Override
     public XAConnection wrap(final XADataSource xaDataSource, final Connection connection) throws SQLException {
-        if (!initialized) {
-            loadReflection();
-            initialized = true;
-        }
         return createXAConnection(xaDataSource, connection.unwrap(jdbcConnectionClass));
+    }
+    
+    @Override
+    public void init(final Properties props) {
+        loadReflection();
     }
     
     private void loadReflection() {

@@ -33,10 +33,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class MySQLComStmtSendLongDataExecutorTest {
+class MySQLComStmtSendLongDataExecutorTest {
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         MySQLComStmtSendLongDataPacket packet = mock(MySQLComStmtSendLongDataPacket.class);
         when(packet.getStatementId()).thenReturn(1);
         when(packet.getParamId()).thenReturn(0);
@@ -47,7 +47,7 @@ public final class MySQLComStmtSendLongDataExecutorTest {
         MySQLServerPreparedStatement preparedStatement = new MySQLServerPreparedStatement("insert into t (b) values (?)", mock(SQLStatementContext.class), Collections.emptyList());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(1, preparedStatement);
         MySQLComStmtSendLongDataExecutor executor = new MySQLComStmtSendLongDataExecutor(packet, connectionSession);
-        Collection<DatabasePacket<?>> actual = executor.execute();
+        Collection<DatabasePacket> actual = executor.execute();
         assertThat(actual, is(Collections.emptyList()));
         assertThat(preparedStatement.getLongData(), is(Collections.singletonMap(0, data)));
     }

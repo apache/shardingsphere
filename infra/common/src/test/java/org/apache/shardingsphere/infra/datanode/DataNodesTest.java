@@ -36,7 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DataNodesTest {
+class DataNodesTest {
     
     private static final Map<String, Collection<String>> READ_WRITE_SPLITTING_DATASOURCE_MAP = new HashMap<>();
     
@@ -45,21 +45,21 @@ public final class DataNodesTest {
     }
     
     @Test
-    public void assertGetDataNodesForShardingTableWithoutDataNodeContainedRule() {
+    void assertGetDataNodesForShardingTableWithoutDataNodeContainedRule() {
         DataNodes dataNodes = new DataNodes(Collections.singletonList(mockDataSourceContainedRule()));
         Collection<DataNode> actual = dataNodes.getDataNodes("t_order");
         assertThat(actual, is(Collections.emptyList()));
     }
     
     @Test
-    public void assertGetDataNodesForSingleTableWithoutDataNodeContainedRule() {
+    void assertGetDataNodesForSingleTableWithoutDataNodeContainedRule() {
         DataNodes dataNodes = new DataNodes(Collections.singletonList(mockDataSourceContainedRule()));
         Collection<DataNode> actual = dataNodes.getDataNodes("t_single");
         assertThat(actual, is(Collections.emptyList()));
     }
     
     @Test
-    public void assertGetDataNodesForShardingTableWithDataNodeContainedRuleWithoutDataSourceContainedRule() {
+    void assertGetDataNodesForShardingTableWithDataNodeContainedRuleWithoutDataSourceContainedRule() {
         DataNodes dataNodes = new DataNodes(mockDataNodeContainedRules());
         Collection<DataNode> actual = dataNodes.getDataNodes("t_order");
         assertThat(actual.size(), is(2));
@@ -73,7 +73,7 @@ public final class DataNodesTest {
     }
     
     @Test
-    public void assertGetDataNodesForSingleTableWithDataNodeContainedRuleWithoutDataSourceContainedRule() {
+    void assertGetDataNodesForSingleTableWithDataNodeContainedRuleWithoutDataSourceContainedRule() {
         DataNodes dataNodes = new DataNodes(mockDataNodeContainedRules());
         Collection<DataNode> actual = dataNodes.getDataNodes("t_single");
         assertThat(actual.size(), is(1));
@@ -84,7 +84,7 @@ public final class DataNodesTest {
     }
     
     @Test
-    public void assertGetDataNodesForShardingTableWithDataNodeContainedRuleAndDataSourceContainedRule() {
+    void assertGetDataNodesForShardingTableWithDataNodeContainedRuleAndDataSourceContainedRule() {
         DataNodes dataNodes = new DataNodes(mockShardingSphereRules());
         Collection<DataNode> actual = dataNodes.getDataNodes("t_order");
         assertThat(actual.size(), is(6));
@@ -110,7 +110,7 @@ public final class DataNodesTest {
     }
     
     @Test
-    public void assertGetDataNodesForSingleTableWithDataNodeContainedRuleAndDataSourceContainedRule() {
+    void assertGetDataNodesForSingleTableWithDataNodeContainedRuleAndDataSourceContainedRule() {
         DataNodes dataNodes = new DataNodes(mockShardingSphereRules());
         Collection<DataNode> actual = dataNodes.getDataNodes("t_single");
         assertThat(actual.size(), is(3));

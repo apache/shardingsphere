@@ -26,14 +26,13 @@ import org.apache.shardingsphere.sharding.route.engine.validator.ShardingStateme
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 
 import java.util.Collection;
 
 /**
- * Sharding ddl statement validator.
+ * Sharding DDL statement validator.
  */
-public abstract class ShardingDDLStatementValidator<T extends DDLStatement> implements ShardingStatementValidator<T> {
+public abstract class ShardingDDLStatementValidator implements ShardingStatementValidator {
     
     /**
      * Validate sharding table.
@@ -41,6 +40,7 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
      * @param shardingRule sharding rule
      * @param operation operation
      * @param tables tables
+     * @throws UnsupportedShardingOperationException unsupported sharding operation exception
      */
     protected void validateShardingTable(final ShardingRule shardingRule, final String operation, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
@@ -56,6 +56,7 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
      *
      * @param schema ShardingSphere schema
      * @param tables tables
+     * @throws NoSuchTableException no such table exception
      */
     protected void validateTableExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
@@ -71,6 +72,7 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
      *
      * @param schema ShardingSphere schema
      * @param tables tables
+     * @throws TableExistsException table exists exception
      */
     protected void validateTableNotExist(final ShardingSphereSchema schema, final Collection<SimpleTableSegment> tables) {
         for (SimpleTableSegment each : tables) {
@@ -102,6 +104,6 @@ public abstract class ShardingDDLStatementValidator<T extends DDLStatement> impl
      * @return whether schema contains index or not
      */
     protected boolean isSchemaContainsIndex(final ShardingSphereSchema schema, final IndexSegment index) {
-        return schema.getAllTableNames().stream().anyMatch(each -> schema.getTable(each).getIndexes().containsKey(index.getIndexName().getIdentifier().getValue()));
+        return schema.getAllTableNames().stream().anyMatch(each -> schema.getTable(each).containsIndex(index.getIndexName().getIdentifier().getValue()));
     }
 }

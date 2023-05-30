@@ -24,21 +24,21 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class MySQLCharacterSetTest {
+class MySQLCharacterSetTest {
     
     @Test
-    public void assertFoundCharacterSetById() {
+    void assertFoundCharacterSetById() {
         MySQLCharacterSet actual = MySQLCharacterSet.findById(45);
         assertThat(actual, is(MySQLCharacterSet.UTF8MB4_GENERAL_CI));
     }
     
     @Test
-    public void assertCharacterSetNotFoundById() {
+    void assertCharacterSetNotFoundById() {
         assertThrows(UnknownCollationException.class, () -> MySQLCharacterSet.findById(-1));
     }
     
     @Test
-    public void assertFoundUnsupportedCharacterSetById() {
+    void assertFoundUnsupportedCharacterSetById() {
         assertThrows(UnknownCollationException.class, () -> MySQLCharacterSet.findById(63));
     }
 }

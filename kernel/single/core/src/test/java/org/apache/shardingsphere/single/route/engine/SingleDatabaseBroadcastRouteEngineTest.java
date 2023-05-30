@@ -41,10 +41,10 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class SingleDatabaseBroadcastRouteEngineTest {
+class SingleDatabaseBroadcastRouteEngineTest {
     
     @Test
-    public void assertRoute() throws SQLException {
+    void assertRoute() throws SQLException {
         SingleRule singleRule = new SingleRule(new SingleRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         SingleDatabaseBroadcastRouteEngine engine = new SingleDatabaseBroadcastRouteEngine();
@@ -58,7 +58,7 @@ public final class SingleDatabaseBroadcastRouteEngineTest {
     }
     
     private Map<String, DataSource> createDataSourceMap() throws SQLException {
-        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1F);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:h2:mem:db");
         result.put("ds_0", new MockedDataSource(connection));

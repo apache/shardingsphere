@@ -37,10 +37,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowSQLTranslatorRuleExecutorTest {
+class ShowSQLTranslatorRuleExecutorTest {
     
     @Test
-    public void assertExecute() {
+    void assertExecute() {
         ShardingSphereMetaData metaData = mockMetaData();
         ShowSQLTranslatorRuleExecutor executor = new ShowSQLTranslatorRuleExecutor();
         Collection<LocalDataQueryResultRow> actual = executor.getRows(metaData, mock(ShowSQLTranslatorRuleStatement.class));
@@ -52,7 +52,7 @@ public final class ShowSQLTranslatorRuleExecutorTest {
     }
     
     @Test
-    public void assertGetColumnNames() {
+    void assertGetColumnNames() {
         ShowSQLTranslatorRuleExecutor executor = new ShowSQLTranslatorRuleExecutor();
         Collection<String> columns = executor.getColumnNames();
         assertThat(columns.size(), is(2));

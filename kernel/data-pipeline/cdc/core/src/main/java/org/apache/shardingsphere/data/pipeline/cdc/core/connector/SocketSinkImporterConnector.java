@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.cdc.core.connector;
 
 import io.netty.channel.Channel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -33,15 +32,15 @@ import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.SocketSinkImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.generator.CDCResponseGenerator;
 import org.apache.shardingsphere.data.pipeline.cdc.protocol.response.DataRecordResult;
-import org.apache.shardingsphere.data.pipeline.cdc.util.CDCDataRecordUtil;
-import org.apache.shardingsphere.data.pipeline.cdc.util.DataRecordResultConvertUtil;
-import org.apache.shardingsphere.data.pipeline.core.record.RecordUtil;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
+import org.apache.shardingsphere.data.pipeline.cdc.util.CDCDataRecordUtils;
+import org.apache.shardingsphere.data.pipeline.cdc.util.DataRecordResultConvertUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +57,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Socket sink importer connector.
  */
 @Slf4j
-public final class SocketSinkImporterConnector implements ImporterConnector {
+public final class SocketSinkImporterConnector implements ImporterConnector, AutoCloseable {
     
     private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200L;
     
@@ -69,8 +68,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
     @Setter
     private volatile boolean incrementalTaskRunning = true;
     
-    @Getter
-    private final String database;
+    private final ShardingSphereDatabase database;
     
     private final Channel channel;
     
@@ -80,13 +78,13 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
     
     private final Map<String, String> tableNameSchemaMap = new HashMap<>();
     
-    private final Map<SocketSinkImporter, BlockingQueue<Record>> incrementalRecordMap = new ConcurrentHashMap<>();
+    private final Map<SocketSinkImporter, BlockingQueue<List<DataRecord>>> incrementalRecordMap = new ConcurrentHashMap<>();
     
     private final AtomicInteger runningIncrementalTaskCount = new AtomicInteger(0);
     
     private Thread incrementalImporterTask;
     
-    public SocketSinkImporterConnector(final Channel channel, final String database, final int jobShardingCount, final Collection<String> schemaTableNames,
+    public SocketSinkImporterConnector(final Channel channel, final ShardingSphereDatabase database, final int jobShardingCount, final Collection<String> schemaTableNames,
                                        final Comparator<DataRecord> dataRecordComparator) {
         this.channel = channel;
         this.database = database;
@@ -115,14 +113,14 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
             return;
         }
         if (ImporterType.INVENTORY == importerType || null == dataRecordComparator) {
-            Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
-            int dataRecordCount = (int) recordList.stream().filter(each -> each instanceof DataRecord).count();
+            int dataRecordCount = (int) recordList.stream().filter(DataRecord.class::isInstance).count();
             Record lastRecord = recordList.get(recordList.size() - 1);
             if (lastRecord instanceof FinishedRecord && 0 == dataRecordCount) {
                 socketSinkImporter.ackWithLastDataRecord(new CDCAckPosition(lastRecord, 0));
                 return;
             }
-            importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(RecordUtil.getLastNormalRecord(recordList), dataRecordCount));
+            Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
+            importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(lastRecord, dataRecordCount));
             writeImmediately(recordList, importerDataRecordMap);
         } else if (ImporterType.INCREMENTAL == importerType) {
             writeIntoQueue(recordList, socketSinkImporter);
@@ -130,9 +128,7 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
     }
     
     private void writeImmediately(final List<? extends Record> recordList, final Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap) {
-        while (!channel.isWritable() && channel.isActive()) {
-            doAwait();
-        }
+        doAwait();
         if (!channel.isActive()) {
             return;
         }
@@ -142,31 +138,44 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
                 continue;
             }
             DataRecord dataRecord = (DataRecord) each;
-            records.add(DataRecordResultConvertUtil.convertDataRecordToRecord(database, tableNameSchemaMap.get(dataRecord.getTableName()), dataRecord));
+            records.add(DataRecordResultConvertUtils.convertDataRecordToRecord(database.getName(), tableNameSchemaMap.get(dataRecord.getTableName()), dataRecord));
         }
         String ackId = CDCAckHolder.getInstance().bindAckIdWithPosition(importerDataRecordMap);
-        DataRecordResult dataRecordResult = DataRecordResult.newBuilder().addAllRecords(records).setAckId(ackId).build();
+        DataRecordResult dataRecordResult = DataRecordResult.newBuilder().addAllRecord(records).setAckId(ackId).build();
         channel.writeAndFlush(CDCResponseGenerator.succeedBuilder("").setDataRecordResult(dataRecordResult).build());
     }
     
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private void doAwait() {
-        lock.lock();
-        try {
-            condition.await(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS);
-        } catch (final InterruptedException ignored) {
-        } finally {
-            lock.unlock();
+        while (!channel.isWritable() && channel.isActive()) {
+            lock.lock();
+            try {
+                condition.await(DEFAULT_TIMEOUT_MILLISECONDS, TimeUnit.MILLISECONDS);
+            } catch (final InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            } finally {
+                lock.unlock();
+            }
         }
     }
     
     @SneakyThrows(InterruptedException.class)
     private void writeIntoQueue(final List<Record> dataRecords, final SocketSinkImporter socketSinkImporter) {
-        BlockingQueue<Record> blockingQueue = incrementalRecordMap.get(socketSinkImporter);
+        BlockingQueue<List<DataRecord>> blockingQueue = incrementalRecordMap.get(socketSinkImporter);
         if (null == blockingQueue) {
             log.warn("not find the queue to write");
             return;
         }
+        Map<Long, List<DataRecord>> recordsMap = new LinkedHashMap<>();
         for (Record each : dataRecords) {
+            if (!(each instanceof DataRecord)) {
+                continue;
+            }
+            DataRecord dataRecord = (DataRecord) each;
+            // TODO need improve if support global transaction
+            recordsMap.computeIfAbsent(dataRecord.getCsn(), ignored -> new LinkedList<>()).add(dataRecord);
+        }
+        for (List<DataRecord> each : recordsMap.values()) {
             blockingQueue.put(each);
         }
     }
@@ -207,25 +216,31 @@ public final class SocketSinkImporterConnector implements ImporterConnector {
         return CDCSinkType.SOCKET.name();
     }
     
+    @Override
+    public void close() throws Exception {
+        channel.close();
+    }
+    
     @RequiredArgsConstructor
     private final class CDCIncrementalImporterTask implements Runnable {
         
         private final int batchSize;
         
+        @SneakyThrows(InterruptedException.class)
         @Override
         public void run() {
             while (incrementalTaskRunning) {
                 Map<SocketSinkImporter, CDCAckPosition> cdcAckPositionMap = new HashMap<>();
                 List<DataRecord> dataRecords = new LinkedList<>();
                 for (int i = 0; i < batchSize; i++) {
-                    DataRecord minimumDataRecord = CDCDataRecordUtil.findMinimumDataRecordAndSavePosition(incrementalRecordMap, dataRecordComparator, cdcAckPositionMap);
-                    if (null == minimumDataRecord) {
+                    List<DataRecord> minimumRecords = CDCDataRecordUtils.findMinimumDataRecordsAndSavePosition(incrementalRecordMap, dataRecordComparator, cdcAckPositionMap);
+                    if (minimumRecords.isEmpty()) {
                         break;
                     }
-                    dataRecords.add(minimumDataRecord);
+                    dataRecords.addAll(minimumRecords);
                 }
                 if (dataRecords.isEmpty()) {
-                    ThreadUtil.sleep(200, TimeUnit.MILLISECONDS);
+                    Thread.sleep(200L);
                 } else {
                     writeImmediately(dataRecords, cdcAckPositionMap);
                 }

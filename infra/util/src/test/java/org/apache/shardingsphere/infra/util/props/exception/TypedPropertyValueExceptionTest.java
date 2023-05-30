@@ -23,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public final class TypedPropertyValueExceptionTest {
+class TypedPropertyValueExceptionTest {
     
     @Test
-    public void assertGetMessage() {
+    void assertGetMessage() {
         assertThat(new TypedPropertyValueException(TypedPropertyKeyFixture.INT_VALUE, "test").getMessage(), is("Value `test` of `int` cannot convert to type `int`"));
     }
 }

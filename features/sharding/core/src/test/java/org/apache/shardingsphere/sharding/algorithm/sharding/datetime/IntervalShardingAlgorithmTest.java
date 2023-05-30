@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.algorithm.sharding.datetime;
 
 import com.google.common.collect.Range;
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -31,8 +30,6 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -52,9 +49,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class IntervalShardingAlgorithmTest {
+class IntervalShardingAlgorithmTest {
     
-    public static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 6, '0');
+    private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 6, '0');
     
     private final Collection<String> availableTablesForQuarterDataSources = new LinkedList<>();
     
@@ -93,7 +90,7 @@ public final class IntervalShardingAlgorithmTest {
     private IntervalShardingAlgorithm shardingAlgorithmByMonthInJSR310;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         initShardStrategyByMonth();
         initShardStrategyByQuarter();
         initShardingStrategyByDay();
@@ -249,7 +246,7 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     @Test
-    public void assertPreciseDoShardingByQuarter() {
+    void assertPreciseDoShardingByQuarter() {
         assertThat(shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources,
                 new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_INFO, "2020-01-01 00:00:01")), is("t_order_202001"));
         assertThat(shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources,
@@ -257,14 +254,14 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     @Test
-    public void assertRangeDoShardingByQuarter() {
+    void assertRangeDoShardingByQuarter() {
         Collection<String> actual = shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("2019-10-15 10:59:08", "2020-04-08 10:59:08")));
         assertThat(actual.size(), is(3));
     }
     
     @Test
-    public void assertPreciseDoShardingByMonth() {
+    void assertPreciseDoShardingByMonth() {
         assertThat(shardingAlgorithmByMonth.doSharding(availableTablesForMonthDataSources,
                 new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_INFO, "2020-01-01 00:00:01")), is("t_order_202001"));
         assertNull(shardingAlgorithmByMonth.doSharding(availableTablesForMonthDataSources,
@@ -272,42 +269,42 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     @Test
-    public void assertRangeDoShardingByMonth() {
+    void assertRangeDoShardingByMonth() {
         Collection<String> actual = shardingAlgorithmByMonth.doSharding(availableTablesForMonthDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("2019-10-15 10:59:08", "2020-04-08 10:59:08")));
         assertThat(actual.size(), is(7));
     }
     
     @Test
-    public void assertLowerHalfRangeDoSharding() {
+    void assertLowerHalfRangeDoSharding() {
         Collection<String> actual = shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.atLeast("2018-10-15 10:59:08")));
         assertThat(actual.size(), is(9));
     }
     
     @Test
-    public void assertUpperHalfRangeDoSharding() {
+    void assertUpperHalfRangeDoSharding() {
         Collection<String> actual = shardingAlgorithmByQuarter.doSharding(availableTablesForQuarterDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.atMost("2019-09-01 00:00:00")));
         assertThat(actual.size(), is(15));
     }
     
     @Test
-    public void assertLowerHalfRangeDoShardingByDay() {
+    void assertLowerHalfRangeDoShardingByDay() {
         Collection<String> actual = shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.atLeast("2021-01-01 00:00:00")));
         assertThat(actual.size(), is(31));
     }
     
     @Test
-    public void assertUpperHalfRangeDoShardingByDay() {
+    void assertUpperHalfRangeDoShardingByDay() {
         Collection<String> actual = shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.atMost("2021-07-31 01:00:00")));
         assertThat(actual.size(), is(31));
     }
     
     @Test
-    public void assertPreciseDoShardingByDay() {
+    void assertPreciseDoShardingByDay() {
         assertThat(shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources,
                 new PreciseShardingValue<>("t_order", "create_time", DATA_NODE_INFO, "2021-07-01 00:00:01")), is("t_order_20210701"));
         assertThat(shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources,
@@ -315,14 +312,14 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     @Test
-    public void assertRangeDoShardingByDay() {
+    void assertRangeDoShardingByDay() {
         Collection<String> actual = shardingAlgorithmByDay.doSharding(availableTablesForDayDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("2021-06-15 00:00:00", "2021-07-31 01:00:00")));
         assertThat(actual.size(), is(24));
     }
     
     @Test
-    public void assertFormat() {
+    void assertFormat() {
         String inputFormat = "yyyy-MM-dd HH:mm:ss.SSS";
         String tableFormatByQuarter = "yyyyQQ";
         String tableFormatByMonth = "yyyyMM";
@@ -335,8 +332,7 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     @Test
-    @SneakyThrows(ParseException.class)
-    public void assertTimestampInJDBCTypeWithZeroMillisecond() {
+    void assertTimestampInJDBCTypeWithZeroMillisecond() {
         Collection<String> actualAsLocalDateTime = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(LocalDateTime.of(2021, 6, 15, 2, 25, 27), LocalDateTime.of(2021, 7, 31, 2, 25, 27))));
@@ -365,15 +361,16 @@ public final class IntervalShardingAlgorithmTest {
                                 ZonedDateTime.of(2021, 6, 15, 2, 25, 27, 0, ZoneId.systemDefault()),
                                 ZonedDateTime.of(2021, 7, 31, 2, 25, 27, 0, ZoneId.systemDefault()))));
         assertThat(actualAsZonedDateTime.size(), is(24));
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
         Collection<String> actualAsDate = shardingAlgorithmByDayWithMillisecond.doSharding(availableTablesForDayWithMillisecondDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
-                        Range.closed(simpleDateFormat.parse("2021-06-15 02:25:27.000"), simpleDateFormat.parse("2021-07-31 02:25:27.000"))));
+                        Range.closed(Date.from(LocalDate.from(dateTimeFormatter.parse("2021-06-15 02:25:27.000")).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()),
+                                Date.from(LocalDate.from(dateTimeFormatter.parse("2021-07-31 02:25:27.000")).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()))));
         assertThat(actualAsDate.size(), is(24));
     }
     
     @Test
-    public void assertDateInJDBCType() {
+    void assertDateInJDBCType() {
         Collection<String> actualAsLocalDate = shardingAlgorithmByJDBCDate.doSharding(availableTablesForJDBCDateDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(LocalDate.of(2021, 6, 15), LocalDate.of(2021, 7, 31))));
@@ -381,7 +378,7 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     @Test
-    public void assertTimeInJDBCType() {
+    void assertTimeInJDBCType() {
         Collection<String> actualAsLocalTime = shardingAlgorithmByJDBCTime.doSharding(availableTablesForJDBCTimeDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(LocalTime.of(2, 25, 27), LocalTime.of(12, 25, 27))));
@@ -394,7 +391,7 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     @Test
-    public void assertIntegerInJDBCType() {
+    void assertIntegerInJDBCType() {
         Collection<String> actualAsYear = shardingAlgorithmByYear.doSharding(availableTablesForYearDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed(Year.of(2001), Year.of(2013))));
         assertThat(actualAsYear.size(), is(7));
@@ -410,7 +407,7 @@ public final class IntervalShardingAlgorithmTest {
     }
     
     @Test
-    public void assertDateInSqlDate() {
+    void assertDateInSqlDate() {
         Collection<String> actualAsLocalDate = shardingAlgorithmByJDBCDate.doSharding(availableTablesForJDBCDateDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO,
                         Range.closed(new Date(LocalDate.of(2021, 6, 15).atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()),

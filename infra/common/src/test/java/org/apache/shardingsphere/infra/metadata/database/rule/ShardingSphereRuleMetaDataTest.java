@@ -26,22 +26,22 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public final class ShardingSphereRuleMetaDataTest {
+class ShardingSphereRuleMetaDataTest {
     
     private final ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(new ShardingSphereRuleFixture()));
     
     @Test
-    public void assertFindRules() {
+    void assertFindRules() {
         assertThat(ruleMetaData.findRules(ShardingSphereRuleFixture.class).size(), is(1));
     }
     
     @Test
-    public void assertFindSingleRule() {
+    void assertFindSingleRule() {
         assertTrue(ruleMetaData.findSingleRule(ShardingSphereRuleFixture.class).isPresent());
     }
     
     @Test
-    public void assertGetSingleRule() {
+    void assertGetSingleRule() {
         assertThat(ruleMetaData.getSingleRule(ShardingSphereRuleFixture.class), instanceOf(ShardingSphereRuleFixture.class));
     }
 }

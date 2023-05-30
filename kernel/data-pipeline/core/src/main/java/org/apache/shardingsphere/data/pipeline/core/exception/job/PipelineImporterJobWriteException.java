@@ -27,7 +27,11 @@ public final class PipelineImporterJobWriteException extends PipelineSQLExceptio
     
     private static final long serialVersionUID = -7924663094479253130L;
     
-    public PipelineImporterJobWriteException() {
-        super(XOpenSQLState.GENERAL_ERROR, 91, "Importer job write data failed.");
+    public PipelineImporterJobWriteException(final Exception cause) {
+        super(XOpenSQLState.GENERAL_ERROR, 91, "Importer job write data failed.", cause);
+    }
+    
+    public PipelineImporterJobWriteException(final String reason, final Exception cause) {
+        super(XOpenSQLState.GENERAL_ERROR, 91, reason, cause);
     }
 }

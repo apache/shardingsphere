@@ -29,13 +29,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLComDescribePacketTest {
+class PostgreSQLComDescribePacketTest {
     
     @Mock
     private PostgreSQLPacketPayload payload;
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         when(payload.readInt1()).thenReturn((int) 'P');
         when(payload.readStringNul()).thenReturn("P_1");
         PostgreSQLComDescribePacket actual = new PostgreSQLComDescribePacket(payload);
@@ -44,7 +44,7 @@ public final class PostgreSQLComDescribePacketTest {
     }
     
     @Test
-    public void assertIdentifier() {
+    void assertIdentifier() {
         PostgreSQLComDescribePacket actual = new PostgreSQLComDescribePacket(payload);
         assertThat(actual.getIdentifier(), is(PostgreSQLCommandPacketType.DESCRIBE_COMMAND));
     }

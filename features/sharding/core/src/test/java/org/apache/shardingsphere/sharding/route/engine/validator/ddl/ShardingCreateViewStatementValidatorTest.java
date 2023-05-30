@@ -44,6 +44,7 @@ import org.mockito.quality.Strictness;
 
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -51,7 +52,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class ShardingCreateViewStatementValidatorTest {
+class ShardingCreateViewStatementValidatorTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private RouteContext routeContext;
@@ -69,7 +70,7 @@ public final class ShardingCreateViewStatementValidatorTest {
     private SelectStatement selectStatement;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(createViewStatementContext.getSqlStatement()).thenReturn(createViewStatement);
         when(createViewStatement.getSelect()).thenReturn(selectStatement);
         when(selectStatement.getFrom()).thenReturn(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
@@ -78,13 +79,13 @@ public final class ShardingCreateViewStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateCreateView() {
-        new ShardingCreateViewStatementValidator().preValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class),
-                mock(ConfigurationProperties.class));
+    void assertPreValidateCreateView() {
+        assertDoesNotThrow(() -> new ShardingCreateViewStatementValidator().preValidate(
+                shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class)));
     }
     
     @Test
-    public void assertPreValidateCreateViewWithException() {
+    void assertPreValidateCreateViewWithException() {
         when(shardingRule.isShardingTable(any())).thenReturn(true);
         when(shardingRule.isAllBindingTables(any())).thenReturn(false);
         ConfigurationProperties props = mock(ConfigurationProperties.class);
@@ -94,15 +95,15 @@ public final class ShardingCreateViewStatementValidatorTest {
     }
     
     @Test
-    public void assertPostValidateCreateView() {
+    void assertPostValidateCreateView() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
-        new ShardingCreateViewStatementValidator().postValidate(shardingRule, createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class),
-                mock(ConfigurationProperties.class), routeContext);
+        assertDoesNotThrow(() -> new ShardingCreateViewStatementValidator().postValidate(
+                shardingRule, createViewStatementContext, new HintValueContext(), Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), routeContext));
     }
     
     @Test
-    public void assertPostValidateCreateViewWithException() {
+    void assertPostValidateCreateViewWithException() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.isDistinctRow()).thenReturn(true);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
@@ -112,7 +113,7 @@ public final class ShardingCreateViewStatementValidatorTest {
     }
     
     @Test
-    public void assertPreValidateCreateViewWithBroadcastTable() {
+    void assertPreValidateCreateViewWithBroadcastTable() {
         when(shardingRule.isAllBroadcastTables(any())).thenReturn(true);
         when(shardingRule.isBroadcastTable("order_view")).thenReturn(false);
         ConfigurationProperties props = mock(ConfigurationProperties.class);

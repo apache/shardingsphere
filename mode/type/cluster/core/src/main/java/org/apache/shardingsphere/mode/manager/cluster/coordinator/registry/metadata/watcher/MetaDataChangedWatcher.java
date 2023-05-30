@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereView;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlViewSwapper;
+import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
@@ -41,7 +42,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 
@@ -100,7 +100,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         Optional<String> tableName = DatabaseMetaDataNode.getTableName(event.getKey());
         Optional<String> viewName = DatabaseMetaDataNode.getViewName(event.getKey());
         return databaseName.isPresent() && schemaName.isPresent() && !Strings.isNullOrEmpty(event.getValue())
-                && ((tableName.isPresent() && !SystemSchemaBuilderRule.isSystemTable(databaseName.get(), tableName.get()) || viewName.isPresent()));
+                && (tableName.isPresent() && !SystemSchemaBuilderRule.isSystemTable(databaseName.get(), tableName.get()) || viewName.isPresent());
     }
     
     private Optional<GovernanceEvent> createDatabaseChangedEvent(final DataChangedEvent event) {

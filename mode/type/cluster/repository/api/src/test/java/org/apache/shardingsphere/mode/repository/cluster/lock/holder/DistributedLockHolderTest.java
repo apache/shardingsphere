@@ -30,17 +30,17 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-public final class DistributedLockHolderTest {
+class DistributedLockHolderTest {
     
     private DistributedLockHolder defaultDistributedLockHolder;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         defaultDistributedLockHolder = new DistributedLockHolder("default", mock(ClusterPersistRepository.class), new DefaultLockTypedProperties(new Properties()));
     }
     
     @Test
-    public void assertGetDistributedLock() {
+    void assertGetDistributedLock() {
         DistributedLock distributedLock = defaultDistributedLockHolder.getDistributedLock("lock/key");
         assertThat(distributedLock, instanceOf(DefaultDistributedLock.class));
     }

@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -59,8 +58,8 @@ public final class ShowShardingAlgorithmExecutor implements RQLExecutor<ShowShar
         return Arrays.asList("name", "type", "props");
     }
     
-    private Object buildProps(final Properties props) {
-        return Objects.nonNull(props) ? PropertiesConverter.convert(props) : "";
+    private String buildProps(final Properties props) {
+        return null == props ? "" : PropertiesConverter.convert(props);
     }
     
     @Override

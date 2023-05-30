@@ -1,6 +1,6 @@
 +++
 title = "UNREGISTER STORAGE UNIT"
-weight = 4
+weight = 3
 +++
 
 ### Description

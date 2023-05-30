@@ -1,6 +1,6 @@
 +++
 title = "Encryption"
-weight = 5
+weight = 4
 +++
 
 ## Background
@@ -16,10 +16,9 @@ Class name: org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguratio
 Attributes:
 
 | *Name*                    | *DataType*                                  | *Description*                                                                                  | *Default Value* |
-| ------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------- |
+|---------------------------|---------------------------------------------|------------------------------------------------------------------------------------------------|-----------------|
 | tables (+)                | Collection\<EncryptTableRuleConfiguration\> | Encrypt table rule configurations                                                              |                 |
 | encryptors (+)            | Map\<String, AlgorithmConfiguration\>       | Encrypt algorithm name and configurations                                                      |                 |
-| queryWithCipherColumn (?) | boolean                                     | Whether query with cipher column for data encrypt. User you can use plaintext to query if have | true            |
 
 ### Encrypt Table Rule Configuration
 
@@ -27,11 +26,10 @@ Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleCo
 
 Attributes:
 
-| *Name*                    | *DataType*                                   | *Description*                      |
-| ------------------------- | -------------------------------------------- | ---------------------------------- |
-| name                      | String                                       | Table name                         |
-| columns (+)               | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rule configurations |
-| queryWithCipherColumn (?) | boolean                                      | The current table whether query with cipher column for data encrypt |
+| *Name*                    | *DataType*                                   | *Description*                                                       |
+|---------------------------|----------------------------------------------|---------------------------------------------------------------------|
+| name                      | String                                       | Table name                                                          |
+| columns (+)               | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rule configurations                                  |
 
 ### Encrypt Column Rule Configuration
 
@@ -39,17 +37,23 @@ Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleC
 
 Attributes:
 
-| *Name*                     | *DataType* | *Description*                                                        |
-|----------------------------| ---------- |----------------------------------------------------------------------|
-| logicColumn                | String     | Logic column name                                                    |
-| cipherColumn               | String     | Cipher column name                                                   |
-| assistedQueryColumn (?)    | String     | Assisted query column name                                           |
-| likeQueryColumn (?)        | String     | Like query column name                                               |
-| plainColumn (?)            | String     | Plain column name                                                    |
-| encryptorName              | String     | Encrypt algorithm name                                               |
-| assistedQueryEncryptorName | String     | Assisted query encrypt algorithm name                                |
-| likeQueryEncryptorName     | String     | Like query encrypt algorithm name                                    |
-| queryWithCipherColumn (?)  | boolean    | The current column whether query with cipher column for data encrypt |
+| *Name*        | *DataType*                         | *Description*                |
+|---------------|------------------------------------|------------------------------|
+| name          | String                             | Logic column name            |
+| cipher        | EncryptColumnItemRuleConfiguration | Cipher column config         |
+| assistedQuery (?) | EncryptColumnItemRuleConfiguration | Assisted query column config |
+| likeQuery (?) | EncryptColumnItemRuleConfiguration | Like query column config     |
+
+### Encrypt Column Item Rule Configuration
+
+Class name: org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration
+
+Attributes:
+
+| *Name*        | *DataType*                         | *Description*            |
+|-----------------|------------------------------------|--------------------------|
+| name            | String                             | encrypt column item name |
+| encryptorName   | String                             | encryptor name           |
 
 ### Encrypt Algorithm Configuration
 
@@ -58,7 +62,7 @@ Class name: org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfigurat
 Attributes:
 
 | *Name*     | *DataType* | *Description*                |
-| ---------- | ---------- | ---------------------------- |
+|------------|------------|------------------------------|
 | name       | String     | Encrypt algorithm name       |
 | type       | String     | Encrypt algorithm type       |
 | properties | Properties | Encrypt algorithm properties |
@@ -68,32 +72,28 @@ Please refer to [Built-in Encrypt Algorithm List](/en/user-manual/common-config/
 ## Procedure
 
 1. Create a real data source mapping relationship, where key is the logical name of the data source and value is the datasource object.
-1. Create the encryption rule object EncryptRuleConfiguration, and initialize the encryption table object EncryptTableRuleConfiguration, encryption algorithm and other parameters in the object.
-1. Call createDataSource of ShardingSphereDataSourceFactory to create  ShardingSphereDataSource.
+2. Create the encryption rule object EncryptRuleConfiguration, and initialize the encryption table object EncryptTableRuleConfiguration, encryption algorithm and other parameters in the object.
+3. Call createDataSource of ShardingSphereDataSourceFactory to create  ShardingSphereDataSource.
 
 ## Sample
 
 ```java
-public final class EncryptDatabasesConfiguration implements ExampleConfiguration {
+public final class EncryptDatabasesConfiguration {
     
-    @Override
-    public DataSource getDataSource() {
+    public DataSource getDataSource() throws SQLException {
         Properties props = new Properties();
         props.setProperty("aes-key-value", "123456");
-        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", "username", "", "", "username_plain", "name_encryptor", null);
-        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "like_pwd", "", "pwd_encryptor", null);
-        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest), null);
-        Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>(2, 1);
+        EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfiguration("username", new EncryptColumnItemRuleConfiguration("username", "name_encryptor"));
+        EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", new EncryptColumnItemRuleConfiguration("pwd", "pwd_encryptor"));
+        columnConfigTest.setAssistedQuery(new EncryptColumnItemRuleConfiguration("assisted_query_pwd", "pwd_encryptor"));
+        columnConfigTest.setLikeQuery(new EncryptColumnItemRuleConfiguration("like_pwd", "like_encryptor"));
+        EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
+        Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new HashMap<>();
         encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", props));
         encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("assistedTest", props));
         encryptAlgorithmConfigs.put("like_encryptor", new AlgorithmConfiguration("CHAR_DIGEST_LIKE", new Properties()));
         EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
-        try {
-            return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfig), props);
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-            return null;
-        }
+        return ShardingSphereDataSourceFactory.createDataSource(DataSourceUtil.createDataSource("demo_ds"), Collections.singleton(encryptRuleConfig), props);
     }
 }
 ```

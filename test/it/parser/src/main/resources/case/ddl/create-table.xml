@@ -1794,4 +1794,94 @@
             <column name="ATTACHMENT_NAME" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_character_varying">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" start-index="22" stop-index="33">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" start-index="36" stop-index="46">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="CHARACTER VARYING" start-index="49" stop-index="76">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_geomcollection">
+        <table name="t1" start-index="13" stop-index="14" />
+        <column-definition type="GEOMCOLLECTION" start-index="17" stop-index="32">
+            <column name="g" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_start_transaction">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" start-index="22" stop-index="33">
+            <column name="order_id" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_cast_function">
+        <table name="t1" start-index="13" stop-index="14" />
+        <column-definition type="json" start-index="16" stop-index="21">
+            <column name="j" />
+        </column-definition>
+        <constraint-definition index-name="mv_idx" start-index="24" stop-index="64" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_long_char_varying">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" start-index="22" stop-index="33">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" start-index="36" stop-index="46">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="LONG CHAR VARYING" start-index="49" stop-index="72">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_signed_int_cast_function">
+        <table name="t1" start-index="13" stop-index="14" />
+        <column-definition type="json" start-index="16" stop-index="21">
+            <column name="j" />
+        </column-definition>
+        <constraint-definition index-name="mv_idx" start-index="24" stop-index="66" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_signed_int">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" start-index="22" stop-index="33">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" start-index="36" stop-index="46">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="SIGNED INT" start-index="49" stop-index="65">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_unsigned_int_cast_function">
+        <table name="t1" start-index="13" stop-index="14" />
+        <column-definition type="json" start-index="16" stop-index="21">
+            <column name="j" />
+        </column-definition>
+        <constraint-definition index-name="mv_idx" start-index="24" stop-index="68" />
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_unsigned_int">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" start-index="22" stop-index="33">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" start-index="36" stop-index="46">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="UNSIGNED INT" start-index="49" stop-index="67">
+            <column name="status" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

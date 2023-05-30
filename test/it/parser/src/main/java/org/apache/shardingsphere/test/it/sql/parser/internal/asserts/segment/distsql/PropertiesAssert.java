@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperty;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -41,7 +41,7 @@ public final class PropertiesAssert {
      * @param actual actual properties
      * @param expected expected properties test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final Properties actual, final List<ExpectedProperty> expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final Properties actual, final Collection<ExpectedProperty> expected) {
         if (expected.isEmpty()) {
             assertTrue(actual.isEmpty(), assertContext.getText("Actual properties should not exist."));
         } else {

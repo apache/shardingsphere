@@ -46,7 +46,7 @@ public final class OrderedSPILoader {
      */
     public static <T extends OrderedSPI<?>> Map<Class<?>, T> getServicesByClass(final Class<T> spiClass, final Collection<Class<?>> types) {
         Collection<T> services = getServices(spiClass);
-        Map<Class<?>, T> result = new LinkedHashMap<>(services.size(), 1);
+        Map<Class<?>, T> result = new LinkedHashMap<>(services.size(), 1F);
         for (T each : services) {
             types.stream().filter(type -> each.getTypeClass() == type).forEach(type -> result.put(type, each));
         }
@@ -83,7 +83,7 @@ public final class OrderedSPILoader {
             return cachedServices.get();
         }
         Collection<V> services = getServices(spiClass, orderComparator);
-        Map<K, V> result = new LinkedHashMap<>(services.size(), 1);
+        Map<K, V> result = new LinkedHashMap<>(services.size(), 1F);
         for (V each : services) {
             types.stream().filter(type -> each.getTypeClass() == type.getClass()).forEach(type -> result.put(type, each));
         }

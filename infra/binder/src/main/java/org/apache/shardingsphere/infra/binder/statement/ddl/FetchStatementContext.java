@@ -37,7 +37,7 @@ import java.util.Optional;
  * Fetch statement context.
  */
 @Getter
-public final class FetchStatementContext extends CommonSQLStatementContext<FetchStatement> implements CursorAvailable, WhereAvailable, CursorDefinitionAware {
+public final class FetchStatementContext extends CommonSQLStatementContext implements CursorAvailable, WhereAvailable, CursorDefinitionAware {
     
     private CursorStatementContext cursorStatementContext;
     
@@ -46,6 +46,11 @@ public final class FetchStatementContext extends CommonSQLStatementContext<Fetch
     public FetchStatementContext(final FetchStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(Collections.emptyList(), getDatabaseType());
+    }
+    
+    @Override
+    public FetchStatement getSqlStatement() {
+        return (FetchStatement) super.getSqlStatement();
     }
     
     @Override

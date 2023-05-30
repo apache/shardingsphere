@@ -31,13 +31,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class PostgreSQLTimeBinaryProtocolValueTest {
+class PostgreSQLTimeBinaryProtocolValueTest {
     
     @Mock
     private PostgreSQLPacketPayload payload;
     
     @Test
-    public void assertNewInstance() {
+    void assertNewInstance() {
         PostgreSQLTimeBinaryProtocolValue actual = new PostgreSQLTimeBinaryProtocolValue();
         assertThat(actual.getColumnLength(null), is(8));
         when(payload.readInt8()).thenReturn(1L);

@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.RouteContextAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.TableToken;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -37,30 +38,29 @@ import java.util.LinkedList;
  * Table token generator.
  */
 @Setter
-public final class TableTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>>, ShardingRuleAware, RouteContextAware {
+public final class TableTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext>, ShardingRuleAware, RouteContextAware {
     
     private ShardingRule shardingRule;
     
     private RouteContext routeContext;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
         return isAllBindingTables(sqlStatementContext) || routeContext.containsTableSharding();
     }
     
-    private boolean isAllBindingTables(final SQLStatementContext<?> sqlStatementContext) {
+    private boolean isAllBindingTables(final SQLStatementContext sqlStatementContext) {
         Collection<String> shardingLogicTableNames = shardingRule.getShardingLogicTableNames(sqlStatementContext.getTablesContext().getTableNames());
         return shardingLogicTableNames.size() > 1 && shardingRule.isAllBindingTables(shardingLogicTableNames);
     }
     
     @Override
-    public Collection<TableToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
+    public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         return sqlStatementContext instanceof TableAvailable ? generateSQLTokens((TableAvailable) sqlStatementContext) : Collections.emptyList();
     }
     
-    @SuppressWarnings("rawtypes")
-    private Collection<TableToken> generateSQLTokens(final TableAvailable sqlStatementContext) {
-        Collection<TableToken> result = new LinkedList<>();
+    private Collection<SQLToken> generateSQLTokens(final TableAvailable sqlStatementContext) {
+        Collection<SQLToken> result = new LinkedList<>();
         for (SimpleTableSegment each : sqlStatementContext.getAllTables()) {
             TableNameSegment tableName = each.getTableName();
             if (shardingRule.findTableRule(tableName.getIdentifier().getValue()).isPresent()) {

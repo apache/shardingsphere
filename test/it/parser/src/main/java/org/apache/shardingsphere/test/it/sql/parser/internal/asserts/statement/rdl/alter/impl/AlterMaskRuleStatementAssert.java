@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mask.distsql.parser.segment.MaskRuleSegment;
 import org.apache.shardingsphere.mask.distsql.parser.statement.AlterMaskRuleStatement;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.distsql.rdl.MaskRuleAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.rdl.ExpectedMaskRule;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.rdl.rule.mask.AlterMaskRuleStatementTestCase;
 
@@ -48,10 +49,7 @@ public final class AlterMaskRuleStatementAssert {
      * @param expected expected alter mask rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final AlterMaskRuleStatement actual, final AlterMaskRuleStatementTestCase expected) {
-        if (null == expected) {
-            assertNull(actual, assertContext.getText("Actual statement should not exist."));
-        } else {
-            assertNotNull(actual, assertContext.getText("Actual statement should exist."));
+        if (ExistingAssert.assertIs(assertContext, actual, expected)) {
             assertMaskRules(assertContext, actual.getRules(), expected.getRules());
         }
     }

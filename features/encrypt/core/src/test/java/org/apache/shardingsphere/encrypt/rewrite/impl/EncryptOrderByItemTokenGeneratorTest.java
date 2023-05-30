@@ -47,12 +47,12 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class EncryptOrderByItemTokenGeneratorTest {
+class EncryptOrderByItemTokenGeneratorTest {
     
     private EncryptOrderByItemTokenGenerator generator;
     
     @BeforeEach
-    public void setup() {
+    void setup() {
         generator = new EncryptOrderByItemTokenGenerator();
         generator.setEncryptRule(buildEncryptRule());
         generator.setDatabaseName("db_schema");
@@ -60,7 +60,7 @@ public final class EncryptOrderByItemTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLTokens() {
+    void assertGenerateSQLTokens() {
         assertThat(generator.generateSQLTokens(buildSelectStatementContext()).size(), is(1));
     }
     
@@ -84,9 +84,8 @@ public final class EncryptOrderByItemTokenGeneratorTest {
         EncryptTable encryptTable = mock(EncryptTable.class);
         when(result.getCipherColumn("t_encrypt", "certificate_number")).thenReturn("cipher_certificate_number");
         when(result.findAssistedQueryColumn("t_encrypt", "certificate_number")).thenReturn(Optional.of("assisted_certificate_number"));
-        when(result.findPlainColumn("t_encrypt", "certificate_number")).thenReturn(Optional.of("certificate_number_plain"));
         when(encryptTable.findEncryptorName("certificate_number")).thenReturn(Optional.of("encryptor_name"));
-        when(result.findEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
+        when(result.findStandardEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(mock(StandardEncryptAlgorithm.class)));
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         return result;
     }

@@ -1,11 +1,11 @@
 +++
 title = "SHOW BROADCAST TABLE RULE"
-weight = 15
+weight = 14
 +++
 
 ## 描述
 
-`SHOW BROADCAST TABLE RULES` 语法用于查询指定数据库中具有广播规则的表
+`SHOW BROADCAST TABLE RULES` 语法用于查询指定数据库中具有广播规则的表。
 
 ### 语法定义
 
@@ -30,9 +30,9 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列                | 说明      |
-|------------------|-----------|
-|  broadcast_table | 广播表名称 |
+| 列               | 说明    |
+|-----------------|-------|
+| broadcast_table | 广播表名称 |
 
 ### 示例
 

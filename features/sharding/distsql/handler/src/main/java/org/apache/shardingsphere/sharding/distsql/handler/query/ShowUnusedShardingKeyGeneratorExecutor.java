@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -62,10 +61,10 @@ public final class ShowUnusedShardingKeyGeneratorExecutor implements RQLExecutor
     
     private Collection<String> getUsedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> result = new LinkedHashSet<>();
-        shardingRuleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy())).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
-        shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy())).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
+        shardingRuleConfig.getTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
+        shardingRuleConfig.getAutoTables().stream().filter(each -> null != each.getKeyGenerateStrategy()).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
         KeyGenerateStrategyConfiguration keyGenerateStrategy = shardingRuleConfig.getDefaultKeyGenerateStrategy();
-        if (Objects.nonNull(keyGenerateStrategy) && !Strings.isNullOrEmpty(keyGenerateStrategy.getKeyGeneratorName())) {
+        if (null != keyGenerateStrategy && !Strings.isNullOrEmpty(keyGenerateStrategy.getKeyGeneratorName())) {
             result.add(keyGenerateStrategy.getKeyGeneratorName());
         }
         return result;
@@ -76,8 +75,8 @@ public final class ShowUnusedShardingKeyGeneratorExecutor implements RQLExecutor
         return Arrays.asList("name", "type", "props");
     }
     
-    private Object buildProps(final Properties props) {
-        return Objects.nonNull(props) ? PropertiesConverter.convert(props) : "";
+    private String buildProps(final Properties props) {
+        return null == props ? "" : PropertiesConverter.convert(props);
     }
     
     @Override

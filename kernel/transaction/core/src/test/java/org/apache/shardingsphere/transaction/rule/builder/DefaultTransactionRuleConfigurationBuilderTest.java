@@ -27,10 +27,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public final class DefaultTransactionRuleConfigurationBuilderTest {
+class DefaultTransactionRuleConfigurationBuilderTest {
     
     @Test
-    public void assertBuild() {
+    void assertBuild() {
         TransactionRuleConfiguration actual = new DefaultTransactionRuleConfigurationBuilder().build();
         assertThat(actual.getDefaultType(), is(TransactionType.LOCAL.name()));
         assertNull(actual.getProviderType());

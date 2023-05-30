@@ -253,10 +253,10 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
     }
     
     private String checkSchemaInName(final String typname, final String schema) {
-        if (typname.indexOf(schema + "\".") > 0) {
+        if (typname.contains(schema + "\".")) {
             return typname.substring(schema.length() + 3);
         }
-        if (typname.indexOf(schema + ".") > 0) {
+        if (typname.contains(schema + ".")) {
             return typname.substring(schema.length() + 1);
         }
         return typname;
@@ -315,11 +315,11 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
             isArray = true;
             result = result.substring(0, result.lastIndexOf("[]"));
         }
-        int idx = result.indexOf("(");
+        int idx = result.indexOf('(');
         if (idx > 0 && result.endsWith(")")) {
             result = result.substring(0, idx);
         } else if (idx > 0 && result.startsWith("time")) {
-            int endIdx = result.indexOf(")");
+            int endIdx = result.indexOf(')');
             if (1 != endIdx) {
                 Matcher matcher = BRACKETS_PATTERN.matcher(result);
                 StringBuffer buffer = new StringBuffer();

@@ -38,31 +38,31 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
-public final class AlterShardingTableReferenceRuleStatementUpdaterTest {
+class AlterShardingTableReferenceRuleStatementUpdaterTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
     
     @Test
-    public void assertCheckWithoutCurrentRuleConfig() {
+    void assertCheckWithoutCurrentRuleConfig() {
         assertThrows(MissingRequiredRuleException.class,
                 () -> new AlterShardingTableReferenceRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("foo", "t_order,t_order_item"), null));
     }
     
     @Test
-    public void assertCheckWithNotExistedRule() {
+    void assertCheckWithNotExistedRule() {
         assertThrows(MissingRequiredRuleException.class,
                 () -> new AlterShardingTableReferenceRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("notExisted", "t_1,t_2"), createCurrentRuleConfiguration()));
     }
     
     @Test
-    public void assertCheckWithNotExistedTables() {
+    void assertCheckWithNotExistedTables() {
         assertThrows(MissingRequiredRuleException.class,
                 () -> new AlterShardingTableReferenceRuleStatementUpdater().checkSQLStatement(database, createSQLStatement("reference_0", "t_3,t_4"), createCurrentRuleConfiguration()));
     }
     
     @Test
-    public void assertUpdate() {
+    void assertUpdate() {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         new AlterShardingTableReferenceRuleStatementUpdater().updateCurrentRuleConfiguration(currentRuleConfig, createToBeAlteredRuleConfig());
         assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));

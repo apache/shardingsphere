@@ -19,13 +19,12 @@ package org.apache.shardingsphere.example.parser.mysql.statement;
 
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
-import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
+import org.apache.shardingsphere.sql.parser.api.SQLStatementVisitorEngine;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 public final class MySQLParserStatementExample {
     
@@ -48,17 +47,18 @@ public final class MySQLParserStatementExample {
     private static final List<String> MYSQL_PARSER_STATEMENT_LIST;
     
     static {
-        MYSQL_PARSER_STATEMENT_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_UPDATE_SQL, DML_DELETE_SQL,
-                DDL_CREATE_SQL, DDL_DROP_SQL, DDL_ALTER_SQL, DDL_SHOW_SQL);
+        MYSQL_PARSER_STATEMENT_LIST = Arrays.asList(DML_SELECT_SQL, DML_INSERT_SQL, DML_UPDATE_SQL, DML_DELETE_SQL, DDL_CREATE_SQL, DDL_DROP_SQL, DDL_ALTER_SQL, DDL_SHOW_SQL);
     }
     
-    public static void main(String[] args) {
+    // CHECKSTYLE:OFF
+    public static void main(final String[] args) {
+        // CHECKSTYLE:ON
         MYSQL_PARSER_STATEMENT_LIST.forEach(each -> {
             CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(each, false);
-            SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "STATEMENT", false, new Properties());
-            MySQLStatement sqlStatement = visitorEngine.visit(parseASTNode);
+            SQLStatementVisitorEngine visitorEngine = new SQLStatementVisitorEngine("MySQL", false);
+            SQLStatement sqlStatement = visitorEngine.visit(parseASTNode);
             System.out.println(sqlStatement.toString());
         });
     }

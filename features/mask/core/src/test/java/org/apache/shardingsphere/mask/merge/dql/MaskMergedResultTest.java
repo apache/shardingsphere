@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class MaskMergedResultTest {
+class MaskMergedResultTest {
     
     @Mock
     private MaskAlgorithmMetaData metaData;
@@ -46,12 +46,12 @@ public final class MaskMergedResultTest {
     private MergedResult mergedResult;
     
     @Test
-    public void assertNext() throws SQLException {
+    void assertNext() throws SQLException {
         assertFalse(new MaskMergedResult(metaData, mergedResult).next());
     }
     
     @Test
-    public void assertGetValue() throws SQLException {
+    void assertGetValue() throws SQLException {
         when(mergedResult.getValue(1, Object.class)).thenReturn("VALUE");
         MaskAlgorithm<String, String> maskAlgorithm = mock(MaskAlgorithm.class);
         when(maskAlgorithm.mask("VALUE")).thenReturn("MASK_VALUE");
@@ -60,21 +60,21 @@ public final class MaskMergedResultTest {
     }
     
     @Test
-    public void assertGetCalendarValue() throws SQLException {
+    void assertGetCalendarValue() throws SQLException {
         Calendar calendar = Calendar.getInstance();
         when(mergedResult.getCalendarValue(1, Date.class, calendar)).thenReturn(new Date(0L));
         assertThat(new MaskMergedResult(metaData, mergedResult).getCalendarValue(1, Date.class, calendar), is(new Date(0L)));
     }
     
     @Test
-    public void assertGetInputStream() throws SQLException {
+    void assertGetInputStream() throws SQLException {
         InputStream inputStream = mock(InputStream.class);
         when(mergedResult.getInputStream(1, "asc")).thenReturn(inputStream);
         assertThat(new MaskMergedResult(metaData, mergedResult).getInputStream(1, "asc"), is(inputStream));
     }
     
     @Test
-    public void assertWasNull() throws SQLException {
+    void assertWasNull() throws SQLException {
         assertFalse(new MaskMergedResult(metaData, mergedResult).wasNull());
     }
 }

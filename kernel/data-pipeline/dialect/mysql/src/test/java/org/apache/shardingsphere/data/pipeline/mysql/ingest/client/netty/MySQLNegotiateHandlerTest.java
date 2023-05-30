@@ -22,6 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.util.concurrent.Promise;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ServerInfo;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.ServerVersion;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLAuthenticationMethod;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
@@ -48,7 +49,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class MySQLNegotiateHandlerTest {
+class MySQLNegotiateHandlerTest {
     
     private static final String USER_NAME = "username";
     
@@ -69,15 +70,15 @@ public final class MySQLNegotiateHandlerTest {
     private MySQLNegotiateHandler mysqlNegotiateHandler;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(channelHandlerContext.channel()).thenReturn(channel);
         when(channel.pipeline()).thenReturn(pipeline);
         mysqlNegotiateHandler = new MySQLNegotiateHandler(USER_NAME, PASSWORD, authResultCallback);
     }
     
     @Test
-    public void assertChannelReadHandshakeInitPacket() throws ReflectiveOperationException {
-        MySQLHandshakePacket handshakePacket = new MySQLHandshakePacket(0, new MySQLAuthenticationPluginData(new byte[8], new byte[12]));
+    void assertChannelReadHandshakeInitPacket() throws ReflectiveOperationException {
+        MySQLHandshakePacket handshakePacket = new MySQLHandshakePacket(0, false, new MySQLAuthenticationPluginData(new byte[8], new byte[12]));
         handshakePacket.setAuthPluginName(MySQLAuthenticationMethod.NATIVE);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, handshakePacket);
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLHandshakeResponse41Packet.class));
@@ -89,9 +90,9 @@ public final class MySQLNegotiateHandlerTest {
     }
     
     @Test
-    public void assertChannelReadOkPacket() throws ReflectiveOperationException {
+    void assertChannelReadOkPacket() throws ReflectiveOperationException {
         MySQLOKPacket okPacket = new MySQLOKPacket(0);
-        ServerInfo serverInfo = new ServerInfo();
+        ServerInfo serverInfo = new ServerInfo(new ServerVersion("5.5.0-log"));
         Plugins.getMemberAccessor().set(MySQLNegotiateHandler.class.getDeclaredField("serverInfo"), mysqlNegotiateHandler, serverInfo);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, okPacket);
         verify(pipeline).remove(mysqlNegotiateHandler);
@@ -99,7 +100,7 @@ public final class MySQLNegotiateHandlerTest {
     }
     
     @Test
-    public void assertChannelReadErrorPacket() {
+    void assertChannelReadErrorPacket() {
         MySQLErrPacket errorPacket = new MySQLErrPacket(MySQLVendorError.ER_NO_DB_ERROR);
         assertThrows(RuntimeException.class, () -> mysqlNegotiateHandler.channelRead(channelHandlerContext, errorPacket));
     }

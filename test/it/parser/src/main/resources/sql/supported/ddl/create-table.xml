@@ -128,4 +128,13 @@
     <sql-case id="create_table_with_visible" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10) VISIBLE) ENGINE=INNODB" db-types="MySQL" />
     <sql-case id="create_table_with_invisible" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10) INVISIBLE) ENGINE=INNODB" db-types="MySQL" />
     <sql-case id="create_table_with_varchar2_char_and_byte_type" value="CREATE TABLE t_order (SYS_ID VARCHAR2(32 CHAR) VISIBLE NOT NULL, ATTACHMENT_NAME VARCHAR2(1024 BYTE) VISIBLE DEFAULT '')" db-types="Oracle" />
+    <sql-case id="create_table_with_character_varying" value="CREATE TABLE t_order (order_id INT, user_id INT, status CHARACTER VARYING(50))" db-types="MySQL" />
+    <sql-case id="create_table_with_geomcollection" value="CREATE TABLE t1 (g GEOMCOLLECTION)" db-types="MySQL" />
+    <sql-case id="create_table_with_start_transaction" value="CREATE TABLE t_order (order_id INT) START TRANSACTION" db-types="MySQL" />
+    <sql-case id="create_table_with_cast_function" value="CREATE TABLE t1(j json, INDEX mv_idx((CAST(j AS UNSIGNED ARRAY))))" db-types="MySQL" />
+    <sql-case id="create_table_with_long_char_varying" value="CREATE TABLE t_order (order_id INT, user_id INT, status LONG CHAR VARYING)" db-types="MySQL" />
+    <sql-case id="create_table_with_signed_int_cast_function" value="CREATE TABLE t1(j json, INDEX mv_idx((CAST(j AS SIGNED INT ARRAY))))" db-types="MySQL" />
+    <sql-case id="create_table_with_signed_int" value="CREATE TABLE t_order (order_id INT, user_id INT, status SIGNED INT)" db-types="MySQL" />
+    <sql-case id="create_table_with_unsigned_int_cast_function" value="CREATE TABLE t1(j json, INDEX mv_idx((CAST(j AS UNSIGNED INT ARRAY))))" db-types="MySQL" />
+    <sql-case id="create_table_with_unsigned_int" value="CREATE TABLE t_order (order_id INT, user_id INT, status UNSIGNED INT)" db-types="MySQL" />
 </sql-cases>

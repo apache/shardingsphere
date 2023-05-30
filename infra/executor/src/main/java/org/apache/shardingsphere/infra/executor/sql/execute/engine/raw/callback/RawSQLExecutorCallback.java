@@ -21,8 +21,8 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.raw.RawSQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
-import org.apache.shardingsphere.infra.executor.sql.process.ExecuteIDContext;
-import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessIdContext;
+import org.apache.shardingsphere.infra.executor.sql.process.ProcessEngine;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 import java.sql.SQLException;
@@ -36,6 +36,8 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
     @SuppressWarnings("rawtypes")
     private final Collection<RawExecutorCallback> callbacks;
     
+    private final ProcessEngine processEngine = new ProcessEngine();
+    
     public RawSQLExecutorCallback() {
         callbacks = ShardingSphereServiceLoader.getServiceInstances(RawExecutorCallback.class);
         Preconditions.checkState(!callbacks.isEmpty(), "No raw executor callback implementation found.");
@@ -45,10 +47,9 @@ public final class RawSQLExecutorCallback implements ExecutorCallback<RawSQLExec
     @Override
     public Collection<ExecuteResult> execute(final Collection<RawSQLExecutionUnit> inputs, final boolean isTrunkThread) throws SQLException {
         Collection<ExecuteResult> result = callbacks.iterator().next().execute(inputs, isTrunkThread);
-        if (!ExecuteIDContext.isEmpty()) {
-            ExecuteProcessEngine executeProcessEngine = new ExecuteProcessEngine();
-            for (RawSQLExecutionUnit each : inputs) {
-                executeProcessEngine.finishExecution(each);
+        if (!ProcessIdContext.isEmpty()) {
+            for (int i = 0; i < inputs.size(); i++) {
+                processEngine.completeSQLUnitExecution();
             }
         }
         return result;

@@ -1,11 +1,11 @@
 +++
 title = "SET DEFAULT SINGLE TABLE STORAGE UNIT"
-weight = 2
+weight = 1
 +++
 
 ## 描述
 
-`SET DEFAULT SINGLE TABLE STORAGE UNIT` 语法用于设置默认的单表存储单元
+`SET DEFAULT SINGLE TABLE STORAGE UNIT` 语法用于设置默认的单表存储单元。
 
 ### 语法定义
 

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.yaml.YamlStorageNodeDataSource;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.yaml.YamlStorageNodeDataSourceSwapper;
-import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
+import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -45,7 +45,7 @@ public final class StorageNodeStatusService {
      */
     public Map<String, StorageNodeDataSource> loadStorageNodes() {
         Collection<String> storageNodes = repository.getChildrenKeys(StorageNode.getRootPath());
-        Map<String, StorageNodeDataSource> result = new HashMap<>(storageNodes.size(), 1);
+        Map<String, StorageNodeDataSource> result = new HashMap<>(storageNodes.size(), 1F);
         storageNodes.forEach(each -> {
             String yamlContext = repository.getDirectly(StorageNode.getStorageNodesDataSourcePath(each));
             if (!Strings.isNullOrEmpty(yamlContext)) {

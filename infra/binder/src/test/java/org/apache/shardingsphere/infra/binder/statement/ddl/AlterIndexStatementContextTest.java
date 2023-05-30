@@ -37,20 +37,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class AlterIndexStatementContextTest {
+class AlterIndexStatementContextTest {
     
     @Test
-    public void assertPostgreSQLNewInstance() {
+    void assertPostgreSQLNewInstance() {
         assertNewInstance(mock(PostgreSQLAlterIndexStatement.class));
     }
     
     @Test
-    public void assertOracleNewInstance() {
+    void assertOracleNewInstance() {
         assertNewInstance(mock(OracleAlterIndexStatement.class));
     }
     
     @Test
-    public void assertSQLServerNewInstance() {
+    void assertSQLServerNewInstance() {
         assertNewInstance(mock(SQLServerAlterIndexStatement.class));
     }
     

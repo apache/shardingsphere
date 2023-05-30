@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
+class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     
     private DataConsistencyCalculateParameter parameter;
     
@@ -59,7 +59,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     private Connection connection;
     
     @BeforeEach
-    public void setUp() throws SQLException {
+    void setUp() throws SQLException {
         PipelineColumnMetaData uniqueKey = new PipelineColumnMetaData(1, "id", Types.INTEGER, "integer", false, true, true);
         parameter = new DataConsistencyCalculateParameter(pipelineDataSource, null,
                 "foo_tbl", Arrays.asList("foo_col", "bar_col"), "FIXTURE", "FIXTURE", uniqueKey, Collections.emptyMap());
@@ -67,7 +67,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     }
     
     @Test
-    public void assertCalculateSuccess() throws SQLException {
+    void assertCalculateSuccess() throws SQLException {
         PreparedStatement preparedStatement0 = mockPreparedStatement(123L, 10);
         when(connection.prepareStatement("SELECT CRC32(foo_col) FROM foo_tbl")).thenReturn(preparedStatement0);
         PreparedStatement preparedStatement1 = mockPreparedStatement(456L, 10);
@@ -87,7 +87,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithmTest {
     }
     
     @Test
-    public void assertCalculateFailed() throws SQLException {
+    void assertCalculateFailed() throws SQLException {
         when(connection.prepareStatement(anyString())).thenThrow(new SQLException());
         assertThrows(PipelineTableDataConsistencyCheckLoadingFailedException.class, () -> new CRC32MatchDataConsistencyCalculateAlgorithm().calculate(parameter));
     }

@@ -33,6 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.L
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.NotExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.SQLSegmentConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.BetweenExpressionConverter;
@@ -48,6 +49,7 @@ import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expre
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.SubqueryExpressionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.impl.AggregationProjectionConverter;
 import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.projection.impl.DataTypeConverter;
+import org.apache.shardingsphere.sqlfederation.optimizer.converter.segment.expression.impl.NotExpressionConverter;
 
 import java.util.Optional;
 
@@ -103,6 +105,9 @@ public final class ExpressionConverter implements SQLSegmentConverter<Expression
         }
         if (segment instanceof CaseWhenExpression) {
             return new CaseWhenExpressionConverter().convert((CaseWhenExpression) segment);
+        }
+        if (segment instanceof NotExpression) {
+            return new NotExpressionConverter().convert((NotExpression) segment);
         }
         throw new UnsupportedSQLOperationException("unsupported TableSegment type: " + segment.getClass());
     }

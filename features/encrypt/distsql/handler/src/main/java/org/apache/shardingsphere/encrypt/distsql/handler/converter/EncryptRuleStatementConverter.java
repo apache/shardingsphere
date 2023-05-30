@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.converter;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnItemRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.segment.EncryptColumnSegment;
@@ -32,6 +35,7 @@ import java.util.Map;
 /**
  * Encrypt rule statement converter.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptRuleStatementConverter {
     
     /**
@@ -55,19 +59,23 @@ public final class EncryptRuleStatementConverter {
         for (EncryptColumnSegment each : ruleSegment.getColumns()) {
             columns.add(createEncryptColumnRuleConfiguration(ruleSegment.getTableName(), each));
         }
-        return new EncryptTableRuleConfiguration(ruleSegment.getTableName(), columns, ruleSegment.getQueryWithCipherColumn());
+        return new EncryptTableRuleConfiguration(ruleSegment.getTableName(), columns);
     }
     
     private static EncryptColumnRuleConfiguration createEncryptColumnRuleConfiguration(final String tableName, final EncryptColumnSegment columnSegment) {
+        EncryptColumnItemRuleConfiguration cipherColumnConfig = new EncryptColumnItemRuleConfiguration(columnSegment.getCipherColumn(), getEncryptorName(tableName, columnSegment.getName()));
+        EncryptColumnRuleConfiguration result = new EncryptColumnRuleConfiguration(columnSegment.getName(), cipherColumnConfig);
         String assistedQueryEncryptorName = null == columnSegment.getAssistedQueryEncryptor() ? null : getAssistedQueryEncryptorName(tableName, columnSegment.getName());
+        EncryptColumnItemRuleConfiguration assistedQueryColumnConfig = new EncryptColumnItemRuleConfiguration(columnSegment.getAssistedQueryColumn(), assistedQueryEncryptorName);
+        result.setAssistedQuery(assistedQueryColumnConfig);
         String likeQueryEncryptorName = null == columnSegment.getLikeQueryEncryptor() ? null : getLikeQueryEncryptorName(tableName, columnSegment.getName());
-        return new EncryptColumnRuleConfiguration(columnSegment.getName(), columnSegment.getCipherColumn(), columnSegment.getAssistedQueryColumn(),
-                columnSegment.getLikeQueryColumn(), columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()),
-                assistedQueryEncryptorName, likeQueryEncryptorName, columnSegment.getQueryWithCipherColumn());
+        EncryptColumnItemRuleConfiguration likeQueryColumnConfig = new EncryptColumnItemRuleConfiguration(columnSegment.getLikeQueryColumn(), likeQueryEncryptorName);
+        result.setLikeQuery(likeQueryColumnConfig);
+        return result;
     }
     
     private static Map<String, AlgorithmConfiguration> createEncryptorConfigurations(final EncryptRuleSegment ruleSegment) {
-        Map<String, AlgorithmConfiguration> result = new HashMap<>(ruleSegment.getColumns().size(), 1);
+        Map<String, AlgorithmConfiguration> result = new HashMap<>(ruleSegment.getColumns().size(), 1F);
         for (EncryptColumnSegment each : ruleSegment.getColumns()) {
             result.put(getEncryptorName(ruleSegment.getTableName(), each.getName()), createEncryptorConfiguration(each));
             if (null != each.getAssistedQueryEncryptor()) {

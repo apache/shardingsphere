@@ -30,5 +30,5 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 @ToString
 public final class InventoryTaskProgress implements TaskProgress {
     
-    private final IngestPosition<?> position;
+    private final IngestPosition position;
 }

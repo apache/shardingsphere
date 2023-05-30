@@ -1,11 +1,11 @@
 +++
-title = "SHOW SHADOW ALGORITHM"
-weight = 4
+title = "SHOW SHADOW ALGORITHMS"
+weight = 3
 +++
 
 ### 描述
 
-`SHOW SHADOW ALGORITHM` 语法用于查询指定逻辑库中的影子算法。
+`SHOW SHADOW ALGORITHMS` 语法用于查询指定逻辑库中的影子算法。
 
 ### 语法
 
@@ -30,12 +30,12 @@ databaseName ::=
 
 ### 返回值说明
 
-| 列                    | 说明        |
-| -------------------   | ---------- |
+| 列                     | 说明     |
+|-----------------------|--------|
 | shadow_algorithm_name | 影子算法名称 |
-| type                  | 算法类型    |
-| props                 | 算法参数    |
-| is_default            | 是否默认    |
+| type                  | 算法类型   |
+| props                 | 算法参数   |
+| is_default            | 是否默认   |
 
 ### 示例
 

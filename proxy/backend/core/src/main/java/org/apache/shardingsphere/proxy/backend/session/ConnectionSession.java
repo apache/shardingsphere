@@ -21,13 +21,12 @@ import io.netty.util.AttributeMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.binder.QueryContext;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
+import org.apache.shardingsphere.infra.session.query.QueryContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.executor.sql.prepare.driver.CacheableExecutorConnectionManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.TransactionIsolationLevel;
@@ -47,7 +46,7 @@ public final class ConnectionSession {
     
     private volatile int connectionId;
     
-    private volatile Grantee grantee;
+    private Grantee grantee;
     
     private final TransactionStatus transactionStatus;
     
@@ -61,8 +60,9 @@ public final class ConnectionSession {
     
     private TransactionIsolationLevel isolationLevel;
     
-    private final BackendConnection backendConnection;
+    private final ProxyDatabaseConnectionManager databaseConnectionManager;
     
+    @SuppressWarnings("rawtypes")
     private final ExecutorStatementManager statementManager;
     
     private final ServerPreparedStatementRegistry serverPreparedStatementRegistry = new ServerPreparedStatementRegistry();
@@ -71,7 +71,7 @@ public final class ConnectionSession {
     
     private final RequiredSessionVariableRecorder requiredSessionVariableRecorder = new RequiredSessionVariableRecorder();
     
-    private volatile String executionId;
+    private volatile String processId;
     
     private QueryContext queryContext;
     
@@ -79,9 +79,9 @@ public final class ConnectionSession {
         this.protocolType = protocolType;
         transactionStatus = new TransactionStatus(initialTransactionType);
         this.attributeMap = attributeMap;
-        backendConnection = new BackendConnection(this);
+        databaseConnectionManager = new ProxyDatabaseConnectionManager(this);
         statementManager = new JDBCBackendStatement();
-        connectionContext = new ConnectionContext(((CacheableExecutorConnectionManager<?>) backendConnection)::getDataSourceNamesOfCachedConnections);
+        connectionContext = new ConnectionContext(databaseConnectionManager::getUsedDataSourceNames);
     }
     
     /**

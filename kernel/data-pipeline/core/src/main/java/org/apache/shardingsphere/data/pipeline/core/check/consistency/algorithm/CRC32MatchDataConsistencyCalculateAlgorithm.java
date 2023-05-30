@@ -24,7 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsist
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCalculatedResult;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.PipelineTableDataConsistencyCheckLoadingFailedException;
 import org.apache.shardingsphere.data.pipeline.core.exception.data.UnsupportedCRC32DataConsistencyCalculateAlgorithmException;
-import org.apache.shardingsphere.data.pipeline.core.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.data.pipeline.core.util.DatabaseTypeUtils;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractDataConsistencyCalculateAlgorithm {
     
-    private static final Collection<String> SUPPORTED_DATABASE_TYPES = DatabaseTypeUtil.getTrunkAndBranchDatabaseTypes(Collections.singleton(new MySQLDatabaseType().getType()));
+    private static final Collection<String> SUPPORTED_DATABASE_TYPES = DatabaseTypeUtils.getTrunkAndBranchDatabaseTypes(Collections.singleton(new MySQLDatabaseType().getType()));
     
     @Override
     public Iterable<DataConsistencyCalculatedResult> calculate(final DataConsistencyCalculateParameter param) {
@@ -62,8 +62,9 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
         ShardingSpherePreconditions.checkState(sql.isPresent(), () -> new UnsupportedCRC32DataConsistencyCalculateAlgorithmException(param.getDatabaseType()));
         try (
                 Connection connection = param.getDataSource().getConnection();
-                PreparedStatement preparedStatement = setCurrentStatement(connection.prepareStatement(sql.get()));
+                PreparedStatement preparedStatement = connection.prepareStatement(sql.get());
                 ResultSet resultSet = preparedStatement.executeQuery()) {
+            setCurrentStatement(preparedStatement);
             resultSet.next();
             long crc32 = resultSet.getLong(1);
             int recordsCount = resultSet.getInt(2);
@@ -109,7 +110,7 @@ public final class CRC32MatchDataConsistencyCalculateAlgorithm extends AbstractD
                 return true;
             }
             if (getClass() != o.getClass()) {
-                log.warn("CalculatedResult type not match, o.className={}", o.getClass().getName());
+                log.warn("DataMatchCalculatedResult type not match, o.className={}", o.getClass().getName());
                 return false;
             }
             final CalculatedResult that = (CalculatedResult) o;

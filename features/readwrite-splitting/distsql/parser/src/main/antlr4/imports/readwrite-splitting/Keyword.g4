@@ -23,6 +23,14 @@ WS
     : [ \t\r\n] + ->skip
     ;
 
+TRUE
+    : T R U E
+    ;
+
+FALSE
+    : F A L S E
+    ;
+
 CREATE
     : C R E A T E
     ;
@@ -59,8 +67,8 @@ READ_STORAGE_UNITS
     : R E A D UL_ S T O R A G E UL_ U N I T S
     ;
 
-AUTO_AWARE_RESOURCE
-    : A U T O UL_ A W A R E UL_ R E S O U R C E
+TRANSACTIONAL_READ_QUERY_STRATEGY
+    : T R A N S A C T I O N A L UL_ R E A D UL_ Q U E R Y UL_ S T R A T E G Y
     ;
 
 TYPE
@@ -121,34 +129,6 @@ RANDOM
 
 WEIGHT
     : W E I G H T
-    ;
-
-TRANSACTION_RANDOM
-    : T R A N S A C T I O N UL_ R A N D O M
-    ;
-
-TRANSACTION_ROUND_ROBIN
-    : T R A N S A C T I O N UL_ R O U N D UL_ R O B I N
-    ;
-
-TRANSACTION_WEIGHT
-    : T R A N S A C T I O N UL_ W E I G H T
-    ;
-
-FIXED_REPLICA_RANDOM
-    : F I X E D UL_ R E P L I C A UL_ R A N D O M
-    ;
-
-FIXED_REPLICA_ROUND_ROBIN
-    : F I X E D UL_ R E P L I C A UL_ R O U N D UL_ R O B I N
-    ;
-
-FIXED_REPLICA_WEIGHT
-    : F I X E D UL_ R E P L I C A UL_ W E I G H T
-    ;
-
-FIXED_PRIMARY
-    : F I X E D UL_ P R I M A R Y
     ;
 
 NOT

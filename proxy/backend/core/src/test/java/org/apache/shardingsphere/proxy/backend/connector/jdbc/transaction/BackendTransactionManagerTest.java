@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.connector.jdbc.transaction;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.context.ConnectionContext;
-import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.connector.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
@@ -52,13 +52,13 @@ import static org.mockito.Mockito.when;
 @ExtendWith(AutoMockExtension.class)
 @StaticMockSettings(ProxyContext.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-public final class BackendTransactionManagerTest {
+class BackendTransactionManagerTest {
     
     @Mock
     private ConnectionSession connectionSession;
     
     @Mock
-    private BackendConnection backendConnection;
+    private ProxyDatabaseConnectionManager databaseConnectionManager;
     
     @Mock
     private TransactionStatus transactionStatus;
@@ -72,40 +72,40 @@ public final class BackendTransactionManagerTest {
     private BackendTransactionManager backendTransactionManager;
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
-        when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
+        when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         TransactionConnectionContext context = new TransactionConnectionContext();
-        when(connectionContext.getTransactionConnectionContext()).thenReturn(context);
+        when(connectionContext.getTransactionContext()).thenReturn(context);
     }
     
     @Test
-    public void assertBeginForLocalTransaction() {
+    void assertBeginForLocalTransaction() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.begin();
         verify(transactionStatus).setInTransaction(true);
-        verify(backendConnection).closeHandlers(true);
-        verify(backendConnection).closeConnections(false);
+        verify(databaseConnectionManager).closeHandlers(true);
+        verify(databaseConnectionManager).closeConnections(false);
         verify(localTransactionManager).begin();
     }
     
     @Test
-    public void assertBeginForDistributedTransaction() {
+    void assertBeginForDistributedTransaction() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         newBackendTransactionManager(TransactionType.XA, true);
         backendTransactionManager.begin();
         verify(transactionStatus, times(0)).setInTransaction(true);
-        verify(backendConnection, times(0)).closeConnections(false);
+        verify(databaseConnectionManager, times(0)).closeConnections(false);
         verify(shardingSphereTransactionManager).begin();
     }
     
     @Test
-    public void assertCommitForLocalTransaction() throws SQLException {
+    void assertCommitForLocalTransaction() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         newBackendTransactionManager(TransactionType.LOCAL, true);
@@ -115,7 +115,7 @@ public final class BackendTransactionManagerTest {
     }
     
     @Test
-    public void assertCommitForDistributedTransaction() throws SQLException {
+    void assertCommitForDistributedTransaction() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         newBackendTransactionManager(TransactionType.XA, true);
@@ -125,7 +125,7 @@ public final class BackendTransactionManagerTest {
     }
     
     @Test
-    public void assertCommitWithoutTransaction() throws SQLException {
+    void assertCommitWithoutTransaction() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         newBackendTransactionManager(TransactionType.LOCAL, false);
@@ -136,7 +136,7 @@ public final class BackendTransactionManagerTest {
     }
     
     @Test
-    public void assertRollbackForLocalTransaction() throws SQLException {
+    void assertRollbackForLocalTransaction() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         newBackendTransactionManager(TransactionType.LOCAL, true);
@@ -146,7 +146,7 @@ public final class BackendTransactionManagerTest {
     }
     
     @Test
-    public void assertRollbackForDistributedTransaction() throws SQLException {
+    void assertRollbackForDistributedTransaction() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         newBackendTransactionManager(TransactionType.XA, true);
@@ -156,7 +156,7 @@ public final class BackendTransactionManagerTest {
     }
     
     @Test
-    public void assertRollbackWithoutTransaction() throws SQLException {
+    void assertRollbackWithoutTransaction() throws SQLException {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         newBackendTransactionManager(TransactionType.LOCAL, false);
@@ -169,13 +169,19 @@ public final class BackendTransactionManagerTest {
     private void newBackendTransactionManager(final TransactionType transactionType, final boolean inTransaction) {
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(transactionType);
         when(transactionStatus.isInTransaction()).thenReturn(inTransaction);
-        backendTransactionManager = new BackendTransactionManager(backendConnection);
+        backendTransactionManager = new BackendTransactionManager(databaseConnectionManager);
         setLocalTransactionManager();
+        setTransactionHooks();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
     private void setLocalTransactionManager() {
         Plugins.getMemberAccessor().set(BackendTransactionManager.class.getDeclaredField("localTransactionManager"), backendTransactionManager, localTransactionManager);
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void setTransactionHooks() {
+        Plugins.getMemberAccessor().set(BackendTransactionManager.class.getDeclaredField("transactionHooks"), backendTransactionManager, Collections.emptyList());
     }
     
     private ContextManager mockContextManager() {

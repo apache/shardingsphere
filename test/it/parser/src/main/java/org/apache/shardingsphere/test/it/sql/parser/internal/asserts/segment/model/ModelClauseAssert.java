@@ -56,7 +56,7 @@ public final class ModelClauseAssert {
         if (null != expected.getReferenceModelSelect()) {
             assertNotNull(actual.getReferenceModelSelects(), assertContext.getText("Actual reference model select subquery should exist."));
             assertThat(assertContext.getText("Actual reference model select subquery size assertion error: "), actual.getReferenceModelSelects().size(), is(expected.getReferenceModelSelect().size()));
-            assertReferenceModelSelectStatements(assertContext, actual.getReferenceModelSelects(), expected.getReferenceModelSelect());
+            assertSubquerySegments(assertContext, actual.getReferenceModelSelects(), expected.getReferenceModelSelect());
         }
         if (null != expected.getOrderBySegments()) {
             assertNotNull(actual.getOrderBySegments(), assertContext.getText("Actual order by segments should exist."));
@@ -71,11 +71,11 @@ public final class ModelClauseAssert {
         if (null != expected.getCellAssignmentSelect()) {
             assertNotNull(actual.getCellAssignmentSelects(), assertContext.getText("Actual cell assignment select subquery should exist."));
             assertThat(assertContext.getText("Actual cell assignment select size assertion error: "), actual.getCellAssignmentSelects().size(), is(expected.getCellAssignmentSelect().size()));
-            assertCellAssignmentSelectStatements(assertContext, actual.getCellAssignmentSelects(), expected.getCellAssignmentSelect());
+            assertSubquerySegments(assertContext, actual.getCellAssignmentSelects(), expected.getCellAssignmentSelect());
         }
     }
     
-    private static void assertReferenceModelSelectStatements(final SQLCaseAssertContext assertContext, final List<SubquerySegment> actual, final List<SelectStatementTestCase> expected) {
+    private static void assertSubquerySegments(final SQLCaseAssertContext assertContext, final List<SubquerySegment> actual, final List<SelectStatementTestCase> expected) {
         int count = 0;
         for (SubquerySegment each : actual) {
             SelectStatementAssert.assertIs(assertContext, each.getSelect(), expected.get(count));
@@ -95,14 +95,6 @@ public final class ModelClauseAssert {
         int count = 0;
         for (ColumnSegment each : actual) {
             ColumnAssert.assertIs(assertContext, each, expected.get(count));
-            count++;
-        }
-    }
-    
-    private static void assertCellAssignmentSelectStatements(final SQLCaseAssertContext assertContext, final List<SubquerySegment> actual, final List<SelectStatementTestCase> expected) {
-        int count = 0;
-        for (SubquerySegment each : actual) {
-            SelectStatementAssert.assertIs(assertContext, each.getSelect(), expected.get(count));
             count++;
         }
     }

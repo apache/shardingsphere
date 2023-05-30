@@ -36,6 +36,7 @@ public final class SQLNodeConverterEngine {
      * 
      * @param statement SQL statement to be converted
      * @return sqlNode converted SQL node
+     * @throws OptimizationSQLNodeConvertException optimization SQL node convert exception
      */
     public static SqlNode convert(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {

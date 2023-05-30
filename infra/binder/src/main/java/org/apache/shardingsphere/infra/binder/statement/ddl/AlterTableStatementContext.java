@@ -44,13 +44,18 @@ import java.util.LinkedList;
  * Alter table statement context.
  */
 @Getter
-public final class AlterTableStatementContext extends CommonSQLStatementContext<AlterTableStatement> implements TableAvailable, IndexAvailable, ConstraintAvailable {
+public final class AlterTableStatementContext extends CommonSQLStatementContext implements TableAvailable, IndexAvailable, ConstraintAvailable {
     
     private final TablesContext tablesContext;
     
     public AlterTableStatementContext(final AlterTableStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(sqlStatement.getTable(), getDatabaseType());
+    }
+    
+    @Override
+    public AlterTableStatement getSqlStatement() {
+        return (AlterTableStatement) super.getSqlStatement();
     }
     
     @Override

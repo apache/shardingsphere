@@ -19,9 +19,8 @@ package org.apache.shardingsphere.transaction;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.context.transaction.TransactionConnectionContext;
+import org.apache.shardingsphere.infra.session.connection.transaction.TransactionConnectionContext;
 import org.apache.shardingsphere.transaction.api.TransactionType;
-import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
@@ -53,7 +52,6 @@ public final class ConnectionTransaction {
         this.databaseName = databaseName;
         this.transactionType = transactionType;
         transactionManager = rule.getResource().getTransactionManager(transactionType);
-        TransactionTypeHolder.set(transactionType);
     }
     
     /**
@@ -91,7 +89,7 @@ public final class ConnectionTransaction {
      * @return hold transaction or not
      */
     public boolean isHoldTransaction(final boolean autoCommit) {
-        return (TransactionType.LOCAL == transactionType && !autoCommit) || (TransactionType.XA == transactionType && isInTransaction());
+        return TransactionType.LOCAL == transactionType && !autoCommit || TransactionType.XA == transactionType && isInTransaction();
     }
     
     /**

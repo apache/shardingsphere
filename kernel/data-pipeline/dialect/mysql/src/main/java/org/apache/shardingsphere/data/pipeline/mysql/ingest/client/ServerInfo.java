@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.client;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * MySQL server info.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 public final class ServerInfo {
     
-    private volatile ServerVersion serverVersion;
+    private final ServerVersion serverVersion;
 }
