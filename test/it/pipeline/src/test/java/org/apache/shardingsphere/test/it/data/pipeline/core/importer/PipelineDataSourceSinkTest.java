@@ -54,6 +54,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -95,7 +96,7 @@ class PipelineDataSourceSinkTest {
     void assertWriteInsertDataRecord() throws SQLException {
         DataRecord insertRecord = getDataRecord("INSERT");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(insertRecord));
+        when(channel.fetchRecords(anyInt(), anyLong(), any())).thenReturn(mockRecords(insertRecord));
         importer.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(2, 10);
@@ -107,7 +108,7 @@ class PipelineDataSourceSinkTest {
     void assertDeleteDataRecord() throws SQLException {
         DataRecord deleteRecord = getDataRecord("DELETE");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(deleteRecord));
+        when(channel.fetchRecords(anyInt(), anyLong(), any())).thenReturn(mockRecords(deleteRecord));
         when(preparedStatement.executeBatch()).thenReturn(new int[]{1});
         importer.run();
         verify(preparedStatement).setObject(1, 1);
@@ -119,7 +120,7 @@ class PipelineDataSourceSinkTest {
     void assertUpdateDataRecord() throws SQLException {
         DataRecord updateRecord = getDataRecord("UPDATE");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(updateRecord));
+        when(channel.fetchRecords(anyInt(), anyLong(), any())).thenReturn(mockRecords(updateRecord));
         importer.run();
         verify(preparedStatement).setObject(1, 20);
         verify(preparedStatement).setObject(2, "UPDATE");
@@ -132,7 +133,7 @@ class PipelineDataSourceSinkTest {
     void assertUpdatePrimaryKeyDataRecord() throws SQLException {
         DataRecord updateRecord = getUpdatePrimaryKeyDataRecord();
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(updateRecord));
+        when(channel.fetchRecords(anyInt(), anyLong(), any())).thenReturn(mockRecords(updateRecord));
         importer.run();
         InOrder inOrder = inOrder(preparedStatement);
         inOrder.verify(preparedStatement).setObject(1, 2);

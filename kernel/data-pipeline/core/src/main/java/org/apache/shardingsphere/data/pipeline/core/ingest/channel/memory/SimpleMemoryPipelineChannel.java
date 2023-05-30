@@ -65,7 +65,7 @@ public final class SimpleMemoryPipelineChannel implements PipelineChannel {
                 recordsCount += records.size();
                 result.addAll(records);
             }
-            if (batchSize > recordsCount) {
+            if (recordsCount >= batchSize) {
                 break;
             }
         } while (System.currentTimeMillis() - startMillis < timeoutMillis);
