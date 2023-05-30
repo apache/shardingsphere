@@ -175,8 +175,8 @@ public final class CDCBackendHandler {
             return;
         }
         CDCJobItemContext cdcJobItemContext = (CDCJobItemContext) jobItemContext.get();
-        if (cdcJobItemContext.getPipelineSink() instanceof CDCSocketSink) {
-            Channel channel = (Channel) cdcJobItemContext.getPipelineSink().getConnector();
+        if (cdcJobItemContext.getSink() instanceof CDCSocketSink) {
+            Channel channel = (Channel) cdcJobItemContext.getSink().getConnector();
             if (channelId.equals(channel.id())) {
                 log.info("close CDC job, channel id: {}", channelId);
                 PipelineJobCenter.stop(jobId);

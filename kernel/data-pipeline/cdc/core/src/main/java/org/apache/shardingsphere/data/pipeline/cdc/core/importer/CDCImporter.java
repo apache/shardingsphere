@@ -27,7 +27,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.api.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
@@ -60,10 +59,6 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     @Getter
     private final String importerId = RandomStringUtils.randomAlphanumeric(8);
     
-    private final ImporterType importerType;
-    
-    private final boolean decodeWithTX;
-    
     private final List<PipelineChannel> channels;
     
     private final int batchSize;
@@ -74,24 +69,22 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     
     private final PipelineSink sink;
     
+    private final boolean needSorting;
+    
     private final JobRateLimitAlgorithm rateLimitAlgorithm;
     
     private final PipelineJobProgressListener jobProgressListener;
     
     @SuppressWarnings("checkstyle:IllegalType")
-    private final TreeMap<Long, Pair<PipelineChannel, List<Record>>> csnRecordsMap = needSorting() ? new TreeMap<>(Long::compareTo) : null;
+    private final TreeMap<Long, Pair<PipelineChannel, List<Record>>> csnRecordsMap = needSorting ? new TreeMap<>(Long::compareTo) : null;
     
     private final Cache<String, Pair<PipelineChannel, CDCAckPosition>> ackCache = CacheBuilder.newBuilder().maximumSize(10000).expireAfterWrite(5, TimeUnit.MINUTES).build();
-    
-    private boolean needSorting() {
-        return ImporterType.INCREMENTAL == importerType && decodeWithTX;
-    }
     
     @Override
     protected void runBlocking() {
         List<PipelineChannel> workingChannels = new ArrayList<>(channels);
         while (isRunning()) {
-            if (needSorting()) {
+            if (needSorting) {
                 doWithSorting(workingChannels);
             } else {
                 doWithoutSorting(workingChannels);

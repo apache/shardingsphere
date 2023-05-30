@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.cdc.context.job;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
@@ -44,6 +45,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * CDC job item context.
  */
+@RequiredArgsConstructor
 @Getter
 public final class CDCJobItemContext implements InventoryIncrementalJobItemContext {
     
@@ -65,7 +67,7 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     
     private final PipelineDataSourceManager dataSourceManager;
     
-    private final PipelineSink pipelineSink;
+    private final PipelineSink sink;
     
     private final Collection<PipelineTask> inventoryTasks = new LinkedList<>();
     
@@ -90,17 +92,6 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
             return new StandardPipelineTableMetaDataLoader(sourceDataSourceLazyInitializer.get());
         }
     };
-    
-    public CDCJobItemContext(final CDCJobConfiguration jobConfig, final int shardingItem, final InventoryIncrementalJobItemProgress initProgress, final CDCProcessContext jobProcessContext,
-                             final CDCTaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager, final PipelineSink pipelineSink) {
-        this.jobConfig = jobConfig;
-        this.shardingItem = shardingItem;
-        this.initProgress = initProgress;
-        this.jobProcessContext = jobProcessContext;
-        this.taskConfig = taskConfig;
-        this.dataSourceManager = dataSourceManager;
-        this.pipelineSink = pipelineSink;
-    }
     
     @Override
     public String getJobId() {
@@ -134,8 +125,8 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
         return sourceMetaDataLoaderLazyInitializer.get();
     }
     
-    public PipelineSink getPipelineSink() {
-        return pipelineSink;
+    public PipelineSink getSink() {
+        return sink;
     }
     
     @Override

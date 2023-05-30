@@ -63,11 +63,11 @@ public interface InventoryIncrementalJobItemContext extends PipelineJobItemConte
     PipelineTableMetaDataLoader getSourceMetaDataLoader();
     
     /**
-     * Get importer connector.
+     * Get sink.
      *
-     * @return importer connector
+     * @return sink
      */
-    PipelineSink getImporterConnector();
+    PipelineSink getSink();
     
     /**
      * Get processed record count.

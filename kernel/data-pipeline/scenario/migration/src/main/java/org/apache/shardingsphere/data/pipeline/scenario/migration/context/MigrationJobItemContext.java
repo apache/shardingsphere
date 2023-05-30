@@ -126,7 +126,7 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     
     // TODO Use SPI, configurable
     @Override
-    public PipelineSink getImporterConnector() {
+    public PipelineSink getSink() {
         return new PipelineDataSourceSink(dataSourceManager);
     }
     

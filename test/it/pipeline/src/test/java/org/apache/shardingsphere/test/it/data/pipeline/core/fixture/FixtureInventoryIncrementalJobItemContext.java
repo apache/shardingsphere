@@ -61,7 +61,7 @@ public final class FixtureInventoryIncrementalJobItemContext implements Inventor
     }
     
     @Override
-    public PipelineSink getImporterConnector() {
+    public PipelineSink getSink() {
         return null;
     }
     

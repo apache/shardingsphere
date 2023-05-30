@@ -67,12 +67,12 @@ public final class PipelineTaskUtils {
      * Create channel for inventory task.
      *
      * @param pipelineChannelCreator channel creator
-     * @param batchSize batch size
+     * @param averageElementSize average element size
      * @param position ingest position
      * @return channel
      */
-    public static PipelineChannel createInventoryChannel(final PipelineChannelCreator pipelineChannelCreator, final int batchSize, final AtomicReference<IngestPosition> position) {
-        return pipelineChannelCreator.createPipelineChannel(1, batchSize, records -> AckCallbacks.inventoryCallback(records, position));
+    public static PipelineChannel createInventoryChannel(final PipelineChannelCreator pipelineChannelCreator, final int averageElementSize, final AtomicReference<IngestPosition> position) {
+        return pipelineChannelCreator.createPipelineChannel(1, averageElementSize, records -> AckCallbacks.inventoryCallback(records, position));
     }
     
     /**

@@ -30,8 +30,8 @@ import org.apache.shardingsphere.data.pipeline.cdc.context.job.CDCJobItemContext
 import org.apache.shardingsphere.data.pipeline.cdc.core.prepare.CDCJobPreparer;
 import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCTasksRunner;
 import org.apache.shardingsphere.data.pipeline.cdc.yaml.job.YamlCDCJobConfigurationSwapper;
-import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.DefaultPipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
@@ -42,6 +42,7 @@ import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -69,21 +70,27 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
         String jobId = shardingContext.getJobName();
         log.info("Execute job {}", jobId);
         CDCJobConfiguration jobConfig = new YamlCDCJobConfigurationSwapper().swapToObject(shardingContext.getJobParameter());
-        Collection<CompletableFuture<?>> futures = new ArrayList<>(jobConfig.getJobShardingCount());
+        Collection<CDCJobItemContext> jobItemContexts = new LinkedList<>();
+        Collection<PipelineTasksRunner> tasksRunners = new LinkedList<>();
         for (int shardingItem = 0; shardingItem < jobConfig.getJobShardingCount(); shardingItem++) {
             if (isStopping()) {
                 log.info("stopping true, ignore");
                 return;
             }
-            PipelineJobItemContext jobItemContext = buildPipelineJobItemContext(jobConfig, shardingItem);
+            CDCJobItemContext jobItemContext = buildPipelineJobItemContext(jobConfig, shardingItem);
             PipelineTasksRunner tasksRunner = buildPipelineTasksRunner(jobItemContext);
             if (!addTasksRunner(shardingItem, tasksRunner)) {
                 continue;
             }
+            jobItemContexts.add(jobItemContext);
+            tasksRunners.add(tasksRunner);
             jobAPI.cleanJobItemErrorMessage(jobId, shardingItem);
-            prepare(jobItemContext);
             log.info("start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
-            futures.add(CompletableFuture.runAsync(tasksRunner::start));
+        }
+        Collection<CompletableFuture<?>> futures = new ArrayList<>(jobConfig.getJobShardingCount());
+        prepare(jobItemContexts);
+        for (PipelineTasksRunner each : tasksRunners) {
+            futures.add(CompletableFuture.runAsync(each::start));
         }
         ExecuteEngine.trigger(futures, new ExecuteCallback() {
             
@@ -99,21 +106,40 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
         });
     }
     
-    private PipelineJobItemContext buildPipelineJobItemContext(final CDCJobConfiguration jobConfig, final int shardingItem) {
+    private CDCJobItemContext buildPipelineJobItemContext(final CDCJobConfiguration jobConfig, final int shardingItem) {
         Optional<InventoryIncrementalJobItemProgress> initProgress = jobAPI.getJobItemProgress(jobConfig.getJobId(), shardingItem);
         CDCProcessContext jobProcessContext = jobAPI.buildPipelineProcessContext(jobConfig);
         CDCTaskConfiguration taskConfig = jobAPI.buildTaskConfiguration(jobConfig, shardingItem, jobProcessContext.getPipelineProcessConfig());
         return new CDCJobItemContext(jobConfig, shardingItem, initProgress.orElse(null), jobProcessContext, taskConfig, dataSourceManager, sink);
     }
     
-    private PipelineTasksRunner buildPipelineTasksRunner(final PipelineJobItemContext pipelineJobItemContext) {
-        InventoryIncrementalJobItemContext jobItemContext = (InventoryIncrementalJobItemContext) pipelineJobItemContext;
+    private PipelineTasksRunner buildPipelineTasksRunner(final CDCJobItemContext jobItemContext) {
         return new CDCTasksRunner(jobItemContext, jobItemContext.getInventoryTasks(), jobItemContext.getIncrementalTasks());
+    }
+    
+    private void prepare(final Collection<CDCJobItemContext> jobItemContexts) {
+        try {
+            jobPreparer.initTasks(jobItemContexts);
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            for (PipelineJobItemContext each : jobItemContexts) {
+                processFailed(each, ex);
+            }
+            throw ex;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            for (PipelineJobItemContext each : jobItemContexts) {
+                processFailed(each, ex);
+            }
+            throw new PipelineInternalException(ex);
+        }
     }
     
     @Override
     protected void doPrepare(final PipelineJobItemContext jobItemContext) {
-        jobPreparer.initTasks((CDCJobItemContext) jobItemContext);
+        throw new UnsupportedOperationException();
     }
     
     @Override
