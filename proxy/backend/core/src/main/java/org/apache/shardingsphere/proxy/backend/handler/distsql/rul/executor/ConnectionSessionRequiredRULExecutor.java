@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -39,6 +40,7 @@ public interface ConnectionSessionRequiredRULExecutor<T extends RULStatement> ex
      * @param connectionSession connectionSession connection session
      * @param sqlStatement SQL statement
      * @return query result rows
+     * @throws SQLException SQL exception
      */
-    Collection<LocalDataQueryResultRow> getRows(ShardingSphereMetaData metaData, ConnectionSession connectionSession, T sqlStatement);
+    Collection<LocalDataQueryResultRow> getRows(ShardingSphereMetaData metaData, ConnectionSession connectionSession, T sqlStatement) throws SQLException;
 }

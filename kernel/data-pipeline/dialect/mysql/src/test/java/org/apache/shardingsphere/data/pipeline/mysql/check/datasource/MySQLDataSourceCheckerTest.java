@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -89,18 +90,18 @@ class MySQLDataSourceCheckerTest {
     
     @Test
     void assertCheckVariableSuccess() throws SQLException {
-        when(resultSet.next()).thenReturn(true, true);
+        when(resultSet.next()).thenReturn(true, true, true, false);
         when(resultSet.getString(1)).thenReturn("LOG_BIN", "BINLOG_FORMAT", "BINLOG_ROW_IMAGE");
         when(resultSet.getString(2)).thenReturn("ON", "ROW", "FULL");
-        new MySQLDataSourceChecker().checkVariable(dataSources);
+        assertDoesNotThrow(() -> new MySQLDataSourceChecker().checkVariable(dataSources));
         verify(preparedStatement, times(1)).executeQuery();
     }
     
     @Test
     void assertCheckVariableWithWrongVariable() throws SQLException {
-        when(resultSet.next()).thenReturn(true, true);
-        when(resultSet.getString(1)).thenReturn("LOG_BIN", "BINLOG_FORMAT");
-        when(resultSet.getString(2)).thenReturn("OFF", "ROW");
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getString(1)).thenReturn("BINLOG_FORMAT", "LOG_BIN");
+        when(resultSet.getString(2)).thenReturn("ROW", "OFF");
         assertThrows(PrepareJobWithInvalidSourceDataSourceException.class, () -> new MySQLDataSourceChecker().checkVariable(dataSources));
     }
     

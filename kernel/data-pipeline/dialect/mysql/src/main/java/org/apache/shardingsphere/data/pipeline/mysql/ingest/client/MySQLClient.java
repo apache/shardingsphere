@@ -351,13 +351,12 @@ public final class MySQLClient {
         
         private void reconnect() {
             closeChannel();
-            if (reconnectTimes.get() > 3) {
-                log.warn("exceeds the maximum number of retry times, last binlog event:{}", lastBinlogEvent);
+            if (reconnectTimes.incrementAndGet() > 3) {
+                log.warn("Exceeds the maximum number of retry times, last binlog event:{}", lastBinlogEvent);
                 return;
             }
-            reconnectTimes.incrementAndGet();
             connect();
-            log.info("reconnect times {}", reconnectTimes.get());
+            log.info("Reconnect times {}", reconnectTimes.get());
             subscribe(lastBinlogEvent.get().getFileName(), lastBinlogEvent.get().getPosition());
         }
     }
