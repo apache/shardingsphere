@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -75,8 +75,7 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     
     private final PipelineJobProgressListener jobProgressListener;
     
-    @SuppressWarnings("checkstyle:IllegalType")
-    private final TreeMap<Long, Pair<PipelineChannel, List<Record>>> csnRecordsMap = needSorting ? new TreeMap<>(Long::compareTo) : null;
+    private final PriorityQueue<CSNRecords> csnRecordsQueue = new PriorityQueue<>(new CSNRecordsComparator());
     
     private final Cache<String, Pair<PipelineChannel, CDCAckPosition>> ackCache = CacheBuilder.newBuilder().maximumSize(10000).expireAfterWrite(5, TimeUnit.MINUTES).build();
     
@@ -123,15 +122,15 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
             rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
         }
         prepareTransactionRecords(workingChannels);
-        if (csnRecordsMap.isEmpty()) {
+        CSNRecords csnRecords = csnRecordsQueue.poll();
+        if (null == csnRecords) {
             timeUnit.sleep(timeout);
             return;
         }
         // TODO Combine small transactions into a large transaction, to improve transformation performance.
         String ackId = CDCAckId.build(importerId).marshal();
-        Pair<PipelineChannel, List<Record>> oldestTxnRecordsPair = csnRecordsMap.pollFirstEntry().getValue();
-        List<Record> records = oldestTxnRecordsPair.getRight();
-        ackCache.put(ackId, Pair.of(oldestTxnRecordsPair.getLeft(), new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records))));
+        List<Record> records = csnRecords.getRecords();
+        ackCache.put(ackId, Pair.of(csnRecords.getChannel(), new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records))));
         sink.write(ackId, filterDataRecords(records));
     }
     
@@ -146,18 +145,18 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     // TODO openGauss CSN should be incremented for every transaction. Currently, CSN might be duplicated in transactions.
     // TODO Use channels watermark depth to improve performance.
     private void prepareTransactionRecords(final List<PipelineChannel> workingChannels) {
-        if (csnRecordsMap.isEmpty()) {
+        if (csnRecordsQueue.isEmpty()) {
             for (PipelineChannel each : workingChannels) {
                 List<Record> records = each.pollRecords();
                 if (0 == getDataRecordsCount(records)) {
                     each.ack(records);
                     continue;
                 }
-                csnRecordsMap.put(findFirstDataRecord(records).getCsn(), Pair.of(each, records));
+                csnRecordsQueue.add(new CSNRecords(findFirstDataRecord(records).getCsn(), each, records));
             }
         } else {
-            Pair<PipelineChannel, List<Record>> channelRecordsPair = csnRecordsMap.firstEntry().getValue();
-            long oldestCSN = findFirstDataRecord(channelRecordsPair.getRight()).getCsn();
+            CSNRecords csnRecords = csnRecordsQueue.peek();
+            long oldestCSN = findFirstDataRecord(csnRecords.getRecords()).getCsn();
             for (PipelineChannel each : workingChannels) {
                 List<Record> records = each.peekRecords();
                 if (0 == getDataRecordsCount(records)) {
@@ -168,7 +167,7 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
                 long csn = findFirstDataRecord(records).getCsn();
                 if (csn < oldestCSN) {
                     records = each.pollRecords();
-                    csnRecordsMap.put(csn, Pair.of(each, records));
+                    csnRecordsQueue.add(new CSNRecords(csn, each, records));
                 }
             }
         }
