@@ -49,7 +49,7 @@ public final class SQLRULBackendHandler<T extends RULStatement> extends RULBacke
     private MergedResult mergedResult;
     
     @Override
-    public ResponseHeader execute() {
+    public ResponseHeader execute() throws SQLException {
         RULExecutor<T> executor = TypedSPILoader.getService(RULExecutor.class, getSqlStatement().getClass().getName());
         queryHeaders = createQueryHeader(executor);
         mergedResult = createMergedResult(executor);
@@ -60,7 +60,7 @@ public final class SQLRULBackendHandler<T extends RULStatement> extends RULBacke
         return executor.getColumnNames().stream().map(each -> new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
     }
     
-    private MergedResult createMergedResult(final RULExecutor<T> executor) {
+    private MergedResult createMergedResult(final RULExecutor<T> executor) throws SQLException {
         if (executor instanceof ConnectionSessionRequiredRULExecutor) {
             ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
             return new LocalDataMergedResult(((ConnectionSessionRequiredRULExecutor<T>) executor).getRows(metaData, getConnectionSession(), getSqlStatement()));
