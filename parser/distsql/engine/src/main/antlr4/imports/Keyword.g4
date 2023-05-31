@@ -35,10 +35,6 @@ CREATE
     : C R E A T E
     ;
 
-DEFAULT
-    : D E F A U L T
-    ;
-
 ALTER
     : A L T E R
     ;
@@ -187,10 +183,6 @@ MODE
     : M O D E
     ;
 
-COUNT
-    : C O U N T
-    ;
-
 LABEL
     : L A B E L
     ;
@@ -285,10 +277,6 @@ UNIT
 
 UNITS
     : U N I T S
-    ;
-
-RANDOM
-    : R A N D O M
     ;
 
 DIST
