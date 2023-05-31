@@ -17,6 +17,15 @@
   -->
 
 <sql-parser-test-cases>
+    <create-index sql-case-id="create_index_with_lock_algorithm">
+        <table>
+            <simple-table name="t_order" start-index="25" stop-index="31" />
+        </table>
+        <index name="idx_name" start-index="13" stop-index="20" />
+        <column start-index="34" stop-index="37" name="name" />
+        <lock-option type="SHARED" start-index="40" stop-index="50" />
+        <algorithm-option type="COPY" start-index="52" stop-index="65" />
+    </create-index>
     <create-index sql-case-id="create_index_with_lock">
         <table>
             <simple-table name="t_order" start-index="25" stop-index="31" />
