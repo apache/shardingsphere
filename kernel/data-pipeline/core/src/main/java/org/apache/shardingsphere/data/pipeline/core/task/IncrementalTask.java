@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
@@ -36,15 +35,13 @@ import java.util.concurrent.CompletableFuture;
  */
 @RequiredArgsConstructor
 @Slf4j
-@ToString(exclude = {"incrementalExecuteEngine", "channel", "dumper", "importers", "taskProgress"})
+@ToString(exclude = {"incrementalExecuteEngine", "dumper", "importers", "taskProgress"})
 public final class IncrementalTask implements PipelineTask {
     
     @Getter
     private final String taskId;
     
     private final ExecuteEngine incrementalExecuteEngine;
-    
-    private final PipelineChannel channel;
     
     private final Dumper dumper;
     
@@ -72,6 +69,5 @@ public final class IncrementalTask implements PipelineTask {
     
     @Override
     public void close() {
-        channel.close();
     }
 }

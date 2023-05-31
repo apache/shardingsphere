@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
@@ -37,7 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Inventory task.
  */
 @RequiredArgsConstructor
-@ToString(exclude = {"inventoryDumperExecuteEngine", "inventoryImporterExecuteEngine", "channel", "dumper", "importer"})
+@ToString(exclude = {"inventoryDumperExecuteEngine", "inventoryImporterExecuteEngine", "dumper", "importer"})
 @Slf4j
 public final class InventoryTask implements PipelineTask {
     
@@ -47,8 +46,6 @@ public final class InventoryTask implements PipelineTask {
     private final ExecuteEngine inventoryDumperExecuteEngine;
     
     private final ExecuteEngine inventoryImporterExecuteEngine;
-    
-    private final PipelineChannel channel;
     
     private final Dumper dumper;
     
@@ -77,6 +74,5 @@ public final class InventoryTask implements PipelineTask {
     
     @Override
     public void close() {
-        channel.close();
     }
 }

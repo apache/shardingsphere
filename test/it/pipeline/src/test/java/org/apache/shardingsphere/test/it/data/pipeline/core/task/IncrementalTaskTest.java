@@ -21,8 +21,6 @@ import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.EmptyAckCallback;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.SimpleMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.test.it.data.pipeline.core.util.JobConfigurationBuilder;
@@ -57,7 +55,7 @@ class IncrementalTaskTest {
     void setUp() {
         MigrationTaskConfiguration taskConfig = PipelineContextUtils.mockMigrationJobItemContext(JobConfigurationBuilder.createJobConfiguration()).getTaskConfig();
         taskConfig.getDumperConfig().setPosition(new PlaceholderPosition());
-        incrementalTask = new IncrementalTask("ds_0", PipelineContextUtils.getExecuteEngine(), new SimpleMemoryPipelineChannel(100, new EmptyAckCallback()), mock(Dumper.class),
+        incrementalTask = new IncrementalTask("ds_0", PipelineContextUtils.getExecuteEngine(), mock(Dumper.class),
                 Collections.singletonList(mock(Importer.class)), new IncrementalTaskProgress(new PlaceholderPosition()));
     }
     
