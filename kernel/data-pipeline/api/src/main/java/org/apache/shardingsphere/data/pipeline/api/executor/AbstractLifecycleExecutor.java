@@ -68,7 +68,7 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
         try {
             doStop();
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             log.warn("doStop failed", ex);
         }
