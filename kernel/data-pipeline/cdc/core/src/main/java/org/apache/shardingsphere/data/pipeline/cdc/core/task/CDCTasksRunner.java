@@ -17,23 +17,28 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.task;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryIncrementalTasksRunner;
-import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
-
-import java.util.Collection;
+import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 
 /**
  * CDC tasks runner.
  */
-public final class CDCTasksRunner extends InventoryIncrementalTasksRunner {
+@RequiredArgsConstructor
+public final class CDCTasksRunner implements PipelineTasksRunner {
     
-    public CDCTasksRunner(final PipelineJobItemContext jobItemContext, final Collection<PipelineTask> inventoryTasks, final Collection<PipelineTask> incrementalTasks) {
-        super(jobItemContext, inventoryTasks, incrementalTasks);
+    private final PipelineJobItemContext jobItemContext;
+    
+    @Override
+    public PipelineJobItemContext getJobItemContext() {
+        return jobItemContext;
     }
     
     @Override
-    protected void inventorySuccessCallback() {
-        executeIncrementalTask();
+    public void start() {
+    }
+    
+    @Override
+    public void stop() {
     }
 }
