@@ -189,8 +189,14 @@ dropTable
     ;
 
 dropIndex
-    : DROP INDEX indexName (ON tableName)?
-    (alterAlgorithmOption | alterLockOption)*
+    : DROP INDEX indexName (ON tableName)? algorithmOptionAndLockOption?
+    ;
+
+algorithmOptionAndLockOption
+    : alterLockOption
+    | alterAlgorithmOption
+    | alterLockOption alterAlgorithmOption
+    | alterAlgorithmOption alterLockOption
     ;
 
 alterAlgorithmOption
@@ -198,7 +204,7 @@ alterAlgorithmOption
     ;
 
 alterLockOption
-    : LOCK EQ_? (DEFAULT | NONE | 'SHARED' | 'EXCLUSIVE')
+    : LOCK EQ_? (DEFAULT | NONE | SHARED | EXCLUSIVE)
     ;
 
 truncateTable
@@ -206,8 +212,7 @@ truncateTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification? INDEX indexName indexTypeClause? ON tableName keyListWithExpression indexOption?
-    (alterAlgorithmOption | alterLockOption)*
+    : CREATE createIndexSpecification? INDEX indexName indexTypeClause? ON tableName keyListWithExpression indexOption? algorithmOptionAndLockOption?
     ;
 
 createDatabase
@@ -421,7 +426,7 @@ dropTrigger
     ;
 
 renameTable
-    : RENAME TABLE tableName TO tableName (COMMA_ tableName TO tableName)*
+    : RENAME (TABLE | TABLES) tableName TO tableName (COMMA_ tableName TO tableName)*
     ;
 
 createDefinitionClause

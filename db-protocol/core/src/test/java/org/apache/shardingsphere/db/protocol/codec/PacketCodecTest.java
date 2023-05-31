@@ -68,7 +68,6 @@ class PacketCodecTest {
         verify(databasePacketCodecEngine, times(0)).decode(context, byteBuf, Collections.emptyList());
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     void assertEncode() {
         DatabasePacket databasePacket = mock(DatabasePacket.class);

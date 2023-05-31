@@ -27,8 +27,10 @@ import java.time.LocalDateTime;
 
 /**
  * MySQL DATETIME2 binlog protocol value.
+ * Stored as 4-byte value The number of decimals for the fractional part is stored in the table metadata as a one byte value.
+ * The number of bytes that follow the 5 byte datetime value can be calculated with the following formula: (decimals + 1) / 2
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/field__types_8h.html">field type</a>
  */
 public final class MySQLDatetime2BinlogProtocolValue implements MySQLBinlogProtocolValue {
     

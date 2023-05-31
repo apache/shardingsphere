@@ -1,0 +1,31 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^http://localhost"
+    },
+    {
+      "pattern": "^https://dist.apache.org/repos/dist/release/incubator/shardingsphere/*"
+    },
+    {
+      "pattern": "^https://github.com/apache/incubator-shardingsphere/*"
+    },
+    {
+      "pattern": "^/en/*"
+    },
+    {
+      "pattern": "^/cn/*"
+    },
+    {
+      "pattern": "^https://twitter.com*"
+    }
+  ],
+  "timeout": "10s",
+  "retryOn429": true,
+  "retryCount": 10,
+  "fallbackRetryDelay": "1000s",
+  "aliveStatusCodes": [
+    200,
+    401,
+    403
+  ]
+}

@@ -24,8 +24,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.db.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.db.protocol.event.WriteCompleteEvent;
-import org.apache.shardingsphere.db.protocol.packet.CommandPacket;
-import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
+import org.apache.shardingsphere.db.protocol.packet.command.CommandPacket;
+import org.apache.shardingsphere.db.protocol.packet.command.CommandPacketType;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.dialect.exception.SQLDialectException;
@@ -123,7 +123,7 @@ public final class CommandExecutorTask implements Runnable {
     
     private boolean doExecuteCommand(final ChannelHandlerContext context, final CommandExecuteEngine commandExecuteEngine, final CommandExecutor commandExecutor) throws SQLException {
         try {
-            Collection<DatabasePacket> responsePackets = commandExecutor.execute();
+            Collection<? extends DatabasePacket> responsePackets = commandExecutor.execute();
             if (responsePackets.isEmpty()) {
                 return false;
             }

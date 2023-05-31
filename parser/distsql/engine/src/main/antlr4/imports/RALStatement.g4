@@ -28,7 +28,7 @@ showDistVariable
     ;
 
 showDistVariables
-    : SHOW DIST VARIABLES
+    : SHOW DIST VARIABLES showLike?
     ;
 
 alterComputeNode
@@ -193,4 +193,12 @@ label
 
 intValue
     : INT_
+    ;
+
+showLike
+    : LIKE likePattern
+    ;
+
+likePattern
+    : STRING_
     ;

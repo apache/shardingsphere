@@ -13,7 +13,10 @@ The `SHOW DIST VARIABLE` syntax is used to query `PROXY` system variables config
 {{% tab name="Grammar" %}}
 ```sql
 ShowDistVariable ::=
-  'SHOW' ('VARIABLES' | 'VARIABLE' 'WHERE' 'NAME' '=' variableName)
+  'SHOW' 'DIST' ('VARIABLES' ('LIKE' likePattern)?| 'VARIABLE' 'WHERE' 'NAME' '=' variableName)
+
+likePattern ::=
+  string
 
 variableName ::=
   identifier

@@ -1599,6 +1599,14 @@ NONE
     : N O N E
     ;
 
+SHARED
+    : S H A R E D
+    ;
+
+EXCLUSIVE
+    : E X C L U S I V E
+    ;
+
 NOT
     : N O T
     ;

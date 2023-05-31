@@ -26,7 +26,3 @@ alterReadwriteSplittingStorageUnitStatus
 showStatusFromReadwriteSplittingRules
     : SHOW STATUS FROM READWRITE_SPLITTING (RULES | RULE groupName) (FROM databaseName)?
     ;
-
-sourceValue
-    : IDENTIFIER_
-    ;

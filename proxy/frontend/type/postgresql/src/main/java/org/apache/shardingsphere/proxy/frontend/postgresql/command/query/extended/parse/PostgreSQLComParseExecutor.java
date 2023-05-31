@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
@@ -50,16 +50,16 @@ import java.util.List;
  * PostgreSQL command parse executor.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLComParseExecutor implements CommandExecutor<PostgreSQLPacket> {
+public final class PostgreSQLComParseExecutor implements CommandExecutor {
     
     private final PostgreSQLComParsePacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<PostgreSQLPacket> execute() {
+    public Collection<DatabasePacket> execute() {
         SQLParserEngine sqlParserEngine = createShardingSphereSQLParserEngine(connectionSession.getDatabaseName());
-        String sql = packet.getSql();
+        String sql = packet.getSQL();
         SQLStatement sqlStatement = sqlParserEngine.parse(sql, true);
         if (sqlStatement.getParameterCount() > 0) {
             sql = convertSQLToJDBCStyle(sqlStatement, sql);

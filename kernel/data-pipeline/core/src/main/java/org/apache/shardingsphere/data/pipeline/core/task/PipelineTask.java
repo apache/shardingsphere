@@ -53,4 +53,9 @@ public interface PipelineTask extends Closeable {
      * @return task progress
      */
     TaskProgress getTaskProgress();
+    
+    /**
+     * Close.
+     */
+    void close();
 }

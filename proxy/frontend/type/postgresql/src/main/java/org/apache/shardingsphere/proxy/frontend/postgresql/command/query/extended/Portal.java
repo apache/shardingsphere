@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extend
 
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.binary.BinaryCell;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
@@ -27,6 +28,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextBitUtils;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextBoolUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLPortalSuspendedPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
@@ -141,9 +144,9 @@ public final class Portal {
      * @return execute result
      * @throws SQLException SQL exception
      */
-    public List<PostgreSQLPacket> execute(final int maxRows) throws SQLException {
+    public List<DatabasePacket> execute(final int maxRows) throws SQLException {
         int fetchSize = maxRows > 0 ? maxRows : Integer.MAX_VALUE;
-        List<PostgreSQLPacket> result = new LinkedList<>();
+        List<DatabasePacket> result = new LinkedList<>();
         for (int i = 0; i < fetchSize && hasNext(); i++) {
             result.add(nextPacket());
         }
@@ -178,7 +181,7 @@ public final class Portal {
         List<QueryResponseCell> columns = new ArrayList<>(cells);
         for (int i = 0; i < columns.size(); i++) {
             PostgreSQLValueFormat format = determineValueFormat(i);
-            result.add(PostgreSQLValueFormat.BINARY == format ? createBinaryCell(columns.get(i)) : columns.get(i).getData());
+            result.add(PostgreSQLValueFormat.BINARY == format ? createBinaryCell(columns.get(i)) : getCellData(columns.get(i)));
         }
         return result;
     }
@@ -188,7 +191,17 @@ public final class Portal {
     }
     
     private BinaryCell createBinaryCell(final QueryResponseCell cell) {
-        return new BinaryCell(PostgreSQLColumnType.valueOfJDBCType(cell.getJdbcType()), cell.getData());
+        return new BinaryCell(PostgreSQLColumnType.valueOfJDBCType(cell.getJdbcType(), cell.getColumnTypeName().orElse(null)), getCellData(cell));
+    }
+    
+    private Object getCellData(final QueryResponseCell cell) {
+        if (PostgreSQLColumnType.isPgBit(cell.getJdbcType(), cell.getColumnTypeName().orElse(null))) {
+            return PostgreSQLTextBitUtils.getTextValue(cell.getData());
+        }
+        if (PostgreSQLColumnType.isPgBool(cell.getJdbcType(), cell.getColumnTypeName().orElse(null))) {
+            return PostgreSQLTextBoolUtils.getTextValue(cell.getData());
+        }
+        return cell.getData();
     }
     
     private PostgreSQLIdentifierPacket createExecutionCompletedPacket(final boolean isSuspended, final int fetchedRows) {

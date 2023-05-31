@@ -136,7 +136,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         try {
             engine.close();
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             log.error("Close transaction engine failed", ex);
         }

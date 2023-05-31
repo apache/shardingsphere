@@ -71,10 +71,10 @@ namespace
 These are the global rule configurations, which can include transaction configuration, SQL parser configuration, etc.
 
 ```yaml
-- !TRANSACTION
+transaction:
   defaultType: XA
   providerType: Atomikos
-- !SQL_PARSER
+sqlParser:
   sqlCommentParseEnabled: true
 ```
 

@@ -41,9 +41,9 @@ services:
 - The following three algorithm classes are not available under GraalVM Native Image because they involve
   the `groovy.lang.Closure` class that is inconvenient for GraalVM Truffle Espresso to interact between the host JVM and
   the guest JVM.
-    - `org.apache.shardingsphere.sharding.algorithm.sharding.complex.ComplexInlineShardingAlgorithm`
-    - `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
     - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.InlineShardingAlgorithm`
+    - `org.apache.shardingsphere.sharding.algorithm.sharding.inline.ComplexInlineShardingAlgorithm`
+    - `org.apache.shardingsphere.sharding.algorithm.sharding.hint.HintInlineShardingAlgorithm`
 
 - At the current stage, ShardingSphere Proxy in GraalVM Native Image is in the stage of mixed AOT ( GraalVM
   Native Image ) and JIT ( GraalVM Truffle Espresso ) operation. Since https://github.com/oracle/graal/issues/4555 has

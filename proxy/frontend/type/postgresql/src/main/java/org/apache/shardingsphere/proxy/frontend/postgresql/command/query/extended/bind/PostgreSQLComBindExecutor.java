@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.bind;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
@@ -36,7 +36,7 @@ import java.util.Collections;
  * Command bind executor for PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLComBindExecutor implements CommandExecutor<PostgreSQLPacket> {
+public final class PostgreSQLComBindExecutor implements CommandExecutor {
     
     private final PortalContext portalContext;
     
@@ -45,7 +45,7 @@ public final class PostgreSQLComBindExecutor implements CommandExecutor<PostgreS
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<PostgreSQLPacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
         ProxyDatabaseConnectionManager databaseConnectionManager = connectionSession.getDatabaseConnectionManager();
         Portal portal = new Portal(packet.getPortal(), preparedStatement, packet.readParameters(preparedStatement.getParameterTypes()), packet.readResultFormats(), databaseConnectionManager);

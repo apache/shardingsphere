@@ -52,10 +52,6 @@ property
 databaseName
     : IDENTIFIER_
     ;
-    
-resourceName
-    : IDENTIFIER_
-    ;
 
 groupName
     : IDENTIFIER_

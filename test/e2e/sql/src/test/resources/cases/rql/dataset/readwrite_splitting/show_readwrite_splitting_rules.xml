@@ -20,8 +20,9 @@
         <column name="name" />
         <column name="write_storage_unit_name" />
         <column name="read_storage_unit_names" />
+        <column name="transactional_read_query_strategy" />
         <column name="load_balancer_type" />
         <column name="load_balancer_props" />
     </metadata>
-    <row values="write-read-ds| write_ds| read_0,read_1| | " />
+    <row values="write-read-ds| write_ds| read_0,read_1| DYNAMIC| | " />
 </dataset>

@@ -75,7 +75,6 @@ import static org.mockito.Mockito.when;
 @StaticMockSettings(ProxyContext.class)
 class MySQLAdminExecutorCreatorTest {
     
-    @SuppressWarnings("rawtypes")
     @Mock
     private SQLStatementContext sqlStatementContext;
     

@@ -28,8 +28,9 @@ import java.util.Date;
 
 /**
  * MySQL DATETIME binlog protocol value.
+ * Stored value is in the format YYYYMMDDHHMMSS and can be easily extracted by repeatedly calculating the remainder of dividing the value by 100 and dividing the value by 100
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/field__types_8h.html">field type</a>
  */
 public final class MySQLDatetimeBinlogProtocolValue implements MySQLBinlogProtocolValue {
     

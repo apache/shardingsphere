@@ -34,7 +34,6 @@ import static org.mockito.Mockito.when;
 
 class CircuitBreakProxyStateTest {
     
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Test
     void assertExecute() {
         ChannelHandlerContext channelHandlerContext = mock(ChannelHandlerContext.class);

@@ -1,11 +1,11 @@
 +++
-title = "SHOW SHADOW TABLE RULE"
+title = "SHOW SHADOW TABLE RULES"
 weight = 2
 +++
 
 ### Description
 
-The `SHOW SHADOW TABLE RULE` syntax is used to query shadow table rules for specified database.
+The `SHOW SHADOW TABLE RULES` syntax is used to query shadow table rules for specified database.
 
 ### Syntax
 

@@ -102,7 +102,7 @@ public final class MetaDataPersistService implements MetaDataBasedPersistService
             databaseMetaDataService.addDatabase(databaseName);
         } else {
             dataSourceService.persist(databaseName, getDataSourcePropertiesMap(databaseConfigs.getDataSources()));
-            databaseRulePersistService.persist(databaseName, dataSources, rules, databaseConfigs.getRuleConfigurations());
+            databaseRulePersistService.persist(databaseName, databaseConfigs.getRuleConfigurations());
         }
     }
     

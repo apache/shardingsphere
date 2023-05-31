@@ -216,10 +216,7 @@ public final class MySQLPacketPayload implements PacketPayload {
      * @return lenenc string
      */
     public String readStringLenenc() {
-        int length = (int) readIntLenenc();
-        byte[] result = new byte[length];
-        byteBuf.readBytes(result);
-        return new String(result, charset);
+        return new String(readStringLenencByBytes(), charset);
     }
     
     /**
@@ -330,10 +327,7 @@ public final class MySQLPacketPayload implements PacketPayload {
      * @return null terminated string
      */
     public String readStringNul() {
-        byte[] result = new byte[byteBuf.bytesBefore((byte) 0)];
-        byteBuf.readBytes(result);
-        byteBuf.skipBytes(1);
-        return new String(result, charset);
+        return new String(readStringNulByBytes(), charset);
     }
     
     /**

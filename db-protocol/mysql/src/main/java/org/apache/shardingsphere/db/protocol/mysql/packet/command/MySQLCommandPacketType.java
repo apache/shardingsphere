@@ -20,7 +20,7 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.command;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.packet.CommandPacketType;
+import org.apache.shardingsphere.db.protocol.packet.command.CommandPacketType;
 
 import java.util.HashMap;
 import java.util.Map;

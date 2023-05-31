@@ -16,7 +16,13 @@ AlterReadwriteSplittingRule ::=
   'ALTER' 'READWRITE_SPLITTING' 'RULE' readwriteSplittingDefinition (',' readwriteSplittingDefinition)*
 
 readwriteSplittingDefinition ::=
-  ruleName '(' 'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')' (',' loadBalancerDefinition)? ')'
+  ruleName '(' dataSourceDefinition (',' transactionalReadQueryStrategyDefinition)? (',' loadBalancerDefinition)? ')'
+
+dataSourceDefinition ::=
+    'WRITE_STORAGE_UNIT' '=' writeStorageUnitName ',' 'READ_STORAGE_UNITS' '(' storageUnitName (',' storageUnitName)* ')' 
+
+transactionalReadQueryStrategyDefinition ::=
+    'TRANSACTIONAL_READ_QUERY_STRATEGY' '=' transactionalReadQueryStrategyType
 
 loadBalancerDefinition ::=
     'TYPE' '(' 'NAME' '=' loadBalancerType (',' propertiesDefinition)? ')'
@@ -30,9 +36,9 @@ writeStorageUnitName ::=
 storageUnitName ::=
   identifier
 
-resourceName ::=
-  identifier
-    
+transactionalReadQueryStrategyType ::=
+  string
+
 loadBalancerType ::=
   string
 
@@ -53,7 +59,8 @@ value ::=
 
 ### Supplement
 
-- `loadBalancerType` specifies the load balancing algorithm type, please refer to [Load Balance Algorithm]((/en/user-manual/common-config/builtin-algorithm/load-balance/));
+- `transactionalReadQueryStrategyType` specifies the routing strategy for read query within a transaction, please refer to [YAML configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting/);
+- `loadBalancerType` specifies the load balancing algorithm type, please refer to [Load Balance Algorithm]((/en/user-manual/common-config/builtin-algorithm/load-balance/)).
 
 ### Example
 

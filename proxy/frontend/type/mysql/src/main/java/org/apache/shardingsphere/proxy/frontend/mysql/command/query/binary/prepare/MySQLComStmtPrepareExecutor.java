@@ -27,6 +27,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLCol
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPrepareOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.dialect.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
@@ -65,25 +66,25 @@ import java.util.stream.Collectors;
  * COM_STMT_PREPARE command executor for MySQL.
  */
 @RequiredArgsConstructor
-public final class MySQLComStmtPrepareExecutor implements CommandExecutor<MySQLPacket> {
+public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
     
     private final MySQLComStmtPreparePacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<MySQLPacket> execute() {
+    public Collection<DatabasePacket> execute() {
         failedIfContainsMultiStatements();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL").getType()).parse(packet.getSql(), true);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL").getType()).parse(packet.getSQL(), true);
         if (!MySQLComStmtPrepareChecker.isAllowedStatement(sqlStatement)) {
             throw new UnsupportedPreparedStatementException();
         }
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
         int statementId = MySQLStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
-        MySQLServerPreparedStatement serverPreparedStatement = new MySQLServerPreparedStatement(packet.getSql(), sqlStatementContext, new CopyOnWriteArrayList<>());
+        MySQLServerPreparedStatement serverPreparedStatement = new MySQLServerPreparedStatement(packet.getSQL(), sqlStatementContext, new CopyOnWriteArrayList<>());
         connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
         return createPackets(sqlStatementContext, statementId, serverPreparedStatement);
     }
@@ -92,13 +93,13 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor<MySQLP
         // TODO Multi statements should be identified by SQL Parser instead of checking if sql contains ";".
         if (connectionSession.getAttributeMap().hasAttr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS)
                 && MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON == connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS).get()
-                && packet.getSql().contains(";")) {
+                && packet.getSQL().contains(";")) {
             throw new UnsupportedPreparedStatementException();
         }
     }
     
-    private Collection<MySQLPacket> createPackets(final SQLStatementContext sqlStatementContext, final int statementId, final MySQLServerPreparedStatement serverPreparedStatement) {
-        Collection<MySQLPacket> result = new LinkedList<>();
+    private Collection<DatabasePacket> createPackets(final SQLStatementContext sqlStatementContext, final int statementId, final MySQLServerPreparedStatement serverPreparedStatement) {
+        Collection<DatabasePacket> result = new LinkedList<>();
         List<Projection> projections = getProjections(sqlStatementContext);
         int parameterCount = sqlStatementContext.getSqlStatement().getParameterCount();
         result.add(new MySQLComStmtPrepareOKPacket(statementId, projections.size(), parameterCount, 0));

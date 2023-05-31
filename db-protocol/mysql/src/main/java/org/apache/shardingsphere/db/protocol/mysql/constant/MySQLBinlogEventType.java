@@ -27,7 +27,7 @@ import java.util.Optional;
 /**
  * MySQL binlog event type.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/binlog-event-type.html">Binlog Event Type</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/group__group__cs__binglog__event__header__flags.html">Binlog Event Flag</a>
  * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/binlog__event_8h_source.html">binlog_event.h</a>
  */
 @RequiredArgsConstructor

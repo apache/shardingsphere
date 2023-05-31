@@ -761,7 +761,12 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     @Override
     public ASTNode visitTableStatement(final TableStatementContext ctx) {
         MySQLSelectStatement result = new MySQLSelectStatement();
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.TABLE()) {
+            result.setFrom(new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
+                    new IdentifierValue(ctx.tableName().getText()))));
+        } else {
+            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        }
         return result;
     }
     

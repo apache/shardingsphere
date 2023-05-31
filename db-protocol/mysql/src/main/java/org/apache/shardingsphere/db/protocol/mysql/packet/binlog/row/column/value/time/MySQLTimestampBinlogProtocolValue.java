@@ -27,8 +27,9 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * MySQL TIMESTAMP binlog protocol value.
+ * Stored as a 4 byte UNIX timestamp (number of seconds since 00:00, Jan 1 1970 UTC).
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/field__types_8h.html">field type</a>
  */
 public final class MySQLTimestampBinlogProtocolValue implements MySQLBinlogProtocolValue {
     

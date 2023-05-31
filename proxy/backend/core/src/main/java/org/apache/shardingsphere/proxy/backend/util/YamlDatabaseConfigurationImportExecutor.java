@@ -196,9 +196,7 @@ public final class YamlDatabaseConfigurationImportExecutor {
         }
         ruleConfigsMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())
                 .forEach(each -> addRules(allRuleConfigs, ruleConfigsMap.get(each), database));
-        metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getResourceMetaData().getDataSources(),
-                metaDataContexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules(), allRuleConfigs);
+        metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getDatabase(databaseName).getName(), allRuleConfigs);
     }
     
     private void addRules(final Collection<RuleConfiguration> allRuleConfigs, final Collection<RuleConfiguration> ruleConfigs, final ShardingSphereDatabase database) {

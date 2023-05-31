@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.simple;
 
 import lombok.Getter;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLColumnDescription;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLDataRowPacket;
@@ -56,7 +57,7 @@ import java.util.LinkedList;
 /**
  * Command query executor for PostgreSQL.
  */
-public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor<PostgreSQLPacket> {
+public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     private final PortalContext portalContext;
     
@@ -67,11 +68,11 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor<Po
     
     public PostgreSQLComQueryExecutor(final PortalContext portalContext, final PostgreSQLComQueryPacket comQueryPacket, final ConnectionSession connectionSession) throws SQLException {
         this.portalContext = portalContext;
-        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), comQueryPacket.getSql(), connectionSession);
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"), comQueryPacket.getSQL(), connectionSession);
     }
     
     @Override
-    public Collection<PostgreSQLPacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() throws SQLException {
         ResponseHeader responseHeader = proxyBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
             return Collections.singleton(createRowDescriptionPacket((QueryResponseHeader) responseHeader));
@@ -94,7 +95,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor<Po
         return result;
     }
     
-    private Collection<PostgreSQLPacket> createUpdatePacket(final UpdateResponseHeader updateResponseHeader) throws SQLException {
+    private Collection<DatabasePacket> createUpdatePacket(final UpdateResponseHeader updateResponseHeader) throws SQLException {
         SQLStatement sqlStatement = updateResponseHeader.getSqlStatement();
         if (sqlStatement instanceof CommitStatement || sqlStatement instanceof RollbackStatement) {
             portalContext.closeAll();
@@ -106,8 +107,8 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor<Po
                 : new PostgreSQLCommandCompletePacket(PostgreSQLCommand.valueOf(sqlStatement.getClass()).map(PostgreSQLCommand::getTag).orElse(""), updateResponseHeader.getUpdateCount()));
     }
     
-    private Collection<PostgreSQLPacket> createParameterStatusResponse(final SetStatement sqlStatement) {
-        Collection<PostgreSQLPacket> result = new ArrayList<>(2);
+    private Collection<DatabasePacket> createParameterStatusResponse(final SetStatement sqlStatement) {
+        Collection<DatabasePacket> result = new ArrayList<>(2);
         result.add(new PostgreSQLCommandCompletePacket("SET", 0));
         for (VariableAssignSegment each : sqlStatement.getVariableAssigns()) {
             result.add(new PostgreSQLParameterStatusPacket(each.getVariable().getVariable(), IdentifierValue.getQuotedContent(each.getAssignValue())));

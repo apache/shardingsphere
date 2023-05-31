@@ -159,7 +159,7 @@ public abstract class AbstractInventoryIncrementalJobAPIImpl extends AbstractPip
     }
     
     private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final Collection<PipelineTask> incrementalTasks) {
-        return new JobItemIncrementalTasksProgress(incrementalTasks.isEmpty() ? null : ((IncrementalTaskProgress) incrementalTasks.iterator().next().getTaskProgress()));
+        return new JobItemIncrementalTasksProgress(incrementalTasks.isEmpty() ? null : (IncrementalTaskProgress) incrementalTasks.iterator().next().getTaskProgress());
     }
     
     private JobItemInventoryTasksProgress getInventoryTasksProgress(final Collection<PipelineTask> inventoryTasks) {

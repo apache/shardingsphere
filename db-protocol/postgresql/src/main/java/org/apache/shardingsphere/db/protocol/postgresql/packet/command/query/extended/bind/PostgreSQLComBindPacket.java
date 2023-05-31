@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind;
 
 import lombok.Getter;
-import lombok.ToString;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLValueFormat;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextBitUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextJsonUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextTimeUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextTimestampUtils;
@@ -41,7 +41,6 @@ import java.util.List;
  * Command bind packet for PostgreSQL.
  */
 @Getter
-@ToString
 public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
     private final PostgreSQLPacketPayload payload;
@@ -134,6 +133,8 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
                 return PostgreSQLTextTimestampUtils.parse(textValue);
             case POSTGRESQL_TYPE_JSON:
                 return PostgreSQLTextJsonUtils.parse(textValue);
+            case POSTGRESQL_TYPE_BIT:
+                return PostgreSQLTextBitUtils.parse(textValue);
             default:
                 return textValue;
         }

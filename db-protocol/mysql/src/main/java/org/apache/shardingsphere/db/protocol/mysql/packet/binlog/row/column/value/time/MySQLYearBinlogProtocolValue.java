@@ -25,8 +25,9 @@ import java.io.Serializable;
 
 /**
  * YEAR type value of MySQL binlog protocol.
+ * 1 byte integer (year = value + 1900)
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html">Date and Time Data Type Representation</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/field__types_8h.html">field type</a>
  */
 public final class MySQLYearBinlogProtocolValue implements MySQLBinlogProtocolValue {
     

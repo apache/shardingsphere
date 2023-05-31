@@ -25,7 +25,7 @@ import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 /**
  * MySQL binlog rotate event packet.
  *
- * @see <a href="https://dev.mysql.com/doc/internals/en/rotate-event.html">ROTATE_EVENT</a>
+ * @see <a href="https://dev.mysql.com/doc/dev/mysql-server/latest/classbinary__log_1_1Rotate__event.html">ROTATE_EVENT</a>
  */
 @Getter
 public final class MySQLBinlogRotateEventPacket extends AbstractMySQLBinlogEventPacket {

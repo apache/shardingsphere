@@ -247,17 +247,7 @@ public final class ZookeeperRepository implements ClusterPersistRepository, Inst
                     }
                 }).build();
         cache.listenable().addListener(curatorCacheListener);
-        start(cache);
-    }
-    
-    private void start(final CuratorCache cache) {
-        try {
-            cache.start();
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            ZookeeperExceptionHandler.handleException(ex);
-        }
+        cache.start();
     }
     
     private Type getChangedType(final TreeCacheEvent.Type type) {

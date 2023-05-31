@@ -24,8 +24,6 @@ import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContex
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineJobAPI;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
@@ -92,7 +90,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (PipelineTask each : inventoryTasks) {
-            if (((InventoryTaskProgress) (each.getTaskProgress())).getPosition() instanceof FinishedPosition) {
+            if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
             futures.addAll(each.start());
@@ -117,7 +115,7 @@ public class InventoryIncrementalTasksRunner implements PipelineTasksRunner {
         updateLocalAndRemoteJobItemStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (PipelineTask each : incrementalTasks) {
-            if (((IncrementalTaskProgress) (each.getTaskProgress())).getPosition() instanceof FinishedPosition) {
+            if (each.getTaskProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
             futures.addAll(each.start());

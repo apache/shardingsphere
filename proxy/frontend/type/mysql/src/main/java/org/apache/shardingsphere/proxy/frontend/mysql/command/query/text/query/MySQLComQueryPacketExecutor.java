@@ -23,6 +23,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.MySQLTextResultSetRowPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
+import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -50,7 +51,7 @@ import java.util.Collection;
 /**
  * COM_QUERY command packet executor for MySQL.
  */
-public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor<MySQLPacket> {
+public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private final ConnectionSession connectionSession;
     
@@ -64,9 +65,9 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor<M
     public MySQLComQueryPacketExecutor(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         this.connectionSession = connectionSession;
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        SQLStatement sqlStatement = parseSQL(packet.getSql(), databaseType);
-        proxyBackendHandler = areMultiStatements(connectionSession, sqlStatement, packet.getSql()) ? new MySQLMultiStatementsHandler(connectionSession, sqlStatement, packet.getSql())
-                : ProxyBackendHandlerFactory.newInstance(databaseType, packet.getSql(), sqlStatement, connectionSession, packet.getHintValueContext());
+        SQLStatement sqlStatement = parseSQL(packet.getSQL(), databaseType);
+        proxyBackendHandler = areMultiStatements(connectionSession, sqlStatement, packet.getSQL()) ? new MySQLMultiStatementsHandler(connectionSession, sqlStatement, packet.getSQL())
+                : ProxyBackendHandlerFactory.newInstance(databaseType, packet.getSQL(), sqlStatement, connectionSession, packet.getHintValueContext());
         characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     
@@ -87,7 +88,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor<M
     }
     
     @Override
-    public Collection<MySQLPacket> execute() throws SQLException {
+    public Collection<DatabasePacket> execute() throws SQLException {
         ResponseHeader responseHeader = proxyBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
             return processQuery((QueryResponseHeader) responseHeader);
@@ -96,12 +97,12 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor<M
         return processUpdate((UpdateResponseHeader) responseHeader);
     }
     
-    private Collection<MySQLPacket> processQuery(final QueryResponseHeader queryResponseHeader) {
+    private Collection<DatabasePacket> processQuery(final QueryResponseHeader queryResponseHeader) {
         responseType = ResponseType.QUERY;
         return ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet, ServerStatusFlagCalculator.calculateFor(connectionSession));
     }
     
-    private Collection<MySQLPacket> processUpdate(final UpdateResponseHeader updateResponseHeader) {
+    private Collection<DatabasePacket> processUpdate(final UpdateResponseHeader updateResponseHeader) {
         return ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader, ServerStatusFlagCalculator.calculateFor(connectionSession));
     }
     

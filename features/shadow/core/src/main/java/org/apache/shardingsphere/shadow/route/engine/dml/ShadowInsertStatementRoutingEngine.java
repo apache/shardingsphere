@@ -17,99 +17,52 @@
 
 package org.apache.shardingsphere.shadow.route.engine.dml;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
 import org.apache.shardingsphere.shadow.exception.syntax.UnsupportedShadowInsertValueException;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Shadow insert statement routing engine.
  */
-@RequiredArgsConstructor
 public final class ShadowInsertStatementRoutingEngine extends AbstractShadowDMLStatementRouteEngine {
     
-    private final InsertStatementContext insertStatementContext;
+    private final InsertStatementContext sqlStatementContext;
     
-    @Override
-    protected Collection<SimpleTableSegment> getAllTables() {
-        return insertStatementContext.getAllTables();
+    public ShadowInsertStatementRoutingEngine(final InsertStatementContext sqlStatementContext) {
+        super(sqlStatementContext, ShadowOperationType.INSERT);
+        this.sqlStatementContext = sqlStatementContext;
     }
     
     @Override
-    protected ShadowOperationType getShadowOperationType() {
-        return ShadowOperationType.INSERT;
-    }
-    
-    @Override
-    protected Optional<Collection<String>> parseSQLComments() {
-        Collection<String> result = new LinkedList<>();
-        insertStatementContext.getSqlStatement().getCommentSegments().forEach(each -> result.add(each.getText()));
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
-    }
-    
-    @Override
-    protected Iterator<Optional<ShadowColumnCondition>> getShadowColumnConditionIterator(final String shadowColumn) {
-        return new ShadowColumnConditionIterator(shadowColumn, parseColumnNames().iterator(), insertStatementContext.getInsertValueContexts());
-    }
-    
-    private Collection<String> parseColumnNames() {
-        return insertStatementContext.getInsertColumnNames();
-    }
-    
-    private final class ShadowColumnConditionIterator implements Iterator<Optional<ShadowColumnCondition>> {
-        
-        private int index;
-        
-        private final String shadowColumn;
-        
-        private final Iterator<String> iterator;
-        
-        private final List<InsertValueContext> insertValueContexts;
-        
-        private ShadowColumnConditionIterator(final String shadowColumn, final Iterator<String> iterator, final List<InsertValueContext> insertValueContexts) {
-            index = 0;
-            this.shadowColumn = shadowColumn;
-            this.iterator = iterator;
-            this.insertValueContexts = insertValueContexts;
-        }
-        
-        @Override
-        public boolean hasNext() {
-            return iterator.hasNext();
-        }
-        
-        @Override
-        public Optional<ShadowColumnCondition> next() {
-            String columnName = iterator.next();
-            if (!shadowColumn.equals(columnName)) {
-                index++;
-                return Optional.empty();
+    protected Collection<ShadowColumnCondition> getShadowColumnConditions(final String shadowColumnName) {
+        Collection<ShadowColumnCondition> result = new LinkedList<>();
+        int columnIndex = 0;
+        for (String each : sqlStatementContext.getInsertColumnNames()) {
+            if (!shadowColumnName.equals(each)) {
+                columnIndex++;
+                continue;
             }
-            Optional<Collection<Comparable<?>>> columnValues = getColumnValues(insertValueContexts, index);
-            index++;
-            return columnValues.map(each -> new ShadowColumnCondition(getSingleTableName(), columnName, each));
+            Collection<Comparable<?>> columnValues = getColumnValues(sqlStatementContext.getInsertValueContexts(), columnIndex);
+            columnIndex++;
+            result.add(new ShadowColumnCondition(getSingleTableName(), each, columnValues));
         }
-        
-        private Optional<Collection<Comparable<?>>> getColumnValues(final List<InsertValueContext> insertValueContexts, final int columnIndex) {
-            Collection<Comparable<?>> result = new LinkedList<>();
-            for (InsertValueContext each : insertValueContexts) {
-                Object valueObject = each.getLiteralValue(columnIndex).orElseThrow(() -> new UnsupportedShadowInsertValueException(columnIndex));
-                if (valueObject instanceof Comparable<?>) {
-                    result.add((Comparable<?>) valueObject);
-                } else {
-                    return Optional.empty();
-                }
-            }
-            return result.isEmpty() ? Optional.empty() : Optional.of(result);
+        return result;
+    }
+    
+    private Collection<Comparable<?>> getColumnValues(final List<InsertValueContext> insertValueContexts, final int columnIndex) {
+        Collection<Comparable<?>> result = new LinkedList<>();
+        for (InsertValueContext each : insertValueContexts) {
+            Object columnValue = each.getLiteralValue(columnIndex).orElseThrow(() -> new UnsupportedShadowInsertValueException(columnIndex));
+            ShardingSpherePreconditions.checkState(columnValue instanceof Comparable<?>, () -> new UnsupportedShadowInsertValueException(columnIndex));
+            result.add((Comparable<?>) columnValue);
         }
+        return result;
     }
 }

@@ -19,7 +19,7 @@ Apache ShardingSphere provides XA transactions, and the default XA transaction m
 Yaml:
 
 ```yaml
-- !TRANSACTION
+transaction:
   defaultType: XA
   providerType: Atomikos 
 ```

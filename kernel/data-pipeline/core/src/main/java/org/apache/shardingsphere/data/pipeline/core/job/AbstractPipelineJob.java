@@ -94,7 +94,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
             processFailed(jobItemContext, ex);
             throw ex;
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final SQLException ex) {
             // CHECKSTYLE:ON
             processFailed(jobItemContext, ex);
             throw new PipelineInternalException(ex);
