@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
@@ -27,7 +26,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.Postgr
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
 import java.util.List;
-import java.util.RandomAccess;
 
 @Getter
 public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPacket {
@@ -42,7 +40,7 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
     
     public PostgreSQLAggregatedCommandPacket(final List<PostgreSQLCommandPacket> packets) {
         this.packets = packets;
-        boolean isParsed = false;
+        int parsePacketCount = 0;
         String firstStatementId = null;
         int firstStatementBindTimes = 0;
         int firstStatementExecuteTimes = 0;
@@ -52,7 +50,7 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
         int lastExecuteIndex = -1;
         for (PostgreSQLCommandPacket each : packets) {
             if (each instanceof PostgreSQLComParsePacket) {
-                if (isParsed) {
+                if (++parsePacketCount > 1) {
                     break;
                 }
                 if (null == firstStatementId) {
@@ -60,7 +58,6 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
                 } else if (!firstStatementId.equals(((PostgreSQLComParsePacket) each).getStatementId())) {
                     break;
                 }
-                isParsed = true;
             }
             if (each instanceof PostgreSQLComBindPacket) {
                 if (-1 == firstBindIndex) {
@@ -94,9 +91,6 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
         this.firstBindIndex = firstBindIndex;
         this.lastExecuteIndex = lastExecuteIndex;
         containsBatchedStatements = firstStatementBindTimes == firstStatementExecuteTimes && firstStatementBindTimes >= 3;
-        if (containsBatchedStatements) {
-            Preconditions.checkArgument(packets instanceof RandomAccess, "Packets must be RandomAccess.");
-        }
     }
     
     @Override
