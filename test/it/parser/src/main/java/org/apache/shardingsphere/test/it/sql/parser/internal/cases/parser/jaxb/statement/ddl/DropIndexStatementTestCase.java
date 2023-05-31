@@ -38,10 +38,10 @@ public final class DropIndexStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "index")
     private final List<ExpectedIndex> indexes = new LinkedList<>();
-
+    
     @XmlElement(name = "algorithm-option")
     private ExpectedAlgorithmClause algorithmOption;
-
+    
     @XmlElement(name = "lock-option")
     private ExpectedLockTypeClause lockOption;
     
