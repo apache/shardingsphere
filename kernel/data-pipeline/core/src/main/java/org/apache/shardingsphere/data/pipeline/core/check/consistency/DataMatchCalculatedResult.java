@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -35,7 +35,6 @@ import java.util.Optional;
 /**
  * Data match calculated result.
  */
-@RequiredArgsConstructor
 @Getter
 @Slf4j
 public final class DataMatchCalculatedResult implements DataConsistencyCalculatedResult {
@@ -45,7 +44,14 @@ public final class DataMatchCalculatedResult implements DataConsistencyCalculate
     
     private final int recordsCount;
     
+    @Getter(AccessLevel.NONE)
     private final Collection<Collection<Object>> records;
+    
+    public DataMatchCalculatedResult(final Object maxUniqueKeyValue, final Collection<Collection<Object>> records) {
+        this.maxUniqueKeyValue = maxUniqueKeyValue;
+        recordsCount = records.size();
+        this.records = records;
+    }
     
     @Override
     public Optional<Object> getMaxUniqueKeyValue() {
@@ -92,6 +98,6 @@ public final class DataMatchCalculatedResult implements DataConsistencyCalculate
     
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37).append(getMaxUniqueKeyValue().orElse(null)).append(getRecordsCount()).append(getRecords()).toHashCode();
+        return new HashCodeBuilder(17, 37).append(getMaxUniqueKeyValue().orElse(null)).append(getRecordsCount()).append(records).toHashCode();
     }
 }
