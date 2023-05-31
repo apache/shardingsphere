@@ -22,12 +22,6 @@ package org.apache.shardingsphere.metadata.persist.node.metadata.config.readwrit
  */
 public final class ReadwriteSplittingNodeConverter {
     
-    private static final String ROOT_NODE = "readwrite_splitting";
-    
-    private static final String ACTIVE_VERSION_NODE = "/active_version";
-    
-    private static final String VERSIONS_NODE = "/versions";
-    
     private static final String LOAD_BALANCER_NODE = "load_balancers";
     
     /**
