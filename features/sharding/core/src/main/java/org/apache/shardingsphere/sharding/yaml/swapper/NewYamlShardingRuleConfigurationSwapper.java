@@ -87,7 +87,7 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
         for (ShardingTableReferenceRuleConfiguration each : data.getBindingTableGroups()) {
             result.add(new YamlDataNode(converter.getBindingTableNamePath(each.getName()), YamlEngine.marshal(each)));
         }
-        if (null != data.getBroadcastTables()) {
+        if (null != data.getBroadcastTables() && !data.getBroadcastTables().isEmpty()) {
             result.add(new YamlDataNode(converter.getBroadcastTablesPath(), YamlEngine.marshal(data.getBroadcastTables())));
         }
     }

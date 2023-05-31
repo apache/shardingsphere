@@ -43,38 +43,29 @@ class NewYamlShardingRuleConfigurationSwapperTest {
     void assertSwapEmptyConfigToDataNodes() {
         ShardingRuleConfiguration config = new ShardingRuleConfiguration();
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(7));
-        Iterator<YamlDataNode> iterator = result.iterator();
-        assertThat(iterator.next().getKey(), is("sharding/broadcast_tables"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_database_strategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_table_strategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_key_generate_strategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_audit_strategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_sharding_column"));
-        assertThat(iterator.next().getKey(), is("sharding/sharding_cache"));
+        assertThat(result.size(), is(0));
     }
     
     @Test
     void assertSwapFullConfigToDataNodesEmpty() {
         ShardingRuleConfiguration config = createMaximumShardingRule();
         Collection<YamlDataNode> result = swapper.swapToDataNodes(config);
-        assertThat(result.size(), is(15));
+        assertThat(result.size(), is(14));
         Iterator<YamlDataNode> iterator = result.iterator();
-        assertThat(iterator.next().getKey(), is("sharding/tables/table_LOGIC_TABLE"));
-        assertThat(iterator.next().getKey(), is("sharding/tables/table_SUB_LOGIC_TABLE"));
-        assertThat(iterator.next().getKey(), is("sharding/binding_tables/binding_table_foo"));
-        assertThat(iterator.next().getKey(), is("sharding/broadcast_tables"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_database_strategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_table_strategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_key_generate_strategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_audit_strategy"));
-        assertThat(iterator.next().getKey(), is("sharding/default_strategy/default_sharding_column"));
-        assertThat(iterator.next().getKey(), is("sharding/sharding_algorithms/core_standard_fixture"));
-        assertThat(iterator.next().getKey(), is("sharding/key_generators/uuid"));
-        assertThat(iterator.next().getKey(), is("sharding/key_generators/default"));
-        assertThat(iterator.next().getKey(), is("sharding/key_generators/auto_increment"));
-        assertThat(iterator.next().getKey(), is("sharding/auditors/audit_algorithm"));
-        assertThat(iterator.next().getKey(), is("sharding/sharding_cache"));
+        assertThat(iterator.next().getKey(), is("tables/table_LOGIC_TABLE"));
+        assertThat(iterator.next().getKey(), is("tables/table_SUB_LOGIC_TABLE"));
+        assertThat(iterator.next().getKey(), is("binding_tables/binding_table_foo"));
+        assertThat(iterator.next().getKey(), is("broadcast_tables"));
+        assertThat(iterator.next().getKey(), is("default_strategy/default_database_strategy"));
+        assertThat(iterator.next().getKey(), is("default_strategy/default_table_strategy"));
+        assertThat(iterator.next().getKey(), is("default_strategy/default_key_generate_strategy"));
+        assertThat(iterator.next().getKey(), is("default_strategy/default_audit_strategy"));
+        assertThat(iterator.next().getKey(), is("sharding_algorithms/core_standard_fixture"));
+        assertThat(iterator.next().getKey(), is("key_generators/uuid"));
+        assertThat(iterator.next().getKey(), is("key_generators/default"));
+        assertThat(iterator.next().getKey(), is("key_generators/auto_increment"));
+        assertThat(iterator.next().getKey(), is("auditors/audit_algorithm"));
+        assertThat(iterator.next().getKey(), is("default_strategy/default_sharding_column"));
     }
     
     private ShardingRuleConfiguration createMaximumShardingRule() {
