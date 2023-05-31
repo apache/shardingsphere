@@ -110,7 +110,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             if (records.isEmpty()) {
                 calculationContext.close();
             }
-            return records.isEmpty() ? Optional.empty() : Optional.of(new DataMatchCalculatedResult(maxUniqueKeyValue, records.size(), records));
+            return records.isEmpty() ? Optional.empty() : Optional.of(new DataMatchCalculatedResult(maxUniqueKeyValue, records));
         } catch (final PipelineSQLException ex) {
             calculationContext.close();
             throw ex;

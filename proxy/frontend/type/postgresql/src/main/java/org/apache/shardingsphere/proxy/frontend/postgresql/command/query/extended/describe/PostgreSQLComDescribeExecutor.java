@@ -261,7 +261,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
         ParameterMetaData parameterMetaData = actualPreparedStatement.getParameterMetaData();
         for (int i = 0; i < logicPreparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount(); i++) {
             if (PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED == logicPreparedStatement.getParameterTypes().get(i)) {
-                logicPreparedStatement.getParameterTypes().set(i, PostgreSQLColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1)));
+                logicPreparedStatement.getParameterTypes().set(i, PostgreSQLColumnType.valueOfJDBCType(parameterMetaData.getParameterType(i + 1), parameterMetaData.getParameterTypeName(i + 1)));
             }
         }
     }

@@ -34,8 +34,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
 import java.util.Collection;
@@ -68,9 +67,9 @@ public final class CDCJobItemContext implements InventoryIncrementalJobItemConte
     
     private final ImporterConnector importerConnector;
     
-    private final Collection<InventoryTask> inventoryTasks = new LinkedList<>();
+    private final Collection<PipelineTask> inventoryTasks = new LinkedList<>();
     
-    private final Collection<IncrementalTask> incrementalTasks = new LinkedList<>();
+    private final Collection<PipelineTask> incrementalTasks = new LinkedList<>();
     
     private final AtomicLong processedRecordsCount = new AtomicLong(0);
     

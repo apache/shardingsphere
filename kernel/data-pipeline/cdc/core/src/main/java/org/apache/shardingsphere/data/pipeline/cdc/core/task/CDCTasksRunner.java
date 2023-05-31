@@ -18,9 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.cdc.core.task;
 
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
-import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryIncrementalTasksRunner;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 
 import java.util.Collection;
 
@@ -29,7 +28,7 @@ import java.util.Collection;
  */
 public final class CDCTasksRunner extends InventoryIncrementalTasksRunner {
     
-    public CDCTasksRunner(final PipelineJobItemContext jobItemContext, final Collection<InventoryTask> inventoryTasks, final Collection<IncrementalTask> incrementalTasks) {
+    public CDCTasksRunner(final PipelineJobItemContext jobItemContext, final Collection<PipelineTask> inventoryTasks, final Collection<PipelineTask> incrementalTasks) {
         super(jobItemContext, inventoryTasks, incrementalTasks);
     }
     

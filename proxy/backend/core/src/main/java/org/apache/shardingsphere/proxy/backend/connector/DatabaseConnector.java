@@ -440,7 +440,7 @@ public final class DatabaseConnector implements DatabaseBackendHandler {
         List<QueryResponseCell> cells = new ArrayList<>(queryHeaders.size());
         for (int columnIndex = 1; columnIndex <= queryHeaders.size(); columnIndex++) {
             Object data = mergedResult.getValue(columnIndex, Object.class);
-            cells.add(new QueryResponseCell(queryHeaders.get(columnIndex - 1).getColumnType(), data));
+            cells.add(new QueryResponseCell(queryHeaders.get(columnIndex - 1).getColumnType(), data, queryHeaders.get(columnIndex - 1).getColumnTypeName()));
         }
         return new QueryResponseRow(cells);
     }

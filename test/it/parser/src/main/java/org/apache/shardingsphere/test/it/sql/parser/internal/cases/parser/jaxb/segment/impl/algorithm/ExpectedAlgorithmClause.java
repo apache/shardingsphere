@@ -15,46 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.task;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.algorithm;
 
-import org.apache.shardingsphere.data.pipeline.api.task.progress.TaskProgress;
+import lombok.Getter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Pipeline task interface.
+ * Expected algorithm clause.
  */
-public interface PipelineTask {
+@Getter
+public final class ExpectedAlgorithmClause extends AbstractExpectedSQLSegment {
     
-    /**
-     * Start task.
-     *
-     * @return future
-     */
-    Collection<CompletableFuture<?>> start();
-    
-    /**
-     * Stop task.
-     */
-    void stop();
-    
-    /**
-     * Get task id.
-     *
-     * @return task id
-     */
-    String getTaskId();
-    
-    /**
-     * Get task progress.
-     *
-     * @return task progress
-     */
-    TaskProgress getTaskProgress();
-    
-    /**
-     * Close.
-     */
-    void close();
+    @XmlAttribute
+    private String type;
 }
