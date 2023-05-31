@@ -64,7 +64,20 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
     @Override
     public Collection<YamlDataNode> swapToDataNodes(final ShardingRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
-        // TODO replace YamlEngine.marshal with swapper
+        // TODO swap rule to YAML configuration before YamlEngine.marshal
+        swapTableRules(data, result);
+        swapStrategies(data, result);
+        swapAlgorithms(data, result);
+        if (null != data.getDefaultShardingColumn()) {
+            result.add(new YamlDataNode(converter.getDefaultShardingColumnPath(), YamlEngine.marshal(data.getDefaultShardingColumn())));
+        }
+        if (null != data.getShardingCache()) {
+            result.add(new YamlDataNode(converter.getShardingCachePath(), YamlEngine.marshal(data.getShardingCache())));
+        }
+        return result;
+    }
+    
+    private void swapTableRules(final ShardingRuleConfiguration data, final Collection<YamlDataNode> result) {
         for (ShardingTableRuleConfiguration each : data.getTables()) {
             result.add(new YamlDataNode(converter.getTableNamePath(each.getLogicTable()), YamlEngine.marshal(each)));
         }
@@ -74,12 +87,27 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
         for (ShardingTableReferenceRuleConfiguration each : data.getBindingTableGroups()) {
             result.add(new YamlDataNode(converter.getBindingTableNamePath(each.getName()), YamlEngine.marshal(each)));
         }
-        result.add(new YamlDataNode(converter.getBroadcastTablesPath(), YamlEngine.marshal(data.getBroadcastTables())));
-        result.add(new YamlDataNode(converter.getDefaultDatabaseStrategyPath(), YamlEngine.marshal(data.getDefaultDatabaseShardingStrategy())));
-        result.add(new YamlDataNode(converter.getDefaultTableStrategyPath(), YamlEngine.marshal(data.getDefaultTableShardingStrategy())));
-        result.add(new YamlDataNode(converter.getDefaultKeyGenerateStrategyPath(), YamlEngine.marshal(data.getDefaultKeyGenerateStrategy())));
-        result.add(new YamlDataNode(converter.getDefaultAuditStrategyPath(), YamlEngine.marshal(data.getDefaultAuditStrategy())));
-        result.add(new YamlDataNode(converter.getDefaultShardingColumnPath(), YamlEngine.marshal(data.getDefaultShardingColumn())));
+        if (null != data.getBroadcastTables()) {
+            result.add(new YamlDataNode(converter.getBroadcastTablesPath(), YamlEngine.marshal(data.getBroadcastTables())));
+        }
+    }
+    
+    private void swapStrategies(final ShardingRuleConfiguration data, final Collection<YamlDataNode> result) {
+        if (null != data.getDefaultDatabaseShardingStrategy()) {
+            result.add(new YamlDataNode(converter.getDefaultDatabaseStrategyPath(), YamlEngine.marshal(data.getDefaultDatabaseShardingStrategy())));
+        }
+        if (null != data.getDefaultTableShardingStrategy()) {
+            result.add(new YamlDataNode(converter.getDefaultTableStrategyPath(), YamlEngine.marshal(data.getDefaultTableShardingStrategy())));
+        }
+        if (null != data.getDefaultKeyGenerateStrategy()) {
+            result.add(new YamlDataNode(converter.getDefaultKeyGenerateStrategyPath(), YamlEngine.marshal(data.getDefaultKeyGenerateStrategy())));
+        }
+        if (null != data.getDefaultAuditStrategy()) {
+            result.add(new YamlDataNode(converter.getDefaultAuditStrategyPath(), YamlEngine.marshal(data.getDefaultAuditStrategy())));
+        }
+    }
+    
+    private void swapAlgorithms(final ShardingRuleConfiguration data, final Collection<YamlDataNode> result) {
         for (Entry<String, AlgorithmConfiguration> each : data.getShardingAlgorithms().entrySet()) {
             result.add(new YamlDataNode(converter.getShardingAlgorithmsPath(each.getKey()), YamlEngine.marshal(each.getValue())));
         }
@@ -89,8 +117,6 @@ public final class NewYamlShardingRuleConfigurationSwapper implements NewYamlRul
         for (Entry<String, AlgorithmConfiguration> each : data.getAuditors().entrySet()) {
             result.add(new YamlDataNode(converter.getAuditorsPath(each.getKey()), YamlEngine.marshal(each.getValue())));
         }
-        result.add(new YamlDataNode(converter.getShardingCachePath(), YamlEngine.marshal(data.getShardingCache())));
-        return result;
     }
     
     @Override
