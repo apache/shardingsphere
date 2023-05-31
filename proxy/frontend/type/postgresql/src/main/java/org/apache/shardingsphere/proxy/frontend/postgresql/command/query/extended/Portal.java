@@ -28,6 +28,8 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextBitUtils;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextBoolUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLPortalSuspendedPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
@@ -179,7 +181,7 @@ public final class Portal {
         List<QueryResponseCell> columns = new ArrayList<>(cells);
         for (int i = 0; i < columns.size(); i++) {
             PostgreSQLValueFormat format = determineValueFormat(i);
-            result.add(PostgreSQLValueFormat.BINARY == format ? createBinaryCell(columns.get(i)) : columns.get(i).getData());
+            result.add(PostgreSQLValueFormat.BINARY == format ? createBinaryCell(columns.get(i)) : getCellData(columns.get(i)));
         }
         return result;
     }
@@ -189,7 +191,17 @@ public final class Portal {
     }
     
     private BinaryCell createBinaryCell(final QueryResponseCell cell) {
-        return new BinaryCell(PostgreSQLColumnType.valueOfJDBCType(cell.getJdbcType()), cell.getData());
+        return new BinaryCell(PostgreSQLColumnType.valueOfJDBCType(cell.getJdbcType(), cell.getColumnTypeName().orElse(null)), getCellData(cell));
+    }
+    
+    private Object getCellData(final QueryResponseCell cell) {
+        if (PostgreSQLColumnType.isPgBit(cell.getJdbcType(), cell.getColumnTypeName().orElse(null))) {
+            return PostgreSQLTextBitUtils.getTextValue(cell.getData());
+        }
+        if (PostgreSQLColumnType.isPgBool(cell.getJdbcType(), cell.getColumnTypeName().orElse(null))) {
+            return PostgreSQLTextBoolUtils.getTextValue(cell.getData());
+        }
+        return cell.getData();
     }
     
     private PostgreSQLIdentifierPacket createExecutionCompletedPacket(final boolean isSuspended, final int fetchedRows) {

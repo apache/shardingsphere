@@ -15,35 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.data;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
-import lombok.Getter;
+import org.junit.jupiter.api.Test;
+import org.postgresql.util.PGobject;
 
-import java.util.Optional;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * Query response cell.
- */
-@Getter
-public final class QueryResponseCell {
+class PostgreSQLTextBitUtilsTest {
     
-    private final int jdbcType;
-    
-    private final Object data;
-    
-    private final String columnTypeName;
-    
-    public QueryResponseCell(final int jdbcType, final Object data) {
-        this(jdbcType, data, null);
+    @Test
+    void assertParse() {
+        String textValue = "1";
+        PGobject actual = PostgreSQLTextBitUtils.parse(textValue);
+        assertThat(actual.getType(), is("bit"));
+        assertThat(actual.getValue(), is(textValue));
     }
     
-    public QueryResponseCell(final int jdbcType, final Object data, final String columnTypeName) {
-        this.jdbcType = jdbcType;
-        this.data = data;
-        this.columnTypeName = columnTypeName;
-    }
-    
-    public Optional<String> getColumnTypeName() {
-        return Optional.ofNullable(columnTypeName);
+    @Test
+    void assertGetTextBitValue() {
+        Object jdbcBitValue = true;
+        String textValue = PostgreSQLTextBitUtils.getTextValue(jdbcBitValue);
+        assertThat(textValue, is("1"));
     }
 }
