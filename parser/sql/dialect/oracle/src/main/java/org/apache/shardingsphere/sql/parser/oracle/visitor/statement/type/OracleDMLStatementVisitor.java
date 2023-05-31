@@ -230,6 +230,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertIntoClause(final InsertIntoClauseContext ctx) {
         OracleInsertStatement result = new OracleInsertStatement();
@@ -721,32 +722,30 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
         if (projection instanceof BinaryOperationExpression) {
             BinaryOperationExpression binaryExpression = (BinaryOperationExpression) projection;
             int startIndex = binaryExpression.getStartIndex();
-            int stopIndex = null != alias ? alias.getStopIndex() : binaryExpression.getStopIndex();
+            int stopIndex = null == alias ? binaryExpression.getStopIndex() : alias.getStopIndex();
             ExpressionProjectionSegment result = new ExpressionProjectionSegment(startIndex, stopIndex, binaryExpression.getText(), binaryExpression);
             result.setAlias(alias);
             return result;
         }
         if (projection instanceof DatetimeExpression) {
             DatetimeExpression datetimeExpression = (DatetimeExpression) projection;
-            if (null != datetimeExpression.getRight()) {
-                return new DatetimeProjectionSegment(datetimeExpression.getStartIndex(), datetimeExpression.getStopIndex(), datetimeExpression.getLeft(), datetimeExpression.getRight(),
-                        datetimeExpression.getText());
-            }
-            return new DatetimeProjectionSegment(datetimeExpression.getStartIndex(), datetimeExpression.getStopIndex(), datetimeExpression.getLeft(), datetimeExpression.getText());
+            return null == datetimeExpression.getRight()
+                    ? new DatetimeProjectionSegment(datetimeExpression.getStartIndex(), datetimeExpression.getStopIndex(), datetimeExpression.getLeft(), datetimeExpression.getText())
+                    : new DatetimeProjectionSegment(datetimeExpression.getStartIndex(), datetimeExpression.getStopIndex(),
+                    datetimeExpression.getLeft(), datetimeExpression.getRight(), datetimeExpression.getText());
         }
         if (projection instanceof XmlQueryAndExistsFunctionSegment) {
             XmlQueryAndExistsFunctionSegment xmlExistsFunctionSegment = (XmlQueryAndExistsFunctionSegment) projection;
-            return new XmlQueryAndExistsFunctionSegment(xmlExistsFunctionSegment.getStartIndex(), xmlExistsFunctionSegment.getStopIndex(),
-                    xmlExistsFunctionSegment.getFunctionName(), xmlExistsFunctionSegment.getXQueryString(), xmlExistsFunctionSegment.getText());
+            return new XmlQueryAndExistsFunctionSegment(xmlExistsFunctionSegment.getStartIndex(),
+                    xmlExistsFunctionSegment.getStopIndex(), xmlExistsFunctionSegment.getFunctionName(), xmlExistsFunctionSegment.getXQueryString(), xmlExistsFunctionSegment.getText());
         }
         if (projection instanceof XmlPiFunctionSegment) {
             XmlPiFunctionSegment xmlPiFunctionSegment = (XmlPiFunctionSegment) projection;
-            if (null != xmlPiFunctionSegment.getIdentifier()) {
-                return new XmlPiFunctionSegment(xmlPiFunctionSegment.getStartIndex(), xmlPiFunctionSegment.getStopIndex(), xmlPiFunctionSegment.getFunctionName(),
-                        xmlPiFunctionSegment.getIdentifier(), xmlPiFunctionSegment.getValueExpr(), xmlPiFunctionSegment.getText());
-            }
-            return new XmlPiFunctionSegment(xmlPiFunctionSegment.getStartIndex(), xmlPiFunctionSegment.getStopIndex(), xmlPiFunctionSegment.getFunctionName(),
-                    xmlPiFunctionSegment.getEvalNameValueExpr(), xmlPiFunctionSegment.getValueExpr(), xmlPiFunctionSegment.getText());
+            return null == xmlPiFunctionSegment.getIdentifier()
+                    ? new XmlPiFunctionSegment(xmlPiFunctionSegment.getStartIndex(), xmlPiFunctionSegment.getStopIndex(),
+                    xmlPiFunctionSegment.getFunctionName(), xmlPiFunctionSegment.getEvalNameValueExpr(), xmlPiFunctionSegment.getValueExpr(), xmlPiFunctionSegment.getText())
+                    : new XmlPiFunctionSegment(xmlPiFunctionSegment.getStartIndex(), xmlPiFunctionSegment.getStopIndex(),
+                    xmlPiFunctionSegment.getFunctionName(), xmlPiFunctionSegment.getIdentifier(), xmlPiFunctionSegment.getValueExpr(), xmlPiFunctionSegment.getText());
         }
         if (projection instanceof XmlSerializeFunctionSegment) {
             XmlSerializeFunctionSegment xmlSerializeFunctionSegment = (XmlSerializeFunctionSegment) projection;
@@ -755,7 +754,8 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
                     xmlSerializeFunctionSegment.getIdentSize(), xmlSerializeFunctionSegment.getText());
         }
         LiteralExpressionSegment column = (LiteralExpressionSegment) projection;
-        ExpressionProjectionSegment result = null == alias ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
+        ExpressionProjectionSegment result = null == alias
+                ? new ExpressionProjectionSegment(column.getStartIndex(), column.getStopIndex(), String.valueOf(column.getLiterals()), column)
                 : new ExpressionProjectionSegment(column.getStartIndex(), ctx.alias().stop.getStopIndex(), String.valueOf(column.getLiterals()), column);
         result.setAlias(alias);
         return result;
