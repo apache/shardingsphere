@@ -25,16 +25,16 @@ import java.util.Optional;
 public interface DataConsistencyCalculatedResult {
     
     /**
-     * Get records count.
-     *
-     * @return records count
-     */
-    int getRecordsCount();
-    
-    /**
      * Get max unique key value.
      *
      * @return max unique key value
      */
     Optional<Object> getMaxUniqueKeyValue();
+    
+    /**
+     * Get records count.
+     *
+     * @return records count
+     */
+    int getRecordsCount();
 }

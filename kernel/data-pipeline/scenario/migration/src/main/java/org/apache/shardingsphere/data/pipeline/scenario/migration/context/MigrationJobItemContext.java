@@ -32,8 +32,7 @@ import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncremental
 import org.apache.shardingsphere.data.pipeline.core.importer.connector.DataSourceImporterConnector;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.StandardPipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.scenario.migration.config.MigrationTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
@@ -63,9 +62,9 @@ public final class MigrationJobItemContext implements InventoryIncrementalJobIte
     
     private final MigrationTaskConfiguration taskConfig;
     
-    private final Collection<InventoryTask> inventoryTasks = new LinkedList<>();
+    private final Collection<PipelineTask> inventoryTasks = new LinkedList<>();
     
-    private final Collection<IncrementalTask> incrementalTasks = new LinkedList<>();
+    private final Collection<PipelineTask> incrementalTasks = new LinkedList<>();
     
     private final AtomicLong processedRecordsCount = new AtomicLong(0);
     

@@ -45,18 +45,19 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.AbstractSQLRULBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.executor.ConnectionSessionRequiredRULExecutor;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sqlfederation.rule.SQLFederationRule;
@@ -74,77 +75,73 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Preview handler.
+ * Preview executor.
  */
-public final class PreviewHandler extends AbstractSQLRULBackendHandler<PreviewStatement> {
-    
-    private static final String DATA_SOURCE_NAME = "data_source_name";
-    
-    private static final String ACTUAL_SQL = "actual_sql";
+public final class PreviewExecutor implements ConnectionSessionRequiredRULExecutor<PreviewStatement> {
     
     private final KernelProcessor kernelProcessor = new KernelProcessor();
     
     @Override
-    protected Collection<String> getColumnNames() {
-        return Arrays.asList(DATA_SOURCE_NAME, ACTUAL_SQL);
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("data_source_name", "actual_sql");
     }
     
     @Override
-    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) throws SQLException {
+    public Collection<LocalDataQueryResultRow> getRows(final ShardingSphereMetaData metaData, final ConnectionSession connectionSession, final PreviewStatement sqlStatement) throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        String databaseName = getDatabaseName();
+        String databaseName = getDatabaseName(connectionSession);
         String databaseType = DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
         ShardingSphereRuleMetaData globalRuleMetaData = metaDataContexts.getMetaData().getGlobalRuleMetaData();
         SQLParserRule sqlParserRule = globalRuleMetaData.getSingleRule(SQLParserRule.class);
-        SQLStatement previewedStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(getSqlStatement().getSql(), false);
+        SQLStatement previewedStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(sqlStatement.getSql(), false);
         SQLStatementContext sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData(), previewedStatement, databaseName);
-        QueryContext queryContext = new QueryContext(sqlStatementContext, getSqlStatement().getSql(), Collections.emptyList());
-        getConnectionSession().setQueryContext(queryContext);
+        QueryContext queryContext = new QueryContext(sqlStatementContext, sqlStatement.getSql(), Collections.emptyList());
+        connectionSession.setQueryContext(queryContext);
         if (sqlStatementContext instanceof CursorAvailable && sqlStatementContext instanceof CursorDefinitionAware) {
-            setUpCursorDefinition(sqlStatementContext);
+            setUpCursorDefinition(sqlStatementContext, connectionSession);
         }
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(getConnectionSession().getDatabaseName());
-        ShardingSpherePreconditions.checkState(database.isComplete(), () -> new RuleNotExistedException(getConnectionSession().getDatabaseName()));
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
+        ShardingSpherePreconditions.checkState(database.isComplete(), () -> new RuleNotExistedException(connectionSession.getDatabaseName()));
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
-        Collection<ExecutionUnit> executionUnits = isUseFederation(queryContext, database, metaDataContexts, props)
-                ? getFederationExecutionUnits(queryContext, databaseName, metaDataContexts)
-                : kernelProcessor.generateExecutionContext(queryContext, database, globalRuleMetaData, props, getConnectionSession().getConnectionContext()).getExecutionUnits();
+        Collection<ExecutionUnit> executionUnits = isUseFederation(queryContext, database, metaDataContexts, props, connectionSession)
+                ? getFederationExecutionUnits(queryContext, databaseName, metaDataContexts, connectionSession)
+                : kernelProcessor.generateExecutionContext(queryContext, database, globalRuleMetaData, props, connectionSession.getConnectionContext()).getExecutionUnits();
         return executionUnits.stream().map(this::buildRow).collect(Collectors.toList());
     }
     
-    private void setUpCursorDefinition(final SQLStatementContext sqlStatementContext) {
+    private void setUpCursorDefinition(final SQLStatementContext sqlStatementContext, final ConnectionSession connectionSession) {
         if (!((CursorAvailable) sqlStatementContext).getCursorName().isPresent()) {
             return;
         }
         String cursorName = ((CursorAvailable) sqlStatementContext).getCursorName().get().getIdentifier().getValue().toLowerCase();
-        CursorStatementContext cursorStatementContext = (CursorStatementContext) getConnectionSession().getConnectionContext().getCursorContext().getCursorDefinitions().get(cursorName);
+        CursorStatementContext cursorStatementContext = (CursorStatementContext) connectionSession.getConnectionContext().getCursorContext().getCursorDefinitions().get(cursorName);
         Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
         ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(cursorStatementContext);
     }
     
-    private boolean isUseFederation(final QueryContext queryContext, final ShardingSphereDatabase database, final MetaDataContexts metaDataContexts, final ConfigurationProperties props) {
+    private boolean isUseFederation(final QueryContext queryContext, final ShardingSphereDatabase database, final MetaDataContexts metaDataContexts, final ConfigurationProperties props,
+                                    final ConnectionSession connectionSession) {
         SQLFederationDecideEngine engine = new SQLFederationDecideEngine(database.getRuleMetaData().getRules(), props);
         return engine.decide(queryContext.getSqlStatementContext(), queryContext.getParameters(),
-                metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()), metaDataContexts.getMetaData().getGlobalRuleMetaData());
+                metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()), metaDataContexts.getMetaData().getGlobalRuleMetaData());
     }
     
     private LocalDataQueryResultRow buildRow(final ExecutionUnit unit) {
         return new LocalDataQueryResultRow(unit.getDataSourceName(), unit.getSqlUnit().getSql());
     }
     
-    private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final String databaseName, final MetaDataContexts metaDataContexts) throws SQLException {
+    private Collection<ExecutionUnit> getFederationExecutionUnits(final QueryContext queryContext, final String databaseName, final MetaDataContexts metaDataContexts,
+                                                                  final ConnectionSession connectionSession) throws SQLException {
         SQLStatement sqlStatement = queryContext.getSqlStatementContext().getSqlStatement();
         boolean isReturnGeneratedKeys = sqlStatement instanceof MySQLInsertStatement;
-        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
+        DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts, connectionSession);
         SQLFederationExecutorContext context = new SQLFederationExecutorContext(true, queryContext, metaDataContexts.getMetaData());
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(getDatabaseName());
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(getDatabaseName(connectionSession));
         String schemaName = queryContext.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(database.getProtocolType(), databaseName));
         SQLFederationRule sqlFederationRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLFederationRule.class);
-        SQLFederationExecutor sqlFederationExecutor = sqlFederationRule.getSQLFederationExecutor(databaseName, schemaName,
-                metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
-                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), getConnectionSession().getConnectionContext()));
-        sqlFederationExecutor.executeQuery(prepareEngine, createPreviewFederationCallback(database.getProtocolType(), database.getResourceMetaData().getStorageTypes(), sqlStatement),
-                context);
+        SQLFederationExecutor sqlFederationExecutor = sqlFederationRule.getSQLFederationExecutor(databaseName, schemaName, metaDataContexts.getMetaData(), metaDataContexts.getShardingSphereData(),
+                new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), connectionSession.getConnectionContext()));
+        sqlFederationExecutor.executeQuery(prepareEngine, createPreviewFederationCallback(database.getProtocolType(), database.getResourceMetaData().getStorageTypes(), sqlStatement), context);
         return context.getExecutionUnits();
     }
     
@@ -163,18 +160,24 @@ public final class PreviewHandler extends AbstractSQLRULBackendHandler<PreviewSt
         };
     }
     
-    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetaDataContexts metaDataContexts) {
+    private DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> createDriverExecutionPrepareEngine(final boolean isReturnGeneratedKeys, final MetaDataContexts metaDataContexts,
+                                                                                                           final ConnectionSession connectionSession) {
         int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
-        return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, getConnectionSession().getDatabaseConnectionManager(),
-                (JDBCBackendStatement) getConnectionSession().getStatementManager(), new StatementOption(isReturnGeneratedKeys),
-                metaDataContexts.getMetaData().getDatabase(getDatabaseName()).getRuleMetaData().getRules(),
-                metaDataContexts.getMetaData().getDatabase(getDatabaseName()).getResourceMetaData().getStorageTypes());
+        return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, connectionSession.getDatabaseConnectionManager(),
+                (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(isReturnGeneratedKeys),
+                metaDataContexts.getMetaData().getDatabase(getDatabaseName(connectionSession)).getRuleMetaData().getRules(),
+                metaDataContexts.getMetaData().getDatabase(getDatabaseName(connectionSession)).getResourceMetaData().getStorageTypes());
     }
     
-    private String getDatabaseName() {
-        String result = Strings.isNullOrEmpty(getConnectionSession().getDatabaseName()) ? getConnectionSession().getDefaultDatabaseName() : getConnectionSession().getDatabaseName();
+    private String getDatabaseName(final ConnectionSession connectionSession) {
+        String result = Strings.isNullOrEmpty(connectionSession.getDatabaseName()) ? connectionSession.getDefaultDatabaseName() : connectionSession.getDatabaseName();
         ShardingSpherePreconditions.checkState(!Strings.isNullOrEmpty(result), NoDatabaseSelectedException::new);
         ShardingSpherePreconditions.checkState(ProxyContext.getInstance().databaseExists(result), () -> new UnknownDatabaseException(result));
         return result;
+    }
+    
+    @Override
+    public String getType() {
+        return PreviewStatement.class.getName();
     }
 }

@@ -47,7 +47,7 @@ public final class ConfigMetaDataChangedEventHandler implements PipelineMetaData
         try {
             jobConfig = YamlEngine.unmarshal(event.getValue(), JobConfigurationPOJO.class, true).toJobConfiguration();
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             log.error("unmarshal job configuration pojo failed.", ex);
             return;

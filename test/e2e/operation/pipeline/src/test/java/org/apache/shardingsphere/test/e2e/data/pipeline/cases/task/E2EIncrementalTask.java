@@ -86,7 +86,7 @@ public final class E2EIncrementalTask extends BaseIncrementTask {
         }
         for (int i = 0; i < Math.max(1, loopCount / 3); i++) {
             setNullToAllFields(primaryKeys.get(random.nextInt(0, primaryKeys.size())));
-            deleteOrderById(primaryKeys.get(random.nextInt(0, primaryKeys.size())));
+            deleteOrderById(primaryKeys.remove(random.nextInt(0, primaryKeys.size())));
         }
         log.info("increment task runnable execute successfully.");
     }
