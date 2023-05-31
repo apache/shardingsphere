@@ -63,22 +63,7 @@ public final class CDCAckHolder {
     private String generateAckId() {
         return "ACK-" + UUID.randomUUID();
     }
-    
-    /**
-     * Has position need to be ack before finished.
-     *
-     * @param socketSinkImporter socket sink importer
-     * @return true if any position need to be ack otherwise false
-     */
-    public boolean hasPositionNeedToBeAckBeforeFinished(final SocketSinkImporter socketSinkImporter) {
-        for (Map<SocketSinkImporter, CDCAckPosition> each : ackIdPositionMap.values()) {
-            if (each.containsKey(socketSinkImporter)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
+
     /**
      * Clean up.
      *

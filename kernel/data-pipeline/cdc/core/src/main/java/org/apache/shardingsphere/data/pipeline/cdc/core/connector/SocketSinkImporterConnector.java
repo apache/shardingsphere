@@ -24,7 +24,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.importer.ImporterType;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.cdc.constant.CDCSinkType;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckHolder;
@@ -108,7 +107,6 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
      * @param socketSinkImporter cdc importer
      * @param importerType importer type
      */
-    @SneakyThrows(InterruptedException.class)
     public void write(final List<Record> recordList, final SocketSinkImporter socketSinkImporter, final ImporterType importerType) {
         if (recordList.isEmpty()) {
             return;
@@ -116,13 +114,6 @@ public final class SocketSinkImporterConnector implements ImporterConnector, Aut
         if (ImporterType.INVENTORY == importerType || null == dataRecordComparator) {
             int dataRecordCount = (int) recordList.stream().filter(DataRecord.class::isInstance).count();
             Record lastRecord = recordList.get(recordList.size() - 1);
-            if (lastRecord instanceof FinishedRecord && 0 == dataRecordCount) {
-                while (CDCAckHolder.getInstance().hasPositionNeedToBeAckBeforeFinished(socketSinkImporter)) {
-                    Thread.sleep(500);
-                }
-                socketSinkImporter.ackWithLastDataRecord(new CDCAckPosition(lastRecord, 0));
-                return;
-            }
             Map<SocketSinkImporter, CDCAckPosition> importerDataRecordMap = new HashMap<>();
             importerDataRecordMap.put(socketSinkImporter, new CDCAckPosition(lastRecord, dataRecordCount));
             writeImmediately(recordList, importerDataRecordMap);
