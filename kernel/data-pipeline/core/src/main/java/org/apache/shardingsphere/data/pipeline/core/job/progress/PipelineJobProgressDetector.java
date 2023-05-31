@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 
 import java.util.Collection;
 
@@ -38,7 +38,7 @@ public final class PipelineJobProgressDetector {
      * @param inventoryTasks to check inventory tasks
      * @return is finished
      */
-    public static boolean allInventoryTasksFinished(final Collection<InventoryTask> inventoryTasks) {
+    public static boolean allInventoryTasksFinished(final Collection<PipelineTask> inventoryTasks) {
         if (inventoryTasks.isEmpty()) {
             log.warn("inventoryTasks is empty");
         }

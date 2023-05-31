@@ -24,12 +24,14 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.NewYamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.spi.PersistRepository;
 
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.List;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 /**
@@ -40,10 +42,6 @@ import java.util.Map;
 public final class NewDatabaseRulePersistService implements NewDatabaseRuleBasedPersistService<Collection<RuleConfiguration>> {
     
     private static final String DEFAULT_VERSION = "0";
-    
-    private static final String ACTIVE_VERSION = "active_version";
-    
-    private static final String VERSIONS = "versions";
     
     private final PersistRepository repository;
     
@@ -62,33 +60,48 @@ public final class NewDatabaseRulePersistService implements NewDatabaseRuleBased
             if (dataNodes.isEmpty()) {
                 continue;
             }
-            persistDataNodes(entry.getValue().getRuleTagName().toLowerCase(), dataNodes);
+            persistDataNodes(databaseName, entry.getValue().getRuleTagName().toLowerCase(), dataNodes);
         }
     }
     
-    private void persistDataNodes(final String ruleName, final Collection<YamlDataNode> dataNodes) {
+    private void persistDataNodes(final String databaseName, final String ruleName, final Collection<YamlDataNode> dataNodes) {
         for (YamlDataNode each : dataNodes) {
             if (Strings.isNullOrEmpty(repository.getDirectly(each.getKey()))) {
-                repository.persist(appendActiveVersion(ruleName, each.getKey()), DEFAULT_VERSION);
+                repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionPath(databaseName, ruleName, each.getKey()), DEFAULT_VERSION);
             }
-            List<String> versions = repository.getChildrenKeys(String.join("/", "", ruleName, each.getKey(), VERSIONS));
-            repository.persist(appendVersion(ruleName, each.getKey(), versions.isEmpty()
+            List<String> versions = repository.getChildrenKeys(NewDatabaseMetaDataNode.getDatabaseRuleVersionsPath(databaseName, ruleName, each.getKey()));
+            repository.persist(NewDatabaseMetaDataNode.getDatabaseRuleVersionPath(databaseName, ruleName, each.getKey(), versions.isEmpty()
                     ? DEFAULT_VERSION
                     : String.valueOf(Integer.parseInt(versions.get(0)) + 1)), each.getValue());
         }
     }
     
-    private String appendActiveVersion(final String ruleName, final String key) {
-        return String.join("/", "", ruleName, key, ACTIVE_VERSION);
-    }
-    
-    private String appendVersion(final String ruleName, final String key, final String nextVersion) {
-        return String.join("/", "", ruleName, key, VERSIONS, nextVersion);
-    }
-    
     @Override
     public Collection<RuleConfiguration> load(final String databaseName, final String ruleName) {
-        // TODO
-        return Collections.emptyList();
+        Collection<String> result = new LinkedHashSet<>();
+        getAllKeys(result, NewDatabaseMetaDataNode.getDatabaseRulePath(databaseName, ruleName));
+        if (1 == result.size()) {
+            return Collections.emptyList();
+        }
+        return new NewYamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(ruleName, getDataNodes(result));
+    }
+    
+    private void getAllKeys(final Collection<String> keys, final String path) {
+        keys.add(path);
+        List<String> childrenKeys = repository.getChildrenKeys(path);
+        if (childrenKeys.isEmpty()) {
+            return;
+        }
+        for (String each : childrenKeys) {
+            getAllKeys(keys, String.join("/", "", path, each));
+        }
+    }
+    
+    private Collection<YamlDataNode> getDataNodes(final Collection<String> keys) {
+        Collection<YamlDataNode> result = new LinkedHashSet<>();
+        for (String each : keys) {
+            result.add(new YamlDataNode(each, repository.getDirectly(each)));
+        }
+        return result;
     }
 }

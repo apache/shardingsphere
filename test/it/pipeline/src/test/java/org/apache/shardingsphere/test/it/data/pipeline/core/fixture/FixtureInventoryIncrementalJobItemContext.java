@@ -24,8 +24,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.Pipelin
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
 import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalProcessContext;
-import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
 import java.util.Collection;
@@ -42,12 +41,12 @@ public final class FixtureInventoryIncrementalJobItemContext implements Inventor
     }
     
     @Override
-    public Collection<InventoryTask> getInventoryTasks() {
+    public Collection<PipelineTask> getInventoryTasks() {
         return null;
     }
     
     @Override
-    public Collection<IncrementalTask> getIncrementalTasks() {
+    public Collection<PipelineTask> getIncrementalTasks() {
         return null;
     }
     

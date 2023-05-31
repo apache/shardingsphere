@@ -17,8 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.api.task.progress;
 
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
+
 /**
  * Task progress.
  */
 public interface TaskProgress {
+    
+    /**
+     * Get position.
+     *
+     * @return position
+     */
+    IngestPosition getPosition();
 }

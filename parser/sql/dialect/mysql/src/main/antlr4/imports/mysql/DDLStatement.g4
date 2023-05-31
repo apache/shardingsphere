@@ -192,6 +192,13 @@ dropIndex
     : DROP INDEX indexName (ON tableName)? alterAlgorithmOption? alterLockOption?
     ;
 
+algorithmOptionAndLockOption
+    : alterLockOption
+    | alterAlgorithmOption
+    | alterLockOption alterAlgorithmOption
+    | alterAlgorithmOption alterLockOption
+    ;
+
 alterAlgorithmOption
     : ALGORITHM EQ_? (DEFAULT | INSTANT | INPLACE | COPY)
     ;
@@ -205,8 +212,7 @@ truncateTable
     ;
 
 createIndex
-    : CREATE createIndexSpecification? INDEX indexName indexTypeClause? ON tableName keyListWithExpression indexOption?
-    (alterAlgorithmOption | alterLockOption)*
+    : CREATE createIndexSpecification? INDEX indexName indexTypeClause? ON tableName keyListWithExpression indexOption? algorithmOptionAndLockOption?
     ;
 
 createDatabase

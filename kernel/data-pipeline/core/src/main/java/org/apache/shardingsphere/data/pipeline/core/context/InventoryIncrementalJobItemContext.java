@@ -21,8 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContex
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.metadata.loader.PipelineTableMetaDataLoader;
-import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
 
 import java.util.Collection;
@@ -40,14 +39,14 @@ public interface InventoryIncrementalJobItemContext extends PipelineJobItemConte
      *
      * @return inventory tasks
      */
-    Collection<InventoryTask> getInventoryTasks();
+    Collection<PipelineTask> getInventoryTasks();
     
     /**
      * Get incremental tasks.
      *
      * @return incremental tasks
      */
-    Collection<IncrementalTask> getIncrementalTasks();
+    Collection<PipelineTask> getIncrementalTasks();
     
     /**
      * Get init progress.

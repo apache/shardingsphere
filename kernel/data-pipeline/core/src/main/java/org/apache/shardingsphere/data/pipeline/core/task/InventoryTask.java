@@ -50,7 +50,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @ToString(exclude = {"inventoryDumperExecuteEngine", "inventoryImporterExecuteEngine", "channel", "dumper", "importer"})
 @Slf4j
-public final class InventoryTask implements PipelineTask, AutoCloseable {
+public final class InventoryTask implements PipelineTask {
     
     @Getter
     private final String taskId;

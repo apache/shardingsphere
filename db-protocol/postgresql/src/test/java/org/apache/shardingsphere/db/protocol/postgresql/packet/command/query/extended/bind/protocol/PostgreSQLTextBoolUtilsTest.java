@@ -15,46 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.task;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
-import org.apache.shardingsphere.data.pipeline.api.task.progress.TaskProgress;
+import org.junit.jupiter.api.Test;
 
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * Pipeline task interface.
- */
-public interface PipelineTask {
+class PostgreSQLTextBoolUtilsTest {
     
-    /**
-     * Start task.
-     *
-     * @return future
-     */
-    Collection<CompletableFuture<?>> start();
-    
-    /**
-     * Stop task.
-     */
-    void stop();
-    
-    /**
-     * Get task id.
-     *
-     * @return task id
-     */
-    String getTaskId();
-    
-    /**
-     * Get task progress.
-     *
-     * @return task progress
-     */
-    TaskProgress getTaskProgress();
-    
-    /**
-     * Close.
-     */
-    void close();
+    @Test
+    void assertGetTextValue() {
+        Object jdbcBoolValue = true;
+        String textValue = PostgreSQLTextBoolUtils.getTextValue(jdbcBoolValue);
+        assertThat(textValue, is("t"));
+    }
 }

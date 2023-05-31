@@ -21,10 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Data source path processor.
+ * Data source node converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataSourcePathProcessor {
+public final class DataSourceNodeConverter {
     
     private static final String ROOT_NODE = "data_sources";
     

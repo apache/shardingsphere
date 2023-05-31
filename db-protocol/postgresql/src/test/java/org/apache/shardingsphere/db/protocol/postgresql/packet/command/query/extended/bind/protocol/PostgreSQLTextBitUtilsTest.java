@@ -15,46 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.task;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
-import org.apache.shardingsphere.data.pipeline.api.task.progress.TaskProgress;
+import org.junit.jupiter.api.Test;
+import org.postgresql.util.PGobject;
 
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * Pipeline task interface.
- */
-public interface PipelineTask {
+class PostgreSQLTextBitUtilsTest {
     
-    /**
-     * Start task.
-     *
-     * @return future
-     */
-    Collection<CompletableFuture<?>> start();
+    @Test
+    void assertParse() {
+        String textValue = "1";
+        PGobject actual = PostgreSQLTextBitUtils.parse(textValue);
+        assertThat(actual.getType(), is("bit"));
+        assertThat(actual.getValue(), is(textValue));
+    }
     
-    /**
-     * Stop task.
-     */
-    void stop();
-    
-    /**
-     * Get task id.
-     *
-     * @return task id
-     */
-    String getTaskId();
-    
-    /**
-     * Get task progress.
-     *
-     * @return task progress
-     */
-    TaskProgress getTaskProgress();
-    
-    /**
-     * Close.
-     */
-    void close();
+    @Test
+    void assertGetTextBitValue() {
+        Object jdbcBitValue = true;
+        String textValue = PostgreSQLTextBitUtils.getTextValue(jdbcBitValue);
+        assertThat(textValue, is("1"));
+    }
 }
