@@ -42,7 +42,7 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
     
     public PostgreSQLAggregatedCommandPacket(final List<PostgreSQLCommandPacket> packets) {
         this.packets = packets;
-        boolean parsed = false;
+        boolean isParsed = false;
         int firstStatementBindTimes = 0;
         int firstStatementExecuteTimes = 0;
         String firstStatement = null;
@@ -51,13 +51,13 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
         int firstBindIndex = -1;
         int lastExecuteIndex = -1;
         for (PostgreSQLCommandPacket each : packets) {
-            if (each instanceof PostgreSQLComParsePacket && !parsed) {
+            if (each instanceof PostgreSQLComParsePacket && !isParsed) {
                 if (null == firstStatement) {
                     firstStatement = ((PostgreSQLComParsePacket) each).getStatementId();
                 } else if (!firstStatement.equals(((PostgreSQLComParsePacket) each).getStatementId())) {
                     break;
                 }
-                parsed = true;
+                isParsed = true;
             }
             if (each instanceof PostgreSQLComBindPacket) {
                 if (-1 == firstBindIndex) {
