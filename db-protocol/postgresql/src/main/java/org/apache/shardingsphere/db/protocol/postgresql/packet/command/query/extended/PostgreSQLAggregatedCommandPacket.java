@@ -42,7 +42,7 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
     
     public PostgreSQLAggregatedCommandPacket(final List<PostgreSQLCommandPacket> packets) {
         this.packets = packets;
-        int parseTimes = 0;
+        boolean parsed = false;
         int firstStatementBindTimes = 0;
         int firstStatementExecuteTimes = 0;
         String firstStatement = null;
@@ -51,15 +51,13 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
         int firstBindIndex = -1;
         int lastExecuteIndex = -1;
         for (PostgreSQLCommandPacket each : packets) {
-            if (each instanceof PostgreSQLComParsePacket) {
-                if (++parseTimes > 1) {
-                    break;
-                }
+            if (each instanceof PostgreSQLComParsePacket && !parsed) {
                 if (null == firstStatement) {
                     firstStatement = ((PostgreSQLComParsePacket) each).getStatementId();
                 } else if (!firstStatement.equals(((PostgreSQLComParsePacket) each).getStatementId())) {
                     break;
                 }
+                parsed = true;
             }
             if (each instanceof PostgreSQLComBindPacket) {
                 if (-1 == firstBindIndex) {
@@ -94,12 +92,8 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
         this.lastExecuteIndex = lastExecuteIndex;
         containsBatchedStatements = firstStatementBindTimes == firstStatementExecuteTimes && firstStatementBindTimes >= 3;
         if (containsBatchedStatements) {
-            ensureRandomAccessible(packets);
+            Preconditions.checkArgument(packets instanceof RandomAccess, "Packets must be RandomAccess.");
         }
-    }
-    
-    private void ensureRandomAccessible(final List<PostgreSQLCommandPacket> packets) {
-        Preconditions.checkArgument(packets instanceof RandomAccess, "Packets must be RandomAccess.");
     }
     
     @Override
