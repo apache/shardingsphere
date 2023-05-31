@@ -157,7 +157,9 @@ public final class MySQLClient {
         MySQLComQueryPacket comQueryPacket = new MySQLComQueryPacket(queryString, false);
         resetSequenceID();
         channel.writeAndFlush(comQueryPacket);
-        return waitExpectedResponse(InternalResultSet.class);
+        InternalResultSet result = waitExpectedResponse(InternalResultSet.class);
+        ShardingSpherePreconditions.checkNotNull(result, () -> new PipelineInternalException("Unexpected null value of response"));
+        return result;
     }
     
     /**

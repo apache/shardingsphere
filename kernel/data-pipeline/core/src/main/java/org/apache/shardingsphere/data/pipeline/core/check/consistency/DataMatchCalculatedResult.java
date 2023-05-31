@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -39,7 +38,6 @@ import java.util.Optional;
 @Slf4j
 public final class DataMatchCalculatedResult implements DataConsistencyCalculatedResult {
     
-    @NonNull
     private final Object maxUniqueKeyValue;
     
     private final int recordsCount;
