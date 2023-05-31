@@ -115,7 +115,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             calculationContext.close();
             throw ex;
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             calculationContext.close();
             throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
@@ -131,7 +131,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             result = createCalculationContext(param);
             fulfillCalculationContext(result, param);
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             CloseUtils.closeQuietly(result);
             throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);

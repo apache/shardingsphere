@@ -63,7 +63,7 @@ public final class YamlShardingSphereDataSourceFactory {
         try {
             return createDataSource(dataSourceMap, rootConfig);
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             dataSourceMap.values().stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
             throw ex;
