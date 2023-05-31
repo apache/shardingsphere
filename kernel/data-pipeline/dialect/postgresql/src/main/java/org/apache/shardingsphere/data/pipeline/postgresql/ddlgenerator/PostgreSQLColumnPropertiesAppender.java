@@ -52,7 +52,7 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
     /**
      * Append column properties.
      *
-     * @param context create table sql context
+     * @param context create table SQL context
      */
     @SneakyThrows(SQLException.class)
     public void append(final Map<String, Object> context) {
@@ -78,14 +78,22 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
         if (null != context.get("typoid")) {
             return getColumnFromType(context);
         }
-        if (null != context.get("coll_inherits")) {
-            Collection<String> collInherits = convertPgArrayToList(context.get("coll_inherits"));
-            context.put("coll_inherits", collInherits);
-            if (!collInherits.isEmpty()) {
-                return getColumnFromInherits(collInherits);
-            }
+        if (null == context.get("coll_inherits")) {
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
+        Collection<String> collInherits = toCollection((Array) context.get("coll_inherits"));
+        context.put("coll_inherits", collInherits);
+        return collInherits.isEmpty() ? Collections.emptyList() : getColumnFromInherits(collInherits);
+    }
+    
+    private Collection<Map<String, Object>> getColumnFromType(final Map<String, Object> context) {
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("tid", context.get("typoid"));
+        return executeByTemplate(params, "component/table/%s/get_columns_for_table.ftl");
+    }
+    
+    private Collection<String> toCollection(final Array array) throws SQLException {
+        return Arrays.stream((String[]) array.getArray()).collect(Collectors.toList());
     }
     
     private Collection<Map<String, Object>> getColumnFromInherits(final Collection<String> collInherits) {
@@ -100,12 +108,6 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
         return result;
     }
     
-    private Collection<Map<String, Object>> getColumnFromType(final Map<String, Object> context) {
-        Map<String, Object> params = new LinkedHashMap<>();
-        params.put("tid", context.get("typoid"));
-        return executeByTemplate(params, "component/table/%s/get_columns_for_table.ftl");
-    }
-    
     @SuppressWarnings("unchecked")
     private String getInheritedFromTableOrType(final Map<String, Object> context) {
         String result = "inheritedfrom";
@@ -117,22 +119,18 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
         return result;
     }
     
-    private Collection<String> convertPgArrayToList(final Object array) throws SQLException {
-        return Arrays.stream((String[]) ((Array) array).getArray()).collect(Collectors.toList());
-    }
-    
     private Map<String, Collection<String>> getEditTypes(final Collection<Map<String, Object>> allColumns) throws SQLException {
         Map<String, Collection<String>> result = new LinkedHashMap<>();
         Map<String, Object> params = new LinkedHashMap<>();
         params.put("type_ids", allColumns.stream().map(each -> each.get("atttypid").toString()).collect(Collectors.joining(",")));
         for (Map<String, Object> each : executeByTemplate(params, "component/columns/%s/edit_mode_types_multi.ftl")) {
-            result.put(each.get("main_oid").toString(), covertPgArrayAndSort(each.get("edit_types")));
+            result.put(each.get("main_oid").toString(), toCollectionAndSort((Array) each.get("edit_types")));
         }
         return result;
     }
     
-    private Collection<String> covertPgArrayAndSort(final Object editTypes) throws SQLException {
-        return Arrays.stream((String[]) ((Array) editTypes).getArray()).sorted(String::compareTo).collect(Collectors.toList());
+    private Collection<String> toCollectionAndSort(final Array editTypes) throws SQLException {
+        return Arrays.stream((String[]) editTypes.getArray()).sorted(String::compareTo).collect(Collectors.toList());
     }
     
     private void columnFormatter(final Map<String, Object> column, final Collection<String> editTypes) throws SQLException {
@@ -146,14 +144,15 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
     }
     
     private void handlePrimaryColumn(final Map<String, Object> column) {
-        if (null != column.get("attnum") && null != column.get("indkey")) {
-            if (Arrays.stream(column.get("indkey").toString().split(" ")).collect(Collectors.toList()).contains(column.get("attnum").toString())) {
-                column.put("is_pk", true);
-                column.put("is_primary_key", true);
-            } else {
-                column.put("is_pk", false);
-                column.put("is_primary_key", false);
-            }
+        if (null == column.get("attnum") || null == column.get("indkey")) {
+            return;
+        }
+        if (Arrays.stream(column.get("indkey").toString().split(" ")).collect(Collectors.toList()).contains(column.get("attnum").toString())) {
+            column.put("is_pk", true);
+            column.put("is_primary_key", true);
+        } else {
+            column.put("is_pk", false);
+            column.put("is_primary_key", false);
         }
     }
     
@@ -165,58 +164,33 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
     }
     
     private void handleLengthPrecision(final Long elemoid, final Map<String, Object> column, final String fullType) {
-        boolean precision = false;
-        boolean length = false;
-        String typeval = "";
-        Long[] lTypes = {1560L, 1561L, 1562L, 1563L, 1042L, 1043L, 1014L, 1015L};
-        Long[] dTypes = {1083L, 1114L, 1115L, 1183L, 1184L, 1185L, 1186L, 1187L, 1266L, 1270L};
-        Long[] pTypes = {1231L, 1700L};
-        if (0 != elemoid) {
-            if (Arrays.asList(lTypes).contains(elemoid)) {
-                typeval = "L";
-            } else if (Arrays.asList(dTypes).contains(elemoid)) {
-                typeval = "D";
-            } else if (Arrays.asList(pTypes).contains(elemoid)) {
-                typeval = "P";
-            } else {
-                typeval = " ";
-            }
-        }
-        if ("P".equals(typeval)) {
-            precision = true;
-        }
-        if (precision || "L".equals(typeval) || "D".equals(typeval)) {
-            length = true;
-        }
-        
-        if (length && precision) {
-            Matcher matcher = LENGTH_PRECISION_PATTERN.matcher(fullType);
-            if (matcher.find()) {
-                column.put("attlen", matcher.group(1));
-                column.put("attprecision", matcher.group(2));
-            }
-        } else if (length) {
-            Matcher matcher = LENGTH_PATTERN.matcher(fullType);
-            if (matcher.find()) {
-                column.put("attlen", matcher.group(1));
-                column.put("attprecision", null);
-            }
+        switch (PostgreSQLColumnType.valueOf(elemoid)) {
+            case NUMERIC:
+                setColumnPrecision(column, fullType);
+                break;
+            case DATE:
+            case VARCHAR:
+                setColumnLength(column, fullType);
+                break;
+            default:
+                break;
         }
     }
     
-    private void formatColumnVariables(final Map<String, Object> column) throws SQLException {
-        if (null == column.get("attoptions")) {
-            return;
+    private void setColumnPrecision(final Map<String, Object> column, final String fullType) {
+        Matcher matcher = LENGTH_PRECISION_PATTERN.matcher(fullType);
+        if (matcher.find()) {
+            column.put("attlen", matcher.group(1));
+            column.put("attprecision", matcher.group(2));
         }
-        Collection<Map<String, String>> attOptions = new LinkedList<>();
-        Collection<String> columnVariables = Arrays.stream((String[]) ((Array) column.get("attoptions")).getArray()).collect(Collectors.toList());
-        for (String each : columnVariables) {
-            Map<String, String> columnVariable = new LinkedHashMap<>();
-            columnVariable.put("name", each.substring(0, each.indexOf(ATT_OPTION_SPLIT)));
-            columnVariable.put("value", each.substring(each.indexOf(ATT_OPTION_SPLIT) + 1));
-            attOptions.add(columnVariable);
+    }
+    
+    private static void setColumnLength(final Map<String, Object> column, final String fullType) {
+        Matcher matcher = LENGTH_PATTERN.matcher(fullType);
+        if (matcher.find()) {
+            column.put("attlen", matcher.group(1));
+            column.put("attprecision", null);
         }
-        column.put("attoptions", attOptions);
     }
     
     private String getFullDataType(final Map<String, Object> column) {
@@ -306,6 +280,21 @@ public final class PostgreSQLColumnPropertiesAppender extends AbstractPostgreSQL
             result += ")";
         }
         return result;
+    }
+    
+    private void formatColumnVariables(final Map<String, Object> column) throws SQLException {
+        if (null == column.get("attoptions")) {
+            return;
+        }
+        Collection<Map<String, String>> attOptions = new LinkedList<>();
+        Collection<String> columnVariables = Arrays.stream((String[]) ((Array) column.get("attoptions")).getArray()).collect(Collectors.toList());
+        for (String each : columnVariables) {
+            Map<String, String> columnVariable = new LinkedHashMap<>();
+            columnVariable.put("name", each.substring(0, each.indexOf(ATT_OPTION_SPLIT)));
+            columnVariable.put("value", each.substring(each.indexOf(ATT_OPTION_SPLIT) + 1));
+            attOptions.add(columnVariable);
+        }
+        column.put("attoptions", attOptions);
     }
     
     private String parseTypeName(final String name) {
