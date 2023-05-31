@@ -54,7 +54,7 @@ import java.util.concurrent.CompletableFuture;
  */
 @Slf4j
 @ToString(exclude = {"incrementalExecuteEngine", "channel", "dumper", "importers", "taskProgress"})
-public final class IncrementalTask implements PipelineTask, AutoCloseable {
+public final class IncrementalTask implements PipelineTask {
     
     @Getter
     private final String taskId;
