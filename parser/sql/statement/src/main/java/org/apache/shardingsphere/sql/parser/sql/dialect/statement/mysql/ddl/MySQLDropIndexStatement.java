@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
 import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.AlgorithmTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
@@ -32,6 +34,10 @@ public final class MySQLDropIndexStatement extends DropIndexStatement implements
     
     private SimpleTableSegment table;
     
+    private AlgorithmTypeSegment algorithmSegment;
+    
+    private LockTableSegment lockTableSegment;
+    
     /**
      * Get simple table segment.
      *
@@ -39,5 +45,23 @@ public final class MySQLDropIndexStatement extends DropIndexStatement implements
      */
     public Optional<SimpleTableSegment> getTable() {
         return Optional.ofNullable(table);
+    }
+    
+    /**
+     * Get algorithm segment.
+     *
+     * @return algorithm segment
+     */
+    public Optional<AlgorithmTypeSegment> getGetAlgorithmSegment() {
+        return Optional.ofNullable(algorithmSegment);
+    }
+    
+    /**
+     * Get lock table Segment.
+     *
+     * @return lock table segment
+     */
+    public Optional<LockTableSegment> getLockTableSegment() {
+        return Optional.ofNullable(lockTableSegment);
     }
 }

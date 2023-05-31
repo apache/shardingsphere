@@ -17,11 +17,39 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.AlgorithmTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+
+import java.util.Optional;
 
 /**
  * MySQL create index statement.
  */
+@Setter
 public final class MySQLCreateIndexStatement extends CreateIndexStatement implements MySQLStatement {
+    
+    private AlgorithmTypeSegment algorithmSegment;
+    
+    private LockTableSegment lockTableSegment;
+    
+    /**
+     * Get algorithm segment.
+     *
+     * @return algorithm segment
+     */
+    public Optional<AlgorithmTypeSegment> getGetAlgorithmSegment() {
+        return Optional.ofNullable(algorithmSegment);
+    }
+    
+    /**
+     * Get lock table Segment.
+     *
+     * @return lock table segment
+     */
+    public Optional<LockTableSegment> getLockTableSegment() {
+        return Optional.ofNullable(lockTableSegment);
+    }
 }

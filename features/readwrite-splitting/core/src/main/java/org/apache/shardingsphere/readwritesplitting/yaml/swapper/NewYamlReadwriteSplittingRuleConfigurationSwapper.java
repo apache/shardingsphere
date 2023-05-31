@@ -35,9 +35,7 @@ import java.util.Map.Entry;
 /**
  * YAML readwrite-splitting rule configuration swapper.
  */
-public final class NewYamlReadwriteSplittingRuleConfigurationSwapper
-        implements
-            NewYamlRuleConfigurationSwapper<ReadwriteSplittingRuleConfiguration> {
+public final class NewYamlReadwriteSplittingRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<ReadwriteSplittingRuleConfiguration> {
     
     private final ReadwriteSplittingNodeConverter converter = new ReadwriteSplittingNodeConverter();
     

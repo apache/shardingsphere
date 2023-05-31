@@ -101,6 +101,18 @@ class PostgreSQLColumnTypeTest {
     }
     
     @Test
+    void assertValueOfPgTypeForBit() {
+        PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.BIT, "bit");
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_BIT));
+    }
+    
+    @Test
+    void assertValueOfPgTypeForBool() {
+        PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.BIT, "bool");
+        assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_BOOL));
+    }
+    
+    @Test
     void assertValueOfJDBCTypeForDate() {
         PostgreSQLColumnType sqlColumnType = PostgreSQLColumnType.valueOfJDBCType(Types.DATE);
         assertThat(sqlColumnType, is(PostgreSQLColumnType.POSTGRESQL_TYPE_DATE));

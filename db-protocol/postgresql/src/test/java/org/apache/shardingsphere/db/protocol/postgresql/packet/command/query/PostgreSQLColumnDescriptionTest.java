@@ -39,6 +39,18 @@ class PostgreSQLColumnDescriptionTest {
     }
     
     @Test
+    void assertBitTypeOid() {
+        PostgreSQLColumnDescription description = new PostgreSQLColumnDescription("gender", 1, Types.BIT, 1, "bit");
+        assertThat(description.getTypeOID(), is(1560));
+    }
+    
+    @Test
+    void assertBoolTypeOid() {
+        PostgreSQLColumnDescription description = new PostgreSQLColumnDescription("married", 1, Types.BIT, 1, "bool");
+        assertThat(description.getTypeOID(), is(16));
+    }
+    
+    @Test
     void assertIntegerArrayTypeOid() {
         PostgreSQLColumnDescription description = new PostgreSQLColumnDescription("ages", 2, Types.ARRAY, 12, "_int4");
         assertThat(description.getTypeOID(), is(1007));

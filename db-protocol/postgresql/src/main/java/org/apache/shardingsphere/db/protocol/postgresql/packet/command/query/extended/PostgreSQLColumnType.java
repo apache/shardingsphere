@@ -193,6 +193,45 @@ public enum PostgreSQLColumnType implements BinaryColumnType {
     }
     
     /**
+     * Value of JDBC type.
+     *
+     * @param jdbcType JDBC type
+     * @param columnTypeName column type name
+     * @return PostgreSQL column type enum
+     */
+    public static PostgreSQLColumnType valueOfJDBCType(final int jdbcType, final String columnTypeName) {
+        if (isPgBit(jdbcType, columnTypeName)) {
+            return POSTGRESQL_TYPE_BIT;
+        }
+        if (isPgBool(jdbcType, columnTypeName)) {
+            return POSTGRESQL_TYPE_BOOL;
+        }
+        return valueOfJDBCType(jdbcType);
+    }
+    
+    /**
+     * check if pg bit type.
+     *
+     * @param jdbcType JDBC type
+     * @param columnTypeName column type name
+     * @return whether is PostgreSQL bit
+     */
+    public static boolean isPgBit(final int jdbcType, final String columnTypeName) {
+        return Types.BIT == jdbcType && "bit".equalsIgnoreCase(columnTypeName);
+    }
+    
+    /**
+     * check if pg bit type.
+     *
+     * @param jdbcType JDBC type
+     * @param columnTypeName column type name
+     * @return whether is PostgreSQL bit
+     */
+    public static boolean isPgBool(final int jdbcType, final String columnTypeName) {
+        return Types.BIT == jdbcType && "bool".equalsIgnoreCase(columnTypeName);
+    }
+    
+    /**
      * Value of.
      * 
      * @param value value

@@ -15,46 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.task;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
-import org.apache.shardingsphere.data.pipeline.api.task.progress.TaskProgress;
-
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Pipeline task interface.
+ * Text Bool utility class of PostgreSQL.
  */
-public interface PipelineTask {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class PostgreSQLTextBoolUtils {
     
     /**
-     * Start task.
-     *
-     * @return future
+     * Get Boolean Text value in PostgreSQL text format.
+     * @param jdbcBoolValue bool value for jdbc
+     * @return bool value in PostgreSQL text format
      */
-    Collection<CompletableFuture<?>> start();
-    
-    /**
-     * Stop task.
-     */
-    void stop();
-    
-    /**
-     * Get task id.
-     *
-     * @return task id
-     */
-    String getTaskId();
-    
-    /**
-     * Get task progress.
-     *
-     * @return task progress
-     */
-    TaskProgress getTaskProgress();
-    
-    /**
-     * Close.
-     */
-    void close();
+    public static String getTextValue(final Object jdbcBoolValue) {
+        return null == jdbcBoolValue ? null : (Boolean) jdbcBoolValue ? "t" : "f";
+    }
 }

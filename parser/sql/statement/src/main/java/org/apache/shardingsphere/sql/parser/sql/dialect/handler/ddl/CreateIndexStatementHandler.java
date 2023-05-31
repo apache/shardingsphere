@@ -19,8 +19,11 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.AlgorithmTypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table.LockTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
@@ -64,5 +67,31 @@ public final class CreateIndexStatementHandler implements SQLStatementHandler {
             return ((OpenGaussCreateIndexStatement) createIndexStatement).isIfNotExists();
         }
         return false;
+    }
+    
+    /**
+     * Get algorithm type segment.
+     *
+     * @param createIndexStatement create index statement
+     * @return algorithm type segment
+     */
+    public static Optional<AlgorithmTypeSegment> getAlgorithmTypeSegment(final CreateIndexStatement createIndexStatement) {
+        if (createIndexStatement instanceof MySQLCreateIndexStatement) {
+            return ((MySQLCreateIndexStatement) createIndexStatement).getGetAlgorithmSegment();
+        }
+        return Optional.empty();
+    }
+    
+    /**
+     * Get lock table segment.
+     *
+     * @param createIndexStatement create index statement
+     * @return lock table segment
+     */
+    public static Optional<LockTableSegment> getLockTableSegment(final CreateIndexStatement createIndexStatement) {
+        if (createIndexStatement instanceof MySQLCreateIndexStatement) {
+            return ((MySQLCreateIndexStatement) createIndexStatement).getLockTableSegment();
+        }
+        return Optional.empty();
     }
 }
