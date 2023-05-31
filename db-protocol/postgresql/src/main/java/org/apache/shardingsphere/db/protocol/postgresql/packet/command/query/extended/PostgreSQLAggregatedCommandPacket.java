@@ -45,7 +45,7 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
         boolean isParsed = false;
         int firstStatementBindTimes = 0;
         int firstStatementExecuteTimes = 0;
-        String firstStatement = null;
+        String firstStatementId = null;
         String firstPortal = null;
         int index = 0;
         int firstBindIndex = -1;
@@ -55,9 +55,9 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
                 if (isParsed) {
                     break;
                 }
-                if (null == firstStatement) {
-                    firstStatement = ((PostgreSQLComParsePacket) each).getStatementId();
-                } else if (!firstStatement.equals(((PostgreSQLComParsePacket) each).getStatementId())) {
+                if (null == firstStatementId) {
+                    firstStatementId = ((PostgreSQLComParsePacket) each).getStatementId();
+                } else if (!firstStatementId.equals(((PostgreSQLComParsePacket) each).getStatementId())) {
                     break;
                 }
                 isParsed = true;
@@ -66,9 +66,9 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
                 if (-1 == firstBindIndex) {
                     firstBindIndex = index;
                 }
-                if (null == firstStatement) {
-                    firstStatement = ((PostgreSQLComBindPacket) each).getStatementId();
-                } else if (!firstStatement.equals(((PostgreSQLComBindPacket) each).getStatementId())) {
+                if (null == firstStatementId) {
+                    firstStatementId = ((PostgreSQLComBindPacket) each).getStatementId();
+                } else if (!firstStatementId.equals(((PostgreSQLComBindPacket) each).getStatementId())) {
                     break;
                 }
                 if (null == firstPortal) {
