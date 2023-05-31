@@ -52,4 +52,9 @@ public interface PipelineTask {
      * @return task progress
      */
     TaskProgress getTaskProgress();
+    
+    /**
+     * Close.
+     */
+    void close();
 }
