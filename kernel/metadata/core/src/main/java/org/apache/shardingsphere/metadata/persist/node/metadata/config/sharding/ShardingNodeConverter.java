@@ -123,7 +123,7 @@ public final class ShardingNodeConverter {
     }
     
     /**
-     * Get default database strategy path.
+     * Get default audit strategy path.
      * 
      * @return default audit strategy path
      */
