@@ -45,9 +45,9 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
         int parsePacketCount = 0;
         int bindPacketCountForFirstStatement = 0;
         int executePacketCountForFirstStatement = 0;
-        int index = 0;
         int batchPacketBeginIndex = -1;
         int batchPacketEndIndex = -1;
+        int index = 0;
         for (PostgreSQLCommandPacket each : packets) {
             if (each instanceof PostgreSQLComParsePacket) {
                 if (++parsePacketCount > 1) {
