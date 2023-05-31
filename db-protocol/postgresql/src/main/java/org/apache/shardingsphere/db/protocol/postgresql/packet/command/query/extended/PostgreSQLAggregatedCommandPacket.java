@@ -34,20 +34,20 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
     
     private final boolean containsBatchedStatements;
     
-    private final int firstBindIndex;
+    private final int batchPacketBeginIndex;
     
-    private final int lastExecuteIndex;
+    private final int batchPacketEndIndex;
     
     public PostgreSQLAggregatedCommandPacket(final List<PostgreSQLCommandPacket> packets) {
         this.packets = packets;
         int parsePacketCount = 0;
         String firstStatementId = null;
-        int firstStatementBindTimes = 0;
-        int firstStatementExecuteTimes = 0;
+        int bindPacketCountForFirstStatement = 0;
+        int executePacketCountForFirstStatement = 0;
         String firstPortal = null;
         int index = 0;
-        int firstBindIndex = -1;
-        int lastExecuteIndex = -1;
+        int batchPacketBeginIndex = -1;
+        int batchPacketEndIndex = -1;
         for (PostgreSQLCommandPacket each : packets) {
             if (each instanceof PostgreSQLComParsePacket) {
                 if (++parsePacketCount > 1) {
@@ -60,8 +60,8 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
                 }
             }
             if (each instanceof PostgreSQLComBindPacket) {
-                if (-1 == firstBindIndex) {
-                    firstBindIndex = index;
+                if (-1 == batchPacketBeginIndex) {
+                    batchPacketBeginIndex = index;
                 }
                 if (null == firstStatementId) {
                     firstStatementId = ((PostgreSQLComBindPacket) each).getStatementId();
@@ -73,24 +73,24 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
                 } else if (!firstPortal.equals(((PostgreSQLComBindPacket) each).getPortal())) {
                     break;
                 }
-                firstStatementBindTimes++;
+                bindPacketCountForFirstStatement++;
             }
             if (each instanceof PostgreSQLComExecutePacket) {
-                if (index > lastExecuteIndex) {
-                    lastExecuteIndex = index;
+                if (index > batchPacketEndIndex) {
+                    batchPacketEndIndex = index;
                 }
                 if (null == firstPortal) {
                     firstPortal = ((PostgreSQLComExecutePacket) each).getPortal();
                 } else if (!firstPortal.equals(((PostgreSQLComExecutePacket) each).getPortal())) {
                     break;
                 }
-                firstStatementExecuteTimes++;
+                executePacketCountForFirstStatement++;
             }
             index++;
         }
-        this.firstBindIndex = firstBindIndex;
-        this.lastExecuteIndex = lastExecuteIndex;
-        containsBatchedStatements = firstStatementBindTimes == firstStatementExecuteTimes && firstStatementBindTimes >= 3;
+        this.batchPacketBeginIndex = batchPacketBeginIndex;
+        this.batchPacketEndIndex = batchPacketEndIndex;
+        containsBatchedStatements = bindPacketCountForFirstStatement == executePacketCountForFirstStatement && bindPacketCountForFirstStatement >= 3;
     }
     
     @Override
