@@ -51,7 +51,10 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
         int firstBindIndex = -1;
         int lastExecuteIndex = -1;
         for (PostgreSQLCommandPacket each : packets) {
-            if (each instanceof PostgreSQLComParsePacket && !isParsed) {
+            if (each instanceof PostgreSQLComParsePacket) {
+                if (isParsed) {
+                    break;
+                }
                 if (null == firstStatement) {
                     firstStatement = ((PostgreSQLComParsePacket) each).getStatementId();
                 } else if (!firstStatement.equals(((PostgreSQLComParsePacket) each).getStatementId())) {
