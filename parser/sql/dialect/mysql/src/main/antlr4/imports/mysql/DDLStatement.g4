@@ -189,8 +189,7 @@ dropTable
     ;
 
 dropIndex
-    : DROP INDEX indexName (ON tableName)?
-    (alterAlgorithmOption | alterLockOption)*
+    : DROP INDEX indexName (ON tableName)? algorithmOptionAndLockOption?
     ;
 
 algorithmOptionAndLockOption

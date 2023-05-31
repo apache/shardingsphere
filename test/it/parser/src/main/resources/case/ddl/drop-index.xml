@@ -17,6 +17,32 @@
   -->
 
 <sql-parser-test-cases>
+    <drop-index sql-case-id="drop_index_with_algorithm">
+        <table name="t_order" start-index="23" stop-index="29" />
+        <index name="idx_name" start-index="11" stop-index="18" />
+        <algorithm-option type="INPLACE" start-index="31" stop-index="47" />
+    </drop-index>
+
+    <drop-index sql-case-id="drop_index_with_lock">
+        <table name="t_order" start-index="23" stop-index="29" />
+        <index name="idx_name" start-index="11" stop-index="18" />
+        <lock-option type="EXCLUSIVE" start-index="31" stop-index="44" />
+    </drop-index>
+
+    <drop-index sql-case-id="drop_index_with_algorithm_lock">
+        <table name="t_order" start-index="23" stop-index="29" />
+        <index name="idx_name" start-index="11" stop-index="18" />
+        <algorithm-option type="INPLACE" start-index="31" stop-index="47" />
+        <lock-option type="EXCLUSIVE" start-index="49" stop-index="62" />
+    </drop-index>
+
+    <drop-index sql-case-id="drop_index_with_lock_algorithm">
+        <table name="t_order" start-index="23" stop-index="29" />
+        <index name="idx_name" start-index="11" stop-index="18" />
+        <lock-option type="EXCLUSIVE" start-index="31" stop-index="44" />
+        <algorithm-option type="INPLACE" start-index="46" stop-index="62" />
+    </drop-index>
+
     <drop-index sql-case-id="drop_index">
         <table name="t_log" start-index="26" stop-index="30" />
     </drop-index>
