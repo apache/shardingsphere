@@ -49,7 +49,7 @@ public final class PostgreSQLBinaryTimestampUtils {
             nanos -= 1000000L;
             pgSeconds++;
         }
-        return pgSeconds * 1000000 + nanos;
+        return pgSeconds * 1000000L + nanos;
     }
     
     /**
@@ -60,18 +60,18 @@ public final class PostgreSQLBinaryTimestampUtils {
      * @return epoch of PostgreSQL
      */
     private static long convertJavaEpochToPgEpoch(final long seconds) {
-        long offsetSeconds = seconds - POSTGRESQL_SECONDS_OFFSET;
-        if (offsetSeconds >= JULIAN_GREGORIAN_CALENDAR_CUTOFF_POINT) {
-            return offsetSeconds;
+        long result = seconds - POSTGRESQL_SECONDS_OFFSET;
+        if (result >= JULIAN_GREGORIAN_CALENDAR_CUTOFF_POINT) {
+            return result;
         }
-        offsetSeconds = convertToJulianSeconds(offsetSeconds);
-        if (offsetSeconds < -15773356800L) {
-            int years = (int) ((offsetSeconds + 15773356800L) / -3155823050L);
+        result = convertToJulianSeconds(result);
+        if (result < -15773356800L) {
+            int years = (int) ((result + 15773356800L) / -3155823050L);
             years++;
             years -= years / 4;
-            offsetSeconds += years * 86400L;
+            result += years * 86400L;
         }
-        return offsetSeconds;
+        return result;
     }
     
     private static long convertToJulianSeconds(final long seconds) {
