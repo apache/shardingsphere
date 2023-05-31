@@ -31,7 +31,7 @@ public final class QueryResponseCell {
     
     private final Object data;
     
-    private final Optional<String> columnTypeName;
+    private final String columnTypeName;
     
     public QueryResponseCell(final int jdbcType, final Object data) {
         this(jdbcType, data, null);
@@ -40,6 +40,10 @@ public final class QueryResponseCell {
     public QueryResponseCell(final int jdbcType, final Object data, final String columnTypeName) {
         this.jdbcType = jdbcType;
         this.data = data;
-        this.columnTypeName = Optional.ofNullable(columnTypeName);
+        this.columnTypeName = columnTypeName;
+    }
+    
+    public Optional<String> getColumnTypeName() {
+        return Optional.ofNullable(columnTypeName);
     }
 }
