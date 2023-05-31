@@ -146,7 +146,7 @@ public final class CDCJobPreparer {
         Dumper dumper = PipelineTypedSPILoader.getDatabaseTypedService(IncrementalDumperCreator.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType())
                 .createIncrementalDumper(dumperConfig, dumperConfig.getPosition(), channel, jobItemContext.getSourceMetaDataLoader());
         boolean needSorting = needSorting(ImporterType.INCREMENTAL, hasGlobalCSN(importerConfig.getDataSourceConfig().getDatabaseType()));
-        Importer importer = importerUsed.get() ? null : new CDCImporter(channels, importerConfig.getBatchSize(), 3, TimeUnit.SECONDS,
+        Importer importer = importerUsed.get() ? null : new CDCImporter(channels, importerConfig.getBatchSize(), 300, TimeUnit.MILLISECONDS,
                 jobItemContext.getSink(), needSorting, importerConfig.getRateLimitAlgorithm(), jobItemContext);
         PipelineTask incrementalTask = new CDCIncrementalTask(dumperConfig.getDataSourceName(), jobItemContext.getJobProcessContext().getIncrementalExecuteEngine(), dumper, importer, taskProgress);
         jobItemContext.getIncrementalTasks().add(incrementalTask);

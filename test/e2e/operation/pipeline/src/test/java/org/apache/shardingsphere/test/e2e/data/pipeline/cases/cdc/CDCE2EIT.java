@@ -183,7 +183,7 @@ class CDCE2EIT {
         DataSourceRecordConsumer recordConsumer = new DataSourceRecordConsumer(dataSource, containerComposer.getDatabaseType());
         CompletableFuture.runAsync(() -> new CDCClient(parameter, recordConsumer).start(), executor).whenComplete((unused, throwable) -> {
             if (null != throwable) {
-                log.error("cdc client sync failed, ", throwable);
+                log.error("cdc client sync failed", throwable);
             }
         });
     }

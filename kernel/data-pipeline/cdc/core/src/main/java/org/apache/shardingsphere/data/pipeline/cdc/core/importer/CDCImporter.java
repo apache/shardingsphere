@@ -99,6 +99,9 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
         while (workingChannelsIterator.hasNext()) {
             PipelineChannel channel = workingChannelsIterator.next();
             List<Record> records = channel.fetchRecords(batchSize, timeout, timeUnit).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
+            if (records.isEmpty()) {
+                continue;
+            }
             if (null != rateLimitAlgorithm) {
                 rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
             }
