@@ -43,9 +43,9 @@ public final class PostgreSQLAggregatedCommandPacket extends PostgreSQLCommandPa
     public PostgreSQLAggregatedCommandPacket(final List<PostgreSQLCommandPacket> packets) {
         this.packets = packets;
         boolean isParsed = false;
+        String firstStatementId = null;
         int firstStatementBindTimes = 0;
         int firstStatementExecuteTimes = 0;
-        String firstStatementId = null;
         String firstPortal = null;
         int index = 0;
         int firstBindIndex = -1;
