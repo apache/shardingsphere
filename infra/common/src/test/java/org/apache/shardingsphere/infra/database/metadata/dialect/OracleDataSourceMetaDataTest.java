@@ -53,20 +53,20 @@ class OracleDataSourceMetaDataTest {
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of("withPort", "jdbc:oracle:thin:@//127.0.0.1:9999/ds_0", "127.0.0.1", 9999, "ds_0", "test"),
-                    Arguments.of("withDomainPort", "jdbc:oracle:oci:@ax-xx.frex.cc:9999/ds_0", "ax-xx.frex.cc", 9999, "ds_0", "test"),
-                    Arguments.of("withIpDefaultPort", "jdbc:oracle:oci:@127.0.0.1/ds_0", "127.0.0.1", 1521, "ds_0", "test"),
-                    Arguments.of("withDomainDefaultPort", "jdbc:oracle:oci:@axxx.frex.cc/ds_0", "axxx.frex.cc", 1521, "ds_0", "test"),
-                    Arguments.of("withConnectDescriptorIpUrl", "jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)"
+                    Arguments.of("port", "jdbc:oracle:thin:@//127.0.0.1:9999/ds_0", "127.0.0.1", 9999, "ds_0", "test"),
+                    Arguments.of("domainPort", "jdbc:oracle:oci:@ax-xx.frex.cc:9999/ds_0", "ax-xx.frex.cc", 9999, "ds_0", "test"),
+                    Arguments.of("ipDefaultPort", "jdbc:oracle:oci:@127.0.0.1/ds_0", "127.0.0.1", 1521, "ds_0", "test"),
+                    Arguments.of("domainDefaultPort", "jdbc:oracle:oci:@axxx.frex.cc/ds_0", "axxx.frex.cc", 1521, "ds_0", "test"),
+                    Arguments.of("connectDescriptorIpUrl", "jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)"
                             + "(HOST = 127.0.0.1)(PORT = 1521))(LOAD_BALANCE = yes)(FAILOVER = ON)(CONNECT_DATA =(SERVER = DEDICATED)"
                             + "(SERVICE_NAME = rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "127.0.0.1", 1521, "rac", "test"),
-                    Arguments.of("withConnectDescriptorDomainUrl", "jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = axxx.frex.cc)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)"
+                    Arguments.of("connectDescriptorDomainUrl", "jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = axxx.frex.cc)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)"
                             + "(HOST = axxx.frex.cc)(PORT = 1521))(LOAD_BALANCE = yes)(FAILOVER = ON)(CONNECT_DATA =(SERVER = DEDICATED)"
                             + "(SERVICE_NAME = rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "axxx.frex.cc", 1521, "rac", "test"),
-                    Arguments.of("withConnectDescriptorHalfenDomainUrl", "jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = ax-xx.frex.cc)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)"
+                    Arguments.of("connectDescriptorHalfenDomainUrl", "jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = ax-xx.frex.cc)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)"
                             + "(HOST = ax-xx.frex.cc)(PORT = 1521))(LOAD_BALANCE = yes)(FAILOVER = ON)(CONNECT_DATA =(SERVER = DEDICATED)"
                             + "(SERVICE_NAME = rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "ax-xx.frex.cc", 1521, "rac", "test"),
-                    Arguments.of("withConnectDescriptorUrlWithExtraSpaces", "jdbc:oracle:thin:@(DESCRIPTION = description"
+                    Arguments.of("connectDescriptorUrlWithExtraSpaces", "jdbc:oracle:thin:@(DESCRIPTION = description"
                             + "(HOST   =   127.0.0.1)(PORT   =  1521))(LOAD_BALANCE = yes)(FAILOVER = ON)(CONNECT_DATA =(SERVER = DEDICATED)"
                             + "(SERVICE_NAME   =   rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "127.0.0.1", 1521, "rac", "test")
                     );
