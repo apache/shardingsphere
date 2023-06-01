@@ -68,8 +68,7 @@ class OracleDataSourceMetaDataTest extends AbstractDataSourceMetaDataTest {
                             + "(SERVICE_NAME = rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "ax-xx.frex.cc", 1521, "rac", "test"),
                     Arguments.of("connectDescriptorUrlWithExtraSpaces", "jdbc:oracle:thin:@(DESCRIPTION = description"
                             + "(HOST   =   127.0.0.1)(PORT   =  1521))(LOAD_BALANCE = yes)(FAILOVER = ON)(CONNECT_DATA =(SERVER = DEDICATED)"
-                            + "(SERVICE_NAME   =   rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "127.0.0.1", 1521, "rac", "test")
-                    );
+                            + "(SERVICE_NAME   =   rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "127.0.0.1", 1521, "rac", "test"));
         }
     }
 }
