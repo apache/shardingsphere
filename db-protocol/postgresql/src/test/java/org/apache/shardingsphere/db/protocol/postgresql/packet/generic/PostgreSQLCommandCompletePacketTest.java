@@ -34,9 +34,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 class PostgreSQLCommandCompletePacketTest {
     
-    @ParameterizedTest(name = "assert{0}ReadWrite")
+    @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertSelectReadWrite(final String sqlCommand, final String expectedDelimiter) {
+    void assertReadWrite(final String sqlCommand, final String expectedDelimiter) {
         long rowCount = 1;
         String expectedString = sqlCommand + expectedDelimiter + rowCount;
         int expectedStringLength = expectedString.length();

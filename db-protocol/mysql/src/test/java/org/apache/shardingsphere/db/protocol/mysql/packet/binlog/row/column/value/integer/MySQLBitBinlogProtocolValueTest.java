@@ -51,9 +51,9 @@ class MySQLBitBinlogProtocolValueTest {
         actual = new MySQLBitBinlogProtocolValue();
     }
     
-    @ParameterizedTest(name = "assertReadWithLength{1}")
+    @ParameterizedTest(name = "withLength{1}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
-    void assertReadWithLength1(final int columnMeta, final int length, final long expected) {
+    void assertRead(final int columnMeta, final int length, final long expected) {
         when(columnDef.getColumnMeta()).thenReturn(columnMeta);
         when(payload.readLong(length)).thenReturn(expected);
         assertThat(actual.read(columnDef, payload), is(expected));
