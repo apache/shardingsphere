@@ -45,7 +45,7 @@ import java.util.List;
  */
 public abstract class MemoryMergedResult<T extends ShardingSphereRule> implements MergedResult {
     
-    private static final Collection<Class<?>> INVALID_MEMORY_TYPES = new HashSet<>(Arrays.asList(Blob.class, Clob.class, Reader.class, InputStream.class, SQLXML.class)); 
+    private static final Collection<Class<?>> INVALID_MEMORY_TYPES = new HashSet<>(Arrays.asList(Blob.class, Clob.class, Reader.class, InputStream.class, SQLXML.class));
     
     private final Iterator<MemoryQueryResultRow> memoryResultSetRows;
     
