@@ -15,20 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.state.spi;
+package org.apache.shardingsphere.test.it.sql.parser.external.loader;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
- * Proxy cluster state.
+ * SQL line comment.
  */
-public interface ProxyClusterState extends TypedSPI {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLLineComment {
+    
+    private static final Collection<String> COMMENT_PREFIXES = Arrays.asList("#", "/", "--", ":", "\\");
     
     /**
-     * Check sql statement.
+     * Judge whether SQL line is comment.
      * 
-     * @param sqlStatement sql statement
+     * @param line SQL line
+     * @return SQL line is comment or not
      */
-    void check(SQLStatement sqlStatement);
+    public static boolean isComment(final String line) {
+        return COMMENT_PREFIXES.stream().anyMatch(line::startsWith);
+    }
+    
 }

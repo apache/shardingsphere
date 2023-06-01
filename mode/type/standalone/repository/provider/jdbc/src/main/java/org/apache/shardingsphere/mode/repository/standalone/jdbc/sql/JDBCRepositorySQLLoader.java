@@ -34,7 +34,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -49,15 +52,7 @@ public final class JDBCRepositorySQLLoader {
     
     private static final String FILE_EXTENSION = ".xml";
     
-    private static final String URL_PROTOCOL_JAR = "jar";
-    
-    private static final String URL_PROTOCOL_WAR = "war";
-    
-    private static final String URL_PROTOCOL_ZIP = "zip";
-    
-    private static final String URL_PROTOCOL_WSJAR = "wsjar";
-    
-    private static final String URL_PROTOCOL_VFSZIP = "vfszip";
+    private static final Collection<String> JAR_URL_PROTOCOLS = new HashSet<>(Arrays.asList("jar", "war", "zip", "wsjar", "vfszip"));
     
     /**
      * Load JDBC repository SQL.
@@ -74,18 +69,12 @@ public final class JDBCRepositorySQLLoader {
         JDBCRepositorySQL result = null;
         while (resources.hasMoreElements()) {
             URL resource = resources.nextElement();
-            result = isJarURL(resource) ? loadFromJar(resource, type) : loadFromDirectory(resource, type);
+            result = JAR_URL_PROTOCOLS.contains(resource.getProtocol()) ? loadFromJar(resource, type) : loadFromDirectory(resource, type);
             if (null != result && Objects.equals(result.isDefault(), false)) {
                 break;
             }
         }
         return result;
-    }
-    
-    private static boolean isJarURL(final URL url) {
-        String protocol = url.getProtocol();
-        return URL_PROTOCOL_JAR.equals(protocol) || URL_PROTOCOL_WAR.equals(protocol) || URL_PROTOCOL_ZIP.equals(protocol)
-                || URL_PROTOCOL_VFSZIP.equals(protocol) || URL_PROTOCOL_WSJAR.equals(protocol);
     }
     
     private static JDBCRepositorySQL loadFromDirectory(final URL url, final String type) throws URISyntaxException, IOException {

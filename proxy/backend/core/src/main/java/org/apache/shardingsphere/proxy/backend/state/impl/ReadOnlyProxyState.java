@@ -20,29 +20,35 @@ package org.apache.shardingsphere.proxy.backend.state.impl;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlockClusterStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
+import org.apache.shardingsphere.infra.util.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.proxy.backend.exception.ReadOnlyException;
-import org.apache.shardingsphere.proxy.backend.state.spi.ProxyClusterState;
+import org.apache.shardingsphere.proxy.backend.state.ProxyClusterState;
+import org.apache.shardingsphere.proxy.backend.state.SupportedSQLStatementJudgeEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * ReadOnly proxy state.
  */
 public final class ReadOnlyProxyState implements ProxyClusterState {
     
+    private static final Collection<Class<? extends SQLStatement>> SUPPORTED_SQL_STATEMENTS = Collections.singleton(UnlockClusterStatement.class);
+    
+    private static final Collection<Class<? extends SQLStatement>> UNSUPPORTED_SQL_STATEMENTS = Arrays.asList(
+            InsertStatement.class, UpdateStatement.class, DeleteStatement.class, DDLStatement.class, UpdatableRALStatement.class, RDLStatement.class);
+    
+    private final SupportedSQLStatementJudgeEngine judgeEngine = new SupportedSQLStatementJudgeEngine(SUPPORTED_SQL_STATEMENTS, UNSUPPORTED_SQL_STATEMENTS);
+    
     @Override
     public void check(final SQLStatement sqlStatement) {
-        if (isUnsupportedStatement(sqlStatement)) {
-            throw new ReadOnlyException();
-        }
-    }
-    
-    private boolean isUnsupportedStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof InsertStatement || sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement || sqlStatement instanceof DDLStatement
-                || sqlStatement instanceof UpdatableRALStatement && !(sqlStatement instanceof UnlockClusterStatement) || sqlStatement instanceof RDLStatement;
+        ShardingSpherePreconditions.checkState(judgeEngine.isSupported(sqlStatement), ReadOnlyException::new);
     }
     
     @Override
