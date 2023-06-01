@@ -30,7 +30,7 @@ public final class MaskNodeConverter {
     private static final String TABLES = "tables";
     
     private static final String MASK_ALGORITHMS = "mask_algorithms";
-  
+    
     /**
      * Get table name path.
      * 

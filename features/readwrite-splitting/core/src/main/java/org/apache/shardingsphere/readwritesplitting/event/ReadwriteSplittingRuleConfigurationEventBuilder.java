@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.event;
 
-import jdk.internal.joptsimple.internal.Strings;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.config.RuleConfigurationEventBuilder;
