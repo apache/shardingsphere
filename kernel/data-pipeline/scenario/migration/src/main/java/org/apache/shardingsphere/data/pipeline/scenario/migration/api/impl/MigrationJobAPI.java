@@ -375,8 +375,8 @@ public final class MigrationJobAPI extends AbstractInventoryIncrementalJobAPIImp
     @Override
     public void rollback(final String jobId) throws SQLException {
         final long startTimeMillis = System.currentTimeMillis();
-        dropCheckJobs(jobId);
         stop(jobId);
+        dropCheckJobs(jobId);
         cleanTempTableOnRollback(jobId);
         dropJob(jobId);
         log.info("Rollback job {} cost {} ms", jobId, System.currentTimeMillis() - startTimeMillis);
