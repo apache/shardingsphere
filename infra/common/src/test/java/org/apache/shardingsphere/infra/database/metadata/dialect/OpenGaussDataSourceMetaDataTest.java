@@ -30,21 +30,14 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.util.Properties;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class OpenGaussDataSourceMetaDataTest {
+class OpenGaussDataSourceMetaDataTest extends AbstractDataSourceMetaDataTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
     void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema, final Properties queryProps) {
-        PostgreSQLDataSourceMetaData actual = new PostgreSQLDataSourceMetaData(url);
-        assertThat(actual.getHostname(), is(hostname));
-        assertThat(actual.getPort(), is(port));
-        assertThat(actual.getCatalog(), is(catalog));
-        assertThat(actual.getSchema(), is(schema));
-        assertThat(actual.getQueryProperties(), is(queryProps));
+        assertDataSourceMetaData(url, hostname, port, catalog, schema, queryProps);
     }
     
     @Test
@@ -52,12 +45,17 @@ class OpenGaussDataSourceMetaDataTest {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> new PostgreSQLDataSourceMetaData("jdbc:opengauss:xxxxxxxx"));
     }
     
+    @Override
+    protected OpenGaussDataSourceMetaData createDataSourceMetaData(final String url) {
+        return new OpenGaussDataSourceMetaData(url);
+    }
+    
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of("simple", "jdbc:opengauss://127.0.0.1/foo_ds", "127.0.0.1", 5432, "foo_ds", null, new Properties()),
+                    Arguments.of("simple", "jdbc:opengauss://127.0.0.1/foo_ds", "127.0.0.1", 5431, "foo_ds", null, new Properties()),
                     Arguments.of("complex", "jdbc:opengauss://127.0.0.1:9999,127.0.0.2:9999,127.0.0.3:9999/foo_ds?targetServerType=master", "127.0.0.1", 9999, "foo_ds", null,
                             PropertiesBuilder.build(new Property("targetServerType", "master"))));
         }

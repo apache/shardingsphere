@@ -25,22 +25,17 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import java.util.Properties;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class OracleDataSourceMetaDataTest {
+class OracleDataSourceMetaDataTest extends AbstractDataSourceMetaDataTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
     void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema) {
-        OracleDataSourceMetaData actual = new OracleDataSourceMetaData(url, schema);
-        assertThat(actual.getHostname(), is(hostname));
-        assertThat(actual.getPort(), is(port));
-        assertThat(actual.getCatalog(), is(catalog));
-        assertThat(actual.getSchema(), is(schema));
+        assertDataSourceMetaData(url, hostname, port, catalog, schema, new Properties());
     }
     
     @Test
@@ -48,15 +43,20 @@ class OracleDataSourceMetaDataTest {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> new OracleDataSourceMetaData("jdbc:oracle:xxxxxxxx", "test"));
     }
     
+    @Override
+    protected OracleDataSourceMetaData createDataSourceMetaData(final String url) {
+        return new OracleDataSourceMetaData(url, "test");
+    }
+    
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of("port", "jdbc:oracle:thin:@//127.0.0.1:9999/ds_0", "127.0.0.1", 9999, "ds_0", "test"),
-                    Arguments.of("domainPort", "jdbc:oracle:oci:@ax-xx.frex.cc:9999/ds_0", "ax-xx.frex.cc", 9999, "ds_0", "test"),
-                    Arguments.of("ipDefaultPort", "jdbc:oracle:oci:@127.0.0.1/ds_0", "127.0.0.1", 1521, "ds_0", "test"),
-                    Arguments.of("domainDefaultPort", "jdbc:oracle:oci:@axxx.frex.cc/ds_0", "axxx.frex.cc", 1521, "ds_0", "test"),
+                    Arguments.of("port", "jdbc:oracle:thin:@//127.0.0.1:9999/foo_ds", "127.0.0.1", 9999, "foo_ds", "test"),
+                    Arguments.of("domainPort", "jdbc:oracle:oci:@ax-xx.frex.cc:9999/foo_ds", "ax-xx.frex.cc", 9999, "foo_ds", "test"),
+                    Arguments.of("ipDefaultPort", "jdbc:oracle:oci:@127.0.0.1/foo_ds", "127.0.0.1", 1521, "foo_ds", "test"),
+                    Arguments.of("domainDefaultPort", "jdbc:oracle:oci:@axxx.frex.cc/foo_ds", "axxx.frex.cc", 1521, "foo_ds", "test"),
                     Arguments.of("connectDescriptorIpUrl", "jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = 127.0.0.1)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)"
                             + "(HOST = 127.0.0.1)(PORT = 1521))(LOAD_BALANCE = yes)(FAILOVER = ON)(CONNECT_DATA =(SERVER = DEDICATED)"
                             + "(SERVICE_NAME = rac)(FAILOVER_MODE=(TYPE = SELECT)(METHOD = BASIC)(RETIRES = 20)(DELAY = 15))))", "127.0.0.1", 1521, "rac", "test"),

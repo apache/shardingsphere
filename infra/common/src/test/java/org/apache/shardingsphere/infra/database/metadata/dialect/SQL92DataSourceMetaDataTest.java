@@ -28,21 +28,14 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.util.Properties;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class SQL92DataSourceMetaDataTest {
+class SQL92DataSourceMetaDataTest extends AbstractDataSourceMetaDataTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
-    void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema, final Properties queryProps) {
-        SQL92DataSourceMetaData actual = new SQL92DataSourceMetaData(url);
-        assertThat(actual.getHostname(), is(hostname));
-        assertThat(actual.getPort(), is(port));
-        assertThat(actual.getCatalog(), is(catalog));
-        assertThat(actual.getSchema(), is(schema));
-        assertThat(actual.getQueryProperties(), is(queryProps));
+    void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema) {
+        assertDataSourceMetaData(url, hostname, port, catalog, schema, new Properties());
     }
     
     @Test
@@ -50,11 +43,16 @@ class SQL92DataSourceMetaDataTest {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> new SQL92DataSourceMetaData("xxx:xxxx:xxxxxxxx"));
     }
     
+    @Override
+    protected SQL92DataSourceMetaData createDataSourceMetaData(final String url) {
+        return new SQL92DataSourceMetaData(url);
+    }
+    
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
-            return Stream.of(Arguments.of("simple", "jdbc:sql92_db:ds_0", "", -1, "", null, new Properties()));
+            return Stream.of(Arguments.of("simple", "jdbc:sql92_db:foo_ds", "", -1, "", null));
         }
     }
 }

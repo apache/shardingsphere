@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.metadata.dialect;
 
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.metadata.UnrecognizedDatabaseURLException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -28,21 +29,14 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.util.Properties;
 import java.util.stream.Stream;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class SQLServerDataSourceMetaDataTest {
+class SQLServerDataSourceMetaDataTest extends AbstractDataSourceMetaDataTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(NewConstructorTestCaseArgumentsProvider.class)
-    void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema, final Properties queryProps) {
-        SQLServerDataSourceMetaData actual = new SQLServerDataSourceMetaData(url);
-        assertThat(actual.getHostname(), is(hostname));
-        assertThat(actual.getPort(), is(port));
-        assertThat(actual.getCatalog(), is(catalog));
-        assertThat(actual.getSchema(), is(schema));
-        assertThat(actual.getQueryProperties(), is(queryProps));
+    void assertNewConstructor(final String name, final String url, final String hostname, final int port, final String catalog, final String schema) {
+        assertDataSourceMetaData(url, hostname, port, catalog, schema, new Properties());
     }
     
     @Test
@@ -50,17 +44,22 @@ class SQLServerDataSourceMetaDataTest {
         assertThrows(UnrecognizedDatabaseURLException.class, () -> new SQLServerDataSourceMetaData("jdbc:sqlserver:xxxxxxxx"));
     }
     
+    @Override
+    protected DataSourceMetaData createDataSourceMetaData(final String url) {
+        return new SQLServerDataSourceMetaData(url);
+    }
+    
     private static class NewConstructorTestCaseArgumentsProvider implements ArgumentsProvider {
         
         @Override
         public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
             return Stream.of(
-                    Arguments.of("portAndMicrosoft", "jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=ds_0", "127.0.0.1", 9999, "ds_0", null, new Properties()),
-                    Arguments.of("portAndWithoutMicrosoft", "jdbc:sqlserver://127.0.0.1:9999;DatabaseName=ds_0", "127.0.0.1", 9999, "ds_0", null, new Properties()),
-                    Arguments.of("defaultPortAndMicrosoft", "jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=ds_0", "127.0.0.1", 1433, "ds_0", null, new Properties()),
-                    Arguments.of("defaultPortWithoutMicrosoft", "jdbc:sqlserver://127.0.0.1;DatabaseName=ds_0", "127.0.0.1", 1433, "ds_0", null, new Properties()),
-                    Arguments.of("databaseNameContainDotAndMicrosoft", "jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=ds_0.0.0", "127.0.0.1", 9999, "ds_0.0.0", null, new Properties()),
-                    Arguments.of("databaseNameContainDotAndWithoutMicrosoft", "jdbc:sqlserver://127.0.0.1:9999;DatabaseName=ds_0.0.0", "127.0.0.1", 9999, "ds_0.0.0", null, new Properties()));
+                    Arguments.of("portAndMicrosoft", "jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=foo_ds", "127.0.0.1", 9999, "foo_ds", null),
+                    Arguments.of("portAndWithoutMicrosoft", "jdbc:sqlserver://127.0.0.1:9999;DatabaseName=foo_ds", "127.0.0.1", 9999, "foo_ds", null),
+                    Arguments.of("defaultPortAndMicrosoft", "jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=foo_ds", "127.0.0.1", 1433, "foo_ds", null),
+                    Arguments.of("defaultPortWithoutMicrosoft", "jdbc:sqlserver://127.0.0.1;DatabaseName=foo_ds", "127.0.0.1", 1433, "foo_ds", null),
+                    Arguments.of("databaseNameContainDotAndMicrosoft", "jdbc:microsoft:sqlserver://127.0.0.1:9999;DatabaseName=foo_0.0.0", "127.0.0.1", 9999, "foo_0.0.0", null),
+                    Arguments.of("databaseNameContainDotAndWithoutMicrosoft", "jdbc:sqlserver://127.0.0.1:9999;DatabaseName=foo_0.0.0", "127.0.0.1", 9999, "foo_0.0.0", null));
         }
     }
 }
