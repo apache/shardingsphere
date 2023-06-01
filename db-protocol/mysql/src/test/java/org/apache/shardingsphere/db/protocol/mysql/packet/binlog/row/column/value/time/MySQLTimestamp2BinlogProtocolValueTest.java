@@ -46,7 +46,7 @@ class MySQLTimestamp2BinlogProtocolValueTest {
     
     @BeforeEach
     void setUp() {
-        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_TIMESTAMP2);
+        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.TIMESTAMP2);
         when(payload.getByteBuf()).thenReturn(byteBuf);
     }
     

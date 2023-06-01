@@ -47,7 +47,7 @@ class MySQLVarcharBinlogProtocolValueTest {
     
     @BeforeEach
     void setUp() {
-        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR);
+        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.VARCHAR);
     }
     
     @Test

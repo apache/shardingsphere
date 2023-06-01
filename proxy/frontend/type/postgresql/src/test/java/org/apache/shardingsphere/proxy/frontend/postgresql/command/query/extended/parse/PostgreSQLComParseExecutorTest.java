@@ -100,7 +100,7 @@ class PostgreSQLComParseExecutorTest {
         final String statementId = "S_2";
         when(parsePacket.getSQL()).thenReturn(rawSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
-        when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
+        when(parsePacket.readParameterTypes()).thenReturn(Collections.singletonList(PostgreSQLColumnType.INT4));
         when(connectionSession.getDefaultDatabaseName()).thenReturn("foo_db");
         Plugins.getMemberAccessor().set(PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession"), executor, connectionSession);
         ContextManager contextManager = mockContextManager();
@@ -112,7 +112,7 @@ class PostgreSQLComParseExecutorTest {
         assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(InsertStatementContext.class));
         assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), instanceOf(PostgreSQLInsertStatement.class));
         assertThat(actualPreparedStatement.getSql(), is(expectedSQL));
-        assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED)));
+        assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.INT4, PostgreSQLColumnType.UNSPECIFIED)));
     }
     
     @Test

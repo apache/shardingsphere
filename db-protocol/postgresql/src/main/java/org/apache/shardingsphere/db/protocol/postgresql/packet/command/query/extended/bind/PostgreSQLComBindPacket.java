@@ -101,20 +101,20 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
     private Object getTextParameters(final String textValue, final PostgreSQLColumnType paramType) {
         switch (paramType) {
-            case POSTGRESQL_TYPE_UNSPECIFIED:
+            case UNSPECIFIED:
                 return new PostgreSQLTypeUnspecifiedSQLParameter(textValue);
-            case POSTGRESQL_TYPE_BOOL:
+            case BOOL:
                 return Boolean.valueOf(textValue);
-            case POSTGRESQL_TYPE_INT2:
-            case POSTGRESQL_TYPE_INT4:
+            case INT2:
+            case INT4:
                 return Integer.parseInt(textValue);
-            case POSTGRESQL_TYPE_INT8:
+            case INT8:
                 return Long.parseLong(textValue);
-            case POSTGRESQL_TYPE_FLOAT4:
+            case FLOAT4:
                 return Float.parseFloat(textValue);
-            case POSTGRESQL_TYPE_FLOAT8:
+            case FLOAT8:
                 return Double.parseDouble(textValue);
-            case POSTGRESQL_TYPE_NUMERIC:
+            case NUMERIC:
                 try {
                     return Integer.parseInt(textValue);
                 } catch (final NumberFormatException ignored) {
@@ -124,16 +124,16 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
                 } catch (final NumberFormatException ignored) {
                 }
                 return new BigDecimal(textValue);
-            case POSTGRESQL_TYPE_DATE:
+            case DATE:
                 return Date.valueOf(textValue);
-            case POSTGRESQL_TYPE_TIME:
+            case TIME:
                 return PostgreSQLTextTimeUtils.parse(textValue);
-            case POSTGRESQL_TYPE_TIMESTAMP:
-            case POSTGRESQL_TYPE_TIMESTAMPTZ:
+            case TIMESTAMP:
+            case TIMESTAMPTZ:
                 return PostgreSQLTextTimestampUtils.parse(textValue);
-            case POSTGRESQL_TYPE_JSON:
+            case JSON:
                 return PostgreSQLTextJsonUtils.parse(textValue);
-            case POSTGRESQL_TYPE_BIT:
+            case BIT:
                 return PostgreSQLTextBitUtils.parse(textValue);
             default:
                 return textValue;
