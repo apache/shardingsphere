@@ -39,8 +39,6 @@ import java.util.Map.Entry;
  */
 public final class NewYamlEncryptRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<EncryptRuleConfiguration> {
     
-    private final EncryptNodeConverter converter = new EncryptNodeConverter();
-    
     // TODO to be used
     private final YamlEncryptTableRuleConfigurationSwapper tableSwapper = new YamlEncryptTableRuleConfigurationSwapper();
     
@@ -50,10 +48,10 @@ public final class NewYamlEncryptRuleConfigurationSwapper implements NewYamlRule
     public Collection<YamlDataNode> swapToDataNodes(final EncryptRuleConfiguration data) {
         Collection<YamlDataNode> result = new LinkedHashSet<>();
         for (EncryptTableRuleConfiguration each : data.getTables()) {
-            result.add(new YamlDataNode(converter.getTableNamePath(each.getName()), YamlEngine.marshal(each)));
+            result.add(new YamlDataNode(EncryptNodeConverter.getTableNamePath(each.getName()), YamlEngine.marshal(each)));
         }
         for (Entry<String, AlgorithmConfiguration> entry : data.getEncryptors().entrySet()) {
-            result.add(new YamlDataNode(converter.getEncryptorPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
+            result.add(new YamlDataNode(EncryptNodeConverter.getEncryptorPath(entry.getKey()), YamlEngine.marshal(entry.getValue())));
         }
         return result;
     }

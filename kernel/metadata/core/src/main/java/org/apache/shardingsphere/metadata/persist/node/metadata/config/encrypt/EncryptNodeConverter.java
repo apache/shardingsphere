@@ -17,9 +17,14 @@
 
 package org.apache.shardingsphere.metadata.persist.node.metadata.config.encrypt;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
+ * TODO move to features module
  * Encrypt node converter.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptNodeConverter {
     
     private static final String TABLES = "tables";
@@ -32,7 +37,7 @@ public final class EncryptNodeConverter {
      * @param tableName table name
      * @return table name path
      */
-    public String getTableNamePath(final String tableName) {
+    public static String getTableNamePath(final String tableName) {
         return String.join("/", TABLES, tableName);
     }
     
@@ -42,7 +47,7 @@ public final class EncryptNodeConverter {
      * @param encryptorName encryptor name
      * @return encryptor path
      */
-    public String getEncryptorPath(final String encryptorName) {
+    public static String getEncryptorPath(final String encryptorName) {
         return String.join("/", ENCRYPTORS, encryptorName);
     }
 }
