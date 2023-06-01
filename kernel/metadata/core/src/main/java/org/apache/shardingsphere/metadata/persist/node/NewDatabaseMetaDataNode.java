@@ -21,8 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.metadata.persist.node.metadata.datasource.DataSourceNodeConverter;
 
-// TODO Rename DatabaseMetaDataNode when metadata structure adjustment completed. #25485
 /**
+ * TODO Rename DatabaseMetaDataNode when metadata structure adjustment completed. #25485
  * New database meta data node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

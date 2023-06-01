@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.util.yaml.datanode.YamlDataNode;
 
 import java.util.Collection;
 
-// TODO Rename YamlConfigurationSwapper when metadata structure adjustment completed. #25485
 /**
+ * TODO Rename YamlConfigurationSwapper when metadata structure adjustment completed. #25485
  * YAML configuration swapper.
  *
  * @param <T> type of swapped object
