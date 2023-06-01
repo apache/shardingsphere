@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.bind;
 
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.infra.binder.statement.UnknownSQLStatementContext;
@@ -42,8 +43,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -63,7 +66,7 @@ class PostgreSQLComBindExecutorTest {
     @Mock
     private PostgreSQLComBindPacket bindPacket;
     
-    @Mock
+    @Mock(answer = Answers.CALLS_REAL_METHODS)
     private ConnectionSession connectionSession;
     
     @InjectMocks
@@ -93,5 +96,33 @@ class PostgreSQLComBindExecutorTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(PostgreSQLBindCompletePacket.getInstance()));
         verify(portalContext).add(any(Portal.class));
+    }
+    
+    @Test
+    void assertExecuteBindParameters() throws SQLException {
+        String databaseName = "postgres";
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.getProtocolType()).thenReturn(new PostgreSQLDatabaseType());
+        when(connectionSession.getServerPreparedStatementRegistry()).thenReturn(new ServerPreparedStatementRegistry());
+        ProxyDatabaseConnectionManager databaseConnectionManager = mock(ProxyDatabaseConnectionManager.class);
+        when(databaseConnectionManager.getConnectionSession()).thenReturn(connectionSession);
+        when(connectionSession.getDatabaseConnectionManager()).thenReturn(databaseConnectionManager);
+        when(connectionSession.getDefaultDatabaseName()).thenReturn(databaseName);
+        String statementId = "S_1";
+        List<Object> parameters = Arrays.asList(1, "updated_name");
+        PostgreSQLServerPreparedStatement serverPreparedStatement = new PostgreSQLServerPreparedStatement("update test set name = $2 where id = $1",
+                new UnknownSQLStatementContext(new PostgreSQLEmptyStatement()),
+                Arrays.asList(PostgreSQLColumnType.VARCHAR, PostgreSQLColumnType.INT4),
+                Arrays.asList(1, 0));
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, serverPreparedStatement);
+        when(bindPacket.getStatementId()).thenReturn(statementId);
+        when(bindPacket.getPortal()).thenReturn("C_1");
+        when(bindPacket.readParameters(anyList())).thenReturn(parameters);
+        when(bindPacket.readResultFormats()).thenReturn(Collections.emptyList());
+        ContextManager contextManager = mock(ContextManager.class, Answers.RETURNS_DEEP_STUBS);
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        when(ProxyContext.getInstance().getDatabase(databaseName)).thenReturn(database);
+        executor.execute();
+        assertThat(connectionSession.getQueryContext().getParameters(), is(Arrays.asList(parameters.get(1), parameters.get(0))));
     }
 }
