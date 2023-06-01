@@ -61,7 +61,7 @@ public final class NewYamlMaskRuleConfigurationSwapper implements NewYamlRuleCon
         // TODO to be completed.
         return new MaskRuleConfiguration(Collections.emptyList(), Collections.emptyMap());
     }
-        
+    
     @Override
     public Class<MaskRuleConfiguration> getTypeClass() {
         return MaskRuleConfiguration.class;
