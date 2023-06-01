@@ -17,17 +17,30 @@
 
 package org.apache.shardingsphere.data.pipeline.cdc.core.task;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobItemContext;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
+import org.apache.shardingsphere.data.pipeline.core.context.InventoryIncrementalJobItemContext;
+import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
+import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
+
+import java.util.Collection;
 
 /**
  * CDC tasks runner.
  */
-@RequiredArgsConstructor
 public final class CDCTasksRunner implements PipelineTasksRunner {
     
-    private final PipelineJobItemContext jobItemContext;
+    private final InventoryIncrementalJobItemContext jobItemContext;
+    
+    private final Collection<PipelineTask> inventoryTasks;
+    
+    private final Collection<PipelineTask> incrementalTasks;
+    
+    public CDCTasksRunner(final InventoryIncrementalJobItemContext jobItemContext) {
+        this.jobItemContext = jobItemContext;
+        inventoryTasks = jobItemContext.getInventoryTasks();
+        incrementalTasks = jobItemContext.getIncrementalTasks();
+    }
     
     @Override
     public PipelineJobItemContext getJobItemContext() {
@@ -40,5 +53,14 @@ public final class CDCTasksRunner implements PipelineTasksRunner {
     
     @Override
     public void stop() {
+        jobItemContext.setStopping(true);
+        for (PipelineTask each : inventoryTasks) {
+            each.stop();
+            CloseUtils.closeQuietly(each);
+        }
+        for (PipelineTask each : incrementalTasks) {
+            each.stop();
+            CloseUtils.closeQuietly(each);
+        }
     }
 }

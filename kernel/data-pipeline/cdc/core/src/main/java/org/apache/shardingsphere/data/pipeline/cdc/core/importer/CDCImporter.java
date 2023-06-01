@@ -81,6 +81,7 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     
     @Override
     protected void runBlocking() {
+        CDCImporterManager.putImporter(this);
         List<PipelineChannel> workingChannels = new ArrayList<>(channels);
         while (isRunning()) {
             if (needSorting) {
