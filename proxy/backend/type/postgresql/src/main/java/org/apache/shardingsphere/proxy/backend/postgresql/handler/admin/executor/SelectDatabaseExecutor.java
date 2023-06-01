@@ -121,7 +121,7 @@ public final class SelectDatabaseExecutor extends DefaultDatabaseMetaDataExecuto
         }
         return projections.stream().map(each -> {
             ColumnProjectionSegment segment = (ColumnProjectionSegment) each;
-            return segment.getAlias().isPresent() ? segment.getAlias().get() : segment.getColumn().getIdentifier().getValue();
+            return segment.getAliasName().isPresent() ? segment.getAliasName().get() : segment.getColumn().getIdentifier().getValue();
         }).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

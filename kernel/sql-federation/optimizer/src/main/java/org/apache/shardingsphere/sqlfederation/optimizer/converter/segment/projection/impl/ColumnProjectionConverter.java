@@ -36,9 +36,9 @@ public final class ColumnProjectionConverter implements SQLSegmentConverter<Colu
     
     @Override
     public Optional<SqlNode> convert(final ColumnProjectionSegment segment) {
-        if (segment.getAlias().isPresent()) {
+        if (segment.getAliasName().isPresent()) {
             Optional<SqlNode> column = new ColumnConverter().convert(segment.getColumn());
-            SqlIdentifier alias = new SqlIdentifier(segment.getAlias().get(), SqlParserPos.ZERO);
+            SqlIdentifier alias = new SqlIdentifier(segment.getAliasName().get(), SqlParserPos.ZERO);
             return column.map(optional -> new SqlBasicCall(new SqlAsOperator(), Arrays.asList(optional, alias), SqlParserPos.ZERO));
         }
         return new ColumnConverter().convert(segment.getColumn());

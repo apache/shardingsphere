@@ -34,20 +34,20 @@ import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class JDBCContextTest {
-
+    
     @Test
     void assertNullCachedDbMetadataWithEmptyDatasource() throws Exception {
         JDBCContext actual = new JDBCContext(new HashMap<>());
         assertNull(actual.getCachedDatabaseMetaData());
     }
-
+    
     @Test
     void assertNotNullCashedDbMetadataWith() throws SQLException {
         Map<String, DataSource> dataSourceMap = getStringDataSourceMap();
         JDBCContext jdbcContext = new JDBCContext(dataSourceMap);
         assertNotNull(jdbcContext.getCachedDatabaseMetaData());
     }
-
+    
     @Test
     void assetNullMetadataAfterRefreshingExisting() throws SQLException {
         Map<String, DataSource> stringDataSourceMap = getStringDataSourceMap();
@@ -56,7 +56,7 @@ class JDBCContextTest {
         jdbcContext.refreshCachedDatabaseMetaData(event);
         assertNull(jdbcContext.getCachedDatabaseMetaData());
     }
-
+    
     private static Map<String, DataSource> getStringDataSourceMap() {
         Map<String, DataSource> result = new HashMap<>();
         result.put("test_db", new CircuitBreakerDataSource());

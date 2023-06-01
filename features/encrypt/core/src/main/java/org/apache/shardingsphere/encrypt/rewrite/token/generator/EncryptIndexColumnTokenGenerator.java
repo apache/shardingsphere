@@ -73,13 +73,13 @@ public final class EncryptIndexColumnTokenGenerator implements CollectionSQLToke
     
     private Optional<SQLToken> getAssistedQueryColumnToken(final int startIndex, final int stopIndex, final String columnName, final QuoteCharacter quoteCharacter) {
         Collection<ColumnProjection> columnProjections = getColumnProjections(columnName);
-        return Optional.of(new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, quoteCharacter));
+        return Optional.of(new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, quoteCharacter, Collections.emptyList()));
     }
     
     private Optional<SQLToken> getCipherColumnToken(final String tableName, final int startIndex, final int stopIndex, final String columnName, final QuoteCharacter quoteCharacter) {
         String cipherColumn = encryptRule.getCipherColumn(tableName, columnName);
         Collection<ColumnProjection> columnProjections = getColumnProjections(cipherColumn);
-        return Optional.of(new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, quoteCharacter));
+        return Optional.of(new SubstitutableColumnNameToken(startIndex, stopIndex, columnProjections, quoteCharacter, Collections.emptyList()));
     }
     
     private Collection<ColumnProjection> getColumnProjections(final String columnName) {

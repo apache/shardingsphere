@@ -70,9 +70,9 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
         SqlAggFunction operator = convertOperator(segment.getType().name());
         List<SqlNode> params = convertParameters(segment.getParameters(), segment.getInnerExpression());
         SqlBasicCall sqlBasicCall = new SqlBasicCall(operator, params, SqlParserPos.ZERO, functionQuantifier);
-        if (segment.getAlias().isPresent()) {
+        if (segment.getAliasName().isPresent()) {
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, Arrays.asList(sqlBasicCall,
-                    SqlIdentifier.star(Collections.singletonList(segment.getAlias().get()), SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))), SqlParserPos.ZERO));
+                    SqlIdentifier.star(Collections.singletonList(segment.getAliasName().get()), SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))), SqlParserPos.ZERO));
         }
         return Optional.of(sqlBasicCall);
     }

@@ -111,11 +111,11 @@ public final class ProjectionEngine {
     }
     
     private ParameterMarkerProjection createProjection(final ParameterMarkerExpressionSegment projectionSegment) {
-        return new ParameterMarkerProjection(projectionSegment.getParameterMarkerIndex(), projectionSegment.getParameterMarkerType(), projectionSegment.getAlias().orElse(null));
+        return new ParameterMarkerProjection(projectionSegment.getParameterMarkerIndex(), projectionSegment.getParameterMarkerType(), projectionSegment.getAliasName().orElse(null));
     }
     
     private SubqueryProjection createProjection(final SubqueryProjectionSegment projectionSegment) {
-        return new SubqueryProjection(projectionSegment.getText(), projectionSegment.getAlias().orElse(null));
+        return new SubqueryProjection(projectionSegment.getText(), projectionSegment.getAliasName().orElse(null));
     }
     
     private ShorthandProjection createProjection(final TableSegment table, final ShorthandProjectionSegment projectionSegment) {
@@ -129,16 +129,16 @@ public final class ProjectionEngine {
     
     private ColumnProjection createProjection(final ColumnProjectionSegment projectionSegment) {
         String owner = projectionSegment.getColumn().getOwner().isPresent() ? projectionSegment.getColumn().getOwner().get().getIdentifier().getValue() : null;
-        return new ColumnProjection(owner, projectionSegment.getColumn().getIdentifier().getValue(), projectionSegment.getAlias().orElse(null));
+        return new ColumnProjection(owner, projectionSegment.getColumn().getIdentifier().getValue(), projectionSegment.getAliasName().orElse(null));
     }
     
     private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment) {
-        return new ExpressionProjection(projectionSegment.getText(), projectionSegment.getAlias().orElse(null));
+        return new ExpressionProjection(projectionSegment.getText(), projectionSegment.getAliasName().orElse(null));
     }
     
     private AggregationDistinctProjection createProjection(final AggregationDistinctProjectionSegment projectionSegment) {
         String innerExpression = projectionSegment.getInnerExpression();
-        String alias = projectionSegment.getAlias().orElseGet(() -> DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
+        String alias = projectionSegment.getAliasName().orElseGet(() -> DerivedColumn.AGGREGATION_DISTINCT_DERIVED.getDerivedColumnAlias(aggregationDistinctDerivedColumnCount++));
         AggregationDistinctProjection result = new AggregationDistinctProjection(
                 projectionSegment.getStartIndex(), projectionSegment.getStopIndex(), projectionSegment.getType(), innerExpression, alias, projectionSegment.getDistinctExpression(), databaseType);
         if (AggregationType.AVG == result.getType()) {
@@ -149,7 +149,7 @@ public final class ProjectionEngine {
     
     private AggregationProjection createProjection(final AggregationProjectionSegment projectionSegment) {
         String innerExpression = projectionSegment.getInnerExpression();
-        AggregationProjection result = new AggregationProjection(projectionSegment.getType(), innerExpression, projectionSegment.getAlias().orElse(null), databaseType);
+        AggregationProjection result = new AggregationProjection(projectionSegment.getType(), innerExpression, projectionSegment.getAliasName().orElse(null), databaseType);
         if (AggregationType.AVG == result.getType()) {
             appendAverageDerivedProjection(result);
             // TODO replace avg to constant, avoid calculate useless avg
@@ -162,7 +162,7 @@ public final class ProjectionEngine {
             return Collections.emptyList();
         }
         String tableName = ((SimpleTableSegment) table).getTableName().getIdentifier().getValue();
-        String tableAlias = table.getAlias().orElse(tableName);
+        String tableAlias = table.getAliasName().orElse(tableName);
         String schemaName = ((SimpleTableSegment) table).getOwner().map(optional -> optional.getIdentifier().getValue())
                 .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName)).toLowerCase();
         ShardingSphereSchema schema = schemas.get(schemaName);
@@ -183,7 +183,7 @@ public final class ProjectionEngine {
         SelectStatement subSelectStatement = ((SubqueryTableSegment) table).getSubquery().getSelect();
         Collection<Projection> projections = subSelectStatement.getProjections().getProjections().stream().map(each -> createProjection(subSelectStatement.getFrom(), each).orElse(null))
                 .filter(Objects::nonNull).collect(Collectors.toList());
-        String subqueryTableAlias = table.getAlias().orElse(null);
+        String subqueryTableAlias = table.getAliasName().orElse(null);
         return getSubqueryTableActualProjections(projections, subqueryTableAlias);
     }
     
