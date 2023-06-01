@@ -40,13 +40,14 @@ import java.util.List;
 /**
  * Command bind packet for PostgreSQL.
  */
-@Getter
 public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
     private final PostgreSQLPacketPayload payload;
     
+    @Getter
     private final String portal;
     
+    @Getter
     private final String statementId;
     
     public PostgreSQLComBindPacket(final PostgreSQLPacketPayload payload) {
@@ -63,11 +64,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
      * @return values of parameter
      */
     public List<Object> readParameters(final List<PostgreSQLColumnType> paramTypes) {
-        int parameterFormatCount = payload.readInt2();
-        List<Integer> paramFormats = new ArrayList<>(parameterFormatCount);
-        for (int i = 0; i < parameterFormatCount; i++) {
-            paramFormats.add(payload.readInt2());
-        }
+        List<Integer> paramFormats = getParameterFormats();
         int parameterCount = payload.readInt2();
         List<Object> result = new ArrayList<>(parameterCount);
         for (int paramIndex = 0; paramIndex < parameterCount; paramIndex++) {
@@ -77,9 +74,18 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
                 continue;
             }
             Object paramValue = isTextParameterValue(paramFormats, paramIndex)
-                    ? getTextParameters(payload, parameterValueLength, paramTypes.get(paramIndex))
-                    : getBinaryParameters(payload, parameterValueLength, paramTypes.get(paramIndex));
+                    ? getTextParameterValue(payload, parameterValueLength, paramTypes.get(paramIndex))
+                    : getBinaryParameterValue(payload, parameterValueLength, paramTypes.get(paramIndex));
             result.add(paramValue);
+        }
+        return result;
+    }
+    
+    private List<Integer> getParameterFormats() {
+        int parameterFormatCount = payload.readInt2();
+        List<Integer> result = new ArrayList<>(parameterFormatCount);
+        for (int i = 0; i < parameterFormatCount; i++) {
+            result.add(payload.readInt2());
         }
         return result;
     }
@@ -88,18 +94,15 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         if (paramFormats.isEmpty()) {
             return true;
         }
-        if (1 == paramFormats.size()) {
-            return 0 == paramFormats.get(0);
-        }
-        return 0 == paramFormats.get(paramIndex);
+        return PostgreSQLValueFormat.TEXT.getCode() == paramFormats.get(1 == paramFormats.size() ? 0 : paramIndex);
     }
     
-    private Object getTextParameters(final PostgreSQLPacketPayload payload, final int paramValueLength, final PostgreSQLColumnType paramType) {
+    private Object getTextParameterValue(final PostgreSQLPacketPayload payload, final int paramValueLength, final PostgreSQLColumnType paramType) {
         String value = payload.getByteBuf().readCharSequence(paramValueLength, payload.getCharset()).toString();
-        return getTextParameters(value, paramType);
+        return getTextParameterValue(value, paramType);
     }
     
-    private Object getTextParameters(final String textValue, final PostgreSQLColumnType paramType) {
+    private Object getTextParameterValue(final String textValue, final PostgreSQLColumnType paramType) {
         switch (paramType) {
             case UNSPECIFIED:
                 return new PostgreSQLTypeUnspecifiedSQLParameter(textValue);
@@ -140,13 +143,13 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
         }
     }
     
-    private Object getBinaryParameters(final PostgreSQLPacketPayload payload, final int paramValueLength, final PostgreSQLColumnType paramType) {
+    private Object getBinaryParameterValue(final PostgreSQLPacketPayload payload, final int paramValueLength, final PostgreSQLColumnType paramType) {
         PostgreSQLBinaryProtocolValue binaryProtocolValue = PostgreSQLBinaryProtocolValueFactory.getBinaryProtocolValue(paramType);
         return binaryProtocolValue.read(payload, paramValueLength);
     }
     
     /**
-     * Read result formats from Bind message.
+     * Read result formats from bind message.
      *
      * @return formats of value
      */
