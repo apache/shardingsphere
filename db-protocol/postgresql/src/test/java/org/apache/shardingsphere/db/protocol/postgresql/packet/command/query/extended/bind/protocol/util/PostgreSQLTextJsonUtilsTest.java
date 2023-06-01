@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
 
 import org.junit.jupiter.api.Test;
+import org.postgresql.util.PGobject;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class PostgreSQLTextBoolUtilsTest {
+class PostgreSQLTextJsonUtilsTest {
     
     @Test
-    void assertGetTextValue() {
-        Object jdbcBoolValue = true;
-        String textValue = PostgreSQLTextBoolUtils.getTextValue(jdbcBoolValue);
-        assertThat(textValue, is("t"));
+    void assertParse() {
+        String textValue = "['input']";
+        PGobject actual = PostgreSQLTextJsonUtils.parse(textValue);
+        assertThat(actual.getType(), is("json"));
+        assertThat(actual.getValue(), is(textValue));
     }
 }
