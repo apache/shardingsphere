@@ -21,12 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.metadata.persist.node.metadata.datasource.DataSourceNodeConverter;
 
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-// TODO Rename DatabaseMetaDataNode when metadata structure adjustment completed. #25485
 /**
+ * TODO Rename DatabaseMetaDataNode when metadata structure adjustment completed. #25485
  * New database meta data node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -82,7 +78,7 @@ public final class NewDatabaseMetaDataNode {
      * @return database rule active version path
      */
     public static String getDatabaseRuleActiveVersionPath(final String databaseName, final String ruleName, final String key) {
-        return String.join("/",getDatabaseRulePath(databaseName, ruleName), key, ACTIVE_VERSION);
+        return String.join("/", getDatabaseRulePath(databaseName, ruleName), key, ACTIVE_VERSION);
     }
     
     /**
@@ -118,7 +114,7 @@ public final class NewDatabaseMetaDataNode {
      * @return database rule path
      */
     public static String getDatabaseRulePath(final String databaseName, final String ruleName) {
-        return String.join("/",getRulesPath(databaseName), ruleName);
+        return String.join("/", getRulesPath(databaseName), ruleName);
     }
     
     private static String getRulesPath(final String databaseName) {

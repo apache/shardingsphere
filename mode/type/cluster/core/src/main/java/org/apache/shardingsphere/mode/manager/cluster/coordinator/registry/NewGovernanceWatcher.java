@@ -24,8 +24,8 @@ import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import java.util.Collection;
 import java.util.Optional;
 
-// TODO Rename GovernanceWatcher when metadata structure adjustment completed. #25485
 /**
+ * TODO Rename GovernanceWatcher when metadata structure adjustment completed. #25485
  * Governance watcher.
  * 
  * @param <T> type of event

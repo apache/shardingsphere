@@ -18,137 +18,36 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.state.DataSourceState;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
-import org.apache.shardingsphere.metadata.persist.NewMetaDataPersistService;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSource;
-import org.apache.shardingsphere.mode.event.storage.StorageNodeDataSourceChangedEvent;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
+import org.apache.shardingsphere.mode.event.config.RuleConfigurationChangedEvent;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.DatabaseVersionChangedEvent;
 
 import java.util.Collection;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
+import java.util.LinkedList;
 
 /**
- * TODO replace the old implementation after meta data refactor completed
- * New configuration changed subscriber.
+ * TODO Rename ConfigurationChangedSubscriber when metadata structure adjustment completed. #25485
+ * New Configuration changed subscriber.
  */
 @SuppressWarnings("UnstableApiUsage")
 public final class NewConfigurationChangedSubscriber {
     
-    private final NewMetaDataPersistService persistService;
-    
-    private final RegistryCenter registryCenter;
-    
     private final ContextManager contextManager;
     
-    public NewConfigurationChangedSubscriber(final NewMetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManager contextManager) {
-        this.persistService = persistService;
-        this.registryCenter = registryCenter;
+    public NewConfigurationChangedSubscriber(final ContextManager contextManager) {
         this.contextManager = contextManager;
         contextManager.getInstanceContext().getEventBusContext().register(this);
-        disableDataSources();
     }
     
-    /**
-     * Renew data source configuration.
-     *
-     * @param event data source changed event.
-     */
     @Subscribe
-    public synchronized void renew(final DataSourceChangedEvent event) {
-        if (persistService.getMetaDataVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
-            contextManager.alterDataSourceConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
-            disableDataSources();
-        }
-    }
-    
-    /**
-     * Renew rule configurations.
-     *
-     * @param event rule configurations changed event
-     */
-    @Subscribe
-    public synchronized void renew(final RuleConfigurationsChangedEvent event) {
-        if (persistService.getMetaDataVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
-            contextManager.alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfigs());
-            disableDataSources();
-        }
-    }
-    
-    /**
-     * Renew global rule configurations.
-     *
-     * @param event global rule configurations changed event
-     */
-    @Subscribe
-    public synchronized void renew(final GlobalRuleConfigurationsChangedEvent event) {
-        contextManager.alterGlobalRuleConfiguration(event.getRuleConfigs());
-        disableDataSources();
-    }
-    
-    /**
-     * Renew with new database version.
-     *
-     * @param event database version changed event
-     */
-    @Subscribe
-    public synchronized void renew(final DatabaseVersionChangedEvent event) {
-        Map<String, DataSourceProperties> dataSourcePropertiesMap = persistService.getDataSourceService().load(event.getDatabaseName(), event.getActiveVersion());
-        Collection<RuleConfiguration> ruleConfigs = persistService.getDatabaseRulePersistService().load(event.getDatabaseName(), event.getActiveVersion());
-        contextManager.alterDataSourceAndRuleConfiguration(event.getDatabaseName(), dataSourcePropertiesMap, ruleConfigs);
-        disableDataSources();
-    }
-    
-    /**
-     * Renew properties.
-     *
-     * @param event properties changed event
-     */
-    @Subscribe
-    public synchronized void renew(final PropertiesChangedEvent event) {
-        contextManager.alterProperties(event.getProps());
-    }
-    
-    private void disableDataSources() {
-        Map<String, StorageNodeDataSource> storageNodes = getDisabledDataSources();
-        for (Entry<String, ShardingSphereDatabase> entry : contextManager.getMetaDataContexts().getMetaData().getDatabases().entrySet()) {
-            entry.getValue().getRuleMetaData().findRules(StaticDataSourceContainedRule.class).forEach(each -> disableDataSources(entry.getKey(), each, storageNodes));
-        }
-    }
-    
-    private void disableDataSources(final String databaseName, final StaticDataSourceContainedRule rule, final Map<String, StorageNodeDataSource> storageNodes) {
-        for (Entry<String, StorageNodeDataSource> entry : storageNodes.entrySet()) {
-            QualifiedDatabase database = new QualifiedDatabase(entry.getKey());
-            if (!database.getDatabaseName().equals(databaseName)) {
-                continue;
-            }
-            disableDataSources(entry.getValue(), rule, database);
-        }
-    }
-    
-    private void disableDataSources(final StorageNodeDataSource storageNodeDataSource, final StaticDataSourceContainedRule rule, final QualifiedDatabase database) {
-        for (Entry<String, Collection<String>> entry : rule.getDataSourceMapper().entrySet()) {
-            if (!database.getGroupName().equals(entry.getKey())) {
-                continue;
-            }
-            entry.getValue().forEach(each -> rule.updateStatus(new StorageNodeDataSourceChangedEvent(database, storageNodeDataSource)));
-        }
-    }
-    
-    private Map<String, StorageNodeDataSource> getDisabledDataSources() {
-        return registryCenter.getStorageNodeStatusService().loadStorageNodes().entrySet()
-                .stream().filter(entry -> DataSourceState.DISABLED == entry.getValue().getStatus()).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    private synchronized void renew(final RuleConfigurationChangedEvent event) {
+        String databaseName = event.getDatabaseName();
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
+        Collection<ShardingSphereRule> rules = new LinkedList<>(database.getRuleMetaData().getRules());
+        rules.addAll(DatabaseRulesBuilder.build(databaseName, database.getResourceMetaData().getDataSources(), database.getRuleMetaData().getRules(),
+                event.getRuleConfig(), contextManager.getInstanceContext()));
+        database.getRuleMetaData().getRules().addAll(rules);
     }
 }

@@ -20,95 +20,28 @@ package org.apache.shardingsphere.sharding.route.engine.type.standard;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.assertion.ShardingRouteAssert;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
 
 // TODO add assertion for ShardingRouteAssert.assertRoute
 class SubqueryRouteTest {
     
-    @Test
-    void assertOneTableDifferentConditionWithFederation() {
-        String sql = "select (select max(id) from t_order b where b.user_id =? ) from t_order a where user_id = ? ";
-        ShardingRouteAssert.assertRoute(sql, Arrays.asList(3, 2));
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertRoute(final String name, final String sql, final List<Object> params) {
+        ShardingRouteAssert.assertRoute(sql, params);
     }
     
     @Test
-    void assertOneTableSameConditionWithFederation() {
-        String sql = "select (select max(id) from t_order b where b.user_id = ? and b.user_id = a.user_id) from t_order a where user_id = ? ";
-        ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1));
-    }
-    
-    @Test
-    void assertBindingTableWithFederation() {
-        String sql = "select (select max(id) from t_order_item b where b.user_id = ?) from t_order a where user_id = ? ";
-        ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1));
-    }
-    
-    @Test
-    void assertNotShardingTable() {
-        String sql = "select (select max(id) from t_category b where b.id = ?) from t_category a where id = ? ";
-        ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1));
-    }
-    
-    @Test
-    void assertBindingTableWithDifferentValueWithFederation() {
-        String sql = "select (select max(id) from t_order_item b where b.user_id = ? ) from t_order a where user_id = ? ";
-        ShardingRouteAssert.assertRoute(sql, Arrays.asList(2, 3));
-    }
-    
-    @Test
-    void assertTwoTableWithDifferentOperatorWithFederation() {
-        String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id = ? ";
-        ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 2, 1));
-    }
-    
-    @Test
-    void assertTwoTableWithInWithFederation() {
-        String sql = "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id in(?,?) ";
-        ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 2, 1, 3));
-    }
-    
-    @Test
-    void assertSubqueryInSubqueryError() {
-        String sql = "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
-                + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))";
-        ShardingRouteAssert.assertRoute(sql, Arrays.asList(11, 2, 1, 1));
-    }
-    
-    @Test
-    void assertSubqueryInSubquery() {
-        String sql = "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
-                + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))";
-        ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1, 1, 1));
-    }
-    
-    @Test
-    void assertSubqueryInFromError() {
-        String sql = "select status from t_order b join (select user_id,status from t_order b where b.user_id =?) c on b.user_id = c.user_id where b.user_id =? ";
-        ShardingRouteAssert.assertRoute(sql, Arrays.asList(11, 1));
-    }
-    
-    @Test
-    void assertSubqueryInFrom() {
-        String sql = "select status from t_order b join (select user_id,status from t_order b where b.user_id =?) c on b.user_id = c.user_id where b.user_id =? ";
-        ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1));
-    }
-    
-    @Test
-    void assertSubqueryForAggregation() {
-        String sql = "select count(*) from t_order where user_id = (select user_id from t_order where user_id =?) ";
-        ShardingRouteAssert.assertRoute(sql, Collections.singletonList(1));
-    }
-    
-    @Test
-    void assertSubqueryForBinding() {
-        String sql = "select count(*) from t_order where user_id = (select user_id from t_order_item where user_id =?) ";
-        ShardingRouteAssert.assertRoute(sql, Collections.singletonList(1));
-    }
-    
-    @Test
-    void assertSubqueryWithHint() {
+    void assertRouteWithHint() {
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_test", 1);
         hintManager.addTableShardingValue("t_hint_test", 1);
@@ -117,9 +50,42 @@ class SubqueryRouteTest {
         hintManager.close();
     }
     
-    @Test
-    void assertSubqueryWithOneInstance() {
-        String sql = "select count(*) from t_order where user_id =?";
-        ShardingRouteAssert.assertRoute(sql, Collections.singletonList(1));
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("oneTableDifferentConditionWithFederation",
+                            "select (select max(id) from t_order b where b.user_id =? ) from t_order a where user_id = ? ", Arrays.asList(3, 2)),
+                    Arguments.of("oneTableSameConditionWithFederation",
+                            "select (select max(id) from t_order b where b.user_id = ? and b.user_id = a.user_id) from t_order a where user_id = ? ", Arrays.asList(1, 1)),
+                    Arguments.of("bindingTableWithFederation",
+                            "select (select max(id) from t_order_item b where b.user_id = ?) from t_order a where user_id = ? ", Arrays.asList(1, 1)),
+                    Arguments.of("notShardingTable",
+                            "select (select max(id) from t_category b where b.id = ?) from t_category a where id = ? ", Arrays.asList(1, 1)),
+                    Arguments.of("bindingTableWithDifferentValueWithFederation",
+                            "select (select max(id) from t_order_item b where b.user_id = ? ) from t_order a where user_id = ? ", Arrays.asList(2, 3)),
+                    Arguments.of("twoTableWithDifferentOperatorWithFederation",
+                            "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id = ? ", Arrays.asList(1, 2, 1)),
+                    Arguments.of("twoTableWithInWithFederation",
+                            "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id in(?,?) ", Arrays.asList(1, 2, 1, 3)),
+                    Arguments.of("subqueryInSubqueryError",
+                            "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
+                                    + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))",
+                            Arrays.asList(11, 2, 1, 1)),
+                    Arguments.of("subqueryInSubquery",
+                            "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
+                                    + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))",
+                            Arrays.asList(1, 1, 1, 1)),
+                    Arguments.of("subqueryInFromError",
+                            "select status from t_order b join (select user_id,status from t_order b where b.user_id =?) c on b.user_id = c.user_id where b.user_id =? ", Arrays.asList(11, 1)),
+                    Arguments.of("subqueryInFrom",
+                            "select status from t_order b join (select user_id,status from t_order b where b.user_id =?) c on b.user_id = c.user_id where b.user_id =? ", Arrays.asList(1, 1)),
+                    Arguments.of("subqueryForAggregation",
+                            "select count(*) from t_order where user_id = (select user_id from t_order where user_id =?) ", Collections.singletonList(1)),
+                    Arguments.of("subqueryForBinding",
+                            "select count(*) from t_order where user_id = (select user_id from t_order_item where user_id =?) ", Collections.singletonList(1)),
+                    Arguments.of("subqueryWithOneInstance", "select count(*) from t_order where user_id =?", Collections.singletonList(1)));
+        }
     }
 }

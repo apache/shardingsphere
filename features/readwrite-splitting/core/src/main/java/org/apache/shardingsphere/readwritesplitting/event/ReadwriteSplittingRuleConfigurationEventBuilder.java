@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.readwritesplitting.event;
 
 import jdk.internal.joptsimple.internal.Strings;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
-import org.apache.shardingsphere.mode.event.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.mode.event.config.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.readwritesplitting.yaml.converter.ReadwriteSplittingNodeConverter;
 
 import java.util.Optional;
@@ -31,7 +31,7 @@ import java.util.Optional;
 public final class ReadwriteSplittingRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
     @Override
-    public Optional<RuleChangedEvent> build(DataChangedEvent event) {
+    public Optional<GovernanceEvent> build(final DataChangedEvent event) {
         if (!ReadwriteSplittingNodeConverter.isReadwriteSplittingPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }

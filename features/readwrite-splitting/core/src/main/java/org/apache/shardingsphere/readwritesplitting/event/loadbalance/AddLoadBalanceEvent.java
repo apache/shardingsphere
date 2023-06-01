@@ -19,19 +19,20 @@ package org.apache.shardingsphere.readwritesplitting.event.loadbalance;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
-import org.apache.shardingsphere.mode.event.config.FeatureEvent;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 
 /**
  * Add load-balance event.
+ *
+ * @param <T> algorithm configuration
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddLoadBalanceEvent implements RuleChangedEvent {
+public final class AddLoadBalanceEvent<T> implements GovernanceEvent {
     
     private final String databaseName;
     
     private final String loadBalanceName;
     
-    private final String data;
+    private final T config;
 }

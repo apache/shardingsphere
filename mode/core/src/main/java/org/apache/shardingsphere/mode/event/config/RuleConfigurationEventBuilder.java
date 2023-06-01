@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.config.readwritesplitting.configuration;
+package org.apache.shardingsphere.mode.event.config;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.event.config.FeatureEvent;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+
+import java.util.Optional;
 
 /**
- * delete readwrite-splitting configuration event.
+ * Rule configuration event builder.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DeleteReadwriteSplittingConfigurationEvent implements FeatureEvent {
+public interface RuleConfigurationEventBuilder {
     
-    private final String databaseName;
-    
-    private final String groupName;
+    /**
+     * Build rule changed event.
+     *
+     * @param event data changed event
+     * @return rule changed event
+     */
+    Optional<GovernanceEvent> build(DataChangedEvent event);
 }

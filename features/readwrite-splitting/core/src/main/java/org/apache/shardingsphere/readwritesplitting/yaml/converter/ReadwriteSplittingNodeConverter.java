@@ -17,9 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.yaml.converter;
 
-import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
-
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,7 +50,7 @@ public final class ReadwriteSplittingNodeConverter {
     }
     
     /**
-     *  Is readwrite-splitting path
+     *  Is readwrite-splitting path.
      *
      * @param rulePath rule path
      * @return true or false

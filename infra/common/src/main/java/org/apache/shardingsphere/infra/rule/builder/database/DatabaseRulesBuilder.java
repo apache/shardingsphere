@@ -72,6 +72,7 @@ public final class DatabaseRulesBuilder {
      *
      * @param databaseName database name
      * @param dataSources data sources
+     * @param rules rules
      * @param ruleConfigs rule configurations
      * @param instanceContext instance context
      * @return built rules

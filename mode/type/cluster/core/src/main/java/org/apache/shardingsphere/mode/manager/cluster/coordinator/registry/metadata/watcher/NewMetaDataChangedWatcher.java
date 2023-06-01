@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.watcher;
 
-import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
 import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
-import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
-import org.apache.shardingsphere.mode.event.RuleConfigurationEventBuilder;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.mode.event.config.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.infra.rule.event.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.NewGovernanceWatcher;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
@@ -38,7 +36,7 @@ import java.util.Arrays;
  */
 public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<GovernanceEvent> {
     
-    private final static Collection<RuleConfigurationEventBuilder> EVENT_BUILDERS = ShardingSphereServiceLoader.getServiceInstances(RuleConfigurationEventBuilder.class);
+    private static final Collection<RuleConfigurationEventBuilder> EVENT_BUILDERS = ShardingSphereServiceLoader.getServiceInstances(RuleConfigurationEventBuilder.class);
     
     @Override
     public Collection<String> getWatchingKeys(final String databaseName) {
@@ -53,18 +51,18 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
     
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return Optional.empty();
+        return createRuleEvent(event);
     }
     
-    
+    // TODO Change to map to avoid loops.
     private Optional<GovernanceEvent> createRuleEvent(final DataChangedEvent event) {
         for (RuleConfigurationEventBuilder each : EVENT_BUILDERS) {
-            Optional<RuleChangedEvent> changedEvent = each.build(event);
-            if (!changedEvent.isPresent()) {
+            Optional<GovernanceEvent> result = each.build(event);
+            if (!result.isPresent()) {
                 continue;
             }
-            return re
+            return result;
         }
-        
+        return Optional.empty();
     }
 }

@@ -17,8 +17,18 @@
 
 package org.apache.shardingsphere.mode.event.config;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+
 /**
- * Feature event.
+ * Rule configuration changed event.
  */
-public interface FeatureEvent {
+@Getter
+@RequiredArgsConstructor
+public final class RuleConfigurationChangedEvent {
+    
+    private final String databaseName;
+    
+    private final RuleConfiguration ruleConfig;
 }
