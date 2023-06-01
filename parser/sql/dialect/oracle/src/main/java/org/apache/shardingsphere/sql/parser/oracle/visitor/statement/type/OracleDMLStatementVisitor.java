@@ -732,7 +732,7 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             return null == datetimeExpression.getRight()
                     ? new DatetimeProjectionSegment(datetimeExpression.getStartIndex(), datetimeExpression.getStopIndex(), datetimeExpression.getLeft(), datetimeExpression.getText())
                     : new DatetimeProjectionSegment(datetimeExpression.getStartIndex(), datetimeExpression.getStopIndex(),
-                    datetimeExpression.getLeft(), datetimeExpression.getRight(), datetimeExpression.getText());
+                            datetimeExpression.getLeft(), datetimeExpression.getRight(), datetimeExpression.getText());
         }
         if (projection instanceof XmlQueryAndExistsFunctionSegment) {
             XmlQueryAndExistsFunctionSegment xmlExistsFunctionSegment = (XmlQueryAndExistsFunctionSegment) projection;
@@ -743,9 +743,9 @@ public final class OracleDMLStatementVisitor extends OracleStatementVisitor impl
             XmlPiFunctionSegment xmlPiFunctionSegment = (XmlPiFunctionSegment) projection;
             return null == xmlPiFunctionSegment.getIdentifier()
                     ? new XmlPiFunctionSegment(xmlPiFunctionSegment.getStartIndex(), xmlPiFunctionSegment.getStopIndex(),
-                    xmlPiFunctionSegment.getFunctionName(), xmlPiFunctionSegment.getEvalNameValueExpr(), xmlPiFunctionSegment.getValueExpr(), xmlPiFunctionSegment.getText())
+                            xmlPiFunctionSegment.getFunctionName(), xmlPiFunctionSegment.getEvalNameValueExpr(), xmlPiFunctionSegment.getValueExpr(), xmlPiFunctionSegment.getText())
                     : new XmlPiFunctionSegment(xmlPiFunctionSegment.getStartIndex(), xmlPiFunctionSegment.getStopIndex(),
-                    xmlPiFunctionSegment.getFunctionName(), xmlPiFunctionSegment.getIdentifier(), xmlPiFunctionSegment.getValueExpr(), xmlPiFunctionSegment.getText());
+                            xmlPiFunctionSegment.getFunctionName(), xmlPiFunctionSegment.getIdentifier(), xmlPiFunctionSegment.getValueExpr(), xmlPiFunctionSegment.getText());
         }
         if (projection instanceof XmlSerializeFunctionSegment) {
             XmlSerializeFunctionSegment xmlSerializeFunctionSegment = (XmlSerializeFunctionSegment) projection;
