@@ -187,7 +187,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 ColumnProjectionSegment segment = (ColumnProjectionSegment) each;
                 String columnName = segment.getColumn().getIdentifier().getValue();
                 ShardingSphereColumn column = table.containsColumn(columnName) ? table.getColumn(columnName) : generateDefaultColumn(segment);
-                String alias = segment.getAlias().orElseGet(column::getName);
+                String alias = segment.getAliasName().orElseGet(column::getName);
                 result.add(new PostgreSQLColumnDescription(alias, 0, column.getDataType(), estimateColumnLength(column.getDataType()), ""));
             }
             if (each instanceof ExpressionProjectionSegment) {
@@ -203,7 +203,7 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
     
     private PostgreSQLColumnDescription convertExpressionToDescription(final ExpressionProjectionSegment expressionProjectionSegment) {
         ExpressionSegment expressionSegment = expressionProjectionSegment.getExpr();
-        String columnName = expressionProjectionSegment.getAlias().orElse(ANONYMOUS_COLUMN_NAME);
+        String columnName = expressionProjectionSegment.getAliasName().orElse(ANONYMOUS_COLUMN_NAME);
         if (expressionSegment instanceof LiteralExpressionSegment) {
             Object value = ((LiteralExpressionSegment) expressionSegment).getLiterals();
             if (value instanceof String) {

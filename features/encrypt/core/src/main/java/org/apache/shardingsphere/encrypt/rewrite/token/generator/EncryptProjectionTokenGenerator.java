@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.Col
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.CollectionSQLTokenGenerator;
@@ -94,7 +93,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
                 ShorthandProjectionSegment shorthandSegment = (ShorthandProjectionSegment) projection;
                 Collection<ColumnProjection> columnProjections = getShorthandProjection(shorthandSegment, selectStatementContext.getProjectionsContext()).getColumnProjections();
                 if (!columnProjections.isEmpty()) {
-                    result.add(generateSQLToken(shorthandSegment, columnProjections, selectStatementContext.getDatabaseType(), subqueryType, columnTableNames));
+                    result.add(generateSQLToken(shorthandSegment, columnProjections, selectStatementContext, subqueryType, columnTableNames));
                 }
             }
         }
@@ -109,7 +108,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
     }
     
     private SubstitutableColumnNameToken generateSQLToken(final ShorthandProjectionSegment segment, final Collection<ColumnProjection> columnProjections,
-                                                          final DatabaseType databaseType, final SubqueryType subqueryType, final Map<String, String> columnTableNames) {
+                                                          final SelectStatementContext selectStatementContext, final SubqueryType subqueryType, final Map<String, String> columnTableNames) {
         List<ColumnProjection> projections = new LinkedList<>();
         for (ColumnProjection each : columnProjections) {
             String tableName = columnTableNames.get(each.getExpression());
@@ -121,12 +120,13 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
         }
         int startIndex = segment.getOwner().isPresent() ? segment.getOwner().get().getStartIndex() : segment.getStartIndex();
         previousSQLTokens.removeIf(each -> each.getStartIndex() == startIndex);
-        return new SubstitutableColumnNameToken(startIndex, segment.getStopIndex(), projections, databaseType.getQuoteCharacter());
+        return new SubstitutableColumnNameToken(startIndex, segment.getStopIndex(), projections, selectStatementContext.getDatabaseType().getQuoteCharacter(),
+                selectStatementContext.getTablesContext().getTableSegments());
     }
     
     private ColumnProjection buildColumnProjection(final ColumnProjectionSegment segment) {
         String owner = segment.getColumn().getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(null);
-        return new ColumnProjection(owner, segment.getColumn().getIdentifier().getValue(), segment.getAlias().orElse(null));
+        return new ColumnProjection(owner, segment.getColumn().getIdentifier().getValue(), segment.getAliasName().orElse(null));
     }
     
     private Map<String, String> getColumnTableNames(final SelectStatementContext selectStatementContext) {

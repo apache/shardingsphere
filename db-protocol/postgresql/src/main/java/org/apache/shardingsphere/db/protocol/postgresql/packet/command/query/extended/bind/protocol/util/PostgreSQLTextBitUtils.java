@@ -19,34 +19,12 @@ package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ex
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
-import org.postgresql.util.PGobject;
-
-import java.sql.SQLException;
 
 /**
  * Text bit utility class of PostgreSQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PostgreSQLTextBitUtils {
-    
-    /**
-     * Parse bit in PostgreSQL text format.
-     *
-     * @param bitText text value to be parsed
-     * @return bit PostgreSQL object
-     * @throws SQLWrapperException thrown if value is invalid for bit type
-     */
-    public static PGobject parse(final String bitText) {
-        try {
-            PGobject result = new PGobject();
-            result.setType("bit");
-            result.setValue(bitText);
-            return result;
-        } catch (SQLException ex) {
-            throw new SQLWrapperException(ex);
-        }
-    }
     
     /**
      * Get bit Text value in PostgreSQL text format.

@@ -46,7 +46,12 @@ public final class XmlTableSegment implements TableSegment {
     private final String xmlTableFunctionAlias;
     
     @Override
-    public Optional<String> getAlias() {
+    public Optional<String> getAliasName() {
+        return Optional.empty();
+    }
+    
+    @Override
+    public Optional<AliasSegment> getAlias() {
         return Optional.empty();
     }
     
