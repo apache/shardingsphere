@@ -71,10 +71,12 @@ class SubqueryRouteTest {
                             "select (select max(id) from t_order_item b where b.user_id in(?,?)) from t_order a where user_id in(?,?) ", Arrays.asList(1, 2, 1, 3)),
                     Arguments.of("subqueryInSubqueryError",
                             "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
-                                    + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))", Arrays.asList(11, 2, 1, 1)),
+                                    + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))",
+                            Arrays.asList(11, 2, 1, 1)),
                     Arguments.of("subqueryInSubquery",
                             "select (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?)) as c from t_order a "
-                                    + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))", Arrays.asList(1, 1, 1, 1)),
+                                    + "where status = (select status from t_order b where b.user_id =? and status = (select status from t_order b where b.user_id =?))",
+                            Arrays.asList(1, 1, 1, 1)),
                     Arguments.of("subqueryInFromError",
                             "select status from t_order b join (select user_id,status from t_order b where b.user_id =?) c on b.user_id = c.user_id where b.user_id =? ", Arrays.asList(11, 1)),
                     Arguments.of("subqueryInFrom",
