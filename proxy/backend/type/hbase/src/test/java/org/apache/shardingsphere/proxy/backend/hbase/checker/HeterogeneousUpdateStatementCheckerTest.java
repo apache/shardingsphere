@@ -67,7 +67,7 @@ class HeterogeneousUpdateStatementCheckerTest {
                     Arguments.of("columnIsNotRowKey", "update /*+ hbase */ t_test_order set age = 10 where age = 1", "age is not a allowed key."),
                     Arguments.of("leftIsNotColumn", "update /*+ hbase */ t_test_order set age = 10 where 1 = 1", "Left segment must column segment."),
                     Arguments.of("multiExpression", "update /*+ hbase */ t_test_order set age = 10 WHERE order_id = ? AND user_id = ? AND status=?", "Do not supported multiple expressions."),
-                    Arguments.of("notWhereSegment", "update /*+ hbase */ t_test_order set age = 10 ", "Must contain where segment."),
+                    Arguments.of("withoutWhere", "update /*+ hbase */ t_test_order set age = 10 ", "Must contain where segment."),
                     Arguments.of("updateRowKey", "update /*+ hbase */ t_test_order set rowKey = 10 where rowKey = 'kid'", "Do not allow update rowKey"));
         }
     }

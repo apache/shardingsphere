@@ -36,7 +36,7 @@ class HeterogeneousInsertStatementCheckerTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(SupportedTestCaseArgumentsProvider.class)
-    void assertExecuteInsertStatement(final String name, final String sql) {
+    void assertExecuteSuccess(final String name, final String sql) {
         SQLStatement sqlStatement = HBaseSupportedSQLStatement.parseSQLStatement(sql);
         assertDoesNotThrow(() -> HBaseCheckerFactory.newInstance(sqlStatement).execute());
     }
