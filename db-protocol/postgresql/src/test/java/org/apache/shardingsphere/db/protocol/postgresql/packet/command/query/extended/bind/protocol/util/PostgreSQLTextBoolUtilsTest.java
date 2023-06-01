@@ -15,28 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
 
 import org.junit.jupiter.api.Test;
-import org.postgresql.util.PGobject;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class PostgreSQLTextBitUtilsTest {
+class PostgreSQLTextBoolUtilsTest {
     
     @Test
-    void assertParse() {
-        String textValue = "1";
-        PGobject actual = PostgreSQLTextBitUtils.parse(textValue);
-        assertThat(actual.getType(), is("bit"));
-        assertThat(actual.getValue(), is(textValue));
-    }
-    
-    @Test
-    void assertGetTextBitValue() {
-        Object jdbcBitValue = true;
-        String textValue = PostgreSQLTextBitUtils.getTextValue(jdbcBitValue);
-        assertThat(textValue, is("1"));
+    void assertGetTextValue() {
+        Object jdbcBoolValue = true;
+        String textValue = PostgreSQLTextBoolUtils.getTextValue(jdbcBoolValue);
+        assertThat(textValue, is("t"));
     }
 }

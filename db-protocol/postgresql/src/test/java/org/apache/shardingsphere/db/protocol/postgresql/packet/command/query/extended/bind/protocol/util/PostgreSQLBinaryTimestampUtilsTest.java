@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
 
 import org.junit.jupiter.api.Test;
 
