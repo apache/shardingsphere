@@ -44,7 +44,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
@@ -111,12 +110,12 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             if (records.isEmpty()) {
                 calculationContext.close();
             }
-            return records.isEmpty() ? Optional.empty() : Optional.of(new DataMatchCalculatedResult(Objects.requireNonNull(maxUniqueKeyValue), records));
+            return records.isEmpty() ? Optional.empty() : Optional.of(new DataMatchCalculatedResult(maxUniqueKeyValue, records));
         } catch (final PipelineSQLException ex) {
             calculationContext.close();
             throw ex;
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             calculationContext.close();
             throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);
@@ -132,7 +131,7 @@ public final class DataMatchDataConsistencyCalculateAlgorithm extends AbstractSt
             result = createCalculationContext(param);
             fulfillCalculationContext(result, param);
             // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
+        } catch (final SQLException | RuntimeException ex) {
             // CHECKSTYLE:ON
             CloseUtils.closeQuietly(result);
             throw new PipelineTableDataConsistencyCheckLoadingFailedException(param.getSchemaName(), param.getLogicTableName(), ex);

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,26 +25,39 @@ import org.postgresql.util.PGobject;
 import java.sql.SQLException;
 
 /**
- * Text Json utility class of PostgreSQL.
+ * Text bit utility class of PostgreSQL.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PostgreSQLTextJsonUtils {
+public class PostgreSQLTextBitUtils {
     
     /**
-     * Parse json in PostgreSQL text format.
+     * Parse bit in PostgreSQL text format.
      *
-     * @param jsonText text value to be parsed
-     * @return json pgobject
-     * @throws SQLWrapperException thrown if value is invalid for json type
+     * @param bitText text value to be parsed
+     * @return bit PostgreSQL object
+     * @throws SQLWrapperException thrown if value is invalid for bit type
      */
-    public static PGobject parse(final String jsonText) {
+    public static PGobject parse(final String bitText) {
         try {
             PGobject result = new PGobject();
-            result.setType("json");
-            result.setValue(jsonText);
+            result.setType("bit");
+            result.setValue(bitText);
             return result;
-        } catch (final SQLException ex) {
+        } catch (SQLException ex) {
             throw new SQLWrapperException(ex);
         }
+    }
+    
+    /**
+     * Get bit Text value in PostgreSQL text format.
+     * 
+     * @param jdbcBitValue bit value for jdbc
+     * @return bit text value in PostgreSQL text format
+     */
+    public static String getTextValue(final Object jdbcBitValue) {
+        if (null == jdbcBitValue) {
+            return null;
+        }
+        return (Boolean) jdbcBitValue ? "1" : "0";
     }
 }

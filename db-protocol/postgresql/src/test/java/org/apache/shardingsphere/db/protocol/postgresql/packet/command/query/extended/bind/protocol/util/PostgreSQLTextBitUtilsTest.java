@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.Test;
+import org.postgresql.util.PGobject;
 
-/**
- * Text Bool utility class of PostgreSQL.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostgreSQLTextBoolUtils {
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class PostgreSQLTextBitUtilsTest {
     
-    /**
-     * Get Boolean Text value in PostgreSQL text format.
-     * @param jdbcBoolValue bool value for jdbc
-     * @return bool value in PostgreSQL text format
-     */
-    public static String getTextValue(final Object jdbcBoolValue) {
-        return null == jdbcBoolValue ? null : (Boolean) jdbcBoolValue ? "t" : "f";
+    @Test
+    void assertParse() {
+        String textValue = "1";
+        PGobject actual = PostgreSQLTextBitUtils.parse(textValue);
+        assertThat(actual.getType(), is("bit"));
+        assertThat(actual.getValue(), is(textValue));
+    }
+    
+    @Test
+    void assertGetTextBitValue() {
+        Object jdbcBitValue = true;
+        String textValue = PostgreSQLTextBitUtils.getTextValue(jdbcBitValue);
+        assertThat(textValue, is("1"));
     }
 }

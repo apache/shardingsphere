@@ -407,38 +407,43 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         return new PostgreSQLAlterForeignDataWrapperStatement();
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitAlterDefinitionClause(final AlterDefinitionClauseContext ctx) {
         CollectionValue<AlterDefinitionSegment> result = new CollectionValue<>();
         if (null != ctx.alterTableActions()) {
-            for (AlterTableActionContext each : ctx.alterTableActions().alterTableAction()) {
-                AddColumnSpecificationContext addColumnSpecification = each.addColumnSpecification();
-                if (null != addColumnSpecification) {
-                    result.getValue().addAll(((CollectionValue<AddColumnDefinitionSegment>) visit(addColumnSpecification)).getValue());
-                }
-                if (null != each.addConstraintSpecification() && null != each.addConstraintSpecification().tableConstraint()) {
-                    result.getValue().add((AddConstraintDefinitionSegment) visit(each.addConstraintSpecification()));
-                }
-                if (null != each.validateConstraintSpecification()) {
-                    result.getValue().add((ValidateConstraintDefinitionSegment) visit(each.validateConstraintSpecification()));
-                }
-                if (null != each.modifyColumnSpecification()) {
-                    result.getValue().add((ModifyColumnDefinitionSegment) visit(each.modifyColumnSpecification()));
-                }
-                if (null != each.modifyConstraintSpecification()) {
-                    result.getValue().add((ModifyConstraintDefinitionSegment) visit(each.modifyConstraintSpecification()));
-                }
-                if (null != each.dropColumnSpecification()) {
-                    result.getValue().add((DropColumnDefinitionSegment) visit(each.dropColumnSpecification()));
-                }
-                if (null != each.dropConstraintSpecification()) {
-                    result.getValue().add((DropConstraintDefinitionSegment) visit(each.dropConstraintSpecification()));
-                }
-            }
+            result.getValue().addAll(getAlterDefinitionSegments(ctx));
         }
         if (null != ctx.renameTableSpecification()) {
             result.getValue().add((RenameTableDefinitionSegment) visit(ctx.renameTableSpecification()));
+        }
+        return result;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Collection<AlterDefinitionSegment> getAlterDefinitionSegments(final AlterDefinitionClauseContext ctx) {
+        Collection<AlterDefinitionSegment> result = new LinkedList<>();
+        for (AlterTableActionContext each : ctx.alterTableActions().alterTableAction()) {
+            if (null != each.addColumnSpecification()) {
+                result.addAll(((CollectionValue<AddColumnDefinitionSegment>) visit(each.addColumnSpecification())).getValue());
+            }
+            if (null != each.addConstraintSpecification() && null != each.addConstraintSpecification().tableConstraint()) {
+                result.add((AddConstraintDefinitionSegment) visit(each.addConstraintSpecification()));
+            }
+            if (null != each.validateConstraintSpecification()) {
+                result.add((ValidateConstraintDefinitionSegment) visit(each.validateConstraintSpecification()));
+            }
+            if (null != each.modifyColumnSpecification()) {
+                result.add((ModifyColumnDefinitionSegment) visit(each.modifyColumnSpecification()));
+            }
+            if (null != each.modifyConstraintSpecification()) {
+                result.add((ModifyConstraintDefinitionSegment) visit(each.modifyConstraintSpecification()));
+            }
+            if (null != each.dropColumnSpecification()) {
+                result.add((DropColumnDefinitionSegment) visit(each.dropColumnSpecification()));
+            }
+            if (null != each.dropConstraintSpecification()) {
+                result.add((DropConstraintDefinitionSegment) visit(each.dropConstraintSpecification()));
+            }
         }
         return result;
     }
@@ -833,6 +838,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
         return result;
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ASTNode visitDropSequence(final DropSequenceContext ctx) {
         PostgreSQLDropSequenceStatement result = new PostgreSQLDropSequenceStatement();

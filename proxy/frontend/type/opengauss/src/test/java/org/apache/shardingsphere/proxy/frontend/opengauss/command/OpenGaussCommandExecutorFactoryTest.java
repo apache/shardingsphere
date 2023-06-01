@@ -135,8 +135,8 @@ class OpenGaussCommandExecutorFactoryTest {
         when(packet.isContainsBatchedStatements()).thenReturn(true);
         when(packet.getPackets()).thenReturn(
                 Arrays.asList(parsePacket, bindPacket, describePacket, executePacket, bindPacket, describePacket, executePacket, closePacket, syncPacket, terminationPacket));
-        when(packet.getFirstBindIndex()).thenReturn(1);
-        when(packet.getLastExecuteIndex()).thenReturn(6);
+        when(packet.getBatchPacketBeginIndex()).thenReturn(1);
+        when(packet.getBatchPacketEndIndex()).thenReturn(6);
         CommandExecutor actual = OpenGaussCommandExecutorFactory.newInstance(null, packet, connectionSession, portalContext);
         assertThat(actual, instanceOf(PostgreSQLAggregatedCommandExecutor.class));
         Iterator<CommandExecutor> actualPacketsIterator = getExecutorsFromAggregatedCommandExecutor((PostgreSQLAggregatedCommandExecutor) actual).iterator();

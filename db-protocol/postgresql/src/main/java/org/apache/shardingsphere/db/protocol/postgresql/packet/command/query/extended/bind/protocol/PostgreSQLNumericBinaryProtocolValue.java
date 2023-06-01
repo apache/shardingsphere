@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
 
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
+import org.postgresql.util.ByteConverter;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -29,18 +30,18 @@ public final class PostgreSQLNumericBinaryProtocolValue implements PostgreSQLBin
     
     @Override
     public int getColumnLength(final Object value) {
-        return value instanceof BigDecimal ? PostgreSQLByteConverter.numeric((BigDecimal) value).length : value.toString().getBytes(StandardCharsets.UTF_8).length;
+        return value instanceof BigDecimal ? ByteConverter.numeric((BigDecimal) value).length : value.toString().getBytes(StandardCharsets.UTF_8).length;
     }
     
     @Override
     public Object read(final PostgreSQLPacketPayload payload, final int parameterValueLength) {
         byte[] bytes = new byte[parameterValueLength];
         payload.getByteBuf().readBytes(bytes);
-        return PostgreSQLByteConverter.numeric(bytes);
+        return ByteConverter.numeric(bytes);
     }
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        payload.writeBytes(value instanceof BigDecimal ? PostgreSQLByteConverter.numeric((BigDecimal) value) : value.toString().getBytes(StandardCharsets.UTF_8));
+        payload.writeBytes(value instanceof BigDecimal ? ByteConverter.numeric((BigDecimal) value) : value.toString().getBytes(StandardCharsets.UTF_8));
     }
 }

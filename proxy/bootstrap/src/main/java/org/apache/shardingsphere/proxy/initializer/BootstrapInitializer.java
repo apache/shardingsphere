@@ -77,7 +77,7 @@ public final class BootstrapInitializer {
             try {
                 each.onInitialized(null, contextManager);
                 // CHECKSTYLE:OFF
-            } catch (final Exception ex) {
+            } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
                 log.error("contextManager onInitialized callback for '{}' failed", each.getClass().getName(), ex);
             }

@@ -95,15 +95,15 @@ public final class OpenGaussCommandExecutorFactory {
     private static List<CommandExecutor> getExecutorsOfAggregatedBatchedStatements(final PostgreSQLAggregatedCommandPacket aggregatedCommandPacket,
                                                                                    final ConnectionSession connectionSession, final PortalContext portalContext) throws SQLException {
         List<PostgreSQLCommandPacket> packets = aggregatedCommandPacket.getPackets();
-        int firstBindIndex = aggregatedCommandPacket.getFirstBindIndex();
-        int lastExecuteIndex = aggregatedCommandPacket.getLastExecuteIndex();
-        List<CommandExecutor> result = new ArrayList<>(firstBindIndex + packets.size() - lastExecuteIndex);
-        for (int i = 0; i < firstBindIndex; i++) {
+        int batchPacketBeginIndex = aggregatedCommandPacket.getBatchPacketBeginIndex();
+        int batchPacketEndIndex = aggregatedCommandPacket.getBatchPacketEndIndex();
+        List<CommandExecutor> result = new ArrayList<>(batchPacketBeginIndex + packets.size() - batchPacketEndIndex);
+        for (int i = 0; i < batchPacketBeginIndex; i++) {
             PostgreSQLCommandPacket each = packets.get(i);
             result.add(getCommandExecutor((CommandPacketType) each.getIdentifier(), each, connectionSession, portalContext));
         }
-        result.add(new PostgreSQLAggregatedBatchedStatementsCommandExecutor(connectionSession, packets.subList(firstBindIndex, lastExecuteIndex + 1)));
-        for (int i = lastExecuteIndex + 1; i < packets.size(); i++) {
+        result.add(new PostgreSQLAggregatedBatchedStatementsCommandExecutor(connectionSession, packets.subList(batchPacketBeginIndex, batchPacketEndIndex + 1)));
+        for (int i = batchPacketEndIndex + 1; i < packets.size(); i++) {
             PostgreSQLCommandPacket each = packets.get(i);
             result.add(getCommandExecutor((CommandPacketType) each.getIdentifier(), each, connectionSession, portalContext));
         }

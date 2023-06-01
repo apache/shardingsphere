@@ -702,6 +702,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         return result;
     }
     
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ASTNode visitQualifiedNameList(final QualifiedNameListContext ctx) {
         CollectionValue<SimpleTableSegment> result = new CollectionValue<>();
@@ -733,6 +734,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertRest(final InsertRestContext ctx) {
         OpenGaussInsertStatement result = new OpenGaussInsertStatement();
@@ -781,6 +783,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         return new ColumnAssignmentSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), columnSegments, expressionSegment);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertColumnList(final InsertColumnListContext ctx) {
         CollectionValue<ColumnSegment> result = new CollectionValue<>();
@@ -1124,41 +1127,53 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
     @Override
     public ASTNode visitTableReference(final TableReferenceContext ctx) {
         if (null != ctx.relationExpr()) {
-            SimpleTableSegment result = (SimpleTableSegment) visit(ctx.relationExpr().qualifiedName());
-            if (null != ctx.aliasClause()) {
-                result.setAlias((AliasSegment) visit(ctx.aliasClause()));
-            }
-            return result;
+            return getSimpleTableSegment(ctx);
         }
         if (null != ctx.selectWithParens()) {
-            OpenGaussSelectStatement select = (OpenGaussSelectStatement) visit(ctx.selectWithParens());
-            SubquerySegment subquery = new SubquerySegment(ctx.selectWithParens().start.getStartIndex(), ctx.selectWithParens().stop.getStopIndex(), select);
-            AliasSegment alias = null != ctx.aliasClause() ? (AliasSegment) visit(ctx.aliasClause()) : null;
-            SubqueryTableSegment result = new SubqueryTableSegment(subquery);
-            result.setAlias(alias);
-            return result;
+            return getSubqueryTableSegment(ctx);
         }
         if (null != ctx.tableReference()) {
-            JoinTableSegment result = new JoinTableSegment();
-            result.setLeft((TableSegment) visit(ctx.tableReference()));
-            int startIndex = null != ctx.LP_() ? ctx.LP_().getSymbol().getStartIndex() : ctx.tableReference().start.getStartIndex();
-            int stopIndex = 0;
-            AliasSegment alias = null;
-            if (null != ctx.aliasClause()) {
-                alias = (AliasSegment) visit(ctx.aliasClause());
-                startIndex = null != ctx.RP_() ? ctx.RP_().getSymbol().getStopIndex() : ctx.joinedTable().stop.getStopIndex();
-            } else {
-                stopIndex = null != ctx.RP_() ? ctx.RP_().getSymbol().getStopIndex() : ctx.tableReference().start.getStopIndex();
-            }
-            result.setStartIndex(startIndex);
-            result.setStopIndex(stopIndex);
-            visitJoinedTable(ctx.joinedTable(), result);
-            result.setAlias(alias);
-            return result;
+            return getJoinTableSegment(ctx);
         }
         // TODO deal with functionTable and xmlTable
-        TableNameSegment tableName = new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("not support"));
-        return new SimpleTableSegment(tableName);
+        return new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue("not support")));
+    }
+    
+    private SimpleTableSegment getSimpleTableSegment(final TableReferenceContext ctx) {
+        SimpleTableSegment result = (SimpleTableSegment) visit(ctx.relationExpr().qualifiedName());
+        if (null != ctx.aliasClause()) {
+            result.setAlias((AliasSegment) visit(ctx.aliasClause()));
+        }
+        return result;
+    }
+    
+    private SubqueryTableSegment getSubqueryTableSegment(final TableReferenceContext ctx) {
+        OpenGaussSelectStatement select = (OpenGaussSelectStatement) visit(ctx.selectWithParens());
+        SubquerySegment subquery = new SubquerySegment(ctx.selectWithParens().start.getStartIndex(), ctx.selectWithParens().stop.getStopIndex(), select);
+        SubqueryTableSegment result = new SubqueryTableSegment(subquery);
+        if (null != ctx.aliasClause()) {
+            result.setAlias((AliasSegment) visit(ctx.aliasClause()));
+        }
+        return result;
+    }
+    
+    private JoinTableSegment getJoinTableSegment(final TableReferenceContext ctx) {
+        JoinTableSegment result = new JoinTableSegment();
+        result.setLeft((TableSegment) visit(ctx.tableReference()));
+        int startIndex = null != ctx.LP_() ? ctx.LP_().getSymbol().getStartIndex() : ctx.tableReference().start.getStartIndex();
+        int stopIndex = 0;
+        AliasSegment alias = null;
+        if (null != ctx.aliasClause()) {
+            alias = (AliasSegment) visit(ctx.aliasClause());
+            startIndex = null == ctx.RP_() ? ctx.joinedTable().stop.getStopIndex() : ctx.RP_().getSymbol().getStopIndex();
+        } else {
+            stopIndex = null == ctx.RP_() ? ctx.tableReference().start.getStopIndex() : ctx.RP_().getSymbol().getStopIndex();
+        }
+        result.setStartIndex(startIndex);
+        result.setStopIndex(stopIndex);
+        visitJoinedTable(ctx.joinedTable(), result);
+        result.setAlias(alias);
+        return result;
     }
     
     private JoinTableSegment visitJoinedTable(final JoinedTableContext ctx, final JoinTableSegment tableSegment) {
@@ -1189,7 +1204,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementBaseVi
         if (null != ctx.FULL()) {
             return JoinType.FULL.name();
         }
-        return null != ctx.LEFT() ? JoinType.LEFT.name() : JoinType.RIGHT.name();
+        return null == ctx.LEFT() ? JoinType.RIGHT.name() : JoinType.LEFT.name();
     }
     
     private String getNaturalJoinType(final NaturalJoinTypeContext ctx) {

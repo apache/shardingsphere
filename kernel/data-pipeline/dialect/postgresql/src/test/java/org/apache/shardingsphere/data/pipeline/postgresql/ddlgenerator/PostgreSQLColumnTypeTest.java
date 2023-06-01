@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol;
+package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
 import org.junit.jupiter.api.Test;
-import org.postgresql.util.PGobject;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
-class PostgreSQLTextJsonUtilsTest {
+class PostgreSQLColumnTypeTest {
     
     @Test
-    void assertParse() {
-        String textValue = "['input']";
-        PGobject actual = PostgreSQLTextJsonUtils.parse(textValue);
-        assertThat(actual.getType(), is("json"));
-        assertThat(actual.getValue(), is(textValue));
+    void assertValueOfZeroValue() {
+        assertThat(PostgreSQLColumnType.valueOf(0L), is(PostgreSQLColumnType.UNKNOWN));
+    }
+    
+    @Test
+    void assertValueOfFoundValue() {
+        assertThat(PostgreSQLColumnType.valueOf(1231L), is(PostgreSQLColumnType.NUMERIC));
+    }
+    
+    @Test
+    void assertValueOfNotExistedValue() {
+        assertThat(PostgreSQLColumnType.valueOf(1L), is(PostgreSQLColumnType.UNKNOWN));
     }
 }
