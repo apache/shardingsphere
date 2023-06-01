@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.cluster.listener;
+package org.apache.shardingsphere.mode.event;
 
-import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
+
+import java.util.Optional;
 
 /**
- * Data changed listener.
+ * Rule configuration event builder.
  */
-public interface DataChangedEventListener {
+public interface RuleConfigurationEventBuilder {
     
     /**
-     * Fire when data changed.
-     * 
+     * Build rule changed event.
+     *
      * @param event data changed event
+     * @return rule changed event
      */
-    void onChange(DataChangedEvent event);
+    Optional<RuleChangedEvent> build(DataChangedEvent event);
 }

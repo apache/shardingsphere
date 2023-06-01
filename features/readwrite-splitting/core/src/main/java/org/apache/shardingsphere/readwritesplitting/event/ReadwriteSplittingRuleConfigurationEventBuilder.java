@@ -15,43 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry;
+package org.apache.shardingsphere.readwritesplitting.event;
 
+import jdk.internal.joptsimple.internal.Strings;
 import org.apache.shardingsphere.mode.event.DataChangedEvent;
-import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
+import org.apache.shardingsphere.mode.event.RuleConfigurationEventBuilder;
+import org.apache.shardingsphere.readwritesplitting.yaml.converter.ReadwriteSplittingNodeConverter;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Governance watcher.
- * 
- * @param <T> type of event
+ * Readwrite-splitting rule configuration event builder.
  */
-@SingletonSPI
-public interface GovernanceWatcher<T> {
+public final class ReadwriteSplittingRuleConfigurationEventBuilder implements RuleConfigurationEventBuilder {
     
-    /**
-     * Get watching keys.
-     *
-     * @param databaseName database name
-     * @return watching keys
-     */
-    Collection<String> getWatchingKeys(String databaseName);
-    
-    /**
-     * Get watching types.
-     *
-     * @return watching types
-     */
-    Collection<Type> getWatchingTypes();
-    
-    /**
-     * Create governance event.
-     * 
-     * @param event registry center data changed event
-     * @return governance event
-     */
-    Optional<T> createGovernanceEvent(DataChangedEvent event);
+    @Override
+    public Optional<RuleChangedEvent> build(DataChangedEvent event) {
+        if (!ReadwriteSplittingNodeConverter.isReadwriteSplittingPath(event.getKey()) || Strings.isNullOrEmpty(event.getValue())) {
+            return Optional.empty();
+        }
+        // TODO Need to build event.
+        return Optional.empty();
+    }
 }

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.conf
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

@@ -15,33 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.node;
+package org.apache.shardingsphere.readwritesplitting.yaml.converter;
 
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-// TODO Rename DatabaseMetaDataNodeTest when metadata structure adjustment completed. #25485
-class NewDatabaseMetaDataNodeTest {
+class ReadwriteSplittingNodeConverterTest {
     
     @Test
-    void assertGetMetaDataDataSourcesPath() {
-        assertThat(NewDatabaseMetaDataNode.getDataSourcesPath("foo_db"), is("/metadata/foo_db/data_sources"));
+    void assertGetGroupNamePath() {
+        assertThat(ReadwriteSplittingNodeConverter.getGroupNamePath("group_0"), is("/group_0"));
     }
     
     @Test
-    void assertGetMetaDataDataSourcePath() {
-        assertThat(NewDatabaseMetaDataNode.getDataSourcePath("foo_db", "foo_ds", "0"), is("/metadata/foo_db/data_sources/foo_ds/versions/0"));
+    void assertGetLoadBalancerPath() {
+        assertThat(ReadwriteSplittingNodeConverter.getLoadBalancerPath("random"), is("/load_balancers/random"));
     }
     
     @Test
-    void assertGetDatabaseRuleActiveVersionPath() {
-        assertThat(NewDatabaseMetaDataNode.getDatabaseRuleActiveVersionPath("foo_db", "foo_rule", "foo_tables"), is("/metadata/foo_db/rules/foo_rule/foo_tables/active_version"));
-    }
-    
-    @Test
-    void assertGetDatabaseRuleVersionPath() {
-        assertThat(NewDatabaseMetaDataNode.getDatabaseRuleVersionPath("foo_db", "foo_rule", "foo_tables", "1"), is("/metadata/foo_db/rules/foo_rule/foo_tables/versions/1"));
+    void assertGetRuleTagNameByRulePath() {
+        assertTrue(ReadwriteSplittingNodeConverter.isReadwriteSplittingPath("/metadata/foo_db/rules/readwrite_splitting/group_0"));
     }
 }

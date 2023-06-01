@@ -15,19 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.cluster.listener;
+package org.apache.shardingsphere.mode.event;
 
-import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Data changed listener.
+ * Data changed event.
  */
-public interface DataChangedEventListener {
+@RequiredArgsConstructor
+@Getter
+public final class DataChangedEvent {
+    
+    private final String key;
+    
+    private final String value;
+    
+    private final Type type;
     
     /**
-     * Fire when data changed.
-     * 
-     * @param event data changed event
+     * Data changed type.
      */
-    void onChange(DataChangedEvent event);
+    public enum Type {
+        
+        ADDED, UPDATED, DELETED, IGNORED
+    }
 }

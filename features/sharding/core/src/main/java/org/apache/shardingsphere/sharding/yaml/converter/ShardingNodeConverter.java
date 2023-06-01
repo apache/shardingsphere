@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.node.metadata.config.sharding;
+package org.apache.shardingsphere.sharding.yaml.converter;
 
 /**
  * Sharding node converter.
@@ -62,7 +62,7 @@ public final class ShardingNodeConverter {
      * @param tableName table name
      * @return table name path
      */
-    public String getTableNamePath(final String tableName) {
+    public static String getTableNamePath(final String tableName) {
         return String.join("/", TABLES, String.format(TABLE_NAME, tableName));
     }
     
@@ -72,7 +72,7 @@ public final class ShardingNodeConverter {
      * @param tableName table name
      * @return auto table name path
      */
-    public String getAutoTableNamePath(final String tableName) {
+    public static String getAutoTableNamePath(final String tableName) {
         return String.join("/", AUTO_TABLES, String.format(AUTO_TABLE_NAME, tableName));
     }
     
@@ -82,7 +82,7 @@ public final class ShardingNodeConverter {
      * @param tableName table name
      * @return binding table name path
      */
-    public String getBindingTableNamePath(final String tableName) {
+    public static String getBindingTableNamePath(final String tableName) {
         return String.join("/", BINDING_TABLES, String.format(BINDING_TABLE_NAME, tableName));
     }
     
@@ -91,7 +91,7 @@ public final class ShardingNodeConverter {
      * 
      * @return broadcast tables path
      */
-    public String getBroadcastTablesPath() {
+    public static String getBroadcastTablesPath() {
         return String.join("/", BROADCAST_TABLES);
     }
     
@@ -100,7 +100,7 @@ public final class ShardingNodeConverter {
      * 
      * @return default database strategy path
      */
-    public String getDefaultDatabaseStrategyPath() {
+    public static String getDefaultDatabaseStrategyPath() {
         return String.join("/", DEFAULT_STRATEGY, DEFAULT_DATABASE_STRATEGY);
     }
     
@@ -109,7 +109,7 @@ public final class ShardingNodeConverter {
      * 
      * @return default table strategy path
      */
-    public String getDefaultTableStrategyPath() {
+    public static String getDefaultTableStrategyPath() {
         return String.join("/", DEFAULT_STRATEGY, DEFAULT_TABLE_STRATEGY);
     }
     
@@ -118,7 +118,7 @@ public final class ShardingNodeConverter {
      * 
      * @return default key generate path
      */
-    public String getDefaultKeyGenerateStrategyPath() {
+    public static String getDefaultKeyGenerateStrategyPath() {
         return String.join("/", DEFAULT_STRATEGY, DEFAULT_KEY_GENERATE_STRATEGY);
     }
     
@@ -127,7 +127,7 @@ public final class ShardingNodeConverter {
      * 
      * @return default audit strategy path
      */
-    public String getDefaultAuditStrategyPath() {
+    public static String getDefaultAuditStrategyPath() {
         return String.join("/", DEFAULT_STRATEGY, DEFAULT_AUDIT_STRATEGY);
     }
     
@@ -136,7 +136,7 @@ public final class ShardingNodeConverter {
      * 
      * @return default sharding column path
      */
-    public String getDefaultShardingColumnPath() {
+    public static String getDefaultShardingColumnPath() {
         return String.join("/", DEFAULT_STRATEGY, DEFAULT_SHARDING_COLUMN);
     }
     
@@ -146,7 +146,7 @@ public final class ShardingNodeConverter {
      * @param shardingAlgorithmName sharding algorithm name
      * @return sharding algorithm name path
      */
-    public String getShardingAlgorithmsPath(final String shardingAlgorithmName) {
+    public static String getShardingAlgorithmsPath(final String shardingAlgorithmName) {
         return String.join("/", SHARDING_ALGORITHMS, shardingAlgorithmName);
     }
     
@@ -156,7 +156,7 @@ public final class ShardingNodeConverter {
      * @param keyGeneratorName key generator name
      * @return key generator name path
      */
-    public String getKeyGeneratorsPath(final String keyGeneratorName) {
+    public static String getKeyGeneratorsPath(final String keyGeneratorName) {
         return String.join("/", KEY_GENERATORS, keyGeneratorName);
     }
     
@@ -166,7 +166,7 @@ public final class ShardingNodeConverter {
      * @param auditorName auditor name
      * @return auditor name path
      */
-    public String getAuditorsPath(final String auditorName) {
+    public static String getAuditorsPath(final String auditorName) {
         return String.join("/", AUDITORS, auditorName);
     }
     
@@ -175,7 +175,7 @@ public final class ShardingNodeConverter {
      *
      * @return sharding cache path
      */
-    public String getShardingCachePath() {
+    public static String getShardingCachePath() {
         return String.join("/", SHARDING_CACHE);
     }
 }

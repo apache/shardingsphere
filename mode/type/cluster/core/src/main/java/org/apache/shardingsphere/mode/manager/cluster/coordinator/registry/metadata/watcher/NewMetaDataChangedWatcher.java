@@ -17,11 +17,15 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.watcher;
 
+import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.metadata.persist.node.NewDatabaseMetaDataNode;
+import org.apache.shardingsphere.mode.event.RuleConfigurationEventBuilder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.NewGovernanceWatcher;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.mode.event.DataChangedEvent;
+import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +37,8 @@ import java.util.Arrays;
  * Meta data changed watcher.
  */
 public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<GovernanceEvent> {
+    
+    private final static Collection<RuleConfigurationEventBuilder> EVENT_BUILDERS = ShardingSphereServiceLoader.getServiceInstances(RuleConfigurationEventBuilder.class);
     
     @Override
     public Collection<String> getWatchingKeys(final String databaseName) {
@@ -48,5 +54,17 @@ public final class NewMetaDataChangedWatcher implements NewGovernanceWatcher<Gov
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         return Optional.empty();
+    }
+    
+    
+    private Optional<GovernanceEvent> createRuleEvent(final DataChangedEvent event) {
+        for (RuleConfigurationEventBuilder each : EVENT_BUILDERS) {
+            Optional<RuleChangedEvent> changedEvent = each.build(event);
+            if (!changedEvent.isPresent()) {
+                continue;
+            }
+            return re
+        }
+        
     }
 }

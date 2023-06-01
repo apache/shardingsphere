@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.readwritesplitting;
+package org.apache.shardingsphere.readwritesplitting.event.loadbalance;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
+import org.apache.shardingsphere.infra.rule.event.RuleChangedEvent;
+import org.apache.shardingsphere.mode.event.config.FeatureEvent;
 
 /**
- * Readwrite-splitting rule configuration changed event.
+ * alter load-balance event.
  */
-@Getter
 @RequiredArgsConstructor
-public final class ReadwriteSplittingRuleConfigurationChangedEvent implements GovernanceEvent {
-
+@Getter
+public final class AlterLoadBalanceEvent implements RuleChangedEvent {
+    
     private final String databaseName;
     
-    private final String groupName;
+    private final String loadBalanceName;
     
     private final String data;
-    
-    private final Type eventType;
 }
