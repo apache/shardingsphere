@@ -38,6 +38,7 @@ import java.util.Collections;
  * Unavailable proxy state.
  */
 public final class UnavailableProxyState implements ProxyClusterState {
+    
     private static final Collection<Class<? extends SQLStatement>> SUPPORTED_SQL_STATEMENTS = Arrays.asList(
             ImportMetaDataStatement.class, ShowStatement.class, QueryableRALStatement.class,
             RQLStatement.class, UnlockClusterStatement.class, MySQLShowDatabasesStatement.class, MySQLUseStatement.class);
