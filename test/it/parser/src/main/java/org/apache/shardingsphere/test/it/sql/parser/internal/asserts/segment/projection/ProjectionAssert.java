@@ -114,7 +114,7 @@ public final class ProjectionAssert {
     }
     
     private static void assertSubqueryProjection(final SQLCaseAssertContext assertContext, final SubqueryProjectionSegment actual, final ExpectedSubqueryProjection expected) {
-        assertThat(assertContext.getText("Subquery projection alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
+        assertThat(assertContext.getText("Subquery projection alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
         String expectedText = SQLCaseType.LITERAL == assertContext.getCaseType() && null != expected.getLiteralText() ? expected.getLiteralText() : expected.getText();
         assertThat(assertContext.getText("Subquery projection text assertion error: "), actual.getText(), is(expectedText));
         SelectStatementAssert.assertIs(assertContext, actual.getSubquery().getSelect(), expected.getSubquery().getSelectTestCases());
@@ -131,7 +131,7 @@ public final class ProjectionAssert {
     
     private static void assertColumnProjection(final SQLCaseAssertContext assertContext, final ColumnProjectionSegment actual, final ExpectedColumnProjection expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getColumn().getIdentifier(), expected, "Column projection");
-        assertThat(assertContext.getText("Column projection alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
+        assertThat(assertContext.getText("Column projection alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
         if (null == expected.getOwner()) {
             assertFalse(actual.getColumn().getOwner().isPresent(), assertContext.getText("Actual owner should not exist."));
         } else {
@@ -143,7 +143,7 @@ public final class ProjectionAssert {
     private static void assertAggregationProjection(final SQLCaseAssertContext assertContext, final AggregationProjectionSegment actual, final ExpectedAggregationProjection expected) {
         assertThat(assertContext.getText("Aggregation projection type assertion error: "), actual.getType().name(), is(expected.getType()));
         assertThat(assertContext.getText("Aggregation projection inner expression assertion error: "), actual.getInnerExpression(), is(expected.getInnerExpression()));
-        assertThat(assertContext.getText("Aggregation projection alias assertion error: "), actual.getAlias().orElse(null), is(expected.getAlias()));
+        assertThat(assertContext.getText("Aggregation projection alias assertion error: "), actual.getAliasName().orElse(null), is(expected.getAlias()));
         if (actual instanceof AggregationDistinctProjectionSegment) {
             assertThat(assertContext.getText("Projection type assertion error: "), expected, instanceOf(ExpectedAggregationDistinctProjection.class));
             assertThat(assertContext.getText("Aggregation projection alias assertion error: "),
@@ -153,7 +153,7 @@ public final class ProjectionAssert {
     
     private static void assertExpressionProjection(final SQLCaseAssertContext assertContext, final ExpressionProjectionSegment actual, final ExpectedExpressionProjection expected) {
         assertThat(assertContext.getText("Expression projection alias assertion error: "),
-                actual.getAlias().orElse(null), is(expected.getAlias()));
+                actual.getAliasName().orElse(null), is(expected.getAlias()));
         String expectedText = SQLCaseType.LITERAL == assertContext.getCaseType() && null != expected.getLiteralText()
                 ? expected.getLiteralText()
                 : expected.getText();

@@ -46,6 +46,6 @@ public final class DropViewStatementContext extends CommonSQLStatementContext im
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getTables();
+        return tablesContext.getSimpleTableSegments();
     }
 }

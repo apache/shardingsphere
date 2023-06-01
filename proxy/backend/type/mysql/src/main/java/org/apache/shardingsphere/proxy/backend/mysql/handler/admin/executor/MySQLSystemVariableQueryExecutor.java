@@ -68,7 +68,7 @@ public final class MySQLSystemVariableQueryExecutor implements DatabaseAdminQuer
             VariableSegment variableSegment = (VariableSegment) projection.getExpr();
             Scope scope = variableSegment.getScope().map(Scope::getScope).orElse(Scope.DEFAULT);
             columnsOfRow.add(variables.get(i).getValue(scope, connectionSession));
-            String name = projection.getAlias().orElseGet(() -> "@@" + variableSegment.getScope().map(s -> s + ".").orElse("") + variableSegment.getVariable());
+            String name = projection.getAliasName().orElseGet(() -> "@@" + variableSegment.getScope().map(s -> s + ".").orElse("") + variableSegment.getVariable());
             metaData.add(new RawQueryResultColumnMetaData("", name, name, Types.VARCHAR, "VARCHAR", 1024, 0));
         }
         queryResultMetaData = new RawQueryResultMetaData(metaData);

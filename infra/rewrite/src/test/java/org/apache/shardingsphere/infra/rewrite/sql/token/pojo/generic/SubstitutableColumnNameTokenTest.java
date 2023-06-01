@@ -20,6 +20,10 @@ package org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -40,6 +44,16 @@ class SubstitutableColumnNameTokenTest {
     @Test
     void assertToStringWithQuote() {
         Collection<ColumnProjection> projections = Collections.singletonList(new ColumnProjection(null, "id", "id"));
-        assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE).toString(mock(RouteUnit.class)), is("`id` AS `id`"));
+        assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE, Collections.emptyList()).toString(mock(RouteUnit.class)), is("`id` AS `id`"));
+    }
+    
+    @Test
+    void assertToStringWithAliasQuote() {
+        Collection<ColumnProjection> projections = Collections.singletonList(new ColumnProjection("temp", "id", "id"));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
+        tableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("`temp`")));
+        assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE, Collections.singletonList(tableSegment)).toString(mock(RouteUnit.class)), is("`temp`.`id` AS `id`"));
+        tableSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("temp")));
+        assertThat(new SubstitutableColumnNameToken(0, 1, projections, QuoteCharacter.BACK_QUOTE, Collections.singletonList(tableSegment)).toString(mock(RouteUnit.class)), is("temp.`id` AS `id`"));
     }
 }

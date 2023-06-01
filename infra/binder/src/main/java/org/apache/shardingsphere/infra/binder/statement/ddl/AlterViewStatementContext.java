@@ -60,6 +60,6 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext i
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getTables();
+        return tablesContext.getSimpleTableSegments();
     }
 }

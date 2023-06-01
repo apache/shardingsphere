@@ -49,6 +49,6 @@ public final class CreateViewStatementContext extends CommonSQLStatementContext 
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getTables();
+        return tablesContext.getSimpleTableSegments();
     }
 }

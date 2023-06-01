@@ -27,6 +27,8 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.sql.common.enums.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -51,6 +53,8 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
     
     private final QuoteCharacter quoteCharacter;
     
+    private final Map<String, AliasSegment> tableAliasSegments = new LinkedHashMap<>();
+    
     public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final Collection<ColumnProjection> projections) {
         super(startIndex);
         this.stopIndex = stopIndex;
@@ -67,12 +71,24 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
         this.projections = projections;
     }
     
-    public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final Collection<ColumnProjection> projections, final QuoteCharacter quoteCharacter) {
+    public SubstitutableColumnNameToken(final int startIndex, final int stopIndex, final Collection<ColumnProjection> projections, final QuoteCharacter quoteCharacter,
+                                        final Collection<TableSegment> tableSegments) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.lastColumn = false;
         this.quoteCharacter = quoteCharacter;
         this.projections = projections;
+        tableAliasSegments.putAll(createTableAliasSegments(tableSegments));
+    }
+    
+    private Map<String, AliasSegment> createTableAliasSegments(final Collection<TableSegment> tableSegments) {
+        Map<String, AliasSegment> result = new LinkedHashMap<>();
+        for (TableSegment each : tableSegments) {
+            if (each.getAlias().isPresent()) {
+                result.put(each.getAlias().get().getIdentifier().getValue().toLowerCase(), each.getAlias().get());
+            }
+        }
+        return result;
     }
     
     @Override
@@ -109,7 +125,8 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
         StringBuilder builder = new StringBuilder();
         String owner = columnProjection.getOwner();
         if (!Strings.isNullOrEmpty(owner)) {
-            builder.append(quoteCharacter.wrap(logicActualTableNames.getOrDefault(owner, owner))).append('.');
+            QuoteCharacter ownerQuoteCharacter = tableAliasSegments.containsKey(owner.toLowerCase()) ? tableAliasSegments.get(owner.toLowerCase()).getIdentifier().getQuoteCharacter() : quoteCharacter;
+            builder.append(ownerQuoteCharacter.wrap(logicActualTableNames.getOrDefault(owner, owner))).append('.');
         }
         builder.append(quoteCharacter.wrap(columnProjection.getName()));
         if (columnProjection.getAlias().isPresent()) {

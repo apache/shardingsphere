@@ -267,7 +267,7 @@ public final class TableExtractor {
      */
     public boolean needRewrite(final OwnerSegment owner) {
         for (TableSegment each : tableContext) {
-            if (owner.getIdentifier().getValue().equalsIgnoreCase(each.getAlias().orElse(null))) {
+            if (owner.getIdentifier().getValue().equalsIgnoreCase(each.getAliasName().orElse(null))) {
                 return false;
             }
         }
