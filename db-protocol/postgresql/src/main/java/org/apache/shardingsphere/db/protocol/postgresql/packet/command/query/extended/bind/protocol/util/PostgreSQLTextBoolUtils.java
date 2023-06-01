@@ -33,6 +33,9 @@ public class PostgreSQLTextBoolUtils {
      * @return boolean value in PostgreSQL text format
      */
     public static String getTextValue(final Object jdbcBoolValue) {
-        return null == jdbcBoolValue ? null : (Boolean) jdbcBoolValue ? "t" : "f";
+        if (null == jdbcBoolValue) {
+            return null;
+        }
+        return (Boolean) jdbcBoolValue ? "t" : "f";
     }
 }
