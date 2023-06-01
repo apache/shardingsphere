@@ -33,6 +33,7 @@ import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.context.CDCProcessContext;
 import org.apache.shardingsphere.data.pipeline.cdc.context.job.CDCJobItemContext;
+import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCChannelProgressPair;
 import org.apache.shardingsphere.data.pipeline.cdc.core.importer.CDCImporter;
 import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCIncrementalTask;
 import org.apache.shardingsphere.data.pipeline.cdc.core.task.CDCInventoryTask;
@@ -72,16 +73,16 @@ public final class CDCJobPreparer {
      */
     public void initTasks(final Collection<CDCJobItemContext> jobItemContexts) {
         AtomicBoolean inventoryImporterUsed = new AtomicBoolean();
-        List<PipelineChannel> inventoryChannels = new LinkedList<>();
+        List<CDCChannelProgressPair> inventoryChannelProgressPairs = new LinkedList<>();
         AtomicBoolean incrementalImporterUsed = new AtomicBoolean();
-        List<PipelineChannel> incrementalChannels = new LinkedList<>();
+        List<CDCChannelProgressPair> incrementalChannelProgressPairs = new LinkedList<>();
         for (CDCJobItemContext each : jobItemContexts) {
-            initTasks0(each, inventoryImporterUsed, inventoryChannels, incrementalImporterUsed, incrementalChannels);
+            initTasks0(each, inventoryImporterUsed, inventoryChannelProgressPairs, incrementalImporterUsed, incrementalChannelProgressPairs);
         }
     }
     
-    private void initTasks0(final CDCJobItemContext jobItemContext, final AtomicBoolean inventoryImporterUsed, final List<PipelineChannel> inventoryChannels,
-                            final AtomicBoolean incrementalImporterUsed, final List<PipelineChannel> incrementalChannels) {
+    private void initTasks0(final CDCJobItemContext jobItemContext, final AtomicBoolean inventoryImporterUsed, final List<CDCChannelProgressPair> inventoryChannelProgressPairs,
+                            final AtomicBoolean incrementalImporterUsed, final List<CDCChannelProgressPair> incrementalChannelProgressPairs) {
         Optional<InventoryIncrementalJobItemProgress> jobItemProgress = jobAPI.getJobItemProgress(jobItemContext.getJobId(), jobItemContext.getShardingItem());
         if (!jobItemProgress.isPresent()) {
             jobAPI.persistJobItemProgress(jobItemContext);
@@ -92,9 +93,9 @@ public final class CDCJobPreparer {
         }
         prepareIncremental(jobItemContext);
         if (jobItemContext.getJobConfig().isFull()) {
-            initInventoryTasks(jobItemContext, inventoryImporterUsed, inventoryChannels);
+            initInventoryTasks(jobItemContext, inventoryImporterUsed, inventoryChannelProgressPairs);
         }
-        initIncrementalTask(jobItemContext, incrementalImporterUsed, incrementalChannels);
+        initIncrementalTask(jobItemContext, incrementalImporterUsed, incrementalChannelProgressPairs);
     }
     
     private void prepareIncremental(final CDCJobItemContext jobItemContext) {
@@ -107,7 +108,7 @@ public final class CDCJobPreparer {
         }
     }
     
-    private void initInventoryTasks(final CDCJobItemContext jobItemContext, final AtomicBoolean importerUsed, final List<PipelineChannel> channels) {
+    private void initInventoryTasks(final CDCJobItemContext jobItemContext, final AtomicBoolean importerUsed, final List<CDCChannelProgressPair> channelProgressPairs) {
         long startTimeMillis = System.currentTimeMillis();
         CDCTaskConfiguration taskConfig = jobItemContext.getTaskConfig();
         ImporterConfiguration importerConfig = taskConfig.getImporterConfig();
@@ -116,11 +117,11 @@ public final class CDCJobPreparer {
                 .splitInventoryDumperConfig(jobItemContext)) {
             AtomicReference<IngestPosition> position = new AtomicReference<>(each.getPosition());
             PipelineChannel channel = PipelineTaskUtils.createInventoryChannel(processContext.getPipelineChannelCreator(), importerConfig.getBatchSize(), position);
-            channels.add(channel);
+            channelProgressPairs.add(new CDCChannelProgressPair(channel, jobItemContext));
             Dumper dumper = new InventoryDumper(each, channel, jobItemContext.getSourceDataSource(), jobItemContext.getSourceMetaDataLoader());
-            Importer importer = importerUsed.get() ? null : new CDCImporter(channels, importerConfig.getBatchSize(), 3, TimeUnit.SECONDS, jobItemContext.getSink(),
+            Importer importer = importerUsed.get() ? null : new CDCImporter(channelProgressPairs, importerConfig.getBatchSize(), 3, TimeUnit.SECONDS, jobItemContext.getSink(),
                     needSorting(ImporterType.INVENTORY, hasGlobalCSN(taskConfig.getDumperConfig().getDataSourceConfig().getDatabaseType())),
-                    importerConfig.getRateLimitAlgorithm(), jobItemContext);
+                    importerConfig.getRateLimitAlgorithm());
             jobItemContext.getInventoryTasks().add(new CDCInventoryTask(PipelineTaskUtils.generateInventoryTaskId(each), processContext.getInventoryDumperExecuteEngine(),
                     processContext.getInventoryImporterExecuteEngine(), dumper, importer, position));
             importerUsed.set(true);
@@ -136,18 +137,18 @@ public final class CDCJobPreparer {
         return databaseType instanceof OpenGaussDatabaseType;
     }
     
-    private void initIncrementalTask(final CDCJobItemContext jobItemContext, final AtomicBoolean importerUsed, final List<PipelineChannel> channels) {
+    private void initIncrementalTask(final CDCJobItemContext jobItemContext, final AtomicBoolean importerUsed, final List<CDCChannelProgressPair> channelProgressPairs) {
         CDCTaskConfiguration taskConfig = jobItemContext.getTaskConfig();
         DumperConfiguration dumperConfig = taskConfig.getDumperConfig();
         ImporterConfiguration importerConfig = taskConfig.getImporterConfig();
         IncrementalTaskProgress taskProgress = PipelineTaskUtils.createIncrementalTaskProgress(dumperConfig.getPosition(), jobItemContext.getInitProgress());
         PipelineChannel channel = PipelineTaskUtils.createIncrementalChannel(importerConfig.getConcurrency(), jobItemContext.getJobProcessContext().getPipelineChannelCreator(), taskProgress);
-        channels.add(channel);
+        channelProgressPairs.add(new CDCChannelProgressPair(channel, jobItemContext));
         Dumper dumper = PipelineTypedSPILoader.getDatabaseTypedService(IncrementalDumperCreator.class, dumperConfig.getDataSourceConfig().getDatabaseType().getType())
                 .createIncrementalDumper(dumperConfig, dumperConfig.getPosition(), channel, jobItemContext.getSourceMetaDataLoader());
         boolean needSorting = needSorting(ImporterType.INCREMENTAL, hasGlobalCSN(importerConfig.getDataSourceConfig().getDatabaseType()));
-        Importer importer = importerUsed.get() ? null : new CDCImporter(channels, importerConfig.getBatchSize(), 300, TimeUnit.MILLISECONDS,
-                jobItemContext.getSink(), needSorting, importerConfig.getRateLimitAlgorithm(), jobItemContext);
+        Importer importer = importerUsed.get() ? null : new CDCImporter(channelProgressPairs, importerConfig.getBatchSize(), 300, TimeUnit.MILLISECONDS,
+                jobItemContext.getSink(), needSorting, importerConfig.getRateLimitAlgorithm());
         PipelineTask incrementalTask = new CDCIncrementalTask(dumperConfig.getDataSourceName(), jobItemContext.getJobProcessContext().getIncrementalExecuteEngine(), dumper, importer, taskProgress);
         jobItemContext.getIncrementalTasks().add(incrementalTask);
         importerUsed.set(true);

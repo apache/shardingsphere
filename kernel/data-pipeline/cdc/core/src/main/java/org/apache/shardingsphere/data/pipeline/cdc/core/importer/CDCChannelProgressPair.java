@@ -19,20 +19,17 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-
-import java.util.List;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 
 /**
- * CSN records.
+ * CDC channel and progress listener pair.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CSNRecords {
+public final class CDCChannelProgressPair {
     
-    private final long csn;
+    private final PipelineChannel channel;
     
-    private final CDCChannelProgressPair channelProgressPair;
-    
-    private final List<Record> records;
+    private final PipelineJobProgressListener jobProgressListener;
 }

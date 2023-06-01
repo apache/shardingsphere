@@ -20,7 +20,6 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.PlaceholderRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckId;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
@@ -52,14 +50,13 @@ import java.util.stream.Collectors;
 /**
  * CDC importer.
  */
-@RequiredArgsConstructor
 @Slf4j
 public final class CDCImporter extends AbstractLifecycleExecutor implements Importer {
     
     @Getter
     private final String importerId = RandomStringUtils.randomAlphanumeric(8);
     
-    private final List<PipelineChannel> channels;
+    private final List<CDCChannelProgressPair> channelProgressPairs;
     
     private final int batchSize;
     
@@ -73,32 +70,41 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     
     private final JobRateLimitAlgorithm rateLimitAlgorithm;
     
-    private final PipelineJobProgressListener jobProgressListener;
-    
     private final PriorityQueue<CSNRecords> csnRecordsQueue = new PriorityQueue<>(new CSNRecordsComparator());
     
-    private final Cache<String, Pair<PipelineChannel, CDCAckPosition>> ackCache = CacheBuilder.newBuilder().maximumSize(10000).expireAfterWrite(5, TimeUnit.MINUTES).build();
+    private final Cache<String, Pair<CDCChannelProgressPair, CDCAckPosition>> ackCache = CacheBuilder.newBuilder().maximumSize(10000).expireAfterWrite(5, TimeUnit.MINUTES).build();
+    
+    public CDCImporter(final List<CDCChannelProgressPair> channelProgressPairs, final int batchSize, final long timeout, final TimeUnit timeUnit,
+                       final PipelineSink sink, final boolean needSorting, final JobRateLimitAlgorithm rateLimitAlgorithm) {
+        this.channelProgressPairs = new ArrayList<>(channelProgressPairs);
+        this.batchSize = batchSize;
+        this.timeout = timeout;
+        this.timeUnit = timeUnit;
+        this.sink = sink;
+        this.needSorting = needSorting;
+        this.rateLimitAlgorithm = rateLimitAlgorithm;
+    }
     
     @Override
     protected void runBlocking() {
         CDCImporterManager.putImporter(this);
-        List<PipelineChannel> workingChannels = new ArrayList<>(channels);
         while (isRunning()) {
             if (needSorting) {
-                doWithSorting(workingChannels);
+                doWithSorting();
             } else {
-                doWithoutSorting(workingChannels);
+                doWithoutSorting();
             }
-            if (workingChannels.isEmpty()) {
+            if (channelProgressPairs.isEmpty()) {
                 break;
             }
         }
     }
     
-    private void doWithoutSorting(final List<PipelineChannel> workingChannels) {
-        Iterator<PipelineChannel> workingChannelsIterator = workingChannels.iterator();
+    private void doWithoutSorting() {
+        Iterator<CDCChannelProgressPair> workingChannelsIterator = channelProgressPairs.iterator();
         while (workingChannelsIterator.hasNext()) {
-            PipelineChannel channel = workingChannelsIterator.next();
+            CDCChannelProgressPair channelProgressPair = workingChannelsIterator.next();
+            PipelineChannel channel = channelProgressPair.getChannel();
             List<Record> records = channel.fetchRecords(batchSize, timeout, timeUnit).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
             if (records.isEmpty()) {
                 continue;
@@ -107,7 +113,7 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
                 rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
             }
             String ackId = CDCAckId.build(importerId).marshal();
-            ackCache.put(ackId, Pair.of(channel, new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records))));
+            ackCache.put(ackId, Pair.of(channelProgressPair, new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records))));
             sink.write(ackId, records);
             Record lastRecord = records.get(records.size() - 1);
             if (lastRecord instanceof FinishedRecord) {
@@ -115,17 +121,17 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
             }
             if (lastRecord instanceof FinishedRecord && records.stream().noneMatch(DataRecord.class::isInstance)) {
                 channel.ack(records);
-                jobProgressListener.onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
+                channelProgressPair.getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(0));
             }
         }
     }
     
     @SneakyThrows(InterruptedException.class)
-    private void doWithSorting(final List<PipelineChannel> workingChannels) {
+    private void doWithSorting() {
         if (null != rateLimitAlgorithm) {
             rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
         }
-        prepareTransactionRecords(workingChannels);
+        prepareTransactionRecords();
         CSNRecords csnRecords = csnRecordsQueue.poll();
         if (null == csnRecords) {
             timeUnit.sleep(timeout);
@@ -134,7 +140,7 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
         // TODO Combine small transactions into a large transaction, to improve transformation performance.
         String ackId = CDCAckId.build(importerId).marshal();
         List<Record> records = csnRecords.getRecords();
-        ackCache.put(ackId, Pair.of(csnRecords.getChannel(), new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records))));
+        ackCache.put(ackId, Pair.of(csnRecords.getChannelProgressPair(), new CDCAckPosition(records.get(records.size() - 1), getDataRecordsCount(records))));
         sink.write(ackId, filterDataRecords(records));
     }
     
@@ -148,12 +154,13 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     
     // TODO openGauss CSN should be incremented for every transaction. Currently, CSN might be duplicated in transactions.
     // TODO Use channels watermark depth to improve performance.
-    private void prepareTransactionRecords(final List<PipelineChannel> workingChannels) {
+    private void prepareTransactionRecords() {
         if (csnRecordsQueue.isEmpty()) {
-            for (PipelineChannel each : workingChannels) {
-                List<Record> records = each.pollRecords();
+            for (CDCChannelProgressPair each : channelProgressPairs) {
+                PipelineChannel channel = each.getChannel();
+                List<Record> records = channel.pollRecords();
                 if (0 == getDataRecordsCount(records)) {
-                    each.ack(records);
+                    channel.ack(records);
                     continue;
                 }
                 csnRecordsQueue.add(new CSNRecords(findFirstDataRecord(records).getCsn(), each, records));
@@ -161,16 +168,17 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
         } else {
             CSNRecords csnRecords = csnRecordsQueue.peek();
             long oldestCSN = findFirstDataRecord(csnRecords.getRecords()).getCsn();
-            for (PipelineChannel each : workingChannels) {
-                List<Record> records = each.peekRecords();
+            for (CDCChannelProgressPair each : channelProgressPairs) {
+                PipelineChannel channel = each.getChannel();
+                List<Record> records = channel.peekRecords();
                 if (0 == getDataRecordsCount(records)) {
-                    records = each.pollRecords();
-                    each.ack(records);
+                    records = channel.pollRecords();
+                    channel.ack(records);
                     continue;
                 }
                 long csn = findFirstDataRecord(records).getCsn();
                 if (csn < oldestCSN) {
-                    records = each.pollRecords();
+                    records = channel.pollRecords();
                     csnRecordsQueue.add(new CSNRecords(csn, each, records));
                 }
             }
@@ -192,13 +200,13 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
      * @param ackId ack id
      */
     public void ack(final String ackId) {
-        Pair<PipelineChannel, CDCAckPosition> channelPositionPair = ackCache.getIfPresent(ackId);
+        Pair<CDCChannelProgressPair, CDCAckPosition> channelPositionPair = ackCache.getIfPresent(ackId);
         if (null == channelPositionPair) {
             return;
         }
         CDCAckPosition ackPosition = channelPositionPair.getRight();
-        channelPositionPair.getLeft().ack(Collections.singletonList(ackPosition.getLastRecord()));
-        jobProgressListener.onProgressUpdated(new PipelineJobProgressUpdatedParameter(ackPosition.getDataRecordCount()));
+        channelPositionPair.getLeft().getChannel().ack(Collections.singletonList(ackPosition.getLastRecord()));
+        channelPositionPair.getLeft().getJobProgressListener().onProgressUpdated(new PipelineJobProgressUpdatedParameter(ackPosition.getDataRecordCount()));
     }
     
     @Override
