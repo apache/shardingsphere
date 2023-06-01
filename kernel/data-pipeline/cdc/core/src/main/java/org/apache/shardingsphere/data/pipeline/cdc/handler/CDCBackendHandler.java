@@ -204,7 +204,7 @@ public final class CDCBackendHandler {
         CDCAckId ackId = CDCAckId.unmarshal(requestBody.getAckId());
         CDCImporter importer = CDCImporterManager.getImporter(ackId.getImporterId());
         if (null == importer) {
-            log.warn("Could not get importer, ack id: {}", ackId.marshal());
+            log.warn("Could not find importer, ack id: {}", ackId.marshal());
             return;
         }
         importer.ack(ackId.marshal());

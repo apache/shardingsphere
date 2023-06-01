@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -35,7 +36,6 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckId;
 import org.apache.shardingsphere.data.pipeline.cdc.core.ack.CDCAckPosition;
-import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 
@@ -50,13 +50,14 @@ import java.util.stream.Collectors;
 /**
  * CDC importer.
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class CDCImporter extends AbstractLifecycleExecutor implements Importer {
     
     @Getter
     private final String importerId = RandomStringUtils.randomAlphanumeric(8);
     
-    private final List<CDCChannelProgressPair> channelProgressPairs;
+    private final List<CDCChannelProgressPair> originalChannelProgressPairs;
     
     private final int batchSize;
     
@@ -72,27 +73,17 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     
     private final PriorityQueue<CSNRecords> csnRecordsQueue = new PriorityQueue<>(new CSNRecordsComparator());
     
-    private final Cache<String, Pair<CDCChannelProgressPair, CDCAckPosition>> ackCache = CacheBuilder.newBuilder().maximumSize(10000).expireAfterWrite(5, TimeUnit.MINUTES).build();
-    
-    public CDCImporter(final List<CDCChannelProgressPair> channelProgressPairs, final int batchSize, final long timeout, final TimeUnit timeUnit,
-                       final PipelineSink sink, final boolean needSorting, final JobRateLimitAlgorithm rateLimitAlgorithm) {
-        this.channelProgressPairs = new ArrayList<>(channelProgressPairs);
-        this.batchSize = batchSize;
-        this.timeout = timeout;
-        this.timeUnit = timeUnit;
-        this.sink = sink;
-        this.needSorting = needSorting;
-        this.rateLimitAlgorithm = rateLimitAlgorithm;
-    }
+    private final Cache<String, Pair<CDCChannelProgressPair, CDCAckPosition>> ackCache = CacheBuilder.newBuilder().maximumSize(10000).expireAfterAccess(5, TimeUnit.MINUTES).build();
     
     @Override
     protected void runBlocking() {
         CDCImporterManager.putImporter(this);
+        List<CDCChannelProgressPair> channelProgressPairs = new ArrayList<>(originalChannelProgressPairs);
         while (isRunning()) {
             if (needSorting) {
-                doWithSorting();
+                doWithSorting(channelProgressPairs);
             } else {
-                doWithoutSorting();
+                doWithoutSorting(channelProgressPairs);
             }
             if (channelProgressPairs.isEmpty()) {
                 break;
@@ -100,10 +91,10 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
         }
     }
     
-    private void doWithoutSorting() {
-        Iterator<CDCChannelProgressPair> workingChannelsIterator = channelProgressPairs.iterator();
-        while (workingChannelsIterator.hasNext()) {
-            CDCChannelProgressPair channelProgressPair = workingChannelsIterator.next();
+    private void doWithoutSorting(final List<CDCChannelProgressPair> channelProgressPairs) {
+        Iterator<CDCChannelProgressPair> channelProgressPairsIterator = channelProgressPairs.iterator();
+        while (channelProgressPairsIterator.hasNext()) {
+            CDCChannelProgressPair channelProgressPair = channelProgressPairsIterator.next();
             PipelineChannel channel = channelProgressPair.getChannel();
             List<Record> records = channel.fetchRecords(batchSize, timeout, timeUnit).stream().filter(each -> !(each instanceof PlaceholderRecord)).collect(Collectors.toList());
             if (records.isEmpty()) {
@@ -117,7 +108,7 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
             sink.write(ackId, records);
             Record lastRecord = records.get(records.size() - 1);
             if (lastRecord instanceof FinishedRecord) {
-                workingChannelsIterator.remove();
+                channelProgressPairsIterator.remove();
             }
             if (lastRecord instanceof FinishedRecord && records.stream().noneMatch(DataRecord.class::isInstance)) {
                 channel.ack(records);
@@ -127,11 +118,11 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     }
     
     @SneakyThrows(InterruptedException.class)
-    private void doWithSorting() {
+    private void doWithSorting(final List<CDCChannelProgressPair> channelProgressPairs) {
         if (null != rateLimitAlgorithm) {
             rateLimitAlgorithm.intercept(JobOperationType.INSERT, 1);
         }
-        prepareTransactionRecords();
+        prepareTransactionRecords(channelProgressPairs);
         CSNRecords csnRecords = csnRecordsQueue.poll();
         if (null == csnRecords) {
             timeUnit.sleep(timeout);
@@ -154,7 +145,7 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     
     // TODO openGauss CSN should be incremented for every transaction. Currently, CSN might be duplicated in transactions.
     // TODO Use channels watermark depth to improve performance.
-    private void prepareTransactionRecords() {
+    private void prepareTransactionRecords(final List<CDCChannelProgressPair> channelProgressPairs) {
         if (csnRecordsQueue.isEmpty()) {
             for (CDCChannelProgressPair each : channelProgressPairs) {
                 PipelineChannel channel = each.getChannel();
@@ -202,6 +193,7 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     public void ack(final String ackId) {
         Pair<CDCChannelProgressPair, CDCAckPosition> channelPositionPair = ackCache.getIfPresent(ackId);
         if (null == channelPositionPair) {
+            log.warn("Could not find cached ack info, ack id: {}", ackId);
             return;
         }
         CDCAckPosition ackPosition = channelPositionPair.getRight();
@@ -212,6 +204,5 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
     @Override
     protected void doStop() {
         CDCImporterManager.removeImporter(importerId);
-        CloseUtils.closeQuietly(sink);
     }
 }

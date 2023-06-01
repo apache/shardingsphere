@@ -49,7 +49,6 @@ public abstract class AbstractLifecycleExecutor implements LifecycleExecutor {
         running = true;
         startTimeMillis = System.currentTimeMillis();
         runBlocking();
-        stop();
     }
     
     /**

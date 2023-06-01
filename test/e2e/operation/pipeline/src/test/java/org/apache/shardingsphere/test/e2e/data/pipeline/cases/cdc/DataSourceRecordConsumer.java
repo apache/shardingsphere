@@ -66,6 +66,7 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
     
     @Override
     public void accept(final List<Record> records) {
+        log.info("Records count: {}", records.size());
         log.debug("Records: {}", records);
         try (Connection connection = dataSource.getConnection()) {
             connection.setAutoCommit(false);
