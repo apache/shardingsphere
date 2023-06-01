@@ -17,41 +17,37 @@
 
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
-import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+
+import java.util.stream.Stream;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class DataConsistencyCalculateAlgorithmChooserTest {
     
-    @Test
-    void assertChooseOnDifferentDatabaseTypes() {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
-        DatabaseType peerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        DataConsistencyCalculateAlgorithm actual = DataConsistencyCalculateAlgorithmChooser.choose(databaseType, peerDatabaseType);
-        assertNotNull(actual);
-        assertThat(actual.getType(), is("DATA_MATCH"));
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertChooseOnDifferentDatabaseTypes(final String name, final String databaseTypeName, final String peerDatabaseTypeName, final String expectedDataConsistencyType) {
+        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, databaseTypeName);
+        DatabaseType peerDatabaseType = TypedSPILoader.getService(DatabaseType.class, peerDatabaseTypeName);
+        assertThat(DataConsistencyCalculateAlgorithmChooser.choose(databaseType, peerDatabaseType).getType(), is(expectedDataConsistencyType));
     }
     
-    @Test
-    void assertChooseOnMySQL() {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        DatabaseType peerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
-        DataConsistencyCalculateAlgorithm actual = DataConsistencyCalculateAlgorithmChooser.choose(databaseType, peerDatabaseType);
-        assertNotNull(actual);
-        assertThat(actual.getType(), is("CRC32_MATCH"));
-    }
-    
-    @Test
-    void assertChooseOnPostgreSQL() {
-        DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        DatabaseType peerDatabaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
-        DataConsistencyCalculateAlgorithm actual = DataConsistencyCalculateAlgorithmChooser.choose(databaseType, peerDatabaseType);
-        assertNotNull(actual);
-        assertThat(actual.getType(), is("DATA_MATCH"));
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("chooseOnDifferentDatabaseTypes", "Oracle", "PostgreSQL", "DATA_MATCH"),
+                    Arguments.of("chooseOnMySQL", "MySQL", "MySQL", "CRC32_MATCH"),
+                    Arguments.of("chooseOnPostgreSQL", "PostgreSQL", "PostgreSQL", "DATA_MATCH"));
+        }
     }
 }
