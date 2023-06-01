@@ -48,7 +48,11 @@ public final class MySQLSetCharsetExecutor implements MySQLSessionVariableHandle
     }
     
     private String formatValue(final String value) {
-        return value.startsWith("'") && value.endsWith("'") || value.startsWith("\"") && value.endsWith("\"") ? value.substring(1, value.length() - 1) : value.trim();
+        return isWrappedByQuote(value, "'") || isWrappedByQuote(value, "\"") ? value.substring(1, value.length() - 1) : value.trim();
+    }
+    
+    private boolean isWrappedByQuote(final String value, final String quoteCharacter) {
+        return value.startsWith(quoteCharacter) && value.endsWith(quoteCharacter);
     }
     
     private Charset parseCharset(final String value) {
