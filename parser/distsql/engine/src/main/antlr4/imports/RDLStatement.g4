@@ -31,10 +31,6 @@ unregisterStorageUnit
     : UNREGISTER STORAGE UNIT ifExists? storageUnitName (COMMA_ storageUnitName)* ignoreSingleTables?
     ;
 
-setDefaultSingleTableStorageUnit
-    : SET DEFAULT SINGLE TABLE STORAGE UNIT EQ_ (storageUnitName | RANDOM)
-    ;
-
 storageUnitDefinition
     : storageUnitName LP_ (simpleSource | urlSource) COMMA_ USER EQ_ user (COMMA_ PASSWORD EQ_ password)? (COMMA_ propertiesDefinition)? RP_
     ;
