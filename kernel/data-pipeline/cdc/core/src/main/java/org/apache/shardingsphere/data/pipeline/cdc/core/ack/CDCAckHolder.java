@@ -63,7 +63,7 @@ public final class CDCAckHolder {
     private String generateAckId() {
         return "ACK-" + UUID.randomUUID();
     }
-
+    
     /**
      * Clean up.
      *
