@@ -26,8 +26,6 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosit
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.InventoryIncrementalJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.cdc.api.impl.CDCJobAPI;
 import org.apache.shardingsphere.data.pipeline.cdc.config.job.CDCJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.cdc.config.task.CDCTaskConfiguration;
@@ -130,7 +128,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
         for (CDCJobItemContext each : jobItemContexts) {
             updateLocalAndRemoteJobItemStatus(each, JobStatus.EXECUTE_INVENTORY_TASK);
             for (PipelineTask task : each.getInventoryTasks()) {
-                if (((InventoryTaskProgress) (task.getTaskProgress())).getPosition() instanceof FinishedPosition) {
+                if (task.getTaskProgress().getPosition() instanceof FinishedPosition) {
                     continue;
                 }
                 futures.addAll(task.start());
@@ -148,6 +146,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
     }
     
     private void executeIncrementalTasks(final List<CDCJobItemContext> jobItemContexts) {
+        log.info("execute incremental tasks, jobId={}", getJobId());
         Collection<CompletableFuture<?>> futures = new LinkedList<>();
         for (CDCJobItemContext each : jobItemContexts) {
             if (JobStatus.EXECUTE_INCREMENTAL_TASK == each.getStatus()) {
@@ -156,7 +155,7 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
             }
             updateLocalAndRemoteJobItemStatus(each, JobStatus.EXECUTE_INCREMENTAL_TASK);
             for (PipelineTask task : each.getIncrementalTasks()) {
-                if (((IncrementalTaskProgress) (task.getTaskProgress())).getPosition() instanceof FinishedPosition) {
+                if (task.getTaskProgress().getPosition() instanceof FinishedPosition) {
                     continue;
                 }
                 futures.addAll(task.start());
