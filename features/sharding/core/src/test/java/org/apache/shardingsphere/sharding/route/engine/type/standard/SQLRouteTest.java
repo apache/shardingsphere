@@ -18,41 +18,40 @@
 package org.apache.shardingsphere.sharding.route.engine.type.standard;
 
 import org.apache.shardingsphere.sharding.route.engine.type.standard.assertion.ShardingRouteAssert;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
 
-// TODO add assertion for ShardingRouteAssert.assertRoute
 class SQLRouteTest {
     
-    @Test
-    void assertNoTableUnicastRandomDataSource() {
-        String sql = "SELECT id,name ";
-        ShardingRouteAssert.assertRoute(sql, Collections.singletonList(1));
+    @ParameterizedTest(name = "{0}")
+    @ArgumentsSource(TestCaseArgumentsProvider.class)
+    void assertRoute(final String name, final String sql, final List<Object> params) {
+        // TODO add assertion for ShardingRouteAssert.assertRoute
+        ShardingRouteAssert.assertRoute(sql, params);
     }
     
-    @Test
-    void assertWithBroadcastTable() {
-        String sql = "SELECT id,name from t_order_item a join t_product b on a.product_id = b.product_id where user_id = ?";
-        ShardingRouteAssert.assertRoute(sql, Collections.singletonList(1));
-    }
-    
-    @Test
-    void assertAllBindingWithBroadcastTable() {
-        String sql = "SELECT id,name from t_order a join t_order_item b on a.order_id = b.order_id join t_product c on b.product_id = c.product_id where a.user_id = ?";
-        ShardingRouteAssert.assertRoute(sql, Collections.singletonList(1));
-    }
-    
-    @Test
-    void assertComplexTableWithBroadcastTable() {
-        String sql = "SELECT id,name from t_order a join t_user b on a.user_id = b.user_id join t_product c on a.product_id = c.product_id where a.user_id = ? and b.user_id =?";
-        ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1));
-    }
-    
-    @Test
-    void assertInsertTable() {
-        String sql = "INSERT INTO t_order (order_id, user_id) VALUES (?, ?)";
-        ShardingRouteAssert.assertRoute(sql, Arrays.asList(1, 1));
+    private static class TestCaseArgumentsProvider implements ArgumentsProvider {
+        
+        @Override
+        public Stream<? extends Arguments> provideArguments(final ExtensionContext extensionContext) {
+            return Stream.of(
+                    Arguments.of("noTableUnicastRandomDataSource", "SELECT id,name ", Collections.singletonList(1)),
+                    Arguments.of("withBroadcastTable", "SELECT id,name from t_order_item a join t_product b on a.product_id = b.product_id where user_id = ?", Collections.singletonList(1)),
+                    Arguments.of("allBindingWithBroadcastTable",
+                            "SELECT id,name from t_order a join t_order_item b on a.order_id = b.order_id join t_product c on b.product_id = c.product_id where a.user_id = ?",
+                            Collections.singletonList(1)),
+                    Arguments.of("complexTableWithBroadcastTable",
+                            "SELECT id,name from t_order a join t_user b on a.user_id = b.user_id join t_product c on a.product_id = c.product_id where a.user_id = ? and b.user_id =?",
+                            Arrays.asList(1, 1)),
+                    Arguments.of("insertTable", "INSERT INTO t_order (order_id, user_id) VALUES (?, ?)", Arrays.asList(1, 1)));
+        }
     }
 }
