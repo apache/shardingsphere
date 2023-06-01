@@ -82,9 +82,16 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private boolean areMultiStatements(final ConnectionSession connectionSession, final SQLStatement sqlStatement, final String sql) {
         // TODO Multi statements should be identified by SQL Parser instead of checking if sql contains ";".
+        return isMultiStatementsEnabled(connectionSession) && isSuitableMultiStatementsSQLStatement(sqlStatement) && sql.contains(";");
+    }
+    
+    private boolean isMultiStatementsEnabled(final ConnectionSession connectionSession) {
         return connectionSession.getAttributeMap().hasAttr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS)
-                && MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON == connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS).get()
-                && (sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement) && sql.contains(";");
+                && MySQLComSetOptionPacket.MYSQL_OPTION_MULTI_STATEMENTS_ON == connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_OPTION_MULTI_STATEMENTS).get();
+    }
+    
+    private boolean isSuitableMultiStatementsSQLStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof UpdateStatement || sqlStatement instanceof DeleteStatement;
     }
     
     @Override
