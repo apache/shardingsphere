@@ -21,6 +21,7 @@ import org.apache.shardingsphere.metadata.persist.NewMetaDataPersistService;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber.ProcessListChangedSubscriber;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.rule.ReadwriteSplittingRuleConfigurationChangedSubscriber;
 
 /**
  * TODO replace the old implementation after meta data refactor completed
@@ -28,8 +29,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proce
  */
 public final class NewContextManagerSubscriberFacade {
     
-    public NewContextManagerSubscriberFacade(final NewMetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManager contextManager) {
-        new NewConfigurationChangedSubscriber(persistService, registryCenter, contextManager);
+    public NewContextManagerSubscriberFacade(final RegistryCenter registryCenter, final ContextManager contextManager) {
+        new ReadwriteSplittingRuleConfigurationChangedSubscriber(contextManager);
         // TODO replace all to new subscriber
         new ResourceMetaDataChangedSubscriber(contextManager);
         new DatabaseChangedSubscriber(contextManager);

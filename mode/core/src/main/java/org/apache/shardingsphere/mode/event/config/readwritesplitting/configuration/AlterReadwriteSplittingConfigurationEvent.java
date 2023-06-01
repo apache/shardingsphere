@@ -15,10 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.rule;
+package org.apache.shardingsphere.mode.event.config.readwritesplitting.configuration;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.event.config.FeatureEvent;
 
 /**
- * Feature event.
+ * alter readwrite-splitting configuration event.
  */
-public interface FeatureEvent {
+@RequiredArgsConstructor
+@Getter
+public final class AlterReadwriteSplittingConfigurationEvent implements FeatureEvent {
+    
+    private final String databaseName;
+    
+    private final String groupName;
+    
+    private final String data;
 }

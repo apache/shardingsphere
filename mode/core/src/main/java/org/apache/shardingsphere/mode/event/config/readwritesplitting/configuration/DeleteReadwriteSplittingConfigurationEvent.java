@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.rule.readwritesplitting.configuration;
+package org.apache.shardingsphere.mode.event.config.readwritesplitting.configuration;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.event.rule.FeatureEvent;
+import org.apache.shardingsphere.mode.event.config.FeatureEvent;
 
 /**
  * delete readwrite-splitting configuration event.

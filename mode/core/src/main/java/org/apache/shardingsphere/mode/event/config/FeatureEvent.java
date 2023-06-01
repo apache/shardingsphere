@@ -15,22 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.event.rule.readwritesplitting.loadbalance;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.event.rule.FeatureEvent;
+package org.apache.shardingsphere.mode.event.config;
 
 /**
- * Add load-balance event.
+ * Feature event.
  */
-@RequiredArgsConstructor
-@Getter
-public final class AddLoadBalanceEvent implements FeatureEvent {
-    
-    private final String databaseName;
-    
-    private final String loadBalanceName;
-    
-    private final String data;
+public interface FeatureEvent {
 }

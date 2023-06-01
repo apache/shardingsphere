@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.event.rule.readwritesplitting.loadbalance.AddLoadBalanceEvent;
-import org.apache.shardingsphere.mode.event.rule.readwritesplitting.loadbalance.AlterLoadBalanceEvent;
-import org.apache.shardingsphere.mode.event.rule.readwritesplitting.loadbalance.DeleteLoadBalanceEvent;
+import org.apache.shardingsphere.mode.event.config.readwritesplitting.loadbalance.AddLoadBalanceEvent;
+import org.apache.shardingsphere.mode.event.config.readwritesplitting.loadbalance.AlterLoadBalanceEvent;
+import org.apache.shardingsphere.mode.event.config.readwritesplitting.loadbalance.DeleteLoadBalanceEvent;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 
