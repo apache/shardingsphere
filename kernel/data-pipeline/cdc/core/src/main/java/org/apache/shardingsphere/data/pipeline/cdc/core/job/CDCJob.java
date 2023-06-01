@@ -39,6 +39,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineInternalEx
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
 import org.apache.shardingsphere.data.pipeline.core.util.CloseUtils;
 import org.apache.shardingsphere.data.pipeline.spi.importer.sink.PipelineSink;
@@ -91,6 +92,10 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
             jobAPI.cleanJobItemErrorMessage(jobId, shardingItem);
             log.info("start tasks runner, jobId={}, shardingItem={}", jobId, shardingItem);
         }
+        if (jobItemContexts.isEmpty()) {
+            log.warn("job item contexts empty, ignore");
+            return;
+        }
         prepare(jobItemContexts);
         executeInventoryTasks(jobItemContexts);
         executeIncrementalTasks(jobItemContexts);
@@ -121,6 +126,15 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
             }
             throw new PipelineInternalException(ex);
         }
+    }
+    
+    @Override
+    protected void processFailed(final PipelineJobItemContext jobItemContext, final Exception ex) {
+        String jobId = jobItemContext.getJobId();
+        log.error("job prepare failed, {}-{}", jobId, jobItemContext.getShardingItem(), ex);
+        jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
+        PipelineJobCenter.stop(jobId);
+        jobAPI.updateJobConfigurationDisabled(jobId, true);
     }
     
     private void executeInventoryTasks(final List<CDCJobItemContext> jobItemContexts) {
@@ -192,7 +206,8 @@ public final class CDCJob extends AbstractPipelineJob implements SimpleJob {
             log.error("onFailure, {} task execute failed.", identifier, throwable);
             String jobId = jobItemContext.getJobId();
             jobAPI.persistJobItemErrorMessage(jobId, jobItemContext.getShardingItem(), throwable);
-            jobAPI.stop(jobId);
+            PipelineJobCenter.stop(jobId);
+            jobAPI.updateJobConfigurationDisabled(jobId, true);
         }
     }
 }

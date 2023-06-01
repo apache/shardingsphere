@@ -150,6 +150,9 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
             for (CDCChannelProgressPair each : channelProgressPairs) {
                 PipelineChannel channel = each.getChannel();
                 List<Record> records = channel.pollRecords();
+                if (records.isEmpty()) {
+                    continue;
+                }
                 if (0 == getDataRecordsCount(records)) {
                     channel.ack(records);
                     continue;
@@ -162,6 +165,9 @@ public final class CDCImporter extends AbstractLifecycleExecutor implements Impo
             for (CDCChannelProgressPair each : channelProgressPairs) {
                 PipelineChannel channel = each.getChannel();
                 List<Record> records = channel.peekRecords();
+                if (records.isEmpty()) {
+                    continue;
+                }
                 if (0 == getDataRecordsCount(records)) {
                     records = channel.pollRecords();
                     channel.ack(records);
