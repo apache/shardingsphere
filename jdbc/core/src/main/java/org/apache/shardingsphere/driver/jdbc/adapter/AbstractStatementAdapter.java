@@ -26,7 +26,13 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationStatement;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
+import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.transaction.ConnectionTransaction;
+import org.apache.shardingsphere.transaction.api.TransactionType;
 
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -49,6 +55,38 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
     private int fetchDirection;
     
     private boolean closed;
+    
+    protected final boolean isNeedImplicitCommitTransaction(final ShardingSphereConnection connection, final ExecutionContext executionContext) {
+        return isInDistributedTransaction(connection) && isModifiedSQL(executionContext) && executionContext.getExecutionUnits().size() > 1;
+    }
+    
+    private boolean isInDistributedTransaction(final ShardingSphereConnection connection) {
+        ConnectionTransaction connectionTransaction = connection.getDatabaseConnectionManager().getConnectionTransaction();
+        boolean isInTransaction = connection.getDatabaseConnectionManager().getConnectionContext().getTransactionContext().isInTransaction();
+        return TransactionType.isDistributedTransaction(connectionTransaction.getTransactionType()) && !isInTransaction;
+    }
+    
+    private boolean isModifiedSQL(final ExecutionContext executionContext) {
+        SQLStatement sqlStatement = executionContext.getSqlStatementContext().getSqlStatement();
+        return sqlStatement instanceof DMLStatement && !(sqlStatement instanceof SelectStatement);
+    }
+    
+    protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final MetaDataContexts metaDataContexts) {
+        if (connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction()) {
+            DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
+            if (databaseType instanceof SchemaSupportedDatabaseType) {
+                connection.getDatabaseConnectionManager().getConnectionTransaction().setRollbackOnly(true);
+            }
+        }
+    }
+    
+    protected abstract boolean isAccumulate();
+    
+    protected abstract Collection<? extends Statement> getRoutedStatements();
+    
+    protected abstract DriverExecutor getExecutor();
+    
+    protected abstract StatementManager getStatementManager();
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
@@ -191,21 +229,4 @@ public abstract class AbstractStatementAdapter extends AbstractUnsupportedOperat
             getRoutedStatements().clear();
         }
     }
-    
-    protected final void handleExceptionInTransaction(final ShardingSphereConnection connection, final MetaDataContexts metaDataContexts) {
-        if (connection.getDatabaseConnectionManager().getConnectionTransaction().isInTransaction()) {
-            DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()).getProtocolType();
-            if (databaseType instanceof SchemaSupportedDatabaseType) {
-                connection.getDatabaseConnectionManager().getConnectionTransaction().setRollbackOnly(true);
-            }
-        }
-    }
-    
-    protected abstract boolean isAccumulate();
-    
-    protected abstract Collection<? extends Statement> getRoutedStatements();
-    
-    protected abstract DriverExecutor getExecutor();
-    
-    protected abstract StatementManager getStatementManager();
 }
