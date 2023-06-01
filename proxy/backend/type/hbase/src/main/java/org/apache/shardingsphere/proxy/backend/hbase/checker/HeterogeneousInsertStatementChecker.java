@@ -44,10 +44,10 @@ public class HeterogeneousInsertStatementChecker extends CommonHeterogeneousSQLS
     
     private void checkIsExistsRowKeyInInsertColumns() {
         List<String> columns = getSqlStatement().getColumns().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList());
-        Preconditions.checkArgument(!columns.isEmpty(), "The inserted column must be explicitly specified");
-        Preconditions.checkArgument(ALLOW_KEYS.stream().anyMatch(each -> each.equalsIgnoreCase(columns.get(0))), "First column must be rowKey");
+        Preconditions.checkArgument(!columns.isEmpty(), "The inserted column must be explicitly specified.");
+        Preconditions.checkArgument(ALLOW_KEYS.stream().anyMatch(each -> each.equalsIgnoreCase(columns.get(0))), "First column must be rowKey.");
         boolean isExists = columns.subList(1, columns.size()).stream().anyMatch(ALLOW_KEYS::contains);
-        Preconditions.checkArgument(!isExists, "Cannot contain multiple rowKey");
+        Preconditions.checkArgument(!isExists, "Cannot contain multiple rowKeys.");
     }
     
     private void checkIsExistsSubQuery() {
@@ -58,7 +58,7 @@ public class HeterogeneousInsertStatementChecker extends CommonHeterogeneousSQLS
         Collection<InsertValuesSegment> values = getSqlStatement().getValues();
         for (InsertValuesSegment insertValuesSegment : values) {
             boolean isAllMatch = insertValuesSegment.getValues().stream().allMatch(this::isAllowExpressionSegment);
-            Preconditions.checkArgument(isAllMatch, "Value must is literal or parameter marker");
+            Preconditions.checkArgument(isAllMatch, "Value must is literal or parameter marker.");
         }
     }
     
