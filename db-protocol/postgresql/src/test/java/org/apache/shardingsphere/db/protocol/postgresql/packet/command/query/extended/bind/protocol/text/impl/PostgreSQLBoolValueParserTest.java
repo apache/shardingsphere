@@ -15,27 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.Test;
 
-/**
- * Text bit utility class of PostgreSQL.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostgreSQLTextBitUtils {
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class PostgreSQLBoolValueParserTest {
     
-    /**
-     * Get bit Text value in PostgreSQL text format.
-     * 
-     * @param jdbcBitValue bit value for jdbc
-     * @return bit text value in PostgreSQL text format
-     */
-    public static String getTextValue(final Object jdbcBitValue) {
-        if (null == jdbcBitValue) {
-            return null;
-        }
-        return (Boolean) jdbcBitValue ? "1" : "0";
+    @Test
+    void assertParse() {
+        assertTrue(new PostgreSQLBoolValueParser().parse("true"));
     }
 }

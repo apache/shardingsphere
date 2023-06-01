@@ -27,13 +27,13 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public enum PostgreSQLColumnType {
     
-    NUMERIC(new Long[] {1231L, 1700L}),
+    NUMERIC(new Long[]{1231L, 1700L}),
     
-    DATE(new Long[] {1083L, 1114L, 1115L, 1183L, 1184L, 1185L, 1186L, 1187L, 1266L, 1270L}),
+    DATE(new Long[]{1083L, 1114L, 1115L, 1183L, 1184L, 1185L, 1186L, 1187L, 1266L, 1270L}),
     
-    VARCHAR(new Long[] {1560L, 1561L, 1562L, 1563L, 1042L, 1043L, 1014L, 1015L}),
+    VARCHAR(new Long[]{1560L, 1561L, 1562L, 1563L, 1042L, 1043L, 1014L, 1015L}),
     
-    UNKNOWN(new Long[] {});
+    UNKNOWN(new Long[]{});
     
     private final Long[] values;
     

@@ -15,27 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.Test;
 
-/**
- * Text bit utility class of PostgreSQL.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostgreSQLTextBitUtils {
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class PostgreSQLDateValueParserTest {
     
-    /**
-     * Get bit Text value in PostgreSQL text format.
-     * 
-     * @param jdbcBitValue bit value for jdbc
-     * @return bit text value in PostgreSQL text format
-     */
-    public static String getTextValue(final Object jdbcBitValue) {
-        if (null == jdbcBitValue) {
-            return null;
-        }
-        return (Boolean) jdbcBitValue ? "1" : "0";
+    @Test
+    void assertParse() {
+        assertThat(new PostgreSQLDateValueParser().parse("2020-01-01"), is(Date.from(LocalDate.of(2020, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant())));
     }
 }

@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
 import org.postgresql.jdbc.TimestampUtils;
 
@@ -29,10 +28,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 /**
- * Text timestamp utility class of PostgreSQL.
+ * Timestamp value parser of PostgreSQL.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PostgreSQLTextTimestampUtils {
+public final class PostgreSQLTimestampValueParser implements PostgreSQLTextValueParser<Timestamp> {
     
     private static final DateTimeFormatter POSTGRESQL_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
             "[yyyy-MM-dd][yyyy_MM_dd][yyyyMMdd][yyyy-M-d][MM/dd/yy][yyMMdd]"
@@ -42,13 +40,8 @@ public final class PostgreSQLTextTimestampUtils {
                     + "[ ]"
                     + "[XXXXX][XXXX][XXX][XX][X]");
     
-    /**
-     * Parse timestamp in PostgreSQL text format.
-     *
-     * @param value text value to be parsed
-     * @return timestamp
-     */
-    public static Timestamp parse(final String value) {
+    @Override
+    public Timestamp parse(final String value) {
         try {
             return Timestamp.valueOf(LocalDateTime.from(POSTGRESQL_DATE_TIME_FORMATTER.parse(value)));
         } catch (final DateTimeParseException ignored) {

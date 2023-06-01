@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
+
+import java.math.BigDecimal;
 
 /**
- * Text bit utility class of PostgreSQL.
+ * Numeric value parser of PostgreSQL.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostgreSQLTextBitUtils {
+public final class PostgreSQLNumericValueParser implements PostgreSQLTextValueParser<Number> {
     
-    /**
-     * Get bit Text value in PostgreSQL text format.
-     * 
-     * @param jdbcBitValue bit value for jdbc
-     * @return bit text value in PostgreSQL text format
-     */
-    public static String getTextValue(final Object jdbcBitValue) {
-        if (null == jdbcBitValue) {
-            return null;
+    @Override
+    public Number parse(final String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (final NumberFormatException ignored) {
         }
-        return (Boolean) jdbcBitValue ? "1" : "0";
+        try {
+            return Long.parseLong(value);
+        } catch (final NumberFormatException ignored) {
+        }
+        return new BigDecimal(value);
     }
 }

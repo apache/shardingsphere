@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.Test;
 
-/**
- * Text bit utility class of PostgreSQL.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostgreSQLTextBitUtils {
+import java.math.BigDecimal;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+class PostgreSQLNumericValueParserTest {
     
-    /**
-     * Get bit Text value in PostgreSQL text format.
-     * 
-     * @param jdbcBitValue bit value for jdbc
-     * @return bit text value in PostgreSQL text format
-     */
-    public static String getTextValue(final Object jdbcBitValue) {
-        if (null == jdbcBitValue) {
-            return null;
-        }
-        return (Boolean) jdbcBitValue ? "1" : "0";
+    @Test
+    void assertParseWithInt() {
+        assertThat(new PostgreSQLNumericValueParser().parse("1"), is(1));
+    }
+    
+    @Test
+    void assertParseWithLong() {
+        assertThat(new PostgreSQLNumericValueParser().parse(Long.valueOf(Long.MAX_VALUE).toString()), is(Long.MAX_VALUE));
+    }
+    
+    @Test
+    void assertParseWithBigDecimal() {
+        assertThat(new PostgreSQLNumericValueParser().parse(Long.MAX_VALUE + "0"), is(new BigDecimal(Long.MAX_VALUE + "0")));
     }
 }
