@@ -40,7 +40,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -64,26 +66,42 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
     
     @Override
     public void accept(final List<Record> records) {
-        long insertCount = records.stream().filter(each -> DataChangeType.INSERT == each.getDataChangeType()).count();
-        if (insertCount == records.size()) {
-            batchInsertRecords(records);
-            return;
-        }
-        for (Record record : records) {
-            write(record);
+        log.debug("Records: {}", records);
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+            processRecords(records, connection);
+            connection.commit();
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
         }
     }
     
-    private void batchInsertRecords(final List<Record> records) {
+    private void processRecords(final List<Record> records, final Connection connection) throws SQLException {
+        long insertCount = records.stream().filter(each -> DataChangeType.INSERT == each.getDataChangeType()).count();
+        if (insertCount == records.size()) {
+            Map<String, List<Record>> recordsMap = new HashMap<>();
+            for (Record each : records) {
+                String key = buildTableNameWithSchema(each.getMetaData().getTable(), each.getMetaData().getSchema());
+                recordsMap.computeIfAbsent(key, ignored -> new LinkedList<>()).add(each);
+            }
+            for (List<Record> each : recordsMap.values()) {
+                batchInsertRecords(each, connection);
+            }
+            return;
+        }
+        for (Record record : records) {
+            write(record, connection);
+        }
+    }
+    
+    private void batchInsertRecords(final List<Record> records, final Connection connection) throws SQLException {
         Record firstRecord = records.get(0);
         MetaData metaData = firstRecord.getMetaData();
         PipelineTableMetaData tableMetaData = loadTableMetaData(metaData.getSchema(), metaData.getTable());
         List<String> columnNames = firstRecord.getAfterList().stream().map(TableColumn::getName).collect(Collectors.toList());
         String tableName = buildTableNameWithSchema(metaData.getSchema(), metaData.getTable());
         String insertSQL = SQLBuilderUtils.buildInsertSQL(columnNames, tableName);
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insertSQL)) {
             for (Record each : records) {
                 List<TableColumn> tableColumns = each.getAfterList();
                 for (int i = 0; i < tableColumns.size(); i++) {
@@ -92,18 +110,14 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
         }
     }
     
-    private void write(final Record record) {
+    private void write(final Record record, final Connection connection) throws SQLException {
         String sql = buildSQL(record);
         MetaData metaData = record.getMetaData();
         PipelineTableMetaData tableMetaData = loadTableMetaData(metaData.getSchema(), metaData.getTable());
-        try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             Map<String, TableColumn> afterMap = new LinkedHashMap<>(record.getBeforeList().size(), 1F);
             record.getAfterList().forEach(each -> afterMap.put(each.getName(), each));
             switch (record.getDataChangeType()) {
@@ -133,8 +147,6 @@ public final class DataSourceRecordConsumer implements Consumer<List<Record>> {
                 default:
             }
             preparedStatement.execute();
-        } catch (final SQLException ex) {
-            throw new RuntimeException(ex);
         }
     }
     

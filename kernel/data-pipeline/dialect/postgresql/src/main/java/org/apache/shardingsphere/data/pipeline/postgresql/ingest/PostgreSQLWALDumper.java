@@ -85,6 +85,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
         this.decodeWithTX = dumperConfig.isDecodeWithTX();
     }
     
+    @SneakyThrows(InterruptedException.class)
     @Override
     protected void runBlocking() {
         AtomicInteger reconnectTimes = new AtomicInteger();
@@ -95,6 +96,9 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
             } catch (final SQLException ex) {
                 int times = reconnectTimes.incrementAndGet();
                 log.error("Connect failed, reconnect times={}", times, ex);
+                if (isRunning()) {
+                    Thread.sleep(5000);
+                }
                 if (times >= 5) {
                     throw new IngestException(ex);
                 }
