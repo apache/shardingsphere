@@ -74,7 +74,7 @@ class BinlogContextTest {
     void assertGetColumnDefs() {
         binlogContext.putTableMapEvent(TEST_TABLE_ID, tableMapEventPacket);
         List<MySQLBinlogColumnDef> columnDefs = new ArrayList<>(1);
-        columnDefs.add(new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_LONG));
+        columnDefs.add(new MySQLBinlogColumnDef(MySQLBinaryColumnType.LONG));
         when(tableMapEventPacket.getColumnDefs()).thenReturn(columnDefs);
         assertThat(binlogContext.getColumnDefs(TEST_TABLE_ID), is(columnDefs));
     }

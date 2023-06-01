@@ -38,7 +38,7 @@ class MySQLBinaryResultSetRowPacketTest {
     
     @Test
     void assertWrite() {
-        BinaryRow row = new BinaryRow(Arrays.asList(new BinaryCell(MySQLBinaryColumnType.MYSQL_TYPE_STRING, "value"), new BinaryCell(MySQLBinaryColumnType.MYSQL_TYPE_STRING, null)));
+        BinaryRow row = new BinaryRow(Arrays.asList(new BinaryCell(MySQLBinaryColumnType.STRING, "value"), new BinaryCell(MySQLBinaryColumnType.STRING, null)));
         MySQLBinaryResultSetRowPacket actual = new MySQLBinaryResultSetRowPacket(row);
         actual.write(payload);
         verify(payload).writeInt1(0x00);

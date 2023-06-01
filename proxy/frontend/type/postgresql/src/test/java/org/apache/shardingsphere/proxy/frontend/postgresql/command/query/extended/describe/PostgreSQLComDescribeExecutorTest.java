@@ -134,7 +134,7 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
-            parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
+            parameterTypes.add(PostgreSQLColumnType.UNSPECIFIED);
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
@@ -164,7 +164,7 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
-            parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
+            parameterTypes.add(PostgreSQLColumnType.UNSPECIFIED);
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
@@ -194,7 +194,7 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
-            parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
+            parameterTypes.add(PostgreSQLColumnType.UNSPECIFIED);
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
@@ -224,7 +224,7 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
-            parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
+            parameterTypes.add(PostgreSQLColumnType.UNSPECIFIED);
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
@@ -246,7 +246,7 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(sqlStatement.getParameterCount());
         for (int i = 0; i < sqlStatement.getParameterCount(); i++) {
-            parameterTypes.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
+            parameterTypes.add(PostgreSQLColumnType.UNSPECIFIED);
         }
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
@@ -273,43 +273,43 @@ class PostgreSQLComDescribeExecutorTest {
         List<PostgreSQLColumnDescription> actualColumnDescriptions = new ArrayList<>(getColumnDescriptionsFromPacket(actualRowDescriptionPacket));
         assertThat(actualColumnDescriptions.size(), is(13));
         assertThat(actualColumnDescriptions.get(0).getColumnName(), is("id"));
-        assertThat(actualColumnDescriptions.get(0).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4.getValue()));
+        assertThat(actualColumnDescriptions.get(0).getTypeOID(), is(PostgreSQLColumnType.INT4.getValue()));
         assertThat(actualColumnDescriptions.get(0).getColumnLength(), is(4));
         assertThat(actualColumnDescriptions.get(1).getColumnName(), is("alias_id"));
-        assertThat(actualColumnDescriptions.get(1).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4.getValue()));
+        assertThat(actualColumnDescriptions.get(1).getTypeOID(), is(PostgreSQLColumnType.INT4.getValue()));
         assertThat(actualColumnDescriptions.get(1).getColumnLength(), is(4));
         assertThat(actualColumnDescriptions.get(2).getColumnName(), is("?column?"));
-        assertThat(actualColumnDescriptions.get(2).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR.getValue()));
+        assertThat(actualColumnDescriptions.get(2).getTypeOID(), is(PostgreSQLColumnType.VARCHAR.getValue()));
         assertThat(actualColumnDescriptions.get(2).getColumnLength(), is(-1));
         assertThat(actualColumnDescriptions.get(3).getColumnName(), is("literal_string"));
-        assertThat(actualColumnDescriptions.get(3).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR.getValue()));
+        assertThat(actualColumnDescriptions.get(3).getTypeOID(), is(PostgreSQLColumnType.VARCHAR.getValue()));
         assertThat(actualColumnDescriptions.get(3).getColumnLength(), is(-1));
         assertThat(actualColumnDescriptions.get(4).getColumnName(), is("literal_int"));
-        assertThat(actualColumnDescriptions.get(4).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4.getValue()));
+        assertThat(actualColumnDescriptions.get(4).getTypeOID(), is(PostgreSQLColumnType.INT4.getValue()));
         assertThat(actualColumnDescriptions.get(4).getColumnLength(), is(4));
         assertThat(actualColumnDescriptions.get(5).getColumnName(), is("literal_bigint"));
-        assertThat(actualColumnDescriptions.get(5).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT8.getValue()));
+        assertThat(actualColumnDescriptions.get(5).getTypeOID(), is(PostgreSQLColumnType.INT8.getValue()));
         assertThat(actualColumnDescriptions.get(5).getColumnLength(), is(8));
         assertThat(actualColumnDescriptions.get(6).getColumnName(), is("literal_numeric"));
-        assertThat(actualColumnDescriptions.get(6).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_NUMERIC.getValue()));
+        assertThat(actualColumnDescriptions.get(6).getTypeOID(), is(PostgreSQLColumnType.NUMERIC.getValue()));
         assertThat(actualColumnDescriptions.get(6).getColumnLength(), is(-1));
         assertThat(actualColumnDescriptions.get(7).getColumnName(), is("id"));
-        assertThat(actualColumnDescriptions.get(7).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4.getValue()));
+        assertThat(actualColumnDescriptions.get(7).getTypeOID(), is(PostgreSQLColumnType.INT4.getValue()));
         assertThat(actualColumnDescriptions.get(7).getColumnLength(), is(4));
         assertThat(actualColumnDescriptions.get(8).getColumnName(), is("k"));
-        assertThat(actualColumnDescriptions.get(8).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4.getValue()));
+        assertThat(actualColumnDescriptions.get(8).getTypeOID(), is(PostgreSQLColumnType.INT4.getValue()));
         assertThat(actualColumnDescriptions.get(8).getColumnLength(), is(4));
         assertThat(actualColumnDescriptions.get(9).getColumnName(), is("c"));
-        assertThat(actualColumnDescriptions.get(9).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_CHAR.getValue()));
+        assertThat(actualColumnDescriptions.get(9).getTypeOID(), is(PostgreSQLColumnType.CHAR.getValue()));
         assertThat(actualColumnDescriptions.get(9).getColumnLength(), is(-1));
         assertThat(actualColumnDescriptions.get(10).getColumnName(), is("pad"));
-        assertThat(actualColumnDescriptions.get(10).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_CHAR.getValue()));
+        assertThat(actualColumnDescriptions.get(10).getTypeOID(), is(PostgreSQLColumnType.CHAR.getValue()));
         assertThat(actualColumnDescriptions.get(10).getColumnLength(), is(-1));
         assertThat(actualColumnDescriptions.get(11).getColumnName(), is("t_order"));
-        assertThat(actualColumnDescriptions.get(11).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR.getValue()));
+        assertThat(actualColumnDescriptions.get(11).getTypeOID(), is(PostgreSQLColumnType.VARCHAR.getValue()));
         assertThat(actualColumnDescriptions.get(11).getColumnLength(), is(-1));
         assertThat(actualColumnDescriptions.get(12).getColumnName(), is("alias_t_order"));
-        assertThat(actualColumnDescriptions.get(12).getTypeOID(), is(PostgreSQLColumnType.POSTGRESQL_TYPE_VARCHAR.getValue()));
+        assertThat(actualColumnDescriptions.get(12).getTypeOID(), is(PostgreSQLColumnType.VARCHAR.getValue()));
         assertThat(actualColumnDescriptions.get(12).getColumnLength(), is(-1));
     }
     
@@ -329,7 +329,7 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         prepareJDBCBackendConnection(sql);
-        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED));
+        List<PostgreSQLColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLColumnType.UNSPECIFIED));
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
@@ -343,7 +343,7 @@ class PostgreSQLComDescribeExecutorTest {
         PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
         actualParameterDescription.write(mockPayload);
         verify(mockPayload).writeInt2(1);
-        verify(mockPayload).writeInt4(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4.getValue());
+        verify(mockPayload).writeInt4(PostgreSQLColumnType.INT4.getValue());
         PostgreSQLRowDescriptionPacket actualRowDescription = (PostgreSQLRowDescriptionPacket) actualPacketsIterator.next();
         List<PostgreSQLColumnDescription> actualColumnDescriptions = getColumnDescriptions(actualRowDescription);
         List<PostgreSQLColumnDescription> expectedColumnDescriptions = Arrays.asList(

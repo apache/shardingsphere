@@ -37,7 +37,7 @@ class MySQLColumnDefinition41PacketTest {
     
     @Test
     void assertWriteWithPayload() {
-        when(payload.readInt1()).thenReturn(MySQLBinaryColumnType.MYSQL_TYPE_LONG.getValue(), 0);
+        when(payload.readInt1()).thenReturn(MySQLBinaryColumnType.LONG.getValue(), 0);
         when(payload.readInt2()).thenReturn(MySQLConstants.DEFAULT_CHARSET.getId(), 0);
         when(payload.readInt4()).thenReturn(10);
         when(payload.readIntLenenc()).thenReturn(0x0cL);
@@ -55,7 +55,7 @@ class MySQLColumnDefinition41PacketTest {
         verify(payload).writeIntLenenc(0x0c);
         verify(payload).writeInt2(MySQLConstants.DEFAULT_CHARSET.getId());
         verify(payload).writeInt4(10);
-        verify(payload).writeInt1(MySQLBinaryColumnType.MYSQL_TYPE_LONG.getValue());
+        verify(payload).writeInt1(MySQLBinaryColumnType.LONG.getValue());
         verify(payload).writeInt2(0);
         verify(payload).writeInt1(0);
         verify(payload).writeReserved(2);
