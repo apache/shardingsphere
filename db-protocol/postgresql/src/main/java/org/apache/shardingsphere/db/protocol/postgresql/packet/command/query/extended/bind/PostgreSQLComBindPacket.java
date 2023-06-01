@@ -24,10 +24,10 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextBitUtils;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextJsonUtils;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextTimeUtils;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLTextTimestampUtils;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util.PostgreSQLTextBitUtils;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util.PostgreSQLTextJsonUtils;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util.PostgreSQLTextTimeUtils;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util.PostgreSQLTextTimestampUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 

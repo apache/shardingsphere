@@ -75,7 +75,7 @@ public final class DropIndexStatementHandler implements SQLStatementHandler {
         }
         return false;
     }
-
+    
     /**
      * Get algorithm type segment.
      *
@@ -88,7 +88,7 @@ public final class DropIndexStatementHandler implements SQLStatementHandler {
         }
         return Optional.empty();
     }
-
+    
     /**
      * Get lock table segment.
      *

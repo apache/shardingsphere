@@ -137,7 +137,7 @@ public final class WALEventConverter {
                 continue;
             }
             boolean isUniqueKey = columnMetaData.isUniqueKey();
-            Object uniqueKeyOldValue = isUniqueKey ? values.get(i) : null;
+            Object uniqueKeyOldValue = isUniqueKey && IngestDataChangeType.UPDATE.equals(dataRecord.getType()) ? values.get(i) : null;
             Column column = new Column(columnMetaData.getName(), uniqueKeyOldValue, values.get(i), true, isUniqueKey);
             dataRecord.addColumn(column);
         }

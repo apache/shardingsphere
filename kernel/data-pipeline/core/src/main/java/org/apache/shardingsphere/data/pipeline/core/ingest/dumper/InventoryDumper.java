@@ -109,8 +109,6 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
         } catch (final SQLException ex) {
             log.error("Inventory dump, ex caught, msg={}.", ex.getMessage());
             throw new IngestException("Inventory dump failed on " + dumperConfig.getActualTableName(), ex);
-        } finally {
-            channel.pushRecords(Collections.singletonList(new FinishedRecord(new FinishedPosition())));
         }
     }
     
@@ -132,12 +130,12 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                 ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
                 List<Record> dataRecords = new LinkedList<>();
                 while (resultSet.next()) {
-                    dataRecords.add(loadDataRecord(resultSet, resultSetMetaData, tableMetaData));
-                    ++rowCount;
                     if (dataRecords.size() >= batchSize) {
                         channel.pushRecords(dataRecords);
                         dataRecords = new LinkedList<>();
                     }
+                    dataRecords.add(loadDataRecord(resultSet, resultSetMetaData, tableMetaData));
+                    ++rowCount;
                     if (!isRunning()) {
                         log.info("Broke because of inventory dump is not running.");
                         break;
@@ -146,9 +144,8 @@ public final class InventoryDumper extends AbstractLifecycleExecutor implements 
                         rateLimitAlgorithm.intercept(JobOperationType.SELECT, 1);
                     }
                 }
-                if (!dataRecords.isEmpty()) {
-                    channel.pushRecords(dataRecords);
-                }
+                dataRecords.add(new FinishedRecord(new FinishedPosition()));
+                channel.pushRecords(dataRecords);
                 dumpStatement.set(null);
                 log.info("Inventory dump done, rowCount={}", rowCount);
             }
