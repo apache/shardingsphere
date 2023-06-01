@@ -61,7 +61,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
     
     private final DumperConfiguration dumperConfig;
     
-    private final WALPosition walPosition;
+    private WALPosition walPosition;
     
     private final PipelineChannel channel;
     
@@ -127,6 +127,7 @@ public final class PostgreSQLWALDumper extends AbstractLifecycleExecutor impleme
                 } else {
                     processEventIgnoreTX(event);
                 }
+                walPosition = new WALPosition(event.getLogSequenceNumber());
             }
         }
     }

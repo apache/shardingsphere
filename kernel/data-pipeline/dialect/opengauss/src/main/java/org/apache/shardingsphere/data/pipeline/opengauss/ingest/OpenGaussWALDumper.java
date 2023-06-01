@@ -59,7 +59,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
     
     private final DumperConfiguration dumperConfig;
     
-    private final WALPosition walPosition;
+    private WALPosition walPosition;
     
     private final PipelineChannel channel;
     
@@ -122,6 +122,7 @@ public final class OpenGaussWALDumper extends AbstractLifecycleExecutor implemen
                 } else {
                     processEventIgnoreTX(event);
                 }
+                walPosition = new WALPosition(event.getLogSequenceNumber());
             }
         } finally {
             if (null != stream) {
