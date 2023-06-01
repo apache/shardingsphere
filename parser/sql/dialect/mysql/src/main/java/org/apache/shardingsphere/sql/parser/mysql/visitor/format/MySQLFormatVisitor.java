@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.mysql.visitor.format;
 
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -70,12 +71,18 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.UserVar
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.WithClauseContext;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Properties;
 
 /**
  * SQL format visitor for MySQL.
  */
 public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> implements SQLFormatVisitor {
+    
+    private static final Collection<Class<? extends ParserRuleContext>> DATA_TYPE_EXTRA_DESCRIPTION_CONTEXT_CLASSES = new HashSet<>(
+            Arrays.asList(FieldLengthContext.class, PrecisionContext.class, StringListContext.class, TypeDatetimePrecisionContext.class));
     
     private final StringBuilder formattedSQL = new StringBuilder(256);
     
@@ -642,7 +649,7 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
         int childCount = ctx.getChildCount();
         for (int i = 0; i < childCount; i++) {
             ParseTree child = ctx.getChild(i);
-            if (i != 0 && !(child instanceof FieldLengthContext || child instanceof PrecisionContext || child instanceof StringListContext || child instanceof TypeDatetimePrecisionContext)) {
+            if (0 != i && !DATA_TYPE_EXTRA_DESCRIPTION_CONTEXT_CLASSES.contains(child.getClass())) {
                 formatPrint(" ");
             }
             child.accept(this);
@@ -799,9 +806,12 @@ public final class MySQLFormatVisitor extends MySQLStatementBaseVisitor<String> 
         String result = defaultResult();
         int childCount = node.getChildCount();
         for (int i = 0; i < childCount; i++) {
-            if (i != 0 && !"(".equals(node.getChild(i - 1).getText()) && !".".equals(node.getChild(i - 1).getText())
-                    && !")".equals(node.getChild(i).getText()) && !"(".equals(node.getChild(i).getText()) && !".".equals(node.getChild(i).getText())) {
-                formatPrint(" ");
+            if (0 != i) {
+                String previousText = node.getChild(i - 1).getText();
+                String text = node.getChild(i).getText();
+                if (!"(".equals(previousText) && !".".equals(previousText) && !")".equals(text) && !"(".equals(text) && !".".equals(text)) {
+                    formatPrint(" ");
+                }
             }
             if (!shouldVisitNextChild(node, result)) {
                 break;
