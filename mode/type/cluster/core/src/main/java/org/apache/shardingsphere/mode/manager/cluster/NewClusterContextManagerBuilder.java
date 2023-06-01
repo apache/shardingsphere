@@ -33,6 +33,7 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator.ClusterWorkerIdGenerator;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.NewContextManagerSubscriberFacade;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.NewMetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -58,7 +59,7 @@ public final class NewClusterContextManagerBuilder implements ContextManagerBuil
         MetaDataContexts metaDataContexts = NewMetaDataContextsFactory.create(persistService, param, instanceContext, registryCenter.getStorageNodeStatusService().loadStorageNodes());
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         setContextManagerAware(result);
-        registerOnline(registryCenter, param, result);
+        registerOnline(persistService, registryCenter, param, result);
         return result;
     }
     
@@ -78,10 +79,11 @@ public final class NewClusterContextManagerBuilder implements ContextManagerBuil
         ((ContextManagerAware) contextManager.getInstanceContext().getModeContextManager()).setContextManagerAware(contextManager);
     }
     
-    private void registerOnline(final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
+    private void registerOnline(final NewMetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
         loadClusterStatus(registryCenter, contextManager);
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
         contextManager.getInstanceContext().getAllClusterInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
+        new NewContextManagerSubscriberFacade(persistService, registryCenter, contextManager);
         registerRuleConfigurationSubscribers(contextManager.getMetaDataContexts(), contextManager.getInstanceContext());
         registryCenter.onlineInstance(contextManager.getInstanceContext().getInstance());
     }

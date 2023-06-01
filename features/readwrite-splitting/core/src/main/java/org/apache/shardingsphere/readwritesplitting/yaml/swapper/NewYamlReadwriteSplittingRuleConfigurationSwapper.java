@@ -31,8 +31,8 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 
-// TODO Rename YamlReadwriteSplittingRuleConfigurationSwapper when metadata structure adjustment completed. #25485
 /**
+ * TODO Rename YamlReadwriteSplittingRuleConfigurationSwapper when metadata structure adjustment completed. #25485
  * YAML readwrite-splitting rule configuration swapper.
  */
 public final class NewYamlReadwriteSplittingRuleConfigurationSwapper implements NewYamlRuleConfigurationSwapper<ReadwriteSplittingRuleConfiguration> {
