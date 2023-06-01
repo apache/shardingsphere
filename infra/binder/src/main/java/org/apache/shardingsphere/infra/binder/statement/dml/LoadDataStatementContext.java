@@ -46,6 +46,6 @@ public final class LoadDataStatementContext extends CommonSQLStatementContext im
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getTables();
+        return tablesContext.getSimpleTableSegments();
     }
 }

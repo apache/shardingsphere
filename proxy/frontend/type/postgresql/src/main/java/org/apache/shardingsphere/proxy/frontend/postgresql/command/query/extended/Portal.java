@@ -195,10 +195,10 @@ public final class Portal {
     }
     
     private Object getCellData(final QueryResponseCell cell) {
-        if (PostgreSQLColumnType.isPgBit(cell.getJdbcType(), cell.getColumnTypeName().orElse(null))) {
+        if (PostgreSQLColumnType.isBit(cell.getJdbcType(), cell.getColumnTypeName().orElse(null))) {
             return PostgreSQLTextBitUtils.getTextValue(cell.getData());
         }
-        if (PostgreSQLColumnType.isPgBool(cell.getJdbcType(), cell.getColumnTypeName().orElse(null))) {
+        if (PostgreSQLColumnType.isBool(cell.getJdbcType(), cell.getColumnTypeName().orElse(null))) {
             return PostgreSQLTextBoolUtils.getTextValue(cell.getData());
         }
         return cell.getData();

@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
 import org.apache.shardingsphere.infra.util.exception.external.sql.type.generic.UnsupportedSQLOperationException;
 
 import java.time.LocalTime;
@@ -26,10 +25,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 /**
- * Text time utility class of PostgreSQL.
+ * Time value parser of PostgreSQL.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PostgreSQLTextTimeUtils {
+public final class PostgreSQLTimeValueParser implements PostgreSQLTextValueParser<LocalTime> {
     
     private static final DateTimeFormatter POSTGRESQL_TIME_FORMATTER = DateTimeFormatter.ofPattern(
             "[HH:mm:ss][HHmmss][HH:mm][HHmm]"
@@ -37,15 +35,8 @@ public final class PostgreSQLTextTimeUtils {
                     + "[ ]"
                     + "[XXXXX][XXXX][XXX][XX][X]");
     
-    /**
-     * Parse time in PostgreSQL text format.<br>
-     * NOTICE: PostgreSQL allows 6 fractional digits retained in the seconds field, which is unsupported by {@link java.sql.Time}.
-     *
-     * @param value text value to be parsed
-     * @return time
-     * @throws UnsupportedSQLOperationException unsupported SQL operation exception
-     */
-    public static LocalTime parse(final String value) {
+    @Override
+    public LocalTime parse(final String value) {
         try {
             return POSTGRESQL_TIME_FORMATTER.parse(value, LocalTime::from);
         } catch (final DateTimeParseException ignored) {

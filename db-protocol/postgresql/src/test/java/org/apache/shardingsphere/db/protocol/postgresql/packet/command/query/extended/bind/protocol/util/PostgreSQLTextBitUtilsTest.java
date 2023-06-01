@@ -18,20 +18,11 @@
 package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
 
 import org.junit.jupiter.api.Test;
-import org.postgresql.util.PGobject;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 class PostgreSQLTextBitUtilsTest {
-    
-    @Test
-    void assertParse() {
-        String textValue = "1";
-        PGobject actual = PostgreSQLTextBitUtils.parse(textValue);
-        assertThat(actual.getType(), is("bit"));
-        assertThat(actual.getValue(), is(textValue));
-    }
     
     @Test
     void assertGetTextBitValue() {

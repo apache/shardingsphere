@@ -75,7 +75,7 @@ public final class MySQLSaneQueryResultEngine implements SaneQueryResultEngine {
             if (each instanceof ExpressionProjectionSegment) {
                 ExpressionProjectionSegment expressionProjection = (ExpressionProjectionSegment) each;
                 String text = expressionProjection.getText();
-                String alias = expressionProjection.getAlias().orElse(expressionProjection.getText());
+                String alias = expressionProjection.getAliasName().orElse(expressionProjection.getText());
                 queryResultColumnMetaDataList.add(createRawQueryResultColumnMetaData(text, alias));
                 String value = expressionProjection.getExpr() instanceof VariableSegment
                         ? MySQLSystemVariable.findSystemVariable(((VariableSegment) expressionProjection.getExpr()).getVariable()).map(MySQLSystemVariable::getDefaultValue).orElse("1")

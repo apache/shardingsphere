@@ -60,7 +60,7 @@ public final class SingleSQLFederationDecider implements SQLFederationDecider<Si
     
     private Collection<QualifiedTable> getSingleTableNames(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database, final SingleRule rule) {
         DatabaseType databaseType = sqlStatementContext.getDatabaseType();
-        Collection<QualifiedTable> result = getQualifiedTables(database, databaseType, sqlStatementContext.getTablesContext().getTables());
+        Collection<QualifiedTable> result = getQualifiedTables(database, databaseType, sqlStatementContext.getTablesContext().getSimpleTableSegments());
         if (result.isEmpty() && sqlStatementContext instanceof IndexAvailable) {
             result = IndexMetaDataUtils.getTableNames(database, databaseType, ((IndexAvailable) sqlStatementContext).getIndexes());
         }

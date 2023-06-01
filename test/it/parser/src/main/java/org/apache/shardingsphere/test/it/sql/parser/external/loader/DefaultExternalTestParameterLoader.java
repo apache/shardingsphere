@@ -69,11 +69,7 @@ public final class DefaultExternalTestParameterLoader extends AbstractTestParame
     }
     
     private String getStatement(final String completedSQL, final String rawSQLLine, final boolean inProcedure) {
-        return (rawSQLLine.isEmpty() || isComment(rawSQLLine)) && !inProcedure ? "" : completedSQL + rawSQLLine + " ";
-    }
-    
-    private boolean isComment(final String line) {
-        return line.startsWith("#") || line.startsWith("/") || line.startsWith("--") || line.startsWith(":") || line.startsWith("\\");
+        return (rawSQLLine.isEmpty() || SQLLineComment.isComment(rawSQLLine)) && !inProcedure ? "" : completedSQL + rawSQLLine + " ";
     }
     
     private int searchInResultContent(final int resultIndex, final List<String> resultLines, final String completedSQL, final int statementLines) {

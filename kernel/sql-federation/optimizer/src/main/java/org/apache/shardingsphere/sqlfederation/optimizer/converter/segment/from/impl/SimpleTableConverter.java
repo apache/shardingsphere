@@ -45,8 +45,8 @@ public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTab
         }
         names.add(tableName.getIdentifier().getValue());
         SqlNode tableNameSQLNode = new SqlIdentifier(names, SqlParserPos.ZERO);
-        if (segment.getAlias().isPresent()) {
-            SqlNode aliasSQLNode = new SqlIdentifier(segment.getAlias().get(), SqlParserPos.ZERO);
+        if (segment.getAliasName().isPresent()) {
+            SqlNode aliasSQLNode = new SqlIdentifier(segment.getAliasName().get(), SqlParserPos.ZERO);
             return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, Arrays.asList(tableNameSQLNode, aliasSQLNode), SqlParserPos.ZERO));
         }
         return Optional.of(tableNameSQLNode);

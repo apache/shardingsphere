@@ -15,36 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
+package org.apache.shardingsphere.metadata.persist.node.metadata.config.mask;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.external.sql.type.wrapper.SQLWrapperException;
-import org.postgresql.util.PGobject;
-
-import java.sql.SQLException;
 
 /**
- * Text Json utility class of PostgreSQL.
+ * TODO move to features module
+ * Mask node converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PostgreSQLTextJsonUtils {
+public final class MaskNodeConverter {
+    
+    private static final String TABLES = "tables";
+    
+    private static final String MASK_ALGORITHMS = "mask_algorithms";
+  
+    /**
+     * Get table name path.
+     * 
+     * @param tableName table name
+     * @return table name path
+     */
+    public static String getTableNamePath(final String tableName) {
+        return String.join("/", TABLES, tableName);
+    }
     
     /**
-     * Parse json in PostgreSQL text format.
-     *
-     * @param jsonText text value to be parsed
-     * @return json PostgreSQL object
-     * @throws SQLWrapperException thrown if value is invalid for json type
+     * Get mask algorithm path.
+     * 
+     * @param maskAlgorithmName mask algorithm name
+     * @return mask algorithm path
      */
-    public static PGobject parse(final String jsonText) {
-        try {
-            PGobject result = new PGobject();
-            result.setType("json");
-            result.setValue(jsonText);
-            return result;
-        } catch (final SQLException ex) {
-            throw new SQLWrapperException(ex);
-        }
+    public static String getMaskAlgorithmNamePath(final String maskAlgorithmName) {
+        return String.join("/", MASK_ALGORITHMS, maskAlgorithmName);
     }
 }

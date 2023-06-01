@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.state.spi;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
-import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
 
 /**
- * Proxy cluster state.
+ * Unspecified value parser of PostgreSQL.
  */
-public interface ProxyClusterState extends TypedSPI {
+public final class PostgreSQLUnspecifiedValueParser implements PostgreSQLTextValueParser<PostgreSQLTypeUnspecifiedSQLParameter> {
     
-    /**
-     * Check sql statement.
-     * 
-     * @param sqlStatement sql statement
-     */
-    void check(SQLStatement sqlStatement);
+    @Override
+    public PostgreSQLTypeUnspecifiedSQLParameter parse(final String value) {
+        return new PostgreSQLTypeUnspecifiedSQLParameter(value);
+    }
 }

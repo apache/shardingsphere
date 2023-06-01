@@ -132,7 +132,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     private Map<String, ShardingSphereSchema> getSchemas(final ShardingSphereMetaData metaData, final String databaseName) {
         if (null == databaseName) {
-            ShardingSpherePreconditions.checkState(tablesContext.getTables().isEmpty(), NoDatabaseSelectedException::new);
+            ShardingSpherePreconditions.checkState(tablesContext.getSimpleTableSegments().isEmpty(), NoDatabaseSelectedException::new);
             return Collections.emptyMap();
         }
         ShardingSphereDatabase database = metaData.getDatabase(databaseName);
@@ -305,7 +305,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext impl
     
     @Override
     public Collection<SimpleTableSegment> getAllTables() {
-        return tablesContext.getTables();
+        return tablesContext.getSimpleTableSegments();
     }
     
     @Override

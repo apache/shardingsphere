@@ -42,7 +42,7 @@ public final class SubqueryProjectionConverter implements SQLSegmentConverter<Su
             return Optional.empty();
         }
         SqlNode sqlNode = new SelectStatementConverter().convert(segment.getSubquery().getSelect());
-        return segment.getAlias().isPresent() ? convertToSQLStatement(sqlNode, segment.getAlias().get()) : Optional.of(sqlNode);
+        return segment.getAliasName().isPresent() ? convertToSQLStatement(sqlNode, segment.getAliasName().get()) : Optional.of(sqlNode);
     }
     
     private Optional<SqlNode> convertToSQLStatement(final SqlNode sqlNode, final String alias) {

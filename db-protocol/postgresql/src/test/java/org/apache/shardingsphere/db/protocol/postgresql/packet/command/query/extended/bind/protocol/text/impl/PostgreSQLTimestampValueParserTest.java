@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,12 +29,12 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-class PostgreSQLTextTimestampUtilsTest {
+class PostgreSQLTimestampValueParserTest {
     
     @ParameterizedTest(name = "{0}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
     void assertGetLocalDateTimeNoExceptionOccurs(final String input, final Timestamp expected) {
-        assertThat(PostgreSQLTextTimestampUtils.parse(input), is(expected));
+        assertThat(new PostgreSQLTimestampValueParser().parse(input), is(expected));
     }
     
     private static class TestCaseArgumentsProvider implements ArgumentsProvider {
