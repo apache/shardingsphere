@@ -46,7 +46,7 @@ class MySQLTime2BinlogProtocolValueTest {
     
     @BeforeEach
     void setUp() {
-        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_TIME2);
+        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.TIME2);
         columnDef.setColumnMeta(0);
     }
     

@@ -29,11 +29,11 @@ class MySQLBinlogProtocolValueFactoryTest {
     
     @Test
     void assertGetBinlogProtocolValue() {
-        assertThat(MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLBinaryColumnType.MYSQL_TYPE_TINY), instanceOf(MySQLTinyBinlogProtocolValue.class));
+        assertThat(MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLBinaryColumnType.TINY), instanceOf(MySQLTinyBinlogProtocolValue.class));
     }
     
     @Test
     void assertGetBinlogProtocolValueFailure() {
-        assertThrows(IllegalArgumentException.class, () -> MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLBinaryColumnType.MYSQL_TYPE_GEOMETRY));
+        assertThrows(IllegalArgumentException.class, () -> MySQLBinlogProtocolValueFactory.getBinlogProtocolValue(MySQLBinaryColumnType.GEOMETRY));
     }
 }

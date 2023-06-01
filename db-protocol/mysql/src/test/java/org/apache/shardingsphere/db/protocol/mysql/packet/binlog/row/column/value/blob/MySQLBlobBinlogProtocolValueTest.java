@@ -46,7 +46,7 @@ class MySQLBlobBinlogProtocolValueTest {
     
     @BeforeEach
     void setUp() {
-        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.MYSQL_TYPE_STRING);
+        columnDef = new MySQLBinlogColumnDef(MySQLBinaryColumnType.STRING);
     }
     
     @Test

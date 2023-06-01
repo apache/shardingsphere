@@ -99,7 +99,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
         result.addAll(specifiedColumnTypes);
         int unspecifiedCount = parameterCount - specifiedColumnTypes.size();
         for (int i = 0; i < unspecifiedCount; i++) {
-            result.add(PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED);
+            result.add(PostgreSQLColumnType.UNSPECIFIED);
         }
         return result;
     }
