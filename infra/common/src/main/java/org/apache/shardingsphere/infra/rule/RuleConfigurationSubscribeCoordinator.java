@@ -15,32 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.node.metadata.config.readwritesplitting;
+package org.apache.shardingsphere.infra.rule;
 
-/**
- * Readwrite-splitting node converter.
- */
-public final class ReadwriteSplittingNodeConverter {
-    
-    private static final String LOAD_BALANCER_NODE = "load_balancers";
-    
-    /**
-     * Get group name path.
-     *
-     * @param groupName group name
-     * @return group name path
-     */
-    public String getGroupNamePath(final String groupName) {
-        return String.join("/", "", groupName);
-    }
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+
+import java.util.Map;
+
+public interface RuleConfigurationSubscribeCoordinator {
     
     /**
-     * Get load balancer name.
+     * Register rule configuration subscriber.
      *
-     * @param loadBalancerName load balancer name
-     * @return load balancer path
+     * @param databases databases
+     * @param instanceContext instance context
      */
-    public String getLoadBalancerPath(final String loadBalancerName) {
-        return String.join("/", "", LOAD_BALANCER_NODE, loadBalancerName);
-    }
+    void registerRuleConfigurationSubscriber(Map<String, ShardingSphereDatabase> databases, InstanceContext instanceContext);
 }

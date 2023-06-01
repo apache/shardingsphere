@@ -15,32 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.metadata.persist.node.metadata.config.readwritesplitting;
+package org.apache.shardingsphere.mode.event.rule;
 
 /**
- * Readwrite-splitting node converter.
+ * Feature event.
  */
-public final class ReadwriteSplittingNodeConverter {
-    
-    private static final String LOAD_BALANCER_NODE = "load_balancers";
-    
-    /**
-     * Get group name path.
-     *
-     * @param groupName group name
-     * @return group name path
-     */
-    public String getGroupNamePath(final String groupName) {
-        return String.join("/", "", groupName);
-    }
-    
-    /**
-     * Get load balancer name.
-     *
-     * @param loadBalancerName load balancer name
-     * @return load balancer path
-     */
-    public String getLoadBalancerPath(final String loadBalancerName) {
-        return String.join("/", "", LOAD_BALANCER_NODE, loadBalancerName);
-    }
+public interface FeatureEvent {
 }

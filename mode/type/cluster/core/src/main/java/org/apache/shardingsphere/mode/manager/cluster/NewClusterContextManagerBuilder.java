@@ -21,7 +21,9 @@ import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.InstanceContextAware;
+import org.apache.shardingsphere.infra.rule.RuleConfigurationSubscribeCoordinator;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.metadata.persist.NewMetaDataPersistService;
 import org.apache.shardingsphere.mode.lock.GlobalLockContext;
@@ -31,7 +33,6 @@ import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator.ClusterWorkerIdGenerator;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.subscriber.NewContextManagerSubscriberFacade;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.NewMetaDataContextsFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -40,7 +41,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import java.sql.SQLException;
 
 /**
- * TODO replace the old implementation after meta data refactor completed
+ * TODO Rename ClusterContextManagerBuilder when metadata structure adjustment completed. #25485
  * New cluster context manager builder.
  */
 public final class NewClusterContextManagerBuilder implements ContextManagerBuilder {
@@ -57,7 +58,7 @@ public final class NewClusterContextManagerBuilder implements ContextManagerBuil
         MetaDataContexts metaDataContexts = NewMetaDataContextsFactory.create(persistService, param, instanceContext, registryCenter.getStorageNodeStatusService().loadStorageNodes());
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         setContextManagerAware(result);
-        registerOnline(persistService, registryCenter, param, result);
+        registerOnline(registryCenter, param, result);
         return result;
     }
     
@@ -77,17 +78,22 @@ public final class NewClusterContextManagerBuilder implements ContextManagerBuil
         ((ContextManagerAware) contextManager.getInstanceContext().getModeContextManager()).setContextManagerAware(contextManager);
     }
     
-    private void registerOnline(final NewMetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
+    private void registerOnline(final RegistryCenter registryCenter, final ContextManagerBuilderParameter param, final ContextManager contextManager) {
         loadClusterStatus(registryCenter, contextManager);
         contextManager.getInstanceContext().getInstance().setLabels(param.getLabels());
         contextManager.getInstanceContext().getAllClusterInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
-        new NewContextManagerSubscriberFacade(persistService, registryCenter, contextManager);
+        registerRuleConfigurationSubscribers(contextManager.getMetaDataContexts(), contextManager.getInstanceContext());
         registryCenter.onlineInstance(contextManager.getInstanceContext().getInstance());
     }
     
     private void loadClusterStatus(final RegistryCenter registryCenter, final ContextManager contextManager) {
         registryCenter.persistClusterState(contextManager);
         contextManager.updateClusterState(registryCenter.getClusterStatusService().loadClusterStatus());
+    }
+    
+    private void registerRuleConfigurationSubscribers(final MetaDataContexts metaDataContexts, final InstanceContext instanceContext) {
+        ShardingSphereServiceLoader.getServiceInstances(RuleConfigurationSubscribeCoordinator.class)
+                .forEach(each -> each.registerRuleConfigurationSubscriber(metaDataContexts.getMetaData().getDatabases(), instanceContext));
     }
     
     @Override
