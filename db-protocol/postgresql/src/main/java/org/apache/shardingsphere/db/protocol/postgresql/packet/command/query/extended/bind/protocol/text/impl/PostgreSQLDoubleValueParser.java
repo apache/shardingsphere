@@ -15,27 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
 
 /**
- * Text bit utility class of PostgreSQL.
+ * Double value parser of PostgreSQL.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PostgreSQLTextBitUtils {
+public final class PostgreSQLDoubleValueParser implements PostgreSQLTextValueParser<Double> {
     
-    /**
-     * Get bit Text value in PostgreSQL text format.
-     * 
-     * @param jdbcBitValue bit value for jdbc
-     * @return bit text value in PostgreSQL text format
-     */
-    public static String getTextValue(final Object jdbcBitValue) {
-        if (null == jdbcBitValue) {
-            return null;
-        }
-        return (Boolean) jdbcBitValue ? "1" : "0";
+    @Override
+    public Double parse(final String value) {
+        return Double.parseDouble(value);
     }
 }

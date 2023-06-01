@@ -24,15 +24,9 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValue;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.PostgreSQLBinaryProtocolValueFactory;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util.PostgreSQLTextBitUtils;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util.PostgreSQLTextJsonUtils;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util.PostgreSQLTextTimeUtils;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util.PostgreSQLTextTimestampUtils;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierTag;
 import org.apache.shardingsphere.db.protocol.postgresql.payload.PostgreSQLPacketPayload;
 
-import java.math.BigDecimal;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -99,48 +93,7 @@ public final class PostgreSQLComBindPacket extends PostgreSQLCommandPacket {
     
     private Object getTextParameterValue(final PostgreSQLPacketPayload payload, final int paramValueLength, final PostgreSQLColumnType paramType) {
         String value = payload.getByteBuf().readCharSequence(paramValueLength, payload.getCharset()).toString();
-        return getTextParameterValue(value, paramType);
-    }
-    
-    private Object getTextParameterValue(final String textValue, final PostgreSQLColumnType paramType) {
-        switch (paramType) {
-            case UNSPECIFIED:
-                return new PostgreSQLTypeUnspecifiedSQLParameter(textValue);
-            case BOOL:
-                return Boolean.valueOf(textValue);
-            case INT2:
-            case INT4:
-                return Integer.parseInt(textValue);
-            case INT8:
-                return Long.parseLong(textValue);
-            case FLOAT4:
-                return Float.parseFloat(textValue);
-            case FLOAT8:
-                return Double.parseDouble(textValue);
-            case NUMERIC:
-                try {
-                    return Integer.parseInt(textValue);
-                } catch (final NumberFormatException ignored) {
-                }
-                try {
-                    return Long.parseLong(textValue);
-                } catch (final NumberFormatException ignored) {
-                }
-                return new BigDecimal(textValue);
-            case DATE:
-                return Date.valueOf(textValue);
-            case TIME:
-                return PostgreSQLTextTimeUtils.parse(textValue);
-            case TIMESTAMP:
-            case TIMESTAMPTZ:
-                return PostgreSQLTextTimestampUtils.parse(textValue);
-            case JSON:
-                return PostgreSQLTextJsonUtils.parse(textValue);
-            case BIT:
-                return PostgreSQLTextBitUtils.parse(textValue);
-            default:
-                return textValue;
-        }
+        return paramType.getTextValueParser().parse(value);
     }
     
     private Object getBinaryParameterValue(final PostgreSQLPacketPayload payload, final int paramValueLength, final PostgreSQLColumnType paramType) {

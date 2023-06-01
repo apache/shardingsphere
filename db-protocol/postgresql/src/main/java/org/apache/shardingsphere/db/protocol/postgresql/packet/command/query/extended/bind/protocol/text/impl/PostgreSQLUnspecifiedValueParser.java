@@ -15,21 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.util;
+package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.impl;
 
-import org.junit.jupiter.api.Test;
-import org.postgresql.util.PGobject;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.protocol.text.PostgreSQLTextValueParser;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
-class PostgreSQLTextJsonUtilsTest {
+/**
+ * Unspecified value parser of PostgreSQL.
+ */
+public final class PostgreSQLUnspecifiedValueParser implements PostgreSQLTextValueParser<PostgreSQLTypeUnspecifiedSQLParameter> {
     
-    @Test
-    void assertParse() {
-        String textValue = "['input']";
-        PGobject actual = PostgreSQLTextJsonUtils.parse(textValue);
-        assertThat(actual.getType(), is("json"));
-        assertThat(actual.getValue(), is(textValue));
+    @Override
+    public PostgreSQLTypeUnspecifiedSQLParameter parse(final String value) {
+        return new PostgreSQLTypeUnspecifiedSQLParameter(value);
     }
 }
