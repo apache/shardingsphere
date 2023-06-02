@@ -15,19 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.it.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.core.task;
 
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 
-public final class FixtureImporterConnector implements ImporterConnector {
+/**
+ * Task execute callback.
+ */
+@Slf4j
+@RequiredArgsConstructor
+public final class TaskExecuteCallback implements ExecuteCallback {
+    
+    private final PipelineTask task;
     
     @Override
-    public Object getConnector() {
-        return null;
+    public void onSuccess() {
     }
     
     @Override
-    public String getType() {
-        return "FIXTURE";
+    public void onFailure(final Throwable throwable) {
+        log.error("onFailure, task ID={}", task.getTaskId());
+        task.stop();
+        IOUtils.closeQuietly(task);
     }
 }

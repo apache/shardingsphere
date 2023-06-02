@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.importer;
+package org.apache.shardingsphere.data.pipeline.core.importer.sink;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,22 +23,19 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
-import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
-import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.JobOperationType;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.exception.job.PipelineImporterJobWriteException;
+import org.apache.shardingsphere.data.pipeline.core.importer.DataRecordMerger;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.record.RecordUtils;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineJdbcUtils;
+import org.apache.shardingsphere.data.pipeline.spi.importer.sink.PipelineSink;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
 import org.apache.shardingsphere.data.pipeline.util.spi.PipelineTypedSPILoader;
@@ -52,7 +49,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -61,7 +57,7 @@ import java.util.stream.IntStream;
  * Default importer.
  */
 @Slf4j
-public final class DataSourceImporter extends AbstractLifecycleExecutor implements Importer {
+public final class PipelineDataSourceSink implements PipelineSink {
     
     private static final DataRecordMerger MERGER = new DataRecordMerger();
     
@@ -72,10 +68,6 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     
     private final PipelineSQLBuilder pipelineSqlBuilder;
     
-    private final PipelineChannel channel;
-    
-    private final PipelineJobProgressListener jobProgressListener;
-    
     private final JobRateLimitAlgorithm rateLimitAlgorithm;
     
     private final AtomicReference<Statement> batchInsertStatement = new AtomicReference<>();
@@ -84,30 +76,21 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     
     private final AtomicReference<Statement> batchDeleteStatement = new AtomicReference<>();
     
-    public DataSourceImporter(final ImporterConfiguration importerConfig, final ImporterConnector importerConnector, final PipelineChannel channel,
-                              final PipelineJobProgressListener jobProgressListener) {
+    public PipelineDataSourceSink(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager) {
         this.importerConfig = importerConfig;
         rateLimitAlgorithm = importerConfig.getRateLimitAlgorithm();
-        this.dataSourceManager = (PipelineDataSourceManager) importerConnector.getConnector();
-        this.channel = channel;
+        this.dataSourceManager = dataSourceManager;
         pipelineSqlBuilder = PipelineTypedSPILoader.getDatabaseTypedService(PipelineSQLBuilder.class, importerConfig.getDataSourceConfig().getDatabaseType().getType());
-        this.jobProgressListener = jobProgressListener;
     }
     
     @Override
-    protected void runBlocking() {
-        int batchSize = importerConfig.getBatchSize();
-        while (isRunning()) {
-            List<Record> records = channel.fetchRecords(batchSize, 3, TimeUnit.SECONDS);
-            if (!records.isEmpty()) {
-                PipelineJobProgressUpdatedParameter updatedParam = flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
-                channel.ack(records);
-                jobProgressListener.onProgressUpdated(updatedParam);
-                if (FinishedRecord.class.equals(records.get(records.size() - 1).getClass())) {
-                    break;
-                }
-            }
-        }
+    public boolean identifierMatched(final Object identifier) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    public PipelineJobProgressUpdatedParameter write(final String ackId, final List<Record> records) {
+        return flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
     }
     
     private PipelineJobProgressUpdatedParameter flush(final DataSource dataSource, final List<Record> buffer) {
@@ -140,7 +123,7 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     
     @SneakyThrows(InterruptedException.class)
     private void tryFlush(final DataSource dataSource, final List<DataRecord> buffer) {
-        for (int i = 0; isRunning() && i <= importerConfig.getRetryTimes(); i++) {
+        for (int i = 0; !Thread.interrupted() && i <= importerConfig.getRetryTimes(); i++) {
             try {
                 doFlush(dataSource, buffer);
                 return;
@@ -310,9 +293,9 @@ public final class DataSourceImporter extends AbstractLifecycleExecutor implemen
     }
     
     @Override
-    protected void doStop() throws SQLException {
-        cancelStatement(batchInsertStatement.get());
-        cancelStatement(updateStatement.get());
-        cancelStatement(batchDeleteStatement.get());
+    public void close() {
+        PipelineJdbcUtils.cancelStatement(batchInsertStatement.get());
+        PipelineJdbcUtils.cancelStatement(updateStatement.get());
+        PipelineJdbcUtils.cancelStatement(batchDeleteStatement.get());
     }
 }

@@ -82,8 +82,18 @@ public final class MultiplexMemoryPipelineChannel implements PipelineChannel {
     }
     
     @Override
-    public List<Record> fetchRecords(final int batchSize, final int timeout, final TimeUnit timeUnit) {
+    public List<Record> fetchRecords(final int batchSize, final long timeout, final TimeUnit timeUnit) {
         return findChannel().fetchRecords(batchSize, timeout, timeUnit);
+    }
+    
+    @Override
+    public List<Record> peekRecords() {
+        return findChannel().peekRecords();
+    }
+    
+    @Override
+    public List<Record> pollRecords() {
+        return findChannel().pollRecords();
     }
     
     @Override

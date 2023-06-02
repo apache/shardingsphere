@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.task;
+package org.apache.shardingsphere.data.pipeline.cdc.core.task;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,53 +23,54 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.api.ingest.dumper.Dumper;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
+import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.task.PipelineTask;
+import org.apache.shardingsphere.data.pipeline.core.task.TaskExecuteCallback;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Inventory task.
+ * CDC incremental task.
  */
 @RequiredArgsConstructor
-@ToString(exclude = {"inventoryDumperExecuteEngine", "inventoryImporterExecuteEngine", "dumper", "importer"})
 @Slf4j
-public final class InventoryTask implements PipelineTask {
+@ToString(exclude = {"incrementalExecuteEngine", "dumper", "importer", "taskProgress"})
+public final class CDCIncrementalTask implements PipelineTask {
     
     @Getter
     private final String taskId;
     
-    private final ExecuteEngine inventoryDumperExecuteEngine;
-    
-    private final ExecuteEngine inventoryImporterExecuteEngine;
+    private final ExecuteEngine incrementalExecuteEngine;
     
     private final Dumper dumper;
     
+    @Nullable
     private final Importer importer;
     
-    private final AtomicReference<IngestPosition> position;
+    @Getter
+    private final IncrementalTaskProgress taskProgress;
     
     @Override
     public Collection<CompletableFuture<?>> start() {
+        taskProgress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         Collection<CompletableFuture<?>> result = new LinkedList<>();
-        result.add(inventoryDumperExecuteEngine.submit(dumper, new TaskExecuteCallback(this)));
-        result.add(inventoryImporterExecuteEngine.submit(importer, new TaskExecuteCallback(this)));
+        result.add(incrementalExecuteEngine.submit(dumper, new TaskExecuteCallback(this)));
+        if (null != importer) {
+            result.add(incrementalExecuteEngine.submit(importer, new TaskExecuteCallback(this)));
+        }
         return result;
     }
     
     @Override
     public void stop() {
         dumper.stop();
-        importer.stop();
-    }
-    
-    @Override
-    public InventoryTaskProgress getTaskProgress() {
-        return new InventoryTaskProgress(position.get());
+        if (null != importer) {
+            importer.stop();
+        }
     }
     
     @Override

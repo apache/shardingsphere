@@ -31,9 +31,9 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
-import org.apache.shardingsphere.data.pipeline.core.importer.DataSourceImporter;
-import org.apache.shardingsphere.data.pipeline.core.importer.connector.DataSourceImporterConnector;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.core.importer.SingleChannelConsumerImporter;
+import org.apache.shardingsphere.data.pipeline.core.importer.sink.PipelineDataSourceSink;
+import org.apache.shardingsphere.data.pipeline.spi.importer.sink.PipelineSink;
 import org.apache.shardingsphere.test.it.data.pipeline.core.fixture.FixtureInventoryIncrementalJobItemContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,15 +50,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class DataSourceImporterTest {
+class PipelineDataSourceSinkTest {
     
     private static final String TABLE_NAME = "test_table";
     
@@ -80,12 +82,12 @@ class DataSourceImporterTest {
     @Mock
     private PreparedStatement preparedStatement;
     
-    private DataSourceImporter jdbcImporter;
+    private SingleChannelConsumerImporter importer;
     
     @BeforeEach
     void setUp() throws SQLException {
-        ImporterConnector importerConnector = new DataSourceImporterConnector(dataSourceManager);
-        jdbcImporter = new DataSourceImporter(mockImporterConfiguration(), importerConnector, channel, new FixtureInventoryIncrementalJobItemContext());
+        PipelineSink pipelineSink = new PipelineDataSourceSink(mockImporterConfiguration(), dataSourceManager);
+        importer = new SingleChannelConsumerImporter(channel, 100, 1, TimeUnit.SECONDS, pipelineSink, new FixtureInventoryIncrementalJobItemContext());
         when(dataSourceManager.getDataSource(dataSourceConfig)).thenReturn(dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
     }
@@ -94,8 +96,8 @@ class DataSourceImporterTest {
     void assertWriteInsertDataRecord() throws SQLException {
         DataRecord insertRecord = getDataRecord("INSERT");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(insertRecord));
-        jdbcImporter.run();
+        when(channel.fetchRecords(anyInt(), anyLong(), any())).thenReturn(mockRecords(insertRecord));
+        importer.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(2, 10);
         verify(preparedStatement).setObject(3, "INSERT");
@@ -106,9 +108,9 @@ class DataSourceImporterTest {
     void assertDeleteDataRecord() throws SQLException {
         DataRecord deleteRecord = getDataRecord("DELETE");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(deleteRecord));
+        when(channel.fetchRecords(anyInt(), anyLong(), any())).thenReturn(mockRecords(deleteRecord));
         when(preparedStatement.executeBatch()).thenReturn(new int[]{1});
-        jdbcImporter.run();
+        importer.run();
         verify(preparedStatement).setObject(1, 1);
         verify(preparedStatement).setObject(2, 10);
         verify(preparedStatement).addBatch();
@@ -118,8 +120,8 @@ class DataSourceImporterTest {
     void assertUpdateDataRecord() throws SQLException {
         DataRecord updateRecord = getDataRecord("UPDATE");
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(updateRecord));
-        jdbcImporter.run();
+        when(channel.fetchRecords(anyInt(), anyLong(), any())).thenReturn(mockRecords(updateRecord));
+        importer.run();
         verify(preparedStatement).setObject(1, 20);
         verify(preparedStatement).setObject(2, "UPDATE");
         verify(preparedStatement).setObject(3, 1);
@@ -131,8 +133,8 @@ class DataSourceImporterTest {
     void assertUpdatePrimaryKeyDataRecord() throws SQLException {
         DataRecord updateRecord = getUpdatePrimaryKeyDataRecord();
         when(connection.prepareStatement(any())).thenReturn(preparedStatement);
-        when(channel.fetchRecords(anyInt(), anyInt(), any())).thenReturn(mockRecords(updateRecord));
-        jdbcImporter.run();
+        when(channel.fetchRecords(anyInt(), anyLong(), any())).thenReturn(mockRecords(updateRecord));
+        importer.run();
         InOrder inOrder = inOrder(preparedStatement);
         inOrder.verify(preparedStatement).setObject(1, 2);
         inOrder.verify(preparedStatement).setObject(2, 10);

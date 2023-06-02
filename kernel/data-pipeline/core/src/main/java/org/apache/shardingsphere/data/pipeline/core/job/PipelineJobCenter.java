@@ -60,6 +60,16 @@ public final class PipelineJobCenter {
     }
     
     /**
+     * Get job.
+     *
+     * @param jobId job id
+     * @return job
+     */
+    public static PipelineJob getJob(final String jobId) {
+        return JOB_MAP.get(jobId);
+    }
+    
+    /**
      * Stop job.
      *
      * @param jobId job id

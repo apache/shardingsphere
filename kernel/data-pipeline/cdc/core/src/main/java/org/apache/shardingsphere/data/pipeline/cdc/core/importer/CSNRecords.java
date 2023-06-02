@@ -15,47 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.task;
+package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
-import org.apache.shardingsphere.data.pipeline.api.task.progress.TaskProgress;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 
-import java.io.Closeable;
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
 
 /**
- * Pipeline task interface.
+ * CSN records.
  */
-public interface PipelineTask extends Closeable {
+@RequiredArgsConstructor
+@Getter
+public final class CSNRecords {
     
-    /**
-     * Start task.
-     *
-     * @return future
-     */
-    Collection<CompletableFuture<?>> start();
+    private final long csn;
     
-    /**
-     * Stop task.
-     */
-    void stop();
+    private final CDCChannelProgressPair channelProgressPair;
     
-    /**
-     * Get task id.
-     *
-     * @return task id
-     */
-    String getTaskId();
-    
-    /**
-     * Get task progress.
-     *
-     * @return task progress
-     */
-    TaskProgress getTaskProgress();
-    
-    /**
-     * Close.
-     */
-    void close();
+    private final List<Record> records;
 }

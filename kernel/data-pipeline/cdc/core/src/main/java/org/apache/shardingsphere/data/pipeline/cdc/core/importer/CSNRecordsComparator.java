@@ -15,47 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.task;
+package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
-import org.apache.shardingsphere.data.pipeline.api.task.progress.TaskProgress;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.io.Closeable;
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+import java.util.Comparator;
 
 /**
- * Pipeline task interface.
+ * CSN records comparator.
  */
-public interface PipelineTask extends Closeable {
+@RequiredArgsConstructor
+@Getter
+public final class CSNRecordsComparator implements Comparator<CSNRecords> {
     
-    /**
-     * Start task.
-     *
-     * @return future
-     */
-    Collection<CompletableFuture<?>> start();
-    
-    /**
-     * Stop task.
-     */
-    void stop();
-    
-    /**
-     * Get task id.
-     *
-     * @return task id
-     */
-    String getTaskId();
-    
-    /**
-     * Get task progress.
-     *
-     * @return task progress
-     */
-    TaskProgress getTaskProgress();
-    
-    /**
-     * Close.
-     */
-    void close();
+    @Override
+    public int compare(final CSNRecords o1, final CSNRecords o2) {
+        return Long.compare(o1.getCsn(), o2.getCsn());
+    }
 }

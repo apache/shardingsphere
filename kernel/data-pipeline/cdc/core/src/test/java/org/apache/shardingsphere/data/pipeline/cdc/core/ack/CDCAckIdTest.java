@@ -15,47 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.task;
+package org.apache.shardingsphere.data.pipeline.cdc.core.ack;
 
-import org.apache.shardingsphere.data.pipeline.api.task.progress.TaskProgress;
+import org.junit.jupiter.api.Test;
 
-import java.io.Closeable;
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-/**
- * Pipeline task interface.
- */
-public interface PipelineTask extends Closeable {
+class CDCAckIdTest {
     
-    /**
-     * Start task.
-     *
-     * @return future
-     */
-    Collection<CompletableFuture<?>> start();
-    
-    /**
-     * Stop task.
-     */
-    void stop();
-    
-    /**
-     * Get task id.
-     *
-     * @return task id
-     */
-    String getTaskId();
-    
-    /**
-     * Get task progress.
-     *
-     * @return task progress
-     */
-    TaskProgress getTaskProgress();
-    
-    /**
-     * Close.
-     */
-    void close();
+    @Test
+    void assertBuild() {
+        CDCAckId expected = CDCAckId.build("importer1");
+        String text = expected.marshal();
+        CDCAckId actual = CDCAckId.unmarshal(text);
+        assertThat(actual.getImporterId(), is(expected.getImporterId()));
+        assertThat(actual.getRandom(), is(expected.getRandom()));
+    }
 }

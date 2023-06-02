@@ -15,24 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.importer.connector;
+package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Importer connector.
+ * CDC importer manager.
  */
-public interface ImporterConnector {
+public final class CDCImporterManager {
+    
+    private static final Map<String, CDCImporter> IMPORTER_MAP = new ConcurrentHashMap<>();
     
     /**
-     * Get connector.
+     * Put importer.
      *
-     * @return connector
+     * @param importer importer
      */
-    Object getConnector();
+    public static void putImporter(final CDCImporter importer) {
+        IMPORTER_MAP.put(importer.getImporterId(), importer);
+    }
     
     /**
-     * Connector type.
+     * Get importer.
      *
-     * @return connector type
+     * @param id importer id
+     * @return importer
      */
-    String getType();
+    public static CDCImporter getImporter(final String id) {
+        return IMPORTER_MAP.get(id);
+    }
+    
+    /**
+     * Remove importer.
+     *
+     * @param id importer id
+     */
+    public static void removeImporter(final String id) {
+        IMPORTER_MAP.remove(id);
+    }
 }

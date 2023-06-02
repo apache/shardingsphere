@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.importer.connector;
+package org.apache.shardingsphere.data.pipeline.cdc.core.importer;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.spi.importer.connector.ImporterConnector;
+import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 
 /**
- * Default importer connector.
+ * CDC channel and progress listener pair.
  */
-
 @RequiredArgsConstructor
-public final class DataSourceImporterConnector implements ImporterConnector {
+@Getter
+public final class CDCChannelProgressPair {
     
-    private final PipelineDataSourceManager pipelineDataSourceManager;
+    private final PipelineChannel channel;
     
-    @Override
-    public Object getConnector() {
-        return pipelineDataSourceManager;
-    }
-    
-    @Override
-    public String getType() {
-        return "DataSource";
-    }
+    private final PipelineJobProgressListener jobProgressListener;
 }

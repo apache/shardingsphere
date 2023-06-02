@@ -15,47 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.task;
+package org.apache.shardingsphere.data.pipeline.spi.importer.sink;
 
-import org.apache.shardingsphere.data.pipeline.api.task.progress.TaskProgress;
+import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressUpdatedParameter;
 
 import java.io.Closeable;
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
 
 /**
- * Pipeline task interface.
+ * Pipeline sink.
  */
-public interface PipelineTask extends Closeable {
+public interface PipelineSink extends Closeable {
     
     /**
-     * Start task.
+     * Identifier matched or not.
      *
-     * @return future
+     * @param identifier sink identifier
+     * @return true if matched, otherwise false
      */
-    Collection<CompletableFuture<?>> start();
+    boolean identifierMatched(Object identifier);
     
     /**
-     * Stop task.
-     */
-    void stop();
-    
-    /**
-     * Get task id.
+     * Write data.
      *
-     * @return task id
+     * @param ackId ack id
+     * @param records records
+     * @return job progress updated parameter
      */
-    String getTaskId();
-    
-    /**
-     * Get task progress.
-     *
-     * @return task progress
-     */
-    TaskProgress getTaskProgress();
-    
-    /**
-     * Close.
-     */
-    void close();
+    PipelineJobProgressUpdatedParameter write(String ackId, List<Record> records);
 }

@@ -103,7 +103,7 @@ public abstract class AbstractPipelineJob implements PipelineJob {
     
     protected abstract void doPrepare(PipelineJobItemContext jobItemContext) throws SQLException;
     
-    private void processFailed(final PipelineJobItemContext jobItemContext, final Exception ex) {
+    protected void processFailed(final PipelineJobItemContext jobItemContext, final Exception ex) {
         String jobId = jobItemContext.getJobId();
         log.error("job prepare failed, {}-{}", jobId, jobItemContext.getShardingItem(), ex);
         jobAPI.persistJobItemErrorMessage(jobItemContext.getJobId(), jobItemContext.getShardingItem(), ex);
