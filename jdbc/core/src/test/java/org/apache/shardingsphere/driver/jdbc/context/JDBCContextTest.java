@@ -34,18 +34,17 @@ import static org.mockito.Mockito.mock;
 class JDBCContextTest {
     
     @Test
-    void assertNullCachedDbMetadataWithEmptyDatasource() throws Exception {
+    void assertGetCachedDatabaseMetaDataForNullValue() throws Exception {
         assertNull(new JDBCContext(Collections.emptyMap()).getCachedDatabaseMetaData());
     }
     
     @Test
-    void assertNotNullCashedDbMetadataWith() throws SQLException {
-        JDBCContext jdbcContext = new JDBCContext(Collections.singletonMap("foo_db", new CircuitBreakerDataSource()));
-        assertNotNull(jdbcContext.getCachedDatabaseMetaData());
+    void assertGetCachedDatabaseMetaDataForSingleValue() throws SQLException {
+        assertNotNull(new JDBCContext(Collections.singletonMap("foo_db", new CircuitBreakerDataSource())).getCachedDatabaseMetaData());
     }
     
     @Test
-    void assertNullMetadataAfterRefreshingExisting() throws SQLException {
+    void assertGetCachedDatabaseMetaDataAfterRefreshingExisting() throws SQLException {
         JDBCContext jdbcContext = new JDBCContext(Collections.singletonMap("foo_db", new CircuitBreakerDataSource()));
         jdbcContext.refreshCachedDatabaseMetaData(mock(DataSourceChangedEvent.class));
         assertNull(jdbcContext.getCachedDatabaseMetaData());
