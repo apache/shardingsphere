@@ -47,7 +47,7 @@ class StandardReadwriteSplittingDataSourceRouterTest {
     
     @Test
     void assertRouteWithFilter() {
-        rule.updateDisabledDataSourceNames("read_ds_0", true);
+        rule.disableDataSource("read_ds_0");
         assertThat(new StandardReadwriteSplittingDataSourceRouter().route(rule), is("read_ds_1"));
     }
 }
